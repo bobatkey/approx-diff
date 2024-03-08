@@ -138,6 +138,10 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
       upper : (I : Set iℓ) (x : I → A) (i : I) → x i ≤ ⋁ I x
       least : (I : Set iℓ) (x : I → A) (z : A) → (∀ i → x i ≤ z) → ⋁ I x ≤ z
 
+  record IsBottom (⊥ : A) : Set (a ⊔ b) where
+    field
+      ≤-bottom : ∀ {x} → ⊥ ≤ x
+
   ------------------------------------------------------------------------------
   -- closure implies distributivity of joins and the monoid
   -- FIXME: don't assume symmetry and do the left and right ones separately
