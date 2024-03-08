@@ -8,19 +8,21 @@ open import Relation.Binary using (Setoid; IsEquivalence)
 
 module _ {a} {A : Set a} where
 
+  SymmetricClosure : ∀ {b} → (A → A → Set b) → (A → A → Set b)
+  SymmetricClosure R x y = R x y × R y x
+
   record IsPreorder {b} (_≤_ : A → A → Set b) : Set (a ⊔ b) where
     field
       refl  : ∀ {x} → x ≤ x
       trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
-
-  SymmetricClosure : ∀ {b} → (A → A → Set b) → (A → A → Set b)
-  SymmetricClosure R x y = R x y × R y x
+    _≃_ = SymmetricClosure _≤_
+    infix 4 _≃_
 
 module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreorder _≤_) where
 
-  private
-    _≃_ = SymmetricClosure _≤_
-    infix 4 _≃_
+  -- private
+  --   _≃_ = SymmetricClosure _≤_
+  --   infix 4 _≃_
 
   module _ where
     open IsPreorder ≤-isPreorder
@@ -37,6 +39,7 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     setoidOf .Setoid.isEquivalence = isEquivalenceOf
 
   record IsMonoid (_∙_ : A → A → A) (ε : A) : Set (a ⊔ b) where
+    open IsPreorder ≤-isPreorder
     field
       mono  : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ∙ y₁) ≤ (x₂ ∙ y₂)
       assoc : ∀ {x y z} → (x ∙ y) ∙ z ≃ x ∙ (y ∙ z)
@@ -164,6 +167,7 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
                     (⊗-isMonoid : IsMonoid _⊗_ ε)
                     (⊗-sym : ∀ {x y} → (x ⊗ y) ≤ (y ⊗ x))
                     (¬ : A → A) : Set (a ⊔ b) where
+    open IsPreorder ≤-isPreorder
     field
       ¬-mono     : ∀ {x y} → x ≤ y → ¬ y ≤ ¬ x
       involution : ∀ {x} → x ≃ ¬ (¬ x)
@@ -171,7 +175,6 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
       *-aut   : ∀ {x y z} → (x ⊗ y) ≤ ¬ z → x ≤ ¬ (y ⊗ z)
       *-aut⁻¹ : ∀ {x y z} → x ≤ ¬ (y ⊗ z) → (x ⊗ y) ≤ ¬ z
 
-    open IsPreorder ≤-isPreorder
     open IsMonoid ⊗-isMonoid
 
     ¬-cong : ∀ {x y} → x ≃ y → ¬ x ≃ ¬ y
@@ -246,6 +249,8 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
 
   ------------------------------------------------------------------------------
   record IsClosureOp (C : A → A) : Set (a ⊔ b) where
+    open IsPreorder ≤-isPreorder
+
     field
       mono   : ∀ {x y} → x ≤ y → C x ≤ C y
       unit   : ∀ {x} → x ≤ C x
