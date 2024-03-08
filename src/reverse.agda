@@ -52,6 +52,17 @@ open _⇒_
 
 -- Have a bicartesian closed category... here's the definitions at least:
 
+-- Any old set becomes a “discrete” object
+Disc : Set → ApproxSet
+Disc A .elem = A
+Disc A .approx _ = 𝟙
+
+Disc-f : ∀ {A B} → (A → B) → Disc A ⇒ Disc B
+Disc-f f .fwd = f
+Disc-f f .bwd x = id
+
+-- Disc preserves sums and products too
+
 -- Terminal Object
 ⊤ₐ : ApproxSet
 ⊤ₐ .elem = ⊤
