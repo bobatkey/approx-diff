@@ -264,9 +264,9 @@ lambda m .bwd x = elim-⨁ _ _ _ λ y → project₁ ∘ m .bwd (x , y)
 ℒ X .elem = X .elem
 ℒ X .approx x = L (X .approx x)
 
-unit : ∀ {X} → X ⇒ ℒ X
-unit .fwd x = x
-unit .bwd x = ⊥-map
+ℒ-unit : ∀ {X} → X ⇒ ℒ X
+ℒ-unit .fwd x = x
+ℒ-unit .bwd x = ⊥-map
 
 -- is this right? the reverse pass gives the _least_ input that gets
 -- the output, so I think this is right.
@@ -274,3 +274,5 @@ unit .bwd x = ⊥-map
 ℒ-join .fwd x = x
 ℒ-join .bwd x .func bottom = bottom -- or < bottom > ?
 ℒ-join .bwd x .func < δx > = < < δx > >
+
+-- Somehow, in JoinSemilattice, lifting is both a monad and a comonad?
