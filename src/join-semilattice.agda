@@ -246,17 +246,35 @@ project₂ {X} {Y} .join-preserving (x , x') _ =
 -- Coproduct bits:
 inject₁ : ∀ {X Y} → X => (X ⊕ Y)
 inject₁ {X}{Y} .func x = x , Y .⊥
+inject₁ {X}{Y} .monotone x≤x' = x≤x' , Y .≤-isPreorder .IsPreorder.refl
 inject₁ {X}{Y} .join-preserving _ _ =
   (X .≤-isPreorder .IsPreorder.refl , proj₁ (IsJoin.idem (Y .∨-isJoin))) ,
   (X .≤-isPreorder .IsPreorder.refl , Y .⊥-isBottom .IsBottom.≤-bottom)
 
 inject₂ : ∀ {X Y} → Y => (X ⊕ Y)
 inject₂ {X}{Y} .func y = X .⊥ , y
+inject₂ {X}{Y} .monotone y≤y' = X .≤-isPreorder .IsPreorder.refl , y≤y'
 inject₂ {X}{Y} .join-preserving _ _ =
   (proj₁ (IsJoin.idem (X .∨-isJoin)) , Y .≤-isPreorder .IsPreorder.refl) ,
   (X .⊥-isBottom .IsBottom.≤-bottom , Y .≤-isPreorder .IsPreorder.refl)
 
 [_,_] : ∀ {X Y Z} → X => Z → Y => Z → (X ⊕ Y) => Z
 [_,_] {X}{Y}{Z} f g .func (x , y) = Z ._∨_ (f .func x) (g .func y)
+[_,_] {X}{Y}{Z} f g .monotone {x} {x'} (x₁≤x₁' , x₂≤x₂') =
+  IsJoin.mono (Z .∨-isJoin) (f .monotone x₁≤x₁') (g .monotone x₂≤x₂')
 [_,_] {X}{Y}{Z} f g .join-preserving (x₁ , y₁) (x₂ , y₂) =
-  {!   !} , {!   !}
+  begin
+    Z ._∨_ (Z ._∨_ (f .func x₁) (g .func y₁)) (Z ._∨_ (f .func x₂) (g .func y₂))
+  ≈⟨ IsJoin.assoc (Z .∨-isJoin) ⟩
+    Z ._∨_ (f .func x₁) (Z ._∨_ (g .func y₁) (Z ._∨_ (f .func x₂) (g .func y₂)))
+  ≈⟨ {!   !} ⟩ -- assoc
+    Z ._∨_ (f .func x₁) (Z ._∨_ (Z ._∨_ (g .func y₁) (f .func x₂)) (g .func y₂))
+  ≈⟨ {!   !} ⟩ -- comm
+    Z ._∨_ (f .func x₁) (Z ._∨_ (f .func x₂) (Z ._∨_ (g .func y₁) (g .func y₂)))
+  ≈⟨ {!   !} ⟩ -- assoc
+    Z ._∨_ (Z ._∨_ (f .func x₁) (f .func x₂)) (Z ._∨_ (g .func y₁) (g .func y₂))
+  ≈⟨ {!   !} ⟩ -- f, g preserve ∨
+    (Z ._∨_ (f .func (X ._∨_ x₁ x₂)) (g .func (Y ._∨_ y₁ y₂)))
+  ∎
+  where
+  open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
