@@ -227,6 +227,9 @@ project₂ {X} {Y} .join-preserving _ _ =
 -- Coproduct bits:
 inject₁ : ∀ {X Y} → X => (X ⊕ Y)
 inject₁ {X}{Y} .func x = x , Y .⊥
+inject₁ {X}{Y} .join-preserving _ _ =
+   (X. ≤-isPreorder .IsPreorder.refl , proj₁ (IsJoin.idem (Y .∨-isJoin))) ,
+   (X. ≤-isPreorder .IsPreorder.refl , Y .⊥-isBottom .IsBottom.≤-bottom)
 
 inject₂ : ∀ {X Y} → Y => (X ⊕ Y)
 inject₂ {X}{Y} .func y = X .⊥ , y
