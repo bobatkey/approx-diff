@@ -55,7 +55,7 @@ _∘_ {X}{Y}{Z} f g .join-preserving x x' =
     Z ._∨_ (f .func (g .func x)) (f .func (g .func x'))
   ≈⟨ f .join-preserving _ _ ⟩
     f .func (Y ._∨_ (g .func x) (g .func x'))
-  ≈⟨ f .monotone (proj₁ (g .join-preserving _ _)) , f .monotone (proj₂ (g .join-preserving _ _)) ⟩
+  ≈⟨ cong f (g .join-preserving _ _) ⟩
     (f .func (g .func (X ._∨_ x x')))
   ∎
   where open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
