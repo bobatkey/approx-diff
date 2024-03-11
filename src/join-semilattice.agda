@@ -6,7 +6,6 @@ open import Level
 open import Data.Product using (proj₁; proj₂; _×_; _,_)
 open import Data.Unit using (⊤; tt)
 open import Data.Empty using () renaming (⊥ to 𝟘)
-open import Relation.Binary.PropositionalEquality using (cong)
 open import basics
 
 record JoinSemilattice : Set (suc 0ℓ) where
@@ -22,12 +21,17 @@ record JoinSemilattice : Set (suc 0ℓ) where
 
 record _=>_ (X Y : JoinSemilattice) : Set where
   open JoinSemilattice
-  open IsPreorder (Y .JoinSemilattice.≤-isPreorder)
+  open IsPreorder (X .JoinSemilattice.≤-isPreorder) renaming (_≃_ to _≃₁_)
+  open IsPreorder (Y .JoinSemilattice.≤-isPreorder) renaming (_≃_ to _≃₂_)
   field
     func : X .Carrier → Y .Carrier
-    join-preserving : ∀ x x' → Y ._∨_ (func x) (func x') ≃ func (X ._∨_ x x')
+    join-preserving : ∀ x x' → Y ._∨_ (func x) (func x') ≃₂ func (X ._∨_ x x')
     -- bottom-preserving :
     monotone : ∀ {x x'} → X ._≤_ x x' → Y ._≤_ (func x) (func x')
+
+  cong : ∀ {x x'} → x ≃₁ x' → func x ≃₂ func x'
+  cong (x≤x' , x'≤x) = monotone x≤x' , monotone x'≤x
+
 open _=>_
 
 record _≃m_ {X Y : JoinSemilattice} (f g : X => Y) : Set where
