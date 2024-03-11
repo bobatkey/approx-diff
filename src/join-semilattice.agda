@@ -57,7 +57,9 @@ _∘_ {X}{Y}{Z} f g .join-preserving x x' =
   where open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
 
 ⊥-map : ∀ {X Y} → X => Y
-⊥-map {X}{Y} .func x = Y .⊥
+⊥-map {X}{Y} .func _ = Y .⊥
+⊥-map {X}{Y} .monotone _ = Y .≤-isPreorder .IsPreorder.refl
+⊥-map {X}{Y} .join-preserving _ _ = IsJoin.idem (Y .∨-isJoin)
 
 -- FIXME: ∨-map
 
