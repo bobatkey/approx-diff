@@ -215,14 +215,14 @@ project₁ {X} .join-preserving _ _ =
 
 project₂ : ∀ {X Y} → (X ⊕ Y) => Y
 project₂ .func = proj₂
-project₂ {X} {Y} .join-preserving _ _ =
+project₂ {X} {Y} .join-preserving (x , x') _ =
    Y. ≤-isPreorder .IsPreorder.refl , Y .≤-isPreorder .IsPreorder.refl
 
 ⟨_,_⟩ : ∀ {X Y Z} → X => Y → X => Z → X => (Y ⊕ Z)
 ⟨ f , g ⟩ .func x = f .func x , g .func x
-⟨ f , g ⟩ .join-preserving x x' =
-   ((f .join-preserving x x') .proj₁ , (g .join-preserving x x') .proj₁) ,
-   ((f .join-preserving x x') .proj₂ , (g .join-preserving x x') .proj₂)
+⟨ f , g ⟩ .join-preserving _ _ =
+   ((f .join-preserving _ _) .proj₁ , (g .join-preserving _ _) .proj₁) ,
+   ((f .join-preserving _ _) .proj₂ , (g .join-preserving _ _) .proj₂)
 
 -- Coproduct bits:
 inject₁ : ∀ {X Y} → X => (X ⊕ Y)
@@ -233,6 +233,11 @@ inject₁ {X}{Y} .join-preserving _ _ =
 
 inject₂ : ∀ {X Y} → Y => (X ⊕ Y)
 inject₂ {X}{Y} .func y = X .⊥ , y
+inject₂ {X}{Y} .join-preserving _ _ =
+   (proj₁ (IsJoin.idem (X .∨-isJoin)) , Y .≤-isPreorder .IsPreorder.refl) ,
+   (X .⊥-isBottom .IsBottom.≤-bottom , Y .≤-isPreorder .IsPreorder.refl)
 
 [_,_] : ∀ {X Y Z} → X => Z → Y => Z → (X ⊕ Y) => Z
 [_,_] {X}{Y}{Z} f g .func (x , y) = Z ._∨_ (f .func x) (g .func y)
+[_,_] {X}{Y}{Z} f g .join-preserving (x₁ , y₁) (x₂ , y₂) =
+  {!   !} , {!   !}
