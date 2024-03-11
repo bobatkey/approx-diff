@@ -21,9 +21,10 @@ record JoinSemilattice : Set (suc 0ℓ) where
 
 record _=>_ (X Y : JoinSemilattice) : Set where
   open JoinSemilattice
+  open IsPreorder (Y .JoinSemilattice.≤-isPreorder)
   field
     func : X .Carrier → Y .Carrier
-    -- join-preserving :
+    join-preserving : ∀ x x' → Y ._∨_ (func x) (func x') ≃ func (X ._∨_ x x')
     -- bottom-preserving :
     -- monotone :
 open _=>_
@@ -209,6 +210,8 @@ _⊕_ : JoinSemilattice → JoinSemilattice → JoinSemilattice
 -- Product bits:
 project₁ : ∀ {X Y} → (X ⊕ Y) => X
 project₁ .func = proj₁
+project₁ {X} .join-preserving (x , y) (x' , y') =
+   X. ≤-isPreorder .IsPreorder.refl , X .≤-isPreorder .IsPreorder.refl
 
 project₂ : ∀ {X Y} → (X ⊕ Y) => Y
 project₂ .func = proj₂
