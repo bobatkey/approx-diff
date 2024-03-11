@@ -20,10 +20,6 @@ module _ {a} {A : Set a} where
 
 module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreorder _≤_) where
 
-  -- private
-  --   _≃_ = SymmetricClosure _≤_
-  --   infix 4 _≃_
-
   module _ where
     open IsPreorder ≤-isPreorder
 

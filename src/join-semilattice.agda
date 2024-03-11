@@ -6,6 +6,7 @@ open import Level
 open import Data.Product using (proj₁; proj₂; _×_; _,_)
 open import Data.Unit using (⊤; tt)
 open import Data.Empty using () renaming (⊥ to 𝟘)
+open import Relation.Binary.PropositionalEquality using (cong)
 open import basics
 
 record JoinSemilattice : Set (suc 0ℓ) where
@@ -38,9 +39,20 @@ open JoinSemilattice
 
 id : ∀ {X} → X => X
 id .func x = x
+id {X} .join-preserving _ _ =
+  X .≤-isPreorder .IsPreorder.refl , X .≤-isPreorder .IsPreorder.refl
 
 _∘_ : ∀ {X Y Z} → Y => Z → X => Y → X => Z
 (f ∘ g) .func x = f .func (g .func x)
+_∘_ {X}{Y}{Z} f g .join-preserving x x' =
+  begin
+    Z ._∨_ (f .func (g .func x)) (f .func (g .func x'))
+  ≈⟨ f .join-preserving _ _ ⟩
+    f .func (Y ._∨_ (g .func x) (g .func x'))
+  ≈⟨ {!   !} , {!   !} ⟩
+    (f .func (g .func (X ._∨_ x x')))
+  ∎
+  where open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
 
 ⊥-map : ∀ {X Y} → X => Y
 ⊥-map {X}{Y} .func x = Y .⊥
@@ -211,31 +223,31 @@ _⊕_ : JoinSemilattice → JoinSemilattice → JoinSemilattice
 project₁ : ∀ {X Y} → (X ⊕ Y) => X
 project₁ .func = proj₁
 project₁ {X} .join-preserving _ _ =
-   X. ≤-isPreorder .IsPreorder.refl , X .≤-isPreorder .IsPreorder.refl
+  X .≤-isPreorder .IsPreorder.refl , X .≤-isPreorder .IsPreorder.refl
 
 project₂ : ∀ {X Y} → (X ⊕ Y) => Y
 project₂ .func = proj₂
 project₂ {X} {Y} .join-preserving (x , x') _ =
-   Y. ≤-isPreorder .IsPreorder.refl , Y .≤-isPreorder .IsPreorder.refl
+  Y .≤-isPreorder .IsPreorder.refl , Y .≤-isPreorder .IsPreorder.refl
 
 ⟨_,_⟩ : ∀ {X Y Z} → X => Y → X => Z → X => (Y ⊕ Z)
 ⟨ f , g ⟩ .func x = f .func x , g .func x
 ⟨ f , g ⟩ .join-preserving _ _ =
-   ((f .join-preserving _ _) .proj₁ , (g .join-preserving _ _) .proj₁) ,
-   ((f .join-preserving _ _) .proj₂ , (g .join-preserving _ _) .proj₂)
+  ((f .join-preserving _ _) .proj₁ , (g .join-preserving _ _) .proj₁) ,
+  ((f .join-preserving _ _) .proj₂ , (g .join-preserving _ _) .proj₂)
 
 -- Coproduct bits:
 inject₁ : ∀ {X Y} → X => (X ⊕ Y)
 inject₁ {X}{Y} .func x = x , Y .⊥
 inject₁ {X}{Y} .join-preserving _ _ =
-   (X. ≤-isPreorder .IsPreorder.refl , proj₁ (IsJoin.idem (Y .∨-isJoin))) ,
-   (X. ≤-isPreorder .IsPreorder.refl , Y .⊥-isBottom .IsBottom.≤-bottom)
+  (X .≤-isPreorder .IsPreorder.refl , proj₁ (IsJoin.idem (Y .∨-isJoin))) ,
+  (X .≤-isPreorder .IsPreorder.refl , Y .⊥-isBottom .IsBottom.≤-bottom)
 
 inject₂ : ∀ {X Y} → Y => (X ⊕ Y)
 inject₂ {X}{Y} .func y = X .⊥ , y
 inject₂ {X}{Y} .join-preserving _ _ =
-   (proj₁ (IsJoin.idem (X .∨-isJoin)) , Y .≤-isPreorder .IsPreorder.refl) ,
-   (X .⊥-isBottom .IsBottom.≤-bottom , Y .≤-isPreorder .IsPreorder.refl)
+  (proj₁ (IsJoin.idem (X .∨-isJoin)) , Y .≤-isPreorder .IsPreorder.refl) ,
+  (X .⊥-isBottom .IsBottom.≤-bottom , Y .≤-isPreorder .IsPreorder.refl)
 
 [_,_] : ∀ {X Y Z} → X => Z → Y => Z → (X ⊕ Y) => Z
 [_,_] {X}{Y}{Z} f g .func (x , y) = Z ._∨_ (f .func x) (g .func y)
