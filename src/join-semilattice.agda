@@ -27,7 +27,7 @@ record _=>_ (X Y : JoinSemilattice) : Set where
     func : X .Carrier → Y .Carrier
     join-preserving : ∀ x x' → Y ._∨_ (func x) (func x') ≃ func (X ._∨_ x x')
     -- bottom-preserving :
-    -- monotone :
+    monotone : ∀ {x x'} → X ._≤_ x x' → Y ._≤_ (func x) (func x')
 open _=>_
 
 record _≃m_ {X Y : JoinSemilattice} (f g : X => Y) : Set where
@@ -39,17 +39,19 @@ open JoinSemilattice
 
 id : ∀ {X} → X => X
 id .func x = x
+id {X} .monotone x≤x' = x≤x'
 id {X} .join-preserving _ _ =
   X .≤-isPreorder .IsPreorder.refl , X .≤-isPreorder .IsPreorder.refl
 
 _∘_ : ∀ {X Y Z} → Y => Z → X => Y → X => Z
 (f ∘ g) .func x = f .func (g .func x)
+(f ∘ g) .monotone x≤x' = f .monotone (g .monotone x≤x')
 _∘_ {X}{Y}{Z} f g .join-preserving x x' =
   begin
     Z ._∨_ (f .func (g .func x)) (f .func (g .func x'))
   ≈⟨ f .join-preserving _ _ ⟩
     f .func (Y ._∨_ (g .func x) (g .func x'))
-  ≈⟨ {!   !} , {!   !} ⟩
+  ≈⟨ f .monotone (proj₁ (g .join-preserving _ _)) , f .monotone (proj₂ (g .join-preserving _ _)) ⟩
     (f .func (g .func (X ._∨_ x x')))
   ∎
   where open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
