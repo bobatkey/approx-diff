@@ -210,14 +210,19 @@ _⊕_ : JoinSemilattice → JoinSemilattice → JoinSemilattice
 -- Product bits:
 project₁ : ∀ {X Y} → (X ⊕ Y) => X
 project₁ .func = proj₁
-project₁ {X} .join-preserving (x , y) (x' , y') =
+project₁ {X} .join-preserving _ _ =
    X. ≤-isPreorder .IsPreorder.refl , X .≤-isPreorder .IsPreorder.refl
 
 project₂ : ∀ {X Y} → (X ⊕ Y) => Y
 project₂ .func = proj₂
+project₂ {X} {Y} .join-preserving _ _ =
+   Y. ≤-isPreorder .IsPreorder.refl , Y .≤-isPreorder .IsPreorder.refl
 
 ⟨_,_⟩ : ∀ {X Y Z} → X => Y → X => Z → X => (Y ⊕ Z)
 ⟨ f , g ⟩ .func x = f .func x , g .func x
+⟨ f , g ⟩ .join-preserving x x' =
+   ((f .join-preserving x x') .proj₁ , (g .join-preserving x x') .proj₁) ,
+   ((f .join-preserving x x') .proj₂ , (g .join-preserving x x') .proj₂)
 
 -- Coproduct bits:
 inject₁ : ∀ {X Y} → X => (X ⊕ Y)
