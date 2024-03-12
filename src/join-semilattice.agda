@@ -237,7 +237,7 @@ module _ (I : Set) (X : I → JoinSemilattice) where
 
   inj-⨁ : (i : I) → X i => ⨁
   inj-⨁ i .func x = el i x
-  inj-⨁ i .monotone _ = {!   !}
+  inj-⨁ i .monotone x₁≤x₂ _ _ (el x₂≤x₃) = el (X i .≤-isPreorder .IsPreorder.trans x₁≤x₂ x₂≤x₃)
   inj-⨁ i .join-preserving = {!   !}
 
   module _ (Z : JoinSemilattice) (X=>Z : ∀ i → X i => Z) where
