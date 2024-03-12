@@ -133,9 +133,6 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     idem .proj₁ = [ refl , refl ]
     idem .proj₂ = inl
 
-    sym : ∀ {x y} → (x ∨ y) ≤ (y ∨ x)
-    sym = [ inr , inl ]
-
   record IsBigJoin iℓ (⋁ : (I : Set iℓ) → (I → A) → A) : Set (a ⊔ b ⊔ suc iℓ) where
     field
       upper : (I : Set iℓ) (x : I → A) (i : I) → x i ≤ ⋁ I x

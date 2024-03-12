@@ -274,19 +274,19 @@ inject₂ {X}{Y} .join-preserving =
     Z ._∨_ (f .func x₁) (Z ._∨_ (g .func y₁) (Z ._∨_ (f .func x₂) (g .func y₂)))
   ≈⟨ ∨-cong (cong f (X≃ .refl)) (Z≃ .sym ∨-assoc) ⟩
     Z ._∨_ (f .func x₁) (Z ._∨_ (Z ._∨_ (g .func y₁) (f .func x₂)) (g .func y₂))
-  ≈⟨ ∨-cong (cong f (X≃ .refl)) (∨-cong ∨-comm (Z≃ .refl)) ⟩ -- comm
+  ≈⟨ ∨-cong (cong f (X≃ .refl)) (∨-cong ∨-comm (Z≃ .refl)) ⟩
     Z ._∨_ (f .func x₁) (Z ._∨_ (Z ._∨_ (f .func x₂) (g .func y₁)) (g .func y₂))
-  ≈⟨ {!   !} ⟩ -- comm
+  ≈⟨ ∨-cong (cong f (X≃ .refl)) ∨-assoc ⟩
     Z ._∨_ (f .func x₁) (Z ._∨_ (f .func x₂) (Z ._∨_ (g .func y₁) (g .func y₂)))
-  ≈⟨ {!   !} ⟩ -- assoc
+  ≈⟨ Z≃ .sym ∨-assoc ⟩
     Z ._∨_ (Z ._∨_ (f .func x₁) (f .func x₂)) (Z ._∨_ (g .func y₁) (g .func y₂))
-  ≈⟨ {!   !} ⟩ -- f, g preserve ∨
+  ≈⟨ ∨-cong (f .join-preserving) (g .join-preserving) ⟩
     (Z ._∨_ (f .func (X ._∨_ x₁ x₂)) (g .func (Y ._∨_ y₁ y₂)))
   ∎
   where
   open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
   open import Relation.Binary using (IsEquivalence)
   open Relation.Binary.IsEquivalence
-  open IsJoin (Z .∨-isJoin) hiding (sym) renaming (cong to ∨-cong; assoc to ∨-assoc; comm to ∨-comm)
+  open IsJoin (Z .∨-isJoin) renaming (cong to ∨-cong; assoc to ∨-assoc; comm to ∨-comm)
   X≃ = isEquivalenceOf (X .≤-isPreorder)
   Z≃ = isEquivalenceOf (Z .≤-isPreorder)
