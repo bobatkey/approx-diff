@@ -19,7 +19,9 @@ record JoinSemilattice : Set (suc 0ℓ) where
     ≤-isPreorder : IsPreorder _≤_
     ∨-isJoin     : IsJoin ≤-isPreorder _∨_
     ⊥-isBottom   : IsBottom ≤-isPreorder ⊥
-    -- TODO: IsMonoid for ∨ and ⊥
+
+  ∨-⊥-isMonoid : IsMonoid ≤-isPreorder _∨_ ⊥
+  ∨-⊥-isMonoid = monoidOfJoin _ ∨-isJoin ⊥-isBottom
 
 record _=>_ (X Y : JoinSemilattice) : Set where
   open JoinSemilattice
@@ -175,9 +177,10 @@ L-counit {X} .func bottom = X .⊥
 L-counit .func < x > = x
 L-counit {X} .monotone {bottom} _ = X .⊥-isBottom .IsBottom.≤-bottom
 L-counit {X} .monotone {< _ >} {< _ >} x≤x' = x≤x'
-L-counit {X} .join-preserving {bottom} {bottom} = {!   !}
-L-counit {X} .join-preserving {bottom} {< x >} = {!   !}
-L-counit {X} .join-preserving {< x >} {x'} = {!   !}
+L-counit {X} .join-preserving {bottom} {bottom} = IsJoin.idem (X .∨-isJoin)
+L-counit {X} .join-preserving {bottom} {< _ >} = IsMonoid.lunit (∨-⊥-isMonoid X)
+L-counit {X} .join-preserving {< _ >} {bottom} = IsMonoid.runit (∨-⊥-isMonoid X)
+L-counit {X} .join-preserving {< _ >} {< _ >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
 
 L-dup : ∀ {X} → L X => L (L X)
 L-dup .func bottom = bottom
