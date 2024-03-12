@@ -32,7 +32,7 @@ record _=>_ (X Y : JoinSemilattice) : Set where
   field
     func : X .Carrier → Y .Carrier
     join-preserving : ∀ {x x'} → Y ._∨_ (func x) (func x') ≃₂ func (X ._∨_ x x')
-    -- bottom-preserving :
+    -- TODO: bottom-preserving
     monotone : ∀ {x x'} → X ._≤_ x x' → Y ._≤_ (func x) (func x')
 
   cong : ∀ {x x'} → x ≃₁ x' → func x ≃₂ func x'
@@ -66,7 +66,7 @@ _∘_ {X}{Y}{Z} f g .join-preserving {x}{x'} =
   ∎
   where open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
 
--- constant morphism
+-- constant (left zero) morphism
 ⊥-map : ∀ {X Y} → X => Y
 ⊥-map {X}{Y} .func _ = Y .⊥
 ⊥-map {X}{Y} .monotone _ = Y .≤-isPreorder .IsPreorder.refl
