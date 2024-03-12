@@ -25,6 +25,7 @@ record JoinSemilattice : Set (suc 0ℓ) where
 
   open IsPreorder ≤-isPreorder renaming (refl to ≤-refl; trans to ≤-trans) public
   open IsEquivalence (isEquivalenceOf ≤-isPreorder) renaming (refl to ≃-refl; sym to ≃-sym) public
+  open IsBottom ⊥-isBottom public
 
 record _=>_ (X Y : JoinSemilattice) : Set where
   open JoinSemilattice
@@ -177,7 +178,7 @@ L-join {X} .join-preserving {< < _ > >} {< < _ > >} = ≃-refl X
 L-counit : ∀ {X} → L X => X
 L-counit {X} .func bottom = X .⊥
 L-counit .func < x > = x
-L-counit {X} .monotone {bottom} _ = X .⊥-isBottom .IsBottom.≤-bottom
+L-counit {X} .monotone {bottom} _ = ≤-bottom X
 L-counit {X} .monotone {< _ >} {< _ >} x≤x' = x≤x'
 L-counit {X} .join-preserving {bottom} {bottom} = IsJoin.idem (X .∨-isJoin)
 L-counit {X} .join-preserving {bottom} {< _ >} = IsMonoid.lunit (∨-⊥-isMonoid X)
@@ -270,8 +271,7 @@ _⊕_ : JoinSemilattice → JoinSemilattice → JoinSemilattice
 (X ⊕ Y) .∨-isJoin .IsJoin.[_,_] (x₁≤z₁ , y₁≤z₂) (x₂≤z₁ , y₂≤z₂) =
   X .∨-isJoin .IsJoin.[_,_] x₁≤z₁ x₂≤z₁ ,
   Y .∨-isJoin .IsJoin.[_,_] y₁≤z₂ y₂≤z₂
-(X ⊕ Y) .⊥-isBottom .IsBottom.≤-bottom =
-  X .⊥-isBottom .IsBottom.≤-bottom , Y .⊥-isBottom .IsBottom.≤-bottom
+(X ⊕ Y) .⊥-isBottom .IsBottom.≤-bottom = ≤-bottom X , ≤-bottom Y
 
 -- Product bits:
 project₁ : ∀ {X Y} → (X ⊕ Y) => X
@@ -295,13 +295,13 @@ inject₁ : ∀ {X Y} → X => (X ⊕ Y)
 inject₁ {X}{Y} .func x = x , Y .⊥
 inject₁ {X}{Y} .monotone x≤x' = x≤x' , ≤-refl Y
 inject₁ {X}{Y} .join-preserving .proj₁ = ≤-refl X , IsJoin.idem (Y .∨-isJoin) .proj₁
-inject₁ {X}{Y} .join-preserving .proj₂ = ≤-refl X , Y .⊥-isBottom .IsBottom.≤-bottom
+inject₁ {X}{Y} .join-preserving .proj₂ = ≤-refl X , ≤-bottom Y
 
 inject₂ : ∀ {X Y} → Y => (X ⊕ Y)
 inject₂ {X}{Y} .func y = X .⊥ , y
 inject₂ {X}{Y} .monotone y≤y' = ≤-refl X , y≤y'
 inject₂ {X}{Y} .join-preserving =
-  (IsJoin.idem (X .∨-isJoin) .proj₁ , ≤-refl Y) , (X .⊥-isBottom .IsBottom.≤-bottom , ≤-refl Y)
+  (IsJoin.idem (X .∨-isJoin) .proj₁ , ≤-refl Y) , (≤-bottom X , ≤-refl Y)
 
 [_,_] : ∀ {X Y Z} → X => Z → Y => Z → (X ⊕ Y) => Z
 [_,_] {X}{Y}{Z} f g .func (x , y) = Z ._∨_ (f .func x) (g .func y)
