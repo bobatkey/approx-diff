@@ -6,6 +6,7 @@ open import Level
 open import Data.Product using (proj₁; proj₂; _×_; _,_)
 open import Data.Unit using (⊤; tt)
 open import Data.Empty using () renaming (⊥ to 𝟘)
+open import Relation.Binary using (IsEquivalence)
 open import basics
 
 record JoinSemilattice : Set (suc 0ℓ) where
@@ -131,24 +132,40 @@ L-func : ∀ {X Y} → X => Y → L X => L Y
 L-func m .func bottom = bottom
 L-func m .func < x > = < m .func x >
 L-func {X} {Y} m .monotone {bottom} {bottom} _ = tt
-L-func {X} {Y} m .monotone {bottom} {< x >} _ = tt
-L-func m .monotone {< x₁ >}{bottom} ()
-L-func m .monotone {< x₁ >}{< x₂ >} x₁≤x₂ = m .monotone x₁≤x₂
-L-func m .join-preserving {bottom}{bottom} = tt , tt
-L-func {Χ}{Υ} m .join-preserving {bottom}{< _ >} .proj₁ = Υ .≤-isPreorder .IsPreorder.refl
-L-func {Χ}{Υ} m .join-preserving {bottom}{< _ >} .proj₂ = Υ .≤-isPreorder .IsPreorder.refl
-L-func {X}{Y} m .join-preserving {< _ >}{bottom} .proj₁ = Y .≤-isPreorder .IsPreorder.refl
-L-func {X}{Y} m .join-preserving {< _ >}{bottom} .proj₂ = Y .≤-isPreorder .IsPreorder.refl
-L-func m .join-preserving {< x₁ >}{< x₂ >} = m .join-preserving
+L-func {X} {Y} m .monotone {bottom} {< _ >} _ = tt
+L-func m .monotone {< _ >} {bottom} ()
+L-func m .monotone {< _ >} {< _ >} x₁≤x₂ = m .monotone x₁≤x₂
+L-func {Χ}{Υ} m .join-preserving {bottom} {bottom} = tt , tt
+L-func {Χ}{Υ} m .join-preserving {bottom} {< _ >} = isEquivalenceOf (Υ .≤-isPreorder) .IsEquivalence.refl
+L-func {X}{Y} m .join-preserving {< _ >} {bottom} = isEquivalenceOf (Y .≤-isPreorder) .IsEquivalence.refl
+L-func m .join-preserving {< _ >} {< _ >} = m .join-preserving
 
+-- Lifting is a monad:
 L-unit : ∀ {X} → X => L X
 L-unit .func x = < x >
+L-unit .monotone {x}{x'} x≤x' = x≤x'
+L-unit {X} .join-preserving .proj₁ = X .≤-isPreorder .IsPreorder.refl
+L-unit {X} .join-preserving .proj₂ = X .≤-isPreorder .IsPreorder.refl
 
 L-join : ∀ {X} → L (L X) => L X
 L-join .func bottom = bottom
 L-join .func < bottom > = bottom
 L-join .func < < x > > = < x >
-
+L-join .monotone {bottom} {bottom} _ = tt
+L-join .monotone {bottom} {< bottom >} _ = tt
+L-join .monotone {bottom} {< < _ > >} _ = tt
+L-join .monotone {< bottom >} {< bottom >} _ = tt
+L-join .monotone {< bottom >} {< < _ > >} _ = tt
+L-join .monotone {< < _ > >} {< < _ > >} x≤x' = x≤x'
+L-join .join-preserving {bottom} {bottom} = tt , tt
+L-join .join-preserving {bottom} {< bottom >} = tt , tt
+L-join {X} .join-preserving {bottom} {< < _ > >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
+L-join {X} .join-preserving {< bottom >} {bottom} = tt , tt
+L-join .join-preserving {< bottom >} {< bottom >} = tt , tt
+L-join {X} .join-preserving {< bottom >} {< < _ > >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
+L-join {X} .join-preserving {< < _ > >} {bottom} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
+L-join {X} .join-preserving {< < _ > >} {< bottom >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
+L-join {X} .join-preserving {< < _ > >} {< < _ > >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
 
 -- Lifting is a comonad in preorders with a bottom:
 L-counit : ∀ {X} → L X => X
