@@ -24,7 +24,7 @@ record JoinSemilattice : Set (suc 0ℓ) where
   ∨-⊥-isMonoid = monoidOfJoin _ ∨-isJoin ⊥-isBottom
 
   open IsPreorder ≤-isPreorder renaming (refl to ≤-refl; trans to ≤-trans) public
-  open IsEquivalence (isEquivalenceOf (≤-isPreorder)) renaming (refl to ≃-refl; sym to ≃-sym) public
+  open IsEquivalence (isEquivalenceOf ≤-isPreorder) renaming (refl to ≃-refl; sym to ≃-sym) public
 
 record _=>_ (X Y : JoinSemilattice) : Set where
   open JoinSemilattice
