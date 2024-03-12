@@ -20,10 +20,6 @@ module _ {a} {A : Set a} where
 
 module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreorder _≤_) where
 
-  -- private
-  --   _≃_ = SymmetricClosure _≤_
-  --   infix 4 _≃_
-
   module _ where
     open IsPreorder ≤-isPreorder
 
@@ -123,18 +119,19 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     mono x₁≤x₂ y₁≤y₂ = [ trans x₁≤x₂ inl , trans y₁≤y₂ inr ]
 
     cong : ∀ {x₁ y₁ x₂ y₂} → x₁ ≃ x₂ → y₁ ≃ y₂ → (x₁ ∨ y₁) ≃ (x₂ ∨ y₂)
-    cong m₁ m₂ = mono (m₁ .proj₁) (m₂ . proj₁) , mono (m₁ .proj₂) (m₂ . proj₂)
+    cong m₁ m₂ = mono (m₁ .proj₁) (m₂ .proj₁) , mono (m₁ .proj₂) (m₂ .proj₂)
 
     assoc : ∀ {x y z} → (x ∨ y) ∨ z ≃ x ∨ (y ∨ z)
     assoc .proj₁ = [ [ inl , trans inl inr ] , trans inr inr ]
     assoc .proj₂ = [ trans inl inl , [ trans inr inl , inr ] ]
 
+    comm : ∀ {x y} → x ∨ y ≃ y ∨ x
+    comm .proj₁ = [ inr , inl ]
+    comm .proj₂ = [ inr , inl ]
+
     idem : ∀ {x} → x ∨ x ≃ x
     idem .proj₁ = [ refl , refl ]
     idem .proj₂ = inl
-
-    sym : ∀ {x y} → (x ∨ y) ≤ (y ∨ x)
-    sym = [ inr , inl ]
 
   record IsBigJoin iℓ (⋁ : (I : Set iℓ) → (I → A) → A) : Set (a ⊔ b ⊔ suc iℓ) where
     field
@@ -144,6 +141,19 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
   record IsBottom (⊥ : A) : Set (a ⊔ b) where
     field
       ≤-bottom : ∀ {x} → ⊥ ≤ x
+
+  module _ {_∨_ : A → A → A} {⊥ : A} (isJoin : IsJoin _∨_) (isBottom : IsBottom ⊥) where
+    open IsPreorder ≤-isPreorder
+    open IsJoin isJoin
+    open IsBottom isBottom
+
+    monoidOfJoin : IsMonoid _∨_ ⊥
+    monoidOfJoin .IsMonoid.mono = mono
+    monoidOfJoin .IsMonoid.assoc = assoc
+    monoidOfJoin .IsMonoid.lunit .proj₁ = [ ≤-bottom , refl ]
+    monoidOfJoin .IsMonoid.lunit .proj₂ = inr
+    monoidOfJoin .IsMonoid.runit .proj₁ = [ refl , ≤-bottom ]
+    monoidOfJoin .IsMonoid.runit .proj₂ = inl
 
   ------------------------------------------------------------------------------
   -- closure implies distributivity of joins and the monoid

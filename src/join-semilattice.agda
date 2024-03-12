@@ -6,6 +6,7 @@ open import Level
 open import Data.Product using (proj₁; proj₂; _×_; _,_)
 open import Data.Unit using (⊤; tt)
 open import Data.Empty using () renaming (⊥ to 𝟘)
+open import Relation.Binary using (IsEquivalence; Reflexive)
 open import basics
 
 record JoinSemilattice : Set (suc 0ℓ) where
@@ -19,13 +20,25 @@ record JoinSemilattice : Set (suc 0ℓ) where
     ∨-isJoin     : IsJoin ≤-isPreorder _∨_
     ⊥-isBottom   : IsBottom ≤-isPreorder ⊥
 
+  ∨-⊥-isMonoid : IsMonoid ≤-isPreorder _∨_ ⊥
+  ∨-⊥-isMonoid = monoidOfJoin _ ∨-isJoin ⊥-isBottom
+
+  open IsEquivalence (isEquivalenceOf (≤-isPreorder)) renaming (refl to ≃-refl; sym to ≃-sym) public
+
 record _=>_ (X Y : JoinSemilattice) : Set where
   open JoinSemilattice
+  open IsPreorder (X .JoinSemilattice.≤-isPreorder) renaming (_≃_ to _≃₁_)
+  open IsPreorder (Y .JoinSemilattice.≤-isPreorder) renaming (_≃_ to _≃₂_)
   field
     func : X .Carrier → Y .Carrier
-    -- join-preserving :
-    -- bottom-preserving :
-    -- monotone :
+    join-preserving : ∀ {x x'} → Y ._∨_ (func x) (func x') ≃₂ func (X ._∨_ x x')
+    -- TODO: bottom-preserving
+    monotone : ∀ {x x'} → X ._≤_ x x' → Y ._≤_ (func x) (func x')
+
+  cong : ∀ {x x'} → x ≃₁ x' → func x ≃₂ func x'
+  cong (x≤x' , _) .proj₁ = monotone x≤x'
+  cong (_ , x'≤x) .proj₂ = monotone x'≤x
+
 open _=>_
 
 record _≃m_ {X Y : JoinSemilattice} (f g : X => Y) : Set where
@@ -37,12 +50,27 @@ open JoinSemilattice
 
 id : ∀ {X} → X => X
 id .func x = x
+id {X} .monotone x≤x' = x≤x'
+id {X} .join-preserving = ≃-refl X
 
 _∘_ : ∀ {X Y Z} → Y => Z → X => Y → X => Z
 (f ∘ g) .func x = f .func (g .func x)
+(f ∘ g) .monotone x≤x' = f .monotone (g .monotone x≤x')
+_∘_ {X}{Y}{Z} f g .join-preserving {x}{x'} =
+  begin
+    Z ._∨_ (f .func (g .func x)) (f .func (g .func x'))
+  ≈⟨ f .join-preserving ⟩
+    f .func (Y ._∨_ (g .func x) (g .func x'))
+  ≈⟨ cong f (g .join-preserving) ⟩
+    (f .func (g .func (X ._∨_ x x')))
+  ∎
+  where open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
 
+-- constant (left zero) morphism
 ⊥-map : ∀ {X Y} → X => Y
-⊥-map {X}{Y} .func x = Y .⊥
+⊥-map {X}{Y} .func _ = Y .⊥
+⊥-map {X}{Y} .monotone _ = Y .≤-isPreorder .IsPreorder.refl
+⊥-map {X}{Y} .join-preserving = IsJoin.idem (Y .∨-isJoin)
 
 -- FIXME: ∨-map
 
@@ -60,7 +88,7 @@ _∘_ : ∀ {X Y Z} → Y => Z → X => Y → X => Z
 𝟙 .∨-isJoin .IsJoin.[_,_] tt tt = tt
 𝟙 .⊥-isBottom .IsBottom.≤-bottom = tt
 
--- this is both initial and terminal...
+-- this is a zero object (both initial and terminal)
 
 ------------------------------------------------------------------------------
 -- Lifting
@@ -107,42 +135,79 @@ L X .⊥-isBottom .IsBottom.≤-bottom {< x >} = tt
 L-func : ∀ {X Y} → X => Y → L X => L Y
 L-func m .func bottom = bottom
 L-func m .func < x > = < m .func x >
+L-func {X} {Y} m .monotone {bottom} {bottom} _ = tt
+L-func {X} {Y} m .monotone {bottom} {< _ >} _ = tt
+L-func m .monotone {< _ >} {bottom} ()
+L-func m .monotone {< _ >} {< _ >} x₁≤x₂ = m .monotone x₁≤x₂
+L-func {Χ}{Υ} m .join-preserving {bottom} {bottom} = tt , tt
+L-func {Χ}{Υ} m .join-preserving {bottom} {< _ >} = ≃-refl Υ
+L-func {X}{Y} m .join-preserving {< _ >} {bottom} = ≃-refl Y
+L-func m .join-preserving {< _ >} {< _ >} = m .join-preserving
 
+-- Lifting is a monad:
 L-unit : ∀ {X} → X => L X
 L-unit .func x = < x >
+L-unit .monotone x≤x' = x≤x'
+L-unit {X} .join-preserving = ≃-refl X
 
 L-join : ∀ {X} → L (L X) => L X
 L-join .func bottom = bottom
 L-join .func < bottom > = bottom
 L-join .func < < x > > = < x >
+L-join .monotone {bottom} {bottom} _ = tt
+L-join .monotone {bottom} {< bottom >} _ = tt
+L-join .monotone {bottom} {< < _ > >} _ = tt
+L-join .monotone {< bottom >} {< bottom >} _ = tt
+L-join .monotone {< bottom >} {< < _ > >} _ = tt
+L-join .monotone {< < _ > >} {< < _ > >} x≤x' = x≤x'
+L-join .join-preserving {bottom} {bottom} = tt , tt
+L-join .join-preserving {bottom} {< bottom >} = tt , tt
+L-join {X} .join-preserving {bottom} {< < _ > >} = ≃-refl X
+L-join {X} .join-preserving {< bottom >} {bottom} = tt , tt
+L-join .join-preserving {< bottom >} {< bottom >} = tt , tt
+L-join {X} .join-preserving {< bottom >} {< < _ > >} = ≃-refl X
+L-join {X} .join-preserving {< < _ > >} {bottom} = ≃-refl X
+L-join {X} .join-preserving {< < _ > >} {< bottom >} = ≃-refl X
+L-join {X} .join-preserving {< < _ > >} {< < _ > >} = ≃-refl X
 
+-- TODO: monad laws for L-join/L-unit
 
 -- Lifting is a comonad in preorders with a bottom:
 L-counit : ∀ {X} → L X => X
 L-counit {X} .func bottom = X .⊥
 L-counit .func < x > = x
+L-counit {X} .monotone {bottom} _ = X .⊥-isBottom .IsBottom.≤-bottom
+L-counit {X} .monotone {< _ >} {< _ >} x≤x' = x≤x'
+L-counit {X} .join-preserving {bottom} {bottom} = IsJoin.idem (X .∨-isJoin)
+L-counit {X} .join-preserving {bottom} {< _ >} = IsMonoid.lunit (∨-⊥-isMonoid X)
+L-counit {X} .join-preserving {< _ >} {bottom} = IsMonoid.runit (∨-⊥-isMonoid X)
+L-counit {X} .join-preserving {< _ >} {< _ >} = ≃-refl X
 
 L-dup : ∀ {X} → L X => L (L X)
 L-dup .func bottom = bottom
 L-dup .func < x > = < < x > >
+L-dup .monotone {bottom} {bottom} _ = tt
+L-dup .monotone {bottom} {< _ >} _ = tt
+L-dup .monotone {< _ >} {< _ >} x≤x' = x≤x'
+L-dup .join-preserving {bottom} {bottom} = tt , tt
+L-dup {X} .join-preserving {bottom} {< _ >} = ≃-refl X
+L-dup {X} .join-preserving {< x >} {bottom} = ≃-refl X
+L-dup {X} .join-preserving {< _ >} {< _ >} = ≃-refl X
 
 L-coassoc : ∀ {X} → (L-func L-dup ∘ L-dup) ≃m (L-dup ∘ L-dup {X})
 L-coassoc ._≃m_.eqfunc bottom .proj₁ = tt
 L-coassoc ._≃m_.eqfunc bottom .proj₂ = tt
-L-coassoc {X} ._≃m_.eqfunc < x > .proj₁ = X .≤-isPreorder .IsPreorder.refl
-L-coassoc {X} ._≃m_.eqfunc < x > .proj₂ = X .≤-isPreorder .IsPreorder.refl
+L-coassoc {X} ._≃m_.eqfunc < x > = ≃-refl X
 
 L-unit1 : ∀ {X} → (L-counit ∘ L-dup) ≃m id {L X}
 L-unit1 ._≃m_.eqfunc bottom .proj₁ = tt
 L-unit1 ._≃m_.eqfunc bottom .proj₂ = tt
-L-unit1 {X} ._≃m_.eqfunc < x > .proj₁ = X .≤-isPreorder .IsPreorder.refl
-L-unit1 {X} ._≃m_.eqfunc < x > .proj₂ = X .≤-isPreorder .IsPreorder.refl
+L-unit1 {X} ._≃m_.eqfunc < x > = ≃-refl X
 
 L-unit2 : ∀ {X} → (L-func L-counit ∘ L-dup) ≃m id {L X}
 L-unit2 ._≃m_.eqfunc bottom .proj₁ = tt
 L-unit2 ._≃m_.eqfunc bottom .proj₂ = tt
-L-unit2 {X} ._≃m_.eqfunc < x > .proj₁ = X .≤-isPreorder .IsPreorder.refl
-L-unit2 {X} ._≃m_.eqfunc < x > .proj₂ = X .≤-isPreorder .IsPreorder.refl
+L-unit2 {X} ._≃m_.eqfunc < x > = ≃-refl X
 
 ------------------------------------------------------------------------------
 -- Set-wide direct sums of JoinSemilattices
@@ -172,6 +237,8 @@ module _ (I : Set) (X : I → JoinSemilattice) where
 
   inj-⨁ : (i : I) → X i => ⨁
   inj-⨁ i .func x = el i x
+  inj-⨁ i .monotone _ = {!   !}
+  inj-⨁ i .join-preserving = {!   !}
 
   module _ (Z : JoinSemilattice) (X=>Z : ∀ i → X i => Z) where
     module Z = JoinSemilattice Z
@@ -183,6 +250,8 @@ module _ (I : Set) (X : I → JoinSemilattice) where
 
     elim-⨁ : ⨁ => Z
     elim-⨁ .func = elim-⨁-func
+    elim-⨁ .monotone = {!   !}
+    elim-⨁ .join-preserving = {!   !}
 
 ------------------------------------------------------------------------------
 -- Biproducts
@@ -209,19 +278,56 @@ _⊕_ : JoinSemilattice → JoinSemilattice → JoinSemilattice
 -- Product bits:
 project₁ : ∀ {X Y} → (X ⊕ Y) => X
 project₁ .func = proj₁
+project₁ .monotone = proj₁
+project₁ {X} .join-preserving = ≃-refl X
 
 project₂ : ∀ {X Y} → (X ⊕ Y) => Y
 project₂ .func = proj₂
+project₂ .monotone = proj₂
+project₂ {X}{Y} .join-preserving = ≃-refl Y
 
 ⟨_,_⟩ : ∀ {X Y Z} → X => Y → X => Z → X => (Y ⊕ Z)
 ⟨ f , g ⟩ .func x = f .func x , g .func x
+⟨ f , g ⟩ .monotone x≤x' = f .monotone x≤x' , g .monotone x≤x'
+⟨ f , g ⟩ .join-preserving .proj₁ = (f .join-preserving) .proj₁ , (g .join-preserving) .proj₁
+⟨ f , g ⟩ .join-preserving .proj₂ = (f .join-preserving) .proj₂ , (g .join-preserving) .proj₂
 
 -- Coproduct bits:
 inject₁ : ∀ {X Y} → X => (X ⊕ Y)
 inject₁ {X}{Y} .func x = x , Y .⊥
+inject₁ {X}{Y} .monotone x≤x' = x≤x' , Y .≤-isPreorder .IsPreorder.refl
+inject₁ {X}{Y} .join-preserving .proj₁ =
+  X .≤-isPreorder .IsPreorder.refl , proj₁ (IsJoin.idem (Y .∨-isJoin))
+inject₁ {X}{Y} .join-preserving .proj₂ =
+  X .≤-isPreorder .IsPreorder.refl , Y .⊥-isBottom .IsBottom.≤-bottom
 
 inject₂ : ∀ {X Y} → Y => (X ⊕ Y)
 inject₂ {X}{Y} .func y = X .⊥ , y
+inject₂ {X}{Y} .monotone y≤y' = X .≤-isPreorder .IsPreorder.refl , y≤y'
+inject₂ {X}{Y} .join-preserving =
+  (proj₁ (IsJoin.idem (X .∨-isJoin)) , Y .≤-isPreorder .IsPreorder.refl) ,
+  (X .⊥-isBottom .IsBottom.≤-bottom , Y .≤-isPreorder .IsPreorder.refl)
 
 [_,_] : ∀ {X Y Z} → X => Z → Y => Z → (X ⊕ Y) => Z
 [_,_] {X}{Y}{Z} f g .func (x , y) = Z ._∨_ (f .func x) (g .func y)
+[_,_] {X}{Y}{Z} f g .monotone (x₁≤x₁' , x₂≤x₂') =
+  IsJoin.mono (Z .∨-isJoin) (f .monotone x₁≤x₁') (g .monotone x₂≤x₂')
+[_,_] {X}{Y}{Z} f g .join-preserving {(x₁ , y₁)}{(x₂ , y₂)} =
+  begin
+    Z ._∨_ (Z ._∨_ (f .func x₁) (g .func y₁)) (Z ._∨_ (f .func x₂) (g .func y₂))
+  ≈⟨ ∨-assoc ⟩
+    Z ._∨_ (f .func x₁) (Z ._∨_ (g .func y₁) (Z ._∨_ (f .func x₂) (g .func y₂)))
+  ≈⟨ ∨-cong (cong f (≃-refl X)) (≃-sym Z ∨-assoc) ⟩
+    Z ._∨_ (f .func x₁) (Z ._∨_ (Z ._∨_ (g .func y₁) (f .func x₂)) (g .func y₂))
+  ≈⟨ ∨-cong (cong f (≃-refl X)) (∨-cong ∨-comm (≃-refl Z)) ⟩
+    Z ._∨_ (f .func x₁) (Z ._∨_ (Z ._∨_ (f .func x₂) (g .func y₁)) (g .func y₂))
+  ≈⟨ ∨-cong (cong f (≃-refl X)) ∨-assoc ⟩
+    Z ._∨_ (f .func x₁) (Z ._∨_ (f .func x₂) (Z ._∨_ (g .func y₁) (g .func y₂)))
+  ≈⟨ ≃-sym Z ∨-assoc ⟩
+    Z ._∨_ (Z ._∨_ (f .func x₁) (f .func x₂)) (Z ._∨_ (g .func y₁) (g .func y₂))
+  ≈⟨ ∨-cong (f .join-preserving) (g .join-preserving) ⟩
+    (Z ._∨_ (f .func (X ._∨_ x₁ x₂)) (g .func (Y ._∨_ y₁ y₂)))
+  ∎
+  where
+  open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
+  open IsJoin (Z .∨-isJoin) renaming (cong to ∨-cong; assoc to ∨-assoc; comm to ∨-comm)
