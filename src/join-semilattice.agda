@@ -334,8 +334,8 @@ proj₁-inverts-inj₁ {X} ._≃m_.eqfunc x = ≃-refl X
 proj₂-inverts-inj₂ : ∀ {X Y} → (project₁ {X} {Y} ∘ inject₁) ≃m id
 proj₂-inverts-inj₂ {X} ._≃m_.eqfunc x = ≃-refl X
 
-proj₁-inverts-inj₂ : ∀ {X Y} → (project₁ {X} {Y} ∘ inject₂) ≃m ⊥-map
-proj₁-inverts-inj₂ {X}{Y} ._≃m_.eqfunc x = ≃-refl X
+proj₁-zeroes-inj₂ : ∀ {X Y} → (project₁ {X} {Y} ∘ inject₂) ≃m ⊥-map
+proj₁-zeroes-inj₂ {X}{Y} ._≃m_.eqfunc x = ≃-refl X
 
-proj₂-inverts-inj₁ : ∀ {X Y} → (project₂ {X} {Y} ∘ inject₁) ≃m ⊥-map
-proj₂-inverts-inj₁ {X}{Y} ._≃m_.eqfunc x = ≃-refl Y
+proj₂-zeroes-inj₁ : ∀ {X Y} → (project₂ {X} {Y} ∘ inject₁) ≃m ⊥-map
+proj₂-zeroes-inj₁ {X}{Y} ._≃m_.eqfunc x = ≃-refl Y
