@@ -142,6 +142,19 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     field
       ≤-bottom : ∀ {x} → ⊥ ≤ x
 
+  module _ {_∨_ : A → A → A} {⊥ : A} (isJoin : IsJoin _∨_) (isBottom : IsBottom ⊥) where
+    open IsPreorder ≤-isPreorder
+    open IsJoin isJoin
+    open IsBottom isBottom
+
+    monoidOfJoin : IsMonoid _∨_ ⊥
+    monoidOfJoin .IsMonoid.mono = mono
+    monoidOfJoin .IsMonoid.assoc = assoc
+    monoidOfJoin .IsMonoid.lunit .proj₁ = [ ≤-bottom , refl ]
+    monoidOfJoin .IsMonoid.lunit .proj₂ = inr
+    monoidOfJoin .IsMonoid.runit .proj₁ = [ refl , ≤-bottom ]
+    monoidOfJoin .IsMonoid.runit .proj₂ = inl
+
   ------------------------------------------------------------------------------
   -- closure implies distributivity of joins and the monoid
   -- FIXME: don't assume symmetry and do the left and right ones separately

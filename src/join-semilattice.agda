@@ -19,7 +19,7 @@ record JoinSemilattice : Set (suc 0ℓ) where
     ≤-isPreorder : IsPreorder _≤_
     ∨-isJoin     : IsJoin ≤-isPreorder _∨_
     ⊥-isBottom   : IsBottom ≤-isPreorder ⊥
-    -- TODO: ⊥ is left and right unit for ∨
+    -- TODO: IsMonoid for ∨ and ⊥
 
 record _=>_ (X Y : JoinSemilattice) : Set where
   open JoinSemilattice
@@ -143,7 +143,7 @@ L-func m .join-preserving {< _ >} {< _ >} = m .join-preserving
 -- Lifting is a monad:
 L-unit : ∀ {X} → X => L X
 L-unit .func x = < x >
-L-unit .monotone {x}{x'} x≤x' = x≤x'
+L-unit .monotone x≤x' = x≤x'
 L-unit {X} .join-preserving .proj₁ = X .≤-isPreorder .IsPreorder.refl
 L-unit {X} .join-preserving .proj₂ = X .≤-isPreorder .IsPreorder.refl
 
@@ -167,10 +167,17 @@ L-join {X} .join-preserving {< < _ > >} {bottom} = isEquivalenceOf (X .≤-isPre
 L-join {X} .join-preserving {< < _ > >} {< bottom >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
 L-join {X} .join-preserving {< < _ > >} {< < _ > >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
 
+-- TODO: monad laws for L-join/L-unit
+
 -- Lifting is a comonad in preorders with a bottom:
 L-counit : ∀ {X} → L X => X
 L-counit {X} .func bottom = X .⊥
 L-counit .func < x > = x
+L-counit {X} .monotone {bottom} _ = X .⊥-isBottom .IsBottom.≤-bottom
+L-counit {X} .monotone {< _ >} {< _ >} x≤x' = x≤x'
+L-counit {X} .join-preserving {bottom} {bottom} = {!   !}
+L-counit {X} .join-preserving {bottom} {< x >} = {!   !}
+L-counit {X} .join-preserving {< x >} {x'} = {!   !}
 
 L-dup : ∀ {X} → L X => L (L X)
 L-dup .func bottom = bottom
