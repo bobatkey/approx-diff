@@ -125,6 +125,10 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     assoc .proj₁ = [ [ inl , trans inl inr ] , trans inr inr ]
     assoc .proj₂ = [ trans inl inl , [ trans inr inl , inr ] ]
 
+    comm : ∀ {x y} → x ∨ y ≃ y ∨ x
+    comm .proj₁ = [ inr , inl ]
+    comm .proj₂ = [ inr , inl ]
+
     idem : ∀ {x} → x ∨ x ≃ x
     idem .proj₁ = [ refl , refl ]
     idem .proj₂ = inl

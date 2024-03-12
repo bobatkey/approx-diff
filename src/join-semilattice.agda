@@ -274,6 +274,8 @@ inject₂ {X}{Y} .join-preserving =
     Z ._∨_ (f .func x₁) (Z ._∨_ (g .func y₁) (Z ._∨_ (f .func x₂) (g .func y₂)))
   ≈⟨ ∨-cong (cong f (X≃ .refl)) (Z≃ .sym ∨-assoc) ⟩
     Z ._∨_ (f .func x₁) (Z ._∨_ (Z ._∨_ (g .func y₁) (f .func x₂)) (g .func y₂))
+  ≈⟨ ∨-cong (cong f (X≃ .refl)) (∨-cong ∨-comm (Z≃ .refl)) ⟩ -- comm
+    Z ._∨_ (f .func x₁) (Z ._∨_ (Z ._∨_ (f .func x₂) (g .func y₁)) (g .func y₂))
   ≈⟨ {!   !} ⟩ -- comm
     Z ._∨_ (f .func x₁) (Z ._∨_ (f .func x₂) (Z ._∨_ (g .func y₁) (g .func y₂)))
   ≈⟨ {!   !} ⟩ -- assoc
@@ -285,6 +287,6 @@ inject₂ {X}{Y} .join-preserving =
   open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
   open import Relation.Binary using (IsEquivalence)
   open Relation.Binary.IsEquivalence
-  open IsJoin (Z .∨-isJoin) hiding (sym) renaming (cong to ∨-cong; assoc to ∨-assoc)
+  open IsJoin (Z .∨-isJoin) hiding (sym) renaming (cong to ∨-cong; assoc to ∨-assoc; comm to ∨-comm)
   X≃ = isEquivalenceOf (X .≤-isPreorder)
   Z≃ = isEquivalenceOf (Z .≤-isPreorder)
