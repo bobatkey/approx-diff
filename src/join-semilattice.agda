@@ -67,7 +67,7 @@ _∘_ {X}{Y}{Z} f g .join-preserving {x}{x'} =
   ∎
   where open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
 
--- constant (left zero) morphism
+-- constant (left zero) morphisms
 ⊥-map : ∀ {X Y} → X => Y
 ⊥-map {X}{Y} .func _ = Y .⊥
 ⊥-map {X}{Y} .monotone _ = ≤-refl Y
@@ -273,8 +273,6 @@ _⊕_ : JoinSemilattice → JoinSemilattice → JoinSemilattice
 (X ⊕ Y) .⊥-isBottom .IsBottom.≤-bottom =
   X .⊥-isBottom .IsBottom.≤-bottom , Y .⊥-isBottom .IsBottom.≤-bottom
 
--- need to prove that this gives a biproduct
-
 -- Product bits:
 project₁ : ∀ {X Y} → (X ⊕ Y) => X
 project₁ .func = proj₁
@@ -328,3 +326,16 @@ inject₂ {X}{Y} .join-preserving =
   where
   open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
   open IsJoin (Z .∨-isJoin) renaming (cong to ∨-cong; assoc to ∨-assoc; comm to ∨-comm)
+
+-- Binary biproduct properties
+proj₁-inverts-inj₁ : ∀ {X Y} → (project₁ {X} {Y} ∘ inject₁) ≃m id
+proj₁-inverts-inj₁ {X} ._≃m_.eqfunc x = ≃-refl X
+
+proj₂-inverts-inj₂ : ∀ {X Y} → (project₁ {X} {Y} ∘ inject₁) ≃m id
+proj₂-inverts-inj₂ {X} ._≃m_.eqfunc x = ≃-refl X
+
+proj₁-inverts-inj₂ : ∀ {X Y} → (project₁ {X} {Y} ∘ inject₂) ≃m ⊥-map
+proj₁-inverts-inj₂ {X}{Y} ._≃m_.eqfunc x = ≃-refl X
+
+proj₂-inverts-inj₁ : ∀ {X Y} → (project₂ {X} {Y} ∘ inject₁) ≃m ⊥-map
+proj₂-inverts-inj₁ {X}{Y} ._≃m_.eqfunc x = ≃-refl Y
