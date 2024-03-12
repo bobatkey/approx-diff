@@ -23,6 +23,7 @@ record JoinSemilattice : Set (suc 0ℓ) where
   ∨-⊥-isMonoid : IsMonoid ≤-isPreorder _∨_ ⊥
   ∨-⊥-isMonoid = monoidOfJoin _ ∨-isJoin ⊥-isBottom
 
+  open IsPreorder ≤-isPreorder renaming (refl to ≤-refl; trans to ≤-trans) public
   open IsEquivalence (isEquivalenceOf (≤-isPreorder)) renaming (refl to ≃-refl; sym to ≃-sym) public
 
 record _=>_ (X Y : JoinSemilattice) : Set where
@@ -69,7 +70,7 @@ _∘_ {X}{Y}{Z} f g .join-preserving {x}{x'} =
 -- constant (left zero) morphism
 ⊥-map : ∀ {X Y} → X => Y
 ⊥-map {X}{Y} .func _ = Y .⊥
-⊥-map {X}{Y} .monotone _ = Y .≤-isPreorder .IsPreorder.refl
+⊥-map {X}{Y} .monotone _ = ≤-refl Y
 ⊥-map {X}{Y} .join-preserving = IsJoin.idem (Y .∨-isJoin)
 
 -- FIXME: ∨-map
@@ -110,7 +111,7 @@ L X ._∨_ bottom < y >  = < y >
 L X ._∨_ < x >  < y >  = < X ._∨_ x y >
 L X .⊥ = bottom
 L X .≤-isPreorder .IsPreorder.refl {bottom} = tt
-L X .≤-isPreorder .IsPreorder.refl {< x >} = X .≤-isPreorder .IsPreorder.refl
+L X .≤-isPreorder .IsPreorder.refl {< x >} = ≤-refl X
 L X .≤-isPreorder .IsPreorder.trans {bottom} {bottom} {bottom} m₁ m₂ = tt
 L X .≤-isPreorder .IsPreorder.trans {bottom} {bottom} {< z >}  m₁ m₂ = tt
 L X .≤-isPreorder .IsPreorder.trans {bottom} {< y >}  {< z >}  m₁ m₂ = tt
@@ -118,10 +119,10 @@ L X .≤-isPreorder .IsPreorder.trans {< x >}  {< y >}  {< z >}  m₁ m₂ =
   X .≤-isPreorder .IsPreorder.trans m₁ m₂
 L X .∨-isJoin .IsJoin.inl {bottom} {bottom} = tt
 L X .∨-isJoin .IsJoin.inl {bottom} {< x >}  = tt
-L X .∨-isJoin .IsJoin.inl {< x >}  {bottom} = X .≤-isPreorder .IsPreorder.refl
+L X .∨-isJoin .IsJoin.inl {< x >}  {bottom} = ≤-refl X
 L X .∨-isJoin .IsJoin.inl {< x >}  {< y >}  = X .∨-isJoin .IsJoin.inl
 L X .∨-isJoin .IsJoin.inr {bottom} {bottom} = tt
-L X .∨-isJoin .IsJoin.inr {bottom} {< x >}  = X .≤-isPreorder .IsPreorder.refl
+L X .∨-isJoin .IsJoin.inr {bottom} {< x >}  = ≤-refl X
 L X .∨-isJoin .IsJoin.inr {< x >}  {bottom} = tt
 L X .∨-isJoin .IsJoin.inr {< x >}  {< y >}  = X .∨-isJoin .IsJoin.inr
 L X .∨-isJoin .IsJoin.[_,_] {bottom}{bottom}{bottom} m₁ m₂ = tt
@@ -237,7 +238,7 @@ module _ (I : Set) (X : I → JoinSemilattice) where
 
   inj-⨁ : (i : I) → X i => ⨁
   inj-⨁ i .func x = el i x
-  inj-⨁ i .monotone x₁≤x₂ _ _ (el x₂≤x₃) = el (X i .≤-isPreorder .IsPreorder.trans x₁≤x₂ x₂≤x₃)
+  inj-⨁ i .monotone x₁≤x₂ _ _ (el x₂≤x₃) = el (≤-trans (X i) x₁≤x₂ x₂≤x₃)
   inj-⨁ i .join-preserving = {!   !}
 
   module _ (Z : JoinSemilattice) (X=>Z : ∀ i → X i => Z) where
@@ -260,8 +261,7 @@ _⊕_ : JoinSemilattice → JoinSemilattice → JoinSemilattice
 (X ⊕ Y) ._≤_ (x₁ , y₁) (x₂ , y₂) = (X ._≤_ x₁ x₂) × (Y ._≤_ y₁ y₂)
 (X ⊕ Y) ._∨_ (x₁ , y₁) (x₂ , y₂) = (X ._∨_ x₁ x₂) , (Y ._∨_ y₁ y₂)
 (X ⊕ Y) .⊥ = X .⊥ , Y .⊥
-(X ⊕ Y) .≤-isPreorder .IsPreorder.refl =
-  X .≤-isPreorder .IsPreorder.refl , Y .≤-isPreorder .IsPreorder.refl
+(X ⊕ Y) .≤-isPreorder .IsPreorder.refl = ≤-refl X , ≤-refl Y
 (X ⊕ Y) .≤-isPreorder .IsPreorder.trans (x₁≤y₁ , x₂≤y₂) (y₁≤z₁ , y₂≤z₂) =
   X .≤-isPreorder .IsPreorder.trans x₁≤y₁ y₁≤z₁ ,
   Y .≤-isPreorder .IsPreorder.trans x₂≤y₂ y₂≤z₂
@@ -295,18 +295,15 @@ project₂ {X}{Y} .join-preserving = ≃-refl Y
 -- Coproduct bits:
 inject₁ : ∀ {X Y} → X => (X ⊕ Y)
 inject₁ {X}{Y} .func x = x , Y .⊥
-inject₁ {X}{Y} .monotone x≤x' = x≤x' , Y .≤-isPreorder .IsPreorder.refl
-inject₁ {X}{Y} .join-preserving .proj₁ =
-  X .≤-isPreorder .IsPreorder.refl , proj₁ (IsJoin.idem (Y .∨-isJoin))
-inject₁ {X}{Y} .join-preserving .proj₂ =
-  X .≤-isPreorder .IsPreorder.refl , Y .⊥-isBottom .IsBottom.≤-bottom
+inject₁ {X}{Y} .monotone x≤x' = x≤x' , ≤-refl Y
+inject₁ {X}{Y} .join-preserving .proj₁ = ≤-refl X , IsJoin.idem (Y .∨-isJoin) .proj₁
+inject₁ {X}{Y} .join-preserving .proj₂ = ≤-refl X , Y .⊥-isBottom .IsBottom.≤-bottom
 
 inject₂ : ∀ {X Y} → Y => (X ⊕ Y)
 inject₂ {X}{Y} .func y = X .⊥ , y
-inject₂ {X}{Y} .monotone y≤y' = X .≤-isPreorder .IsPreorder.refl , y≤y'
+inject₂ {X}{Y} .monotone y≤y' = ≤-refl X , y≤y'
 inject₂ {X}{Y} .join-preserving =
-  (proj₁ (IsJoin.idem (X .∨-isJoin)) , Y .≤-isPreorder .IsPreorder.refl) ,
-  (X .⊥-isBottom .IsBottom.≤-bottom , Y .≤-isPreorder .IsPreorder.refl)
+  (IsJoin.idem (X .∨-isJoin) .proj₁ , ≤-refl Y) , (X .⊥-isBottom .IsBottom.≤-bottom , ≤-refl Y)
 
 [_,_] : ∀ {X Y Z} → X => Z → Y => Z → (X ⊕ Y) => Z
 [_,_] {X}{Y}{Z} f g .func (x , y) = Z ._∨_ (f .func x) (g .func y)
