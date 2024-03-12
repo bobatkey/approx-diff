@@ -37,6 +37,25 @@ record _≃m_ {X Y : MeetSemilattice} (f g : X => Y) : Set where
     eqfunc : ∀ x → f .func x ≃ g .func x
 
 ------------------------------------------------------------------------------
+module _ where
+  open MeetSemilattice
+  open _=>_
+
+  id : ∀ {X} → X => X
+  id {X} .func x = x
+  id {X} .monotone x₁≤x₂ = x₁≤x₂
+  id {X} .∧-preserving = X .≤-refl
+  id {X} .⊤-preserving = X .≤-refl
+
+  _∘_ : ∀ {X Y Z} → Y => Z → X => Y → X => Z
+  (f ∘ g) .func x = f .func (g .func x)
+  (f ∘ g) .monotone x₁≤x₂ = f .monotone (g .monotone x₁≤x₂)
+  _∘_ {X}{Y}{Z} f g .∧-preserving =
+    Z .≤-trans (f .∧-preserving) (f .monotone (g .∧-preserving))
+  _∘_ {X}{Y}{Z} f g .⊤-preserving =
+    Z .≤-trans (f .⊤-preserving) (f .monotone (g .⊤-preserving))
+
+------------------------------------------------------------------------------
 -- Big Products
 module _ (I : Set)(X : I → MeetSemilattice) where
 
@@ -84,6 +103,73 @@ module _ where
   𝟙 .⊤-isTop .IsTop.≤-top = tt
 
 ------------------------------------------------------------------------------
+-- Lifting
+module _ where
+  open MeetSemilattice
+  open _=>_
+
+  data LCarrier (X : Set) : Set where
+    bottom : LCarrier X
+    <_>    : X → LCarrier X
+
+  L : MeetSemilattice → MeetSemilattice
+  L X .Carrier = LCarrier (X .Carrier)
+  L X ._≤_ bottom bottom = Unit
+  L X ._≤_ bottom < _ >  = Unit
+  L X ._≤_ < _ >  bottom = 𝟘
+  L X ._≤_ < x > < y >   = X ._≤_ x y
+  L X ._∧_ bottom _ = bottom
+  L X ._∧_ < x > bottom = bottom
+  L X ._∧_ < x > < y > = < X ._∧_ x y >
+  L X .⊤ = < X .⊤ >
+  L X .≤-isPreorder .IsPreorder.refl {bottom} = tt
+  L X .≤-isPreorder .IsPreorder.refl {< x >} = ≤-refl X
+  L X .≤-isPreorder .IsPreorder.trans {bottom} {bottom} {bottom} m₁ m₂ = tt
+  L X .≤-isPreorder .IsPreorder.trans {bottom} {bottom} {< z >}  m₁ m₂ = tt
+  L X .≤-isPreorder .IsPreorder.trans {bottom} {< y >}  {< z >}  m₁ m₂ = tt
+  L X .≤-isPreorder .IsPreorder.trans {< x >}  {< y >}  {< z >}  m₁ m₂ =
+    X .≤-isPreorder .IsPreorder.trans m₁ m₂
+  L X .∧-isMeet .IsMeet.π₁ {bottom} {y} = tt
+  L X .∧-isMeet .IsMeet.π₁ {< x >} {bottom} = tt
+  L X .∧-isMeet .IsMeet.π₁ {< x >} {< x₁ >} = X .∧-isMeet .IsMeet.π₁
+  L X .∧-isMeet .IsMeet.π₂ {bottom} {bottom} = tt
+  L X .∧-isMeet .IsMeet.π₂ {bottom} {< x >} = tt
+  L X .∧-isMeet .IsMeet.π₂ {< x >} {bottom} = tt
+  L X .∧-isMeet .IsMeet.π₂ {< x >} {< x₁ >} = X .∧-isMeet .IsMeet.π₂
+  L X .∧-isMeet .IsMeet.⟨_,_⟩ {bottom} {bottom} {z} x≤y x≤z = tt
+  L X .∧-isMeet .IsMeet.⟨_,_⟩ {bottom} {< y >}  {bottom} x≤y x≤z = tt
+  L X .∧-isMeet .IsMeet.⟨_,_⟩ {bottom} {< y >}  {< z >} x≤y x≤z = tt
+  L X .∧-isMeet .IsMeet.⟨_,_⟩ {< x >}  {< y >}  {< z >} x≤y x≤z =
+    X .∧-isMeet .IsMeet.⟨_,_⟩ x≤y x≤z
+  L X .⊤-isTop .IsTop.≤-top {bottom} = tt
+  L X .⊤-isTop .IsTop.≤-top {< x >} = X .⊤-isTop .IsTop.≤-top
+
+  L-unit : ∀ {X} → X => L X
+  L-unit .func x = < x >
+  L-unit .monotone x₁≤x₂ = x₁≤x₂
+  L-unit {X} .∧-preserving = X .≤-refl
+  L-unit {X} .⊤-preserving = X .≤-refl
+
+  L-join : ∀ {X} → L (L X) => L X
+  L-join .func bottom = bottom
+  L-join .func < bottom > = bottom
+  L-join .func < < x > > = < x >
+  L-join .monotone {bottom}     {bottom}     x₁≤x₂ = tt
+  L-join .monotone {bottom}     {< bottom >} x₁≤x₂ = tt
+  L-join .monotone {bottom}     {< < x > >}  x₁≤x₂ = tt
+  L-join .monotone {< bottom >} {< bottom >} x₁≤x₂ = tt
+  L-join .monotone {< bottom >} {< < x > >}  x₁≤x₂ = tt
+  L-join .monotone {< < x > >}  {< < y > >}  x₁≤x₂ = x₁≤x₂
+  L-join .∧-preserving {bottom} {bottom} = tt
+  L-join .∧-preserving {bottom} {< x >} = tt
+  L-join .∧-preserving {< bottom >} {bottom} = tt
+  L-join .∧-preserving {< < x > >} {bottom} = tt
+  L-join .∧-preserving {< bottom >} {< x₁ >} = tt
+  L-join .∧-preserving {< < x > >} {< bottom >} = tt
+  L-join {X} .∧-preserving {< < x > >} {< < x₁ > >} = X .≤-refl
+  L-join {X} .⊤-preserving = X .≤-refl
+
+------------------------------------------------------------------------------
 -- Biproducts
 module _ where
   open MeetSemilattice
@@ -115,8 +201,15 @@ module _ where
   project₂ {X}{Y} .∧-preserving = Y .≤-refl
   project₂ {X}{Y} .⊤-preserving = Y .≤-refl
 
-  pair : ∀ {W X Y} → W => X → W => Y → W => (X ⊕ Y)
-  pair f g .func w = f .func w , g .func w
-  pair f g .monotone w₁≤w₂ = (f .monotone w₁≤w₂) , (g .monotone w₁≤w₂)
-  pair f g .∧-preserving = (f .∧-preserving) , (g .∧-preserving)
-  pair f g .⊤-preserving = (f .⊤-preserving) , (g .⊤-preserving)
+  ⟨_,_⟩ : ∀ {W X Y} → W => X → W => Y → W => (X ⊕ Y)
+  ⟨_,_⟩ f g .func w = f .func w , g .func w
+  ⟨_,_⟩ f g .monotone w₁≤w₂ = (f .monotone w₁≤w₂) , (g .monotone w₁≤w₂)
+  ⟨_,_⟩ f g .∧-preserving = (f .∧-preserving) , (g .∧-preserving)
+  ⟨_,_⟩ f g .⊤-preserving = (f .⊤-preserving) , (g .⊤-preserving)
+
+  inject₁ : ∀ {X Y} → X => (X ⊕ Y)
+  inject₁ {X} {Y} .func x = x , Y .⊤
+  inject₁ {X} {Y} .monotone x₁≤x₂ = x₁≤x₂ , Y .≤-refl
+  inject₁ {X} {Y} .∧-preserving .proj₁ = X .≤-refl
+  inject₁ {X} {Y} .∧-preserving .proj₂ = Y .⊤-isTop .IsTop.≤-top
+  inject₁ {X} {Y} .⊤-preserving = (X .≤-refl) , Y .≤-refl
