@@ -49,8 +49,7 @@ open JoinSemilattice
 id : ∀ {X} → X => X
 id .func x = x
 id {X} .monotone x≤x' = x≤x'
-id {X} .join-preserving .proj₁ = X .≤-isPreorder .IsPreorder.refl
-id {X} .join-preserving .proj₂ = X .≤-isPreorder .IsPreorder.refl
+id {X} .join-preserving = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
 
 _∘_ : ∀ {X Y Z} → Y => Z → X => Y → X => Z
 (f ∘ g) .func x = f .func (g .func x)
@@ -146,8 +145,7 @@ L-func m .join-preserving {< _ >} {< _ >} = m .join-preserving
 L-unit : ∀ {X} → X => L X
 L-unit .func x = < x >
 L-unit .monotone x≤x' = x≤x'
-L-unit {X} .join-preserving .proj₁ = X .≤-isPreorder .IsPreorder.refl
-L-unit {X} .join-preserving .proj₂ = X .≤-isPreorder .IsPreorder.refl
+L-unit {X} .join-preserving = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
 
 L-join : ∀ {X} → L (L X) => L X
 L-join .func bottom = bottom
@@ -185,6 +183,13 @@ L-counit {X} .join-preserving {< _ >} {< _ >} = isEquivalenceOf (X .≤-isPreord
 L-dup : ∀ {X} → L X => L (L X)
 L-dup .func bottom = bottom
 L-dup .func < x > = < < x > >
+L-dup .monotone {bottom} {bottom} _ = tt
+L-dup .monotone {bottom} {< _ >} _ = tt
+L-dup .monotone {< _ >} {< _ >} x≤x' = x≤x'
+L-dup .join-preserving {bottom} {bottom} = tt , tt
+L-dup {X} .join-preserving {bottom} {< _ >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
+L-dup {X} .join-preserving {< x >} {bottom} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
+L-dup {X} .join-preserving {< _ >} {< _ >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
 
 L-coassoc : ∀ {X} → (L-func L-dup ∘ L-dup) ≃m (L-dup ∘ L-dup {X})
 L-coassoc ._≃m_.eqfunc bottom .proj₁ = tt
