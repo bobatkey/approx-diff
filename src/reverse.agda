@@ -139,7 +139,7 @@ strength .fwd (x , y) = x , y
 strength {X} .bwd (x , y) ._=>_.func bottom = X .approx x .⊥ , bottom
 strength .bwd (x , y) ._=>_.func < δx , δy > = δx , < δy >
 strength {X} .bwd (x , y) ._=>_.monotone {bottom} {bottom} _ = ≤-bottom (X .approx x) , tt
-strength .bwd (x , y) ._=>_.monotone {bottom} {< _ >} _ = {!   !} , tt
+strength {X} .bwd (x , y) ._=>_.monotone {bottom} {< _ >} _ = ≤-bottom (X .approx x) , tt
 strength .bwd (x , y) ._=>_.monotone {< δx₁ , δy₁ >} {< δx₂ , δy₂ >} (δx₁≤δx₂ , δy₁≤δy₂) = δx₁≤δx₂ , δy₁≤δy₂
 strength .bwd (x , y) ._=>_.join-preserving = {!   !}
 
