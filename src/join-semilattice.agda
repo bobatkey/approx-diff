@@ -6,7 +6,7 @@ open import Level
 open import Data.Product using (proj₁; proj₂; _×_; _,_)
 open import Data.Unit using (⊤; tt)
 open import Data.Empty using () renaming (⊥ to 𝟘)
-open import Relation.Binary using (IsEquivalence)
+open import Relation.Binary using (IsEquivalence; Reflexive)
 open import basics
 
 record JoinSemilattice : Set (suc 0ℓ) where
@@ -22,6 +22,8 @@ record JoinSemilattice : Set (suc 0ℓ) where
 
   ∨-⊥-isMonoid : IsMonoid ≤-isPreorder _∨_ ⊥
   ∨-⊥-isMonoid = monoidOfJoin _ ∨-isJoin ⊥-isBottom
+
+  open IsEquivalence (isEquivalenceOf (≤-isPreorder)) renaming (refl to ≃-refl; sym to ≃-sym) public
 
 record _=>_ (X Y : JoinSemilattice) : Set where
   open JoinSemilattice
@@ -49,7 +51,7 @@ open JoinSemilattice
 id : ∀ {X} → X => X
 id .func x = x
 id {X} .monotone x≤x' = x≤x'
-id {X} .join-preserving = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
+id {X} .join-preserving = ≃-refl X
 
 _∘_ : ∀ {X Y Z} → Y => Z → X => Y → X => Z
 (f ∘ g) .func x = f .func (g .func x)
@@ -64,6 +66,7 @@ _∘_ {X}{Y}{Z} f g .join-preserving {x}{x'} =
   ∎
   where open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
 
+-- constant morphism
 ⊥-map : ∀ {X Y} → X => Y
 ⊥-map {X}{Y} .func _ = Y .⊥
 ⊥-map {X}{Y} .monotone _ = Y .≤-isPreorder .IsPreorder.refl
@@ -137,15 +140,15 @@ L-func {X} {Y} m .monotone {bottom} {< _ >} _ = tt
 L-func m .monotone {< _ >} {bottom} ()
 L-func m .monotone {< _ >} {< _ >} x₁≤x₂ = m .monotone x₁≤x₂
 L-func {Χ}{Υ} m .join-preserving {bottom} {bottom} = tt , tt
-L-func {Χ}{Υ} m .join-preserving {bottom} {< _ >} = isEquivalenceOf (Υ .≤-isPreorder) .IsEquivalence.refl
-L-func {X}{Y} m .join-preserving {< _ >} {bottom} = isEquivalenceOf (Y .≤-isPreorder) .IsEquivalence.refl
+L-func {Χ}{Υ} m .join-preserving {bottom} {< _ >} = ≃-refl Υ
+L-func {X}{Y} m .join-preserving {< _ >} {bottom} = ≃-refl Y
 L-func m .join-preserving {< _ >} {< _ >} = m .join-preserving
 
 -- Lifting is a monad:
 L-unit : ∀ {X} → X => L X
 L-unit .func x = < x >
 L-unit .monotone x≤x' = x≤x'
-L-unit {X} .join-preserving = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
+L-unit {X} .join-preserving = ≃-refl X
 
 L-join : ∀ {X} → L (L X) => L X
 L-join .func bottom = bottom
@@ -159,13 +162,13 @@ L-join .monotone {< bottom >} {< < _ > >} _ = tt
 L-join .monotone {< < _ > >} {< < _ > >} x≤x' = x≤x'
 L-join .join-preserving {bottom} {bottom} = tt , tt
 L-join .join-preserving {bottom} {< bottom >} = tt , tt
-L-join {X} .join-preserving {bottom} {< < _ > >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
+L-join {X} .join-preserving {bottom} {< < _ > >} = ≃-refl X
 L-join {X} .join-preserving {< bottom >} {bottom} = tt , tt
 L-join .join-preserving {< bottom >} {< bottom >} = tt , tt
-L-join {X} .join-preserving {< bottom >} {< < _ > >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
-L-join {X} .join-preserving {< < _ > >} {bottom} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
-L-join {X} .join-preserving {< < _ > >} {< bottom >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
-L-join {X} .join-preserving {< < _ > >} {< < _ > >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
+L-join {X} .join-preserving {< bottom >} {< < _ > >} = ≃-refl X
+L-join {X} .join-preserving {< < _ > >} {bottom} = ≃-refl X
+L-join {X} .join-preserving {< < _ > >} {< bottom >} = ≃-refl X
+L-join {X} .join-preserving {< < _ > >} {< < _ > >} = ≃-refl X
 
 -- TODO: monad laws for L-join/L-unit
 
@@ -178,7 +181,7 @@ L-counit {X} .monotone {< _ >} {< _ >} x≤x' = x≤x'
 L-counit {X} .join-preserving {bottom} {bottom} = IsJoin.idem (X .∨-isJoin)
 L-counit {X} .join-preserving {bottom} {< _ >} = IsMonoid.lunit (∨-⊥-isMonoid X)
 L-counit {X} .join-preserving {< _ >} {bottom} = IsMonoid.runit (∨-⊥-isMonoid X)
-L-counit {X} .join-preserving {< _ >} {< _ >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
+L-counit {X} .join-preserving {< _ >} {< _ >} = ≃-refl X
 
 L-dup : ∀ {X} → L X => L (L X)
 L-dup .func bottom = bottom
@@ -187,27 +190,24 @@ L-dup .monotone {bottom} {bottom} _ = tt
 L-dup .monotone {bottom} {< _ >} _ = tt
 L-dup .monotone {< _ >} {< _ >} x≤x' = x≤x'
 L-dup .join-preserving {bottom} {bottom} = tt , tt
-L-dup {X} .join-preserving {bottom} {< _ >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
-L-dup {X} .join-preserving {< x >} {bottom} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
-L-dup {X} .join-preserving {< _ >} {< _ >} = isEquivalenceOf (X .≤-isPreorder) .IsEquivalence.refl
+L-dup {X} .join-preserving {bottom} {< _ >} = ≃-refl X
+L-dup {X} .join-preserving {< x >} {bottom} = ≃-refl X
+L-dup {X} .join-preserving {< _ >} {< _ >} = ≃-refl X
 
 L-coassoc : ∀ {X} → (L-func L-dup ∘ L-dup) ≃m (L-dup ∘ L-dup {X})
 L-coassoc ._≃m_.eqfunc bottom .proj₁ = tt
 L-coassoc ._≃m_.eqfunc bottom .proj₂ = tt
-L-coassoc {X} ._≃m_.eqfunc < x > .proj₁ = X .≤-isPreorder .IsPreorder.refl
-L-coassoc {X} ._≃m_.eqfunc < x > .proj₂ = X .≤-isPreorder .IsPreorder.refl
+L-coassoc {X} ._≃m_.eqfunc < x > = ≃-refl X
 
 L-unit1 : ∀ {X} → (L-counit ∘ L-dup) ≃m id {L X}
 L-unit1 ._≃m_.eqfunc bottom .proj₁ = tt
 L-unit1 ._≃m_.eqfunc bottom .proj₂ = tt
-L-unit1 {X} ._≃m_.eqfunc < x > .proj₁ = X .≤-isPreorder .IsPreorder.refl
-L-unit1 {X} ._≃m_.eqfunc < x > .proj₂ = X .≤-isPreorder .IsPreorder.refl
+L-unit1 {X} ._≃m_.eqfunc < x > = ≃-refl X
 
 L-unit2 : ∀ {X} → (L-func L-counit ∘ L-dup) ≃m id {L X}
 L-unit2 ._≃m_.eqfunc bottom .proj₁ = tt
 L-unit2 ._≃m_.eqfunc bottom .proj₂ = tt
-L-unit2 {X} ._≃m_.eqfunc < x > .proj₁ = X .≤-isPreorder .IsPreorder.refl
-L-unit2 {X} ._≃m_.eqfunc < x > .proj₂ = X .≤-isPreorder .IsPreorder.refl
+L-unit2 {X} ._≃m_.eqfunc < x > = ≃-refl X
 
 ------------------------------------------------------------------------------
 -- Set-wide direct sums of JoinSemilattices
@@ -275,14 +275,12 @@ _⊕_ : JoinSemilattice → JoinSemilattice → JoinSemilattice
 project₁ : ∀ {X Y} → (X ⊕ Y) => X
 project₁ .func = proj₁
 project₁ .monotone = proj₁
-project₁ {X} .join-preserving .proj₁ = X .≤-isPreorder .IsPreorder.refl
-project₁ {X} .join-preserving .proj₂ = X .≤-isPreorder .IsPreorder.refl
+project₁ {X} .join-preserving = ≃-refl X
 
 project₂ : ∀ {X Y} → (X ⊕ Y) => Y
 project₂ .func = proj₂
 project₂ .monotone = proj₂
-project₂ {X}{Y} .join-preserving .proj₁ = Y .≤-isPreorder .IsPreorder.refl
-project₂ {X}{Y} .join-preserving .proj₂ = Y .≤-isPreorder .IsPreorder.refl
+project₂ {X}{Y} .join-preserving = ≃-refl Y
 
 ⟨_,_⟩ : ∀ {X Y Z} → X => Y → X => Z → X => (Y ⊕ Z)
 ⟨ f , g ⟩ .func x = f .func x , g .func x
@@ -315,21 +313,17 @@ inject₂ {X}{Y} .join-preserving =
     Z ._∨_ (Z ._∨_ (f .func x₁) (g .func y₁)) (Z ._∨_ (f .func x₂) (g .func y₂))
   ≈⟨ ∨-assoc ⟩
     Z ._∨_ (f .func x₁) (Z ._∨_ (g .func y₁) (Z ._∨_ (f .func x₂) (g .func y₂)))
-  ≈⟨ ∨-cong (cong f (X≃ .refl)) (Z≃ .sym ∨-assoc) ⟩
+  ≈⟨ ∨-cong (cong f (≃-refl X)) (≃-sym Z ∨-assoc) ⟩
     Z ._∨_ (f .func x₁) (Z ._∨_ (Z ._∨_ (g .func y₁) (f .func x₂)) (g .func y₂))
-  ≈⟨ ∨-cong (cong f (X≃ .refl)) (∨-cong ∨-comm (Z≃ .refl)) ⟩
+  ≈⟨ ∨-cong (cong f (≃-refl X)) (∨-cong ∨-comm (≃-refl Z)) ⟩
     Z ._∨_ (f .func x₁) (Z ._∨_ (Z ._∨_ (f .func x₂) (g .func y₁)) (g .func y₂))
-  ≈⟨ ∨-cong (cong f (X≃ .refl)) ∨-assoc ⟩
+  ≈⟨ ∨-cong (cong f (≃-refl X)) ∨-assoc ⟩
     Z ._∨_ (f .func x₁) (Z ._∨_ (f .func x₂) (Z ._∨_ (g .func y₁) (g .func y₂)))
-  ≈⟨ Z≃ .sym ∨-assoc ⟩
+  ≈⟨ ≃-sym Z ∨-assoc ⟩
     Z ._∨_ (Z ._∨_ (f .func x₁) (f .func x₂)) (Z ._∨_ (g .func y₁) (g .func y₂))
   ≈⟨ ∨-cong (f .join-preserving) (g .join-preserving) ⟩
     (Z ._∨_ (f .func (X ._∨_ x₁ x₂)) (g .func (Y ._∨_ y₁ y₂)))
   ∎
   where
   open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
-  open import Relation.Binary using (IsEquivalence)
-  open Relation.Binary.IsEquivalence
   open IsJoin (Z .∨-isJoin) renaming (cong to ∨-cong; assoc to ∨-assoc; comm to ∨-comm)
-  X≃ = isEquivalenceOf (X .≤-isPreorder)
-  Z≃ = isEquivalenceOf (Z .≤-isPreorder)
