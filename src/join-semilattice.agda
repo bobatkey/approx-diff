@@ -25,12 +25,13 @@ record _=>_ (X Y : JoinSemilattice) : Set where
   open IsPreorder (Y .JoinSemilattice.≤-isPreorder) renaming (_≃_ to _≃₂_)
   field
     func : X .Carrier → Y .Carrier
-    join-preserving : ∀ x x' → Y ._∨_ (func x) (func x') ≃₂ func (X ._∨_ x x')
+    join-preserving : ∀ {x x'} → Y ._∨_ (func x) (func x') ≃₂ func (X ._∨_ x x')
     -- bottom-preserving :
     monotone : ∀ {x x'} → X ._≤_ x x' → Y ._≤_ (func x) (func x')
 
   cong : ∀ {x x'} → x ≃₁ x' → func x ≃₂ func x'
-  cong (x≤x' , x'≤x) = monotone x≤x' , monotone x'≤x
+  cong (x≤x' , _) .proj₁ = monotone x≤x'
+  cong (_ , x'≤x) .proj₂ = monotone x'≤x
 
 open _=>_
 
@@ -44,18 +45,18 @@ open JoinSemilattice
 id : ∀ {X} → X => X
 id .func x = x
 id {X} .monotone x≤x' = x≤x'
-id {X} .join-preserving _ _ =
-  X .≤-isPreorder .IsPreorder.refl , X .≤-isPreorder .IsPreorder.refl
+id {X} .join-preserving .proj₁ = X .≤-isPreorder .IsPreorder.refl
+id {X} .join-preserving .proj₂ = X .≤-isPreorder .IsPreorder.refl
 
 _∘_ : ∀ {X Y Z} → Y => Z → X => Y → X => Z
 (f ∘ g) .func x = f .func (g .func x)
 (f ∘ g) .monotone x≤x' = f .monotone (g .monotone x≤x')
-_∘_ {X}{Y}{Z} f g .join-preserving x x' =
+_∘_ {X}{Y}{Z} f g .join-preserving {x}{x'} =
   begin
     Z ._∨_ (f .func (g .func x)) (f .func (g .func x'))
-  ≈⟨ f .join-preserving _ _ ⟩
+  ≈⟨ f .join-preserving ⟩
     f .func (Y ._∨_ (g .func x) (g .func x'))
-  ≈⟨ cong f (g .join-preserving _ _) ⟩
+  ≈⟨ cong f (g .join-preserving) ⟩
     (f .func (g .func (X ._∨_ x x')))
   ∎
   where open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
@@ -63,7 +64,7 @@ _∘_ {X}{Y}{Z} f g .join-preserving x x' =
 ⊥-map : ∀ {X Y} → X => Y
 ⊥-map {X}{Y} .func _ = Y .⊥
 ⊥-map {X}{Y} .monotone _ = Y .≤-isPreorder .IsPreorder.refl
-⊥-map {X}{Y} .join-preserving _ _ = IsJoin.idem (Y .∨-isJoin)
+⊥-map {X}{Y} .join-preserving = IsJoin.idem (Y .∨-isJoin)
 
 -- FIXME: ∨-map
 
@@ -81,7 +82,7 @@ _∘_ {X}{Y}{Z} f g .join-preserving x x' =
 𝟙 .∨-isJoin .IsJoin.[_,_] tt tt = tt
 𝟙 .⊥-isBottom .IsBottom.≤-bottom = tt
 
--- this is both initial and terminal...
+-- this is a zero object (both initial and terminal)
 
 ------------------------------------------------------------------------------
 -- Lifting
@@ -231,47 +232,47 @@ _⊕_ : JoinSemilattice → JoinSemilattice → JoinSemilattice
 project₁ : ∀ {X Y} → (X ⊕ Y) => X
 project₁ .func = proj₁
 project₁ .monotone = proj₁
-project₁ {X} .join-preserving _ _ =
-  X .≤-isPreorder .IsPreorder.refl , X .≤-isPreorder .IsPreorder.refl
+project₁ {X} .join-preserving .proj₁ = X .≤-isPreorder .IsPreorder.refl
+project₁ {X} .join-preserving .proj₂ = X .≤-isPreorder .IsPreorder.refl
 
 project₂ : ∀ {X Y} → (X ⊕ Y) => Y
 project₂ .func = proj₂
 project₂ .monotone = proj₂
-project₂ {X} {Y} .join-preserving (x , x') _ =
-  Y .≤-isPreorder .IsPreorder.refl , Y .≤-isPreorder .IsPreorder.refl
+project₂ {X}{Y} .join-preserving .proj₁ = Y .≤-isPreorder .IsPreorder.refl
+project₂ {X}{Y} .join-preserving .proj₂ = Y .≤-isPreorder .IsPreorder.refl
 
 ⟨_,_⟩ : ∀ {X Y Z} → X => Y → X => Z → X => (Y ⊕ Z)
 ⟨ f , g ⟩ .func x = f .func x , g .func x
 ⟨ f , g ⟩ .monotone x≤x' = f .monotone x≤x' , g .monotone x≤x'
-⟨ f , g ⟩ .join-preserving _ _ =
-  ((f .join-preserving _ _) .proj₁ , (g .join-preserving _ _) .proj₁) ,
-  ((f .join-preserving _ _) .proj₂ , (g .join-preserving _ _) .proj₂)
+⟨ f , g ⟩ .join-preserving .proj₁ = (f .join-preserving) .proj₁ , (g .join-preserving) .proj₁
+⟨ f , g ⟩ .join-preserving .proj₂ = (f .join-preserving) .proj₂ , (g .join-preserving) .proj₂
 
 -- Coproduct bits:
 inject₁ : ∀ {X Y} → X => (X ⊕ Y)
 inject₁ {X}{Y} .func x = x , Y .⊥
 inject₁ {X}{Y} .monotone x≤x' = x≤x' , Y .≤-isPreorder .IsPreorder.refl
-inject₁ {X}{Y} .join-preserving _ _ =
-  (X .≤-isPreorder .IsPreorder.refl , proj₁ (IsJoin.idem (Y .∨-isJoin))) ,
-  (X .≤-isPreorder .IsPreorder.refl , Y .⊥-isBottom .IsBottom.≤-bottom)
+inject₁ {X}{Y} .join-preserving .proj₁ =
+  X .≤-isPreorder .IsPreorder.refl , proj₁ (IsJoin.idem (Y .∨-isJoin))
+inject₁ {X}{Y} .join-preserving .proj₂ =
+  X .≤-isPreorder .IsPreorder.refl , Y .⊥-isBottom .IsBottom.≤-bottom
 
 inject₂ : ∀ {X Y} → Y => (X ⊕ Y)
 inject₂ {X}{Y} .func y = X .⊥ , y
 inject₂ {X}{Y} .monotone y≤y' = X .≤-isPreorder .IsPreorder.refl , y≤y'
-inject₂ {X}{Y} .join-preserving _ _ =
+inject₂ {X}{Y} .join-preserving =
   (proj₁ (IsJoin.idem (X .∨-isJoin)) , Y .≤-isPreorder .IsPreorder.refl) ,
   (X .⊥-isBottom .IsBottom.≤-bottom , Y .≤-isPreorder .IsPreorder.refl)
 
 [_,_] : ∀ {X Y Z} → X => Z → Y => Z → (X ⊕ Y) => Z
 [_,_] {X}{Y}{Z} f g .func (x , y) = Z ._∨_ (f .func x) (g .func y)
-[_,_] {X}{Y}{Z} f g .monotone {x} {x'} (x₁≤x₁' , x₂≤x₂') =
+[_,_] {X}{Y}{Z} f g .monotone (x₁≤x₁' , x₂≤x₂') =
   IsJoin.mono (Z .∨-isJoin) (f .monotone x₁≤x₁') (g .monotone x₂≤x₂')
-[_,_] {X}{Y}{Z} f g .join-preserving (x₁ , y₁) (x₂ , y₂) =
+[_,_] {X}{Y}{Z} f g .join-preserving {(x₁ , y₁)}{(x₂ , y₂)} =
   begin
     Z ._∨_ (Z ._∨_ (f .func x₁) (g .func y₁)) (Z ._∨_ (f .func x₂) (g .func y₂))
-  ≈⟨ IsJoin.assoc (Z .∨-isJoin) ⟩
+  ≈⟨ ∨-assoc ⟩
     Z ._∨_ (f .func x₁) (Z ._∨_ (g .func y₁) (Z ._∨_ (f .func x₂) (g .func y₂)))
-  ≈⟨ {!   !} ⟩ -- assoc
+  ≈⟨ ∨-cong (cong f (X≃ .refl)) (Z≃ .sym ∨-assoc) ⟩
     Z ._∨_ (f .func x₁) (Z ._∨_ (Z ._∨_ (g .func y₁) (f .func x₂)) (g .func y₂))
   ≈⟨ {!   !} ⟩ -- comm
     Z ._∨_ (f .func x₁) (Z ._∨_ (f .func x₂) (Z ._∨_ (g .func y₁) (g .func y₂)))
@@ -282,3 +283,8 @@ inject₂ {X}{Y} .join-preserving _ _ =
   ∎
   where
   open import Relation.Binary.Reasoning.Setoid (setoidOf (Z .≤-isPreorder))
+  open import Relation.Binary using (IsEquivalence)
+  open Relation.Binary.IsEquivalence
+  open IsJoin (Z .∨-isJoin) hiding (sym) renaming (cong to ∨-cong; assoc to ∨-assoc)
+  X≃ = isEquivalenceOf (X .≤-isPreorder)
+  Z≃ = isEquivalenceOf (Z .≤-isPreorder)
