@@ -18,6 +18,7 @@ record JoinSemilattice : Set (suc 0ℓ) where
     ≤-isPreorder : IsPreorder _≤_
     ∨-isJoin     : IsJoin ≤-isPreorder _∨_
     ⊥-isBottom   : IsBottom ≤-isPreorder ⊥
+    -- TODO: ⊥ is left and right unit for ∨
 
 record _=>_ (X Y : JoinSemilattice) : Set where
   open JoinSemilattice
@@ -129,6 +130,16 @@ L X .⊥-isBottom .IsBottom.≤-bottom {< x >} = tt
 L-func : ∀ {X Y} → X => Y → L X => L Y
 L-func m .func bottom = bottom
 L-func m .func < x > = < m .func x >
+L-func {X} {Y} m .monotone {bottom} {bottom} _ = tt
+L-func {X} {Y} m .monotone {bottom} {< x >} _ = tt
+L-func m .monotone {< x₁ >}{bottom} ()
+L-func m .monotone {< x₁ >}{< x₂ >} x₁≤x₂ = m .monotone x₁≤x₂
+L-func m .join-preserving {bottom}{bottom} = tt , tt
+L-func {Χ}{Υ} m .join-preserving {bottom}{< _ >} .proj₁ = Υ .≤-isPreorder .IsPreorder.refl
+L-func {Χ}{Υ} m .join-preserving {bottom}{< _ >} .proj₂ = Υ .≤-isPreorder .IsPreorder.refl
+L-func {X}{Y} m .join-preserving {< _ >}{bottom} .proj₁ = Y .≤-isPreorder .IsPreorder.refl
+L-func {X}{Y} m .join-preserving {< _ >}{bottom} .proj₂ = Y .≤-isPreorder .IsPreorder.refl
+L-func m .join-preserving {< x₁ >}{< x₂ >} = m .join-preserving
 
 L-unit : ∀ {X} → X => L X
 L-unit .func x = < x >
