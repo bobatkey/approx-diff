@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --safe --without-K #-}
+{-# OPTIONS --postfix-projections --allow-unsolved-metas --without-K #-}
 
 module reverse where
 
@@ -16,18 +16,17 @@ open import join-semilattice
 -- approximation.
 --
 -- TODO:
---   1. Add join-preserving to the definition of JoinSemilattice morphism
---   2. Prove the expected categorical properties of JoinSemilattices
---   3. Prove the expected categorical properties of ApproxSets
---   4. Add in the forward approximation pass to ApproxSets
---   5. Show that a typed λ-calculus can be interpreted using ApproxSets
---   6. Show that the forwards and reverse-mode approximations form a Galois
+--   1. Prove the expected categorical properties of JoinSemilattices
+--   2. Prove the expected categorical properties of ApproxSets
+--   3. Add in the forward approximation pass to ApproxSets
+--   4. Show that a typed λ-calculus can be interpreted using ApproxSets
+--   5. Show that the forwards and reverse-mode approximations form a Galois
 --      connection at first order type.
 --
---   7. Show that ApproxSets (with forward approximation) form a
+--   6. Show that ApproxSets (with forward approximation) form a
 --      Tangent Category
 --
---   8. Abstract the development below to any category with biproducts
+--   7. Abstract the development below to any category with biproducts
 --      and Set-sigmas
 --
 ------------------------------------------------------------------------------
