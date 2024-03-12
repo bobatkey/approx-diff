@@ -237,6 +237,8 @@ module _ (I : Set) (X : I → JoinSemilattice) where
 
   inj-⨁ : (i : I) → X i => ⨁
   inj-⨁ i .func x = el i x
+  inj-⨁ i .monotone _ = {!   !}
+  inj-⨁ i .join-preserving = {!   !}
 
   module _ (Z : JoinSemilattice) (X=>Z : ∀ i → X i => Z) where
     module Z = JoinSemilattice Z
@@ -248,6 +250,8 @@ module _ (I : Set) (X : I → JoinSemilattice) where
 
     elim-⨁ : ⨁ => Z
     elim-⨁ .func = elim-⨁-func
+    elim-⨁ .monotone = {!   !}
+    elim-⨁ .join-preserving = {!   !}
 
 ------------------------------------------------------------------------------
 -- Biproducts
