@@ -289,8 +289,8 @@ project₂ {X}{Y} .join-preserving = ≃-refl Y
 ⟨_,_⟩ : ∀ {X Y Z} → X => Y → X => Z → X => (Y ⊕ Z)
 ⟨ f , g ⟩ .func x = f .func x , g .func x
 ⟨ f , g ⟩ .monotone x≤x' = f .monotone x≤x' , g .monotone x≤x'
-⟨ f , g ⟩ .join-preserving .proj₁ = (f .join-preserving) .proj₁ , (g .join-preserving) .proj₁
-⟨ f , g ⟩ .join-preserving .proj₂ = (f .join-preserving) .proj₂ , (g .join-preserving) .proj₂
+⟨ f , g ⟩ .join-preserving .proj₁ = f .join-preserving .proj₁ , g .join-preserving .proj₁
+⟨ f , g ⟩ .join-preserving .proj₂ = f .join-preserving .proj₂ , g .join-preserving .proj₂
 
 -- Coproduct bits:
 inject₁ : ∀ {X Y} → X => (X ⊕ Y)
