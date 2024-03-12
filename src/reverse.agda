@@ -132,7 +132,16 @@ lambda m .bwd x = elim-⨁ _ _ _ λ y → project₁ ∘ m .bwd (x , y)
 ℒ-join .fwd x = x
 ℒ-join .bwd x = L-dup
 
--- FIXME: strength, functoriality
+-- FIXME: strength properties, functoriality
+
+strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
+strength .fwd (x , y) = x , y
+strength {X} .bwd (x , y) ._=>_.func bottom = X .approx x .JoinSemilattice.⊥ , bottom
+strength .bwd (x , y) ._=>_.func < δx , δy > = δx , < δy >
+strength .bwd (x , y) ._=>_.monotone {bottom} {bottom} _ = {!   !} , tt
+strength .bwd (x , y) ._=>_.monotone {bottom} {< _ >} _ = {!   !} , tt
+strength .bwd (x , y) ._=>_.monotone {< δx₁ , δy₁ >} {< δx₂ , δy₂ >} (δx₁≤δx₂ , δy₁≤δy₂) = δx₁≤δx₂ , δy₁≤δy₂
+strength .bwd (x , y) ._=>_.join-preserving = {!   !}
 
 -- Approximable lists: μY. 1 + ℒ(X × Y)
 --

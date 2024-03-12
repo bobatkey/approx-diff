@@ -51,7 +51,7 @@ open JoinSemilattice
 
 id : ∀ {X} → X => X
 id .func x = x
-id {X} .monotone x≤x' = x≤x'
+id .monotone x≤x' = x≤x'
 id {X} .join-preserving = ≃-refl X
 
 _∘_ : ∀ {X Y Z} → Y => Z → X => Y → X => Z
@@ -239,7 +239,7 @@ module _ (I : Set) (X : I → JoinSemilattice) where
   inj-⨁ : (i : I) → X i => ⨁
   inj-⨁ i .func x = el i x
   inj-⨁ i .monotone x₁≤x₂ _ _ (el x₂≤x₃) = el (≤-trans (X i) x₁≤x₂ x₂≤x₃)
-  inj-⨁ i .join-preserving = {!   !} , {!   !}
+  inj-⨁ i .join-preserving = {!   !}
 
   module _ (Z : JoinSemilattice) (X=>Z : ∀ i → X i => Z) where
     module Z = JoinSemilattice Z
