@@ -160,21 +160,7 @@ lambda m .bwd x = elim-⨁ _ _ _ λ y → project₁J ∘ m .bwd (x , y)
 ℒ-join .fwd x = meet-semilattice.L-join
 ℒ-join .bwd x = L-dup
 
--- FIXME: strength properties, functoriality
-
-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
-strength .func (x , y) = x , y
-strength .fwd = {!   !}
-strength {X} .bwd (x , y) ._=>J_.func bottom = X .rapprox x .⊥ , bottom
-strength .bwd (x , y) ._=>J_.func < δx , δy > = δx , < δy >
-strength {X} .bwd (x , y) ._=>J_.monotone {bottom} {bottom} _ = ≤-bottom (X .rapprox x) , tt
-strength {X} .bwd (x , y) ._=>J_.monotone {bottom} {< _ >} _ = ≤-bottom (X .rapprox x) , tt
-strength .bwd (x , y) ._=>J_.monotone {< _ >} {< _ >} (δx₁≤δx₂ , δy₁≤δy₂) = δx₁≤δx₂ , δy₁≤δy₂
-strength {X} .bwd (x , y) ._=>J_.join-preserving {bottom} {bottom} =
-  ({!   !} , tt) , (≤-bottom (X .rapprox x) , tt)
-strength .bwd (x , y) ._=>J_.join-preserving {bottom} {< x₁ >} = {!   !}
-strength .bwd (x , y) ._=>J_.join-preserving {< x₁ >} {b} = {!   !}
-strength .bwd (x , y) ._=>J_.⊥-preserving = {!   !}
+-- FIXME: strength, functoriality
 
 -- Approximable lists: μY. 1 + ℒ(X × Y)
 --
