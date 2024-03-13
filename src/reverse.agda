@@ -140,8 +140,11 @@ strength {X} .bwd (x , y) ._=>_.func bottom = X .approx x .⊥ , bottom
 strength .bwd (x , y) ._=>_.func < δx , δy > = δx , < δy >
 strength {X} .bwd (x , y) ._=>_.monotone {bottom} {bottom} _ = ≤-bottom (X .approx x) , tt
 strength {X} .bwd (x , y) ._=>_.monotone {bottom} {< _ >} _ = ≤-bottom (X .approx x) , tt
-strength .bwd (x , y) ._=>_.monotone {< δx₁ , δy₁ >} {< δx₂ , δy₂ >} (δx₁≤δx₂ , δy₁≤δy₂) = δx₁≤δx₂ , δy₁≤δy₂
-strength .bwd (x , y) ._=>_.join-preserving = {!   !}
+strength .bwd (x , y) ._=>_.monotone {< _ >} {< _ >} (δx₁≤δx₂ , δy₁≤δy₂) = δx₁≤δx₂ , δy₁≤δy₂
+strength {X} .bwd (x , y) ._=>_.join-preserving {bottom} {bottom} =
+  ({!   !} , tt) , (≤-bottom (X .approx x) , tt)
+strength .bwd (x , y) ._=>_.join-preserving {bottom} {< x₁ >} = {!   !}
+strength .bwd (x , y) ._=>_.join-preserving {< x₁ >} {b} = {!   !}
 
 -- Approximable lists: μY. 1 + ℒ(X × Y)
 --
