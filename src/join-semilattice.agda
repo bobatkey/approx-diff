@@ -83,6 +83,9 @@ _∘_ {X}{Y}{Z} f g .⊥-preserving = Z .≤-trans (f .monotone (g .⊥-preservi
 𝟙 .∨-isJoin .IsJoin.[_,_] tt tt = tt
 𝟙 .⊥-isBottom .IsBottom.≤-bottom = tt
 
+initial : ∀ {X} → 𝟙 => X
+initial = ⊥-map
+
 -- this is a zero object (both initial and terminal)
 
 ------------------------------------------------------------------------------

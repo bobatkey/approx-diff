@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --safe --without-K #-}
+{-# OPTIONS --postfix-projections --allow-unsolved-metas --without-K #-}
 
 module reverse where
 
@@ -10,12 +10,14 @@ open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import join-semilattice
   renaming (_=>_ to _=>J_; 𝟙 to 𝟙J; _⊕_ to _⊕J_; ⟨_,_⟩ to ⟨_,_⟩J;
             project₁ to project₁J; project₂ to project₂J;
-            L to LJ)
+            L to LJ; _∘_ to _∘J_; id to idJ)
+  hiding (initial)
 open import meet-semilattice
   renaming (_=>_ to _=>M_; 𝟙 to 𝟙M; _⊕_ to _⊕M_; ⟨_,_⟩ to ⟨_,_⟩M;
             project₁ to project₁M; project₂ to project₂M;
             inject₁ to inject₁M; inject₂ to inject₂M;
             L to LM; _∘_ to _∘M_; id to idM)
+  hiding (terminal)
 
 ------------------------------------------------------------------------------
 --
@@ -58,6 +60,16 @@ open _⇒_
 
 -- Have a bicartesian closed category... here's the definitions at least:
 
+id : ∀ {X} → X ⇒ X
+id .func x = x
+id .fwd x = idM
+id .bwd x = idJ
+
+_∘_ : ∀ {X Y Z} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
+(f ∘ g) .func x = f .func (g .func x)
+(f ∘ g) .fwd x = f .fwd (g .func x) ∘M g .fwd x
+(f ∘ g) .bwd x = g .bwd x ∘J f .bwd (g .func x)
+
 -- Any old set becomes a “discrete” object
 Disc : Set → ApproxSet
 Disc A .elem = A
@@ -67,7 +79,7 @@ Disc A .fapprox _ = 𝟙M
 Disc-f : ∀ {A B} → (A → B) → Disc A ⇒ Disc B
 Disc-f f .func = f
 Disc-f f .fwd x = idM
-Disc-f f .bwd x = id
+Disc-f f .bwd x = idJ
 
 -- Disc preserves sums and products too
 
@@ -76,6 +88,11 @@ Disc-f f .bwd x = id
 ⊤ₐ .elem = ⊤
 ⊤ₐ .rapprox tt = 𝟙J
 ⊤ₐ .fapprox tt = 𝟙M
+
+terminal : ∀ {X} → X ⇒ ⊤ₐ
+terminal .func x = tt
+terminal .fwd x = meet-semilattice.terminal
+terminal .bwd x = join-semilattice.initial
 
 -- Products
 _⊗_ : ApproxSet → ApproxSet → ApproxSet
@@ -96,7 +113,7 @@ _⊗_ : ApproxSet → ApproxSet → ApproxSet
 pair : ∀ {X Y Z} → X ⇒ Y → X ⇒ Z → X ⇒ (Y ⊗ Z)
 pair f g .func x = f .func x , g .func x
 pair f g .fwd x = ⟨ f .fwd x , g .fwd x ⟩M
-pair f g .bwd x = [ f .bwd x , g .bwd x ]
+pair f g .bwd x = join-semilattice.[ f .bwd x , g .bwd x ]
 
 -- Sums
 _+_ : ApproxSet → ApproxSet → ApproxSet
@@ -109,12 +126,12 @@ _+_ : ApproxSet → ApproxSet → ApproxSet
 inl : ∀ {X Y} → X ⇒ (X + Y)
 inl .func = inj₁
 inl .fwd x = idM
-inl .bwd x = id
+inl .bwd x = idJ
 
 inr : ∀ {X Y} → Y ⇒ (X + Y)
 inr .func = inj₂
 inr .fwd y = idM
-inr .bwd y = id
+inr .bwd y = idJ
 
 case : ∀ {W X Y Z} → (W ⊗ X) ⇒ Z → (W ⊗ Y) ⇒ Z → (W ⊗ (X + Y)) ⇒ Z
 case m₁ m₂ .func (w , inj₁ x) = m₁ .func (w , x)
@@ -139,9 +156,9 @@ eval {X}{Y} .bwd (f , x) =
 lambda : ∀ {X Y Z} → (X ⊗ Y) ⇒ Z → X ⇒ (Y ⊸ Z)
 lambda m .func x .func y = m .func (x , y)
 lambda m .func x .fwd y = m .fwd (x , y) ∘M inject₂M
-lambda m .func x .bwd y = project₂J ∘ m .bwd (x , y)
+lambda m .func x .bwd y = project₂J ∘J m .bwd (x , y)
 lambda m .fwd x = lambda-Π _ _ λ y → m .fwd (x , y) ∘M inject₁M
-lambda m .bwd x = elim-⨁ _ _ _ λ y → project₁J ∘ m .bwd (x , y)
+lambda m .bwd x = elim-⨁ _ _ _ λ y → project₁J ∘J m .bwd (x , y)
 
 -- Lifting
 ℒ : ApproxSet → ApproxSet
@@ -159,8 +176,21 @@ lambda m .bwd x = elim-⨁ _ _ _ λ y → project₁J ∘ m .bwd (x , y)
 ℒ-join .fwd x = meet-semilattice.L-join
 ℒ-join .bwd x = L-dup
 
--- FIXME: strength, functoriality
+ℒ-func : ∀ {X Y} → X ⇒ Y → ℒ X ⇒ ℒ Y
+ℒ-func f .func = f .func
+ℒ-func f .fwd x = meet-semilattice.L-func (f .fwd x)
+ℒ-func f .bwd x = join-semilattice.L-func (f .bwd x)
 
+-- FIXME: strength
+
+ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
+ℒ-strength .func xy = xy
+ℒ-strength .fwd (x , y) =
+  meet-semilattice.[ L-unit ∘M inject₁M , meet-semilattice.L-func inject₂M ]
+ℒ-strength .bwd (x , y) =
+  join-semilattice.⟨ project₁J ∘J L-counit , join-semilattice.L-func project₂J ⟩
+
+{-
 -- Approximable lists: μY. 1 + ℒ(X × Y)
 --
 -- These are lists that can be approximated by forgetting their tails
@@ -205,3 +235,4 @@ module _ {W X Y} (nil-f : W ⇒ Y) (cons-f : (W ⊗ ℒ (X ⊗ Y)) ⇒ Y) where
   Ls-elim .func = elim-func
   Ls-elim .fwd = {!!}
   Ls-elim .bwd = elim-bwd
+-}

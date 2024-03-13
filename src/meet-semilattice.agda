@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --safe --without-K #-}
+{-# OPTIONS --postfix-projections --allow-unsolved-metas --without-K #-}
 
 module meet-semilattice where
 
@@ -89,6 +89,7 @@ module _ (I : Set)(X : I → MeetSemilattice) where
 ------------------------------------------------------------------------------
 module _ where
   open MeetSemilattice
+  open _=>_
 
   𝟙 : MeetSemilattice
   𝟙 .Carrier = Unit
@@ -101,6 +102,12 @@ module _ where
   𝟙 .∧-isMeet .IsMeet.π₂ = tt
   𝟙 .∧-isMeet .IsMeet.⟨_,_⟩ tt tt = tt
   𝟙 .⊤-isTop .IsTop.≤-top = tt
+
+  terminal : ∀ {X} → X => 𝟙
+  terminal .func _ = tt
+  terminal .monotone _ = tt
+  terminal .∧-preserving = tt
+  terminal .⊤-preserving = tt
 
 ------------------------------------------------------------------------------
 -- Lifting
@@ -169,6 +176,17 @@ module _ where
   L-join {X} .∧-preserving {< < x > >} {< < x₁ > >} = X .≤-refl
   L-join {X} .⊤-preserving = X .≤-refl
 
+  L-func : ∀ {X Y} → X => Y → L X => L Y
+  L-func f .func bottom = bottom
+  L-func f .func < x > = < f .func x >
+  L-func f .monotone {bottom} {bottom} x₁≤x₂ = tt
+  L-func f .monotone {bottom} {< x₂ >} x₁≤x₂ = tt
+  L-func f .monotone {< x₁ >} {< x₂ >} x₁≤x₂ = f .monotone x₁≤x₂
+  L-func f .∧-preserving {bottom} {x'} = tt
+  L-func f .∧-preserving {< x >} {bottom} = tt
+  L-func f .∧-preserving {< x >} {< x₁ >} = f .∧-preserving
+  L-func f .⊤-preserving = f .⊤-preserving
+
 ------------------------------------------------------------------------------
 -- Biproducts
 module _ where
@@ -220,3 +238,15 @@ module _ where
   inject₂ {X} {Y} .∧-preserving .proj₁ = X .⊤-isTop .IsTop.≤-top
   inject₂ {X} {Y} .∧-preserving .proj₂ = Y .≤-refl
   inject₂ {X} {Y} .⊤-preserving = X .≤-refl , Y .≤-refl
+
+  [_,_] : ∀ {X Y Z} → X => Z → Y => Z → (X ⊕ Y) => Z
+  [_,_] {X} {Y} {Z} f g .func (x , y) = Z ._∧_ (f .func x) (g .func y)
+  [_,_] {X} {Y} {Z} f g .monotone (x₁≤x₂ , y₁≤y₂) =
+    mono (f .monotone x₁≤x₂) (g .monotone y₁≤y₂)
+    where open IsMeet (Z .∧-isMeet)
+  [_,_] {X} {Y} {Z} f g .∧-preserving {x , y} {x' , y'} =
+    Z .≤-trans {!!}
+               {!!}
+    where open IsMeet (Z .∧-isMeet)
+  [_,_] {X} {Y} {Z} f g .⊤-preserving = ⟨ (f .⊤-preserving) , (g .⊤-preserving) ⟩Z
+    where open IsMeet (Z .∧-isMeet) renaming (⟨_,_⟩ to ⟨_,_⟩Z)
