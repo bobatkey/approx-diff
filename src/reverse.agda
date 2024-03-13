@@ -16,7 +16,6 @@ open import meet-semilattice
             project₁ to project₁M; project₂ to project₂M;
             inject₁ to inject₁M;
             L to LM; _∘_ to _∘M_; id to idM)
-open JoinSemilattice
 
 ------------------------------------------------------------------------------
 --
