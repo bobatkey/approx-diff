@@ -27,7 +27,7 @@ record JoinSemilattice : Set (suc 0ℓ) where
   open IsEquivalence (isEquivalenceOf ≤-isPreorder) renaming (refl to ≃-refl; sym to ≃-sym) public
   open IsBottom ⊥-isBottom public
   open IsJoin ∨-isJoin public hiding ([_,_])
-    renaming (cong to ∨-cong'; mono to ∨-mono; idem to ∨-idem; comm to ∨-comm'; assoc to ∨-assoc')
+    renaming (mono to ∨-mono; idem to ∨-idem; comm to ∨-comm; assoc to ∨-assoc)
 
 record _=>_ (X Y : JoinSemilattice) : Set where
   open JoinSemilattice
@@ -38,10 +38,6 @@ record _=>_ (X Y : JoinSemilattice) : Set where
     monotone : ∀ {x₁ x₂} → X ._≤_ x₁ x₂ → Y ._≤_ (func x₁) (func x₂)
     ∨-preserving : ∀ {x x'} → Y ._≤_ (func (X ._∨_ x x')) (Y ._∨_ (func x) (func x'))
     ⊥-preserving : Y ._≤_ (func (X .⊥)) (Y .⊥)
-
-  cong : ∀ {x x'} → x ≃₁ x' → func x ≃₂ func x'
-  cong (x≤x' , _) .proj₁ = monotone x≤x'
-  cong (_ , x'≤x) .proj₂ = monotone x'≤x
 
 open _=>_
 
@@ -338,15 +334,15 @@ inject₂ {X}{Y} .⊥-preserving = X .≤-refl , Y .≤-refl
   Z .≤-trans
     (∨-mono Z (f .∨-preserving) (g .∨-preserving))
   (Z .≤-trans
-    (∨-assoc' Z .proj₁)
+    (∨-assoc Z .proj₁)
   (Z .≤-trans
     (∨-mono Z (Z .≤-refl)
       (Z .≤-trans
-        (Z .≃-sym (∨-assoc' Z) .proj₁)
+        (Z .≃-sym (∨-assoc Z) .proj₁)
       (Z .≤-trans
-        (∨-mono Z (∨-comm' Z .proj₁) (Z .≤-refl))
-        (∨-assoc' Z .proj₁))))
-    (Z .≃-sym (∨-assoc' Z) .proj₁)))
+        (∨-mono Z (∨-comm Z .proj₁) (Z .≤-refl))
+        (∨-assoc Z .proj₁))))
+    (Z .≃-sym (∨-assoc Z) .proj₁)))
 [_,_] {X}{Y}{Z} f g .⊥-preserving = Z[ f .⊥-preserving , g .⊥-preserving ]
   where open IsJoin (Z .∨-isJoin) renaming ([_,_] to Z[_,_])
 
