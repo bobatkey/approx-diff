@@ -213,3 +213,10 @@ module _ where
   inject₁ {X} {Y} .∧-preserving .proj₁ = X .≤-refl
   inject₁ {X} {Y} .∧-preserving .proj₂ = Y .⊤-isTop .IsTop.≤-top
   inject₁ {X} {Y} .⊤-preserving = (X .≤-refl) , Y .≤-refl
+
+  inject₂ : ∀ {X Y} → Y => (X ⊕ Y)
+  inject₂ {X} {Y} .func y = X .⊤ , y
+  inject₂ {X} {Y} .monotone y₁≤y₂ = X .≤-refl , y₁≤y₂
+  inject₂ {X} {Y} .∧-preserving .proj₁ = X .⊤-isTop .IsTop.≤-top
+  inject₂ {X} {Y} .∧-preserving .proj₂ = Y .≤-refl
+  inject₂ {X} {Y} .⊤-preserving = X .≤-refl , Y .≤-refl

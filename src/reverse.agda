@@ -14,7 +14,7 @@ open import join-semilattice
 open import meet-semilattice
   renaming (_=>_ to _=>M_; 𝟙 to 𝟙M; _⊕_ to _⊕M_; ⟨_,_⟩ to ⟨_,_⟩M;
             project₁ to project₁M; project₂ to project₂M;
-            inject₁ to inject₁M;
+            inject₁ to inject₁M; inject₂ to inject₂M;
             L to LM; _∘_ to _∘M_; id to idM)
 
 ------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ eval {X}{Y} .bwd (f , x) =
 
 lambda : ∀ {X Y Z} → (X ⊗ Y) ⇒ Z → X ⇒ (Y ⊸ Z)
 lambda m .func x .func y = m .func (x , y)
-lambda m .func x .fwd y = m .fwd (x , y) ∘M {!!}
+lambda m .func x .fwd y = m .fwd (x , y) ∘M inject₂M
 lambda m .func x .bwd y = project₂J ∘ m .bwd (x , y)
 lambda m .fwd x = lambda-Π _ _ λ y → m .fwd (x , y) ∘M inject₁M
 lambda m .bwd x = elim-⨁ _ _ _ λ y → project₁J ∘ m .bwd (x , y)
