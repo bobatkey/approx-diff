@@ -266,7 +266,7 @@ module _ (I : Set) (X : I → JoinSemilattice) where
     elim-⨁-func-monotone (≤f-trans j₁≤j₂ j₂≤j₃) = Z.≤-trans (elim-⨁-func-monotone j₁≤j₂) (elim-⨁-func-monotone j₂≤j₃)
     elim-⨁-func-monotone (≤f-el-mono i x₁≤x₂) = X=>Z i .monotone x₁≤x₂
     elim-⨁-func-monotone (≤f-el-bot i) = X=>Z i .⊥-preserving
-    elim-⨁-func-monotone (≤f-el-join i) = {!   !}
+    elim-⨁-func-monotone (≤f-el-join i) = X=>Z i .∨-preserving
     elim-⨁-func-monotone ≤f-bot = Z .≤-bottom
     elim-⨁-func-monotone ≤f-inl = Z .inl
     elim-⨁-func-monotone ≤f-inr = Z .inr
