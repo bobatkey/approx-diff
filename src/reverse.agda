@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --allow-unsolved-metas --without-K #-}
+{-# OPTIONS --postfix-projections --safe --without-K #-}
 
 module reverse where
 

@@ -47,6 +47,15 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
       mono (eq₁ .proj₁) (eq₂ .proj₁) ,
       mono (eq₁ .proj₂) (eq₂ .proj₂)
 
+    interchange : (∀ {x y} → (x ∙ y) ≤ (y ∙ x)) →
+                  ∀ {w x y z} → ((w ∙ x) ∙ (y ∙ z)) ≤ ((w ∙ y) ∙ (x ∙ z))
+    interchange ∙-sym {w} {x} {y} {z} =
+       trans (assoc .proj₁)
+      (trans (mono refl (assoc .proj₂))
+      (trans (mono refl (mono ∙-sym refl))
+      (trans (mono refl (assoc .proj₁))
+             (assoc .proj₂))))
+
   record IsClosure {_∙_ : A → A → A} {ε : A}
                    (∙-isMonoid : IsMonoid _∙_ ε)
                    (_-∙_ : A → A → A) : Set (a ⊔ b) where
@@ -84,6 +93,9 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     idem : ∀ {x} → x ∧ x ≃ x
     idem .proj₁ = π₁
     idem .proj₂ = ⟨ refl , refl ⟩
+
+    sym : ∀ {x y} → (x ∧ y) ≤ (y ∧ x)
+    sym = ⟨ π₂ , π₁ ⟩
 
   record IsTop (⊤ : A) : Set (a ⊔ b) where
     field

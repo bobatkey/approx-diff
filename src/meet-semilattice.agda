@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --allow-unsolved-metas --without-K #-}
+{-# OPTIONS --postfix-projections --safe --without-K #-}
 
 module meet-semilattice where
 
@@ -245,8 +245,9 @@ module _ where
     mono (f .monotone x₁≤x₂) (g .monotone y₁≤y₂)
     where open IsMeet (Z .∧-isMeet)
   [_,_] {X} {Y} {Z} f g .∧-preserving {x , y} {x' , y'} =
-    Z .≤-trans {!!}
-               {!!}
-    where open IsMeet (Z .∧-isMeet)
+    Z .≤-trans (interchange sym)
+               (∧-mono (f .∧-preserving) (g .∧-preserving))
+    where open IsMeet (Z .∧-isMeet) renaming (mono to ∧-mono)
+          open IsMonoid (monoidOfMeet (Z .≤-isPreorder) (Z .∧-isMeet) (Z .⊤-isTop))
   [_,_] {X} {Y} {Z} f g .⊤-preserving = ⟨ (f .⊤-preserving) , (g .⊤-preserving) ⟩Z
     where open IsMeet (Z .∧-isMeet) renaming (⟨_,_⟩ to ⟨_,_⟩Z)

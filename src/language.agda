@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --without-K #-}
+{-# OPTIONS --postfix-projections --without-K --safe #-}
 
 module language where
 
