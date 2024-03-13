@@ -334,20 +334,19 @@ inject₂ {X}{Y} .⊥-preserving = X .≤-refl , Y .≤-refl
 [_,_] {X}{Y}{Z} f g .monotone (x₁≤x₁' , x₂≤x₂') =
   IsJoin.mono (Z .∨-isJoin) (f .monotone x₁≤x₁') (g .monotone x₂≤x₂')
 [_,_] {X}{Y}{Z} f g .∨-preserving {(x₁ , y₁)}{(x₂ , y₂)} =
-  -- spell out intermediate steps for clarity; redo later with inequality reasoning
-  Z .≤-trans {Z ._∨_ (f .func (X ._∨_ x₁ x₂)) (g .func (Y ._∨_ y₁ y₂))}
+  -- redo with inequality reasoning
+  Z .≤-trans
     (∨-mono Z (f .∨-preserving) (g .∨-preserving))
-  (Z .≤-trans {Z ._∨_ (Z ._∨_ (f .func x₁) (f .func x₂)) (Z ._∨_ (g .func y₁) (g .func y₂))}
+  (Z .≤-trans
     (∨-assoc' Z .proj₁)
-  (Z .≤-trans {Z ._∨_ (f .func x₁) (Z ._∨_ (f .func x₂) (Z ._∨_ (g .func y₁) (g .func y₂)))}
-    (∨-mono Z (Z .≤-refl) (Z .≃-sym (∨-assoc' Z) .proj₁))
-  (Z .≤-trans {Z ._∨_ (f .func x₁) (Z ._∨_ (Z ._∨_ (f .func x₂) (g .func y₁)) (g .func y₂))}
-    (∨-mono Z (Z .≤-refl) (∨-mono Z (∨-comm' Z .proj₁) (Z .≤-refl)))
-  (Z .≤-trans {Z ._∨_ (f .func x₁) (Z ._∨_ (Z ._∨_ (g .func y₁) (f .func x₂)) (g .func y₂))}
-              {Z ._∨_ (f .func x₁) (Z ._∨_ (g .func y₁) (Z ._∨_ (f .func x₂) (g .func y₂)))}
-              {Z ._∨_ (Z ._∨_ (f .func x₁) (g .func y₁)) (Z ._∨_ (f .func x₂) (g .func y₂))}
-    (∨-mono Z (Z .≤-refl) (∨-assoc' Z .proj₁))
-    (Z .≃-sym (∨-assoc' Z) .proj₁)))))
+  (Z .≤-trans
+    (∨-mono Z (Z .≤-refl)
+      (Z .≤-trans
+        (Z .≃-sym (∨-assoc' Z) .proj₁)
+      (Z .≤-trans
+        (∨-mono Z (∨-comm' Z .proj₁) (Z .≤-refl))
+        (∨-assoc' Z .proj₁))))
+    (Z .≃-sym (∨-assoc' Z) .proj₁)))
 [_,_] {X}{Y}{Z} f g .⊥-preserving = Z[ f .⊥-preserving , g .⊥-preserving ]
   where open IsJoin (Z .∨-isJoin) renaming ([_,_] to Z[_,_])
 
