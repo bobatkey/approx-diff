@@ -82,8 +82,9 @@ open _⇒_
 ⟦ ze ⟧var = π₂
 ⟦ su x ⟧var = ⟦ x ⟧var ∘ π₁
 
--- approximative semantics for the primops where plus always "uses" both arguments,
--- but times only use second argument if first is non-zero
+-- approximative semantics for primops (one of several choices):
+--   plus always "uses" both arguments
+--   times only uses second argument if first is non-zero
 eval-plus : ⟦ num `× num ⟧ty ⇒ ⟦ num ⟧ty
 eval-plus .func (n , m) = Data.Nat._+_ n m
 eval-plus .fwd (n , m) = use-both-fwd
