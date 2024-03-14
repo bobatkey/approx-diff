@@ -2,6 +2,8 @@
 
 module language where
 
+open import Data.Nat using (ℕ)
+
 data type : Set where
   unit num : type
   _`×_ _`⇒_ _`+_ : type → type → type
@@ -19,6 +21,10 @@ data _∋_ : ctxt → type → Set where
 
 data _⊢_ : ctxt → type → Set where
   var : ∀ {Γ τ} → Γ ∋ τ → Γ ⊢ τ
+
+  -- Natural numbers and some operations.
+  nat : ∀ {Γ} → ℕ -> Γ ⊢ num
+  plus : ∀ {Γ} → Γ ⊢ num -> Γ ⊢ num -> Γ ⊢ num
 
   -- The sole value of the unit type
   unit : ∀ {Γ} → Γ ⊢ unit
@@ -55,11 +61,10 @@ data _⊢_ : ctxt → type → Set where
 -}
 
 open import reverse
-open import Data.Nat using (ℕ)
 
 ⟦_⟧ty : type → ApproxSet
 ⟦ unit ⟧ty = ⊤ₐ
-⟦ num ⟧ty = Disc ℕ
+⟦ num ⟧ty = ℒ (Disc ℕ)
 ⟦ σ `× τ ⟧ty = ⟦ σ ⟧ty ⊗ ⟦ τ ⟧ty
 ⟦ σ `⇒ τ ⟧ty = ⟦ σ ⟧ty ⊸ ⟦ τ ⟧ty
 ⟦ σ `+ τ ⟧ty = ⟦ σ ⟧ty + ⟦ τ ⟧ty
@@ -73,9 +78,37 @@ open import Data.Nat using (ℕ)
 ⟦ ze ⟧var = π₂
 ⟦ su x ⟧var = ⟦ x ⟧var ∘ π₁
 
+module _ where
+  open _⇒_
+  open import Data.Product using (_,_)
+  open ℕ
+
+  open import join-semilattice
+    renaming (_=>_ to _=>J_; 𝟙 to 𝟙J; _⊕_ to _⊕J_; ⟨_,_⟩ to ⟨_,_⟩J;
+              project₁ to project₁J; project₂ to project₂J;
+              L to LJ; _∘_ to _∘J_; id to idJ)
+  open import meet-semilattice
+    renaming (_=>_ to _=>M_; 𝟙 to 𝟙M; _⊕_ to _⊕M_; ⟨_,_⟩ to ⟨_,_⟩M;
+              project₁ to project₁M; project₂ to project₂M;
+              inject₁ to inject₁M; inject₂ to inject₂M;
+              L to LM; _∘_ to _∘M_; id to idM)
+
+  plus-fwd : (LM 𝟙M ⊕M LM 𝟙M) =>M LM 𝟙M
+  plus-fwd = {!   !}
+
+  plus-bwd : LJ 𝟙J =>J (LJ 𝟙J ⊕J LJ 𝟙J)
+  plus-bwd = {!   !}
+
+  eval-plus : ⟦ num `× num ⟧ty ⇒ ⟦ num ⟧ty
+  eval-plus .func (n , m) = Data.Nat._+_ n m
+  eval-plus .fwd (n , m) = plus-fwd
+  eval-plus .bwd (n , m) = plus-bwd
+
 ⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
 ⟦ var x ⟧ = ⟦ x ⟧var
 ⟦ unit ⟧ = terminal
+⟦ nat n ⟧ = (ℒ-unit ∘ Disc-const n) ∘ terminal
+⟦ plus s t ⟧ = eval-plus ∘ pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ lam t ⟧ = lambda ⟦ t ⟧
 ⟦ app s t ⟧ = eval ∘ pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ fst t ⟧ = π₁ ∘ ⟦ t ⟧
@@ -85,4 +118,4 @@ open import Data.Nat using (ℕ)
 ⟦ inj₂ t ⟧ = inr ∘ ⟦ t ⟧
 ⟦ _⊢_.case t₁ t₂ s ⟧ = reverse.case ⟦ t₁ ⟧ ⟦ t₂ ⟧ ∘ pair id ⟦ s ⟧
 ⟦ return t ⟧ = ℒ-unit ∘ ⟦ t ⟧
-⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-func ⟦ t ⟧) ∘ ℒ-strength) ∘ (pair id ⟦ s ⟧)
+⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-func ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id ⟦ s ⟧

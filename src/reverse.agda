@@ -94,6 +94,11 @@ terminal .func x = tt
 terminal .fwd x = meet-semilattice.terminal
 terminal .bwd x = join-semilattice.initial
 
+Disc-const : ∀ {A} → A → ⊤ₐ ⇒ Disc A
+Disc-const x .func tt = x
+Disc-const x .fwd tt = idM
+Disc-const x .bwd tt = idJ
+
 -- Products
 _⊗_ : ApproxSet → ApproxSet → ApproxSet
 (X ⊗ Y) .elem = X .elem × Y .elem
