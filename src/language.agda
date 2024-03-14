@@ -61,6 +61,9 @@ data _⊢_ : ctxt → type → Set where
 -}
 
 open import reverse
+open _⇒_
+open import Data.Product using (_,_)
+open import PrimOps
 
 ⟦_⟧ty : type → ApproxSet
 ⟦ unit ⟧ty = ⊤ₐ
@@ -77,36 +80,6 @@ open import reverse
 ⟦_⟧var : ∀ {Γ τ} → Γ ∋ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
 ⟦ ze ⟧var = π₂
 ⟦ su x ⟧var = ⟦ x ⟧var ∘ π₁
-
-module _ where
-  open import Data.Unit using (tt)
-  open import Data.Product using (_,_)
-
-  open import join-semilattice
-    renaming (_=>_ to _=>J_; 𝟙 to 𝟙J; _⊕_ to _⊕J_; ⟨_,_⟩ to ⟨_,_⟩J;
-              project₁ to project₁J; project₂ to project₂J;
-              L to LJ; _∘_ to _∘J_; id to idJ)
-  open import meet-semilattice
-    renaming (_=>_ to _=>M_; 𝟙 to 𝟙M; _⊕_ to _⊕M_; ⟨_,_⟩ to ⟨_,_⟩M;
-              project₁ to project₁M; project₂ to project₂M;
-              inject₁ to inject₁M; inject₂ to inject₂M;
-              L to LM; _∘_ to _∘M_; id to idM)
-
-  plus-fwd : (LM 𝟙M ⊕M LM 𝟙M) =>M LM 𝟙M
-  plus-fwd ._=>M_.func _ = < tt >
-  plus-fwd ._=>M_.monotone _ = tt
-  plus-fwd ._=>M_.∧-preserving = tt
-  plus-fwd ._=>M_.⊤-preserving = tt
-
-  plus-bwd : LJ 𝟙J =>J (LJ 𝟙J ⊕J LJ 𝟙J)
-  plus-bwd ._=>J_.func _ = bottom , bottom
-  plus-bwd ._=>J_.monotone _ = tt , tt
-  plus-bwd ._=>J_.∨-preserving = tt , tt
-  plus-bwd ._=>J_.⊥-preserving = tt , tt
-
-open _⇒_
-open import Data.Product using (_,_)
-open ℕ
 
 eval-plus : ⟦ num `× num ⟧ty ⇒ ⟦ num ⟧ty
 eval-plus .func (n , m) = Data.Nat._+_ n m
