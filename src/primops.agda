@@ -11,6 +11,9 @@ open import meet-semilattice
   renaming (_=>_ to _=>M_; 𝟙 to 𝟙M; _⊕_ to _⊕M_; L to LM)
 open MeetSemilattice renaming (_≤_ to _≤M_)
 
+-- couple of other variants are possible, e.g. being 'strict' in second argument instead, or degenerate
+-- approximation which is constantly top in fwd direction and constantly bottom in bwd direction
+
 use-both-fwd : (LM 𝟙M ⊕M LM 𝟙M) =>M LM 𝟙M
 use-both-fwd ._=>M_.func (bottom , bottom) = bottom
 use-both-fwd ._=>M_.func (bottom , < tt >) = bottom
@@ -99,6 +102,3 @@ use-fst-bwd ._=>J_.∨-preserving {bottom} {< tt >} = tt , tt
 use-fst-bwd ._=>J_.∨-preserving {< tt >} {bottom} = tt , tt
 use-fst-bwd ._=>J_.∨-preserving {< tt >} {< tt >} = tt , tt
 use-fst-bwd ._=>J_.⊥-preserving = tt , tt
-
--- a couple of other variants are possible, e.g. being 'strict' in second argument instead, or the
--- degenerate approximation which is constantly top in fwd direction and constantly bottom in bwd direction

@@ -22,7 +22,7 @@ data _∋_ : ctxt → type → Set where
 data _⊢_ : ctxt → type → Set where
   var : ∀ {Γ τ} → Γ ∋ τ → Γ ⊢ τ
 
-  -- Natural numbers and some operations.
+  -- Natural numbers and some operations
   nat : ∀ {Γ} → ℕ -> Γ ⊢ num
   plus : ∀ {Γ} → Γ ⊢ num -> Γ ⊢ num -> Γ ⊢ num
   times : ∀ {Γ} → Γ ⊢ num -> Γ ⊢ num -> Γ ⊢ num
@@ -82,6 +82,8 @@ open _⇒_
 ⟦ ze ⟧var = π₂
 ⟦ su x ⟧var = ⟦ x ⟧var ∘ π₁
 
+-- approximative semantics for the primops where plus always "uses" both arguments,
+-- but times only use second argument if first is non-zero
 eval-plus : ⟦ num `× num ⟧ty ⇒ ⟦ num ⟧ty
 eval-plus .func (n , m) = Data.Nat._+_ n m
 eval-plus .fwd (n , m) = use-both-fwd
@@ -89,9 +91,9 @@ eval-plus .bwd (n , m) = use-both-bwd
 
 eval-times : ⟦ num `× num ⟧ty ⇒ ⟦ num ⟧ty
 eval-times .func (n , m) = Data.Nat._*_ n m
-eval-times .fwd (ℕ.zero , m) = use-fst-fwd
+eval-times .fwd (ℕ.zero , m)  = use-fst-fwd
 eval-times .fwd (ℕ.suc n , m) = use-both-fwd
-eval-times .bwd (ℕ.zero , m) = use-fst-bwd
+eval-times .bwd (ℕ.zero , m)  = use-fst-bwd
 eval-times .bwd (ℕ.suc n , m) = use-both-bwd
 
 ⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
