@@ -84,15 +84,15 @@ open _⇒_
 
 eval-plus : ⟦ num `× num ⟧ty ⇒ ⟦ num ⟧ty
 eval-plus .func (n , m) = Data.Nat._+_ n m
-eval-plus .fwd (n , m) = strict-both-fwd
-eval-plus .bwd (n , m) = strict-both-bwd
+eval-plus .fwd (n , m) = use-both-fwd
+eval-plus .bwd (n , m) = use-both-bwd
 
 eval-times : ⟦ num `× num ⟧ty ⇒ ⟦ num ⟧ty
 eval-times .func (n , m) = Data.Nat._*_ n m
-eval-times .fwd (ℕ.zero , m) = strict-fst-fwd
-eval-times .fwd (ℕ.suc n , m) = strict-both-fwd
-eval-times .bwd (ℕ.zero , m) = strict-fst-bwd
-eval-times .bwd (ℕ.suc n , m) = strict-both-bwd
+eval-times .fwd (ℕ.zero , m) = use-fst-fwd
+eval-times .fwd (ℕ.suc n , m) = use-both-fwd
+eval-times .bwd (ℕ.zero , m) = use-fst-bwd
+eval-times .bwd (ℕ.suc n , m) = use-both-bwd
 
 ⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
 ⟦ var x ⟧ = ⟦ x ⟧var
