@@ -25,6 +25,7 @@ data _⊢_ : ctxt → type → Set where
   -- Natural numbers and some operations.
   nat : ∀ {Γ} → ℕ -> Γ ⊢ num
   plus : ∀ {Γ} → Γ ⊢ num -> Γ ⊢ num -> Γ ⊢ num
+  times : ∀ {Γ} → Γ ⊢ num -> Γ ⊢ num -> Γ ⊢ num
 
   -- The sole value of the unit type
   unit : ∀ {Γ} → Γ ⊢ unit
@@ -86,11 +87,19 @@ eval-plus .func (n , m) = Data.Nat._+_ n m
 eval-plus .fwd (n , m) = strict-both-fwd
 eval-plus .bwd (n , m) = strict-both-bwd
 
+eval-times : ⟦ num `× num ⟧ty ⇒ ⟦ num ⟧ty
+eval-times .func (n , m) = Data.Nat._*_ n m
+eval-times .fwd (ℕ.zero , m) = strict-fst-fwd
+eval-times .fwd (ℕ.suc n , m) = strict-both-fwd
+eval-times .bwd (ℕ.zero , m) = strict-fst-bwd
+eval-times .bwd (ℕ.suc n , m) = strict-both-bwd
+
 ⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
 ⟦ var x ⟧ = ⟦ x ⟧var
 ⟦ unit ⟧ = terminal
 ⟦ nat n ⟧ = (ℒ-unit ∘ Disc-const n) ∘ terminal
 ⟦ plus s t ⟧ = eval-plus ∘ pair ⟦ s ⟧ ⟦ t ⟧
+⟦ times s t ⟧ = eval-times ∘ pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ lam t ⟧ = lambda ⟦ t ⟧
 ⟦ app s t ⟧ = eval ∘ pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ fst t ⟧ = π₁ ∘ ⟦ t ⟧
