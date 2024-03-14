@@ -83,8 +83,8 @@ open _⇒_
 
 eval-plus : ⟦ num `× num ⟧ty ⇒ ⟦ num ⟧ty
 eval-plus .func (n , m) = Data.Nat._+_ n m
-eval-plus .fwd (n , m) = plus-fwd
-eval-plus .bwd (n , m) = plus-bwd
+eval-plus .fwd (n , m) = strict-both-fwd
+eval-plus .bwd (n , m) = strict-both-bwd
 
 ⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
 ⟦ var x ⟧ = ⟦ x ⟧var
