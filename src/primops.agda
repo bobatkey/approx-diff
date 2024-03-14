@@ -56,5 +56,49 @@ strict-both-bwd ._=>J_.∨-preserving {< tt >} {bottom} = tt , tt
 strict-both-bwd ._=>J_.∨-preserving {< tt >} {< tt >} = tt , tt
 strict-both-bwd ._=>J_.⊥-preserving = tt , tt
 
--- a few other variants are possible, e.g. being 'strict' in second argument instead, or the degenerate
--- approximation which is constantly top in fwd direction and constantly bottom in bwd direction
+strict-fst-fwd : (LM 𝟙M ⊕M LM 𝟙M) =>M LM 𝟙M
+strict-fst-fwd ._=>M_.func (bottom , bottom) = bottom
+strict-fst-fwd ._=>M_.func (bottom , < tt >) = bottom
+strict-fst-fwd ._=>M_.func (< tt > , bottom) = < tt >
+strict-fst-fwd ._=>M_.func (< tt > , < tt >) = < tt >
+strict-fst-fwd ._=>M_.monotone {bottom , bottom} {bottom , bottom} _ = tt
+strict-fst-fwd ._=>M_.monotone {bottom , bottom} {bottom , < tt >} _ = tt
+strict-fst-fwd ._=>M_.monotone {bottom , bottom} {< tt > , bottom} _ = tt
+strict-fst-fwd ._=>M_.monotone {bottom , bottom} {< tt > , < tt >} _ = tt
+strict-fst-fwd ._=>M_.monotone {bottom , < tt >} {bottom , < tt >} _ = tt
+strict-fst-fwd ._=>M_.monotone {bottom , < tt >} {< tt > , < tt >} _ = tt
+strict-fst-fwd ._=>M_.monotone {< tt > , bottom} {< tt > , bottom} _ = tt
+strict-fst-fwd ._=>M_.monotone {< tt > , bottom} {< tt > , < tt >} _ = tt
+strict-fst-fwd ._=>M_.monotone {< tt > , < tt >} {< tt > , < tt >} _ = tt
+strict-fst-fwd ._=>M_.∧-preserving {bottom , bottom} {bottom , bottom} = tt
+strict-fst-fwd ._=>M_.∧-preserving {bottom , bottom} {bottom , < tt >} = tt
+strict-fst-fwd ._=>M_.∧-preserving {bottom , bottom} {< tt > , bottom} = tt
+strict-fst-fwd ._=>M_.∧-preserving {bottom , bottom} {< tt > , < tt >} = tt
+strict-fst-fwd ._=>M_.∧-preserving {bottom , < tt >} {bottom , bottom} = tt
+strict-fst-fwd ._=>M_.∧-preserving {bottom , < tt >} {bottom , < tt >} = tt
+strict-fst-fwd ._=>M_.∧-preserving {bottom , < tt >} {< tt > , bottom} = tt
+strict-fst-fwd ._=>M_.∧-preserving {bottom , < tt >} {< tt > , < tt >} = tt
+strict-fst-fwd ._=>M_.∧-preserving {< tt > , bottom} {bottom , bottom} = tt
+strict-fst-fwd ._=>M_.∧-preserving {< tt > , bottom} {bottom , < tt >} = tt
+strict-fst-fwd ._=>M_.∧-preserving {< tt > , bottom} {< tt > , bottom} = tt
+strict-fst-fwd ._=>M_.∧-preserving {< tt > , bottom} {< tt > , < tt >} = tt
+strict-fst-fwd ._=>M_.∧-preserving {< tt > , < tt >} {bottom , bottom} = tt
+strict-fst-fwd ._=>M_.∧-preserving {< tt > , < tt >} {bottom , < tt >} = tt
+strict-fst-fwd ._=>M_.∧-preserving {< tt > , < tt >} {< tt > , bottom} = tt
+strict-fst-fwd ._=>M_.∧-preserving {< tt > , < tt >} {< tt > , < tt >} = tt
+strict-fst-fwd ._=>M_.⊤-preserving = tt
+
+strict-fst-bwd : LJ 𝟙J =>J (LJ 𝟙J ⊕J LJ 𝟙J)
+strict-fst-bwd ._=>J_.func bottom = bottom , bottom
+strict-fst-bwd ._=>J_.func < tt > = < tt > , bottom
+strict-fst-bwd ._=>J_.monotone {bottom} {bottom} _ = tt , tt
+strict-fst-bwd ._=>J_.monotone {bottom} {< tt >} _ = tt , tt
+strict-fst-bwd ._=>J_.monotone {< tt >} {< tt >} _ = tt , tt
+strict-fst-bwd ._=>J_.∨-preserving {bottom} {bottom} = tt , tt
+strict-fst-bwd ._=>J_.∨-preserving {bottom} {< tt >} = tt , tt
+strict-fst-bwd ._=>J_.∨-preserving {< tt >} {bottom} = tt , tt
+strict-fst-bwd ._=>J_.∨-preserving {< tt >} {< tt >} = tt , tt
+strict-fst-bwd ._=>J_.⊥-preserving = tt , tt
+
+-- a couple of other variants are possible, e.g. being 'strict' in second argument instead, or the
+-- degenerate approximation which is constantly top in fwd direction and constantly bottom in bwd direction
