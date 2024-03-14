@@ -1,6 +1,6 @@
 {-# OPTIONS --postfix-projections --without-K --safe #-}
 
-module PrimOps where
+module primops where
 
 open import Data.Unit using (tt)
 open import Data.Product using (_,_)

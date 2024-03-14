@@ -60,10 +60,10 @@ data _⊢_ : ctxt → type → Set where
                      Γ ⊢ σ
 -}
 
-open import reverse
-open _⇒_
 open import Data.Product using (_,_)
-open import PrimOps
+open import reverse
+open import primops
+open _⇒_
 
 ⟦_⟧ty : type → ApproxSet
 ⟦ unit ⟧ty = ⊤ₐ
