@@ -60,7 +60,7 @@ data _⊢_ : ctxt → type → Set where
                      Γ ⊢ σ
 -}
 
-open import Data.Product using (_,_)
+open import Data.Product using (_×_; _,_)
 open import reverse
 open _⇒_
 
@@ -83,13 +83,17 @@ open _⇒_
 let' : ∀ {Γ σ τ} -> ⟦ Γ ⟧ctxt ⇒ ℒ ⟦ σ ⟧ty -> (⟦ Γ ⟧ctxt ⊗ ⟦ σ ⟧ty) ⇒ ℒ ⟦ τ ⟧ty -> ⟦ Γ ⟧ctxt ⇒ ℒ ⟦ τ ⟧ty
 let' e e' = ((ℒ-join ∘ ℒ-func e') ∘ ℒ-strength) ∘ pair id e
 
+plus' : (Disc ℕ ⊗ Disc ℕ) ⇒ Disc ℕ
+plus' = {!   !}
+
 ⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
 ⟦ var x ⟧ = ⟦ x ⟧var
 ⟦ unit ⟧ = terminal
 ⟦ nat n ⟧ = Disc-const n ∘ terminal
 ⟦ plus {Γ} s t ⟧ =
   let' {Γ} {num} {num} ⟦ s ⟧
-  (let' {Γ -, num} {num} {num} {!   !}  (ℒ-unit ∘ ({!   !} ∘ pair (π₂ ∘ π₁) π₂)))
+  (let' {Γ -, num} {num} {num} (⟦ t ⟧ ∘ π₁)
+  (ℒ-unit ∘ (plus' ∘ pair (π₂ ∘ π₁) π₂)))
 ⟦ lam t ⟧ = lambda ⟦ t ⟧
 ⟦ app s t ⟧ = eval ∘ pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ fst t ⟧ = π₁ ∘ ⟦ t ⟧
