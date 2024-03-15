@@ -81,13 +81,15 @@ open _⇒_
 ⟦ su x ⟧var = ⟦ x ⟧var ∘ π₁
 
 let' : ∀ {Γ σ τ} -> ⟦ Γ ⟧ctxt ⇒ ℒ ⟦ σ ⟧ty -> (⟦ Γ ⟧ctxt ⊗ ⟦ σ ⟧ty) ⇒ ℒ ⟦ τ ⟧ty -> ⟦ Γ ⟧ctxt ⇒ ℒ ⟦ τ ⟧ty
-let' a b = ((ℒ-join ∘ ℒ-func b) ∘ ℒ-strength) ∘ pair id a
+let' e e' = ((ℒ-join ∘ ℒ-func e') ∘ ℒ-strength) ∘ pair id e
 
 ⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
 ⟦ var x ⟧ = ⟦ x ⟧var
 ⟦ unit ⟧ = terminal
 ⟦ nat n ⟧ = Disc-const n ∘ terminal
-⟦ plus {Γ} s t ⟧ = {!   !}
+⟦ plus {Γ} s t ⟧ =
+  let' {Γ} {num} {num} ⟦ s ⟧
+  (let' {Γ -, num} {num} {num} {!   !}  (ℒ-unit ∘ ({!   !} ∘ pair (π₂ ∘ π₁) π₂)))
 ⟦ lam t ⟧ = lambda ⟦ t ⟧
 ⟦ app s t ⟧ = eval ∘ pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ fst t ⟧ = π₁ ∘ ⟦ t ⟧
@@ -97,4 +99,4 @@ let' a b = ((ℒ-join ∘ ℒ-func b) ∘ ℒ-strength) ∘ pair id a
 ⟦ inj₂ t ⟧ = inr ∘ ⟦ t ⟧
 ⟦ _⊢_.case t₁ t₂ s ⟧ = reverse.case ⟦ t₁ ⟧ ⟦ t₂ ⟧ ∘ pair id ⟦ s ⟧
 ⟦ return t ⟧ = ℒ-unit ∘ ⟦ t ⟧
-⟦ bind {Γ} {σ} {τ} s t ⟧ = let' {Γ} {σ} {τ} ⟦ s ⟧ ⟦ t ⟧ --((ℒ-join ∘ ℒ-func ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id {!   !}
+⟦ bind {Γ} {σ} {τ} s t ⟧ = let' {Γ} {σ} {τ} ⟦ s ⟧ ⟦ t ⟧
