@@ -104,3 +104,19 @@ binOp f = (Disc-f λ (x , y) -> f x y) ∘ Disc-reflects-products
 ⟦ case t₁ t₂ s ⟧ = reverse.case ⟦ t₁ ⟧ ⟦ t₂ ⟧ ∘ pair id ⟦ s ⟧
 ⟦ return t ⟧ = ℒ-unit ∘ ⟦ t ⟧
 ⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-func ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id ⟦ s ⟧
+
+weaken : ∀ {Γ σ τ} → Γ ⊢ σ → Γ -, τ ⊢ σ
+weaken (var x) = var (su x)
+weaken (nat n) = nat n
+weaken (plus s t) = plus (weaken s) (weaken t)
+weaken unit = unit
+weaken (lam t) = lam {!   !}
+weaken (app s t) = app (weaken s) (weaken t)
+weaken (fst t) = fst (weaken t)
+weaken (snd t) = snd (weaken t)
+weaken (mkPair s t) = mkPair (weaken s) (weaken t)
+weaken (inj₁ s) = inj₁ (weaken s)
+weaken (inj₂ s) = inj₂ (weaken s)
+weaken (case t₁ t₂ s) = _⊢_.case {!   !} {!   !} (weaken s)
+weaken (return s) = return (weaken s)
+weaken (bind s t) = bind (weaken s) {!   !}
