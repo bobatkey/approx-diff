@@ -83,8 +83,15 @@ open _⇒_
 let' : ∀ {Γ σ τ} -> ⟦ Γ ⟧ctxt ⇒ ℒ ⟦ σ ⟧ty -> (⟦ Γ ⟧ctxt ⊗ ⟦ σ ⟧ty) ⇒ ℒ ⟦ τ ⟧ty -> ⟦ Γ ⟧ctxt ⇒ ℒ ⟦ τ ⟧ty
 let' e e' = ((ℒ-join ∘ ℒ-func e') ∘ ℒ-strength) ∘ pair id e
 
+plus'' : Disc (ℕ × ℕ) ⇒ Disc ℕ
+plus'' = Disc-f λ (x , y) -> Data.Nat._+_ x y
+
 plus' : (Disc ℕ ⊗ Disc ℕ) ⇒ Disc ℕ
 plus' = {!   !}
+
+-- Disc-f : ∀ {A B} → (A → B) → Disc A ⇒ Disc B
+-- eval : ∀ {X Y} → ((X ⊸ Y) ⊗ X) ⇒ Y
+-- lambda : ∀ {X Y Z} → (X ⊗ Y) ⇒ Z → X ⇒ (Y ⊸ Z)
 
 ⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
 ⟦ var x ⟧ = ⟦ x ⟧var
