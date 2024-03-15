@@ -31,12 +31,17 @@ data _⊢_ : ctxt → type → Set where
   lam : ∀ {Γ σ τ} → Γ -, σ ⊢ τ → Γ ⊢ σ `⇒ τ
   app : ∀ {Γ σ τ} → Γ ⊢ σ `⇒ τ → Γ ⊢ σ → Γ ⊢ τ
 
+  -- pairs
+  fst    : ∀ {Γ σ τ} → Γ ⊢ σ `× τ → Γ ⊢ σ
+  snd    : ∀ {Γ σ τ} → Γ ⊢ σ `× τ → Γ ⊢ τ
+  mkPair : ∀ {Γ σ τ} → Γ ⊢ σ → Γ ⊢ τ → Γ ⊢ σ `× τ
+
 import language as ML
 
 ⟦_⟧ₐty : type → ML.type
 ⟦ unit ⟧ₐty = ML.unit
 ⟦ num ⟧ₐty = ML.num
-⟦ σ `× τ ⟧ₐty = {!    !}
+⟦ σ `× τ ⟧ₐty = ML.lift ⟦ σ ⟧ₐty ML.`× ML.lift ⟦ τ ⟧ₐty
 ⟦ σ `⇒ τ ⟧ₐty = ML.lift ⟦ σ ⟧ₐty ML.`⇒ ML.lift ⟦ τ ⟧ₐty
 ⟦ σ `+ τ ⟧ₐty = {!   !}
 
@@ -54,3 +59,6 @@ import language as ML
 ⟦ nat n ⟧ₐ = ML.return (ML.nat n)
 ⟦ lam t ⟧ₐ = ML.return (ML.lam ⟦ t ⟧ₐ)
 ⟦ app s t ⟧ₐ = ML.bind ⟦ s ⟧ₐ (ML.app (ML.var ML.ze) {!   !}) -- some sort of weakening of t required?
+⟦ fst t ⟧ₐ = ML.bind ⟦ t ⟧ₐ (ML.fst (ML.var ML.ze))
+⟦ snd t ⟧ₐ = ML.bind ⟦ t ⟧ₐ (ML.snd (ML.var ML.ze))
+⟦ mkPair s t ⟧ₐ = ML.return (ML.mkPair ⟦ s ⟧ₐ ⟦ t ⟧ₐ)
