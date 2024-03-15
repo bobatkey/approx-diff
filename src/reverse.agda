@@ -123,7 +123,12 @@ Disc-preserves-products .func ab = ab
 Disc-preserves-products .fwd _ = ⟨ idM , idM ⟩M
 Disc-preserves-products .bwd _ = [ idJ , idJ ]J
 
--- Disc preserves sums too
+Disc-reflects-products : ∀ {A B} → (Disc A ⊗ Disc B) ⇒ Disc (A × B)
+Disc-reflects-products .func ab = ab
+Disc-reflects-products .fwd _ = [ idM , idM ]M
+Disc-reflects-products .bwd _ = ⟨ idJ , idJ ⟩J
+
+-- Disc preserves and reflects sums too
 
 -- Sums
 _+_ : ApproxSet → ApproxSet → ApproxSet
