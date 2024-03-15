@@ -186,8 +186,6 @@ lambda m .bwd x = elim-⨁ _ _ _ λ y → project₁J ∘J m .bwd (x , y)
 ℒ-func f .fwd x = meet-semilattice.L-func (f .fwd x)
 ℒ-func f .bwd x = join-semilattice.L-func (f .bwd x)
 
--- FIXME: strength
-
 ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
 ℒ-strength .func xy = xy
 ℒ-strength .fwd (x , y) =

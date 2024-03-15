@@ -24,8 +24,7 @@ data _⊢_ : ctxt → type → Set where
 
   -- Natural numbers and some operations
   nat : ∀ {Γ} → ℕ -> Γ ⊢ num
-  plus : ∀ {Γ} → Γ ⊢ num -> Γ ⊢ num -> Γ ⊢ num
-  times : ∀ {Γ} → Γ ⊢ num -> Γ ⊢ num -> Γ ⊢ num
+  plus : ∀ {Γ} → Γ ⊢ lift num -> Γ ⊢ lift num -> Γ ⊢ lift num
 
   -- The sole value of the unit type
   unit : ∀ {Γ} → Γ ⊢ unit
@@ -63,12 +62,11 @@ data _⊢_ : ctxt → type → Set where
 
 open import Data.Product using (_,_)
 open import reverse
-open import primops
 open _⇒_
 
 ⟦_⟧ty : type → ApproxSet
 ⟦ unit ⟧ty = ⊤ₐ
-⟦ num ⟧ty = ℒ (Disc ℕ)
+⟦ num ⟧ty = Disc ℕ
 ⟦ σ `× τ ⟧ty = ⟦ σ ⟧ty ⊗ ⟦ τ ⟧ty
 ⟦ σ `⇒ τ ⟧ty = ⟦ σ ⟧ty ⊸ ⟦ τ ⟧ty
 ⟦ σ `+ τ ⟧ty = ⟦ σ ⟧ty + ⟦ τ ⟧ty
@@ -82,27 +80,14 @@ open _⇒_
 ⟦ ze ⟧var = π₂
 ⟦ su x ⟧var = ⟦ x ⟧var ∘ π₁
 
--- approximative semantics for primops (one of several choices):
---   plus always "uses" both arguments
---   times only uses second argument if first is non-zero
-eval-plus : ⟦ num `× num ⟧ty ⇒ ⟦ num ⟧ty
-eval-plus .func (n , m) = Data.Nat._+_ n m
-eval-plus .fwd (n , m) = use-both-fwd
-eval-plus .bwd (n , m) = use-both-bwd
-
-eval-times : ⟦ num `× num ⟧ty ⇒ ⟦ num ⟧ty
-eval-times .func (n , m) = Data.Nat._*_ n m
-eval-times .fwd (ℕ.zero , m)  = use-fst-fwd
-eval-times .fwd (ℕ.suc n , m) = use-both-fwd
-eval-times .bwd (ℕ.zero , m)  = use-fst-bwd
-eval-times .bwd (ℕ.suc n , m) = use-both-bwd
+let' : ∀ {Γ σ τ} -> ⟦ Γ ⟧ctxt ⇒ ℒ ⟦ σ ⟧ty -> (⟦ Γ ⟧ctxt ⊗ ⟦ σ ⟧ty) ⇒ ℒ ⟦ τ ⟧ty -> ⟦ Γ ⟧ctxt ⇒ ℒ ⟦ τ ⟧ty
+let' a b = ((ℒ-join ∘ ℒ-func b) ∘ ℒ-strength) ∘ pair id a
 
 ⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
 ⟦ var x ⟧ = ⟦ x ⟧var
 ⟦ unit ⟧ = terminal
-⟦ nat n ⟧ = (ℒ-unit ∘ Disc-const n) ∘ terminal
-⟦ plus s t ⟧ = eval-plus ∘ pair ⟦ s ⟧ ⟦ t ⟧
-⟦ times s t ⟧ = eval-times ∘ pair ⟦ s ⟧ ⟦ t ⟧
+⟦ nat n ⟧ = Disc-const n ∘ terminal
+⟦ plus {Γ} s t ⟧ = {!   !}
 ⟦ lam t ⟧ = lambda ⟦ t ⟧
 ⟦ app s t ⟧ = eval ∘ pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ fst t ⟧ = π₁ ∘ ⟦ t ⟧
@@ -112,4 +97,4 @@ eval-times .bwd (ℕ.suc n , m) = use-both-bwd
 ⟦ inj₂ t ⟧ = inr ∘ ⟦ t ⟧
 ⟦ _⊢_.case t₁ t₂ s ⟧ = reverse.case ⟦ t₁ ⟧ ⟦ t₂ ⟧ ∘ pair id ⟦ s ⟧
 ⟦ return t ⟧ = ℒ-unit ∘ ⟦ t ⟧
-⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-func ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id ⟦ s ⟧
+⟦ bind {Γ} {σ} {τ} s t ⟧ = let' {Γ} {σ} {τ} ⟦ s ⟧ ⟦ t ⟧ --((ℒ-join ∘ ℒ-func ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id {!   !}
