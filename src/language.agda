@@ -2,7 +2,8 @@
 
 module language where
 
-open import Data.Nat using (ℕ)
+open import Data.Bool using (Bool; if_then_else_)
+open import Data.Nat using (ℕ; _≟_)
 
 data type : Set where
   unit num : type
@@ -25,6 +26,7 @@ data _⊢_ : ctxt → type → Set where
   -- Natural numbers and some operations
   nat : ∀ {Γ} → ℕ -> Γ ⊢ num
   plus : ∀ {Γ} → Γ ⊢ lift num -> Γ ⊢ lift num -> Γ ⊢ lift num
+  times : ∀ {Γ} → Γ ⊢ lift num -> Γ ⊢ lift num -> Γ ⊢ lift num
 
   -- The sole value of the unit type
   unit : ∀ {Γ} → Γ ⊢ unit
@@ -94,6 +96,9 @@ binOp f = (Disc-f λ (x , y) -> f x y) ∘ Disc-reflects-products
   let' {Γ} {num} {num} ⟦ s ⟧
   (let' {Γ -, num} {num} {num} (⟦ t ⟧ ∘ π₁)
   (ℒ-unit ∘ (binOp Data.Nat._+_ ∘ pair (π₂ ∘ π₁) π₂)))
+⟦ times {Γ} s t ⟧ =
+  let' {Γ} {num} {num} ⟦ s ⟧
+  {!   !}
 ⟦ lam t ⟧ = lambda ⟦ t ⟧
 ⟦ app s t ⟧ = eval ∘ pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ fst t ⟧ = π₁ ∘ ⟦ t ⟧
