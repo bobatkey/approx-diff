@@ -25,8 +25,7 @@ data _⊢_ : ctxt → type → Set where
 
   -- Natural numbers and some operations
   nat : ∀ {Γ} → ℕ -> Γ ⊢ num
-  plus : ∀ {Γ} → Γ ⊢ lift num -> Γ ⊢ lift num -> Γ ⊢ lift num
-  times : ∀ {Γ} → Γ ⊢ lift num -> Γ ⊢ lift num -> Γ ⊢ lift num
+  plus : ∀ {Γ} → Γ ⊢ num -> Γ ⊢ num -> Γ ⊢ num
 
   -- The sole value of the unit type
   unit : ∀ {Γ} → Γ ⊢ unit
@@ -88,34 +87,14 @@ open _⇒_
 ⟦ ze ⟧var = π₂
 ⟦ su x ⟧var = ⟦ x ⟧var ∘ π₁
 
-let' : ∀ {Γ σ τ} -> ⟦ Γ ⟧ctxt ⇒ ℒ ⟦ σ ⟧ty -> (⟦ Γ ⟧ctxt ⊗ ⟦ σ ⟧ty) ⇒ ℒ ⟦ τ ⟧ty -> ⟦ Γ ⟧ctxt ⇒ ℒ ⟦ τ ⟧ty
-let' e e' = ((ℒ-join ∘ ℒ-func e') ∘ ℒ-strength) ∘ pair id e
-
 binOp : (ℕ -> ℕ -> ℕ) -> (Disc ℕ ⊗ Disc ℕ) ⇒ Disc ℕ
 binOp f = (Disc-f λ (x , y) -> f x y) ∘ Disc-reflects-products
-
-binPred : ∀ {A : Set} -> DecidableEquality A -> Disc (A × A) ⇒ (⊤ₐ + ⊤ₐ)
-binPred _∼_ .func (n , m) with n ∼ m
-... | yes _ = inj₁ tt
-... | no _ = inj₂ tt
-binPred _∼_ .fwd (n , m) with n ∼ m
-... | yes _ = idM
-... | no _ = idM
-binPred _∼_ .bwd (n , m) with n ∼ m
-... | yes _ = idJ
-... | no _ = idJ
 
 ⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
 ⟦ var x ⟧ = ⟦ x ⟧var
 ⟦ unit ⟧ = terminal
 ⟦ nat n ⟧ = Disc-const n ∘ terminal
-⟦ plus {Γ} s t ⟧ =
-  let' {Γ} {num} {num} ⟦ s ⟧
-  (let' {Γ -, num} {num} {num} (⟦ t ⟧ ∘ π₁)
-  (ℒ-unit ∘ (binOp Data.Nat._+_ ∘ pair (π₂ ∘ π₁) π₂)))
-⟦ times {Γ} s t ⟧ =
-  let' {Γ} {num} {num} ⟦ s ⟧
-  {!   !}
+⟦ plus s t ⟧ = binOp Data.Nat._+_ ∘ pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ lam t ⟧ = lambda ⟦ t ⟧
 ⟦ app s t ⟧ = eval ∘ pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ fst t ⟧ = π₁ ∘ ⟦ t ⟧
@@ -125,4 +104,4 @@ binPred _∼_ .bwd (n , m) with n ∼ m
 ⟦ inj₂ t ⟧ = inr ∘ ⟦ t ⟧
 ⟦ case t₁ t₂ s ⟧ = reverse.case ⟦ t₁ ⟧ ⟦ t₂ ⟧ ∘ pair id ⟦ s ⟧
 ⟦ return t ⟧ = ℒ-unit ∘ ⟦ t ⟧
-⟦ bind {Γ} {σ} {τ} s t ⟧ = let' {Γ} {σ} {τ} ⟦ s ⟧ ⟦ t ⟧
+⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-func ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id ⟦ s ⟧
