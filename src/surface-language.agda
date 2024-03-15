@@ -36,6 +36,11 @@ data _⊢_ : ctxt → type → Set where
   snd    : ∀ {Γ σ τ} → Γ ⊢ σ `× τ → Γ ⊢ τ
   mkPair : ∀ {Γ σ τ} → Γ ⊢ σ → Γ ⊢ τ → Γ ⊢ σ `× τ
 
+  -- sums
+  inj₁ : ∀ {Γ σ τ} → Γ ⊢ σ → Γ ⊢ σ `+ τ
+  inj₂ : ∀ {Γ σ τ} → Γ ⊢ τ → Γ ⊢ σ `+ τ
+  case : ∀ {Γ ρ σ τ} → Γ -, σ ⊢ ρ → Γ -, τ ⊢ ρ → Γ ⊢ σ `+ τ → Γ ⊢ ρ
+
 import language as ML
 
 ⟦_⟧ₐty : type → ML.type
@@ -43,7 +48,7 @@ import language as ML
 ⟦ num ⟧ₐty = ML.num
 ⟦ σ `× τ ⟧ₐty = ML.lift ⟦ σ ⟧ₐty ML.`× ML.lift ⟦ τ ⟧ₐty
 ⟦ σ `⇒ τ ⟧ₐty = ML.lift ⟦ σ ⟧ₐty ML.`⇒ ML.lift ⟦ τ ⟧ₐty
-⟦ σ `+ τ ⟧ₐty = {!   !}
+⟦ σ `+ τ ⟧ₐty = ML.lift ⟦ σ ⟧ₐty ML.`+ ML.lift ⟦ τ ⟧ₐty
 
 ⟦_⟧ₐctxt : ctxt → ML.ctxt
 ⟦ ε ⟧ₐctxt      = ML.ε
@@ -58,7 +63,11 @@ import language as ML
 ⟦ unit ⟧ₐ = ML.return ML.unit
 ⟦ nat n ⟧ₐ = ML.return (ML.nat n)
 ⟦ lam t ⟧ₐ = ML.return (ML.lam ⟦ t ⟧ₐ)
-⟦ app s t ⟧ₐ = ML.bind ⟦ s ⟧ₐ (ML.app (ML.var ML.ze) {!   !}) -- some sort of weakening of t required?
+⟦ app s t ⟧ₐ = ML.bind ⟦ s ⟧ₐ (ML.app (ML.var ML.ze) {!   !}) -- weakening of t required?
 ⟦ fst t ⟧ₐ = ML.bind ⟦ t ⟧ₐ (ML.fst (ML.var ML.ze))
 ⟦ snd t ⟧ₐ = ML.bind ⟦ t ⟧ₐ (ML.snd (ML.var ML.ze))
 ⟦ mkPair s t ⟧ₐ = ML.return (ML.mkPair ⟦ s ⟧ₐ ⟦ t ⟧ₐ)
+⟦ inj₁ t ⟧ₐ = ML.return (ML.inj₁ ⟦ t ⟧ₐ)
+⟦ inj₂ t ⟧ₐ = ML.return ((ML.inj₂ ⟦ t ⟧ₐ))
+⟦ case t₁ t₂ s ⟧ₐ = ML.bind ⟦ s ⟧ₐ (ML.case {! !} {!   !} (ML.var ML.ze)) -- again weakening required?
+
