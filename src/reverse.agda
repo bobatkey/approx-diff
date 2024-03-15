@@ -8,12 +8,12 @@ open import Data.Unit using (⊤; tt)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 
 open import join-semilattice
-  renaming (_=>_ to _=>J_; 𝟙 to 𝟙J; _⊕_ to _⊕J_; ⟨_,_⟩ to ⟨_,_⟩J;
+  renaming (_=>_ to _=>J_; 𝟙 to 𝟙J; _⊕_ to _⊕J_; ⟨_,_⟩ to ⟨_,_⟩J; [_,_] to [_,_]J;
             project₁ to project₁J; project₂ to project₂J;
             L to LJ; _∘_ to _∘J_; id to idJ)
   hiding (initial)
 open import meet-semilattice
-  renaming (_=>_ to _=>M_; 𝟙 to 𝟙M; _⊕_ to _⊕M_; ⟨_,_⟩ to ⟨_,_⟩M;
+  renaming (_=>_ to _=>M_; 𝟙 to 𝟙M; _⊕_ to _⊕M_; ⟨_,_⟩ to ⟨_,_⟩M; [_,_] to [_,_]M;
             project₁ to project₁M; project₂ to project₂M;
             inject₁ to inject₁M; inject₂ to inject₂M;
             L to LM; _∘_ to _∘M_; id to idM)
@@ -81,8 +81,6 @@ Disc-f f .func = f
 Disc-f f .fwd x = idM
 Disc-f f .bwd x = idJ
 
--- Disc preserves sums and products too
-
 -- Terminal Object
 ⊤ₐ : ApproxSet
 ⊤ₐ .elem = ⊤
@@ -93,6 +91,11 @@ terminal : ∀ {X} → X ⇒ ⊤ₐ
 terminal .func x = tt
 terminal .fwd x = meet-semilattice.terminal
 terminal .bwd x = join-semilattice.initial
+
+Disc-const : ∀ {A} → A → ⊤ₐ ⇒ Disc A
+Disc-const x .func tt = x
+Disc-const x .fwd tt = idM
+Disc-const x .bwd tt = idJ
 
 -- Products
 _⊗_ : ApproxSet → ApproxSet → ApproxSet
@@ -114,6 +117,18 @@ pair : ∀ {X Y Z} → X ⇒ Y → X ⇒ Z → X ⇒ (Y ⊗ Z)
 pair f g .func x = f .func x , g .func x
 pair f g .fwd x = ⟨ f .fwd x , g .fwd x ⟩M
 pair f g .bwd x = join-semilattice.[ f .bwd x , g .bwd x ]
+
+Disc-preserves-products : ∀ {A B} → Disc (A × B) ⇒ (Disc A ⊗ Disc B)
+Disc-preserves-products .func ab = ab
+Disc-preserves-products .fwd _ = ⟨ idM , idM ⟩M
+Disc-preserves-products .bwd _ = [ idJ , idJ ]J
+
+Disc-reflects-products : ∀ {A B} → (Disc A ⊗ Disc B) ⇒ Disc (A × B)
+Disc-reflects-products .func ab = ab
+Disc-reflects-products .fwd _ = [ idM , idM ]M
+Disc-reflects-products .bwd _ = ⟨ idJ , idJ ⟩J
+
+-- Disc preserves and reflects sums too
 
 -- Sums
 _+_ : ApproxSet → ApproxSet → ApproxSet
@@ -180,8 +195,6 @@ lambda m .bwd x = elim-⨁ _ _ _ λ y → project₁J ∘J m .bwd (x , y)
 ℒ-func f .func = f .func
 ℒ-func f .fwd x = meet-semilattice.L-func (f .fwd x)
 ℒ-func f .bwd x = join-semilattice.L-func (f .bwd x)
-
--- FIXME: strength
 
 ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
 ℒ-strength .func xy = xy

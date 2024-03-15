@@ -2,6 +2,8 @@
 
 module language where
 
+open import Data.Nat using (ℕ)
+
 data type : Set where
   unit num : type
   _`×_ _`⇒_ _`+_ : type → type → type
@@ -19,6 +21,10 @@ data _∋_ : ctxt → type → Set where
 
 data _⊢_ : ctxt → type → Set where
   var : ∀ {Γ τ} → Γ ∋ τ → Γ ⊢ τ
+
+  -- Natural numbers and some operations
+  nat : ∀ {Γ} → ℕ -> Γ ⊢ num
+  plus : ∀ {Γ} → Γ ⊢ lift num -> Γ ⊢ lift num -> Γ ⊢ lift num
 
   -- The sole value of the unit type
   unit : ∀ {Γ} → Γ ⊢ unit
@@ -54,8 +60,9 @@ data _⊢_ : ctxt → type → Set where
                      Γ ⊢ σ
 -}
 
+open import Data.Product using (_×_; _,_)
 open import reverse
-open import Data.Nat using (ℕ)
+open _⇒_
 
 ⟦_⟧ty : type → ApproxSet
 ⟦ unit ⟧ty = ⊤ₐ
@@ -73,9 +80,20 @@ open import Data.Nat using (ℕ)
 ⟦ ze ⟧var = π₂
 ⟦ su x ⟧var = ⟦ x ⟧var ∘ π₁
 
+let' : ∀ {Γ σ τ} -> ⟦ Γ ⟧ctxt ⇒ ℒ ⟦ σ ⟧ty -> (⟦ Γ ⟧ctxt ⊗ ⟦ σ ⟧ty) ⇒ ℒ ⟦ τ ⟧ty -> ⟦ Γ ⟧ctxt ⇒ ℒ ⟦ τ ⟧ty
+let' e e' = ((ℒ-join ∘ ℒ-func e') ∘ ℒ-strength) ∘ pair id e
+
+binOp : (ℕ -> ℕ -> ℕ) -> (Disc ℕ ⊗ Disc ℕ) ⇒ Disc ℕ
+binOp f = (Disc-f λ (x , y) -> f x y) ∘ Disc-reflects-products
+
 ⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
 ⟦ var x ⟧ = ⟦ x ⟧var
 ⟦ unit ⟧ = terminal
+⟦ nat n ⟧ = Disc-const n ∘ terminal
+⟦ plus {Γ} s t ⟧ =
+  let' {Γ} {num} {num} ⟦ s ⟧
+  (let' {Γ -, num} {num} {num} (⟦ t ⟧ ∘ π₁)
+  (ℒ-unit ∘ (binOp Data.Nat._+_ ∘ pair (π₂ ∘ π₁) π₂)))
 ⟦ lam t ⟧ = lambda ⟦ t ⟧
 ⟦ app s t ⟧ = eval ∘ pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ fst t ⟧ = π₁ ∘ ⟦ t ⟧
@@ -85,4 +103,4 @@ open import Data.Nat using (ℕ)
 ⟦ inj₂ t ⟧ = inr ∘ ⟦ t ⟧
 ⟦ _⊢_.case t₁ t₂ s ⟧ = reverse.case ⟦ t₁ ⟧ ⟦ t₂ ⟧ ∘ pair id ⟦ s ⟧
 ⟦ return t ⟧ = ℒ-unit ∘ ⟦ t ⟧
-⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-func ⟦ t ⟧) ∘ ℒ-strength) ∘ (pair id ⟦ s ⟧)
+⟦ bind {Γ} {σ} {τ} s t ⟧ = let' {Γ} {σ} {τ} ⟦ s ⟧ ⟦ t ⟧
