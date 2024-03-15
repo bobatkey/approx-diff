@@ -70,6 +70,8 @@ _∘_ : ∀ {X Y Z} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
 (f ∘ g) .fwd x = f .fwd (g .func x) ∘M g .fwd x
 (f ∘ g) .bwd x = g .bwd x ∘J f .bwd (g .func x)
 
+infixr 10 _∘_
+
 -- Any old set becomes a “discrete” object
 Disc : Set → ApproxSet
 Disc A .elem = A
@@ -148,13 +150,13 @@ inr .func = inj₂
 inr .fwd y = idM
 inr .bwd y = idJ
 
-case : ∀ {W X Y Z} → (W ⊗ X) ⇒ Z → (W ⊗ Y) ⇒ Z → (W ⊗ (X + Y)) ⇒ Z
-case m₁ m₂ .func (w , inj₁ x) = m₁ .func (w , x)
-case m₁ m₂ .func (w , inj₂ y) = m₂ .func (w , y)
-case m₁ m₂ .fwd (w , inj₁ x) = m₁ .fwd (w , x)
-case m₁ m₂ .fwd (w , inj₂ y) = m₂ .fwd (w , y)
-case m₁ m₂ .bwd (w , inj₁ x) = m₁ .bwd (w , x)
-case m₁ m₂ .bwd (w , inj₂ y) = m₂ .bwd (w , y)
+[_,_] : ∀ {W X Y Z} → (W ⊗ X) ⇒ Z → (W ⊗ Y) ⇒ Z → (W ⊗ (X + Y)) ⇒ Z
+[_,_] m₁ m₂ .func (w , inj₁ x) = m₁ .func (w , x)
+[_,_] m₁ m₂ .func (w , inj₂ y) = m₂ .func (w , y)
+[_,_] m₁ m₂ .fwd (w , inj₁ x) = m₁ .fwd (w , x)
+[_,_] m₁ m₂ .fwd (w , inj₂ y) = m₂ .fwd (w , y)
+[_,_] m₁ m₂ .bwd (w , inj₁ x) = m₁ .bwd (w , x)
+[_,_] m₁ m₂ .bwd (w , inj₂ y) = m₂ .bwd (w , y)
 
 -- Functions
 _⊸_ : ApproxSet → ApproxSet → ApproxSet
