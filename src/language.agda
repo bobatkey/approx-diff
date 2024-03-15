@@ -2,8 +2,7 @@
 
 module language where
 
-open import Data.Bool using (Bool; if_then_else_)
-open import Data.Nat using (ℕ; _≟_)
+open import Data.Nat using (ℕ)
 
 data type : Set where
   unit num : type
