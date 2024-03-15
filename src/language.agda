@@ -63,6 +63,12 @@ data _⊢_ : ctxt → type → Set where
 -}
 
 open import Data.Product using (_×_; _,_)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Data.Unit using (⊤; tt)
+open import Relation.Binary using (DecidableEquality)
+open import Relation.Nullary
+open import join-semilattice hiding (_∘_; initial) renaming (id to idJ)
+open import meet-semilattice hiding (_∘_; terminal) renaming (id to idM)
 open import reverse
 open _⇒_
 
@@ -87,6 +93,17 @@ let' e e' = ((ℒ-join ∘ ℒ-func e') ∘ ℒ-strength) ∘ pair id e
 
 binOp : (ℕ -> ℕ -> ℕ) -> (Disc ℕ ⊗ Disc ℕ) ⇒ Disc ℕ
 binOp f = (Disc-f λ (x , y) -> f x y) ∘ Disc-reflects-products
+
+binPred : ∀ {A : Set} -> DecidableEquality A -> Disc (A × A) ⇒ (⊤ₐ + ⊤ₐ)
+binPred _∼_ .func (n , m) with n ∼ m
+... | yes _ = inj₁ tt
+... | no _ = inj₂ tt
+binPred _∼_ .fwd (n , m) with n ∼ m
+... | yes _ = idM
+... | no _ = idM
+binPred _∼_ .bwd (n , m) with n ∼ m
+... | yes _ = idJ
+... | no _ = idJ
 
 ⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
 ⟦ var x ⟧ = ⟦ x ⟧var
