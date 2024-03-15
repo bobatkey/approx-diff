@@ -6,6 +6,7 @@ open import Data.Nat using (ℕ)
 
 data type : Set where
   unit num : type
+  _`×_ _`⇒_ _`+_ : type → type → type
 
 infix 4 _∋_ _⊢_
 
@@ -26,21 +27,30 @@ data _⊢_ : ctxt → type → Set where
   -- The sole value of the unit type
   unit : ∀ {Γ} → Γ ⊢ unit
 
+  -- lambda and application
+  lam : ∀ {Γ σ τ} → Γ -, σ ⊢ τ → Γ ⊢ σ `⇒ τ
+  app : ∀ {Γ σ τ} → Γ ⊢ σ `⇒ τ → Γ ⊢ σ → Γ ⊢ τ
+
 import language as ML
 
 ⟦_⟧ₐty : type → ML.type
-⟦ unit ⟧ₐty = ML.unit -- should probably be lifted
-⟦ num ⟧ₐty = ML.lift ML.num
+⟦ unit ⟧ₐty = ML.unit
+⟦ num ⟧ₐty = ML.num
+⟦ σ `× τ ⟧ₐty = {!    !}
+⟦ σ `⇒ τ ⟧ₐty = ML.lift ⟦ σ ⟧ₐty ML.`⇒ ML.lift ⟦ τ ⟧ₐty
+⟦ σ `+ τ ⟧ₐty = {!   !}
 
 ⟦_⟧ₐctxt : ctxt → ML.ctxt
 ⟦ ε ⟧ₐctxt      = ML.ε
-⟦ Γ -, τ ⟧ₐctxt = ⟦ Γ ⟧ₐctxt ML.-, ⟦ τ ⟧ₐty
+⟦ Γ -, τ ⟧ₐctxt = ⟦ Γ ⟧ₐctxt ML.-, ML.lift ⟦ τ ⟧ₐty
 
-⟦_⟧ₐ∋ : ∀ {Γ σ} → Γ ∋ σ → ⟦ Γ ⟧ₐctxt ML.∋ ⟦ σ ⟧ₐty
+⟦_⟧ₐ∋ : ∀ {Γ σ} → Γ ∋ σ → ⟦ Γ ⟧ₐctxt ML.∋ ML.lift ⟦ σ ⟧ₐty
 ⟦ ze ⟧ₐ∋ = ML.ze
 ⟦ su x ⟧ₐ∋ = ML.su ⟦ x ⟧ₐ∋
 
-⟦_⟧ₐ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ₐctxt ML.⊢ ⟦ τ ⟧ₐty
+⟦_⟧ₐ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ₐctxt ML.⊢ ML.lift ⟦ τ ⟧ₐty
 ⟦ var x ⟧ₐ = ML.var ⟦ x ⟧ₐ∋
+⟦ unit ⟧ₐ = ML.return ML.unit
 ⟦ nat n ⟧ₐ = ML.return (ML.nat n)
-⟦ unit ⟧ₐ = ML.unit
+⟦ lam t ⟧ₐ = ML.return (ML.lam ⟦ t ⟧ₐ)
+⟦ app s t ⟧ₐ = ML.bind ⟦ s ⟧ₐ (ML.app (ML.var ML.ze) {!   !}) -- some sort of weakening of t required?
