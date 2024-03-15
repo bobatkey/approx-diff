@@ -106,6 +106,6 @@ binOp f = (Disc-f λ (x , y) -> f x y) ∘ Disc-reflects-products
 ⟦ mkPair s t ⟧ = pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ inj₁ t ⟧ = inl ∘ ⟦ t ⟧
 ⟦ inj₂ t ⟧ = inr ∘ ⟦ t ⟧
-⟦ _⊢_.case t₁ t₂ s ⟧ = reverse.case ⟦ t₁ ⟧ ⟦ t₂ ⟧ ∘ pair id ⟦ s ⟧
+⟦ case t₁ t₂ s ⟧ = reverse.case ⟦ t₁ ⟧ ⟦ t₂ ⟧ ∘ pair id ⟦ s ⟧
 ⟦ return t ⟧ = ℒ-unit ∘ ⟦ t ⟧
 ⟦ bind {Γ} {σ} {τ} s t ⟧ = let' {Γ} {σ} {τ} ⟦ s ⟧ ⟦ t ⟧
