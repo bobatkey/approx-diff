@@ -44,7 +44,7 @@ data _⊢_ : ctxt → type → Set where
 open import language renaming (
   type to typeₘₗ; ctxt to ctxtₘₗ; _∋_ to _∋ₘₗ_; _⊢_ to _⊢ₘₗ_;
   ε to εₘₗ; _-,_ to _-,ₘₗ_; ze to zeₘₗ; su to suₘₗ;
-  unit to unitₘₗ; num to numₘₗ; _`×_ to _`×ₘₗ_; _`⇒_ to _`⇒ₘₗ_; _`+_ to _`+ₘₗ_; lift to liftₘₗ;
+  unit to unitₘₗ; num to numₘₗ; _`×_ to _`×ₘₗ_; _`⇒_ to _`⇒ₘₗ_; _`+_ to _`+ₘₗ_;
   var to varₘₗ; nat to natₘₗ; lam to lamₘₗ; app to appₘₗ;
   fst to fstₘₗ; snd to sndₘₗ; mkPair to mkPairₘₗ; inj₁ to inj₁ₘₗ; inj₂ to inj₂ₘₗ; case to caseₘₗ
   )
@@ -52,19 +52,19 @@ open import language renaming (
 ⟦_⟧ₐty : type → typeₘₗ
 ⟦ unit ⟧ₐty = unitₘₗ
 ⟦ num ⟧ₐty = numₘₗ
-⟦ σ `× τ ⟧ₐty = liftₘₗ ⟦ σ ⟧ₐty `×ₘₗ liftₘₗ ⟦ τ ⟧ₐty
-⟦ σ `⇒ τ ⟧ₐty = liftₘₗ ⟦ σ ⟧ₐty `⇒ₘₗ liftₘₗ ⟦ τ ⟧ₐty
-⟦ σ `+ τ ⟧ₐty = liftₘₗ ⟦ σ ⟧ₐty `+ₘₗ liftₘₗ ⟦ τ ⟧ₐty
+⟦ σ `× τ ⟧ₐty = lift ⟦ σ ⟧ₐty `×ₘₗ lift ⟦ τ ⟧ₐty
+⟦ σ `⇒ τ ⟧ₐty = lift ⟦ σ ⟧ₐty `⇒ₘₗ lift ⟦ τ ⟧ₐty
+⟦ σ `+ τ ⟧ₐty = lift ⟦ σ ⟧ₐty `+ₘₗ lift ⟦ τ ⟧ₐty
 
 ⟦_⟧ₐctxt : ctxt → ctxtₘₗ
 ⟦ ε ⟧ₐctxt = εₘₗ
-⟦ Γ -, τ ⟧ₐctxt = ⟦ Γ ⟧ₐctxt -,ₘₗ liftₘₗ ⟦ τ ⟧ₐty
+⟦ Γ -, τ ⟧ₐctxt = ⟦ Γ ⟧ₐctxt -,ₘₗ lift ⟦ τ ⟧ₐty
 
-⟦_⟧ₐvar : ∀ {Γ σ} → Γ ∋ σ → ⟦ Γ ⟧ₐctxt ∋ₘₗ liftₘₗ ⟦ σ ⟧ₐty
+⟦_⟧ₐvar : ∀ {Γ σ} → Γ ∋ σ → ⟦ Γ ⟧ₐctxt ∋ₘₗ lift ⟦ σ ⟧ₐty
 ⟦ ze ⟧ₐvar = zeₘₗ
 ⟦ su x ⟧ₐvar = suₘₗ ⟦ x ⟧ₐvar
 
-⟦_⟧ₐ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ₐctxt ⊢ₘₗ liftₘₗ ⟦ τ ⟧ₐty
+⟦_⟧ₐ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ₐctxt ⊢ₘₗ lift ⟦ τ ⟧ₐty
 ⟦ var x ⟧ₐ = varₘₗ ⟦ x ⟧ₐvar
 ⟦ unit ⟧ₐ = return unitₘₗ
 ⟦ nat n ⟧ₐ = return (natₘₗ n)
