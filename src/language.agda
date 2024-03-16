@@ -23,8 +23,8 @@ data _⊢_ : ctxt → type → Set where
   var : ∀ {Γ τ} → Γ ∋ τ → Γ ⊢ τ
 
   -- Natural numbers and some operations
-  nat : ∀ {Γ} → ℕ -> Γ ⊢ num
-  plus : ∀ {Γ} → Γ ⊢ num -> Γ ⊢ num -> Γ ⊢ num
+  nat : ∀ {Γ} → ℕ → Γ ⊢ num
+  plus : ∀ {Γ} → Γ ⊢ num → Γ ⊢ num → Γ ⊢ num
 
   -- The sole value of the unit type
   unit : ∀ {Γ} → Γ ⊢ unit
@@ -80,8 +80,8 @@ open _⇒_
 ⟦ ze ⟧var = π₂
 ⟦ su x ⟧var = ⟦ x ⟧var ∘ π₁
 
-binOp : (ℕ -> ℕ -> ℕ) -> (Disc ℕ ⊗ Disc ℕ) ⇒ Disc ℕ
-binOp f = (Disc-f λ (x , y) -> f x y) ∘ Disc-reflects-products
+binOp : (ℕ → ℕ → ℕ) → (Disc ℕ ⊗ Disc ℕ) ⇒ Disc ℕ
+binOp f = (Disc-f λ (x , y) → f x y) ∘ Disc-reflects-products
 
 ⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
 ⟦ var x ⟧ = ⟦ x ⟧var
@@ -101,7 +101,7 @@ binOp f = (Disc-f λ (x , y) -> f x y) ∘ Disc-reflects-products
 
 -- A renaming is a context morphism
 Ren : ctxt → ctxt → Set
-Ren Γ Γ' = ∀ {τ} -> Γ ∋ τ → Γ' ∋ τ
+Ren Γ Γ' = ∀ {τ} → Γ ∋ τ → Γ' ∋ τ
 
 -- Push a renaming under a context extension.
 ext : ∀ {Γ Γ' τ} → Ren Γ Γ' → Ren (Γ -, τ) (Γ' -, τ)
@@ -112,7 +112,7 @@ weaken : ∀ {Γ τ} → Ren Γ (Γ -, τ)
 weaken ze = su ze
 weaken (su x) = su (weaken x)
 
-_*_ : ∀ {Γ Γ' τ} -> Ren Γ Γ' → Γ ⊢ τ → Γ' ⊢ τ
+_*_ : ∀ {Γ Γ' τ} → Ren Γ Γ' → Γ ⊢ τ → Γ' ⊢ τ
 ρ * var x = var (ρ x)
 ρ * nat n = nat n
 ρ * plus s t = plus (ρ * s) (ρ * t)

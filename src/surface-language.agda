@@ -22,7 +22,7 @@ data _⊢_ : ctxt → type → Set where
   var : ∀ {Γ τ} → Γ ∋ τ → Γ ⊢ τ
 
   -- Natural numbers and some operations
-  nat : ∀ {Γ} → ℕ -> Γ ⊢ num
+  nat : ∀ {Γ} → ℕ → Γ ⊢ num
 
   -- The sole value of the unit type
   unit : ∀ {Γ} → Γ ⊢ unit
