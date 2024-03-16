@@ -41,6 +41,32 @@ data _⊢_ : ctxt → type → Set where
   inj₂ : ∀ {Γ σ τ} → Γ ⊢ τ → Γ ⊢ σ `+ τ
   case : ∀ {Γ ρ σ τ} → Γ -, σ ⊢ ρ → Γ -, τ ⊢ ρ → Γ ⊢ σ `+ τ → Γ ⊢ ρ
 
+-- A renaming is a context morphism
+Ren : ctxt → ctxt → Set
+Ren Γ Γ' = ∀ {τ} -> Γ ∋ τ → Γ' ∋ τ
+
+-- Extend a renaming with an identity maplet.
+ext : ∀ {Γ Γ' τ} → Ren Γ Γ' → Ren (Γ -, τ) (Γ' -, τ)
+ext ρ ze = ze
+ext ρ (su x) = su (ρ x)
+
+weaken : ∀ {Γ τ} → Ren Γ (Γ -, τ)
+weaken {Γ} {τ} ze = su ze
+weaken (su x) = su (weaken x)
+
+_*_ : ∀ {Γ Γ' τ} -> Ren Γ Γ' → Γ ⊢ τ → Γ' ⊢ τ
+ρ * var x = var (ρ x)
+ρ * nat n = nat n
+ρ * unit = unit
+ρ * (lam t) = lam (ext ρ * t)
+ρ * app s t = app (ρ * s) (ρ * t)
+ρ * fst t = fst (ρ * t)
+ρ * snd t = snd (ρ * t)
+ρ * mkPair s t = mkPair (ρ * s) (ρ * t)
+ρ * inj₁ t = inj₁ (ρ * t)
+ρ * inj₂ t = inj₂ (ρ * t)
+ρ * (case t₁ t₂ s) = case (ext ρ * t₁) (ext ρ * t₂) (ρ * s)
+
 import language as ML
 
 ⟦_⟧ₐty : type → ML.type
@@ -63,10 +89,10 @@ import language as ML
 ⟦ unit ⟧ₐ = ML.return ML.unit
 ⟦ nat n ⟧ₐ = ML.return (ML.nat n)
 ⟦ lam t ⟧ₐ = ML.return (ML.lam ⟦ t ⟧ₐ)
-⟦ app s t ⟧ₐ = ML.bind ⟦ s ⟧ₐ (ML.app (ML.var ML.ze) (ML.weaken ⟦ t ⟧ₐ))
+⟦ app s t ⟧ₐ = ML.bind ⟦ s ⟧ₐ (ML.app (ML.var ML.ze) {!   !})
 ⟦ fst t ⟧ₐ = ML.bind ⟦ t ⟧ₐ (ML.fst (ML.var ML.ze))
 ⟦ snd t ⟧ₐ = ML.bind ⟦ t ⟧ₐ (ML.snd (ML.var ML.ze))
 ⟦ mkPair s t ⟧ₐ = ML.return (ML.mkPair ⟦ s ⟧ₐ ⟦ t ⟧ₐ)
 ⟦ inj₁ t ⟧ₐ = ML.return (ML.inj₁ ⟦ t ⟧ₐ)
 ⟦ inj₂ t ⟧ₐ = ML.return ((ML.inj₂ ⟦ t ⟧ₐ))
-⟦ case t₁ t₂ s ⟧ₐ = ML.bind ⟦ s ⟧ₐ (ML.case {!   !} ({!   !}) (ML.var ML.ze)) -- again weakening required?
+⟦ case t₁ t₂ s ⟧ₐ = ML.bind ⟦ s ⟧ₐ (ML.case {!   !} ({!   !}) (ML.var ML.ze))
