@@ -117,7 +117,7 @@ _*_ : ∀ {Γ Γ' τ} → Ren Γ Γ' → Γ ⊢ τ → Γ' ⊢ τ
 ρ * nat n = nat n
 ρ * plus s t = plus (ρ * s) (ρ * t)
 ρ * unit = unit
-ρ * (lam t) = lam (ext ρ * t)
+ρ * lam t = lam (ext ρ * t)
 ρ * app s t = app (ρ * s) (ρ * t)
 ρ * fst t = fst (ρ * t)
 ρ * snd t = snd (ρ * t)
