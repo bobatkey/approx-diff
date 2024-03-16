@@ -124,6 +124,6 @@ _*_ : ∀ {Γ Γ' τ} -> Ren Γ Γ' → Γ ⊢ τ → Γ' ⊢ τ
 ρ * mkPair s t = mkPair (ρ * s) (ρ * t)
 ρ * inj₁ t = inj₁ (ρ * t)
 ρ * inj₂ t = inj₂ (ρ * t)
-ρ * (_⊢_.case t₁ t₂ s) = _⊢_.case (ext ρ * t₁) (ext ρ * t₂) (ρ * s)
+ρ * case t₁ t₂ s = case (ext ρ * t₁) (ext ρ * t₂) (ρ * s)
 ρ * return t = return (ρ * t)
 ρ * bind s t = bind (ρ * s) (ext ρ * t)
