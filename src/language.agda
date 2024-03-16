@@ -104,3 +104,32 @@ binOp f = (Disc-f λ (x , y) -> f x y) ∘ Disc-reflects-products
 ⟦ case t₁ t₂ s ⟧ = reverse.case ⟦ t₁ ⟧ ⟦ t₂ ⟧ ∘ pair id ⟦ s ⟧
 ⟦ return t ⟧ = ℒ-unit ∘ ⟦ t ⟧
 ⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-func ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id ⟦ s ⟧
+
+-- A renaming is a context morphism
+Ren : ctxt → ctxt → Set
+Ren Γ Γ' = ∀ {τ} -> Γ ∋ τ → Γ' ∋ τ
+
+-- Extend a renaming with an identity maplet.
+ext : ∀ {Γ Γ' τ} → Ren Γ Γ' → Ren (Γ -, τ) (Γ' -, τ)
+ext ρ ze = ze
+ext ρ (su x) = su (ρ x)
+
+weaken : ∀ {Γ τ} → Ren Γ (Γ -, τ)
+weaken ze = su ze
+weaken (su x) = su (weaken x)
+
+_*_ : ∀ {Γ Γ' τ} -> Ren Γ Γ' → Γ ⊢ τ → Γ' ⊢ τ
+ρ * var x = var (ρ x)
+ρ * nat n = nat n
+ρ * plus s t = plus (ρ * s) (ρ * t)
+ρ * unit = unit
+ρ * (lam t) = lam (ext ρ * t)
+ρ * app s t = app (ρ * s) (ρ * t)
+ρ * fst t = fst (ρ * t)
+ρ * snd t = snd (ρ * t)
+ρ * mkPair s t = mkPair (ρ * s) (ρ * t)
+ρ * inj₁ t = inj₁ (ρ * t)
+ρ * inj₂ t = inj₂ (ρ * t)
+ρ * (_⊢_.case t₁ t₂ s) = _⊢_.case (ext ρ * t₁) (ext ρ * t₂) (ρ * s)
+ρ * return t = return (ρ * t)
+ρ * bind s t = bind (ρ * s) (ext ρ * t)
