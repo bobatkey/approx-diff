@@ -109,7 +109,7 @@ binOp f = (Disc-f λ (x , y) -> f x y) ∘ Disc-reflects-products
 Ren : ctxt → ctxt → Set
 Ren Γ Γ' = ∀ {τ} -> Γ ∋ τ → Γ' ∋ τ
 
--- Extend a renaming with an identity maplet.
+-- Push a renaming under a context extension.
 ext : ∀ {Γ Γ' τ} → Ren Γ Γ' → Ren (Γ -, τ) (Γ' -, τ)
 ext ρ ze = ze
 ext ρ (su x) = su (ρ x)
