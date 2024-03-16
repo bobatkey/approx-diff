@@ -61,12 +61,6 @@ data _⊢_ : ctxt → type → Set where
 -}
 
 open import Data.Product using (_×_; _,_)
-open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Data.Unit using (⊤; tt)
-open import Relation.Binary using (DecidableEquality)
-open import Relation.Nullary
-open import join-semilattice hiding (_∘_; initial) renaming (id to idJ)
-open import meet-semilattice hiding (_∘_; terminal) renaming (id to idM)
 open import reverse
 open _⇒_
 
@@ -101,7 +95,7 @@ binOp f = (Disc-f λ (x , y) -> f x y) ∘ Disc-reflects-products
 ⟦ mkPair s t ⟧ = pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ inj₁ t ⟧ = inl ∘ ⟦ t ⟧
 ⟦ inj₂ t ⟧ = inr ∘ ⟦ t ⟧
-⟦ case t₁ t₂ s ⟧ = reverse.case ⟦ t₁ ⟧ ⟦ t₂ ⟧ ∘ pair id ⟦ s ⟧
+⟦ case t₁ t₂ s ⟧ = [ ⟦ t₁ ⟧ , ⟦ t₂ ⟧ ] ∘ pair id ⟦ s ⟧
 ⟦ return t ⟧ = ℒ-unit ∘ ⟦ t ⟧
 ⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-func ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id ⟦ s ⟧
 
