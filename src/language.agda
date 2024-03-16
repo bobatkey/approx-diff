@@ -24,7 +24,7 @@ data _⊢_ : ctxt → type → Set where
 
   -- Natural numbers and some operations
   nat : ∀ {Γ} → ℕ -> Γ ⊢ num
-  plus : ∀ {Γ} → Γ ⊢ lift num -> Γ ⊢ lift num -> Γ ⊢ lift num
+  plus : ∀ {Γ} → Γ ⊢ num -> Γ ⊢ num -> Γ ⊢ num
 
   -- The sole value of the unit type
   unit : ∀ {Γ} → Γ ⊢ unit
@@ -80,9 +80,6 @@ open _⇒_
 ⟦ ze ⟧var = π₂
 ⟦ su x ⟧var = ⟦ x ⟧var ∘ π₁
 
-let' : ∀ {Γ σ τ} -> ⟦ Γ ⟧ctxt ⇒ ℒ ⟦ σ ⟧ty -> (⟦ Γ ⟧ctxt ⊗ ⟦ σ ⟧ty) ⇒ ℒ ⟦ τ ⟧ty -> ⟦ Γ ⟧ctxt ⇒ ℒ ⟦ τ ⟧ty
-let' e e' = ((ℒ-join ∘ ℒ-func e') ∘ ℒ-strength) ∘ pair id e
-
 binOp : (ℕ -> ℕ -> ℕ) -> (Disc ℕ ⊗ Disc ℕ) ⇒ Disc ℕ
 binOp f = (Disc-f λ (x , y) -> f x y) ∘ Disc-reflects-products
 
@@ -90,10 +87,7 @@ binOp f = (Disc-f λ (x , y) -> f x y) ∘ Disc-reflects-products
 ⟦ var x ⟧ = ⟦ x ⟧var
 ⟦ unit ⟧ = terminal
 ⟦ nat n ⟧ = Disc-const n ∘ terminal
-⟦ plus {Γ} s t ⟧ =
-  let' {Γ} {num} {num} ⟦ s ⟧
-  (let' {Γ -, num} {num} {num} (⟦ t ⟧ ∘ π₁)
-  (ℒ-unit ∘ (binOp Data.Nat._+_ ∘ pair (π₂ ∘ π₁) π₂)))
+⟦ plus s t ⟧ = binOp Data.Nat._+_ ∘ pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ lam t ⟧ = lambda ⟦ t ⟧
 ⟦ app s t ⟧ = eval ∘ pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ fst t ⟧ = π₁ ∘ ⟦ t ⟧
@@ -103,4 +97,33 @@ binOp f = (Disc-f λ (x , y) -> f x y) ∘ Disc-reflects-products
 ⟦ inj₂ t ⟧ = inr ∘ ⟦ t ⟧
 ⟦ case t₁ t₂ s ⟧ = [ ⟦ t₁ ⟧ , ⟦ t₂ ⟧ ] ∘ pair id ⟦ s ⟧
 ⟦ return t ⟧ = ℒ-unit ∘ ⟦ t ⟧
-⟦ bind {Γ} {σ} {τ} s t ⟧ = let' {Γ} {σ} {τ} ⟦ s ⟧ ⟦ t ⟧
+⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-func ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id ⟦ s ⟧
+
+-- A renaming is a context morphism
+Ren : ctxt → ctxt → Set
+Ren Γ Γ' = ∀ {τ} -> Γ ∋ τ → Γ' ∋ τ
+
+-- Push a renaming under a context extension.
+ext : ∀ {Γ Γ' τ} → Ren Γ Γ' → Ren (Γ -, τ) (Γ' -, τ)
+ext ρ ze = ze
+ext ρ (su x) = su (ρ x)
+
+weaken : ∀ {Γ τ} → Ren Γ (Γ -, τ)
+weaken ze = su ze
+weaken (su x) = su (weaken x)
+
+_*_ : ∀ {Γ Γ' τ} -> Ren Γ Γ' → Γ ⊢ τ → Γ' ⊢ τ
+ρ * var x = var (ρ x)
+ρ * nat n = nat n
+ρ * plus s t = plus (ρ * s) (ρ * t)
+ρ * unit = unit
+ρ * (lam t) = lam (ext ρ * t)
+ρ * app s t = app (ρ * s) (ρ * t)
+ρ * fst t = fst (ρ * t)
+ρ * snd t = snd (ρ * t)
+ρ * mkPair s t = mkPair (ρ * s) (ρ * t)
+ρ * inj₁ t = inj₁ (ρ * t)
+ρ * inj₂ t = inj₂ (ρ * t)
+ρ * (_⊢_.case t₁ t₂ s) = _⊢_.case (ext ρ * t₁) (ext ρ * t₂) (ρ * s)
+ρ * return t = return (ρ * t)
+ρ * bind s t = bind (ρ * s) (ext ρ * t)

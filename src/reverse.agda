@@ -5,6 +5,7 @@ module reverse where
 open import Level
 open import Data.Product using (proj₁; proj₂; _×_; _,_)
 open import Data.Unit using (⊤; tt)
+open import Data.Empty using (⊥)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 
 open import join-semilattice
@@ -131,6 +132,17 @@ Disc-reflects-products .fwd _ = [ idM , idM ]M
 Disc-reflects-products .bwd _ = ⟨ idJ , idJ ⟩J
 
 -- Disc preserves and reflects sums too
+
+-- Initial object
+⊥ₐ : ApproxSet
+⊥ₐ .elem = ⊥
+⊥ₐ .rapprox ()
+⊥ₐ .fapprox ()
+
+initial : ∀ {X} → ⊥ₐ ⇒ X
+initial .func ()
+initial .fwd ()
+initial .bwd ()
 
 -- Sums
 _+_ : ApproxSet → ApproxSet → ApproxSet
