@@ -60,12 +60,12 @@ open import language renaming (
 ⟦ ε ⟧ₐctxt = εₘₗ
 ⟦ Γ -, τ ⟧ₐctxt = ⟦ Γ ⟧ₐctxt -,ₘₗ liftₘₗ ⟦ τ ⟧ₐty
 
-⟦_⟧ₐ∋ : ∀ {Γ σ} → Γ ∋ σ → ⟦ Γ ⟧ₐctxt ∋ₘₗ liftₘₗ ⟦ σ ⟧ₐty
-⟦ ze ⟧ₐ∋ = zeₘₗ
-⟦ su x ⟧ₐ∋ = suₘₗ ⟦ x ⟧ₐ∋
+⟦_⟧ₐvar : ∀ {Γ σ} → Γ ∋ σ → ⟦ Γ ⟧ₐctxt ∋ₘₗ liftₘₗ ⟦ σ ⟧ₐty
+⟦ ze ⟧ₐvar = zeₘₗ
+⟦ su x ⟧ₐvar = suₘₗ ⟦ x ⟧ₐvar
 
 ⟦_⟧ₐ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ₐctxt ⊢ₘₗ liftₘₗ ⟦ τ ⟧ₐty
-⟦ var x ⟧ₐ = varₘₗ ⟦ x ⟧ₐ∋
+⟦ var x ⟧ₐ = varₘₗ ⟦ x ⟧ₐvar
 ⟦ unit ⟧ₐ = return unitₘₗ
 ⟦ nat n ⟧ₐ = return (natₘₗ n)
 ⟦ lam t ⟧ₐ = return (lamₘₗ ⟦ t ⟧ₐ)
