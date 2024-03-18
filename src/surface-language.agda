@@ -74,7 +74,7 @@ open import language renaming (
 ⟦ times s t ⟧ₐ =
   bind ⟦ s ⟧ₐ
   (caseₘₗ
-    (return (natₘₗ 0)) -- ignore second argument if first is zero
+    (return (natₘₗ 0)) -- ignore t if s is zero
     (bind (weaken * (weaken * ⟦ t ⟧ₐ)) (return (timesₘₗ (varₘₗ (suₘₗ (suₘₗ zeₘₗ))) (varₘₗ zeₘₗ))))
     (eqₘₗ (varₘₗ zeₘₗ) (natₘₗ 0)))
 ⟦ lam t ⟧ₐ = return (lamₘₗ ⟦ t ⟧ₐ)
