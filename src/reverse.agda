@@ -7,6 +7,8 @@ open import Data.Product using (proj₁; proj₂; _×_; _,_)
 open import Data.Unit using (⊤; tt)
 open import Data.Empty using (⊥)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Relation.Binary using (Decidable; Rel)
+open import Relation.Nullary
 
 open import join-semilattice
   renaming (_=>_ to _=>J_; 𝟙 to 𝟙J; _⊕_ to _⊕J_; ⟨_,_⟩ to ⟨_,_⟩J; [_,_] to [_,_]J;
@@ -169,6 +171,18 @@ inr .bwd y = idJ
 [_,_] m₁ m₂ .fwd (w , inj₂ y) = m₂ .fwd (w , y)
 [_,_] m₁ m₂ .bwd (w , inj₁ x) = m₁ .bwd (w , x)
 [_,_] m₁ m₂ .bwd (w , inj₂ y) = m₂ .bwd (w , y)
+
+-- Helper for binary predicate over a set
+binPred : ∀ {ℓ A} {_∼_ : Rel A ℓ} → Decidable _∼_ → Disc (A × A) ⇒ (⊤ₐ + ⊤ₐ)
+binPred _∼_ .func (n , m) with n ∼ m
+... | yes _ = inj₁ tt
+... | no _ = inj₂ tt
+binPred _∼_ .fwd (n , m) with n ∼ m
+... | yes _ = idM
+... | no _ = idM
+binPred _∼_ .bwd (n , m) with n ∼ m
+... | yes _ = idJ
+... | no _ = idJ
 
 -- Functions
 _⊸_ : ApproxSet → ApproxSet → ApproxSet

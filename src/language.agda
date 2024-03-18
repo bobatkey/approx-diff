@@ -2,7 +2,7 @@
 
 module language where
 
-open import Data.Nat using (ℕ)
+open import Data.Nat using (ℕ; _≟_)
 
 data type : Set where
   unit num : type
@@ -22,12 +22,14 @@ data _∋_ : ctxt → type → Set where
 data _⊢_ : ctxt → type → Set where
   var : ∀ {Γ τ} → Γ ∋ τ → Γ ⊢ τ
 
+  -- The sole value of the unit type
+  unit : ∀ {Γ} → Γ ⊢ unit
+
   -- Natural numbers and some operations
   nat : ∀ {Γ} → ℕ → Γ ⊢ num
   plus : ∀ {Γ} → Γ ⊢ num → Γ ⊢ num → Γ ⊢ num
-
-  -- The sole value of the unit type
-  unit : ∀ {Γ} → Γ ⊢ unit
+  times : ∀ {Γ} → Γ ⊢ num → Γ ⊢ num → Γ ⊢ num
+  eq : ∀ {Γ} → Γ ⊢ num → Γ ⊢ num → Γ ⊢ unit `+ unit
 
   -- lambda and application
   lam : ∀ {Γ σ τ} → Γ -, σ ⊢ τ → Γ ⊢ σ `⇒ τ
@@ -88,6 +90,8 @@ binOp f = (Disc-f λ (x , y) → f x y) ∘ Disc-reflects-products
 ⟦ unit ⟧ = terminal
 ⟦ nat n ⟧ = Disc-const n ∘ terminal
 ⟦ plus s t ⟧ = binOp Data.Nat._+_ ∘ pair ⟦ s ⟧ ⟦ t ⟧
+⟦ times s t ⟧ = binOp Data.Nat._*_ ∘ pair ⟦ s ⟧ ⟦ t ⟧
+⟦ eq s t ⟧ = (binPred _≟_ ∘ Disc-reflects-products) ∘ pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ lam t ⟧ = lambda ⟦ t ⟧
 ⟦ app s t ⟧ = eval ∘ pair ⟦ s ⟧ ⟦ t ⟧
 ⟦ fst t ⟧ = π₁ ∘ ⟦ t ⟧
@@ -116,6 +120,8 @@ _*_ : ∀ {Γ Γ' τ} → Ren Γ Γ' → Γ ⊢ τ → Γ' ⊢ τ
 ρ * var x = var (ρ x)
 ρ * nat n = nat n
 ρ * plus s t = plus (ρ * s) (ρ * t)
+ρ * times s t = times (ρ * s) (ρ * t)
+ρ * eq s t = eq (ρ * s) (ρ * t)
 ρ * unit = unit
 ρ * lam t = lam (ext ρ * t)
 ρ * app s t = app (ρ * s) (ρ * t)

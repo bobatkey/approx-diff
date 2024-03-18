@@ -21,11 +21,13 @@ data _∋_ : ctxt → type → Set where
 data _⊢_ : ctxt → type → Set where
   var : ∀ {Γ τ} → Γ ∋ τ → Γ ⊢ τ
 
-  -- Natural numbers and some operations
-  nat : ∀ {Γ} → ℕ → Γ ⊢ num
-
   -- The sole value of the unit type
   unit : ∀ {Γ} → Γ ⊢ unit
+
+  -- Natural numbers and some operations
+  nat : ∀ {Γ} → ℕ → Γ ⊢ num
+  plus : ∀ {Γ} → Γ ⊢ num → Γ ⊢ num → Γ ⊢ num
+  times : ∀ {Γ} → Γ ⊢ num → Γ ⊢ num → Γ ⊢ num
 
   -- lambda and application
   lam : ∀ {Γ σ τ} → Γ -, σ ⊢ τ → Γ ⊢ σ `⇒ τ
@@ -45,7 +47,7 @@ open import language renaming (
   type to typeₘₗ; ctxt to ctxtₘₗ; _∋_ to _∋ₘₗ_; _⊢_ to _⊢ₘₗ_;
   ε to εₘₗ; _-,_ to _-,ₘₗ_; ze to zeₘₗ; su to suₘₗ;
   unit to unitₘₗ; num to numₘₗ; _`×_ to _`×ₘₗ_; _`⇒_ to _`⇒ₘₗ_; _`+_ to _`+ₘₗ_;
-  var to varₘₗ; nat to natₘₗ; lam to lamₘₗ; app to appₘₗ;
+  var to varₘₗ; nat to natₘₗ; plus to plusₘₗ; times to timesₘₗ; eq to eqₘₗ; lam to lamₘₗ; app to appₘₗ;
   fst to fstₘₗ; snd to sndₘₗ; mkPair to mkPairₘₗ; inj₁ to inj₁ₘₗ; inj₂ to inj₂ₘₗ; case to caseₘₗ
   )
 
@@ -68,6 +70,13 @@ open import language renaming (
 ⟦ var x ⟧ₐ = varₘₗ ⟦ x ⟧ₐvar
 ⟦ unit ⟧ₐ = return unitₘₗ
 ⟦ nat n ⟧ₐ = return (natₘₗ n)
+⟦ plus s t ⟧ₐ = bind ⟦ s ⟧ₐ (bind (weaken * ⟦ t ⟧ₐ) (return (plusₘₗ (varₘₗ (suₘₗ zeₘₗ)) (varₘₗ zeₘₗ))))
+⟦ times s t ⟧ₐ =
+  bind ⟦ s ⟧ₐ
+  (caseₘₗ
+    (return (natₘₗ 0)) -- ignore t if s is zero
+    (bind (weaken * (weaken * ⟦ t ⟧ₐ)) (return (timesₘₗ (varₘₗ (suₘₗ (suₘₗ zeₘₗ))) (varₘₗ zeₘₗ))))
+    (eqₘₗ (varₘₗ zeₘₗ) (natₘₗ 0)))
 ⟦ lam t ⟧ₐ = return (lamₘₗ ⟦ t ⟧ₐ)
 ⟦ app s t ⟧ₐ = bind ⟦ s ⟧ₐ (appₘₗ (varₘₗ zeₘₗ) (weaken * ⟦ t ⟧ₐ))
 ⟦ fst t ⟧ₐ = bind ⟦ t ⟧ₐ (fstₘₗ (varₘₗ zeₘₗ))
