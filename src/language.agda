@@ -22,12 +22,12 @@ data _∋_ : ctxt → type → Set where
 data _⊢_ : ctxt → type → Set where
   var : ∀ {Γ τ} → Γ ∋ τ → Γ ⊢ τ
 
+  -- The sole value of the unit type
+  unit : ∀ {Γ} → Γ ⊢ unit
+
   -- Natural numbers and some operations
   nat : ∀ {Γ} → ℕ → Γ ⊢ num
   plus : ∀ {Γ} → Γ ⊢ num → Γ ⊢ num → Γ ⊢ num
-
-  -- The sole value of the unit type
-  unit : ∀ {Γ} → Γ ⊢ unit
 
   -- lambda and application
   lam : ∀ {Γ σ τ} → Γ -, σ ⊢ τ → Γ ⊢ σ `⇒ τ
