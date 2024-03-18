@@ -173,7 +173,7 @@ inr .bwd y = idJ
 [_,_] m₁ m₂ .bwd (w , inj₂ y) = m₂ .bwd (w , y)
 
 -- Helper for binary predicate over a set
-binPred : ∀ {A : Set} -> DecidableEquality A -> Disc (A × A) ⇒ (⊤ₐ + ⊤ₐ)
+binPred : ∀ {A : Set} → DecidableEquality A → Disc (A × A) ⇒ (⊤ₐ + ⊤ₐ)
 binPred _∼_ .func (n , m) with n ∼ m
 ... | yes _ = inj₁ tt
 ... | no _ = inj₂ tt
