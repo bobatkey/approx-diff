@@ -47,7 +47,7 @@ open import language renaming (
   type to typeₘₗ; ctxt to ctxtₘₗ; _∋_ to _∋ₘₗ_; _⊢_ to _⊢ₘₗ_;
   ε to εₘₗ; _-,_ to _-,ₘₗ_; ze to zeₘₗ; su to suₘₗ;
   unit to unitₘₗ; num to numₘₗ; _`×_ to _`×ₘₗ_; _`⇒_ to _`⇒ₘₗ_; _`+_ to _`+ₘₗ_;
-  var to varₘₗ; nat to natₘₗ; plus to plusₘₗ; times to timesₘₗ; lam to lamₘₗ; app to appₘₗ;
+  var to varₘₗ; nat to natₘₗ; plus to plusₘₗ; times to timesₘₗ; eq to eqₘₗ; lam to lamₘₗ; app to appₘₗ;
   fst to fstₘₗ; snd to sndₘₗ; mkPair to mkPairₘₗ; inj₁ to inj₁ₘₗ; inj₂ to inj₂ₘₗ; case to caseₘₗ
   )
 
@@ -71,7 +71,12 @@ open import language renaming (
 ⟦ unit ⟧ₐ = return unitₘₗ
 ⟦ nat n ⟧ₐ = return (natₘₗ n)
 ⟦ plus s t ⟧ₐ = bind ⟦ s ⟧ₐ (bind (weaken * ⟦ t ⟧ₐ) (return (plusₘₗ (varₘₗ (suₘₗ zeₘₗ)) (varₘₗ zeₘₗ))))
-⟦ times s t ⟧ₐ = bind ⟦ s ⟧ₐ (bind (weaken * ⟦ t ⟧ₐ) (return (timesₘₗ (varₘₗ (suₘₗ zeₘₗ)) (varₘₗ zeₘₗ))))
+⟦ times s t ⟧ₐ =
+  bind ⟦ s ⟧ₐ
+  (caseₘₗ
+    (return (natₘₗ 0)) -- ignore second argument if first is zero
+    (bind (weaken * (weaken * ⟦ t ⟧ₐ)) (return (timesₘₗ (varₘₗ (suₘₗ (suₘₗ zeₘₗ))) (varₘₗ zeₘₗ))))
+    (eqₘₗ (varₘₗ zeₘₗ) (natₘₗ 0)))
 ⟦ lam t ⟧ₐ = return (lamₘₗ ⟦ t ⟧ₐ)
 ⟦ app s t ⟧ₐ = bind ⟦ s ⟧ₐ (appₘₗ (varₘₗ zeₘₗ) (weaken * ⟦ t ⟧ₐ))
 ⟦ fst t ⟧ₐ = bind ⟦ t ⟧ₐ (fstₘₗ (varₘₗ zeₘₗ))
