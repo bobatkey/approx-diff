@@ -7,7 +7,7 @@ open import Data.Product using (proj₁; proj₂; _×_; _,_)
 open import Data.Unit using (⊤; tt)
 open import Data.Empty using (⊥)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Relation.Binary using (DecidableEquality)
+open import Relation.Binary using (Decidable; Rel)
 open import Relation.Nullary
 
 open import join-semilattice
@@ -173,7 +173,7 @@ inr .bwd y = idJ
 [_,_] m₁ m₂ .bwd (w , inj₂ y) = m₂ .bwd (w , y)
 
 -- Helper for binary predicate over a set
-binPred : ∀ {A : Set} → DecidableEquality A → Disc (A × A) ⇒ (⊤ₐ + ⊤ₐ)
+binPred : ∀ {ℓ A} {_∼_ : Rel A ℓ} → Decidable _∼_ → Disc (A × A) ⇒ (⊤ₐ + ⊤ₐ)
 binPred _∼_ .func (n , m) with n ∼ m
 ... | yes _ = inj₁ tt
 ... | no _ = inj₂ tt
