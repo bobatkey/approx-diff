@@ -63,7 +63,7 @@ data _⊢_ : ctxt → type → Set where
 -}
 
 open import Data.Product using (_×_; _,_)
-open import reverse
+open import approxset
 open _⇒_
 
 ⟦_⟧ty : type → ApproxSet
