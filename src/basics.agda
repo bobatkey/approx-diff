@@ -137,6 +137,7 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     assoc .proj₁ = [ [ inl , trans inl inr ] , trans inr inr ]
     assoc .proj₂ = [ trans inl inl , [ trans inr inl , inr ] ]
 
+    -- subsumed by sym; remove
     comm : ∀ {x y} → x ∨ y ≃ y ∨ x
     comm .proj₁ = [ inr , inl ]
     comm .proj₂ = [ inr , inl ]
@@ -144,6 +145,9 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     idem : ∀ {x} → x ∨ x ≃ x
     idem .proj₁ = [ refl , refl ]
     idem .proj₂ = inl
+
+    sym : ∀ {x y} → (x ∨ y) ≤ (y ∨ x)
+    sym = [ inr , inl ]
 
   record IsBigJoin iℓ (⋁ : (I : Set iℓ) → (I → A) → A) : Set (a ⊔ b ⊔ suc iℓ) where
     field
