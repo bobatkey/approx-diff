@@ -26,12 +26,12 @@ module _ where
 
 record _⇒_ (X Y : FOApproxSet) : Set where
   open _=>M_
-  open MeetSemilattice
+  open Poset
 
   field
     func : X .elem → Y .elem
-    fwd : (x : X .elem) → fapprox X x =>M fapprox Y (func x)
-    bwd : (x : X .elem) → rapprox Y (func x) =>J rapprox X x
+    fwd : (x : X .elem) → X .fapprox x =>M Y. fapprox (func x)
+    bwd : (x : X .elem) → Y .rapprox (func x) =>J X .rapprox x
     bwd⊣fwd : ∀ (x : X .elem) {x' y'} →
               Y .approx (func x) ._≤_ y' (fwd x ._=>M_.func x') ⇔ X .approx x ._≤_ (bwd x ._=>J_.func y') x'
 
@@ -60,3 +60,11 @@ infixr 10 _∘_
 -- TODO: definitions for Cartesian closure
 
 -- Lifting
+-- Add a new bottom element to a finite lattice
+module _ where
+
+  L : FOApproxSet → FOApproxSet
+  L X .elem = X .elem
+  L X .approx x = poset.L (X .approx x)
+  L X .fapprox x = LM (X .fapprox x)
+  L X .rapprox x = LJ (X .rapprox x)
