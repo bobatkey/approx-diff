@@ -8,6 +8,7 @@ open import Data.Empty using () renaming (⊥ to 𝟘)
 open import Data.Product using (_,_)
 open import basics
 
+-- Maybe 'Preorder'
 record Poset : Set (suc 0ℓ) where
   no-eta-equality
   field
