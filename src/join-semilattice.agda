@@ -31,8 +31,6 @@ record JoinSemilattice : Set (suc 0ℓ) where
 
 record _=>_ (X Y : JoinSemilattice) : Set where
   open JoinSemilattice
-  open IsPreorder (X .JoinSemilattice.≤-isPreorder) renaming (_≃_ to _≃₁_)
-  open IsPreorder (Y .JoinSemilattice.≤-isPreorder) renaming (_≃_ to _≃₂_)
   field
     func : X .Carrier → Y .Carrier
     monotone : ∀ {x₁ x₂} → X ._≤_ x₁ x₂ → Y ._≤_ (func x₁) (func x₂)
