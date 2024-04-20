@@ -73,3 +73,9 @@ module _ where
   𝟙 .∧-isMeet .IsMeet.π₂ = tt
   𝟙 .∧-isMeet .IsMeet.⟨_,_⟩ tt tt = tt
   𝟙 .⊤-isTop .IsTop.≤-top = tt
+
+  terminal : ∀ {A}{X : MeetSemilattice A} → X => 𝟙
+  terminal .func _ = tt
+  terminal .monotone _ = tt
+  terminal .∧-preserving = tt
+  terminal .⊤-preserving = tt
