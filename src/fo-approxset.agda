@@ -5,7 +5,7 @@ module fo-approxset where
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Level
 open import basics
-open import poset using (Poset)
+open import poset using (Poset; L)
 open import meet-semilattice-2 renaming (_=>_ to _=>M_; id to idM; _∘_ to _∘M_; L to LM)
 open import join-semilattice-2 renaming (_=>_ to _=>J_; id to idJ; _∘_ to _∘J_; L to LJ)
 
@@ -60,11 +60,10 @@ infixr 10 _∘_
 -- TODO: definitions for Cartesian closure
 
 -- Lifting
--- Add a new bottom element to a finite lattice
 module _ where
 
-  L : FOApproxSet → FOApproxSet
-  L X .elem = X .elem
-  L X .approx x = poset.L (X .approx x)
-  L X .fapprox x = LM (X .fapprox x)
-  L X .rapprox x = LJ (X .rapprox x)
+  ℒ : FOApproxSet → FOApproxSet
+  ℒ X .elem = X .elem
+  ℒ X .approx x = L (X .approx x)
+  ℒ X .fapprox x = LM (X .fapprox x)
+  ℒ X .rapprox x = LJ (X .rapprox x)
