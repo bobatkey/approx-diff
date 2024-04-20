@@ -3,6 +3,7 @@
 module fo-approxset where
 
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
+open import Data.Unit using (tt)
 open import Level
 open import basics
 open import poset using (Poset; L)
@@ -12,7 +13,7 @@ open import join-semilattice-2 renaming (_=>_ to _=>J_; id to idJ; _∘_ to _∘
 record FOApproxSet : Set (suc 0ℓ) where
   field
     elem    : Set
-    approx : elem → Poset
+    approx  : elem → Poset
     fapprox : (x : elem) → MeetSemilattice (approx x)
     rapprox : (x : elem) → JoinSemilattice (approx x)
 
@@ -61,9 +62,20 @@ infixr 10 _∘_
 
 -- Lifting
 module _ where
+  open JoinSemilattice
+  open poset.LCarrier
 
   ℒ : FOApproxSet → FOApproxSet
   ℒ X .elem = X .elem
   ℒ X .approx x = L (X .approx x)
   ℒ X .fapprox x = LM (X .fapprox x)
   ℒ X .rapprox x = LJ (X .rapprox x)
+
+  ℒ-unit : ∀ {X} → X ⇒ ℒ X
+  ℒ-unit .func x = x
+  ℒ-unit .fwd x = L-unit
+  ℒ-unit .bwd x = L-counit
+  ℒ-unit {X} .bwd⊣fwd x {y' = bottom} .proj₁ _ = IsBottom.≤-bottom (X .rapprox x .⊥-isBottom)
+  ℒ-unit {X} .bwd⊣fwd x {y' = < x' >} .proj₁ x'≤ = x'≤
+  ℒ-unit .bwd⊣fwd x {y' = bottom} .proj₂ _ = tt
+  ℒ-unit .bwd⊣fwd x {y' = < x' >} .proj₂ ≤x' = ≤x'

@@ -53,12 +53,11 @@ module _ where
   _∘_ {C = C} f g .∨-preserving = C .≤-trans (f .monotone (g .∨-preserving)) (f .∨-preserving)
   _∘_ {C = C} f g .⊥-preserving = C .≤-trans (f .monotone (g .⊥-preserving)) (f .⊥-preserving)
 
-  -- constant (left zero) morphisms
   ⊥-map : ∀ {A}{B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → X => Y
-  ⊥-map {Y = Y} .func _ = Y .⊥
+  ⊥-map {Y = Y} .func y = Y .⊥
   ⊥-map {B = B} .monotone _ = B .≤-refl
   ⊥-map {Y = Y} .∨-preserving = IsJoin.idem (Y .∨-isJoin) .proj₂
-  ⊥-map {X}{Y} .⊥-preserving = Y .≤-refl
+  ⊥-map {B = B} .⊥-preserving = B .≤-refl
 
 ------------------------------------------------------------------------------
 -- One element semilattice, for use when there are no approximations
