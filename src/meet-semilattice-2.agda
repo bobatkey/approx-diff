@@ -3,12 +3,12 @@
 module meet-semilattice-2 where
 
 open import Level
-open import Data.Product using (Σ; proj₁; proj₂; _×_; _,_)
+open import Data.Product using (Σ; proj₁; proj₂; _,_)
 open import Data.Unit using (tt) renaming (⊤ to Unit)
 open import Data.Empty using () renaming (⊥ to 𝟘)
 open import Relation.Binary using (IsEquivalence; Reflexive)
 open import basics
-open import poset using (Poset)
+open import poset using (Poset; _×_)
 
 record MeetSemilattice (A : Poset) : Set (suc 0ℓ) where
   no-eta-equality
@@ -143,5 +143,61 @@ module _ where
 ------------------------------------------------------------------------------
 -- Biproducts
 module _ where
+  open Poset
   open MeetSemilattice
   open _=>_
+
+  _⊕_ : ∀ {A B} → MeetSemilattice A → MeetSemilattice B → MeetSemilattice (A × B)
+  (X ⊕ Y) ._∧_ (x₁ , y₁) (x₂ , y₂) = (X ._∧_ x₁ x₂) , (Y ._∧_ y₁ y₂)
+  (X ⊕ Y) .⊤ = (X .⊤) , (Y .⊤)
+  (X ⊕ Y) .∧-isMeet .IsMeet.π₁ = X .∧-isMeet .IsMeet.π₁ , Y .∧-isMeet .IsMeet.π₁
+  (X ⊕ Y) .∧-isMeet .IsMeet.π₂ = X .∧-isMeet .IsMeet.π₂ , Y .∧-isMeet .IsMeet.π₂
+  (X ⊕ Y) .∧-isMeet .IsMeet.⟨_,_⟩ (x₁≤y₁ , x₂≤y₂) (x₁≤z₁ , x₂≤z₂) =
+    X .∧-isMeet .IsMeet.⟨_,_⟩ x₁≤y₁ x₁≤z₁ , Y .∧-isMeet .IsMeet.⟨_,_⟩ x₂≤y₂ x₂≤z₂
+  (X ⊕ Y) .⊤-isTop .IsTop.≤-top = X .⊤-isTop .IsTop.≤-top , Y .⊤-isTop .IsTop.≤-top
+
+  project₁ : ∀ {A B} {X : MeetSemilattice A} {Y : MeetSemilattice B} → (X ⊕ Y) => X
+  project₁ .func = proj₁
+  project₁ .monotone = proj₁
+  project₁ {A = A} .∧-preserving = A .≤-refl
+  project₁ {A = A} .⊤-preserving = A .≤-refl
+
+  project₂ : ∀ {A B} {X : MeetSemilattice A} {Y : MeetSemilattice B} → (X ⊕ Y) => Y
+  project₂ .func = proj₂
+  project₂ .monotone = proj₂
+  project₂ {B = B} .∧-preserving = B .≤-refl
+  project₂ {X}{Y} .⊤-preserving = Y .≤-refl
+
+  ⟨_,_⟩ : ∀ {A B C} {W : MeetSemilattice A} {X : MeetSemilattice B} {Y : MeetSemilattice C} →
+          W => X → W => Y → W => (X ⊕ Y)
+  ⟨_,_⟩ f g .func w = f .func w , g .func w
+  ⟨_,_⟩ f g .monotone w₁≤w₂ = (f .monotone w₁≤w₂) , (g .monotone w₁≤w₂)
+  ⟨_,_⟩ f g .∧-preserving = (f .∧-preserving) , (g .∧-preserving)
+  ⟨_,_⟩ f g .⊤-preserving = (f .⊤-preserving) , (g .⊤-preserving)
+
+  inject₁ : ∀ {A B} {X : MeetSemilattice A} {Y : MeetSemilattice B} → X => (X ⊕ Y)
+  inject₁ {Y = Y} .func x = x , Y .⊤
+  inject₁ {B = B} .monotone x₁≤x₂ = x₁≤x₂ , B .≤-refl
+  inject₁ {A = A} .∧-preserving .proj₁ = A .≤-refl
+  inject₁ {Y = Y} .∧-preserving .proj₂ = Y .⊤-isTop .IsTop.≤-top
+  inject₁ {A = A}{B = B} .⊤-preserving = A .≤-refl , B .≤-refl
+
+  inject₂ : ∀ {A B} {X : MeetSemilattice A} {Y : MeetSemilattice B} → Y => (X ⊕ Y)
+  inject₂ {X = X} .func y = X .⊤ , y
+  inject₂ {A = A} .monotone y₁≤y₂ = A .≤-refl , y₁≤y₂
+  inject₂ {X = X} .∧-preserving .proj₁ = X .⊤-isTop .IsTop.≤-top
+  inject₂ {B = B} .∧-preserving .proj₂ = B .≤-refl
+  inject₂ {A = A}{B = B} .⊤-preserving = A .≤-refl , B .≤-refl
+
+  [_,_] : ∀ {A B C}{X : MeetSemilattice A}{Y : MeetSemilattice B}{Z : MeetSemilattice C} → X => Z → Y => Z → (X ⊕ Y) => Z
+  [_,_] {Z = Z} f g .func (x , y) = Z ._∧_ (f .func x) (g .func y)
+  [_,_] {Z = Z} f g .monotone (x₁≤x₂ , y₁≤y₂) =
+    mono (f .monotone x₁≤x₂) (g .monotone y₁≤y₂)
+    where open IsMeet (Z .∧-isMeet)
+  [_,_] {C = C}{Z = Z} f g .∧-preserving {x , y} {x' , y'} =
+    C .≤-trans (interchange sym)
+               (∧-mono (f .∧-preserving) (g .∧-preserving))
+    where open IsMeet (Z .∧-isMeet) renaming (mono to ∧-mono)
+          open IsMonoid (monoidOfMeet (C .≤-isPreorder) (Z .∧-isMeet) (Z .⊤-isTop))
+  [_,_] {Z = Z} f g .⊤-preserving = ⟨ (f .⊤-preserving) , (g .⊤-preserving) ⟩Z
+    where open IsMeet (Z .∧-isMeet) renaming (⟨_,_⟩ to ⟨_,_⟩Z)
