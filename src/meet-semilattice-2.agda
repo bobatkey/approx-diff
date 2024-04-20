@@ -3,7 +3,7 @@
 module meet-semilattice-2 where
 
 open import Level
-open import Data.Product using (proj₁; proj₂; _×_; _,_)
+open import Data.Product using (Σ; proj₁; proj₂; _×_; _,_)
 open import Data.Unit using (tt) renaming (⊤ to Unit)
 open import Data.Empty using () renaming (⊥ to 𝟘)
 open import Relation.Binary using (IsEquivalence; Reflexive)
@@ -50,10 +50,26 @@ module _ where
   id {X = X} .∧-preserving = X .≤-refl
   id {X = X} .⊤-preserving = X .≤-refl
 
-  _∘_ : ∀ {A B C}{X : MeetSemilattice A}{Y : MeetSemilattice B}{Z : MeetSemilattice C} → Y => Z → X => Y → X => Z
+  _∘_ : ∀ {A B C}{X : MeetSemilattice A}{Y : MeetSemilattice B}{Z : MeetSemilattice C} →
+        Y => Z → X => Y → X => Z
   (f ∘ g) .func x = f .func (g .func x)
   (f ∘ g) .monotone x₁≤x₂ = f .monotone (g .monotone x₁≤x₂)
   _∘_ {Z = Z} f g .∧-preserving =
     Z .≤-trans (f .∧-preserving) (f .monotone (g .∧-preserving))
   _∘_ {Z = Z} f g .⊤-preserving =
     Z .≤-trans (f .⊤-preserving) (f .monotone (g .⊤-preserving))
+
+-- Big Products would be expressed in terms of big product of posets
+
+------------------------------------------------------------------------------
+module _ where
+  open MeetSemilattice
+  open _=>_
+
+  𝟙 : MeetSemilattice poset.𝟙
+  𝟙 ._∧_ tt tt = tt
+  𝟙 .⊤ = tt
+  𝟙 .∧-isMeet .IsMeet.π₁ = tt
+  𝟙 .∧-isMeet .IsMeet.π₂ = tt
+  𝟙 .∧-isMeet .IsMeet.⟨_,_⟩ tt tt = tt
+  𝟙 .⊤-isTop .IsTop.≤-top = tt
