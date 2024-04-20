@@ -18,3 +18,5 @@ record Lattice : Set (suc 0ℓ) where
     meetSemilattice : MeetSemilattice A
     joinSemilattice : JoinSemilattice A
     -- distributivity?
+
+  open Poset public

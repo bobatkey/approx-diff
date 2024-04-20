@@ -29,3 +29,17 @@ module _ where
 
   _⇔_ : Set → Set → Set
   P ⇔ Q = (P → Q) × (Q → P)
+
+record _⇒_ (X Y : FOApproxSet) : Set where
+  open _=>M_
+  open MeetSemilattice
+  open Lattice
+
+  field
+    func : X .elem → Y .elem
+    fwd : (x : X .elem) → fapprox X x =>M fapprox Y (func x)
+    bwd : (x : X .elem) → rapprox Y (func x) =>J rapprox X x
+    bwd⊣fwd : ∀ (x : X .elem) {x' y'} →
+              Y .approx (func x) .A ._≤_ y' (fwd x ._=>M_.func x') ⇔ X .approx x .A ._≤_ (bwd x ._=>J_.func y') x'
+
+open _⇒_
