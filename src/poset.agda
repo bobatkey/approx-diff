@@ -5,6 +5,7 @@ module poset where
 open import Level
 open import Data.Unit using (tt) renaming (⊤ to Unit)
 open import Data.Empty using () renaming (⊥ to 𝟘)
+open import Data.Product using (_,_)
 open import basics
 
 record Poset : Set (suc 0ℓ) where
@@ -26,7 +27,6 @@ module _ where
   𝟙 .≤-isPreorder .IsPreorder.refl = tt
   𝟙 .≤-isPreorder .IsPreorder.trans tt tt = tt
 
-------------------------------------------------------------------------------
 -- Lifting
 module _ where
   open Poset
@@ -48,3 +48,14 @@ module _ where
   L X .≤-isPreorder .IsPreorder.trans {bottom} {< y >}  {< z >}  m₁ m₂ = tt
   L X .≤-isPreorder .IsPreorder.trans {< x >}  {< y >}  {< z >}  m₁ m₂ =
     X .≤-isPreorder .IsPreorder.trans m₁ m₂
+
+-- Products
+module _ where
+  open Poset
+
+  _×_ : Poset → Poset → Poset
+  (X × Y) .Carrier = Data.Product._×_ (X .Carrier) (Y .Carrier)
+  (X × Y) ._≤_ (x₁ , y₁) (x₂ , y₂) = Data.Product._×_ (X ._≤_ x₁ x₂) (Y ._≤_ y₁ y₂)
+  (X × Y) .≤-isPreorder .IsPreorder.refl = (X .≤-refl) , (Y .≤-refl)
+  (X × Y) .≤-isPreorder .IsPreorder.trans (x₁≤y₁ , x₂≤y₂) (y₁≤z₁ , y₂≤z₂) =
+    (X .≤-trans x₁≤y₁ y₁≤z₁) , (Y .≤-trans x₂≤y₂ y₂≤z₂)
