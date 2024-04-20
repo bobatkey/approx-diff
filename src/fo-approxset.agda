@@ -20,7 +20,7 @@ record FOApproxSet : Set (suc 0ℓ) where
   fapprox x = approx x .meetSemilattice
 
   rapprox : (x : elem) → JoinSemilattice (approx x .A)
-  rapprox x = joinSemilattice (approx x)
+  rapprox x = approx x. joinSemilattice
 
 open FOApproxSet
 
@@ -43,3 +43,27 @@ record _⇒_ (X Y : FOApproxSet) : Set where
               Y .approx (func x) .A ._≤_ y' (fwd x ._=>M_.func x') ⇔ X .approx x .A ._≤_ (bwd x ._=>J_.func y') x'
 
 open _⇒_
+
+-- Definitions for category
+
+id : ∀ {X} → X ⇒ X
+id .func x = x
+id .fwd x = idM
+id .bwd x = idJ
+id .bwd⊣fwd x .proj₁ x'≤ = x'≤
+id .bwd⊣fwd x .proj₂ ≤x' = ≤x'
+
+_∘_ : ∀ {X Y Z} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
+(f ∘ g) .func x = f .func (g .func x)
+(f ∘ g) .fwd x = f .fwd (g .func x) ∘M g .fwd x
+(f ∘ g) .bwd x = g .bwd x ∘J f .bwd (g .func x)
+(f ∘ g) .bwd⊣fwd x .proj₁ z'≤fgx' =
+  g .bwd⊣fwd x .proj₁ (f .bwd⊣fwd (g .func x) .proj₁ z'≤fgx')
+(f ∘ g) .bwd⊣fwd x .proj₂ gfz'≤x' =
+  f .bwd⊣fwd (g .func x) .proj₂ (g .bwd⊣fwd x .proj₂ gfz'≤x')
+
+infixr 10 _∘_
+
+-- TODO: definitions for Cartesian closure
+
+-- Lifting
