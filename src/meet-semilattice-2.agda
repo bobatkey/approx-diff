@@ -107,8 +107,8 @@ module _ where
   L-unit : ∀ {A}{X : MeetSemilattice A} → X => L X
   L-unit .func x = < x >
   L-unit .monotone x₁≤x₂ = x₁≤x₂
-  L-unit {X} .∧-preserving = X .≤-refl
-  L-unit {X} .⊤-preserving = X .≤-refl
+  L-unit {A} .∧-preserving = A .≤-refl
+  L-unit {A} .⊤-preserving = A .≤-refl
 
   L-join : ∀ {A}{X : MeetSemilattice A} → L (L X) => L X
   L-join .func bottom = bottom
@@ -126,8 +126,8 @@ module _ where
   L-join .∧-preserving {< < x > >} {bottom} = tt
   L-join .∧-preserving {< bottom >} {< x₁ >} = tt
   L-join .∧-preserving {< < x > >} {< bottom >} = tt
-  L-join {X} .∧-preserving {< < x > >} {< < x₁ > >} = X .≤-refl
-  L-join {X} .⊤-preserving = X .≤-refl
+  L-join {A} .∧-preserving {< < x > >} {< < x₁ > >} = A .≤-refl
+  L-join {A} .⊤-preserving = A .≤-refl
 
   L-func : ∀ {A B}{X : MeetSemilattice A}{Y : MeetSemilattice B} → X => Y → L X => L Y
   L-func f .func bottom = bottom
