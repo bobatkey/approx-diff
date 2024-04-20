@@ -340,7 +340,7 @@ module _ where
   [_,_] {X}{Y}{Z} f g .monotone (x₁≤x₁' , x₂≤x₂') =
     IsJoin.mono (Z .∨-isJoin) (f .monotone x₁≤x₁') (g .monotone x₂≤x₂')
   [_,_] {X}{Y}{Z} f g .∨-preserving {(x₁ , y₁)}{(x₂ , y₂)} =
-    Z .≤-trans (∨-mono Z (f .∨-preserving) (g .∨-preserving))
+    Z .≤-trans (IsJoin.mono (Z .∨-isJoin) (f .∨-preserving) (g .∨-preserving))
                (interchange (∨-sym Z))
     where open IsMonoid (monoidOfJoin (Z .≤-isPreorder) (Z .∨-isJoin) (Z .⊥-isBottom))
   [_,_] {X}{Y}{Z} f g .⊥-preserving = Z[ f .⊥-preserving , g .⊥-preserving ]

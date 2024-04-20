@@ -166,7 +166,7 @@ module _ where
   project₂ .func = proj₂
   project₂ .monotone = proj₂
   project₂ {B = B} .∧-preserving = B .≤-refl
-  project₂ {X}{Y} .⊤-preserving = Y .≤-refl
+  project₂ {B = B} .⊤-preserving = B .≤-refl
 
   ⟨_,_⟩ : ∀ {A B C} {W : MeetSemilattice A} {X : MeetSemilattice B} {Y : MeetSemilattice C} →
           W => X → W => Y → W => (X ⊕ Y)

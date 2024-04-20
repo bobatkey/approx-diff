@@ -2,7 +2,7 @@
 
 module join-semilattice-2 where
 
-open import Data.Product using (proj₁; proj₂)
+open import Data.Product using (proj₁; proj₂; _,_)
 open import Data.Unit using (tt) renaming (⊤ to Unit)
 open import Level
 open import Relation.Binary using (IsEquivalence)
@@ -182,3 +182,64 @@ module _ where
   L-unit2 ._≃m_.eqfunc bottom .proj₁ = tt
   L-unit2 ._≃m_.eqfunc bottom .proj₂ = tt
   L-unit2 {X = X} ._≃m_.eqfunc < x > = X. ≃-refl
+
+-- TODO: Set-wide direct sums
+
+------------------------------------------------------------------------------
+-- Biproducts
+module _ where
+  open JoinSemilattice
+  open _=>_
+
+  _⊕_ : ∀ {A B} → JoinSemilattice A → JoinSemilattice B → JoinSemilattice (A × B)
+  (X ⊕ Y) ._∨_ (x₁ , y₁) (x₂ , y₂) = (X ._∨_ x₁ x₂) , (Y ._∨_ y₁ y₂)
+  (X ⊕ Y) .⊥ = X .⊥ , Y .⊥
+  (X ⊕ Y) .∨-isJoin .IsJoin.inl = X .∨-isJoin .IsJoin.inl , Y .∨-isJoin .IsJoin.inl
+  (X ⊕ Y) .∨-isJoin .IsJoin.inr = X .∨-isJoin .IsJoin.inr , Y .∨-isJoin .IsJoin.inr
+  (X ⊕ Y) .∨-isJoin .IsJoin.[_,_] (x₁≤z₁ , y₁≤z₂) (x₂≤z₁ , y₂≤z₂) =
+    X .∨-isJoin .IsJoin.[_,_] x₁≤z₁ x₂≤z₁ ,
+    Y .∨-isJoin .IsJoin.[_,_] y₁≤z₂ y₂≤z₂
+  (X ⊕ Y) .⊥-isBottom .IsBottom.≤-bottom = IsBottom.≤-bottom (X .⊥-isBottom) , IsBottom.≤-bottom (Y .⊥-isBottom)
+
+  -- Product bits:
+  project₁ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (X ⊕ Y) => X
+  project₁ .func = proj₁
+  project₁ .monotone = proj₁
+  project₁ {A} .∨-preserving = A .≤-refl
+  project₁ {A} .⊥-preserving = A .≤-refl
+
+  project₂ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (X ⊕ Y) => Y
+  project₂ .func = proj₂
+  project₂ .monotone = proj₂
+  project₂ {B = B} .∨-preserving = B .≤-refl
+  project₂ {B = B} .⊥-preserving = B .≤-refl
+
+  ⟨_,_⟩ : ∀ {A B C}{X : JoinSemilattice A}{Y : JoinSemilattice B}{Z : JoinSemilattice C} → X => Y → X => Z → X => (Y ⊕ Z)
+  ⟨ f , g ⟩ .func x = f .func x , g .func x
+  ⟨ f , g ⟩ .monotone x≤x' = f .monotone x≤x' , g .monotone x≤x'
+  ⟨ f , g ⟩ .∨-preserving = f .∨-preserving , g .∨-preserving
+  ⟨ f , g ⟩ .⊥-preserving = f .⊥-preserving , g . ⊥-preserving
+
+  -- Coproduct bits:
+  inject₁ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → X => (X ⊕ Y)
+  inject₁ {Y = Y} .func x = x , Y .⊥
+  inject₁ {B = B} .monotone x≤x' = x≤x' , B .≤-refl
+  inject₁ {A}{Y = Y} .∨-preserving = A .≤-refl , IsJoin.idem (Y .∨-isJoin) .proj₂
+  inject₁ {X}{Y} .⊥-preserving = X .≤-refl , Y .≤-refl
+
+  inject₂ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → Y => (X ⊕ Y)
+  inject₂ {X = X} .func y = X .⊥ , y
+  inject₂ {A} .monotone y≤y' = A. ≤-refl , y≤y'
+  inject₂ {B = B}{X = X} .∨-preserving = IsJoin.idem (X .∨-isJoin) .proj₂ , B .≤-refl
+  inject₂ {A}{B} .⊥-preserving = A .≤-refl , B .≤-refl
+
+  [_,_] : ∀ {A B C}{X : JoinSemilattice A}{Y : JoinSemilattice B}{Z : JoinSemilattice C} → X => Z → Y => Z → (X ⊕ Y) => Z
+  [_,_] {Z = Z} f g .func (x , y) = Z ._∨_ (f .func x) (g .func y)
+  [_,_] {Z = Z} f g .monotone (x₁≤x₁' , x₂≤x₂') =
+    IsJoin.mono (Z .∨-isJoin) (f .monotone x₁≤x₁') (g .monotone x₂≤x₂')
+  [_,_] {C = C}{Z = Z} f g .∨-preserving {(x₁ , y₁)}{(x₂ , y₂)} =
+    C .≤-trans (IsJoin.mono (Z .∨-isJoin) (f .∨-preserving) (g .∨-preserving))
+               (interchange (IsJoin.sym (Z .∨-isJoin)))
+    where open IsMonoid (monoidOfJoin (C .≤-isPreorder) (Z .∨-isJoin) (Z .⊥-isBottom))
+  [_,_] {Z = Z} f g .⊥-preserving = Z[ f .⊥-preserving , g .⊥-preserving ]
+    where open IsJoin (Z .∨-isJoin) renaming ([_,_] to Z[_,_])
