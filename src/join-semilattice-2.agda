@@ -243,3 +243,16 @@ module _ where
     where open IsMonoid (monoidOfJoin (C .≤-isPreorder) (Z .∨-isJoin) (Z .⊥-isBottom))
   [_,_] {Z = Z} f g .⊥-preserving = Z[ f .⊥-preserving , g .⊥-preserving ]
     where open IsJoin (Z .∨-isJoin) renaming ([_,_] to Z[_,_])
+
+  -- Biproduct properties
+  proj₁-inverts-inj₁ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (project₁ {X = X}{Y} ∘ inject₁) ≃m id
+  proj₁-inverts-inj₁ {X = X} ._≃m_.eqfunc x = ≃-refl X
+
+  proj₂-inverts-inj₂ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (project₁ {X = X}{Y} ∘ inject₁) ≃m id
+  proj₂-inverts-inj₂ {X = X} ._≃m_.eqfunc x = ≃-refl X
+
+  proj₁-zeroes-inj₂ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (project₁ {X = X}{Y} ∘ inject₂) ≃m ⊥-map
+  proj₁-zeroes-inj₂ {X = X} ._≃m_.eqfunc x = ≃-refl X
+
+  proj₂-zeroes-inj₁ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (project₂ {X = X}{Y} ∘ inject₁) ≃m ⊥-map
+  proj₂-zeroes-inj₁ {X = X}{Y} ._≃m_.eqfunc x = ≃-refl Y
