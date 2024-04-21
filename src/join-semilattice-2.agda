@@ -7,11 +7,11 @@ open import Data.Unit using (tt) renaming (⊤ to Unit)
 open import Level
 open import Relation.Binary using (IsEquivalence)
 open import basics
-open import poset using (Poset; _×_)
+open import poset using (Preorder; _×_)
 
-record JoinSemilattice (A : Poset) : Set (suc 0ℓ) where
+record JoinSemilattice (A : Preorder) : Set (suc 0ℓ) where
   no-eta-equality
-  open Poset public
+  open Preorder public
 
   field
     _∨_          : A .Carrier → A .Carrier → A .Carrier
@@ -21,8 +21,8 @@ record JoinSemilattice (A : Poset) : Set (suc 0ℓ) where
 
   open IsEquivalence (isEquivalenceOf (A .≤-isPreorder)) renaming (refl to ≃-refl; sym to ≃-sym) public
 
-module _ {A B : Poset} where
-  open Poset
+module _ {A B : Preorder} where
+  open Preorder
 
   record _=>_ (X : JoinSemilattice A) (Y : JoinSemilattice B) : Set where
     open JoinSemilattice

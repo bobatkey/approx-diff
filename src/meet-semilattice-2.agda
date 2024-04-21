@@ -8,11 +8,11 @@ open import Data.Unit using (tt) renaming (⊤ to Unit)
 open import Data.Empty using () renaming (⊥ to 𝟘)
 open import Relation.Binary using (IsEquivalence; Reflexive)
 open import basics
-open import poset using (Poset; _×_)
+open import poset using (Preorder; _×_)
 
-record MeetSemilattice (A : Poset) : Set (suc 0ℓ) where
+record MeetSemilattice (A : Preorder) : Set (suc 0ℓ) where
   no-eta-equality
-  open Poset public
+  open Preorder public
 
   field
     _∧_     : A .Carrier → A .Carrier → A .Carrier
@@ -20,8 +20,8 @@ record MeetSemilattice (A : Poset) : Set (suc 0ℓ) where
     ∧-isMeet  : IsMeet (A .≤-isPreorder) _∧_
     ⊤-isTop   : IsTop (A. ≤-isPreorder) ⊤
 
-module _ {A B : Poset} where
-  open Poset
+module _ {A B : Preorder} where
+  open Preorder
 
   record _=>_ (X : MeetSemilattice A) (Y : MeetSemilattice B) : Set where
     open MeetSemilattice
@@ -143,7 +143,7 @@ module _ where
 ------------------------------------------------------------------------------
 -- Biproducts
 module _ where
-  open Poset
+  open Preorder
   open MeetSemilattice
   open _=>_
 

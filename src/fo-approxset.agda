@@ -6,14 +6,14 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Unit using (tt)
 open import Level
 open import basics
-open import poset using (Poset; L)
+open import poset using (Preorder; L)
 open import meet-semilattice-2 renaming (_=>_ to _=>M_; id to idM; _∘_ to _∘M_; L to LM)
 open import join-semilattice-2 renaming (_=>_ to _=>J_; id to idJ; _∘_ to _∘J_; L to LJ)
 
 record FOApproxSet : Set (suc 0ℓ) where
   field
     elem    : Set
-    approx  : elem → Poset
+    approx  : elem → Preorder
     fapprox : (x : elem) → MeetSemilattice (approx x)
     rapprox : (x : elem) → JoinSemilattice (approx x)
 
@@ -27,7 +27,7 @@ module _ where
 
 record _⇒_ (X Y : FOApproxSet) : Set where
   open _=>M_
-  open Poset
+  open Preorder
 
   field
     func : X .elem → Y .elem
