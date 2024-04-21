@@ -6,9 +6,13 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Unit using (tt)
 open import Level
 open import basics
-open import poset using (Preorder; L)
-open import meet-semilattice-2 renaming (_=>_ to _=>M_; id to idM; _∘_ to _∘M_; L to LM)
-open import join-semilattice-2 renaming (_=>_ to _=>J_; id to idJ; _∘_ to _∘J_; L to LJ)
+open import preorder using (Preorder; L)
+open import meet-semilattice-2
+  renaming (_=>_ to _=>M_; _⊕_ to _⊕M_; id to idM; _∘_ to _∘M_; L to LM;
+            project₁ to project₁M; project₂ to project₂M; inject₁ to inject₁M; inject₂ to inject₂M)
+open import join-semilattice-2
+  renaming (_=>_ to _=>J_; _⊕_ to _⊕J_; id to idJ; _∘_ to _∘J_; L to LJ;
+            project₁ to project₁J; project₂ to project₂J; inject₁ to inject₁J; inject₂ to inject₂J)
 
 record FOApproxSet : Set (suc 0ℓ) where
   field
@@ -60,10 +64,35 @@ infixr 10 _∘_
 
 -- TODO: definitions for Cartesian closure
 
+-- Products
+_⊗_ : FOApproxSet → FOApproxSet → FOApproxSet
+(X ⊗ Y) .elem = X .elem × Y .elem
+(X ⊗ Y) .approx (x , y) = X .approx x preorder.× Y .approx y
+(X ⊗ Y) .fapprox (x , y) = X .fapprox x ⊕M Y .fapprox y
+(X ⊗ Y) .rapprox (x , y) = X .rapprox x ⊕J Y .rapprox y
+
+module _ where
+  open MeetSemilattice
+  open JoinSemilattice
+
+  π₁ : ∀ {X Y} → (X ⊗ Y) ⇒ X
+  π₁ .func = proj₁
+  π₁ .fwd (x , y) = project₁M
+  π₁ .bwd (x , y) = inject₁J
+  π₁ {Y = Y} .bwd⊣fwd (x , y) .proj₁ y'≤ = y'≤ , IsBottom.≤-bottom (Y .rapprox y .⊥-isBottom)
+  π₁ .bwd⊣fwd (x , y) .proj₂ = proj₁
+
+  π₂ : ∀ {X Y} → (X ⊗ Y) ⇒ Y
+  π₂ .func = proj₂
+  π₂ .fwd (x , y) = project₂M
+  π₂ .bwd (x , y) = inject₂J
+  π₂ {X} .bwd⊣fwd (x , y) .proj₁ ≤x' = IsBottom.≤-bottom (X .rapprox x .⊥-isBottom) , ≤x'
+  π₂ .bwd⊣fwd (x , y) .proj₂ = proj₂
+
 -- Lifting
 module _ where
   open JoinSemilattice
-  open poset.LCarrier
+  open preorder.LCarrier
 
   ℒ : FOApproxSet → FOApproxSet
   ℒ X .elem = X .elem

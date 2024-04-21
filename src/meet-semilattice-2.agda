@@ -8,7 +8,7 @@ open import Data.Unit using (tt) renaming (⊤ to Unit)
 open import Data.Empty using () renaming (⊥ to 𝟘)
 open import Relation.Binary using (IsEquivalence; Reflexive)
 open import basics
-open import poset using (Preorder; _×_)
+open import preorder using (Preorder; _×_)
 
 record MeetSemilattice (A : Preorder) : Set (suc 0ℓ) where
   no-eta-equality
@@ -63,7 +63,7 @@ module _ where
   open MeetSemilattice
   open _=>_
 
-  𝟙 : MeetSemilattice poset.𝟙
+  𝟙 : MeetSemilattice preorder.𝟙
   𝟙 ._∧_ tt tt = tt
   𝟙 .⊤ = tt
   𝟙 .∧-isMeet .IsMeet.π₁ = tt
@@ -80,11 +80,11 @@ module _ where
 ------------------------------------------------------------------------------
 -- Lifting
 module _ where
-  open poset using (LCarrier; <_>; bottom)
+  open preorder using (LCarrier; <_>; bottom)
   open MeetSemilattice
   open _=>_
 
-  L : ∀ {A} → MeetSemilattice A → MeetSemilattice (poset.L A)
+  L : ∀ {A} → MeetSemilattice A → MeetSemilattice (preorder.L A)
   L X ._∧_ bottom _ = bottom
   L X ._∧_ < x > bottom = bottom
   L X ._∧_ < x > < y > = < X ._∧_ x y >

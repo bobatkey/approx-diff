@@ -7,7 +7,7 @@ open import Data.Unit using (tt) renaming (⊤ to Unit)
 open import Level
 open import Relation.Binary using (IsEquivalence)
 open import basics
-open import poset using (Preorder; _×_)
+open import preorder using (Preorder; _×_)
 
 record JoinSemilattice (A : Preorder) : Set (suc 0ℓ) where
   no-eta-equality
@@ -64,7 +64,7 @@ module _ where
 module _ where
   open JoinSemilattice
 
-  𝟙 : JoinSemilattice poset.𝟙
+  𝟙 : JoinSemilattice preorder.𝟙
   𝟙 ._∨_ tt tt = tt
   𝟙 .⊥ = tt
   𝟙 .∨-isJoin .IsJoin.inl = tt
@@ -79,11 +79,11 @@ module _ where
 ------------------------------------------------------------------------------
 -- Lifting
 module _ where
-  open poset using (LCarrier; <_>; bottom)
+  open preorder using (LCarrier; <_>; bottom)
   open JoinSemilattice
   open _=>_
 
-  L : ∀ {A} → JoinSemilattice A → JoinSemilattice (poset.L A)
+  L : ∀ {A} → JoinSemilattice A → JoinSemilattice (preorder.L A)
   L X ._∨_ bottom bottom = bottom
   L X ._∨_ < x >  bottom = < x >
   L X ._∨_ bottom < y >  = < y >
