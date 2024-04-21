@@ -20,7 +20,7 @@ record Preorder : Set (suc 0ℓ) where
 module _ where
   open Preorder
 
-  -- Unit poset
+  -- Unit preorder
   𝟙 : Preorder
   𝟙 .Carrier = Unit
   𝟙 ._≤_ tt tt = Unit
