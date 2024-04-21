@@ -8,9 +8,11 @@ open import Level
 open import basics
 open import preorder using (Preorder; L)
 open import meet-semilattice-2
+  using (MeetSemilattice)
   renaming (_=>_ to _=>M_; _⊕_ to _⊕M_; id to idM; _∘_ to _∘M_; L to LM; [_,_] to [_,_]M; ⟨_,_⟩ to ⟨_,_⟩M;
             project₁ to project₁M; project₂ to project₂M; inject₁ to inject₁M; inject₂ to inject₂M)
 open import join-semilattice-2
+  using (JoinSemilattice)
   renaming (_=>_ to _=>J_; _⊕_ to _⊕J_; id to idJ; _∘_ to _∘J_; L to LJ; [_,_] to [_,_]J; ⟨_,_⟩ to ⟨_,_⟩J;
             project₁ to project₁J; project₂ to project₂J; inject₁ to inject₁J; inject₂ to inject₂J)
 
@@ -22,12 +24,6 @@ record FOApproxSet : Set (suc 0ℓ) where
     rapprox : (x : elem) → JoinSemilattice (approx x)
 
 open FOApproxSet
-
-module _ where
-  infix 4 _⇔_
-
-  _⇔_ : Set → Set → Set
-  P ⇔ Q = (P → Q) × (Q → P)
 
 record _⇒_ (X Y : FOApproxSet) : Set where
   open _=>M_
@@ -61,8 +57,6 @@ _∘_ : ∀ {X Y Z} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
   f .bwd⊣fwd (g .func x) .proj₂ (g .bwd⊣fwd x .proj₂ gfz'≤x')
 
 infixr 10 _∘_
-
--- TODO: definitions for Cartesian closure
 
 -- Products
 _⊗_ : FOApproxSet → FOApproxSet → FOApproxSet
@@ -102,6 +96,9 @@ module _ where
     g .bwd⊣fwd x .proj₂ (≤-trans (X .approx x) inr ≤x')
     where open IsJoin (X .rapprox x .∨-isJoin)
 
+-- TODO: sums
+-- TODO: _⊸_, eval and lambda
+
 -- Lifting
 module _ where
   open JoinSemilattice
@@ -115,8 +112,8 @@ module _ where
 
   ℒ-unit : ∀ {X} → X ⇒ ℒ X
   ℒ-unit .func x = x
-  ℒ-unit .fwd x = L-unit
-  ℒ-unit .bwd x = L-counit
+  ℒ-unit .fwd x = meet-semilattice-2.L-unit
+  ℒ-unit .bwd x = join-semilattice-2.L-counit
   ℒ-unit {X} .bwd⊣fwd x {y' = bottom} .proj₁ _ = IsBottom.≤-bottom (X .rapprox x .⊥-isBottom)
   ℒ-unit .bwd⊣fwd x {y' = < x' >} .proj₁ x'≤ = x'≤
   ℒ-unit .bwd⊣fwd x {y' = bottom} .proj₂ _ = tt
@@ -125,7 +122,7 @@ module _ where
   ℒ-join : ∀ {X} → ℒ (ℒ X) ⇒ ℒ X
   ℒ-join .func x = x
   ℒ-join .fwd x = meet-semilattice-2.L-join
-  ℒ-join .bwd x = L-dup
+  ℒ-join .bwd x = join-semilattice-2.L-dup
   ℒ-join .bwd⊣fwd x {bottom} {bottom} .proj₁ _ = tt
   ℒ-join .bwd⊣fwd x {bottom} {< x₂ >} .proj₁ ()
   ℒ-join .bwd⊣fwd x {< bottom >} {bottom} .proj₁ _ = tt
@@ -152,10 +149,4 @@ module _ where
   ℒ-func f .bwd⊣fwd x {< x₁ >} {bottom} .proj₂ _ = tt
   ℒ-func f .bwd⊣fwd x {< x₁ >} {< x₂ >} .proj₂ = f .bwd⊣fwd x .proj₂
 
-  ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
-  ℒ-strength .func xy = xy
-  ℒ-strength .fwd (x , y) =
-    meet-semilattice-2.[ L-unit ∘M inject₁M , meet-semilattice-2.L-func inject₂M ]
-  ℒ-strength .bwd (x , y) =
-    join-semilattice-2.⟨ project₁J ∘J L-counit , join-semilattice-2.L-func project₂J ⟩
-  ℒ-strength .bwd⊣fwd (x , y) = {!   !}
+  -- TODO: strength

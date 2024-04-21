@@ -6,6 +6,12 @@ open import Level using (_⊔_; suc)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Relation.Binary using (Setoid; IsEquivalence)
 
+module _ where
+  infix 4 _⇔_
+
+  _⇔_ : Set → Set → Set
+  P ⇔ Q = (P → Q) × (Q → P)
+
 module _ {a} {A : Set a} where
 
   SymmetricClosure : ∀ {b} → (A → A → Set b) → (A → A → Set b)
