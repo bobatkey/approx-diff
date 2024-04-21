@@ -49,7 +49,7 @@ module _ where
   L X .≤-isPreorder .IsPreorder.trans {< x >}  {< y >}  {< z >}  m₁ m₂ =
     X .≤-isPreorder .IsPreorder.trans m₁ m₂
 
--- Products
+-- Component-wise product
 module _ where
   open Preorder
 
