@@ -8,10 +8,10 @@ open import Level
 open import basics
 open import preorder using (Preorder; L)
 open import meet-semilattice-2
-  renaming (_=>_ to _=>M_; _⊕_ to _⊕M_; id to idM; _∘_ to _∘M_; L to LM;
+  renaming (_=>_ to _=>M_; _⊕_ to _⊕M_; id to idM; _∘_ to _∘M_; L to LM; [_,_] to [_,_]M; ⟨_,_⟩ to ⟨_,_⟩M;
             project₁ to project₁M; project₂ to project₂M; inject₁ to inject₁M; inject₂ to inject₂M)
 open import join-semilattice-2
-  renaming (_=>_ to _=>J_; _⊕_ to _⊕J_; id to idJ; _∘_ to _∘J_; L to LJ;
+  renaming (_=>_ to _=>J_; _⊕_ to _⊕J_; id to idJ; _∘_ to _∘J_; L to LJ; [_,_] to [_,_]J; ⟨_,_⟩ to ⟨_,_⟩J;
             project₁ to project₁J; project₂ to project₂J; inject₁ to inject₁J; inject₂ to inject₂J)
 
 record FOApproxSet : Set (suc 0ℓ) where
@@ -72,7 +72,6 @@ _⊗_ : FOApproxSet → FOApproxSet → FOApproxSet
 (X ⊗ Y) .rapprox (x , y) = X .rapprox x ⊕J Y .rapprox y
 
 module _ where
-  open MeetSemilattice
   open JoinSemilattice
 
   π₁ : ∀ {X Y} → (X ⊗ Y) ⇒ X
@@ -88,6 +87,20 @@ module _ where
   π₂ .bwd (x , y) = inject₂J
   π₂ {X} .bwd⊣fwd (x , y) .proj₁ ≤x' = IsBottom.≤-bottom (X .rapprox x .⊥-isBottom) , ≤x'
   π₂ .bwd⊣fwd (x , y) .proj₂ = proj₂
+
+  pair : ∀ {X Y Z} → X ⇒ Y → X ⇒ Z → X ⇒ (Y ⊗ Z)
+  pair f g .func x = f .func x , g .func x
+  pair f g .fwd x = ⟨ f .fwd x , g .fwd x ⟩M
+  pair f g .bwd x = [ f .bwd x , g .bwd x ]J
+  pair {X} f g .bwd⊣fwd x .proj₁ (y'≤ , z'≤) =
+    [ f .bwd⊣fwd x .proj₁ y'≤ , g .bwd⊣fwd x .proj₁ z'≤ ]
+    where open IsJoin (X .rapprox x .∨-isJoin)
+  pair {X} f g .bwd⊣fwd x .proj₂ ≤x' .proj₁ =
+    f .bwd⊣fwd x .proj₂ (≤-trans (X .approx x) inl ≤x')
+    where open IsJoin (X .rapprox x .∨-isJoin)
+  pair {X}{Z = Z} f g .bwd⊣fwd x {y' = y' , z'} .proj₂ ≤x' .proj₂ =
+    g .bwd⊣fwd x .proj₂ (≤-trans (X .approx x) inr ≤x')
+    where open IsJoin (X .rapprox x .∨-isJoin)
 
 -- Lifting
 module _ where
@@ -138,3 +151,11 @@ module _ where
   ℒ-func f .bwd⊣fwd x {bottom} {< x₁ >} .proj₂ ()
   ℒ-func f .bwd⊣fwd x {< x₁ >} {bottom} .proj₂ _ = tt
   ℒ-func f .bwd⊣fwd x {< x₁ >} {< x₂ >} .proj₂ = f .bwd⊣fwd x .proj₂
+
+  ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
+  ℒ-strength .func xy = xy
+  ℒ-strength .fwd (x , y) =
+    meet-semilattice-2.[ L-unit ∘M inject₁M , meet-semilattice-2.L-func inject₂M ]
+  ℒ-strength .bwd (x , y) =
+    join-semilattice-2.⟨ project₁J ∘J L-counit , join-semilattice-2.L-func project₂J ⟩
+  ℒ-strength .bwd⊣fwd (x , y) = {!   !}

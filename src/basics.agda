@@ -138,9 +138,9 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     assoc .proj₂ = [ trans inl inl , [ trans inr inl , inr ] ]
 
     -- subsumed by sym; remove
-    comm : ∀ {x y} → x ∨ y ≃ y ∨ x
-    comm .proj₁ = [ inr , inl ]
-    comm .proj₂ = [ inr , inl ]
+--    comm : ∀ {x y} → x ∨ y ≃ y ∨ x
+--    comm .proj₁ = [ inr , inl ]
+--    comm .proj₂ = [ inr , inl ]
 
     idem : ∀ {x} → x ∨ x ≃ x
     idem .proj₁ = [ refl , refl ]
