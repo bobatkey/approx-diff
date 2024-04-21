@@ -76,6 +76,36 @@ module _ where
   ℒ-unit .fwd x = L-unit
   ℒ-unit .bwd x = L-counit
   ℒ-unit {X} .bwd⊣fwd x {y' = bottom} .proj₁ _ = IsBottom.≤-bottom (X .rapprox x .⊥-isBottom)
-  ℒ-unit {X} .bwd⊣fwd x {y' = < x' >} .proj₁ x'≤ = x'≤
+  ℒ-unit .bwd⊣fwd x {y' = < x' >} .proj₁ x'≤ = x'≤
   ℒ-unit .bwd⊣fwd x {y' = bottom} .proj₂ _ = tt
   ℒ-unit .bwd⊣fwd x {y' = < x' >} .proj₂ ≤x' = ≤x'
+
+  ℒ-join : ∀ {X} → ℒ (ℒ X) ⇒ ℒ X
+  ℒ-join .func x = x
+  ℒ-join .fwd x = meet-semilattice-2.L-join
+  ℒ-join .bwd x = L-dup
+  ℒ-join .bwd⊣fwd x {bottom} {bottom} .proj₁ _ = tt
+  ℒ-join .bwd⊣fwd x {bottom} {< x₂ >} .proj₁ ()
+  ℒ-join .bwd⊣fwd x {< bottom >} {bottom} .proj₁ _ = tt
+  ℒ-join .bwd⊣fwd x {< bottom >} {< x₂ >} .proj₁ ()
+  ℒ-join .bwd⊣fwd x {< < x₁ > >} {bottom} .proj₁ _ = tt
+  ℒ-join .bwd⊣fwd x {< < x₁ > >} {< x₂ >} .proj₁ x₂≤ = x₂≤
+  ℒ-join .bwd⊣fwd x {bottom} {bottom} .proj₂ _ = tt
+  ℒ-join .bwd⊣fwd x {bottom} {< x₂ >} .proj₂ ()
+  ℒ-join .bwd⊣fwd x {< bottom >} {bottom} .proj₂ _ = tt
+  ℒ-join .bwd⊣fwd x {< bottom >} {< x₂ >} .proj₂ ()
+  ℒ-join .bwd⊣fwd x {< < x₁ > >} {bottom} .proj₂ _ = tt
+  ℒ-join .bwd⊣fwd x {< < x₁ > >} {< x₂ >} .proj₂ ≤x₁ = ≤x₁
+
+  ℒ-func : ∀ {X Y} → X ⇒ Y → ℒ X ⇒ ℒ Y
+  ℒ-func f .func = f .func
+  ℒ-func f .fwd x = meet-semilattice-2.L-func (f .fwd x)
+  ℒ-func f .bwd x = join-semilattice-2.L-func (f .bwd x)
+  ℒ-func f .bwd⊣fwd x {bottom} {bottom} .proj₁ _ = tt
+  ℒ-func f .bwd⊣fwd x {bottom} {< y' >} .proj₁ ()
+  ℒ-func f .bwd⊣fwd x {< x' >} {bottom} .proj₁ _ = tt
+  ℒ-func f .bwd⊣fwd x {< x' >} {< y' >} .proj₁ = f .bwd⊣fwd x .proj₁
+  ℒ-func f .bwd⊣fwd x {bottom} {bottom} .proj₂ _ = tt
+  ℒ-func f .bwd⊣fwd x {bottom} {< x₁ >} .proj₂ ()
+  ℒ-func f .bwd⊣fwd x {< x₁ >} {bottom} .proj₂ _ = tt
+  ℒ-func f .bwd⊣fwd x {< x₁ >} {< x₂ >} .proj₂ = f .bwd⊣fwd x .proj₂
