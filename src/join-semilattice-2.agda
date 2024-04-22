@@ -182,7 +182,40 @@ module _ where
   L-unit2 ._≃m_.eqfunc bottom .proj₂ = tt
   L-unit2 {X = X} ._≃m_.eqfunc < x > = X. ≃-refl
 
--- TODO: Set-wide direct sums
+------------------------------------------------------------------------------
+-- Set-wide direct sums of JoinSemilattices
+module _ (I : Set) (A : I -> Preorder) (X : (i : I) → JoinSemilattice (A i)) where
+  open JoinSemilattice
+
+  data FormalJoin : Set where
+    bot  : FormalJoin
+    el   : (i : I) → A i .Carrier → FormalJoin
+    join : FormalJoin → FormalJoin → FormalJoin
+
+  data _≤f_ : FormalJoin → FormalJoin → Set where
+    ≤f-refl    : ∀ {j} → j ≤f j
+    ≤f-trans   : ∀ {j₁ j₂ j₃} → j₁ ≤f j₂ → j₂ ≤f j₃ → j₁ ≤f j₃
+    ≤f-el-mono : ∀ i {x₁ x₂} → A i ._≤_ x₁ x₂ → el i x₁ ≤f el i x₂
+    ≤f-el-bot  : ∀ i → el i (X i .⊥) ≤f bot
+    ≤f-el-join : ∀ i {x₁ x₂} → el i (X i ._∨_ x₁ x₂) ≤f join (el i x₁) (el i x₂)
+    ≤f-bot     : ∀ {j} → bot ≤f j
+    ≤f-inl     : ∀ {j₁ j₂} → j₁ ≤f join j₁ j₂
+    ≤f-inr     : ∀ {j₁ j₂} → j₂ ≤f join j₁ j₂
+    ≤f-case    : ∀ {j₁ j₂ j₃} → j₁ ≤f j₃ → j₂ ≤f j₃ → join j₁ j₂ ≤f j₃
+
+  ⨁-preorder : Preorder
+  ⨁-preorder .Carrier = FormalJoin
+  ⨁-preorder ._≤_ = _≤f_
+  ⨁-preorder .≤-isPreorder .IsPreorder.refl = ≤f-refl
+  ⨁-preorder .≤-isPreorder .IsPreorder.trans = ≤f-trans
+
+  ⨁ : JoinSemilattice ⨁-preorder
+  ⨁ ._∨_ = join
+  ⨁ .⊥ = bot
+  ⨁ .∨-isJoin .IsJoin.inl = ≤f-inl
+  ⨁ .∨-isJoin .IsJoin.inr = ≤f-inr
+  ⨁ .∨-isJoin .IsJoin.[_,_] = ≤f-case
+  ⨁ .⊥-isBottom .IsBottom.≤-bottom = ≤f-bot
 
 ------------------------------------------------------------------------------
 -- Biproducts

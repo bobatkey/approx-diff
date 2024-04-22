@@ -56,8 +56,6 @@ module _ where
   _∘_ {C = C} f g .⊤-preserving =
     C .≤-trans (f .⊤-preserving) (f .monotone (g .⊤-preserving))
 
--- Big Products would be expressed in terms of big product of posets
-
 ------------------------------------------------------------------------------
 module _ where
   open MeetSemilattice
@@ -78,11 +76,17 @@ module _ where
   terminal .⊤-preserving = tt
 
 -- Big Products
-module _ (I : Set)(A : I → Preorder)(X : (i : I) → MeetSemilattice (A i)) where
+module _ (I : Set) (A : I → Preorder) (X : (i : I) → MeetSemilattice (A i)) where
   open MeetSemilattice
   open _=>_
 
-  Π : MeetSemilattice (preorder.Π I A)
+  Π-preorder : Preorder
+  Π-preorder .Carrier = ∀ i → A i .Carrier
+  Π-preorder ._≤_ x₁ x₂ = ∀ i → A i ._≤_ (x₁ i) (x₂ i)
+  Π-preorder .≤-isPreorder .IsPreorder.refl i = A i .≤-refl
+  Π-preorder .≤-isPreorder .IsPreorder.trans x≤y y≤z i = A i .≤-trans (x≤y i) (y≤z i)
+
+  Π : MeetSemilattice Π-preorder
   Π ._∧_ x₁ x₂ i = X i ._∧_ (x₁ i) (x₂ i)
   Π .⊤ i = X i .⊤
   Π .∧-isMeet .IsMeet.π₁ i = X i .∧-isMeet .IsMeet.π₁
