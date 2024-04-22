@@ -245,6 +245,12 @@ module _ (I : Set) (A : I -> Preorder) (X : (i : I) → JoinSemilattice (A i)) w
     elim-⨁-func-monotone (≤f-case j₁≤j₃ j₂≤j₃) =
       [ elim-⨁-func-monotone j₁≤j₃ , elim-⨁-func-monotone j₂≤j₃ ]
 
+    elim-⨁ : ⨁ => Z
+    elim-⨁ .func = elim-⨁-func
+    elim-⨁ .monotone = elim-⨁-func-monotone
+    elim-⨁ .∨-preserving = B .≤-refl
+    elim-⨁ .⊥-preserving = B .≤-refl
+
 ------------------------------------------------------------------------------
 -- Biproducts
 module _ where
