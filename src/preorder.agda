@@ -55,7 +55,7 @@ module _ where
 
   _×_ : Preorder → Preorder → Preorder
   (X × Y) .Carrier = Data.Product._×_ (X .Carrier) (Y .Carrier)
-  (X × Y) ._≤_ (x₁ , y₁) (x₂ , y₂) = X._≤_ x₁ x₂ Data.Product.× Y ._≤_ y₁ y₂
+  (X × Y) ._≤_ (x₁ , y₁) (x₂ , y₂) = Data.Product._×_ (X ._≤_ x₁ x₂) (Y ._≤_ y₁ y₂)
   (X × Y) .≤-isPreorder .IsPreorder.refl = (X .≤-refl) , (Y .≤-refl)
   (X × Y) .≤-isPreorder .IsPreorder.trans (x₁≤y₁ , x₂≤y₂) (y₁≤z₁ , y₂≤z₂) =
     (X .≤-trans x₁≤y₁ y₁≤z₁) , (Y .≤-trans x₂≤y₂ y₂≤z₂)
