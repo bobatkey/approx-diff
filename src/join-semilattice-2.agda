@@ -224,6 +224,27 @@ module _ (I : Set) (A : I -> Preorder) (X : (i : I) → JoinSemilattice (A i)) w
   inj-⨁ i .∨-preserving = ≤f-el-join i
   inj-⨁ i .⊥-preserving = ≤f-el-bot i
 
+  module _ {B} (Z : JoinSemilattice B) (X=>Z : ∀ i → X i => Z) where
+    open IsJoin (Z .∨-isJoin)
+    open IsBottom (Z .⊥-isBottom)
+
+    elim-⨁-func : ⨁-preorder .Carrier → B .Carrier
+    elim-⨁-func bot = Z .⊥
+    elim-⨁-func (el i x) = X=>Z i .func x
+    elim-⨁-func (join j₁ j₂) = Z ._∨_ (elim-⨁-func j₁) (elim-⨁-func j₂)
+
+    elim-⨁-func-monotone : ∀ {j₁ j₂} → j₁ ≤f j₂ → B ._≤_ (elim-⨁-func j₁) (elim-⨁-func j₂)
+    elim-⨁-func-monotone ≤f-refl = B .≤-refl
+    elim-⨁-func-monotone (≤f-trans j₁≤j₂ j₂≤j₃) = B .≤-trans (elim-⨁-func-monotone j₁≤j₂) (elim-⨁-func-monotone j₂≤j₃)
+    elim-⨁-func-monotone (≤f-el-mono i x₁≤x₂) = X=>Z i .monotone x₁≤x₂
+    elim-⨁-func-monotone (≤f-el-bot i) = X=>Z i .⊥-preserving
+    elim-⨁-func-monotone (≤f-el-join i) = X=>Z i .∨-preserving
+    elim-⨁-func-monotone ≤f-bot = ≤-bottom
+    elim-⨁-func-monotone ≤f-inl = inl
+    elim-⨁-func-monotone ≤f-inr = inr
+    elim-⨁-func-monotone (≤f-case j₁≤j₃ j₂≤j₃) =
+      [ elim-⨁-func-monotone j₁≤j₃ , elim-⨁-func-monotone j₂≤j₃ ]
+
 ------------------------------------------------------------------------------
 -- Biproducts
 module _ where
