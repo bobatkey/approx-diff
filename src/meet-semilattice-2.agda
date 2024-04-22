@@ -77,6 +77,19 @@ module _ where
   terminal .∧-preserving = tt
   terminal .⊤-preserving = tt
 
+-- Big Products
+module _ (I : Set)(A : I → Preorder)(X : (i : I) → MeetSemilattice (A i)) where
+  open MeetSemilattice
+  open _=>_
+
+  Π : MeetSemilattice (preorder.Π I A)
+  Π ._∧_ x₁ x₂ i = X i ._∧_ (x₁ i) (x₂ i)
+  Π .⊤ i = X i .⊤
+  Π .∧-isMeet .IsMeet.π₁ i = X i .∧-isMeet .IsMeet.π₁
+  Π .∧-isMeet .IsMeet.π₂ i = X i .∧-isMeet .IsMeet.π₂
+  Π .∧-isMeet .IsMeet.⟨_,_⟩ x≤y x≤z i = X i .∧-isMeet .IsMeet.⟨_,_⟩ (x≤y i) (x≤z i)
+  Π .⊤-isTop .IsTop.≤-top i = X i .⊤-isTop .IsTop.≤-top
+
 ------------------------------------------------------------------------------
 -- Lifting
 module _ where
