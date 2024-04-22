@@ -57,24 +57,6 @@ module _ where
     C .≤-trans (f .⊤-preserving) (f .monotone (g .⊤-preserving))
 
 ------------------------------------------------------------------------------
-module _ where
-  open MeetSemilattice
-  open _=>_
-
-  𝟙 : MeetSemilattice preorder.𝟙
-  𝟙 ._∧_ tt tt = tt
-  𝟙 .⊤ = tt
-  𝟙 .∧-isMeet .IsMeet.π₁ = tt
-  𝟙 .∧-isMeet .IsMeet.π₂ = tt
-  𝟙 .∧-isMeet .IsMeet.⟨_,_⟩ tt tt = tt
-  𝟙 .⊤-isTop .IsTop.≤-top = tt
-
-  terminal : ∀ {A}{X : MeetSemilattice A} → X => 𝟙
-  terminal .func _ = tt
-  terminal .monotone _ = tt
-  terminal .∧-preserving = tt
-  terminal .⊤-preserving = tt
-
 -- Big Products
 module _ (I : Set) (A : I → Preorder) (X : (i : I) → MeetSemilattice (A i)) where
   open MeetSemilattice
@@ -93,6 +75,37 @@ module _ (I : Set) (A : I → Preorder) (X : (i : I) → MeetSemilattice (A i)) 
   Π .∧-isMeet .IsMeet.π₂ i = X i .∧-isMeet .IsMeet.π₂
   Π .∧-isMeet .IsMeet.⟨_,_⟩ x≤y x≤z i = X i .∧-isMeet .IsMeet.⟨_,_⟩ (x≤y i) (x≤z i)
   Π .⊤-isTop .IsTop.≤-top i = X i .⊤-isTop .IsTop.≤-top
+
+  proj-Π : (i : I) → Π => X i
+  proj-Π i .func x = x i
+  proj-Π i .monotone x₁≤x₂ = x₁≤x₂ i
+  proj-Π i .∧-preserving = A i .≤-refl
+  proj-Π i .⊤-preserving = A i .≤-refl
+
+  lambda-Π : ∀ {B} {W : MeetSemilattice B} → (W=>X : ∀ i → W => X i) → W => Π
+  lambda-Π W=>X .func w i = W=>X i .func w
+  lambda-Π W=>X .monotone w₁≤w₂ i = W=>X i .monotone w₁≤w₂
+  lambda-Π W=>X .∧-preserving i = W=>X i .∧-preserving
+  lambda-Π W=>X .⊤-preserving i = W=>X i .⊤-preserving
+
+------------------------------------------------------------------------------
+module _ where
+  open MeetSemilattice
+  open _=>_
+
+  𝟙 : MeetSemilattice preorder.𝟙
+  𝟙 ._∧_ tt tt = tt
+  𝟙 .⊤ = tt
+  𝟙 .∧-isMeet .IsMeet.π₁ = tt
+  𝟙 .∧-isMeet .IsMeet.π₂ = tt
+  𝟙 .∧-isMeet .IsMeet.⟨_,_⟩ tt tt = tt
+  𝟙 .⊤-isTop .IsTop.≤-top = tt
+
+  terminal : ∀ {A}{X : MeetSemilattice A} → X => 𝟙
+  terminal .func _ = tt
+  terminal .monotone _ = tt
+  terminal .∧-preserving = tt
+  terminal .⊤-preserving = tt
 
 ------------------------------------------------------------------------------
 -- Lifting

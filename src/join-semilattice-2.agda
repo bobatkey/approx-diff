@@ -186,6 +186,7 @@ module _ where
 -- Set-wide direct sums of JoinSemilattices
 module _ (I : Set) (A : I -> Preorder) (X : (i : I) → JoinSemilattice (A i)) where
   open JoinSemilattice
+  open _=>_
 
   data FormalJoin : Set where
     bot  : FormalJoin
@@ -216,6 +217,12 @@ module _ (I : Set) (A : I -> Preorder) (X : (i : I) → JoinSemilattice (A i)) w
   ⨁ .∨-isJoin .IsJoin.inr = ≤f-inr
   ⨁ .∨-isJoin .IsJoin.[_,_] = ≤f-case
   ⨁ .⊥-isBottom .IsBottom.≤-bottom = ≤f-bot
+
+  inj-⨁ : (i : I) → X i => ⨁
+  inj-⨁ i .func x = el i x
+  inj-⨁ i .monotone = ≤f-el-mono i
+  inj-⨁ i .∨-preserving = ≤f-el-join i
+  inj-⨁ i .⊥-preserving = ≤f-el-bot i
 
 ------------------------------------------------------------------------------
 -- Biproducts
