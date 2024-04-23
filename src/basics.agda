@@ -6,6 +6,12 @@ open import Level using (_⊔_; suc)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Relation.Binary using (Setoid; IsEquivalence)
 
+module _ where
+  infix 4 _⇔_
+
+  _⇔_ : Set → Set → Set
+  P ⇔ Q = (P → Q) × (Q → P)
+
 module _ {a} {A : Set a} where
 
   SymmetricClosure : ∀ {b} → (A → A → Set b) → (A → A → Set b)
@@ -138,9 +144,9 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     assoc .proj₂ = [ trans inl inl , [ trans inr inl , inr ] ]
 
     -- subsumed by sym; remove
-    comm : ∀ {x y} → x ∨ y ≃ y ∨ x
-    comm .proj₁ = [ inr , inl ]
-    comm .proj₂ = [ inr , inl ]
+--    comm : ∀ {x y} → x ∨ y ≃ y ∨ x
+--    comm .proj₁ = [ inr , inl ]
+--    comm .proj₂ = [ inr , inl ]
 
     idem : ∀ {x} → x ∨ x ≃ x
     idem .proj₁ = [ refl , refl ]
