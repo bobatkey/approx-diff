@@ -3,16 +3,15 @@
 module fo-approxset where
 
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Unit using (tt)
 open import Level
 open import basics
 open import preorder using (Preorder; L)
 open import meet-semilattice-2
-  using (MeetSemilattice)
   renaming (_=>_ to _=>M_; _⊕_ to _⊕M_; id to idM; _∘_ to _∘M_; L to LM; [_,_] to [_,_]M; ⟨_,_⟩ to ⟨_,_⟩M;
             project₁ to project₁M; project₂ to project₂M; inject₁ to inject₁M; inject₂ to inject₂M)
 open import join-semilattice-2
-  using (JoinSemilattice)
   renaming (_=>_ to _=>J_; _⊕_ to _⊕J_; id to idJ; _∘_ to _∘J_; L to LJ; [_,_] to [_,_]J; ⟨_,_⟩ to ⟨_,_⟩J;
             project₁ to project₁J; project₂ to project₂J; inject₁ to inject₁J; inject₂ to inject₂J)
 
@@ -59,14 +58,14 @@ _∘_ : ∀ {X Y Z} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
 infixr 10 _∘_
 
 -- Products
-_⊗_ : FOApproxSet → FOApproxSet → FOApproxSet
-(X ⊗ Y) .elem = X .elem × Y .elem
-(X ⊗ Y) .approx (x , y) = X .approx x preorder.× Y .approx y
-(X ⊗ Y) .fapprox (x , y) = X .fapprox x ⊕M Y .fapprox y
-(X ⊗ Y) .rapprox (x , y) = X .rapprox x ⊕J Y .rapprox y
-
 module _ where
   open JoinSemilattice
+
+  _⊗_ : FOApproxSet → FOApproxSet → FOApproxSet
+  (X ⊗ Y) .elem = X .elem × Y .elem
+  (X ⊗ Y) .approx (x , y) = X .approx x preorder.× Y .approx y
+  (X ⊗ Y) .fapprox (x , y) = X .fapprox x ⊕M Y .fapprox y
+  (X ⊗ Y) .rapprox (x , y) = X .rapprox x ⊕J Y .rapprox y
 
   π₁ : ∀ {X Y} → (X ⊗ Y) ⇒ X
   π₁ .func = proj₁
@@ -96,8 +95,42 @@ module _ where
     g .bwd⊣fwd x .proj₂ (≤-trans (X .approx x) inr ≤x')
     where open IsJoin (X .rapprox x .∨-isJoin)
 
--- TODO: sums
--- TODO: _⊸_, eval and lambda
+-- Sums
+module _ where
+  _+_ : FOApproxSet → FOApproxSet → FOApproxSet
+  (X + Y) .elem = X .elem ⊎ Y .elem
+  (X + Y) .approx (inj₁ x) = X .approx x
+  (X + Y) .approx (inj₂ y) = Y .approx y
+  (X + Y) .rapprox (inj₁ x) = X .rapprox x
+  (X + Y) .rapprox (inj₂ y) = Y .rapprox y
+  (X + Y) .fapprox (inj₁ x) = X .fapprox x
+  (X + Y) .fapprox (inj₂ y) = Y .fapprox y
+
+  inl : ∀ {X Y} → X ⇒ (X + Y)
+  inl .func = inj₁
+  inl .fwd x = idM
+  inl .bwd x = idJ
+  inl .bwd⊣fwd x .proj₁ x'≤ = x'≤
+  inl .bwd⊣fwd x .proj₂ ≤x' = ≤x'
+
+  inr : ∀ {X Y} → Y ⇒ (X + Y)
+  inr .func = inj₂
+  inr .fwd y = idM
+  inr .bwd y = idJ
+  inr .bwd⊣fwd y .proj₁ y'≤ = y'≤
+  inr .bwd⊣fwd y .proj₂ ≤y' = ≤y'
+
+  [_,_] : ∀ {W X Y Z} → (W ⊗ X) ⇒ Z → (W ⊗ Y) ⇒ Z → (W ⊗ (X + Y)) ⇒ Z
+  [ m₁ , m₂ ] .func (w , inj₁ x) = m₁ .func (w , x)
+  [ m₁ , m₂ ] .func (w , inj₂ y) = m₂ .func (w , y)
+  [ m₁ , m₂ ] .fwd (w , inj₁ x) = m₁ .fwd (w , x)
+  [ m₁ , m₂ ] .fwd (w , inj₂ y) = m₂ .fwd (w , y)
+  [ m₁ , m₂ ] .bwd (w , inj₁ x) = m₁ .bwd (w , x)
+  [ m₁ , m₂ ] .bwd (w , inj₂ y) = m₂ .bwd (w , y)
+  [ m₁ , m₂ ] .bwd⊣fwd (w , inj₁ x) = m₁ .bwd⊣fwd (w , x)
+  [ m₁ , m₂ ] .bwd⊣fwd (w , inj₂ y) = m₂ .bwd⊣fwd (w , y)
+
+-- Not sure how to do function spaces given different posets used by ⨁ and Π
 
 -- Lifting
 module _ where
