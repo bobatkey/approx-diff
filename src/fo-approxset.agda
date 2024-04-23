@@ -135,6 +135,7 @@ module _ where
 -- Lifting
 module _ where
   open JoinSemilattice
+  open MeetSemilattice
   open preorder.LCarrier
 
   ℒ : FOApproxSet → FOApproxSet
@@ -182,4 +183,22 @@ module _ where
   ℒ-func f .bwd⊣fwd x {< x₁ >} {bottom} .proj₂ _ = tt
   ℒ-func f .bwd⊣fwd x {< x₁ >} {< x₂ >} .proj₂ = f .bwd⊣fwd x .proj₂
 
-  -- TODO: strength
+  ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
+  ℒ-strength .func xy = xy
+  ℒ-strength .fwd (x , y) = [ L-unit ∘M inject₁M , meet-semilattice.L-func inject₂M ]M
+  ℒ-strength .bwd (x , y) = ⟨ project₁J ∘J L-counit , join-semilattice.L-func project₂J ⟩J
+  ℒ-strength {X} .bwd⊣fwd (x , y) {x₁ , y₁} {bottom} .proj₁ _ .proj₁ =
+    IsBottom.≤-bottom (X .rapprox x .⊥-isBottom)
+  ℒ-strength {X}{Y} .bwd⊣fwd (x , y) {x₁ , < y₁ >} {< x₂ , y₂ >} .proj₁ (x₂≤ , snd₁) .proj₁ =
+    ≤-trans (X .order x) x₂≤ (X .fapprox x .∧-isMeet .IsMeet.π₁)
+  ℒ-strength .bwd⊣fwd (x , y) {x₁ , bottom} {bottom} .proj₁ _ .proj₂ = tt
+  ℒ-strength .bwd⊣fwd (x , y) {x₁ , < y₁ >} {bottom} .proj₁ _ .proj₂ = tt
+  ℒ-strength {Y = Y} .bwd⊣fwd (x , y) {x₁ , < y₁ >} {< x₂ , y₂ >} .proj₁ (_ , y₂≤) .proj₂ =
+    ≤-trans (Y .order y) y₂≤ (Y .fapprox y .∧-isMeet .IsMeet.π₂)
+  ℒ-strength .bwd⊣fwd (x , y) {x₁ , bottom} {bottom} .proj₂ _ = tt
+  ℒ-strength .bwd⊣fwd (x , y) {x₁ , bottom} {< _ >} .proj₂ ()
+  ℒ-strength .bwd⊣fwd (x , y) {x₁ , < y₁ >} {bottom} .proj₂ _ = tt
+  ℒ-strength {X} .bwd⊣fwd (x , y) {x₁ , < y₁ >} {< x₂ , y₂ >} .proj₂ (x₂≤ , _) .proj₁ =
+    ≤-trans (X .order x) x₂≤ {!   !} -- idem + mono
+  ℒ-strength {Y = Y} .bwd⊣fwd (x , y) {x₁ , < y₁ >} {< x₂ , y₂ >} .proj₂ (_ , y₂≤) .proj₂ =
+    ≤-trans (Y .order y) y₂≤ {!   !} -- idem + mono
