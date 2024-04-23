@@ -18,9 +18,9 @@ open import join-semilattice
 record FOApproxSet : Set (suc 0ℓ) where
   field
     elem    : Set
-    approx  : elem → Preorder
-    fapprox : (x : elem) → MeetSemilattice (approx x)
-    rapprox : (x : elem) → JoinSemilattice (approx x)
+    order  : elem → Preorder
+    fapprox : (x : elem) → MeetSemilattice (order x)
+    rapprox : (x : elem) → JoinSemilattice (order x)
 
 open FOApproxSet
 
@@ -33,7 +33,7 @@ record _⇒_ (X Y : FOApproxSet) : Set where
     fwd : (x : X .elem) → X .fapprox x =>M Y. fapprox (func x)
     bwd : (x : X .elem) → Y .rapprox (func x) =>J X .rapprox x
     bwd⊣fwd : ∀ (x : X .elem) {x' y'} →
-              Y .approx (func x) ._≤_ y' (fwd x ._=>M_.func x') ⇔ X .approx x ._≤_ (bwd x ._=>J_.func y') x'
+              Y .order (func x) ._≤_ y' (fwd x ._=>M_.func x') ⇔ X .order x ._≤_ (bwd x ._=>J_.func y') x'
 
 open _⇒_
 
@@ -63,7 +63,7 @@ module _ where
 
   _⊗_ : FOApproxSet → FOApproxSet → FOApproxSet
   (X ⊗ Y) .elem = X .elem × Y .elem
-  (X ⊗ Y) .approx (x , y) = X .approx x preorder.× Y .approx y
+  (X ⊗ Y) .order (x , y) = X .order x preorder.× Y .order y
   (X ⊗ Y) .fapprox (x , y) = X .fapprox x ⊕M Y .fapprox y
   (X ⊗ Y) .rapprox (x , y) = X .rapprox x ⊕J Y .rapprox y
 
@@ -89,18 +89,18 @@ module _ where
     [ f .bwd⊣fwd x .proj₁ y'≤ , g .bwd⊣fwd x .proj₁ z'≤ ]
     where open IsJoin (X .rapprox x .∨-isJoin)
   pair {X} f g .bwd⊣fwd x .proj₂ ≤x' .proj₁ =
-    f .bwd⊣fwd x .proj₂ (≤-trans (X .approx x) inl ≤x')
+    f .bwd⊣fwd x .proj₂ (≤-trans (X .order x) inl ≤x')
     where open IsJoin (X .rapprox x .∨-isJoin)
   pair {X}{Z = Z} f g .bwd⊣fwd x {y' = y' , z'} .proj₂ ≤x' .proj₂ =
-    g .bwd⊣fwd x .proj₂ (≤-trans (X .approx x) inr ≤x')
+    g .bwd⊣fwd x .proj₂ (≤-trans (X .order x) inr ≤x')
     where open IsJoin (X .rapprox x .∨-isJoin)
 
 -- Sums
 module _ where
   _+_ : FOApproxSet → FOApproxSet → FOApproxSet
   (X + Y) .elem = X .elem ⊎ Y .elem
-  (X + Y) .approx (inj₁ x) = X .approx x
-  (X + Y) .approx (inj₂ y) = Y .approx y
+  (X + Y) .order (inj₁ x) = X .order x
+  (X + Y) .order (inj₂ y) = Y .order y
   (X + Y) .rapprox (inj₁ x) = X .rapprox x
   (X + Y) .rapprox (inj₂ y) = Y .rapprox y
   (X + Y) .fapprox (inj₁ x) = X .fapprox x
@@ -139,7 +139,7 @@ module _ where
 
   ℒ : FOApproxSet → FOApproxSet
   ℒ X .elem = X .elem
-  ℒ X .approx x = L (X .approx x)
+  ℒ X .order x = L (X .order x)
   ℒ X .fapprox x = LM (X .fapprox x)
   ℒ X .rapprox x = LJ (X .rapprox x)
 
