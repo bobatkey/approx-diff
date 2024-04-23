@@ -16,7 +16,7 @@ open import join-semilattice
             project₁ to project₁J; project₂ to project₂J;
             L to LJ; _∘_ to _∘J_; id to idJ)
   hiding (initial)
-open import meet-semilattice-2
+open import meet-semilattice
   renaming (_=>_ to _=>M_; 𝟙 to 𝟙M; _⊕_ to _⊕M_; ⟨_,_⟩ to ⟨_,_⟩M; [_,_] to [_,_]M;
             project₁ to project₁M; project₂ to project₂M;
             inject₁ to inject₁M; inject₂ to inject₂M;
@@ -101,7 +101,7 @@ Disc-f f .bwd x = idJ
 
 terminal : ∀ {X} → X ⇒ ⊤ₐ
 terminal .func x = tt
-terminal .fwd x = meet-semilattice-2.terminal
+terminal .fwd x = meet-semilattice.terminal
 terminal .bwd x = join-semilattice.initial
 
 Disc-const : ∀ {A} → A → ⊤ₐ ⇒ Disc A
@@ -232,18 +232,18 @@ lambda m .bwd x = elim-⨁ _ _ _ _ λ y → project₁J ∘J m .bwd (x , y)
 
 ℒ-join : ∀ {X} → ℒ (ℒ X) ⇒ ℒ X
 ℒ-join .func x = x
-ℒ-join .fwd x = meet-semilattice-2.L-join
+ℒ-join .fwd x = meet-semilattice.L-join
 ℒ-join .bwd x = join-semilattice.L-dup
 
 ℒ-func : ∀ {X Y} → X ⇒ Y → ℒ X ⇒ ℒ Y
 ℒ-func f .func = f .func
-ℒ-func f .fwd x = meet-semilattice-2.L-func (f .fwd x)
+ℒ-func f .fwd x = meet-semilattice.L-func (f .fwd x)
 ℒ-func f .bwd x = join-semilattice.L-func (f .bwd x)
 
 ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
 ℒ-strength .func xy = xy
 ℒ-strength .fwd (x , y) =
-  meet-semilattice-2.[ L-unit ∘M inject₁M , meet-semilattice-2.L-func inject₂M ]
+  meet-semilattice.[ L-unit ∘M inject₁M , meet-semilattice.L-func inject₂M ]
 ℒ-strength .bwd (x , y) =
   join-semilattice.⟨ project₁J ∘J L-counit , join-semilattice.L-func project₂J ⟩
 
