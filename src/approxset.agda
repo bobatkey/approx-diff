@@ -11,7 +11,7 @@ open import Relation.Binary using (Decidable; Rel)
 open import Relation.Nullary
 open import preorder using (Preorder)
 
-open import join-semilattice-2
+open import join-semilattice
   renaming (_=>_ to _=>J_; 𝟙 to 𝟙J; _⊕_ to _⊕J_; ⟨_,_⟩ to ⟨_,_⟩J; [_,_] to [_,_]J;
             project₁ to project₁J; project₂ to project₂J;
             L to LJ; _∘_ to _∘J_; id to idJ)
@@ -99,7 +99,7 @@ Disc-f f .bwd x = idJ
 terminal : ∀ {X} → X ⇒ ⊤ₐ
 terminal .func x = tt
 terminal .fwd x = meet-semilattice.terminal
-terminal .bwd x = join-semilattice-2.initial
+terminal .bwd x = join-semilattice.initial
 
 Disc-const : ∀ {A} → A → ⊤ₐ ⇒ Disc A
 Disc-const x .func tt = x
@@ -126,7 +126,7 @@ _⊗_ : ApproxSet → ApproxSet → ApproxSet
 pair : ∀ {X Y Z} → X ⇒ Y → X ⇒ Z → X ⇒ (Y ⊗ Z)
 pair f g .func x = f .func x , g .func x
 pair f g .fwd x = ⟨ f .fwd x , g .fwd x ⟩M
-pair f g .bwd x = join-semilattice-2.[ f .bwd x , g .bwd x ]
+pair f g .bwd x = join-semilattice.[ f .bwd x , g .bwd x ]
 
 Disc-preserves-products : ∀ {A B} → Disc (A × B) ⇒ (Disc A ⊗ Disc B)
 Disc-preserves-products .func ab = ab
@@ -231,14 +231,14 @@ lambda m .bwd x = elim-⨁ _ _ _ _ λ y → project₁J ∘J m .bwd (x , y)
 ℒ-func : ∀ {X Y} → X ⇒ Y → ℒ X ⇒ ℒ Y
 ℒ-func f .func = f .func
 ℒ-func f .fwd x = meet-semilattice.L-func (f .fwd x)
-ℒ-func f .bwd x = join-semilattice-2.L-func (f .bwd x)
+ℒ-func f .bwd x = join-semilattice.L-func (f .bwd x)
 
 ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
 ℒ-strength .func xy = xy
 ℒ-strength .fwd (x , y) =
   meet-semilattice.[ L-unit ∘M inject₁M , meet-semilattice.L-func inject₂M ]
 ℒ-strength .bwd (x , y) =
-  join-semilattice-2.⟨ project₁J ∘J L-counit , join-semilattice-2.L-func project₂J ⟩
+  join-semilattice.⟨ project₁J ∘J L-counit , join-semilattice.L-func project₂J ⟩
 
 {-
 -- Approximable lists: μY. 1 + ℒ(X × Y)

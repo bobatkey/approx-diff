@@ -11,7 +11,7 @@ open import preorder using (Preorder; L)
 open import meet-semilattice-2
   renaming (_=>_ to _=>M_; _⊕_ to _⊕M_; id to idM; _∘_ to _∘M_; L to LM; [_,_] to [_,_]M; ⟨_,_⟩ to ⟨_,_⟩M;
             project₁ to project₁M; project₂ to project₂M; inject₁ to inject₁M; inject₂ to inject₂M)
-open import join-semilattice-2
+open import join-semilattice
   renaming (_=>_ to _=>J_; _⊕_ to _⊕J_; id to idJ; _∘_ to _∘J_; L to LJ; [_,_] to [_,_]J; ⟨_,_⟩ to ⟨_,_⟩J;
             project₁ to project₁J; project₂ to project₂J; inject₁ to inject₁J; inject₂ to inject₂J)
 
@@ -146,7 +146,7 @@ module _ where
   ℒ-unit : ∀ {X} → X ⇒ ℒ X
   ℒ-unit .func x = x
   ℒ-unit .fwd x = meet-semilattice-2.L-unit
-  ℒ-unit .bwd x = join-semilattice-2.L-counit
+  ℒ-unit .bwd x = join-semilattice.L-counit
   ℒ-unit {X} .bwd⊣fwd x {y' = bottom} .proj₁ _ = IsBottom.≤-bottom (X .rapprox x .⊥-isBottom)
   ℒ-unit .bwd⊣fwd x {y' = < x' >} .proj₁ x'≤ = x'≤
   ℒ-unit .bwd⊣fwd x {y' = bottom} .proj₂ _ = tt
@@ -155,7 +155,7 @@ module _ where
   ℒ-join : ∀ {X} → ℒ (ℒ X) ⇒ ℒ X
   ℒ-join .func x = x
   ℒ-join .fwd x = meet-semilattice-2.L-join
-  ℒ-join .bwd x = join-semilattice-2.L-dup
+  ℒ-join .bwd x = join-semilattice.L-dup
   ℒ-join .bwd⊣fwd x {bottom} {bottom} .proj₁ _ = tt
   ℒ-join .bwd⊣fwd x {bottom} {< x₂ >} .proj₁ ()
   ℒ-join .bwd⊣fwd x {< bottom >} {bottom} .proj₁ _ = tt
@@ -172,7 +172,7 @@ module _ where
   ℒ-func : ∀ {X Y} → X ⇒ Y → ℒ X ⇒ ℒ Y
   ℒ-func f .func = f .func
   ℒ-func f .fwd x = meet-semilattice-2.L-func (f .fwd x)
-  ℒ-func f .bwd x = join-semilattice-2.L-func (f .bwd x)
+  ℒ-func f .bwd x = join-semilattice.L-func (f .bwd x)
   ℒ-func f .bwd⊣fwd x {bottom} {bottom} .proj₁ _ = tt
   ℒ-func f .bwd⊣fwd x {bottom} {< y' >} .proj₁ ()
   ℒ-func f .bwd⊣fwd x {< x' >} {bottom} .proj₁ _ = tt
