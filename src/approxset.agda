@@ -16,7 +16,7 @@ open import join-semilattice
             project₁ to project₁J; project₂ to project₂J;
             L to LJ; _∘_ to _∘J_; id to idJ)
   hiding (initial)
-open import meet-semilattice
+open import meet-semilattice-2
   renaming (_=>_ to _=>M_; 𝟙 to 𝟙M; _⊕_ to _⊕M_; ⟨_,_⟩ to ⟨_,_⟩M; [_,_] to [_,_]M;
             project₁ to project₁M; project₂ to project₂M;
             inject₁ to inject₁M; inject₂ to inject₂M;
@@ -51,8 +51,9 @@ open import meet-semilattice
 record ApproxSet : Set (suc 0ℓ) where
   field
     elem    : Set
+    forder : elem -> Preorder
     rorder : elem → Preorder
-    fapprox : elem → MeetSemilattice
+    fapprox : (x : elem) → MeetSemilattice (forder x)
     rapprox : (x : elem) → JoinSemilattice (rorder x)
 open ApproxSet
 
@@ -80,6 +81,7 @@ infixr 10 _∘_
 -- Any old set becomes a “discrete” object
 Disc : Set → ApproxSet
 Disc A .elem = A
+Disc A .forder _ = preorder.𝟙
 Disc A .rorder _ = preorder.𝟙
 Disc A .rapprox _ = 𝟙J
 Disc A .fapprox _ = 𝟙M
@@ -92,13 +94,14 @@ Disc-f f .bwd x = idJ
 -- Terminal Object
 ⊤ₐ : ApproxSet
 ⊤ₐ .elem = ⊤
+⊤ₐ .forder _ = preorder.𝟙
 ⊤ₐ .rorder _ = preorder.𝟙
 ⊤ₐ .rapprox tt = 𝟙J
 ⊤ₐ .fapprox tt = 𝟙M
 
 terminal : ∀ {X} → X ⇒ ⊤ₐ
 terminal .func x = tt
-terminal .fwd x = meet-semilattice.terminal
+terminal .fwd x = meet-semilattice-2.terminal
 terminal .bwd x = join-semilattice.initial
 
 Disc-const : ∀ {A} → A → ⊤ₐ ⇒ Disc A
@@ -109,6 +112,7 @@ Disc-const x .bwd tt = idJ
 -- Products
 _⊗_ : ApproxSet → ApproxSet → ApproxSet
 (X ⊗ Y) .elem = X .elem × Y .elem
+(X ⊗ Y) .forder (x , y) = X .forder x preorder.× Y .forder y
 (X ⊗ Y) .rorder (x , y) = X .rorder x preorder.× Y .rorder y
 (X ⊗ Y) .fapprox (x , y) = X .fapprox x ⊕M Y .fapprox y
 (X ⊗ Y) .rapprox (x , y) = X .rapprox x ⊕J Y .rapprox y
@@ -154,6 +158,8 @@ initial .bwd ()
 -- Sums
 _+_ : ApproxSet → ApproxSet → ApproxSet
 (X + Y) .elem = X .elem ⊎ Y .elem
+(X + Y) .forder (inj₁ x) = X .forder x
+(X + Y) .forder (inj₂ y) = Y .forder y
 (X + Y) .rorder (inj₁ x) = X .rorder x
 (X + Y) .rorder (inj₂ y) = Y .rorder y
 (X + Y) .rapprox (inj₁ x) = X .rapprox x
@@ -194,26 +200,27 @@ binPred _∼_ .bwd (n , m) with n ∼ m
 -- Functions
 _⊸_ : ApproxSet → ApproxSet → ApproxSet
 (X ⊸ Y) .elem = X ⇒ Y
-(X ⊸ Y) .rorder f = ⨁-preorder (X .elem) (λ x → Y .rorder (f .func x)) λ x → Y .rapprox (f .func x)
-(X ⊸ Y) .rapprox f = ⨁ (X .elem) (λ x → Y .rorder (f .func x)) λ x → Y .rapprox (f .func x)
-(X ⊸ Y) .fapprox f = Π (X .elem) λ x → Y .fapprox (f .func x)
+(X ⊸ Y) .forder f = Π-preorder (X .elem) _ λ x → Y .fapprox (f .func x)
+(X ⊸ Y) .rorder f = ⨁-preorder (X .elem) _ λ x → Y .rapprox (f .func x)
+(X ⊸ Y) .rapprox f = ⨁ (X .elem) _ λ x → Y .rapprox (f .func x)
+(X ⊸ Y) .fapprox f = Π (X .elem) _ λ x → Y .fapprox (f .func x)
 
 eval : ∀ {X Y} → ((X ⊸ Y) ⊗ X) ⇒ Y
 eval .func (f , x) = f .func x
-eval {X}{Y} .fwd (f , x) = proj-Π _ _ x ∘M project₁M
-eval {X}{Y} .bwd (f , x) =
-  ⟨ inj-⨁ (X .elem) (λ x → Y .rorder (f .func x)) (λ x → Y .rapprox (f .func x)) x , f .bwd x ⟩J
+eval .fwd (f , x) = proj-Π _ _ _ x ∘M project₁M
+eval .bwd (f , x) = ⟨ inj-⨁ _ _ _ x , f .bwd x ⟩J
 
 lambda : ∀ {X Y Z} → (X ⊗ Y) ⇒ Z → X ⇒ (Y ⊸ Z)
 lambda m .func x .func y = m .func (x , y)
 lambda m .func x .fwd y = m .fwd (x , y) ∘M inject₂M
 lambda m .func x .bwd y = project₂J ∘J m .bwd (x , y)
-lambda m .fwd x = lambda-Π _ _ λ y → m .fwd (x , y) ∘M inject₁M
+lambda m .fwd x = lambda-Π _ _ _ λ y → m .fwd (x , y) ∘M inject₁M
 lambda m .bwd x = elim-⨁ _ _ _ _ λ y → project₁J ∘J m .bwd (x , y)
 
 -- Lifting
 ℒ : ApproxSet → ApproxSet
 ℒ X .elem = X .elem
+ℒ X .forder x = preorder.L (X .forder x)
 ℒ X .rorder x = preorder.L (X .rorder x)
 ℒ X .rapprox x = LJ (X .rapprox x)
 ℒ X .fapprox x = LM (X .fapprox x)
@@ -225,18 +232,18 @@ lambda m .bwd x = elim-⨁ _ _ _ _ λ y → project₁J ∘J m .bwd (x , y)
 
 ℒ-join : ∀ {X} → ℒ (ℒ X) ⇒ ℒ X
 ℒ-join .func x = x
-ℒ-join .fwd x = meet-semilattice.L-join
-ℒ-join .bwd x = L-dup
+ℒ-join .fwd x = meet-semilattice-2.L-join
+ℒ-join .bwd x = join-semilattice.L-dup
 
 ℒ-func : ∀ {X Y} → X ⇒ Y → ℒ X ⇒ ℒ Y
 ℒ-func f .func = f .func
-ℒ-func f .fwd x = meet-semilattice.L-func (f .fwd x)
+ℒ-func f .fwd x = meet-semilattice-2.L-func (f .fwd x)
 ℒ-func f .bwd x = join-semilattice.L-func (f .bwd x)
 
 ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
 ℒ-strength .func xy = xy
 ℒ-strength .fwd (x , y) =
-  meet-semilattice.[ L-unit ∘M inject₁M , meet-semilattice.L-func inject₂M ]
+  meet-semilattice-2.[ L-unit ∘M inject₁M , meet-semilattice-2.L-func inject₂M ]
 ℒ-strength .bwd (x , y) =
   join-semilattice.⟨ project₁J ∘J L-counit , join-semilattice.L-func project₂J ⟩
 
