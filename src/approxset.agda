@@ -178,12 +178,12 @@ inr .fwd y = idM
 inr .bwd y = idJ
 
 [_,_] : ∀ {W X Y Z} → (W ⊗ X) ⇒ Z → (W ⊗ Y) ⇒ Z → (W ⊗ (X + Y)) ⇒ Z
-[_,_] m₁ m₂ .func (w , inj₁ x) = m₁ .func (w , x)
-[_,_] m₁ m₂ .func (w , inj₂ y) = m₂ .func (w , y)
-[_,_] m₁ m₂ .fwd (w , inj₁ x) = m₁ .fwd (w , x)
-[_,_] m₁ m₂ .fwd (w , inj₂ y) = m₂ .fwd (w , y)
-[_,_] m₁ m₂ .bwd (w , inj₁ x) = m₁ .bwd (w , x)
-[_,_] m₁ m₂ .bwd (w , inj₂ y) = m₂ .bwd (w , y)
+[ m₁ , m₂ ] .func (w , inj₁ x) = m₁ .func (w , x)
+[ m₁ , m₂ ] .func (w , inj₂ y) = m₂ .func (w , y)
+[ m₁ , m₂ ] .fwd (w , inj₁ x) = m₁ .fwd (w , x)
+[ m₁ , m₂ ] .fwd (w , inj₂ y) = m₂ .fwd (w , y)
+[ m₁ , m₂ ] .bwd (w , inj₁ x) = m₁ .bwd (w , x)
+[ m₁ , m₂ ] .bwd (w , inj₂ y) = m₂ .bwd (w , y)
 
 -- Helper for binary predicate over a set
 binPred : ∀ {ℓ A} {_∼_ : Rel A ℓ} → Decidable _∼_ → Disc (A × A) ⇒ (⊤ₐ + ⊤ₐ)
@@ -200,22 +200,22 @@ binPred _∼_ .bwd (n , m) with n ∼ m
 -- Functions
 _⊸_ : ApproxSet → ApproxSet → ApproxSet
 (X ⊸ Y) .elem = X ⇒ Y
-(X ⊸ Y) .forder f = Π-preorder (X .elem) _ λ x → Y .fapprox (f .func x)
-(X ⊸ Y) .rorder f = ⨁-preorder (X .elem) _ λ x → Y .rapprox (f .func x)
-(X ⊸ Y) .rapprox f = ⨁ (X .elem) _ λ x → Y .rapprox (f .func x)
-(X ⊸ Y) .fapprox f = Π (X .elem) _ λ x → Y .fapprox (f .func x)
+(X ⊸ Y) .forder f = Π-preorder (X .elem) λ x → Y .fapprox (f .func x)
+(X ⊸ Y) .rorder f = ⨁-preorder (X .elem) λ x → Y .rapprox (f .func x)
+(X ⊸ Y) .rapprox f = ⨁ (X .elem) λ x → Y .rapprox (f .func x)
+(X ⊸ Y) .fapprox f = Π (X .elem) λ x → Y .fapprox (f .func x)
 
 eval : ∀ {X Y} → ((X ⊸ Y) ⊗ X) ⇒ Y
 eval .func (f , x) = f .func x
-eval .fwd (f , x) = proj-Π _ _ _ x ∘M project₁M
-eval .bwd (f , x) = ⟨ inj-⨁ _ _ _ x , f .bwd x ⟩J
+eval .fwd (f , x) = proj-Π _ _ x ∘M project₁M
+eval .bwd (f , x) = ⟨ inj-⨁ _ _ x , f .bwd x ⟩J
 
 lambda : ∀ {X Y Z} → (X ⊗ Y) ⇒ Z → X ⇒ (Y ⊸ Z)
 lambda m .func x .func y = m .func (x , y)
 lambda m .func x .fwd y = m .fwd (x , y) ∘M inject₂M
 lambda m .func x .bwd y = project₂J ∘J m .bwd (x , y)
-lambda m .fwd x = lambda-Π _ _ _ λ y → m .fwd (x , y) ∘M inject₁M
-lambda m .bwd x = elim-⨁ _ _ _ _ λ y → project₁J ∘J m .bwd (x , y)
+lambda m .fwd x = lambda-Π _ _ λ y → m .fwd (x , y) ∘M inject₁M
+lambda m .bwd x = elim-⨁ _ _ _ λ y → project₁J ∘J m .bwd (x , y)
 
 -- Lifting
 ℒ : ApproxSet → ApproxSet

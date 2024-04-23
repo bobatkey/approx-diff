@@ -58,7 +58,7 @@ module _ where
 
 ------------------------------------------------------------------------------
 -- Big Products
-module _ (I : Set) (A : I → Preorder) (X : (i : I) → MeetSemilattice (A i)) where
+module _ (I : Set) {A : I → Preorder} (X : (i : I) → MeetSemilattice (A i)) where
   open MeetSemilattice
   open _=>_
 

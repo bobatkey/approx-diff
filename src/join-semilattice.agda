@@ -184,7 +184,7 @@ module _ where
 
 ------------------------------------------------------------------------------
 -- Set-wide direct sums of JoinSemilattices
-module _ (I : Set) (A : I -> Preorder) (X : (i : I) → JoinSemilattice (A i)) where
+module _ (I : Set) {A : I -> Preorder} (X : (i : I) → JoinSemilattice (A i)) where
   open JoinSemilattice
   open _=>_
 

@@ -130,7 +130,7 @@ module _ where
   [ m₁ , m₂ ] .bwd⊣fwd (w , inj₁ x) = m₁ .bwd⊣fwd (w , x)
   [ m₁ , m₂ ] .bwd⊣fwd (w , inj₂ y) = m₂ .bwd⊣fwd (w , y)
 
--- Not sure how to do function spaces given different posets used by ⨁ and Π
+-- Function spaces will be provided by presheaf category
 
 -- Lifting
 module _ where
