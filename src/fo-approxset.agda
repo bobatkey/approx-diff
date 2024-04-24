@@ -199,6 +199,8 @@ module _ where
   ℒ-strength .bwd⊣fwd (x , y) {x₁ , bottom} {< _ >} .proj₂ ()
   ℒ-strength .bwd⊣fwd (x , y) {x₁ , < y₁ >} {bottom} .proj₂ _ = tt
   ℒ-strength {X} .bwd⊣fwd (x , y) {x₁ , < y₁ >} {< x₂ , y₂ >} .proj₂ (x₂≤ , _) .proj₁ =
-    ≤-trans (X .order x) x₂≤ {!   !} -- idem + mono
+    ⟨ x₂≤ , IsTop.≤-top (X .fapprox x .⊤-isTop) ⟩
+    where open IsMeet (X .fapprox x .∧-isMeet)
   ℒ-strength {Y = Y} .bwd⊣fwd (x , y) {x₁ , < y₁ >} {< x₂ , y₂ >} .proj₂ (_ , y₂≤) .proj₂ =
-    ≤-trans (Y .order y) y₂≤ {!   !} -- idem + mono
+    ⟨ IsTop.≤-top (Y .fapprox y .⊤-isTop) , y₂≤ ⟩
+    where open IsMeet (Y .fapprox y .∧-isMeet)
