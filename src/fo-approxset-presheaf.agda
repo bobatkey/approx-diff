@@ -3,9 +3,10 @@
 module fo-approxset-presheaf where
 
 open import Level
+open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Function renaming (id to idₛ; _∘_ to _∘ₛ_)
 open import Relation.Binary.PropositionalEquality
-open import fo-approxset renaming (_⇒_ to _⇒ₐ_; id to idₐ; _∘_ to _∘ₐ_)
+open import fo-approxset renaming (_⇒_ to _⇒ₐ_; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_)
 
 -- Presheaf on FOApproxSet
 record FOApproxSetPSh : Set (suc 0ℓ) where
@@ -20,12 +21,6 @@ open FOApproxSetPSh
 infix 4 _≈_
 _≈_ : ∀ {A B} → (A -> B) -> (A → B) -> Set
 f ≈ g = ∀ x → f x ≡ g x
-
-≈-sym : ∀ {A B} {f : A → B} {g : A → B} -> f ≈ g -> g ≈ f
-≈-sym f≈g x = sym (f≈g x)
-
-∘-cong₁ : ∀ {A B C} (f g : B → C) (h : A → B) -> f ≈ g → f ∘ₛ h ≈ g ∘ₛ h
-∘-cong₁ f g h f≈g x = f≈g (h x)
 
 record _⇒_ (F G : FOApproxSetPSh) : Set (suc 0ℓ) where
   field
@@ -43,3 +38,11 @@ _∘_ : ∀ {F G H} → G ⇒ H → F ⇒ G → F ⇒ H
 (ζ ∘ η) .func X = ζ .func X ∘ₛ η .func X
 (ζ ∘ η) .commute {X}{Y} f y =
   trans (cong (ζ .func X) (η .commute f y)) (ζ .commute f (η .func Y y))
+
+infixr 10 _∘_
+
+-- Products
+module _ where
+  _⊗_ : FOApproxSetPSh → FOApproxSetPSh → FOApproxSetPSh
+  (F ⊗ G) .obj X = F .obj X × G .obj X
+  (F ⊗ G) .map f (y₁ , y₂) = F .map f y₁ , G .map f y₂
