@@ -41,9 +41,5 @@ id .commute f y = refl
 
 _∘_ : ∀ {F G H} → G ⇒ H → F ⇒ G → F ⇒ H
 (ζ ∘ η) .func X = ζ .func X ∘ₛ η .func X
-_∘_ {F}{G}{H} ζ η .commute {X}{Y} f y =
-  let q : H .map f ∘ₛ ζ .func Y ∘ₛ η .func Y ≈ ζ .func X ∘ₛ G .map f ∘ₛ η .func Y
-      q = λ x → ≈-sym (ζ .commute f) (η .func Y x) in
-  let q' : ζ .func X ∘ₛ G .map f ∘ₛ η .func Y ≈ ζ .func X ∘ₛ η .func X ∘ₛ F .map f
-      q' = λ x → cong (ζ .func X) (≈-sym (η .commute f) x) in
-  trans (sym (q' y)) (sym (q y))
+(ζ ∘ η) .commute {X}{Y} f y =
+  trans (cong (ζ .func X) (η .commute f y)) (ζ .commute f (η .func Y y))
