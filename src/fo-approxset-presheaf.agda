@@ -3,9 +3,9 @@
 module fo-approxset-presheaf where
 
 open import Level
-open import Function using (_∘_)
+open import Function renaming (id to idₛ; _∘_ to _∘ₛ_)
 open import Relation.Binary.PropositionalEquality
-open import fo-approxset renaming (_⇒_ to _⇒ₐ_; _∘_ to _∘ₐ_)
+open import fo-approxset renaming (_⇒_ to _⇒ₐ_; id to idₐ; _∘_ to _∘ₐ_)
 
 -- Presheaf on FOApproxSet to Set
 record FOApproxSetPSh : Set (suc 0ℓ) where
@@ -23,4 +23,11 @@ f ≈ g = ∀ x → f x ≡ g x
 record _⇒_ (F G : FOApproxSetPSh) : Set (suc 0ℓ) where
   field
     func : ∀ (X : FOApproxSet) → F .obj X → G .obj X
-    commute : ∀ {X Y : FOApproxSet} (f : X ⇒ₐ Y) → func X ∘ F .map f ≈ G .map f ∘ func Y
+    commute : ∀ {X Y : FOApproxSet} (f : X ⇒ₐ Y) → func X ∘ₛ F .map f ≈ G .map f ∘ₛ func Y
+
+open _⇒_
+
+-- Definitions for category
+id : ∀ {F} → F ⇒ F
+id .func x = idₛ
+id .commute m y = refl
