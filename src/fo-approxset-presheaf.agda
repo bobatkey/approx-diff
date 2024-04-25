@@ -9,10 +9,10 @@ open import Function renaming (id to idₛ; _∘_ to _∘ₛ_)
 open import Relation.Binary.PropositionalEquality
 open import fo-approxset using (FOApproxSet) renaming (_⇒_ to _⇒ₐ_; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_)
 
--- Presheaf on FOApproxSet
-record FOApproxSetPSh : Set (suc 0ℓ) where
+-- Presheaf on FOApproxSet. Unsure about universe levels..
+record FOApproxSetPSh : Set (suc (suc 0ℓ)) where
   field
-    obj : FOApproxSet → Set
+    obj : FOApproxSet → Set (suc 0ℓ)
     map : ∀ {X Y : FOApproxSet} → (X ⇒ₐ Y) → obj Y → obj X
     -- preserves id, composition
 
@@ -20,7 +20,7 @@ open FOApproxSetPSh
 
 -- Come back to function equality, this for now
 infix 4 _≈_
-_≈_ : ∀ {A B} → (A -> B) -> (A → B) -> Set
+_≈_ : ∀ {a} {A B : Set a} → (A -> B) -> (A → B) -> Set a
 f ≈ g = ∀ x → f x ≡ g x
 
 record _⇒_ (F G : FOApproxSetPSh) : Set (suc 0ℓ) where
@@ -80,3 +80,8 @@ inr .commute f _ = refl
 [ ζ , η ] .func X (x , inj₂ y) = η .func X (x , y)
 [ ζ , η ] .commute f (x , inj₁ y) = ζ .commute f (x , y)
 [ ζ , η ] .commute f (x , inj₂ y) = η .commute f (x , y)
+
+-- Functions
+_⊸_ : FOApproxSetPSh → FOApproxSetPSh → FOApproxSetPSh
+(F ⊸ G) .obj X = F ⇒ G
+(F ⊸ G) .map f = {!   !}
