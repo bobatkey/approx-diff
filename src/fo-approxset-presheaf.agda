@@ -6,7 +6,7 @@ open import Level
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Function renaming (id to idₛ; _∘_ to _∘ₛ_)
 open import Relation.Binary.PropositionalEquality
-open import fo-approxset renaming (_⇒_ to _⇒ₐ_; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_)
+open import fo-approxset using (FOApproxSet) renaming (_⇒_ to _⇒ₐ_; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_)
 
 -- Presheaf on FOApproxSet
 record FOApproxSetPSh : Set (suc 0ℓ) where
@@ -45,4 +45,18 @@ infixr 10 _∘_
 module _ where
   _⊗_ : FOApproxSetPSh → FOApproxSetPSh → FOApproxSetPSh
   (F ⊗ G) .obj X = F .obj X × G .obj X
-  (F ⊗ G) .map f (y₁ , y₂) = F .map f y₁ , G .map f y₂
+  (F ⊗ G) .map f (x , y) .proj₁ = F .map f x
+  (F ⊗ G) .map f (x , y) .proj₂ = G .map f y
+
+  π₁ : ∀ {F G} → (F ⊗ G) ⇒ F
+  π₁ .func X = proj₁
+  π₁ .commute f _ = refl
+
+  π₂ : ∀ {F G} → (F ⊗ G) ⇒ G
+  π₂ .func X = proj₂
+  π₂ .commute f _ = refl
+
+  pair : ∀ {F G H} → F ⇒ G → F ⇒ H → F ⇒ (G ⊗ H)
+  pair ζ η .func X x .proj₁ = ζ .func X x
+  pair ζ η .func X x .proj₂ = η .func X x
+  pair ζ η .commute f x = cong₂ _,_ (ζ .commute f x) (η .commute f x)
