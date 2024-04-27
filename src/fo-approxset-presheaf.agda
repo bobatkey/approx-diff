@@ -91,11 +91,11 @@ _⊸_ : FOApproxSetPSh 0ℓ → FOApproxSetPSh 0ℓ → FOApproxSetPSh (suc 0ℓ
 (F ⊸ G) .obj X = (F ⊗ よ X) ⇒ G
 (F ⊸ G) .map f η .at X (x , g) = η .at X (x , f ∘ₐ g)
 (F ⊸ G) .map {X} {Y} f η .commute {W} {Z} g (x , h) =
-  let q : η .at W (F .map g x , (f ∘ₐ h) ∘ₐ g) ≡ (G .map g ∘ₛ η .at Z) (x , f ∘ₐ h)
-      q = η .commute g (x , f ∘ₐ h) in
   begin
     η .at W (F .map g x , f ∘ₐ (h ∘ₐ g))
-  ≡⟨ {!   !} ⟩
+  ≡⟨ cong (λ f' → η .at W (F .map g x , f')) {!   !} ⟩
+    η .at W (F .map g x , (f ∘ₐ h) ∘ₐ g)
+  ≡⟨ η .commute g (x , f ∘ₐ h) ⟩
     G .map g (η .at Z (x , f ∘ₐ h))
   ∎
   where open ≡-Reasoning

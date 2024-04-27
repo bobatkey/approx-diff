@@ -6,12 +6,15 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Unit using (tt)
 open import Level
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import basics
 open import preorder using (Preorder; L)
 open import meet-semilattice
+  hiding (_≃m_)
   renaming (_=>_ to _=>M_; _⊕_ to _⊕M_; id to idM; _∘_ to _∘M_; L to LM; [_,_] to [_,_]M; ⟨_,_⟩ to ⟨_,_⟩M;
             project₁ to project₁M; project₂ to project₂M; inject₁ to inject₁M; inject₂ to inject₂M)
 open import join-semilattice
+  hiding (_≃m_)
   renaming (_=>_ to _=>J_; _⊕_ to _⊕J_; id to idJ; _∘_ to _∘J_; L to LJ; [_,_] to [_,_]J; ⟨_,_⟩ to ⟨_,_⟩J;
             project₁ to project₁J; project₂ to project₂J; inject₁ to inject₁J; inject₂ to inject₂J)
 
@@ -37,6 +40,12 @@ record _⇒_ (X Y : FOApproxSet) : Set where
 
 open _⇒_
 
+record _≃m_ {X Y : FOApproxSet} (f g : X ⇒ Y) : Set where
+  open _⇒_
+  field
+    eqfunc : ∀ x → f .func x ≡ g .func x
+    -- also need a proof that fwd/bwd approximations are equal (either would entail the other)
+
 -- Definitions for category
 
 id : ∀ {X} → X ⇒ X
@@ -54,6 +63,12 @@ _∘_ : ∀ {X Y Z} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
   g .bwd⊣fwd x .proj₁ (f .bwd⊣fwd (g .func x) .proj₁ z'≤fgx')
 (f ∘ g) .bwd⊣fwd x .proj₂ gfz'≤x' =
   f .bwd⊣fwd (g .func x) .proj₂ (g .bwd⊣fwd x .proj₂ gfz'≤x')
+
+module _ where
+  open _≃m_
+
+  ∘-assoc : ∀ {X Y Z W} (f : Y ⇒ Z) (g : Z ⇒ X) (h : X ⇒ W) → (h ∘ (g ∘ f)) ≃m ((h ∘ g) ∘ f)
+  ∘-assoc f g h .eqfunc x = refl
 
 infixr 10 _∘_
 
