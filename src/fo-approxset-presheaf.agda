@@ -10,25 +10,29 @@ open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 open import fo-approxset using (FOApproxSet) renaming (_⇒_ to _⇒ₐ_; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_)
 
--- Presheaf on FOApproxSet. Unsure about universe levels..
-record FOApproxSetPSh a : Set (suc a) where
-  field
-    obj : FOApproxSet → Set a
-    map : ∀ {X Y : FOApproxSet} → (X ⇒ₐ Y) → obj Y → obj X
-    -- preserves id, composition
-
-open FOApproxSetPSh
-
--- For now this is how we state naturality (.commute).
+-- For now this is how we state functoriality/naturality.
 infix 4 _≈_
 _≈_ : ∀ {a b} {A : Set a} {B : Set b} → (A -> B) -> (A → B) -> Set (a ⊔ b)
 f ≈ g = ∀ x → f x ≡ g x
+
+≈-sym : ∀ {a b} {A : Set a} {B : Set b} {f : A -> B} {g : A → B} → f ≈ g → g ≈ f
+≈-sym f≈g x = sym (f≈g x)
 
 -- But maybe too restrictive because then ⇒ₐ equations need to hold up to propositional equality..
 postulate
   ∘ₐ-assoc : ∀ {W X Y Z} (f : Y ⇒ₐ Z) (g : X ⇒ₐ Y) (h : W ⇒ₐ X) → f ∘ₐ (g ∘ₐ h) ≡ (f ∘ₐ g) ∘ₐ h
   ∘ₐ-unitᵣ : ∀ {X Y} (f : X ⇒ₐ Y) → f ∘ₐ idₐ ≡ f
   ∘ₐ-unitₗ : ∀ {X Y} (f : X ⇒ₐ Y) → idₐ ∘ₐ f ≡ f
+
+-- Presheaf on FOApproxSet.
+record FOApproxSetPSh a : Set (suc a) where
+  field
+    obj : FOApproxSet → Set a
+    map : ∀ {X Y} → (X ⇒ₐ Y) → obj Y → obj X
+    preserves-∘ : ∀ {X Y Z} (f : Y ⇒ₐ Z) (g : X ⇒ₐ Y) → (map g ∘ₛ map f) ≈ map (f ∘ₐ g)
+    -- preserves id too
+
+open FOApproxSetPSh
 
 record _⇒_ {a b} (F : FOApproxSetPSh a) (G : FOApproxSetPSh b) : Set (suc (a ⊔ b)) where
   field
@@ -54,6 +58,7 @@ _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
 (F ⊗ G) .obj X = F .obj X × G .obj X
 (F ⊗ G) .map f (x , y) .proj₁ = F .map f x
 (F ⊗ G) .map f (x , y) .proj₂ = G .map f y
+(F ⊗ G) .preserves-∘ f g (x , y) = cong₂ _,_ (F .preserves-∘ f g x) (G .preserves-∘ f g y)
 
 π₁ : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → (F ⊗ G) ⇒ F
 π₁ .at X = proj₁
@@ -73,6 +78,8 @@ _+_ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a → FOApproxSetPSh a
 (F + G) .obj X = F .obj X ⊎ G .obj X
 (F + G) .map f (inj₁ x) = inj₁ (F .map f x)
 (F + G) .map f (inj₂ x) = inj₂ (G .map f x)
+(F + G) .preserves-∘ f g (inj₁ x) = cong inj₁ (F .preserves-∘ f g x)
+(F + G) .preserves-∘ f g (inj₂ x) = cong inj₂ (G .preserves-∘ f g x)
 
 inl : ∀ {a} {F G : FOApproxSetPSh a} → F ⇒ (F + G)
 inl .at X = inj₁
@@ -92,8 +99,9 @@ inr .commute f _ = refl
 よ : FOApproxSet -> FOApproxSetPSh 0ℓ
 よ Y .obj X = X ⇒ₐ Y
 よ Y .map f g = g ∘ₐ f
+よ Y .preserves-∘ f g h = sym (∘ₐ-assoc h f g)
 
--- Functions
+-- Functions. (F ⊗ よ X) ⇒ G and よ X ⇒ (F ⊸ G) are isomorphic
 _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (suc (a ⊔ b))
 (F ⊸ G) .obj X = (F ⊗ よ X) ⇒ G
 (F ⊸ G) .map f η .at X (x , g) = η .at X (x , f ∘ₐ g)
@@ -105,11 +113,16 @@ _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
   ≡⟨ η .commute g (x , f ∘ₐ h) ⟩
     G .map g (η .at Z (x , f ∘ₐ h))
   ∎
-  -- (F ⊗ よ X) ⇒ G and よ X ⇒ (F ⊸ G) are isomorphic
+(F ⊸ G) .preserves-∘ f g η =
+  begin
+    (F ⊸ G) .map g ((F ⊸ G) .map f η)
+  ≡⟨ {!   !} ⟩
+    (F ⊸ G) .map (f ∘ₐ g) η
+  ∎
 
-eval : ∀ {F G : FOApproxSetPSh 0ℓ} → ((F ⊸ G) ⊗ F) ⇒ G
+eval : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ((F ⊸ G) ⊗ F) ⇒ G
 eval .at X (η , x) = η .at X (x , idₐ)
-eval {F} {G} .commute {X} {Y} f (η , y) =
+eval {F = F} {G} .commute {X} {Y} f (η , y) =
   begin
     η .at X (F .map f y , f ∘ₐ idₐ)
   ≡⟨ cong (λ f' → η .at X (F .map f y , f')) (trans (∘ₐ-unitᵣ f) (sym (∘ₐ-unitₗ f))) ⟩
@@ -118,5 +131,19 @@ eval {F} {G} .commute {X} {Y} f (η , y) =
     G .map f (η .at Y (y , idₐ))
   ∎
 
-lambda : ∀ {F G H : FOApproxSetPSh 0ℓ} → (F ⊗ G) ⇒ H → F ⇒ (G ⊸ H)
-lambda = {!   !}
+lambda : ∀ {a b c} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} {H : FOApproxSetPSh c} → (F ⊗ G) ⇒ H → F ⇒ (G ⊸ H)
+lambda {F = F} η .at X x .at Y (y , f) = η .at Y (F .map f x , y)
+lambda {F = F} {G} {H} η .at X x .commute {Y} {Z} f (z , g) =
+  begin
+    η .at Y (F .map (g ∘ₐ f) x , G .map f z)
+  ≡⟨ cong (λ y → η .at Y (y , G .map f z)) (≈-sym (F .preserves-∘ g f) x) ⟩
+    η .at Y (F .map f (F .map g x) , G .map f z)
+  ≡⟨ η .commute f (F .map g x , z) ⟩
+    H .map f (η .at Z (F .map g x , z))
+  ∎
+lambda {F = F} {G} {H} η .commute {X} {Y} f x =
+  begin
+    lambda η .at X (F .map f x)
+  ≡⟨ {!   !} ⟩
+    (G ⊸ H) .map f (lambda η .at Y x)
+  ∎
