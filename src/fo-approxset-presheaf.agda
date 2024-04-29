@@ -10,7 +10,7 @@ open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 open import fo-approxset using (FOApproxSet) renaming (_⇒_ to _⇒ₐ_; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_)
 
--- For now this is how we state functoriality/naturality.
+-- For now how we state functoriality/naturality.
 infix 4 _≈_
 _≈_ : ∀ {a b} {A : Set a} {B : Set b} → (A -> B) -> (A → B) -> Set (a ⊔ b)
 f ≈ g = ∀ x → f x ≡ g x
@@ -18,7 +18,7 @@ f ≈ g = ∀ x → f x ≡ g x
 ≈-sym : ∀ {a b} {A : Set a} {B : Set b} {f : A -> B} {g : A → B} → f ≈ g → g ≈ f
 ≈-sym f≈g x = sym (f≈g x)
 
--- But maybe too restrictive because then ⇒ₐ equations need to hold up to propositional equality..
+-- But maybe too restrictive because then ⇒ₐ equations need to hold up to propositional equality.
 postulate
   ∘ₐ-assoc : ∀ {W X Y Z} (f : Y ⇒ₐ Z) (g : X ⇒ₐ Y) (h : W ⇒ₐ X) → f ∘ₐ (g ∘ₐ h) ≡ (f ∘ₐ g) ∘ₐ h
   ∘ₐ-unitᵣ : ∀ {X Y} (f : X ⇒ₐ Y) → f ∘ₐ idₐ ≡ f
@@ -30,7 +30,6 @@ record FOApproxSetPSh a : Set (suc a) where
     obj : FOApproxSet → Set a
     map : ∀ {X Y} → (X ⇒ₐ Y) → obj Y → obj X
     preserves-∘ : ∀ {X Y Z} (f : Y ⇒ₐ Z) (g : X ⇒ₐ Y) → (map g ∘ₛ map f) ≈ map (f ∘ₐ g)
-    -- preserves id too
 
 open FOApproxSetPSh
 
@@ -116,7 +115,7 @@ _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
 (F ⊸ G) .preserves-∘ f g η =
   begin
     (F ⊸ G) .map g ((F ⊸ G) .map f η)
-  ≡⟨ {!   !} ⟩
+  ≡⟨ {!   !} ⟩ -- need to show natural transformations are equivalent
     (F ⊸ G) .map (f ∘ₐ g) η
   ∎
 
@@ -144,6 +143,6 @@ lambda {F = F} {G} {H} η .at X x .commute {Y} {Z} f (z , g) =
 lambda {F = F} {G} {H} η .commute {X} {Y} f x =
   begin
     lambda η .at X (F .map f x)
-  ≡⟨ {!   !} ⟩
+  ≡⟨ {!   !} ⟩ -- need to show natural transformations are equivalent
     (G ⊸ H) .map f (lambda η .at Y x)
   ∎
