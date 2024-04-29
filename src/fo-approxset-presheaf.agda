@@ -7,6 +7,7 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Function renaming (id to idₛ; _∘_ to _∘ₛ_)
 open import Relation.Binary.PropositionalEquality
+open ≡-Reasoning
 open import fo-approxset using (FOApproxSet) renaming (_⇒_ to _⇒ₐ_; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_)
 
 -- Presheaf on FOApproxSet. Unsure about universe levels..
@@ -54,15 +55,15 @@ _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
 (F ⊗ G) .map f (x , y) .proj₁ = F .map f x
 (F ⊗ G) .map f (x , y) .proj₂ = G .map f y
 
-π₁ : ∀ {a} {F G : FOApproxSetPSh a} → (F ⊗ G) ⇒ F
+π₁ : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → (F ⊗ G) ⇒ F
 π₁ .at X = proj₁
 π₁ .commute f _ = refl
 
-π₂ : ∀ {a} {F G : FOApproxSetPSh a} → (F ⊗ G) ⇒ G
+π₂ : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → (F ⊗ G) ⇒ G
 π₂ .at X = proj₂
 π₂ .commute f _ = refl
 
-pair : ∀ {a} {F G H : FOApproxSetPSh a} → F ⇒ G → F ⇒ H → F ⇒ (G ⊗ H)
+pair : ∀ {a b c} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} {H : FOApproxSetPSh c} → F ⇒ G → F ⇒ H → F ⇒ (G ⊗ H)
 pair ζ η .at X x .proj₁ = ζ .at X x
 pair ζ η .at X x .proj₂ = η .at X x
 pair ζ η .commute f x = cong₂ _,_ (ζ .commute f x) (η .commute f x)
@@ -87,13 +88,13 @@ inr .commute f _ = refl
 [ ζ , η ] .commute f (x , inj₁ y) = ζ .commute f (x , y)
 [ ζ , η ] .commute f (x , inj₂ y) = η .commute f (x , y)
 
--- Yoneda embedding
+-- Yoneda embedding Y ↦ Hom(-, Y)
 よ : FOApproxSet -> FOApproxSetPSh 0ℓ
 よ Y .obj X = X ⇒ₐ Y
 よ Y .map f g = g ∘ₐ f
 
 -- Functions
-_⊸_ : FOApproxSetPSh 0ℓ → FOApproxSetPSh 0ℓ → FOApproxSetPSh (suc 0ℓ)
+_⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (suc (a ⊔ b))
 (F ⊸ G) .obj X = (F ⊗ よ X) ⇒ G
 (F ⊸ G) .map f η .at X (x , g) = η .at X (x , f ∘ₐ g)
 (F ⊸ G) .map f η .commute {W} {Z} g (x , h) =
@@ -104,7 +105,7 @@ _⊸_ : FOApproxSetPSh 0ℓ → FOApproxSetPSh 0ℓ → FOApproxSetPSh (suc 0ℓ
   ≡⟨ η .commute g (x , f ∘ₐ h) ⟩
     G .map g (η .at Z (x , f ∘ₐ h))
   ∎
-  where open ≡-Reasoning
+  -- (F ⊗ よ X) ⇒ G and よ X ⇒ (F ⊸ G) are isomorphic
 
 eval : ∀ {F G : FOApproxSetPSh 0ℓ} → ((F ⊸ G) ⊗ F) ⇒ G
 eval .at X (η , x) = η .at X (x , idₐ)
@@ -116,4 +117,6 @@ eval {F} {G} .commute {X} {Y} f (η , y) =
   ≡⟨ η .commute f (y , idₐ) ⟩
     G .map f (η .at Y (y , idₐ))
   ∎
-  where open ≡-Reasoning
+
+lambda : ∀ {F G H : FOApproxSetPSh 0ℓ} → (F ⊗ G) ⇒ H → F ⇒ (G ⊸ H)
+lambda = {!   !}
