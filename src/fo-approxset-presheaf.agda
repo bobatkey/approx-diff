@@ -20,6 +20,7 @@ record FOApproxSetPSh a : Set (suc a) where
     obj : FOApproxSet → Setoid a a
     map : ∀ {X Y} → (X ⇒ₐ Y) → obj Y .Carrier → obj X .Carrier
     preserves-∘ : ∀ {X Y Z} (f : Y ⇒ₐ Z) (g : X ⇒ₐ Y) → ∀ x → obj X ._≈_ (map g (map f x)) (map (f ∘ₐ g) x)
+    preserves-id : ∀ {X Y} (f : X ⇒ₐ Y) → ∀ x → obj X ._≈_ (idₛ (map f x)) (map f (idₛ x))
 
 open FOApproxSetPSh
 
@@ -45,7 +46,7 @@ module _ where
 -- Definitions for category
 id : ∀ {a} {F : FOApproxSetPSh a} → F ⇒ F
 id .at X = idₛ
-id .commute f y = {!   !}
+id {F = F} .commute = F .preserves-id
 
 _∘_ : ∀ {a} {F G H : FOApproxSetPSh a} → G ⇒ H → F ⇒ G → F ⇒ H
 (ζ ∘ η) .at X = ζ .at X ∘ₛ η .at X
@@ -68,6 +69,7 @@ _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
 (F ⊗ G) .map f (x , y) .proj₂ = G .map f y
 (F ⊗ G) .preserves-∘ f g (x , y) .proj₁ = F .preserves-∘ f g x
 (F ⊗ G) .preserves-∘ f g (x , y) .proj₂ = G .preserves-∘ f g y
+(F ⊗ G) .preserves-id f = {!   !}
 
 π₁ : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → (F ⊗ G) ⇒ F
 π₁ .at X = proj₁
@@ -100,6 +102,7 @@ _+_ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a → FOApproxSetPSh a
 (F + G) .map f (inj₂ x) = inj₂ (G .map f x)
 (F + G) .preserves-∘ f g (inj₁ x) = F .preserves-∘ f g x
 (F + G) .preserves-∘ f g (inj₂ x) = G .preserves-∘ f g x
+(F + G) .preserves-id f x = {!   !}
 
 inl : ∀ {a} {F G : FOApproxSetPSh a} → F ⇒ (F + G)
 inl .at X = inj₁
@@ -122,6 +125,7 @@ inr .commute f _ = {!   !} --refl
 よ Y .obj X .isEquivalence = ≃mₐ-isEquivalence
 よ Y .map f g = g ∘ₐ f
 よ Y .preserves-∘ f g h = {!   !} -- sym (∘ₐ-assoc h f g)
+よ Y .preserves-id f = {!   !} -- sym (∘ₐ-assoc h f g)
 
 -- Functions. (F ⊗ よ X) ⇒ G and よ X ⇒ (F ⊸ G) are isomorphic
 _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (suc (a ⊔ b))
@@ -147,6 +151,7 @@ _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
     (F ⊸ G) .map (f ∘ₐ g) η
   ∎
 -}
+(F ⊸ G) .preserves-id = {!   !}
 
 eval : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ((F ⊸ G) ⊗ F) ⇒ G
 eval .at X (η , x) = η .at X (x , idₐ)
