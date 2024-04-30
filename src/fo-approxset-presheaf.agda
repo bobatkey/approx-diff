@@ -45,6 +45,18 @@ record _⇒_ {a b} (F : FOApproxSetPSh a) (G : FOApproxSetPSh b) : Set (suc (a �
 
 open _⇒_
 
+record _≃m_ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} (η ζ : F ⇒ G) : Set (suc (a ⊔ b)) where
+  field
+    eqat : ∀ X x → G .obj X ._≈_ (η .at X x) (ζ .at X x)
+
+module _ where
+  open _≃m_
+
+  ≃m-isEquivalence : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → IsEquivalence (_≃m_ {F = F} {G})
+  ≃m-isEquivalence {G = G} .IsEquivalence.refl .eqat X x = G .obj X .isEquivalence .IsEquivalence.refl
+  ≃m-isEquivalence {G = G} .IsEquivalence.sym f≃g .eqat X x = G .obj X .isEquivalence .IsEquivalence.sym (f≃g .eqat X x)
+  ≃m-isEquivalence {G = G} .IsEquivalence.trans f≃g g≃h .eqat X x = G .obj X .isEquivalence .IsEquivalence.trans (f≃g .eqat X x) (g≃h .eqat X x)
+
 -- Definitions for category
 id : ∀ {a} {F : FOApproxSetPSh a} → F ⇒ F
 id .at X = idₛ
@@ -127,8 +139,8 @@ inr .commute f _ = refl
 -- Functions. (F ⊗ よ X) ⇒ G and よ X ⇒ (F ⊸ G) are isomorphic
 _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (suc (a ⊔ b))
 (F ⊸ G) .obj X .Carrier = (F ⊗ よ X) ⇒ G
-(F ⊸ G) .obj X ._≈_ = {!   !}
-(F ⊸ G) .obj X .isEquivalence = {!   !}
+(F ⊸ G) .obj X ._≈_ η ζ = η ≃m ζ
+(F ⊸ G) .obj X .isEquivalence = ≃m-isEquivalence
 (F ⊸ G) .map f η .at X (x , g) = η .at X (x , f ∘ₐ g)
 (F ⊸ G) .map f η .commute {W} {Z} g (x , h) =
   begin
