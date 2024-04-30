@@ -89,7 +89,12 @@ _+_ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a → FOApproxSetPSh a
 (F + G) .obj X ._≈_ (inj₂ x) (inj₂ y) = G .obj X ._≈_ x y
 (F + G) .obj X ._≈_ (inj₁ x) (inj₂ y) = Lift _ 𝟘
 (F + G) .obj X ._≈_ (inj₂ x) (inj₁ y) = Lift _ 𝟘
-(F + G) .obj X .isEquivalence = {!   !}
+(F + G) .obj X .isEquivalence .IsEquivalence.refl {inj₁ x} = F .obj X .isEquivalence .IsEquivalence.refl
+(F + G) .obj X .isEquivalence .IsEquivalence.refl {inj₂ x} = G .obj X .isEquivalence .IsEquivalence.refl
+(F + G) .obj X .isEquivalence .IsEquivalence.sym {inj₁ x} {inj₁ y} = F .obj X .isEquivalence .IsEquivalence.sym
+(F + G) .obj X .isEquivalence .IsEquivalence.sym {inj₂ x} {inj₂ y} = G .obj X .isEquivalence .IsEquivalence.sym
+(F + G) .obj X .isEquivalence .IsEquivalence.trans {inj₁ x} {inj₁ y} {inj₁ z} = F .obj X .isEquivalence .IsEquivalence.trans
+(F + G) .obj X .isEquivalence .IsEquivalence.trans {inj₂ x} {inj₂ y} {inj₂ z} = G .obj X .isEquivalence .IsEquivalence.trans
 (F + G) .map f (inj₁ x) = inj₁ (F .map f x)
 (F + G) .map f (inj₂ x) = inj₂ (G .map f x)
 (F + G) .preserves-∘ f g (inj₁ x) = cong inj₁ (F .preserves-∘ f g x)
