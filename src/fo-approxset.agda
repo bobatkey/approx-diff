@@ -45,9 +45,9 @@ record _≃m_ {X Y : FOApproxSet} (f g : X ⇒ Y) : Set where
   field
     eqfunc : ∀ x → f .func x ≡ g .func x
 
-module _ where
-  open _≃m_
+open _≃m_
 
+module _ where
   ≃m-isEquivalence : {X Y : FOApproxSet} → IsEquivalence (_≃m_ {X} {Y})
   ≃m-isEquivalence .IsEquivalence.refl .eqfunc x = refl
   ≃m-isEquivalence .IsEquivalence.sym f≃g .eqfunc x = sym (f≃g .eqfunc x)
@@ -73,14 +73,14 @@ _∘_ : ∀ {X Y Z} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
 
 infixr 10 _∘_
 
-∘-assoc : ∀ {W X Y Z} (f : Y ⇒ Z) (g : X ⇒ Y) (h : W ⇒ X) → ∀ x → (f ∘ (g ∘ h)) .func x ≡ ((f ∘ g) ∘ h) .func x
-∘-assoc f g h x = refl
+∘-assoc : ∀ {W X Y Z} (f : Y ⇒ Z) (g : X ⇒ Y) (h : W ⇒ X) → (f ∘ (g ∘ h)) ≃m ((f ∘ g) ∘ h)
+∘-assoc f g h .eqfunc x = refl
 
-∘-unitᵣ : ∀ {X Y} (f : X ⇒ Y) → ∀ x → (f ∘ id) .func x ≡ f .func x
-∘-unitᵣ f x = refl
+∘-unitᵣ : ∀ {X Y} (f : X ⇒ Y) → (f ∘ id) ≃m f
+∘-unitᵣ f .eqfunc x = refl
 
-∘-unitₗ : ∀ {X Y} (f : X ⇒ Y) → ∀ x → (id ∘ f) .func x ≡ f .func x
-∘-unitₗ f x = refl
+∘-unitₗ : ∀ {X Y} (f : X ⇒ Y) → (id ∘ f) ≃m f
+∘-unitₗ f .eqfunc x = refl
 
 -- Products
 module _ where

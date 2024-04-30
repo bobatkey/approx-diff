@@ -12,7 +12,10 @@ open IsEquivalence
 open Setoid using (Carrier; _≈_; isEquivalence)
 open import fo-approxset
   using (FOApproxSet)
-  renaming (_⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-isEquivalence to ≃mₐ-isEquivalence; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_)
+  renaming (
+    _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-isEquivalence to ≃mₐ-isEquivalence; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
+    ∘-assoc to ∘ₐ-assoc
+  )
 
 -- Presheaf on FOApproxSet.
 record FOApproxSetPSh a : Set (suc a) where
@@ -69,7 +72,8 @@ _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
 (F ⊗ G) .map f (x , y) .proj₂ = G .map f y
 (F ⊗ G) .preserves-∘ f g (x , y) .proj₁ = F .preserves-∘ f g x
 (F ⊗ G) .preserves-∘ f g (x , y) .proj₂ = G .preserves-∘ f g y
-(F ⊗ G) .preserves-id f = {!   !}
+(F ⊗ G) .preserves-id f (x , y) .proj₁ = F .preserves-id f x
+(F ⊗ G) .preserves-id f (x , y) .proj₂ = G .preserves-id f y
 
 π₁ : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → (F ⊗ G) ⇒ F
 π₁ .at X = proj₁
@@ -102,15 +106,16 @@ _+_ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a → FOApproxSetPSh a
 (F + G) .map f (inj₂ x) = inj₂ (G .map f x)
 (F + G) .preserves-∘ f g (inj₁ x) = F .preserves-∘ f g x
 (F + G) .preserves-∘ f g (inj₂ x) = G .preserves-∘ f g x
-(F + G) .preserves-id f x = {!   !}
+(F + G) .preserves-id f (inj₁ x) = F .preserves-id f x
+(F + G) .preserves-id f (inj₂ x) = G .preserves-id f x
 
 inl : ∀ {a} {F G : FOApproxSetPSh a} → F ⇒ (F + G)
 inl .at X = inj₁
-inl .commute f _ = {!   !} --refl
+inl {F = F} .commute {X} f _ = F .obj X .isEquivalence .refl
 
 inr : ∀ {a} {F G : FOApproxSetPSh a} → G ⇒ (F + G)
 inr .at X = inj₂
-inr .commute f _ = {!   !} --refl
+inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 
 [_,_] : ∀ {a} {E F G H : FOApproxSetPSh a} → (E ⊗ F) ⇒ H → (E ⊗ G) ⇒ H → (E ⊗ (F + G)) ⇒ H
 [ ζ , η ] .at X (x , inj₁ y) = ζ .at X (x , y)
@@ -124,8 +129,8 @@ inr .commute f _ = {!   !} --refl
 よ Y .obj X ._≈_ f g = f ≃mₐ g
 よ Y .obj X .isEquivalence = ≃mₐ-isEquivalence
 よ Y .map f g = g ∘ₐ f
-よ Y .preserves-∘ f g h = {!   !} -- sym (∘ₐ-assoc h f g)
-よ Y .preserves-id f = {!   !} -- sym (∘ₐ-assoc h f g)
+よ Y .preserves-∘ f g h = ≃mₐ-isEquivalence .sym (∘ₐ-assoc h f g)
+よ Y .preserves-id f g = {!   !}
 
 -- Functions. (F ⊗ よ X) ⇒ G and よ X ⇒ (F ⊸ G) are isomorphic
 _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (suc (a ⊔ b))
