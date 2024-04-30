@@ -123,6 +123,8 @@ inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 [ ζ , η ] .commute f (x , inj₁ y) = ζ .commute f (x , y)
 [ ζ , η ] .commute f (x , inj₂ y) = η .commute f (x , y)
 
+-- Rework proofs below using setoid equivalences
+
 -- Yoneda embedding Y ↦ Hom(-, Y)
 よ : FOApproxSet -> FOApproxSetPSh 0ℓ
 よ Y .obj X .Carrier = X ⇒ₐ Y
