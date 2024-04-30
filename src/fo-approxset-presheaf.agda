@@ -3,11 +3,12 @@
 module fo-approxset-presheaf where
 
 open import Level
+open import Data.Empty using () renaming (⊥ to 𝟘)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Function renaming (id to idₛ; _∘_ to _∘ₛ_)
 open import Relation.Binary.PropositionalEquality hiding (isEquivalence)
-open import Relation.Binary using (Setoid)
+open import Relation.Binary using (Setoid; IsEquivalence)
 open Setoid using (Carrier; _≈_; isEquivalence)
 open ≡-Reasoning
 open import fo-approxset using (FOApproxSet) renaming (_⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_)
@@ -57,8 +58,13 @@ infixr 10 _∘_
 -- Products
 _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (a ⊔ b)
 (F ⊗ G) .obj X .Carrier = F .obj X .Carrier × G .obj X .Carrier
-(F ⊗ G) .obj X ._≈_ = {!   !}
-(F ⊗ G) .obj X .isEquivalence = {!   !}
+(F ⊗ G) .obj X ._≈_ (x₁ , y₁) (x₂ , y₂) = F .obj X ._≈_ x₁ x₂ × G .obj X ._≈_ y₁ y₂
+(F ⊗ G) .obj X .isEquivalence .IsEquivalence.refl .proj₁ = F .obj X .isEquivalence .IsEquivalence.refl
+(F ⊗ G) .obj X .isEquivalence .IsEquivalence.refl .proj₂ = G .obj X .isEquivalence .IsEquivalence.refl
+(F ⊗ G) .obj X .isEquivalence .IsEquivalence.sym (x₁≈y₁ , _) .proj₁ = F .obj X .isEquivalence .IsEquivalence.sym x₁≈y₁
+(F ⊗ G) .obj X .isEquivalence .IsEquivalence.sym (_ , x₂≈y₂) .proj₂ = G .obj X .isEquivalence .IsEquivalence.sym x₂≈y₂
+(F ⊗ G) .obj X .isEquivalence .IsEquivalence.trans (x₁≈y₁ , _) (y₁≈z₁ , _) .proj₁ = F .obj X .isEquivalence .IsEquivalence.trans x₁≈y₁ y₁≈z₁
+(F ⊗ G) .obj X .isEquivalence .IsEquivalence.trans (_ , x₂≈y₂) (_ , y₂≈z₂) .proj₂ = G .obj X .isEquivalence .IsEquivalence.trans x₂≈y₂ y₂≈z₂
 (F ⊗ G) .map f (x , y) .proj₁ = F .map f x
 (F ⊗ G) .map f (x , y) .proj₂ = G .map f y
 (F ⊗ G) .preserves-∘ f g (x , y) = cong₂ _,_ (F .preserves-∘ f g x) (G .preserves-∘ f g y)
@@ -79,7 +85,10 @@ pair ζ η .commute f x = cong₂ _,_ (ζ .commute f x) (η .commute f x)
 -- Sums
 _+_ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a → FOApproxSetPSh a
 (F + G) .obj X .Carrier = F .obj X .Carrier ⊎ G .obj X .Carrier
-(F + G) .obj X ._≈_ = {!   !}
+(F + G) .obj X ._≈_ (inj₁ x) (inj₁ y) = F .obj X ._≈_ x y
+(F + G) .obj X ._≈_ (inj₂ x) (inj₂ y) = G .obj X ._≈_ x y
+(F + G) .obj X ._≈_ (inj₁ x) (inj₂ y) = Lift _ 𝟘
+(F + G) .obj X ._≈_ (inj₂ x) (inj₁ y) = Lift _ 𝟘
 (F + G) .obj X .isEquivalence = {!   !}
 (F + G) .map f (inj₁ x) = inj₁ (F .map f x)
 (F + G) .map f (inj₂ x) = inj₂ (G .map f x)
