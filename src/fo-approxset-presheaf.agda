@@ -11,7 +11,9 @@ open import Relation.Binary.PropositionalEquality hiding (isEquivalence)
 open import Relation.Binary using (Setoid; IsEquivalence)
 open Setoid using (Carrier; _≈_; isEquivalence)
 open ≡-Reasoning
-open import fo-approxset using (FOApproxSet) renaming (_⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_)
+open import fo-approxset
+  using (FOApproxSet)
+  renaming (_⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-isEquivalence to ≃mₐ-isEquivalence; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_)
 
 -- For now how we state functoriality/naturality.
 infix 4 _≃mₛ_
@@ -117,8 +119,8 @@ inr .commute f _ = refl
 -- Yoneda embedding Y ↦ Hom(-, Y)
 よ : FOApproxSet -> FOApproxSetPSh 0ℓ
 よ Y .obj X .Carrier = X ⇒ₐ Y
-よ Y .obj X ._≈_ = {!   !}
-よ Y .obj X .isEquivalence = {!   !}
+よ Y .obj X ._≈_ f g = f ≃mₐ g
+よ Y .obj X .isEquivalence = ≃mₐ-isEquivalence
 よ Y .map f g = g ∘ₐ f
 よ Y .preserves-∘ f g h = sym (∘ₐ-assoc h f g)
 

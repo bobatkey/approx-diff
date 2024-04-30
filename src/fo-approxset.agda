@@ -6,7 +6,8 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Unit using (tt)
 open import Level
-open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Relation.Binary using (IsEquivalence)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans)
 open import basics
 open import preorder using (Preorder; L)
 open import meet-semilattice
@@ -43,6 +44,14 @@ open _⇒_
 record _≃m_ {X Y : FOApproxSet} (f g : X ⇒ Y) : Set where
   field
     eqfunc : ∀ x → f .func x ≡ g .func x
+
+module _ where
+  open _≃m_
+
+  ≃m-isEquivalence : {X Y : FOApproxSet} → IsEquivalence (_≃m_ {X} {Y})
+  ≃m-isEquivalence .IsEquivalence.refl .eqfunc x = refl
+  ≃m-isEquivalence .IsEquivalence.sym f≃g .eqfunc x = sym (f≃g .eqfunc x)
+  ≃m-isEquivalence .IsEquivalence.trans f≃g g≃h .eqfunc x = trans (f≃g .eqfunc x) (g≃h .eqfunc x)
 
 -- Definitions for category
 
