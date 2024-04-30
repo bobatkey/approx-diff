@@ -6,17 +6,19 @@ open import Level
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Function renaming (id to idₛ; _∘_ to _∘ₛ_)
-open import Relation.Binary.PropositionalEquality
+open import Relation.Binary.PropositionalEquality hiding (isEquivalence)
+open import Relation.Binary using (Setoid)
+open Setoid using (Carrier; _≈_; isEquivalence)
 open ≡-Reasoning
-open import fo-approxset using (FOApproxSet) renaming (_⇒_ to _⇒ₐ_; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_)
+open import fo-approxset using (FOApproxSet) renaming (_⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_)
 
 -- For now how we state functoriality/naturality.
-infix 4 _≈_
-_≈_ : ∀ {a b} {A : Set a} {B : Set b} → (A -> B) -> (A → B) -> Set (a ⊔ b)
-f ≈ g = ∀ x → f x ≡ g x
+infix 4 _≃mₛ_
+_≃mₛ_ : ∀ {a b} {A : Set a} {B : Set b} → (A -> B) -> (A → B) -> Set (a ⊔ b)
+f ≃mₛ g = ∀ x → f x ≡ g x
 
-≈-sym : ∀ {a b} {A : Set a} {B : Set b} {f : A -> B} {g : A → B} → f ≈ g → g ≈ f
-≈-sym f≈g x = sym (f≈g x)
+≈-sym : ∀ {a b} {A : Set a} {B : Set b} {f : A -> B} {g : A → B} → f ≃mₛ g → g ≃mₛ f
+≈-sym f≃g x = sym (f≃g x)
 
 -- But maybe too restrictive because then ⇒ₐ equations need to hold up to propositional equality.
 postulate
@@ -27,16 +29,16 @@ postulate
 -- Presheaf on FOApproxSet.
 record FOApproxSetPSh a : Set (suc a) where
   field
-    obj : FOApproxSet → Set a
-    map : ∀ {X Y} → (X ⇒ₐ Y) → obj Y → obj X
-    preserves-∘ : ∀ {X Y Z} (f : Y ⇒ₐ Z) (g : X ⇒ₐ Y) → (map g ∘ₛ map f) ≈ map (f ∘ₐ g)
+    obj : FOApproxSet → Setoid a a
+    map : ∀ {X Y} → (X ⇒ₐ Y) → obj Y .Carrier → obj X .Carrier
+    preserves-∘ : ∀ {X Y Z} (f : Y ⇒ₐ Z) (g : X ⇒ₐ Y) → (map g ∘ₛ map f) ≃mₛ map (f ∘ₐ g)
 
 open FOApproxSetPSh
 
 record _⇒_ {a b} (F : FOApproxSetPSh a) (G : FOApproxSetPSh b) : Set (suc (a ⊔ b)) where
   field
-    at : ∀ (X : FOApproxSet) → F .obj X → G .obj X
-    commute : ∀ {X Y : FOApproxSet} (f : X ⇒ₐ Y) → at X ∘ₛ F .map f ≈ G .map f ∘ₛ at Y
+    at : ∀ (X : FOApproxSet) → F .obj X .Carrier → G .obj X .Carrier
+    commute : ∀ {X Y : FOApproxSet} (f : X ⇒ₐ Y) → at X ∘ₛ F .map f ≃mₛ G .map f ∘ₛ at Y
 
 open _⇒_
 
@@ -54,7 +56,9 @@ infixr 10 _∘_
 
 -- Products
 _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (a ⊔ b)
-(F ⊗ G) .obj X = F .obj X × G .obj X
+(F ⊗ G) .obj X .Carrier = F .obj X .Carrier × G .obj X .Carrier
+(F ⊗ G) .obj X ._≈_ = {!   !}
+(F ⊗ G) .obj X .isEquivalence = {!   !}
 (F ⊗ G) .map f (x , y) .proj₁ = F .map f x
 (F ⊗ G) .map f (x , y) .proj₂ = G .map f y
 (F ⊗ G) .preserves-∘ f g (x , y) = cong₂ _,_ (F .preserves-∘ f g x) (G .preserves-∘ f g y)
@@ -74,7 +78,9 @@ pair ζ η .commute f x = cong₂ _,_ (ζ .commute f x) (η .commute f x)
 
 -- Sums
 _+_ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a → FOApproxSetPSh a
-(F + G) .obj X = F .obj X ⊎ G .obj X
+(F + G) .obj X .Carrier = F .obj X .Carrier ⊎ G .obj X .Carrier
+(F + G) .obj X ._≈_ = {!   !}
+(F + G) .obj X .isEquivalence = {!   !}
 (F + G) .map f (inj₁ x) = inj₁ (F .map f x)
 (F + G) .map f (inj₂ x) = inj₂ (G .map f x)
 (F + G) .preserves-∘ f g (inj₁ x) = cong inj₁ (F .preserves-∘ f g x)
@@ -96,13 +102,17 @@ inr .commute f _ = refl
 
 -- Yoneda embedding Y ↦ Hom(-, Y)
 よ : FOApproxSet -> FOApproxSetPSh 0ℓ
-よ Y .obj X = X ⇒ₐ Y
+よ Y .obj X .Carrier = X ⇒ₐ Y
+よ Y .obj X ._≈_ = {!   !}
+よ Y .obj X .isEquivalence = {!   !}
 よ Y .map f g = g ∘ₐ f
 よ Y .preserves-∘ f g h = sym (∘ₐ-assoc h f g)
 
 -- Functions. (F ⊗ よ X) ⇒ G and よ X ⇒ (F ⊸ G) are isomorphic
 _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (suc (a ⊔ b))
-(F ⊸ G) .obj X = (F ⊗ よ X) ⇒ G
+(F ⊸ G) .obj X .Carrier = (F ⊗ よ X) ⇒ G
+(F ⊸ G) .obj X ._≈_ = {!   !}
+(F ⊸ G) .obj X .isEquivalence = {!   !}
 (F ⊸ G) .map f η .at X (x , g) = η .at X (x , f ∘ₐ g)
 (F ⊸ G) .map f η .commute {W} {Z} g (x , h) =
   begin

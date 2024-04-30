@@ -40,6 +40,10 @@ record _⇒_ (X Y : FOApproxSet) : Set where
 
 open _⇒_
 
+record _≃m_ {X Y : FOApproxSet} (f g : X ⇒ Y) : Set where
+  field
+    eqfunc : ∀ x → f .func x ≡ g .func x
+
 -- Definitions for category
 
 id : ∀ {X} → X ⇒ X
