@@ -73,6 +73,15 @@ _∘_ : ∀ {X Y Z} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
 
 infixr 10 _∘_
 
+∘-assoc : ∀ {W X Y Z} (f : Y ⇒ Z) (g : X ⇒ Y) (h : W ⇒ X) → ∀ x → (f ∘ (g ∘ h)) .func x ≡ ((f ∘ g) ∘ h) .func x
+∘-assoc f g h x = refl
+
+∘-unitᵣ : ∀ {X Y} (f : X ⇒ Y) → ∀ x → (f ∘ id) .func x ≡ f .func x
+∘-unitᵣ f x = refl
+
+∘-unitₗ : ∀ {X Y} (f : X ⇒ Y) → ∀ x → (id ∘ f) .func x ≡ f .func x
+∘-unitₗ f x = refl
+
 -- Products
 module _ where
   open JoinSemilattice

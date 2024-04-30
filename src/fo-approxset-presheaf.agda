@@ -14,11 +14,6 @@ open import fo-approxset
   using (FOApproxSet)
   renaming (_⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-isEquivalence to ≃mₐ-isEquivalence; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_)
 
--- But maybe too restrictive because then ⇒ₐ equations need to hold up to propositional equality.
---  ∘ₐ-assoc : ∀ {W X Y Z} (f : Y ⇒ₐ Z) (g : X ⇒ₐ Y) (h : W ⇒ₐ X) → f ∘ₐ (g ∘ₐ h) ≡ (f ∘ₐ g) ∘ₐ h
---  ∘ₐ-unitᵣ : ∀ {X Y} (f : X ⇒ₐ Y) → f ∘ₐ idₐ ≡ f
---  ∘ₐ-unitₗ : ∀ {X Y} (f : X ⇒ₐ Y) → idₐ ∘ₐ f ≡ f
-
 -- Presheaf on FOApproxSet.
 record FOApproxSetPSh a : Set (suc a) where
   field
