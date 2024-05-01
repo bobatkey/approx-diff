@@ -23,6 +23,7 @@ record FOApproxSetPSh a : Set (suc a) where
   field
     obj : FOApproxSet → Setoid a a
     map : ∀ {X Y} → (X ⇒ₐ Y) → obj Y .Carrier → obj X .Carrier
+    -- Cartesian closure requires generalising to f ≃mₐ f'
     map-resp-≈ : ∀ {X Y} (f : X ⇒ₐ Y) {x y} → obj Y ._≈_ x y → obj X ._≈_ (map f x) (map f y)
     preserves-∘ : ∀ {X Y Z} (f : Y ⇒ₐ Z) (g : X ⇒ₐ Y) → ∀ x → obj X ._≈_ (map g (map f x)) (map (f ∘ₐ g) x)
     preserves-id : ∀ {X Y} (f : X ⇒ₐ Y) → ∀ x → obj X ._≈_ (idₛ (map f x)) (map f (idₛ x))
@@ -39,6 +40,7 @@ open _⇒_
 
 record _≃m_ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} (η ζ : F ⇒ G) : Set (suc (a ⊔ b)) where
   field
+    -- Cartesian closure requires generalising to x ≃ x'
     eqat : ∀ X x → G .obj X ._≈_ (η .at X x) (ζ .at X x)
 
 open _≃m_
@@ -185,11 +187,12 @@ eval {F = F} {G} .commute {X} {Y} f (η , y) =
 
 lambda : ∀ {a b c} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} {H : FOApproxSetPSh c} → (F ⊗ G) ⇒ H → F ⇒ (G ⊸ H)
 lambda {F = F} η .at X x .at Y (y , f) = η .at Y (F .map f x , y)
-lambda η .at X x .at-resp-≈ Y = {!   !}
+lambda {F = F} η .at X x .at-resp-≈ Y (y , f) = η .at-resp-≈ Y ({!   !} , y)
 lambda {F = F} {G} {H} η .at X x .commute {Y} {Z} f (z , g) =
   H .obj Y .isEquivalence .trans
     (η .at-resp-≈ Y (F .obj Y .isEquivalence .sym (F .preserves-∘ g f x) , G .obj Y .isEquivalence .refl))
     (η .commute f (F .map g x , z))
-lambda η .at-resp-≈ = {!   !}
+lambda {F = F} {G} η .at-resp-≈ X x .eqat Y (y , f) =
+  η .at-resp-≈ Y (F .map-resp-≈ f x , G .obj Y .isEquivalence .refl)
 lambda {F = F} {G} η .commute f x .eqat Z (z , g) =
   η .at-resp-≈ Z (F .preserves-∘ f g x , G .obj Z .isEquivalence .refl)
