@@ -174,7 +174,12 @@ _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
   G .obj Y .isEquivalence .trans
     (η .at-resp-≈ Y (F .obj Y .isEquivalence .refl , ∘ₐ-assoc f h g)) (η .commute g (x , f ∘ₐ h))
 (F ⊸ G) .map-resp-≈ f η .eqat X (x , g) = η .eqat X (x , ∘ₐ-resp-≃mₐ f g)
-(F ⊸ G) .preserves-∘ f g η .eqat X (x , h) = η .at-resp-≈ X (x , {!   !}) -- ∘ₐ-assoc f g h
+(F ⊸ G) .preserves-∘ {Y} {Z = Z} f g η .eqat X {a , h₁} {b , h₂} (x , h) =
+  η .at-resp-≈ X (
+    x ,
+    ≃mₐ-setoid X Z .isEquivalence .trans
+      (∘ₐ-assoc f g h₁) (∘ₐ-resp-≃mₐ {f = f ∘ₐ g} (≃mₐ-setoid Y Z .isEquivalence .refl) h)
+  )
 (F ⊸ G) .preserves-id f η .eqat X (x , h) = {!   !} --≡-to-≈ (G .obj X) ≡-refl
 
 eval : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ((F ⊸ G) ⊗ F) ⇒ G
