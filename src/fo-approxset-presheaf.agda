@@ -48,8 +48,8 @@ module _ where
   ≃m-setoid F G .isEquivalence .refl {η} .eqat X x = η .at-resp-≈ X x
   ≃m-setoid F G .isEquivalence .sym η≃ζ .eqat X x =
     G .obj X .isEquivalence .sym (η≃ζ .eqat X (F .obj X .isEquivalence .sym x))
-  ≃m-setoid F G .isEquivalence .trans η≃ζ η≃ε .eqat X x =
-    G .obj X .isEquivalence .trans (η≃ζ .eqat X x) (η≃ε .eqat X (F .obj X .isEquivalence .refl))
+  ≃m-setoid F G .isEquivalence .trans η≃ζ ζ≃ε .eqat X x =
+    G .obj X .isEquivalence .trans (η≃ζ .eqat X x) (ζ≃ε .eqat X (F .obj X .isEquivalence .refl))
 
 -- Definitions for category
 id : ∀ {a} {F : FOApproxSetPSh a} → F ⇒ F
@@ -129,9 +129,9 @@ inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 よ : FOApproxSet -> FOApproxSetPSh 0ℓ
 よ Y .obj X = ≃mₐ-setoid X Y
 よ Y .map f g = g ∘ₐ f
-よ Y .map-resp-≈ {X} {Z} f≈f' g≈ = ∘ₐ-resp-≃mₐ g≈ f≈f'
-よ Y .preserves-∘ {X} {Z} f g h = ≃mₐ-setoid X Y .isEquivalence .sym (∘ₐ-assoc h f g)
-よ Y .preserves-id {X} {Z} f g =
+よ Y .map-resp-≈ f g = ∘ₐ-resp-≃mₐ g f
+よ Y .preserves-∘ {X} f g h = ≃mₐ-setoid X Y .isEquivalence .sym (∘ₐ-assoc h f g)
+よ Y .preserves-id {X} f g =
   ≃mₐ-setoid X Y .isEquivalence .trans
     (≡-to-≈ (≃mₐ-setoid X Y) ≡-refl) (≡-to-≈ (≃mₐ-setoid X Y) (cong (λ g' → g' ∘ₐ f) {_} {g} ≡-refl))
 
