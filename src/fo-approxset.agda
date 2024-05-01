@@ -6,8 +6,9 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Unit using (tt)
 open import Level
-open import Relation.Binary using (IsEquivalence)
+open import Relation.Binary using (Setoid; IsEquivalence)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans)
+open Setoid using (Carrier; _≈_; isEquivalence)
 open import basics
 open import preorder using (Preorder; L)
 open import meet-semilattice
@@ -48,10 +49,12 @@ record _≃m_ {X Y : FOApproxSet} (f g : X ⇒ Y) : Set where
 open _≃m_
 
 module _ where
-  ≃m-isEquivalence : {X Y : FOApproxSet} → IsEquivalence (_≃m_ {X} {Y})
-  ≃m-isEquivalence .IsEquivalence.refl .eqfunc x = refl
-  ≃m-isEquivalence .IsEquivalence.sym f≃g .eqfunc x = sym (f≃g .eqfunc x)
-  ≃m-isEquivalence .IsEquivalence.trans f≃g g≃h .eqfunc x = trans (f≃g .eqfunc x) (g≃h .eqfunc x)
+  ≃m-setoid : {X Y : FOApproxSet} → Setoid 0ℓ 0ℓ
+  ≃m-setoid {X} {Y} .Carrier = X ⇒ Y
+  ≃m-setoid ._≈_ f g = f ≃m g
+  ≃m-setoid .isEquivalence .IsEquivalence.refl .eqfunc x = refl
+  ≃m-setoid .isEquivalence .IsEquivalence.sym f≃g .eqfunc x = sym (f≃g .eqfunc x)
+  ≃m-setoid .isEquivalence .IsEquivalence.trans f≃g g≃h .eqfunc x = trans (f≃g .eqfunc x) (g≃h .eqfunc x)
 
 -- Definitions for category
 

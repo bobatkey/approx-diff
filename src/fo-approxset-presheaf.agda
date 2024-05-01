@@ -8,13 +8,14 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Function renaming (id to idₛ; _∘_ to _∘ₛ_)
 open import Relation.Binary using (Setoid; IsEquivalence)
+open import Relation.Binary.PropositionalEquality using (cong) renaming (refl to ≡-refl)
 open IsEquivalence
 open Setoid using (Carrier; _≈_; isEquivalence)
 open import fo-approxset
   using (FOApproxSet)
   renaming (
-    _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-isEquivalence to ≃mₐ-isEquivalence; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
-    ∘-assoc to ∘ₐ-assoc
+    _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-setoid to ≃mₐ-setoid; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
+    ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ
   )
 
 -- Presheaf on FOApproxSet.
@@ -41,10 +42,12 @@ record _≃m_ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} (η ζ : F ⇒
 module _ where
   open _≃m_
 
-  ≃m-isEquivalence : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → IsEquivalence (_≃m_ {F = F} {G})
-  ≃m-isEquivalence {G = G} .refl .eqat X x = G .obj X .isEquivalence .refl
-  ≃m-isEquivalence {G = G} .sym f≃g .eqat X x = G .obj X .isEquivalence .sym (f≃g .eqat X x)
-  ≃m-isEquivalence {G = G} .trans f≃g g≃h .eqat X x = G .obj X .isEquivalence .trans (f≃g .eqat X x) (g≃h .eqat X x)
+  ≃m-setoid : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → Setoid (suc (a ⊔ b)) (suc (a ⊔ b))
+  ≃m-setoid {F = F} {G} .Carrier = F ⇒ G
+  ≃m-setoid ._≈_ η ζ = η ≃m ζ
+  ≃m-setoid {G = G} .isEquivalence .refl .eqat X x = G .obj X .isEquivalence .refl
+  ≃m-setoid {G = G} .isEquivalence .sym f≃g .eqat X x = G .obj X .isEquivalence .sym (f≃g .eqat X x)
+  ≃m-setoid {G = G} .isEquivalence .trans f≃g g≃h .eqat X x = G .obj X .isEquivalence .trans (f≃g .eqat X x) (g≃h .eqat X x)
 
 -- Definitions for category
 id : ∀ {a} {F : FOApproxSetPSh a} → F ⇒ F
@@ -53,8 +56,16 @@ id {F = F} .commute = F .preserves-id
 
 _∘_ : ∀ {a} {F G H : FOApproxSetPSh a} → G ⇒ H → F ⇒ G → F ⇒ H
 (ζ ∘ η) .at X = ζ .at X ∘ₛ η .at X
-(ζ ∘ η) .commute {X}{Y} f y = {!   !}
---  trans (cong (ζ .at X) (η .commute f y)) (ζ .commute f (η .at Y y))
+_∘_ {F = F} {G} {H} ζ η .commute {X}{Y} f y =
+  let q = η .commute f y in
+  begin
+    ζ .at X (η .at X (F .map f y))
+  ≈⟨ {!   !} ⟩ -- cong (ζ .at X) (η .commute f y)
+    ζ .at X (G .map f (η .at Y y))
+  ≈⟨ ζ .commute f (η .at Y y) ⟩
+    H .map f (ζ .at Y (η .at Y y))
+  ∎
+  where open import Relation.Binary.Reasoning.Setoid (H .obj X)
 
 infixr 10 _∘_
 
@@ -127,29 +138,32 @@ inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 
 -- Yoneda embedding Y ↦ Hom(-, Y)
 よ : FOApproxSet -> FOApproxSetPSh 0ℓ
-よ Y .obj X .Carrier = X ⇒ₐ Y
-よ Y .obj X ._≈_ f g = f ≃mₐ g
-よ Y .obj X .isEquivalence = ≃mₐ-isEquivalence
+よ Y .obj X = ≃mₐ-setoid {X} {Y}
 よ Y .map f g = g ∘ₐ f
-よ Y .preserves-∘ f g h = ≃mₐ-isEquivalence .sym (∘ₐ-assoc h f g)
-よ Y .preserves-id f g = {!   !}
+よ Y .preserves-∘ f g h = ≃mₐ-setoid .isEquivalence .sym (∘ₐ-assoc h f g)
+よ Y .preserves-id {X} {Z} f g =
+  begin
+    idₛ (g ∘ₐ f)
+  ≡⟨ ≡-refl ⟩
+    g ∘ₐ f
+  ≡⟨ cong (λ g' → g' ∘ₐ f) {_} {g} ≡-refl ⟩
+    (idₛ g ∘ₐ f)
+  ∎
+  where open import Relation.Binary.Reasoning.Setoid (≃mₐ-setoid {X} {Y})
 
 -- Functions. (F ⊗ よ X) ⇒ G and よ X ⇒ (F ⊸ G) are isomorphic
 _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (suc (a ⊔ b))
-(F ⊸ G) .obj X .Carrier = (F ⊗ よ X) ⇒ G
-(F ⊸ G) .obj X ._≈_ η ζ = η ≃m ζ
-(F ⊸ G) .obj X .isEquivalence = ≃m-isEquivalence
+(F ⊸ G) .obj X = ≃m-setoid {F = F ⊗ よ X} {G}
 (F ⊸ G) .map f η .at X (x , g) = η .at X (x , f ∘ₐ g)
-(F ⊸ G) .map f η .commute {W} {Z} g (x , h) = {!   !}
-{-
+(F ⊸ G) .map f η .commute {W} {Z} g (x , h) =
   begin
-    η .at W (F .map g x , f ∘ₐ (h ∘ₐ g))
-  ≡⟨ cong (λ f' → η .at W (F .map g x , f')) (∘ₐ-assoc f h g) ⟩
+    η .at W (F .map g x , f ∘ₐ h ∘ₐ g)
+  ≈⟨ {!   !} ⟩ -- cong (λ f' → η .at W (F .map g x , f')) (∘ₐ-assoc f h g)
     η .at W (F .map g x , (f ∘ₐ h) ∘ₐ g)
-  ≡⟨ η .commute g (x , f ∘ₐ h) ⟩
+  ≈⟨ η .commute g (x , f ∘ₐ h) ⟩
     G .map g (η .at Z (x , f ∘ₐ h))
   ∎
--}
+  where open import Relation.Binary.Reasoning.Setoid (G .obj W)
 (F ⊸ G) .preserves-∘ f g η = {!   !}
 {-
   begin
