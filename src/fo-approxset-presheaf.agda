@@ -3,14 +3,14 @@
 module fo-approxset-presheaf where
 
 open import Level
-open import Data.Empty using () renaming (⊥ to 𝟘)
-open import Data.Product using (_×_; _,_; proj₁; proj₂)
-open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Data.Product using (_,_; proj₁; proj₂)
+open import Data.Sum using (inj₁; inj₂)
 open import Function renaming (id to idₛ; _∘_ to _∘ₛ_)
 open import Relation.Binary using (Setoid; IsEquivalence)
 open import Relation.Binary.PropositionalEquality using (cong; _≡_) renaming (refl to ≡-refl; trans to ≡-trans)
 open IsEquivalence
 open Setoid using (Carrier; _≈_; isEquivalence)
+open import basics
 open import fo-approxset
   using (FOApproxSet)
   renaming (
@@ -52,33 +52,6 @@ module _ where
     G .obj X .isEquivalence .sym (η≃ζ .eqat X (F .obj X .isEquivalence .sym x))
   ≃m-setoid {F = F} {G} .isEquivalence .trans η≃ζ η≃ε .eqat X x =
     G .obj X .isEquivalence .trans (η≃ζ .eqat X x) (η≃ε .eqat X (F .obj X .isEquivalence .refl))
-
--- Some setoid helpers that are probably in stdlib somewhere
-≡-to-≈ : ∀ {a b} (X : Setoid a b) {x y : X .Carrier} → x ≡ y → X ._≈_ x y
-≡-to-≈ X {x} {.x} ≡-refl = X .isEquivalence .refl
-
-⊗-setoid : ∀ {a b} (X : Setoid a a) (Y : Setoid b b) → Setoid (a ⊔ b) (a ⊔ b)
-⊗-setoid X Y .Carrier = X .Carrier × Y .Carrier
-⊗-setoid X Y ._≈_ (x₁ , y₁) (x₂ , y₂) = X ._≈_ x₁ x₂ × Y ._≈_ y₁ y₂
-⊗-setoid X Y .isEquivalence .refl .proj₁ = X .isEquivalence .refl
-⊗-setoid X Y .isEquivalence .refl .proj₂ = Y .isEquivalence .refl
-⊗-setoid X Y .isEquivalence .sym (x₁≈y₁ , _) .proj₁ = X .isEquivalence .sym x₁≈y₁
-⊗-setoid X Y .isEquivalence .sym (_ , x₂≈y₂) .proj₂ = Y .isEquivalence .sym x₂≈y₂
-⊗-setoid X Y .isEquivalence .trans (x₁≈y₁ , _) (y₁≈z₁ , _) .proj₁ = X .isEquivalence .trans x₁≈y₁ y₁≈z₁
-⊗-setoid X Y .isEquivalence .trans (_ , x₂≈y₂) (_ , y₂≈z₂) .proj₂ = Y .isEquivalence .trans x₂≈y₂ y₂≈z₂
-
-+-setoid : ∀ {a} (X : Setoid a a) (Y : Setoid a a) → Setoid a a
-+-setoid X Y .Carrier = X .Carrier ⊎ Y .Carrier
-+-setoid X Y ._≈_ (inj₁ x) (inj₁ y) = X ._≈_ x y
-+-setoid X Y ._≈_ (inj₂ x) (inj₂ y) = Y ._≈_ x y
-+-setoid X Y ._≈_ (inj₁ x) (inj₂ y) = Lift _ 𝟘
-+-setoid X Y ._≈_ (inj₂ x) (inj₁ y) = Lift _ 𝟘
-+-setoid X Y .isEquivalence .refl {inj₁ x} = X .isEquivalence .refl
-+-setoid X Y .isEquivalence .refl {inj₂ x} = Y .isEquivalence .refl
-+-setoid X Y .isEquivalence .sym {inj₁ x} {inj₁ y} = X .isEquivalence .sym
-+-setoid X Y .isEquivalence .sym {inj₂ x} {inj₂ y} = Y .isEquivalence .sym
-+-setoid X Y .isEquivalence .trans {inj₁ x} {inj₁ y} {inj₁ z} = X .isEquivalence .trans
-+-setoid X Y .isEquivalence .trans {inj₂ x} {inj₂ y} {inj₂ z} = Y .isEquivalence .trans
 
 -- Definitions for category
 id : ∀ {a} {F : FOApproxSetPSh a} → F ⇒ F
@@ -174,13 +147,14 @@ _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
   G .obj Y .isEquivalence .trans
     (η .at-resp-≈ Y (F .obj Y .isEquivalence .refl , ∘ₐ-assoc f h g)) (η .commute g (x , f ∘ₐ h))
 (F ⊸ G) .map-resp-≈ f η .eqat X (x , g) = η .eqat X (x , ∘ₐ-resp-≃mₐ f g)
-(F ⊸ G) .preserves-∘ {Y} {Z = Z} f g η .eqat X {a , h₁} {b , h₂} (x , h) =
+(F ⊸ G) .preserves-∘ {Y} {Z = Z} f g η .eqat X {_ , h₁} (x , h) =
   η .at-resp-≈ X (
     x ,
     ≃mₐ-setoid X Z .isEquivalence .trans
       (∘ₐ-assoc f g h₁) (∘ₐ-resp-≃mₐ {f = f ∘ₐ g} (≃mₐ-setoid Y Z .isEquivalence .refl) h)
   )
-(F ⊸ G) .preserves-id f η .eqat X (x , h) = {!   !} --≡-to-≈ (G .obj X) ≡-refl
+(F ⊸ G) .preserves-id {Y} {Z} f η .eqat X (x , h) =
+  η .at-resp-≈ X (x , ∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid Y Z .isEquivalence .refl) h)
 
 eval : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ((F ⊸ G) ⊗ F) ⇒ G
 eval .at X (η , x) = η .at X (x , idₐ)
@@ -207,3 +181,5 @@ lambda {F = F} {G} η .commute {X} {Y} f x .eqat Z (z , g) =
       (F .map-resp-≈ (∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid X Y .isEquivalence .refl) g) (F .obj Y .isEquivalence .refl)) ,
     z
   )
+
+-- prove law relating eval and lambda
