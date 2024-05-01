@@ -15,7 +15,7 @@ open import fo-approxset
   using (FOApproxSet)
   renaming (
     _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-setoid to ≃mₐ-setoid; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
-    ∘-resp-≃m to ∘ₐ-resp-≃mₐ; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ
+    ∘-resp-≃m to ∘ₐ-resp-≃mₐ; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ
   )
 
 -- Presheaf on FOApproxSet.
@@ -51,9 +51,32 @@ module _ where
   ≃m-setoid {G = G} .isEquivalence .sym f≃g .eqat X x = G .obj X .isEquivalence .sym (f≃g .eqat X x)
   ≃m-setoid {G = G} .isEquivalence .trans f≃g g≃h .eqat X x = G .obj X .isEquivalence .trans (f≃g .eqat X x) (g≃h .eqat X x)
 
--- Find this in stdlib
+-- Some setoid helpers that are probably in stdlib somewhere
 ≡-to-≈ : ∀ {a b} (X : Setoid a b) {x y : X .Carrier} → x ≡ y → X ._≈_ x y
 ≡-to-≈ X {x} {.x} ≡-refl = X .isEquivalence .refl
+
+⊗-setoid : ∀ {a b} (X : Setoid a a) (Y : Setoid b b) → Setoid (a ⊔ b) (a ⊔ b)
+⊗-setoid X Y .Carrier = X .Carrier × Y .Carrier
+⊗-setoid X Y ._≈_ (x₁ , y₁) (x₂ , y₂) = X ._≈_ x₁ x₂ × Y ._≈_ y₁ y₂
+⊗-setoid X Y .isEquivalence .refl .proj₁ = X .isEquivalence .refl
+⊗-setoid X Y .isEquivalence .refl .proj₂ = Y .isEquivalence .refl
+⊗-setoid X Y .isEquivalence .sym (x₁≈y₁ , _) .proj₁ = X .isEquivalence .sym x₁≈y₁
+⊗-setoid X Y .isEquivalence .sym (_ , x₂≈y₂) .proj₂ = Y .isEquivalence .sym x₂≈y₂
+⊗-setoid X Y .isEquivalence .trans (x₁≈y₁ , _) (y₁≈z₁ , _) .proj₁ = X .isEquivalence .trans x₁≈y₁ y₁≈z₁
+⊗-setoid X Y .isEquivalence .trans (_ , x₂≈y₂) (_ , y₂≈z₂) .proj₂ = Y .isEquivalence .trans x₂≈y₂ y₂≈z₂
+
++-setoid : ∀ {a} (X : Setoid a a) (Y : Setoid a a) → Setoid a a
++-setoid X Y .Carrier = X .Carrier ⊎ Y .Carrier
++-setoid X Y ._≈_ (inj₁ x) (inj₁ y) = X ._≈_ x y
++-setoid X Y ._≈_ (inj₂ x) (inj₂ y) = Y ._≈_ x y
++-setoid X Y ._≈_ (inj₁ x) (inj₂ y) = Lift _ 𝟘
++-setoid X Y ._≈_ (inj₂ x) (inj₁ y) = Lift _ 𝟘
++-setoid X Y .isEquivalence .refl {inj₁ x} = X .isEquivalence .refl
++-setoid X Y .isEquivalence .refl {inj₂ x} = Y .isEquivalence .refl
++-setoid X Y .isEquivalence .sym {inj₁ x} {inj₁ y} = X .isEquivalence .sym
++-setoid X Y .isEquivalence .sym {inj₂ x} {inj₂ y} = Y .isEquivalence .sym
++-setoid X Y .isEquivalence .trans {inj₁ x} {inj₁ y} {inj₁ z} = X .isEquivalence .trans
++-setoid X Y .isEquivalence .trans {inj₂ x} {inj₂ y} {inj₂ z} = Y .isEquivalence .trans
 
 -- Definitions for category
 id : ∀ {a} {F : FOApproxSetPSh a} → F ⇒ F
@@ -69,16 +92,6 @@ _∘_ {H = H} ζ η .commute {X}{Y} f y =
 infixr 10 _∘_
 
 -- Products
-⊗-setoid : ∀ {a b} (X : Setoid a a) (Y : Setoid b b) → Setoid (a ⊔ b) (a ⊔ b)
-⊗-setoid X Y .Carrier = X .Carrier × Y .Carrier
-⊗-setoid X Y ._≈_ (x₁ , y₁) (x₂ , y₂) = X ._≈_ x₁ x₂ × Y ._≈_ y₁ y₂
-⊗-setoid X Y .isEquivalence .refl .proj₁ = X .isEquivalence .refl
-⊗-setoid X Y .isEquivalence .refl .proj₂ = Y .isEquivalence .refl
-⊗-setoid X Y .isEquivalence .sym (x₁≈y₁ , _) .proj₁ = X .isEquivalence .sym x₁≈y₁
-⊗-setoid X Y .isEquivalence .sym (_ , x₂≈y₂) .proj₂ = Y .isEquivalence .sym x₂≈y₂
-⊗-setoid X Y .isEquivalence .trans (x₁≈y₁ , _) (y₁≈z₁ , _) .proj₁ = X .isEquivalence .trans x₁≈y₁ y₁≈z₁
-⊗-setoid X Y .isEquivalence .trans (_ , x₂≈y₂) (_ , y₂≈z₂) .proj₂ = Y .isEquivalence .trans x₂≈y₂ y₂≈z₂
-
 _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (a ⊔ b)
 (F ⊗ G) .obj X = ⊗-setoid (F .obj X) (G .obj X)
 (F ⊗ G) .map f (x , y) .proj₁ = F .map f x
@@ -109,19 +122,6 @@ pair ζ η .commute f x .proj₁ = ζ .commute f x
 pair ζ η .commute f x .proj₂ = η .commute f x
 
 -- Sums
-+-setoid : ∀ {a} (X : Setoid a a) (Y : Setoid a a) → Setoid a a
-+-setoid X Y .Carrier = X .Carrier ⊎ Y .Carrier
-+-setoid X Y ._≈_ (inj₁ x) (inj₁ y) = X ._≈_ x y
-+-setoid X Y ._≈_ (inj₂ x) (inj₂ y) = Y ._≈_ x y
-+-setoid X Y ._≈_ (inj₁ x) (inj₂ y) = Lift _ 𝟘
-+-setoid X Y ._≈_ (inj₂ x) (inj₁ y) = Lift _ 𝟘
-+-setoid X Y .isEquivalence .refl {inj₁ x} = X .isEquivalence .refl
-+-setoid X Y .isEquivalence .refl {inj₂ x} = Y .isEquivalence .refl
-+-setoid X Y .isEquivalence .sym {inj₁ x} {inj₁ y} = X .isEquivalence .sym
-+-setoid X Y .isEquivalence .sym {inj₂ x} {inj₂ y} = Y .isEquivalence .sym
-+-setoid X Y .isEquivalence .trans {inj₁ x} {inj₁ y} {inj₁ z} = X .isEquivalence .trans
-+-setoid X Y .isEquivalence .trans {inj₂ x} {inj₂ y} {inj₂ z} = Y .isEquivalence .trans
-
 _+_ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a → FOApproxSetPSh a
 (F + G) .obj X = +-setoid (F .obj X) (G .obj X)
 (F + G) .map f (inj₁ x) = inj₁ (F .map f x)
@@ -167,14 +167,8 @@ _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
 (F ⊸ G) .map f η .at X (x , g) = η .at X (x , f ∘ₐ g)
 (F ⊸ G) .map f η .at-resp-≈ X = {!   !}
 (F ⊸ G) .map f η .commute {Y} {Z} g (x , h) =
-  begin
-    η .at Y (F .map g x , f ∘ₐ h ∘ₐ g)
-  ≈⟨ η .at-resp-≈ Y {!   !} ⟩ -- cong (λ f' → η .at Y (F .map g x , f')) (∘ₐ-assoc f h g)
-    η .at Y (F .map g x , (f ∘ₐ h) ∘ₐ g)
-  ≈⟨ η .commute g (x , f ∘ₐ h) ⟩
-    G .map g (η .at Z (x , f ∘ₐ h))
-  ∎
-  where open import Relation.Binary.Reasoning.Setoid (G .obj Y)
+  G .obj Y .isEquivalence .trans
+    (η .at-resp-≈ Y (F .obj Y .isEquivalence .refl , ∘ₐ-assoc f h g)) (η .commute g (x , f ∘ₐ h))
 (F ⊸ G) .map-resp-≈ = {!   !}
 (F ⊸ G) .preserves-∘ f g η .eqat X (x , h) = η .at-resp-≈ X (F .obj X .isEquivalence .refl , ∘ₐ-assoc f g h)
 (F ⊸ G) .preserves-id f η .eqat X (x , h) = ≡-to-≈ (G .obj X) ≡-refl
@@ -183,14 +177,10 @@ eval : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ((F ⊸ G) �
 eval .at X (η , x) = η .at X (x , idₐ)
 eval .at-resp-≈ = {!   !}
 eval {F = F} {G} .commute {X} {Y} f (η , y) =
-  begin
-    η .at X (F .map f y , f ∘ₐ idₐ)
-  ≈⟨ η .at-resp-≈ X (F .obj X .isEquivalence .refl , {!   !}) ⟩ -- cong (λ f' → η .at X (F .map f y , f')) (trans (∘ₐ-unitᵣ f) (sym (∘ₐ-unitₗ f)))
-    η .at X ((F ⊗ よ Y) .map f (y , idₐ))
-  ≈⟨ η .commute f (y , idₐ) ⟩
-    G .map f (η .at Y (y , idₐ))
-  ∎
-  where open import Relation.Binary.Reasoning.Setoid (G .obj X)
+  G .obj X .isEquivalence .trans
+    (η .at-resp-≈ X (F .obj X .isEquivalence .refl ,
+     ≃mₐ-setoid X Y .isEquivalence .trans (∘ₐ-unitᵣ f) (≃mₐ-setoid X Y .isEquivalence .sym (∘ₐ-unitₗ f))))
+    (η .commute f (y , idₐ))
 
 lambda : ∀ {a b c} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} {H : FOApproxSetPSh c} → (F ⊗ G) ⇒ H → F ⇒ (G ⊸ H)
 lambda {F = F} η .at X x .at Y (y , f) = η .at Y (F .map f x , y)
