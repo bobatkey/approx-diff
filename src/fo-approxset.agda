@@ -7,7 +7,7 @@ open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Unit using (tt)
 open import Level
 open import Relation.Binary using (Setoid; IsEquivalence)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
 open Setoid using (Carrier; _≈_; isEquivalence)
 open import basics
 open import preorder using (Preorder; L)
@@ -45,12 +45,13 @@ open _⇒_
 record _≃m_ {X Y : FOApproxSet} (f g : X ⇒ Y) : Set where
   field
     eqfunc : ∀ x → f .func x ≡ g .func x
+    -- also need either eqfwd or eqbwd
 
 open _≃m_
 
-module _ where
-  ≃m-setoid : {X Y : FOApproxSet} → Setoid 0ℓ 0ℓ
-  ≃m-setoid {X} {Y} .Carrier = X ⇒ Y
+module _ (X Y : FOApproxSet) where
+  ≃m-setoid : Setoid 0ℓ 0ℓ
+  ≃m-setoid .Carrier = X ⇒ Y
   ≃m-setoid ._≈_ f g = f ≃m g
   ≃m-setoid .isEquivalence .IsEquivalence.refl .eqfunc x = refl
   ≃m-setoid .isEquivalence .IsEquivalence.sym f≃g .eqfunc x = sym (f≃g .eqfunc x)
@@ -73,6 +74,10 @@ _∘_ : ∀ {X Y Z} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
   g .bwd⊣fwd x .proj₁ (f .bwd⊣fwd (g .func x) .proj₁ z'≤fgx')
 (f ∘ g) .bwd⊣fwd x .proj₂ gfz'≤x' =
   f .bwd⊣fwd (g .func x) .proj₂ (g .bwd⊣fwd x .proj₂ gfz'≤x')
+
+∘-resp-≃m : ∀ {X Y Z} {f f' : Y ⇒ Z} {g g' : X ⇒ Y} → f ≃m f' → g ≃m g' → (f ∘ g) ≃m (f' ∘ g')
+∘-resp-≃m {f = f}{f'}{g}{g'} f≃ g≃ .eqfunc x =
+  trans (cong (f .func) (g≃ .eqfunc x)) (f≃ .eqfunc (g' .func x))
 
 infixr 10 _∘_
 
