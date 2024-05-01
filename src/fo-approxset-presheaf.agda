@@ -11,9 +11,7 @@ open import Relation.Binary.PropositionalEquality using (cong; _≡_) renaming (
 open IsEquivalence
 open Setoid using (Carrier; _≈_; isEquivalence)
 open import basics
-open import fo-approxset
-  using (FOApproxSet)
-  renaming (
+open import fo-approxset using (FOApproxSet) renaming (
     _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-setoid to ≃mₐ-setoid; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
     ∘-resp-≃m to ∘ₐ-resp-≃mₐ; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ
   )
@@ -44,13 +42,13 @@ record _≃m_ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} (η ζ : F ⇒
 open _≃m_
 
 module _ where
-  ≃m-setoid : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → Setoid (suc (a ⊔ b)) (suc (a ⊔ b))
-  ≃m-setoid {F = F} {G} .Carrier = F ⇒ G
-  ≃m-setoid ._≈_ η ζ = η ≃m ζ
-  ≃m-setoid {G = G} .isEquivalence .refl {η} .eqat X x = η .at-resp-≈ X x
-  ≃m-setoid {F = F} {G} .isEquivalence .sym η≃ζ .eqat X x =
+  ≃m-setoid : ∀ {a b} (F : FOApproxSetPSh a) (G : FOApproxSetPSh b) → Setoid (suc (a ⊔ b)) (suc (a ⊔ b))
+  ≃m-setoid F G .Carrier = F ⇒ G
+  ≃m-setoid F G ._≈_ η ζ = η ≃m ζ
+  ≃m-setoid F G .isEquivalence .refl {η} .eqat X x = η .at-resp-≈ X x
+  ≃m-setoid F G .isEquivalence .sym η≃ζ .eqat X x =
     G .obj X .isEquivalence .sym (η≃ζ .eqat X (F .obj X .isEquivalence .sym x))
-  ≃m-setoid {F = F} {G} .isEquivalence .trans η≃ζ η≃ε .eqat X x =
+  ≃m-setoid F G .isEquivalence .trans η≃ζ η≃ε .eqat X x =
     G .obj X .isEquivalence .trans (η≃ζ .eqat X x) (η≃ε .eqat X (F .obj X .isEquivalence .refl))
 
 -- Definitions for category
@@ -139,7 +137,7 @@ inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 
 -- Functions. (F ⊗ よ X) ⇒ G and よ X ⇒ (F ⊸ G) are isomorphic
 _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (suc (a ⊔ b))
-(F ⊸ G) .obj X = ≃m-setoid {F = F ⊗ よ X} {G}
+(F ⊸ G) .obj X = ≃m-setoid (F ⊗ よ X) G
 (F ⊸ G) .map f η .at X (x , g) = η .at X (x , f ∘ₐ g)
 (F ⊸ G) .map f η .at-resp-≈ X (x , g) =
   η .at-resp-≈ X (x , ∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid _ _ .isEquivalence .refl) g)
