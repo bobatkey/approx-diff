@@ -181,7 +181,7 @@ _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
 
 eval : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ((F ⊸ G) ⊗ F) ⇒ G
 eval .at X (η , x) = η .at X (x , idₐ)
-eval .at-resp-≈ X {η , x} {ζ , x'} (η≈ , x≈) = {!   !}
+eval .at-resp-≈ X (η , x) = η .eqat X (x , ≃mₐ-setoid X _ .isEquivalence .refl)
 eval {F = F} {G} .commute {X} {Y} f (η , y) =
   G .obj X .isEquivalence .trans
     (η .at-resp-≈ X (F .obj X .isEquivalence .refl ,
