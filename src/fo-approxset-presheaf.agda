@@ -108,18 +108,21 @@ pair ζ η .commute f x .proj₁ = ζ .commute f x
 pair ζ η .commute f x .proj₂ = η .commute f x
 
 -- Sums
++-setoid : ∀ {a} (X : Setoid a a) (Y : Setoid a a) → Setoid a a
++-setoid X Y .Carrier = X .Carrier ⊎ Y .Carrier
++-setoid X Y ._≈_ (inj₁ x) (inj₁ y) = X ._≈_ x y
++-setoid X Y ._≈_ (inj₂ x) (inj₂ y) = Y ._≈_ x y
++-setoid X Y ._≈_ (inj₁ x) (inj₂ y) = Lift _ 𝟘
++-setoid X Y ._≈_ (inj₂ x) (inj₁ y) = Lift _ 𝟘
++-setoid X Y .isEquivalence .refl {inj₁ x} = X .isEquivalence .refl
++-setoid X Y .isEquivalence .refl {inj₂ x} = Y .isEquivalence .refl
++-setoid X Y .isEquivalence .sym {inj₁ x} {inj₁ y} = X .isEquivalence .sym
++-setoid X Y .isEquivalence .sym {inj₂ x} {inj₂ y} = Y .isEquivalence .sym
++-setoid X Y .isEquivalence .trans {inj₁ x} {inj₁ y} {inj₁ z} = X .isEquivalence .trans
++-setoid X Y .isEquivalence .trans {inj₂ x} {inj₂ y} {inj₂ z} = Y .isEquivalence .trans
+
 _+_ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a → FOApproxSetPSh a
-(F + G) .obj X .Carrier = F .obj X .Carrier ⊎ G .obj X .Carrier
-(F + G) .obj X ._≈_ (inj₁ x) (inj₁ y) = F .obj X ._≈_ x y
-(F + G) .obj X ._≈_ (inj₂ x) (inj₂ y) = G .obj X ._≈_ x y
-(F + G) .obj X ._≈_ (inj₁ x) (inj₂ y) = Lift _ 𝟘
-(F + G) .obj X ._≈_ (inj₂ x) (inj₁ y) = Lift _ 𝟘
-(F + G) .obj X .isEquivalence .refl {inj₁ x} = F .obj X .isEquivalence .refl
-(F + G) .obj X .isEquivalence .refl {inj₂ x} = G .obj X .isEquivalence .refl
-(F + G) .obj X .isEquivalence .sym {inj₁ x} {inj₁ y} = F .obj X .isEquivalence .sym
-(F + G) .obj X .isEquivalence .sym {inj₂ x} {inj₂ y} = G .obj X .isEquivalence .sym
-(F + G) .obj X .isEquivalence .trans {inj₁ x} {inj₁ y} {inj₁ z} = F .obj X .isEquivalence .trans
-(F + G) .obj X .isEquivalence .trans {inj₂ x} {inj₂ y} {inj₂ z} = G .obj X .isEquivalence .trans
+(F + G) .obj X = +-setoid (F .obj X) (G .obj X)
 (F + G) .map f (inj₁ x) = inj₁ (F .map f x)
 (F + G) .map f (inj₂ x) = inj₂ (G .map f x)
 (F + G) .preserves-∘ f g (inj₁ x) = F .preserves-∘ f g x
