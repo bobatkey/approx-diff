@@ -41,7 +41,7 @@ open _⇒_
 record _≃m_ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} (η ζ : F ⇒ G) : Set (suc (a ⊔ b)) where
   field
     -- Cartesian closure requires generalising to x ≃ x'
-    eqat : ∀ X x → G .obj X ._≈_ (η .at X x) (ζ .at X x)
+    eqat : ∀ X {x x'} → F .obj X ._≈_ x x' → G .obj X ._≈_ (η .at X x) (ζ .at X x')
 
 open _≃m_
 
@@ -49,9 +49,11 @@ module _ where
   ≃m-setoid : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → Setoid (suc (a ⊔ b)) (suc (a ⊔ b))
   ≃m-setoid {F = F} {G} .Carrier = F ⇒ G
   ≃m-setoid ._≈_ η ζ = η ≃m ζ
-  ≃m-setoid {G = G} .isEquivalence .refl .eqat X x = G .obj X .isEquivalence .refl
-  ≃m-setoid {G = G} .isEquivalence .sym f≃g .eqat X x = G .obj X .isEquivalence .sym (f≃g .eqat X x)
-  ≃m-setoid {G = G} .isEquivalence .trans f≃g g≃h .eqat X x = G .obj X .isEquivalence .trans (f≃g .eqat X x) (g≃h .eqat X x)
+  ≃m-setoid {G = G} .isEquivalence .refl {η} .eqat X x = η .at-resp-≈ X x
+  ≃m-setoid {F = F} {G} .isEquivalence .sym η≃ζ .eqat X x =
+    G .obj X .isEquivalence .sym (η≃ζ .eqat X (F .obj X .isEquivalence .sym x))
+  ≃m-setoid {F = F} {G} .isEquivalence .trans η≃ζ η≃ε .eqat X x =
+    G .obj X .isEquivalence .trans (η≃ζ .eqat X x) (η≃ε .eqat X (F .obj X .isEquivalence .refl))
 
 -- Some setoid helpers that are probably in stdlib somewhere
 ≡-to-≈ : ∀ {a b} (X : Setoid a b) {x y : X .Carrier} → x ≡ y → X ._≈_ x y
@@ -91,6 +93,7 @@ _∘_ : ∀ {a} {F G H : FOApproxSetPSh a} → G ⇒ H → F ⇒ G → F ⇒ H
 (ζ ∘ η) .at-resp-≈ X = ζ .at-resp-≈ X ∘ₛ η .at-resp-≈ X
 _∘_ {H = H} ζ η .commute {X}{Y} f y =
   H .obj X .isEquivalence .trans (ζ .at-resp-≈ X (η .commute f y)) (ζ .commute f (η .at Y y))
+
 infixr 10 _∘_
 
 -- Products
@@ -172,9 +175,9 @@ _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
 (F ⊸ G) .map f η .commute {Y} {Z} g (x , h) =
   G .obj Y .isEquivalence .trans
     (η .at-resp-≈ Y (F .obj Y .isEquivalence .refl , ∘ₐ-assoc f h g)) (η .commute g (x , f ∘ₐ h))
-(F ⊸ G) .map-resp-≈ {f = f} {f'} f≈f' η≈ .eqat X (x , g) = {!   !} --η≈ .eqat X (x , f ∘ₐ g)
-(F ⊸ G) .preserves-∘ f g η .eqat X (x , h) = η .at-resp-≈ X (F .obj X .isEquivalence .refl , ∘ₐ-assoc f g h)
-(F ⊸ G) .preserves-id f η .eqat X (x , h) = ≡-to-≈ (G .obj X) ≡-refl
+(F ⊸ G) .map-resp-≈ f η .eqat X (x , g) = η .eqat X (x , ∘ₐ-resp-≃mₐ f g)
+(F ⊸ G) .preserves-∘ f g η .eqat X (x , h) = {!   !} -- η .at-resp-≈ X (F .obj X .isEquivalence .refl , ∘ₐ-assoc f g h)
+(F ⊸ G) .preserves-id f η .eqat X (x , h) = {!   !} --≡-to-≈ (G .obj X) ≡-refl
 
 eval : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ((F ⊸ G) ⊗ F) ⇒ G
 eval .at X (η , x) = η .at X (x , idₐ)
@@ -187,12 +190,13 @@ eval {F = F} {G} .commute {X} {Y} f (η , y) =
 
 lambda : ∀ {a b c} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} {H : FOApproxSetPSh c} → (F ⊗ G) ⇒ H → F ⇒ (G ⊸ H)
 lambda {F = F} η .at X x .at Y (y , f) = η .at Y (F .map f x , y)
-lambda {F = F} η .at X x .at-resp-≈ Y (y , f) = η .at-resp-≈ Y (F .map-resp-≈ f (F .obj X .isEquivalence .refl) , y)
+lambda {F = F} η .at X x .at-resp-≈ Y (y , f) =
+  η .at-resp-≈ Y (F .map-resp-≈ f (F .obj X .isEquivalence .refl) , y)
 lambda {F = F} {G} {H} η .at X x .commute {Y} {Z} f (z , g) =
   H .obj Y .isEquivalence .trans
     (η .at-resp-≈ Y (F .obj Y .isEquivalence .sym (F .preserves-∘ g f x) , G .obj Y .isEquivalence .refl))
     (η .commute f (F .map g x , z))
-lambda {F = F} {G} η .at-resp-≈ X x .eqat Y (y , f) =
-  η .at-resp-≈ Y (F .map-resp-≈ (≃mₐ-setoid Y X .isEquivalence .refl) x , G .obj Y .isEquivalence .refl)
+lambda {F = F} {G} η .at-resp-≈ X x .eqat Y (y , f) = {!   !}
+  {!   !} --η .at-resp-≈ Y (F .map-resp-≈ (≃mₐ-setoid Y X .isEquivalence .refl) x , G .obj Y .isEquivalence .refl)
 lambda {F = F} {G} η .commute f x .eqat Z (z , g) =
-  η .at-resp-≈ Z (F .preserves-∘ f g x , G .obj Z .isEquivalence .refl)
+  {!   !} -- η .at-resp-≈ Z (F .preserves-∘ f g x , G .obj Z .isEquivalence .refl)
