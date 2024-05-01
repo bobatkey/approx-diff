@@ -195,10 +195,10 @@ lambda {F = F} {G} {H} η .at X x .commute {Y} {Z} f (z , g) =
     (η .at-resp-≈ Y (F .obj Y .isEquivalence .sym (F .preserves-∘ g f x) , G .obj Y .isEquivalence .refl))
     (η .commute f (F .map g x , z))
 lambda {F = F} {G} η .at-resp-≈ X x .eqat Y (y , f) = η .at-resp-≈ Y (F .map-resp-≈ f x , y)
-lambda {F = F} {G} η .commute {X} {Y} f x .eqat Z {z , g} {z' , g'} (z≈ , g≈) =
-  η .at-resp-≈ Z (map-f-preserves-∘ , z≈)
-  where
-  map-f-preserves-∘ : F .obj Z ._≈_ (F .map g (F .map f x)) (F .map (f ∘ₐ g') x)
-  map-f-preserves-∘ = F .obj Z .isEquivalence .trans
-    (F .preserves-∘ f g x)
-    (F .map-resp-≈ (∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid X Y .isEquivalence .refl) g≈) (F .obj Y .isEquivalence .refl))
+lambda {F = F} {G} η .commute {X} {Y} f x .eqat Z (z , g) =
+  η .at-resp-≈ Z (
+    F .obj Z .isEquivalence .trans
+      (F .preserves-∘ f _ x)
+      (F .map-resp-≈ (∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid X Y .isEquivalence .refl) g) (F .obj Y .isEquivalence .refl)) ,
+    z
+  )
