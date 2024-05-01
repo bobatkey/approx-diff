@@ -23,6 +23,7 @@ record FOApproxSetPSh a : Set (suc a) where
   field
     obj : FOApproxSet → Setoid a a
     map : ∀ {X Y} → (X ⇒ₐ Y) → obj Y .Carrier → obj X .Carrier
+    map-resp-≈ : ∀ {X Y} (f : X ⇒ₐ Y) {x y} → obj Y ._≈_ x y → obj X ._≈_ (map f x) (map f y)
     preserves-∘ : ∀ {X Y Z} (f : Y ⇒ₐ Z) (g : X ⇒ₐ Y) → ∀ x → obj X ._≈_ (map g (map f x)) (map (f ∘ₐ g) x)
     preserves-id : ∀ {X Y} (f : X ⇒ₐ Y) → ∀ x → obj X ._≈_ (idₛ (map f x)) (map f (idₛ x))
 
@@ -31,6 +32,7 @@ open FOApproxSetPSh
 record _⇒_ {a b} (F : FOApproxSetPSh a) (G : FOApproxSetPSh b) : Set (suc (a ⊔ b)) where
   field
     at : ∀ (X : FOApproxSet) → F .obj X .Carrier → G .obj X .Carrier
+    at-resp-≈ : ∀ {X} {x y} → F .obj X ._≈_ x y → G .obj X ._≈_ (at X x) (at X y)
     commute : ∀ {X Y : FOApproxSet} (f : X ⇒ₐ Y) → ∀ x → G .obj X ._≈_ (at X (F .map f x)) (G .map f (at Y x))
 
 open _⇒_
@@ -56,10 +58,12 @@ module _ where
 -- Definitions for category
 id : ∀ {a} {F : FOApproxSetPSh a} → F ⇒ F
 id .at X = idₛ
+id .at-resp-≈ = idₛ
 id {F = F} .commute = F .preserves-id
 
 _∘_ : ∀ {a} {F G H : FOApproxSetPSh a} → G ⇒ H → F ⇒ G → F ⇒ H
 (ζ ∘ η) .at X = ζ .at X ∘ₛ η .at X
+(ζ ∘ η) .at-resp-≈ = {!   !}
 _∘_ {F = F} {G} {H} ζ η .commute {X}{Y} f y =
   let q = η .commute f y in
   begin
@@ -88,6 +92,7 @@ _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
 (F ⊗ G) .obj X = ⊗-setoid (F .obj X) (G .obj X)
 (F ⊗ G) .map f (x , y) .proj₁ = F .map f x
 (F ⊗ G) .map f (x , y) .proj₂ = G .map f y
+(F ⊗ G) .map-resp-≈ = {!   !}
 (F ⊗ G) .preserves-∘ f g (x , y) .proj₁ = F .preserves-∘ f g x
 (F ⊗ G) .preserves-∘ f g (x , y) .proj₂ = G .preserves-∘ f g y
 (F ⊗ G) .preserves-id f (x , y) .proj₁ = F .preserves-id f x
@@ -95,15 +100,18 @@ _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
 
 π₁ : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → (F ⊗ G) ⇒ F
 π₁ .at X = proj₁
+π₁ .at-resp-≈ = {!   !}
 π₁ {F = F} .commute {X} f _ = F .obj X .isEquivalence .refl
 
 π₂ : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → (F ⊗ G) ⇒ G
 π₂ .at X = proj₂
+π₂ .at-resp-≈ = {!   !}
 π₂ {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 
 pair : ∀ {a b c} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} {H : FOApproxSetPSh c} → F ⇒ G → F ⇒ H → F ⇒ (G ⊗ H)
 pair ζ η .at X x .proj₁ = ζ .at X x
 pair ζ η .at X x .proj₂ = η .at X x
+pair ζ η .at-resp-≈ = {!   !}
 pair ζ η .commute f x .proj₁ = ζ .commute f x
 pair ζ η .commute f x .proj₂ = η .commute f x
 
@@ -125,6 +133,7 @@ _+_ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a → FOApproxSetPSh a
 (F + G) .obj X = +-setoid (F .obj X) (G .obj X)
 (F + G) .map f (inj₁ x) = inj₁ (F .map f x)
 (F + G) .map f (inj₂ x) = inj₂ (G .map f x)
+(F + G) .map-resp-≈ = {!   !}
 (F + G) .preserves-∘ f g (inj₁ x) = F .preserves-∘ f g x
 (F + G) .preserves-∘ f g (inj₂ x) = G .preserves-∘ f g x
 (F + G) .preserves-id f (inj₁ x) = F .preserves-id f x
@@ -132,24 +141,26 @@ _+_ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a → FOApproxSetPSh a
 
 inl : ∀ {a} {F G : FOApproxSetPSh a} → F ⇒ (F + G)
 inl .at X = inj₁
+inl .at-resp-≈ = {!   !}
 inl {F = F} .commute {X} f _ = F .obj X .isEquivalence .refl
 
 inr : ∀ {a} {F G : FOApproxSetPSh a} → G ⇒ (F + G)
 inr .at X = inj₂
+inr .at-resp-≈ = {!   !}
 inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 
 [_,_] : ∀ {a} {E F G H : FOApproxSetPSh a} → (E ⊗ F) ⇒ H → (E ⊗ G) ⇒ H → (E ⊗ (F + G)) ⇒ H
 [ ζ , η ] .at X (x , inj₁ y) = ζ .at X (x , y)
 [ ζ , η ] .at X (x , inj₂ y) = η .at X (x , y)
+[ ζ , η ] .at-resp-≈ = {!   !}
 [ ζ , η ] .commute f (x , inj₁ y) = ζ .commute f (x , y)
 [ ζ , η ] .commute f (x , inj₂ y) = η .commute f (x , y)
-
--- Rework proofs below using setoid equivalences
 
 -- Yoneda embedding Y ↦ Hom(-, Y)
 よ : FOApproxSet -> FOApproxSetPSh 0ℓ
 よ Y .obj X = ≃mₐ-setoid {X} {Y}
 よ Y .map f g = g ∘ₐ f
+よ Y .map-resp-≈ = {!   !}
 よ Y .preserves-∘ f g h = ≃mₐ-setoid .isEquivalence .sym (∘ₐ-assoc h f g)
 よ Y .preserves-id {X} {Z} f g =
   begin
@@ -165,6 +176,7 @@ inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (suc (a ⊔ b))
 (F ⊸ G) .obj X = ≃m-setoid {F = F ⊗ よ X} {G}
 (F ⊸ G) .map f η .at X (x , g) = η .at X (x , f ∘ₐ g)
+(F ⊸ G) .map f η .at-resp-≈ = {!   !}
 (F ⊸ G) .map f η .commute {Y} {Z} g (x , h) =
   begin
     η .at Y (F .map g x , f ∘ₐ h ∘ₐ g)
@@ -174,11 +186,13 @@ _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
     G .map g (η .at Z (x , f ∘ₐ h))
   ∎
   where open import Relation.Binary.Reasoning.Setoid (G .obj Y)
+(F ⊸ G) .map-resp-≈ = {!   !}
 (F ⊸ G) .preserves-∘ f g η .eqat X (x , h) = {!   !} -- resp-≈, ∘ₐ-assoc
 (F ⊸ G) .preserves-id f η .eqat X (x , h) = ≡-to-≈ (G .obj X) ≡-refl
 
 eval : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ((F ⊸ G) ⊗ F) ⇒ G
 eval .at X (η , x) = η .at X (x , idₐ)
+eval .at-resp-≈ = {!   !}
 eval {F = F} {G} .commute {X} {Y} f (η , y) =
   begin
     η .at X (F .map f y , f ∘ₐ idₐ)
@@ -191,6 +205,7 @@ eval {F = F} {G} .commute {X} {Y} f (η , y) =
 
 lambda : ∀ {a b c} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} {H : FOApproxSetPSh c} → (F ⊗ G) ⇒ H → F ⇒ (G ⊸ H)
 lambda {F = F} η .at X x .at Y (y , f) = η .at Y (F .map f x , y)
+lambda η .at X x .at-resp-≈ = {!   !}
 lambda {F = F} {G} {H} η .at X x .commute {Y} {Z} f (z , g) =
   begin
     η .at Y (F .map (g ∘ₐ f) x , G .map f z)
@@ -200,4 +215,5 @@ lambda {F = F} {G} {H} η .at X x .commute {Y} {Z} f (z , g) =
     H .map f (η .at Z (F .map g x , z))
   ∎
   where open import Relation.Binary.Reasoning.Setoid (H .obj Y)
+lambda η .at-resp-≈ = {!   !}
 lambda {F = F} {G} {H} η .commute {X} {Y} f x .eqat Z (z , g) = {!   !} -- resp-≈, preserves-∘
