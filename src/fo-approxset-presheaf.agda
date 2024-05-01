@@ -176,7 +176,7 @@ _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
 
 eval : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ((F ⊸ G) ⊗ F) ⇒ G
 eval .at X (η , x) = η .at X (x , idₐ)
-eval .at-resp-≈ = {!   !}
+eval .at-resp-≈ X {η , x} {ζ , x'} (η≈ , x≈) = {!   !}
 eval {F = F} {G} .commute {X} {Y} f (η , y) =
   G .obj X .isEquivalence .trans
     (η .at-resp-≈ X (F .obj X .isEquivalence .refl ,
@@ -185,7 +185,7 @@ eval {F = F} {G} .commute {X} {Y} f (η , y) =
 
 lambda : ∀ {a b c} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} {H : FOApproxSetPSh c} → (F ⊗ G) ⇒ H → F ⇒ (G ⊸ H)
 lambda {F = F} η .at X x .at Y (y , f) = η .at Y (F .map f x , y)
-lambda η .at X x .at-resp-≈ = {!   !}
+lambda η .at X x .at-resp-≈ Y = {!   !}
 lambda {F = F} {G} {H} η .at X x .commute {Y} {Z} f (z , g) =
   H .obj Y .isEquivalence .trans
     (η .at-resp-≈ Y (F .obj Y .isEquivalence .sym (F .preserves-∘ g f x) , G .obj Y .isEquivalence .refl))
