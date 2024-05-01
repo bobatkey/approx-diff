@@ -24,7 +24,7 @@ record FOApproxSetPSh a : Set (suc a) where
     obj : FOApproxSet → Setoid a a
     map : ∀ {X Y} → (X ⇒ₐ Y) → obj Y .Carrier → obj X .Carrier
     -- Cartesian closure requires generalising to f ≃mₐ f'
-    map-resp-≈ : ∀ {X Y} (f : X ⇒ₐ Y) {x y} → obj Y ._≈_ x y → obj X ._≈_ (map f x) (map f y)
+    map-resp-≈ : ∀ {X Y} {f f' : X ⇒ₐ Y} → f ≃mₐ f' → ∀ {x y} → obj Y ._≈_ x y → obj X ._≈_ (map f x) (map f' y)
     preserves-∘ : ∀ {X Y Z} (f : Y ⇒ₐ Z) (g : X ⇒ₐ Y) → ∀ x → obj X ._≈_ (map g (map f x)) (map (f ∘ₐ g) x)
     preserves-id : ∀ {X Y} (f : X ⇒ₐ Y) → ∀ x → obj X ._≈_ (idₛ (map f x)) (map f (idₛ x))
 
@@ -157,7 +157,7 @@ inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 よ : FOApproxSet -> FOApproxSetPSh 0ℓ
 よ Y .obj X = ≃mₐ-setoid X Y
 よ Y .map f g = g ∘ₐ f
-よ Y .map-resp-≈ {X} {Z} f {g₁} {g₂} g≈ = ∘ₐ-resp-≃mₐ {f = g₁} {g₂} {f} g≈ (≃mₐ-setoid X Z .isEquivalence .refl)
+よ Y .map-resp-≈ {X} {Z} f≈f' g≈ = ∘ₐ-resp-≃mₐ g≈ f≈f'
 よ Y .preserves-∘ {X} {Z} f g h = ≃mₐ-setoid X Y .isEquivalence .sym (∘ₐ-assoc h f g)
 よ Y .preserves-id {X} {Z} f g =
   ≃mₐ-setoid X Y .isEquivalence .trans
@@ -172,7 +172,7 @@ _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
 (F ⊸ G) .map f η .commute {Y} {Z} g (x , h) =
   G .obj Y .isEquivalence .trans
     (η .at-resp-≈ Y (F .obj Y .isEquivalence .refl , ∘ₐ-assoc f h g)) (η .commute g (x , f ∘ₐ h))
-(F ⊸ G) .map-resp-≈ f η≈ .eqat X (x , g) = η≈ .eqat X (x , f ∘ₐ g)
+(F ⊸ G) .map-resp-≈ {f = f} {f'} f≈f' η≈ .eqat X (x , g) = {!   !} --η≈ .eqat X (x , f ∘ₐ g)
 (F ⊸ G) .preserves-∘ f g η .eqat X (x , h) = η .at-resp-≈ X (F .obj X .isEquivalence .refl , ∘ₐ-assoc f g h)
 (F ⊸ G) .preserves-id f η .eqat X (x , h) = ≡-to-≈ (G .obj X) ≡-refl
 
@@ -187,12 +187,12 @@ eval {F = F} {G} .commute {X} {Y} f (η , y) =
 
 lambda : ∀ {a b c} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} {H : FOApproxSetPSh c} → (F ⊗ G) ⇒ H → F ⇒ (G ⊸ H)
 lambda {F = F} η .at X x .at Y (y , f) = η .at Y (F .map f x , y)
-lambda {F = F} η .at X x .at-resp-≈ Y (y , f) = η .at-resp-≈ Y ({!   !} , y)
+lambda {F = F} η .at X x .at-resp-≈ Y (y , f) = η .at-resp-≈ Y (F .map-resp-≈ f (F .obj X .isEquivalence .refl) , y)
 lambda {F = F} {G} {H} η .at X x .commute {Y} {Z} f (z , g) =
   H .obj Y .isEquivalence .trans
     (η .at-resp-≈ Y (F .obj Y .isEquivalence .sym (F .preserves-∘ g f x) , G .obj Y .isEquivalence .refl))
     (η .commute f (F .map g x , z))
 lambda {F = F} {G} η .at-resp-≈ X x .eqat Y (y , f) =
-  η .at-resp-≈ Y (F .map-resp-≈ f x , G .obj Y .isEquivalence .refl)
+  η .at-resp-≈ Y (F .map-resp-≈ (≃mₐ-setoid Y X .isEquivalence .refl) x , G .obj Y .isEquivalence .refl)
 lambda {F = F} {G} η .commute f x .eqat Z (z , g) =
   η .at-resp-≈ Z (F .preserves-∘ f g x , G .obj Z .isEquivalence .refl)
