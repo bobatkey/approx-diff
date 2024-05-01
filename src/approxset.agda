@@ -242,10 +242,8 @@ lambda m .bwd x = elim-⨁ _ _ _ λ y → project₁J ∘J m .bwd (x , y)
 
 ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
 ℒ-strength .func xy = xy
-ℒ-strength .fwd (x , y) =
-  meet-semilattice.[ L-unit ∘M inject₁M , meet-semilattice.L-func inject₂M ]
-ℒ-strength .bwd (x , y) =
-  join-semilattice.⟨ project₁J ∘J L-counit , join-semilattice.L-func project₂J ⟩
+ℒ-strength .fwd (x , y) = [ L-unit ∘M inject₁M , meet-semilattice.L-func inject₂M ]M
+ℒ-strength .bwd (x , y) = ⟨ project₁J ∘J L-counit , join-semilattice.L-func project₂J ⟩J
 
 {-
 -- Approximable lists: μY. 1 + ℒ(X × Y)

@@ -6,12 +6,17 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Unit using (tt)
 open import Level
+open import Relation.Binary using (Setoid; IsEquivalence)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
+open Setoid using (Carrier; _≈_; isEquivalence)
 open import basics
 open import preorder using (Preorder; L)
 open import meet-semilattice
+  hiding (_≃m_)
   renaming (_=>_ to _=>M_; _⊕_ to _⊕M_; id to idM; _∘_ to _∘M_; L to LM; [_,_] to [_,_]M; ⟨_,_⟩ to ⟨_,_⟩M;
             project₁ to project₁M; project₂ to project₂M; inject₁ to inject₁M; inject₂ to inject₂M)
 open import join-semilattice
+  hiding (_≃m_)
   renaming (_=>_ to _=>J_; _⊕_ to _⊕J_; id to idJ; _∘_ to _∘J_; L to LJ; [_,_] to [_,_]J; ⟨_,_⟩ to ⟨_,_⟩J;
             project₁ to project₁J; project₂ to project₂J; inject₁ to inject₁J; inject₂ to inject₂J)
 
@@ -37,6 +42,21 @@ record _⇒_ (X Y : FOApproxSet) : Set where
 
 open _⇒_
 
+record _≃m_ {X Y : FOApproxSet} (f g : X ⇒ Y) : Set where
+  field
+    eqfunc : ∀ x → f .func x ≡ g .func x
+    -- also need either eqfwd or eqbwd
+
+open _≃m_
+
+module _ (X Y : FOApproxSet) where
+  ≃m-setoid : Setoid 0ℓ 0ℓ
+  ≃m-setoid .Carrier = X ⇒ Y
+  ≃m-setoid ._≈_ f g = f ≃m g
+  ≃m-setoid .isEquivalence .IsEquivalence.refl .eqfunc x = refl
+  ≃m-setoid .isEquivalence .IsEquivalence.sym f≃g .eqfunc x = sym (f≃g .eqfunc x)
+  ≃m-setoid .isEquivalence .IsEquivalence.trans f≃g g≃h .eqfunc x = trans (f≃g .eqfunc x) (g≃h .eqfunc x)
+
 -- Definitions for category
 
 id : ∀ {X} → X ⇒ X
@@ -55,7 +75,20 @@ _∘_ : ∀ {X Y Z} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
 (f ∘ g) .bwd⊣fwd x .proj₂ gfz'≤x' =
   f .bwd⊣fwd (g .func x) .proj₂ (g .bwd⊣fwd x .proj₂ gfz'≤x')
 
+∘-resp-≃m : ∀ {X Y Z} {f f' : Y ⇒ Z} {g g' : X ⇒ Y} → f ≃m f' → g ≃m g' → (f ∘ g) ≃m (f' ∘ g')
+∘-resp-≃m {f = f}{f'}{g}{g'} f≃ g≃ .eqfunc x =
+  trans (cong (f .func) (g≃ .eqfunc x)) (f≃ .eqfunc (g' .func x))
+
 infixr 10 _∘_
+
+∘-assoc : ∀ {W X Y Z} (f : Y ⇒ Z) (g : X ⇒ Y) (h : W ⇒ X) → (f ∘ (g ∘ h)) ≃m ((f ∘ g) ∘ h)
+∘-assoc f g h .eqfunc x = refl
+
+∘-unitᵣ : ∀ {X Y} (f : X ⇒ Y) → (f ∘ id) ≃m f
+∘-unitᵣ f .eqfunc x = refl
+
+∘-unitₗ : ∀ {X Y} (f : X ⇒ Y) → (id ∘ f) ≃m f
+∘-unitₗ f .eqfunc x = refl
 
 -- Products
 module _ where
@@ -135,6 +168,7 @@ module _ where
 -- Lifting
 module _ where
   open JoinSemilattice
+  open MeetSemilattice
   open preorder.LCarrier
 
   ℒ : FOApproxSet → FOApproxSet
@@ -182,4 +216,24 @@ module _ where
   ℒ-func f .bwd⊣fwd x {< x₁ >} {bottom} .proj₂ _ = tt
   ℒ-func f .bwd⊣fwd x {< x₁ >} {< x₂ >} .proj₂ = f .bwd⊣fwd x .proj₂
 
-  -- TODO: strength
+  ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
+  ℒ-strength .func xy = xy
+  ℒ-strength .fwd (x , y) = [ L-unit ∘M inject₁M , meet-semilattice.L-func inject₂M ]M
+  ℒ-strength .bwd (x , y) = ⟨ project₁J ∘J L-counit , join-semilattice.L-func project₂J ⟩J
+  ℒ-strength {X} .bwd⊣fwd (x , y) {x₁ , y₁} {bottom} .proj₁ _ .proj₁ =
+    IsBottom.≤-bottom (X .rapprox x .⊥-isBottom)
+  ℒ-strength {X}{Y} .bwd⊣fwd (x , y) {x₁ , < y₁ >} {< x₂ , y₂ >} .proj₁ (x₂≤ , snd₁) .proj₁ =
+    ≤-trans (X .order x) x₂≤ (X .fapprox x .∧-isMeet .IsMeet.π₁)
+  ℒ-strength .bwd⊣fwd (x , y) {x₁ , bottom} {bottom} .proj₁ _ .proj₂ = tt
+  ℒ-strength .bwd⊣fwd (x , y) {x₁ , < y₁ >} {bottom} .proj₁ _ .proj₂ = tt
+  ℒ-strength {Y = Y} .bwd⊣fwd (x , y) {x₁ , < y₁ >} {< x₂ , y₂ >} .proj₁ (_ , y₂≤) .proj₂ =
+    ≤-trans (Y .order y) y₂≤ (Y .fapprox y .∧-isMeet .IsMeet.π₂)
+  ℒ-strength .bwd⊣fwd (x , y) {x₁ , bottom} {bottom} .proj₂ _ = tt
+  ℒ-strength .bwd⊣fwd (x , y) {x₁ , bottom} {< _ >} .proj₂ ()
+  ℒ-strength .bwd⊣fwd (x , y) {x₁ , < y₁ >} {bottom} .proj₂ _ = tt
+  ℒ-strength {X} .bwd⊣fwd (x , y) {x₁ , < y₁ >} {< x₂ , y₂ >} .proj₂ (x₂≤ , _) .proj₁ =
+    ⟨ x₂≤ , IsTop.≤-top (X .fapprox x .⊤-isTop) ⟩
+    where open IsMeet (X .fapprox x .∧-isMeet)
+  ℒ-strength {Y = Y} .bwd⊣fwd (x , y) {x₁ , < y₁ >} {< x₂ , y₂ >} .proj₂ (_ , y₂≤) .proj₂ =
+    ⟨ IsTop.≤-top (Y .fapprox y .⊤-isTop) , y₂≤ ⟩
+    where open IsMeet (Y .fapprox y .∧-isMeet)
