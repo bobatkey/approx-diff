@@ -13,10 +13,12 @@ open import Relation.Binary.PropositionalEquality
 open IsEquivalence
 open Setoid using (Carrier; _≈_; isEquivalence)
 open import basics
-open import fo-approxset using (FOApproxSet) renaming (
-    _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-setoid to ≃mₐ-setoid; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
-    ∘-resp-≃m to ∘ₐ-resp-≃mₐ; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ
-  )
+open import fo-approxset
+    using (FOApproxSet; ℒ-func; ℒ-func-resp-≃m)
+    renaming (
+      _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-setoid to ≃mₐ-setoid; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
+      ∘-resp-≃m to ∘ₐ-resp-≃mₐ; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ; ℒ to ℒₐ
+    )
 
 -- Presheaf on FOApproxSet.
 record FOApproxSetPSh a : Set (suc a) where

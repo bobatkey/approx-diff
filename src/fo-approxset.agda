@@ -216,6 +216,9 @@ module _ where
   ℒ-func f .bwd⊣fwd x {< x₁ >} {bottom} .proj₂ _ = tt
   ℒ-func f .bwd⊣fwd x {< x₁ >} {< x₂ >} .proj₂ = f .bwd⊣fwd x .proj₂
 
+  ℒ-func-resp-≃m : ∀ {X Y} {f g : X ⇒ Y} → f ≃m g → ℒ-func f ≃m ℒ-func g
+  ℒ-func-resp-≃m {f = f}{g} f≃g .eqfunc x = f≃g .eqfunc x
+
   ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
   ℒ-strength .func xy = xy
   ℒ-strength .fwd (x , y) = [ L-unit ∘M inject₁M , meet-semilattice.L-func inject₂M ]M
