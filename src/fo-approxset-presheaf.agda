@@ -3,18 +3,22 @@
 module fo-approxset-presheaf where
 
 open import Level
-open import Data.Product using (_,_; proj₁; proj₂)
+open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum using (inj₁; inj₂)
+open import Data.Unit using (tt)
 open import Function renaming (id to idₛ; _∘_ to _∘ₛ_)
 open import Relation.Binary using (Setoid; IsEquivalence)
-open import Relation.Binary.PropositionalEquality using (cong; _≡_) renaming (refl to ≡-refl; trans to ≡-trans)
+open import Relation.Binary.PropositionalEquality
+  using (cong; cong₂; _≡_; setoid) renaming (refl to ≡-refl; trans to ≡-trans)
 open IsEquivalence
 open Setoid using (Carrier; _≈_; isEquivalence)
 open import basics
-open import fo-approxset using (FOApproxSet) renaming (
-    _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-setoid to ≃mₐ-setoid; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
-    ∘-resp-≃m to ∘ₐ-resp-≃mₐ; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ
-  )
+open import fo-approxset
+    using (FOApproxSet; ℒ-func; ℒ-func-resp-≃m)
+    renaming (
+      _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-setoid to ≃mₐ-setoid; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
+      ∘-resp-≃m to ∘ₐ-resp-≃mₐ; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ; ℒ to ℒₐ
+    )
 
 -- Presheaf on FOApproxSet.
 record FOApproxSetPSh a : Set (suc a) where
@@ -64,6 +68,22 @@ _∘_ {H = H} ζ η .commute {X}{Y} f y =
   H .obj X .isEquivalence .trans (ζ .at-resp-≈ X (η .commute f y)) (ζ .commute f (η .at Y y))
 
 infixr 10 _∘_
+
+-- Terminal object
+module _ where
+  open import Data.Unit.Properties renaming (≡-setoid to 𝟙) public
+
+  ⊤ : FOApproxSetPSh 0ℓ
+  ⊤ .obj X = 𝟙
+  ⊤ .map f _ = tt
+  ⊤ .map-resp-≈ f _ = 𝟙 .isEquivalence .refl
+  ⊤ .preserves-∘ f g _ = 𝟙 .isEquivalence .refl
+  ⊤ .preserves-id f _ = 𝟙 .isEquivalence .refl
+
+  terminal : ∀ {a} {F : FOApproxSetPSh a} → F ⇒ ⊤
+  terminal .at X _ = tt
+  terminal .at-resp-≈ X _ = 𝟙 .isEquivalence .refl
+  terminal .commute f x = 𝟙 .isEquivalence .refl
 
 -- Products
 _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (a ⊔ b)
@@ -181,3 +201,42 @@ lambda {F = F} {G} η .commute {X} {Y} f x .eqat Z (z , g) =
   )
 
 -- prove law relating eval and lambda
+
+-- Any old set becomes a constant presheaf
+Disc : Set → FOApproxSetPSh 0ℓ
+Disc A .obj X = setoid A
+Disc A .map f = idₛ
+Disc A .map-resp-≈ f = idₛ
+Disc A .preserves-∘ f g x = ≡-refl
+Disc A .preserves-id f x = ≡-refl
+
+Disc-f : ∀ {A B} → (A → B) → Disc A ⇒ Disc B
+Disc-f f .at X = f
+Disc-f f .at-resp-≈ X = cong f
+Disc-f f .commute g x = ≡-refl
+
+Disc-const : ∀ {A} → A → ⊤ ⇒ Disc A
+Disc-const x .at X _ = x
+Disc-const x .at-resp-≈ X _ = ≡-refl
+Disc-const x .commute f _ = ≡-refl
+
+Disc-reflects-products : ∀ {A B} → (Disc A ⊗ Disc B) ⇒ Disc (A × B)
+Disc-reflects-products .at X = idₛ
+Disc-reflects-products .at-resp-≈ X (x , y) = cong₂ _,_ x y
+Disc-reflects-products .commute f (x , y) = ≡-refl
+
+-- Helper for binary predicate over a set
+module _ where
+  open import Relation.Binary using (Decidable; Rel)
+  open import Relation.Nullary
+
+  binPred : ∀ {ℓ A} {_∼_ : Rel A ℓ} → Decidable _∼_ → Disc (A × A) ⇒ (⊤ + ⊤)
+  binPred _∼_ .at X (x , y) with x ∼ y
+  ... | yes _ = inj₁ tt
+  ... | no _ = inj₂ tt
+  binPred _∼_ .at-resp-≈ X {x , y} ≡-refl with x ∼ y
+  ... | yes _ = ≡-refl
+  ... | no _ = ≡-refl
+  binPred _∼_ .commute f (x , y) with x ∼ y
+  ... | yes _ = ≡-refl
+  ... | no _ = ≡-refl
