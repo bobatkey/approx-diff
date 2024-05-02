@@ -77,6 +77,11 @@ module _ where
   ⊤ .preserves-∘ f g _ = 𝟙 .isEquivalence .refl
   ⊤ .preserves-id f _ = 𝟙 .isEquivalence .refl
 
+  terminal : ∀ {a} {F : FOApproxSetPSh a} → F ⇒ ⊤
+  terminal .at X _ = tt
+  terminal .at-resp-≈ X _ = 𝟙 .isEquivalence .refl
+  terminal .commute f x = 𝟙 .isEquivalence .refl
+
 -- Products
 _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (a ⊔ b)
 (F ⊗ G) .obj X = ⊗-setoid (F .obj X) (G .obj X)
