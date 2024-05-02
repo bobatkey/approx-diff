@@ -66,12 +66,16 @@ _∘_ {H = H} ζ η .commute {X}{Y} f y =
 infixr 10 _∘_
 
 -- Terminal object
-⊤ : ∀ {a} → FOApproxSetPSh a
-⊤ .obj X = {!   !}
-⊤ .map f = {!   !}
-⊤ .map-resp-≈ f = {!   !}
-⊤ .preserves-∘ f g = {!   !}
-⊤ .preserves-id f = {!   !}
+module _ where
+  open import Data.Unit using (tt)
+  open import Data.Unit.Properties renaming (≡-setoid to 𝟙) public
+
+  ⊤ : FOApproxSetPSh 0ℓ
+  ⊤ .obj X = 𝟙
+  ⊤ .map f _ = tt
+  ⊤ .map-resp-≈ f _ = 𝟙 .isEquivalence .refl
+  ⊤ .preserves-∘ f g _ = 𝟙 .isEquivalence .refl
+  ⊤ .preserves-id f _ = 𝟙 .isEquivalence .refl
 
 -- Products
 _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (a ⊔ b)

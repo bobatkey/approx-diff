@@ -17,8 +17,6 @@ module _ where
   ≡-to-≈ : ∀ {a b} (X : Setoid a b) {x y : X .Carrier} → x ≡ y → X ._≈_ x y
   ≡-to-≈ X {x} {.x} ≡-refl = X .isEquivalence .refl
 
-  open import Data.Unit.Properties renaming (≡-setoid to 𝟙) public
-
   -- Slightly less general in universe level than they could be, but sufficient for our purposes
   ⊗-setoid : ∀ {a b} → Setoid a a → Setoid b b → Setoid (a ⊔ b) (a ⊔ b)
   ⊗-setoid X Y .Carrier = X .Carrier × Y .Carrier

@@ -12,6 +12,7 @@ open import basics
 record Preorder : Set (suc 0ℓ) where
   no-eta-equality
   field
+
     Carrier : Set
     _≤_     : Carrier → Carrier → Set
     ≤-isPreorder : IsPreorder _≤_
