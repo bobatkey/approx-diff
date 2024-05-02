@@ -91,6 +91,16 @@ Disc A .map-resp-≈ f = idₛ
 Disc A .preserves-∘ f g x = ≡-refl
 Disc A .preserves-id f x = ≡-refl
 
+Disc-f : ∀ {A B} → (A → B) → Disc A ⇒ Disc B
+Disc-f f .at X = f
+Disc-f f .at-resp-≈ X = cong f
+Disc-f f .commute g x = ≡-refl
+
+Disc-const : ∀ {A} → A → ⊤ ⇒ Disc A
+Disc-const x .at X _ = x
+Disc-const x .at-resp-≈ X _ = ≡-refl
+Disc-const x .commute f _ = ≡-refl
+
 -- Products
 _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (a ⊔ b)
 (F ⊗ G) .obj X = ⊗-setoid (F .obj X) (G .obj X)
