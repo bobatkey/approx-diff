@@ -3,12 +3,12 @@
 module fo-approxset-presheaf where
 
 open import Level
-open import Data.Product using (_,_; proj₁; proj₂)
+open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum using (inj₁; inj₂)
 open import Function renaming (id to idₛ; _∘_ to _∘ₛ_)
 open import Relation.Binary using (Setoid; IsEquivalence)
 open import Relation.Binary.PropositionalEquality
-  using (cong; _≡_; setoid) renaming (refl to ≡-refl; trans to ≡-trans)
+  using (cong; cong₂; _≡_; setoid) renaming (refl to ≡-refl; trans to ≡-trans)
 open IsEquivalence
 open Setoid using (Carrier; _≈_; isEquivalence)
 open import basics
@@ -83,24 +83,6 @@ module _ where
   terminal .at-resp-≈ X _ = 𝟙 .isEquivalence .refl
   terminal .commute f x = 𝟙 .isEquivalence .refl
 
--- Any old set becomes a constant presheaf
-Disc : Set → FOApproxSetPSh 0ℓ
-Disc A .obj X = setoid A
-Disc A .map f = idₛ
-Disc A .map-resp-≈ f = idₛ
-Disc A .preserves-∘ f g x = ≡-refl
-Disc A .preserves-id f x = ≡-refl
-
-Disc-f : ∀ {A B} → (A → B) → Disc A ⇒ Disc B
-Disc-f f .at X = f
-Disc-f f .at-resp-≈ X = cong f
-Disc-f f .commute g x = ≡-refl
-
-Disc-const : ∀ {A} → A → ⊤ ⇒ Disc A
-Disc-const x .at X _ = x
-Disc-const x .at-resp-≈ X _ = ≡-refl
-Disc-const x .commute f _ = ≡-refl
-
 -- Products
 _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (a ⊔ b)
 (F ⊗ G) .obj X = ⊗-setoid (F .obj X) (G .obj X)
@@ -160,6 +142,29 @@ inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 [ ζ , η ] .at-resp-≈ X {x₁ , inj₂ y₁} {x₂ , inj₂ y₂} = η .at-resp-≈ X
 [ ζ , η ] .commute f (x , inj₁ y) = ζ .commute f (x , y)
 [ ζ , η ] .commute f (x , inj₂ y) = η .commute f (x , y)
+
+-- Any old set becomes a constant presheaf
+Disc : Set → FOApproxSetPSh 0ℓ
+Disc A .obj X = setoid A
+Disc A .map f = idₛ
+Disc A .map-resp-≈ f = idₛ
+Disc A .preserves-∘ f g x = ≡-refl
+Disc A .preserves-id f x = ≡-refl
+
+Disc-f : ∀ {A B} → (A → B) → Disc A ⇒ Disc B
+Disc-f f .at X = f
+Disc-f f .at-resp-≈ X = cong f
+Disc-f f .commute g x = ≡-refl
+
+Disc-const : ∀ {A} → A → ⊤ ⇒ Disc A
+Disc-const x .at X _ = x
+Disc-const x .at-resp-≈ X _ = ≡-refl
+Disc-const x .commute f _ = ≡-refl
+
+Disc-reflects-products : ∀ {A B} → (Disc A ⊗ Disc B) ⇒ Disc (A × B)
+Disc-reflects-products .at X = idₛ
+Disc-reflects-products .at-resp-≈ X (x , y) = cong₂ _,_ x y
+Disc-reflects-products .commute f (x , y) = ≡-refl
 
 -- Yoneda embedding Y ↦ Hom(-, Y)
 よ : FOApproxSet -> FOApproxSetPSh 0ℓ

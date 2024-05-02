@@ -91,24 +91,6 @@ terminal .func x = tt
 terminal .fwd x = meet-semilattice.terminal
 terminal .bwd x = join-semilattice.initial
 
--- Any old set becomes a “discrete” object
-Disc : Set → ApproxSet
-Disc A .elem = A
-Disc A .forder _ = preorder.𝟙
-Disc A .rorder _ = preorder.𝟙
-Disc A .rapprox _ = 𝟙J
-Disc A .fapprox _ = 𝟙M
-
-Disc-f : ∀ {A B} → (A → B) → Disc A ⇒ Disc B
-Disc-f f .func = f
-Disc-f f .fwd x = idM
-Disc-f f .bwd x = idJ
-
-Disc-const : ∀ {A} → A → ⊤ₐ ⇒ Disc A
-Disc-const x .func tt = x
-Disc-const x .fwd tt = idM
-Disc-const x .bwd tt = idJ
-
 -- Products
 _⊗_ : ApproxSet → ApproxSet → ApproxSet
 (X ⊗ Y) .elem = X .elem × Y .elem
@@ -132,17 +114,29 @@ pair f g .func x = f .func x , g .func x
 pair f g .fwd x = ⟨ f .fwd x , g .fwd x ⟩M
 pair f g .bwd x = join-semilattice.[ f .bwd x , g .bwd x ]
 
-Disc-preserves-products : ∀ {A B} → Disc (A × B) ⇒ (Disc A ⊗ Disc B)
-Disc-preserves-products .func ab = ab
-Disc-preserves-products .fwd _ = ⟨ idM , idM ⟩M
-Disc-preserves-products .bwd _ = [ idJ , idJ ]J
+-- Any old set becomes a “discrete” object
+Disc : Set → ApproxSet
+Disc A .elem = A
+Disc A .forder _ = preorder.𝟙
+Disc A .rorder _ = preorder.𝟙
+Disc A .rapprox _ = 𝟙J
+Disc A .fapprox _ = 𝟙M
 
+Disc-f : ∀ {A B} → (A → B) → Disc A ⇒ Disc B
+Disc-f f .func = f
+Disc-f f .fwd x = idM
+Disc-f f .bwd x = idJ
+
+Disc-const : ∀ {A} → A → ⊤ₐ ⇒ Disc A
+Disc-const x .func tt = x
+Disc-const x .fwd tt = idM
+Disc-const x .bwd tt = idJ
+
+-- Disc also preserves products and preserves and reflects sums, but we only need this
 Disc-reflects-products : ∀ {A B} → (Disc A ⊗ Disc B) ⇒ Disc (A × B)
 Disc-reflects-products .func ab = ab
 Disc-reflects-products .fwd _ = [ idM , idM ]M
 Disc-reflects-products .bwd _ = ⟨ idJ , idJ ⟩J
-
--- Disc preserves and reflects sums too
 
 -- Initial object
 ⊥ₐ : ApproxSet
