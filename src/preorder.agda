@@ -3,7 +3,8 @@
 module preorder where
 
 open import Level
-open import Data.Unit using (tt) renaming (⊤ to Unit)
+import Data.Unit using (tt) renaming (⊤ to 𝟙)
+open Data.Unit using (tt)
 open import Data.Empty using () renaming (⊥ to 𝟘)
 open import Data.Product using (_,_)
 open import basics
@@ -22,8 +23,8 @@ module _ where
 
   -- Unit preorder
   𝟙 : Preorder
-  𝟙 .Carrier = Unit
-  𝟙 ._≤_ tt tt = Unit
+  𝟙 .Carrier = Data.Unit.𝟙
+  𝟙 ._≤_ tt tt = Data.Unit.𝟙
   𝟙 .≤-isPreorder .IsPreorder.refl = tt
   𝟙 .≤-isPreorder .IsPreorder.trans tt tt = tt
 
@@ -37,8 +38,8 @@ module _ where
 
   L : Preorder → Preorder
   L X .Carrier = LCarrier (X .Carrier)
-  L X ._≤_ bottom bottom = Unit
-  L X ._≤_ bottom < _ >  = Unit
+  L X ._≤_ bottom bottom = Data.Unit.𝟙
+  L X ._≤_ bottom < _ >  = Data.Unit.𝟙
   L X ._≤_ < _ >  bottom = 𝟘
   L X ._≤_ < x > < y >   = X ._≤_ x y
   L X .≤-isPreorder .IsPreorder.refl {bottom} = tt

@@ -65,6 +65,14 @@ _∘_ {H = H} ζ η .commute {X}{Y} f y =
 
 infixr 10 _∘_
 
+-- Terminal object
+⊤ : ∀ {a} → FOApproxSetPSh a
+⊤ .obj X = {!   !}
+⊤ .map f = {!   !}
+⊤ .map-resp-≈ f = {!   !}
+⊤ .preserves-∘ f g = {!   !}
+⊤ .preserves-id f = {!   !}
+
 -- Products
 _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (a ⊔ b)
 (F ⊗ G) .obj X = ⊗-setoid (F .obj X) (G .obj X)

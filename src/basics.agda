@@ -2,7 +2,7 @@
 
 module basics where
 
-open import Level using (Lift; _⊔_; suc)
+open import Level
 open import Data.Empty using () renaming (⊥ to 𝟘)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
@@ -17,7 +17,10 @@ module _ where
   ≡-to-≈ : ∀ {a b} (X : Setoid a b) {x y : X .Carrier} → x ≡ y → X ._≈_ x y
   ≡-to-≈ X {x} {.x} ≡-refl = X .isEquivalence .refl
 
-  ⊗-setoid : ∀ {a b} (X : Setoid a a) (Y : Setoid b b) → Setoid (a ⊔ b) (a ⊔ b)
+  open import Data.Unit.Properties renaming (≡-setoid to 𝟙) public
+
+  -- Slightly less general in universe level than they could be, but sufficient for our purposes
+  ⊗-setoid : ∀ {a b} → Setoid a a → Setoid b b → Setoid (a ⊔ b) (a ⊔ b)
   ⊗-setoid X Y .Carrier = X .Carrier × Y .Carrier
   ⊗-setoid X Y ._≈_ (x₁ , y₁) (x₂ , y₂) = X ._≈_ x₁ x₂ × Y ._≈_ y₁ y₂
   ⊗-setoid X Y .isEquivalence .refl .proj₁ = X .isEquivalence .refl
