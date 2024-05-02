@@ -5,6 +5,7 @@ module fo-approxset-presheaf where
 open import Level
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum using (inj₁; inj₂)
+open import Data.Unit using (tt)
 open import Function renaming (id to idₛ; _∘_ to _∘ₛ_)
 open import Relation.Binary using (Setoid; IsEquivalence)
 open import Relation.Binary.PropositionalEquality
@@ -68,7 +69,6 @@ infixr 10 _∘_
 
 -- Terminal object
 module _ where
-  open import Data.Unit using (tt)
   open import Data.Unit.Properties renaming (≡-setoid to 𝟙) public
 
   ⊤ : FOApproxSetPSh 0ℓ
@@ -143,29 +143,6 @@ inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 [ ζ , η ] .commute f (x , inj₁ y) = ζ .commute f (x , y)
 [ ζ , η ] .commute f (x , inj₂ y) = η .commute f (x , y)
 
--- Any old set becomes a constant presheaf
-Disc : Set → FOApproxSetPSh 0ℓ
-Disc A .obj X = setoid A
-Disc A .map f = idₛ
-Disc A .map-resp-≈ f = idₛ
-Disc A .preserves-∘ f g x = ≡-refl
-Disc A .preserves-id f x = ≡-refl
-
-Disc-f : ∀ {A B} → (A → B) → Disc A ⇒ Disc B
-Disc-f f .at X = f
-Disc-f f .at-resp-≈ X = cong f
-Disc-f f .commute g x = ≡-refl
-
-Disc-const : ∀ {A} → A → ⊤ ⇒ Disc A
-Disc-const x .at X _ = x
-Disc-const x .at-resp-≈ X _ = ≡-refl
-Disc-const x .commute f _ = ≡-refl
-
-Disc-reflects-products : ∀ {A B} → (Disc A ⊗ Disc B) ⇒ Disc (A × B)
-Disc-reflects-products .at X = idₛ
-Disc-reflects-products .at-resp-≈ X (x , y) = cong₂ _,_ x y
-Disc-reflects-products .commute f (x , y) = ≡-refl
-
 -- Yoneda embedding Y ↦ Hom(-, Y)
 よ : FOApproxSet -> FOApproxSetPSh 0ℓ
 よ Y .obj X = ≃mₐ-setoid X Y
@@ -222,3 +199,42 @@ lambda {F = F} {G} η .commute {X} {Y} f x .eqat Z (z , g) =
   )
 
 -- prove law relating eval and lambda
+
+-- Any old set becomes a constant presheaf
+Disc : Set → FOApproxSetPSh 0ℓ
+Disc A .obj X = setoid A
+Disc A .map f = idₛ
+Disc A .map-resp-≈ f = idₛ
+Disc A .preserves-∘ f g x = ≡-refl
+Disc A .preserves-id f x = ≡-refl
+
+Disc-f : ∀ {A B} → (A → B) → Disc A ⇒ Disc B
+Disc-f f .at X = f
+Disc-f f .at-resp-≈ X = cong f
+Disc-f f .commute g x = ≡-refl
+
+Disc-const : ∀ {A} → A → ⊤ ⇒ Disc A
+Disc-const x .at X _ = x
+Disc-const x .at-resp-≈ X _ = ≡-refl
+Disc-const x .commute f _ = ≡-refl
+
+Disc-reflects-products : ∀ {A B} → (Disc A ⊗ Disc B) ⇒ Disc (A × B)
+Disc-reflects-products .at X = idₛ
+Disc-reflects-products .at-resp-≈ X (x , y) = cong₂ _,_ x y
+Disc-reflects-products .commute f (x , y) = ≡-refl
+
+-- Helper for binary predicate over a set
+module _ where
+  open import Relation.Binary using (Decidable; Rel)
+  open import Relation.Nullary
+
+  binPred : ∀ {ℓ A} {_∼_ : Rel A ℓ} → Decidable _∼_ → Disc (A × A) ⇒ (⊤ + ⊤)
+  binPred _∼_ .at X (x , y) with x ∼ y
+  ... | yes _ = inj₁ tt
+  ... | no _ = inj₂ tt
+  binPred _∼_ .at-resp-≈ X {x , y} ≡-refl with x ∼ y
+  ... | yes _ = ≡-refl
+  ... | no _ = ≡-refl
+  binPred _∼_ .commute f (x , y) with x ∼ y
+  ... | yes _ = ≡-refl
+  ... | no _ = ≡-refl
