@@ -7,7 +7,8 @@ open import Data.Product using (_,_; proj₁; proj₂)
 open import Data.Sum using (inj₁; inj₂)
 open import Function renaming (id to idₛ; _∘_ to _∘ₛ_)
 open import Relation.Binary using (Setoid; IsEquivalence)
-open import Relation.Binary.PropositionalEquality using (cong; _≡_) renaming (refl to ≡-refl; trans to ≡-trans)
+open import Relation.Binary.PropositionalEquality
+  using (cong; _≡_; setoid) renaming (refl to ≡-refl; trans to ≡-trans)
 open IsEquivalence
 open Setoid using (Carrier; _≈_; isEquivalence)
 open import basics
@@ -81,6 +82,14 @@ module _ where
   terminal .at X _ = tt
   terminal .at-resp-≈ X _ = 𝟙 .isEquivalence .refl
   terminal .commute f x = 𝟙 .isEquivalence .refl
+
+-- Any old set becomes a constant presheaf
+Disc : Set → FOApproxSetPSh 0ℓ
+Disc A .obj X = setoid A
+Disc A .map f = idₛ
+Disc A .map-resp-≈ f = idₛ
+Disc A .preserves-∘ f g x = ≡-refl
+Disc A .preserves-id f x = ≡-refl
 
 -- Products
 _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (a ⊔ b)

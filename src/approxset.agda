@@ -78,19 +78,6 @@ _∘_ : ∀ {X Y Z} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
 
 infixr 10 _∘_
 
--- Any old set becomes a “discrete” object
-Disc : Set → ApproxSet
-Disc A .elem = A
-Disc A .forder _ = preorder.𝟙
-Disc A .rorder _ = preorder.𝟙
-Disc A .rapprox _ = 𝟙J
-Disc A .fapprox _ = 𝟙M
-
-Disc-f : ∀ {A B} → (A → B) → Disc A ⇒ Disc B
-Disc-f f .func = f
-Disc-f f .fwd x = idM
-Disc-f f .bwd x = idJ
-
 -- Terminal Object
 ⊤ₐ : ApproxSet
 ⊤ₐ .elem = ⊤
@@ -103,6 +90,19 @@ terminal : ∀ {X} → X ⇒ ⊤ₐ
 terminal .func x = tt
 terminal .fwd x = meet-semilattice.terminal
 terminal .bwd x = join-semilattice.initial
+
+-- Any old set becomes a “discrete” object
+Disc : Set → ApproxSet
+Disc A .elem = A
+Disc A .forder _ = preorder.𝟙
+Disc A .rorder _ = preorder.𝟙
+Disc A .rapprox _ = 𝟙J
+Disc A .fapprox _ = 𝟙M
+
+Disc-f : ∀ {A B} → (A → B) → Disc A ⇒ Disc B
+Disc-f f .func = f
+Disc-f f .fwd x = idM
+Disc-f f .bwd x = idJ
 
 Disc-const : ∀ {A} → A → ⊤ₐ ⇒ Disc A
 Disc-const x .func tt = x
