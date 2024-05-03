@@ -159,16 +159,16 @@ module _ where
   L-join {A} .∧-preserving {< < x > >} {< < x₁ > >} = A .≤-refl
   L-join {A} .⊤-preserving = A .≤-refl
 
-  L-func : ∀ {A B}{X : MeetSemilattice A}{Y : MeetSemilattice B} → X => Y → L X => L Y
-  L-func f .func bottom = bottom
-  L-func f .func < x > = < f .func x >
-  L-func f .monotone {bottom} {bottom} x₁≤x₂ = tt
-  L-func f .monotone {bottom} {< x₂ >} x₁≤x₂ = tt
-  L-func f .monotone {< x₁ >} {< x₂ >} x₁≤x₂ = f .monotone x₁≤x₂
-  L-func f .∧-preserving {bottom} {x'} = tt
-  L-func f .∧-preserving {< x >} {bottom} = tt
-  L-func f .∧-preserving {< x >} {< x₁ >} = f .∧-preserving
-  L-func f .⊤-preserving = f .⊤-preserving
+  L-map : ∀ {A B}{X : MeetSemilattice A}{Y : MeetSemilattice B} → X => Y → L X => L Y
+  L-map f .func bottom = bottom
+  L-map f .func < x > = < f .func x >
+  L-map f .monotone {bottom} {bottom} x₁≤x₂ = tt
+  L-map f .monotone {bottom} {< x₂ >} x₁≤x₂ = tt
+  L-map f .monotone {< x₁ >} {< x₂ >} x₁≤x₂ = f .monotone x₁≤x₂
+  L-map f .∧-preserving {bottom} {x'} = tt
+  L-map f .∧-preserving {< x >} {bottom} = tt
+  L-map f .∧-preserving {< x >} {< x₁ >} = f .∧-preserving
+  L-map f .⊤-preserving = f .⊤-preserving
 
 ------------------------------------------------------------------------------
 -- Biproducts

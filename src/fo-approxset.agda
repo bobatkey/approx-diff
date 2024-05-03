@@ -203,26 +203,26 @@ module _ where
   ℒ-join .bwd⊣fwd x {< < x₁ > >} {bottom} .proj₂ _ = tt
   ℒ-join .bwd⊣fwd x {< < x₁ > >} {< x₂ >} .proj₂ ≤x₁ = ≤x₁
 
-  ℒ-func : ∀ {X Y} → X ⇒ Y → ℒ X ⇒ ℒ Y
-  ℒ-func f .func = f .func
-  ℒ-func f .fwd x = meet-semilattice.L-func (f .fwd x)
-  ℒ-func f .bwd x = join-semilattice.L-func (f .bwd x)
-  ℒ-func f .bwd⊣fwd x {bottom} {bottom} .proj₁ _ = tt
-  ℒ-func f .bwd⊣fwd x {bottom} {< y' >} .proj₁ ()
-  ℒ-func f .bwd⊣fwd x {< x' >} {bottom} .proj₁ _ = tt
-  ℒ-func f .bwd⊣fwd x {< x' >} {< y' >} .proj₁ = f .bwd⊣fwd x .proj₁
-  ℒ-func f .bwd⊣fwd x {bottom} {bottom} .proj₂ _ = tt
-  ℒ-func f .bwd⊣fwd x {bottom} {< x₁ >} .proj₂ ()
-  ℒ-func f .bwd⊣fwd x {< x₁ >} {bottom} .proj₂ _ = tt
-  ℒ-func f .bwd⊣fwd x {< x₁ >} {< x₂ >} .proj₂ = f .bwd⊣fwd x .proj₂
+  ℒ-map : ∀ {X Y} → X ⇒ Y → ℒ X ⇒ ℒ Y
+  ℒ-map f .func = f .func
+  ℒ-map f .fwd x = meet-semilattice.L-map (f .fwd x)
+  ℒ-map f .bwd x = join-semilattice.L-map (f .bwd x)
+  ℒ-map f .bwd⊣fwd x {bottom} {bottom} .proj₁ _ = tt
+  ℒ-map f .bwd⊣fwd x {bottom} {< y' >} .proj₁ ()
+  ℒ-map f .bwd⊣fwd x {< x' >} {bottom} .proj₁ _ = tt
+  ℒ-map f .bwd⊣fwd x {< x' >} {< y' >} .proj₁ = f .bwd⊣fwd x .proj₁
+  ℒ-map f .bwd⊣fwd x {bottom} {bottom} .proj₂ _ = tt
+  ℒ-map f .bwd⊣fwd x {bottom} {< x₁ >} .proj₂ ()
+  ℒ-map f .bwd⊣fwd x {< x₁ >} {bottom} .proj₂ _ = tt
+  ℒ-map f .bwd⊣fwd x {< x₁ >} {< x₂ >} .proj₂ = f .bwd⊣fwd x .proj₂
 
-  ℒ-func-resp-≃ : ∀ {X Y} {f g : X ⇒ Y} → f ≃m g → ℒ-func f ≃m ℒ-func g
-  ℒ-func-resp-≃ {f = f}{g} f≃g .eqfunc x = f≃g .eqfunc x
+  ℒ-map-resp-≃ : ∀ {X Y} {f g : X ⇒ Y} → f ≃m g → ℒ-map f ≃m ℒ-map g
+  ℒ-map-resp-≃ {f = f}{g} f≃g .eqfunc x = f≃g .eqfunc x
 
   ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
   ℒ-strength .func xy = xy
-  ℒ-strength .fwd (x , y) = [ L-unit ∘M inject₁M , meet-semilattice.L-func inject₂M ]M
-  ℒ-strength .bwd (x , y) = ⟨ project₁J ∘J L-counit , join-semilattice.L-func project₂J ⟩J
+  ℒ-strength .fwd (x , y) = [ L-unit ∘M inject₁M , meet-semilattice.L-map inject₂M ]M
+  ℒ-strength .bwd (x , y) = ⟨ project₁J ∘J L-counit , join-semilattice.L-map project₂J ⟩J
   ℒ-strength {X} .bwd⊣fwd (x , y) {x₁ , y₁} {bottom} .proj₁ _ .proj₁ =
     IsBottom.≤-bottom (X .rapprox x .⊥-isBottom)
   ℒ-strength {X}{Y} .bwd⊣fwd (x , y) {x₁ , < y₁ >} {< x₂ , y₂ >} .proj₁ (x₂≤ , snd₁) .proj₁ =

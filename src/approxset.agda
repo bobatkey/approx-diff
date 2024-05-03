@@ -229,15 +229,15 @@ binPred _∼_ .bwd (x , y) with x ∼ y
 ℒ-join .fwd x = meet-semilattice.L-join
 ℒ-join .bwd x = join-semilattice.L-dup
 
-ℒ-func : ∀ {X Y} → X ⇒ Y → ℒ X ⇒ ℒ Y
-ℒ-func f .func = f .func
-ℒ-func f .fwd x = meet-semilattice.L-func (f .fwd x)
-ℒ-func f .bwd x = join-semilattice.L-func (f .bwd x)
+ℒ-map : ∀ {X Y} → X ⇒ Y → ℒ X ⇒ ℒ Y
+ℒ-map f .func = f .func
+ℒ-map f .fwd x = meet-semilattice.L-map (f .fwd x)
+ℒ-map f .bwd x = join-semilattice.L-map (f .bwd x)
 
 ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
 ℒ-strength .func xy = xy
-ℒ-strength .fwd (x , y) = [ L-unit ∘M inject₁M , meet-semilattice.L-func inject₂M ]M
-ℒ-strength .bwd (x , y) = ⟨ project₁J ∘J L-counit , join-semilattice.L-func project₂J ⟩J
+ℒ-strength .fwd (x , y) = [ L-unit ∘M inject₁M , meet-semilattice.L-map inject₂M ]M
+ℒ-strength .bwd (x , y) = ⟨ project₁J ∘J L-counit , join-semilattice.L-map project₂J ⟩J
 
 {-
 -- Approximable lists: μY. 1 + ℒ(X × Y)
@@ -278,7 +278,7 @@ module _ {W X Y} (nil-f : W ⇒ Y) (cons-f : (W ⊗ ℒ (X ⊗ Y)) ⇒ Y) where
   elim-bwd (w , []) = inject₁ ∘ nil-f .bwd w
   elim-bwd (w , x ∷ xs) =
     -- FIXME: this is a bit muddled, and probably shouldn't be passing W around
-    ⟨ project₁J , (L-func ⟨ project₁J , ((project₂J ∘ elim-bwd (w , xs)) ∘ project₂J) ⟩J ∘ project₂J) ⟩J ∘ cons-f .bwd (w , x , elim-func (w , xs))
+    ⟨ project₁J , (L-map ⟨ project₁J , ((project₂J ∘ elim-bwd (w , xs)) ∘ project₂J) ⟩J ∘ project₂J) ⟩J ∘ cons-f .bwd (w , x , elim-func (w , xs))
 
   Ls-elim : (W ⊗ Ls X) ⇒ Y
   Ls-elim .func = elim-func

@@ -101,7 +101,7 @@ binOp f = (Disc-f λ (x , y) → f x y) ∘ Disc-reflects-products
 ⟦ inj₂ t ⟧ = inr ∘ ⟦ t ⟧
 ⟦ case t₁ t₂ s ⟧ = [ ⟦ t₁ ⟧ , ⟦ t₂ ⟧ ] ∘ pair id ⟦ s ⟧
 ⟦ return t ⟧ = ℒ-unit ∘ ⟦ t ⟧
-⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-func ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id ⟦ s ⟧
+⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-map ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id ⟦ s ⟧
 
 -- A renaming is a context morphism
 Ren : ctxt → ctxt → Set

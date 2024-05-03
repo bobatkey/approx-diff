@@ -105,18 +105,18 @@ module _ where
   L X .⊥-isBottom .IsBottom.≤-bottom {bottom} = tt
   L X .⊥-isBottom .IsBottom.≤-bottom {< x >} = tt
 
-  L-func : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → X => Y → L X => L Y
-  L-func m .func bottom = bottom
-  L-func m .func < x > = < m .func x >
-  L-func m .monotone {bottom} {bottom} _ = tt
-  L-func m .monotone {bottom} {< _ >} _ = tt
-  L-func m .monotone {< _ >} {bottom} ()
-  L-func m .monotone {< _ >} {< _ >} x₁≤x₂ = m .monotone x₁≤x₂
-  L-func m .∨-preserving {bottom} {bottom} = tt
-  L-func {B = B} m .∨-preserving {bottom} {< _ >} = B .≤-refl
-  L-func {B = B} m .∨-preserving {< x >} {bottom} = B .≤-refl
-  L-func m .∨-preserving {< _ >} {< _ >} = m .∨-preserving
-  L-func m .⊥-preserving = tt
+  L-map : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → X => Y → L X => L Y
+  L-map m .func bottom = bottom
+  L-map m .func < x > = < m .func x >
+  L-map m .monotone {bottom} {bottom} _ = tt
+  L-map m .monotone {bottom} {< _ >} _ = tt
+  L-map m .monotone {< _ >} {bottom} ()
+  L-map m .monotone {< _ >} {< _ >} x₁≤x₂ = m .monotone x₁≤x₂
+  L-map m .∨-preserving {bottom} {bottom} = tt
+  L-map {B = B} m .∨-preserving {bottom} {< _ >} = B .≤-refl
+  L-map {B = B} m .∨-preserving {< x >} {bottom} = B .≤-refl
+  L-map m .∨-preserving {< _ >} {< _ >} = m .∨-preserving
+  L-map m .⊥-preserving = tt
 
   -- Lifting is /not/ a monad: L-unit is not ⊥-preserving
 
@@ -167,7 +167,7 @@ module _ where
   L-dup {A} .∨-preserving {< _ >} {< _ >} = A .≤-refl
   L-dup .⊥-preserving = tt
 
-  L-coassoc : ∀ {A}{X : JoinSemilattice A} → (L-func L-dup ∘ L-dup) ≃m (L-dup ∘ L-dup {X = X})
+  L-coassoc : ∀ {A}{X : JoinSemilattice A} → (L-map L-dup ∘ L-dup) ≃m (L-dup ∘ L-dup {X = X})
   L-coassoc ._≃m_.eqfunc bottom .proj₁ = tt
   L-coassoc ._≃m_.eqfunc bottom .proj₂ = tt
   L-coassoc {X = X} ._≃m_.eqfunc < x > = X. ≃-refl
@@ -177,7 +177,7 @@ module _ where
   L-unit1 ._≃m_.eqfunc bottom .proj₂ = tt
   L-unit1 {X = X} ._≃m_.eqfunc < x > = X. ≃-refl
 
-  L-unit2 : ∀ {A}{X : JoinSemilattice A} → (L-func L-counit ∘ L-dup) ≃m id {X = L X}
+  L-unit2 : ∀ {A}{X : JoinSemilattice A} → (L-map L-counit ∘ L-dup) ≃m id {X = L X}
   L-unit2 ._≃m_.eqfunc bottom .proj₁ = tt
   L-unit2 ._≃m_.eqfunc bottom .proj₂ = tt
   L-unit2 {X = X} ._≃m_.eqfunc < x > = X. ≃-refl
