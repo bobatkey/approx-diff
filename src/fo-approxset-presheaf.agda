@@ -14,7 +14,7 @@ open IsEquivalence
 open Setoid using (Carrier; _≈_; isEquivalence)
 open import basics
 open import fo-approxset
-    using (FOApproxSet; ℒ-map; ℒ-map-resp-≃)
+    using (FOApproxSet; ℒ-map; ℒ-map-resp-≃; ℒ-map-preserves-id; ℒ-map-preserves-∘)
     renaming (
       _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-setoid to ≃mₐ-setoid; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
       ∘-resp-≃m to ∘ₐ-resp-≃mₐ; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ; ℒ to ℒₐ
@@ -246,14 +246,8 @@ module _ where
 ℒ F .obj X = F .obj (ℒₐ X)
 ℒ F .map f = F .map (ℒ-map f)
 ℒ F .map-resp-≈ f = F .map-resp-≈ (ℒ-map-resp-≃ f)
-ℒ F .preserves-∘ {X} f g x =
-  begin
-    F .map (ℒ-map g) (F .map (ℒ-map f) x)
-  ≈⟨ {!   !} ⟩
-    F .map (ℒ-map f ∘ₐ (ℒ-map g)) x
-  ≈⟨ {!   !} ⟩
-    F .map (ℒ-map (f ∘ₐ g)) x
-  ∎
-  where open import Relation.Binary.Reasoning.Setoid (F .obj (ℒₐ X))
---  {!   !} -- would be nicer if F were ℒₐ composable
-ℒ F .preserves-id f x = {!   !}
+ℒ F .preserves-∘ {X} {Y} {Z} f g x =
+  F .obj (ℒₐ X) .isEquivalence .trans
+    (F .preserves-∘ (ℒ-map f) (ℒ-map g) x)
+    (F .map-resp-≈ (ℒ-map-preserves-∘ f g) (F .obj (ℒₐ Z) .isEquivalence .refl))
+ℒ F .preserves-id f x = F .preserves-id (ℒ-map f) x

@@ -217,7 +217,13 @@ module _ where
   ℒ-map f .bwd⊣fwd x {< x₁ >} {< x₂ >} .proj₂ = f .bwd⊣fwd x .proj₂
 
   ℒ-map-resp-≃ : ∀ {X Y} {f g : X ⇒ Y} → f ≃m g → ℒ-map f ≃m ℒ-map g
-  ℒ-map-resp-≃ {f = f}{g} f≃g .eqfunc x = f≃g .eqfunc x
+  ℒ-map-resp-≃ f≃g .eqfunc x = f≃g .eqfunc x
+
+  ℒ-map-preserves-∘ : ∀ {X Y Z} (f : Y ⇒ Z) (g : X ⇒ Y) → (ℒ-map f ∘ ℒ-map g) ≃m (ℒ-map (f ∘ g))
+  ℒ-map-preserves-∘ f g .eqfunc x = refl
+
+  ℒ-map-preserves-id : ∀ {X Y} (f : X ⇒ Y) → (id ∘ ℒ-map f) ≃m (ℒ-map f ∘ id)
+  ℒ-map-preserves-id f .eqfunc x = refl
 
   ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
   ℒ-strength .func xy = xy
