@@ -14,7 +14,7 @@ open IsEquivalence
 open Setoid using (Carrier; _≈_; isEquivalence)
 open import basics
 open import fo-approxset
-    using (FOApproxSet; ℒ-map; ℒ-map-resp-≃; ℒ-map-preserves-id; ℒ-map-preserves-∘)
+    using (FOApproxSet; ℒ-map; ℒ-map-resp-≃; ℒ-map-preserves-id; ℒ-map-preserves-∘; ℒ-unit-commute)
     renaming (
       _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-setoid to ≃mₐ-setoid; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
       ∘-resp-≃m to ∘ₐ-resp-≃mₐ; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ;
@@ -261,7 +261,8 @@ module _ where
     F .map ℒₐ-unit (F .map (ℒ-map (ℒ-map f)) x)
   ≈⟨ F .preserves-∘ _ _ x ⟩
     F .map (ℒ-map (ℒ-map f) ∘ₐ ℒₐ-unit {ℒₐ X}) x
-  ≈⟨ F .map-resp-≈ {!   !} (F .obj (ℒₐ (ℒₐ Y)) .isEquivalence .refl) ⟩
+  ≈⟨ F .map-resp-≈ (≃mₐ-setoid _ _ .isEquivalence .sym (ℒ-unit-commute (ℒ-map f)))
+                   (F .obj (ℒₐ (ℒₐ Y)) .isEquivalence .refl) ⟩
     F .map (ℒₐ-unit {ℒₐ Y} ∘ₐ ℒ-map f) x
   ≈⟨ F .obj (ℒₐ X) .isEquivalence .sym (F .preserves-∘ _ _ x) ⟩
     F .map (ℒ-map f) (F .map (ℒₐ-unit {ℒₐ Y}) x)
