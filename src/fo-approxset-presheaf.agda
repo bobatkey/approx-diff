@@ -14,7 +14,7 @@ open IsEquivalence
 open Setoid using (Carrier; _≈_; isEquivalence)
 open import basics
 open import fo-approxset
-    using (FOApproxSet; ℒ-func; ℒ-func-resp-≃m)
+    using (FOApproxSet; ℒ-func; ℒ-func-resp-≃)
     renaming (
       _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-setoid to ≃mₐ-setoid; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
       ∘-resp-≃m to ∘ₐ-resp-≃mₐ; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ; ℒ to ℒₐ
@@ -240,3 +240,11 @@ module _ where
   binPred _∼_ .commute f (x , y) with x ∼ y
   ... | yes _ = ≡-refl
   ... | no _ = ≡-refl
+
+-- Lifting
+ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a
+ℒ F .obj X = F .obj (ℒₐ X)
+ℒ F .map f = F .map (ℒ-func f)
+ℒ F .map-resp-≈ f = F .map-resp-≈ (ℒ-func-resp-≃ f)
+ℒ F .preserves-∘ f g x = {!   !} -- want F and ℒₐ composable, so need a Functor abstraction
+ℒ F .preserves-id f x = {!   !}
