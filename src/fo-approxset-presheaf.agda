@@ -17,7 +17,8 @@ open import fo-approxset
     using (FOApproxSet; ℒ-map; ℒ-map-resp-≃; ℒ-map-preserves-id; ℒ-map-preserves-∘)
     renaming (
       _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-setoid to ≃mₐ-setoid; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
-      ∘-resp-≃m to ∘ₐ-resp-≃mₐ; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ; ℒ to ℒₐ
+      ∘-resp-≃m to ∘ₐ-resp-≃mₐ; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ;
+      ℒ to ℒₐ; ℒ-unit to ℒₐ-unit; ℒ-join to ℒₐ-join
     )
 
 -- Presheaf on FOApproxSet.
@@ -251,3 +252,18 @@ module _ where
     (F .preserves-∘ (ℒ-map f) (ℒ-map g) x)
     (F .map-resp-≈ (ℒ-map-preserves-∘ f g) (F .obj (ℒₐ Z) .isEquivalence .refl))
 ℒ F .preserves-id f x = F .preserves-id (ℒ-map f) x
+
+ℒ-join : ∀ {F : FOApproxSetPSh 0ℓ} → ℒ (ℒ F) ⇒ ℒ F
+ℒ-join {F} .at X = F .map ℒₐ-unit
+ℒ-join {F} .at-resp-≈ X = F .map-resp-≈ (≃mₐ-setoid (ℒₐ X) _ .isEquivalence .refl)
+ℒ-join {F} .commute {X} {Y} f x =
+  begin
+    F .map ℒₐ-unit (F .map (ℒ-map (ℒ-map f)) x)
+  ≈⟨ F .preserves-∘ _ _ x ⟩
+    F .map (ℒ-map (ℒ-map f) ∘ₐ ℒₐ-unit {ℒₐ X}) x
+  ≈⟨ F .map-resp-≈ {!   !} (F .obj (ℒₐ (ℒₐ Y)) .isEquivalence .refl) ⟩
+    F .map (ℒₐ-unit {ℒₐ Y} ∘ₐ ℒ-map f) x
+  ≈⟨ F .obj (ℒₐ X) .isEquivalence .sym (F .preserves-∘ _ _ x) ⟩
+    F .map (ℒ-map f) (F .map (ℒₐ-unit {ℒₐ Y}) x)
+  ∎
+  where open import Relation.Binary.Reasoning.Setoid (F .obj (ℒₐ X))

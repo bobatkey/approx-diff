@@ -225,6 +225,9 @@ module _ where
   ℒ-map-preserves-id : ∀ {X Y} (f : X ⇒ Y) → (id ∘ ℒ-map f) ≃m (ℒ-map f ∘ id)
   ℒ-map-preserves-id f .eqfunc x = refl
 
+  ℒ-unit-commute : ∀ {X Y} (f : X ⇒ Y) → (ℒ-unit ∘ f) ≃m (ℒ-map f ∘ ℒ-unit)
+  ℒ-unit-commute f .eqfunc x = refl
+
   ℒ-strength : ∀ {X Y} → (X ⊗ ℒ Y) ⇒ ℒ (X ⊗ Y)
   ℒ-strength .func xy = xy
   ℒ-strength .fwd (x , y) = [ L-unit ∘M inject₁M , meet-semilattice.L-map inject₂M ]M
