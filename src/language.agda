@@ -141,7 +141,7 @@ module AsFOApproxSetPSh where
   open import fo-approxset-presheaf
   open _⇒_
 
-  -- type with universe level of its interpretation; kludge for now..
+  -- type/context with universe level of its interpretation; kludge for now
   data type' : type -> Level -> Set where
     unit : type' unit 0ℓ
     num : type' num 0ℓ
@@ -149,6 +149,11 @@ module AsFOApproxSetPSh where
     _`⇒_ : ∀ {a b σ τ} → type' σ a → type' τ b → type' (σ `⇒ τ) (suc (a ⊔ b))
     _`+_ : ∀ {a σ τ} → type' σ a → type' τ a → type' (σ `+ τ) a
     lift : ∀ {a τ} → type' τ a → type' (lift τ) a
+
+  data ctxt' : ctxt -> Level -> Set where
+    ε : ctxt' ε 0ℓ
+    _-,_ : ∀ {a b Γ τ} → ctxt' Γ a → type' τ b → ctxt' (Γ -, τ) (a ⊔ b)
+
 
   module _ where
     open FOApproxSetPSh
@@ -160,3 +165,7 @@ module AsFOApproxSetPSh where
     ⟦ σ `⇒ τ ⟧ty = ⟦ σ ⟧ty ⊸ ⟦ τ ⟧ty
     ⟦ σ `+ τ ⟧ty = ⟦ σ ⟧ty + ⟦ τ ⟧ty
     ⟦ lift τ ⟧ty = ℒ ⟦ τ ⟧ty
+
+    ⟦_⟧ctxt : ∀ {a Γ} → ctxt' Γ a → FOApproxSetPSh a
+    ⟦ ε ⟧ctxt = ⊤
+    ⟦ Γ -, τ ⟧ctxt = ⟦ Γ ⟧ctxt ⊗ ⟦ τ ⟧ty
