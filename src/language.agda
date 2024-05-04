@@ -141,29 +141,29 @@ module AsFOApproxSetPSh where
   open import fo-approxset-presheaf
   open _⇒_
 
-  -- type/context with universe level of its interpretation; kludge for now
-  data type' : type -> Level -> Set where
-    unit : type' unit 0ℓ
-    num : type' num 0ℓ
-    _`×_ : ∀ {a b σ τ} → type' σ a → type' τ b → type' (σ `× τ) (a ⊔ b)
-    _`⇒_ : ∀ {a b σ τ} → type' σ a → type' τ b → type' (σ `⇒ τ) (suc (a ⊔ b))
-    _`+_ : ∀ {a σ τ} → type' σ a → type' τ a → type' (σ `+ τ) a
-    lift : ∀ {a τ} → type' τ a → type' (lift τ) a
+  -- syntax with universe level of its interpretation; kludge for now
+  data type' : Level -> Set where
+    unit : type' 0ℓ
+    num : type' 0ℓ
+    _`×_ : ∀ {a b} (σ : type' a) (τ : type' b) → type' (a ⊔ b)
+    _`⇒_ : ∀ {a b} (σ : type' a) (τ : type' b) → type' (suc (a ⊔ b))
+    _`+_ : ∀ {a} (σ : type' a) (τ : type' a) → type' a
+    lift : ∀ {a} (τ : type' a) → type' a
 
   infix 4 _∋'_
 
-  data ctxt' : ctxt -> Level -> Set where
-    ε : ctxt' ε 0ℓ
-    _-,_ : ∀ {a b Γ τ} → ctxt' Γ a → type' τ b → ctxt' (Γ -, τ) (a ⊔ b)
+  data ctxt' : Level -> Set where
+    ε : ctxt' 0ℓ
+    _-,_ : ∀ {a b} (Γ : ctxt' a) (τ : type' b) → ctxt' (a ⊔ b)
 
-  data _∋'_ : ∀ {a Γ τ} → ctxt' Γ a → type' τ a → Set where
-    ze : ∀ {a Γ₀ τ₀} {Γ : ctxt' Γ₀ a} {τ : type' τ₀ a} → Γ -, τ ∋' τ
-    su : ∀ {a Γ₀ τ₀ σ₀} {Γ : ctxt' Γ₀ a} {τ : type' τ₀ a} {σ : type' σ₀ a} → Γ ∋' τ → Γ -, σ ∋' τ
+  data _∋'_ : ∀ {a} (Γ : ctxt' a) (τ : type' a) → Set where
+    ze : ∀ {a} {Γ : ctxt' a} {τ : type' a} → Γ -, τ ∋' τ
+    su : ∀ {a} {Γ : ctxt' a} {τ : type' a} {σ : type' a} → Γ ∋' τ → Γ -, σ ∋' τ
 
   module _ where
     open FOApproxSetPSh
 
-    ⟦_⟧ty : ∀ {a τ} → type' τ a → FOApproxSetPSh a
+    ⟦_⟧ty : ∀ {a} (τ : type' a) → FOApproxSetPSh a
     ⟦ unit ⟧ty = ⊤
     ⟦ num ⟧ty = Disc ℕ
     ⟦ σ `× τ ⟧ty = ⟦ σ ⟧ty ⊗ ⟦ τ ⟧ty
@@ -171,10 +171,10 @@ module AsFOApproxSetPSh where
     ⟦ σ `+ τ ⟧ty = ⟦ σ ⟧ty + ⟦ τ ⟧ty
     ⟦ lift τ ⟧ty = ℒ ⟦ τ ⟧ty
 
-    ⟦_⟧ctxt : ∀ {a Γ} → ctxt' Γ a → FOApproxSetPSh a
+    ⟦_⟧ctxt : ∀ {a} (Γ : ctxt' a) → FOApproxSetPSh a
     ⟦ ε ⟧ctxt = ⊤
     ⟦ Γ -, τ ⟧ctxt = ⟦ Γ ⟧ctxt ⊗ ⟦ τ ⟧ty
 
-    ⟦_⟧var : ∀ {a Γ₀ τ₀} {Γ : ctxt' Γ₀ a} {τ : type' τ₀ a} → Γ ∋' τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
+    ⟦_⟧var : ∀ {a} {Γ : ctxt' a} {τ : type' a} → Γ ∋' τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
     ⟦ ze ⟧var = π₂
     ⟦ su x ⟧var = ⟦ x ⟧var ∘ π₁
