@@ -77,7 +77,7 @@ infixr 10 _∘_
 
 -- Terminal object
 module _ where
-  open import Data.Unit.Properties renaming (≡-setoid to 𝟙) public
+  open import Data.Unit.Properties using () renaming (≡-setoid to 𝟙) public
 
   ⊤ : FOApproxSetPSh 0ℓ
   ⊤ .obj X = 𝟙
@@ -256,6 +256,11 @@ module _ where
   F .obj (ℒₐ X) .isEquivalence .trans
     (F .preserves-∘ x) (F .map-resp-≈ ℒₐ-map-preserves-∘ (F .obj (ℒₐ Z) .isEquivalence .refl))
 ℒ F .preserves-id x = F .preserves-id x
+
+ℒ-map : ∀ {a} {F G : FOApproxSetPSh a} → F ⇒ G → ℒ F ⇒ ℒ G
+ℒ-map {F = F} η .at X = η .at (ℒₐ X)
+ℒ-map {F = F} η .at-resp-≈ X = η .at-resp-≈ (ℒₐ X)
+ℒ-map {F = F} {G} η .commute f x = η .commute (ℒₐ-map f) x
 
 ℒ-counit : ∀ {a} {F : FOApproxSetPSh a} → ℒ F ⇒ F
 ℒ-counit {F = F} .at X = F .map ℒₐ-unit
