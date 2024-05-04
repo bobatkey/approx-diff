@@ -21,7 +21,7 @@ open import fo-approxset
       ∘-resp-≃m to ∘ₐ-resp-≃mₐ; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ;
       ℒ to ℒₐ; ℒ-map to ℒₐ-map; ℒ-map-resp-≃ to ℒₐ-map-resp-≃; ℒ-map-preserves-id to ℒₐ-map-preserves-id;
       ℒ-map-preserves-∘ to ℒₐ-map-preserves-∘; ℒ-unit-commute to ℒₐ-unit-commute; ℒ-unit to ℒₐ-unit;
-      ℒ-join to ℒₐ-join; ℒ-strength to ℒₐ-strength
+      ℒ-join to ℒₐ-join; ℒ-join-commute to ℒₐ-join-commute; ℒ-strength to ℒₐ-strength
     )
 
 module ≃-Reasoning = Relation.Binary.Reasoning.Setoid
@@ -32,8 +32,8 @@ record FOApproxSetPSh a : Set (suc a) where
     obj : FOApproxSet → Setoid a a
     map : ∀ {X Y} → (X ⇒ₐ Y) → obj Y .Carrier → obj X .Carrier
     map-resp-≈ : ∀ {X Y} {f f' : X ⇒ₐ Y} → f ≃mₐ f' → ∀ {x y} → obj Y ._≈_ x y → obj X ._≈_ (map f x) (map f' y)
-    preserves-∘ : ∀ {X Y Z} (f : Y ⇒ₐ Z) (g : X ⇒ₐ Y) → ∀ x → obj X ._≈_ (map g (map f x)) (map (f ∘ₐ g) x)
-    preserves-id : ∀ {X Y} (f : X ⇒ₐ Y) → ∀ x → obj X ._≈_ (idₛ (map f x)) (map f (idₛ x))
+    preserves-∘ : ∀ {X Y Z} {f : Y ⇒ₐ Z} {g : X ⇒ₐ Y} → ∀ x → obj X ._≈_ (map g (map f x)) (map (f ∘ₐ g) x)
+    preserves-id : ∀ {X Y} {f : X ⇒ₐ Y} → ∀ x → obj X ._≈_ (idₛ (map f x)) (map f (idₛ x))
 
 open FOApproxSetPSh
 
@@ -65,7 +65,7 @@ module _ where
 id : ∀ {a} {F : FOApproxSetPSh a} → F ⇒ F
 id .at X = idₛ
 id .at-resp-≈ X = idₛ
-id {F = F} .commute = F .preserves-id
+id {F = F} .commute f = F .preserves-id
 
 _∘_ : ∀ {a} {F G H : FOApproxSetPSh a} → G ⇒ H → F ⇒ G → F ⇒ H
 (ζ ∘ η) .at X = ζ .at X ∘ₛ η .at X
@@ -83,8 +83,8 @@ module _ where
   ⊤ .obj X = 𝟙
   ⊤ .map f _ = tt
   ⊤ .map-resp-≈ f _ = 𝟙 .isEquivalence .refl
-  ⊤ .preserves-∘ f g _ = 𝟙 .isEquivalence .refl
-  ⊤ .preserves-id f _ = 𝟙 .isEquivalence .refl
+  ⊤ .preserves-∘ _ = 𝟙 .isEquivalence .refl
+  ⊤ .preserves-id _ = 𝟙 .isEquivalence .refl
 
   terminal : ∀ {a} {F : FOApproxSetPSh a} → F ⇒ ⊤
   terminal .at X _ = tt
@@ -98,10 +98,10 @@ _⊗_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
 (F ⊗ G) .map f (x , y) .proj₂ = G .map f y
 (F ⊗ G) .map-resp-≈ f (x , y) .proj₁ = F .map-resp-≈ f x
 (F ⊗ G) .map-resp-≈ f (x , y) .proj₂ = G .map-resp-≈ f y
-(F ⊗ G) .preserves-∘ f g (x , y) .proj₁ = F .preserves-∘ f g x
-(F ⊗ G) .preserves-∘ f g (x , y) .proj₂ = G .preserves-∘ f g y
-(F ⊗ G) .preserves-id f (x , y) .proj₁ = F .preserves-id f x
-(F ⊗ G) .preserves-id f (x , y) .proj₂ = G .preserves-id f y
+(F ⊗ G) .preserves-∘ (x , y) .proj₁ = F .preserves-∘ x
+(F ⊗ G) .preserves-∘ (x , y) .proj₂ = G .preserves-∘ y
+(F ⊗ G) .preserves-id (x , y) .proj₁ = F .preserves-id x
+(F ⊗ G) .preserves-id (x , y) .proj₂ = G .preserves-id y
 
 π₁ : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → (F ⊗ G) ⇒ F
 π₁ .at X = proj₁
@@ -128,10 +128,10 @@ _+_ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a → FOApproxSetPSh a
 (F + G) .map f (inj₂ x) = inj₂ (G .map f x)
 (F + G) .map-resp-≈ f {inj₁ x} {inj₁ y} = F .map-resp-≈ f
 (F + G) .map-resp-≈ f {inj₂ x} {inj₂ y} = G .map-resp-≈ f
-(F + G) .preserves-∘ f g (inj₁ x) = F .preserves-∘ f g x
-(F + G) .preserves-∘ f g (inj₂ x) = G .preserves-∘ f g x
-(F + G) .preserves-id f (inj₁ x) = F .preserves-id f x
-(F + G) .preserves-id f (inj₂ x) = G .preserves-id f x
+(F + G) .preserves-∘ (inj₁ x) = F .preserves-∘ x
+(F + G) .preserves-∘ (inj₂ x) = G .preserves-∘ x
+(F + G) .preserves-id (inj₁ x) = F .preserves-id x
+(F + G) .preserves-id (inj₂ x) = G .preserves-id x
 
 inl : ∀ {a} {F G : FOApproxSetPSh a} → F ⇒ (F + G)
 inl .at X = inj₁
@@ -156,8 +156,8 @@ inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 よ Y .obj X = ≃mₐ-setoid {X = X} {Y}
 よ Y .map f g = g ∘ₐ f
 よ Y .map-resp-≈ f g = ∘ₐ-resp-≃mₐ g f
-よ Y .preserves-∘ {X} f g h = ≃mₐ-setoid .isEquivalence .sym (∘ₐ-assoc h f g)
-よ Y .preserves-id {X} f g =
+よ Y .preserves-∘ {X} {f = f} {g} h = ≃mₐ-setoid .isEquivalence .sym (∘ₐ-assoc h f g)
+よ Y .preserves-id {X} {f = f} g =
   ≃mₐ-setoid .isEquivalence .trans
     (≡-to-≈ ≃mₐ-setoid ≡-refl) (≡-to-≈ ≃mₐ-setoid (cong (λ g' → g' ∘ₐ f) {_} {g} ≡-refl))
 
@@ -171,13 +171,13 @@ _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
   G .obj Y .isEquivalence .trans
     (η .at-resp-≈ Y (F .obj Y .isEquivalence .refl , ∘ₐ-assoc f h g)) (η .commute g (x , f ∘ₐ h))
 (F ⊸ G) .map-resp-≈ f η .eqat X (x , g) = η .eqat X (x , ∘ₐ-resp-≃mₐ f g)
-(F ⊸ G) .preserves-∘ {Y} {Z = Z} f g η .eqat X {_ , h₁} (x , h) =
+(F ⊸ G) .preserves-∘ {Y} {Z = Z} {f = f} {g} η .eqat X {_ , h₁} (x , h) =
   η .at-resp-≈ X (
     x ,
     ≃mₐ-setoid .isEquivalence .trans
       (∘ₐ-assoc f g h₁) (∘ₐ-resp-≃mₐ {f = f ∘ₐ g} (≃mₐ-setoid .isEquivalence .refl) h)
   )
-(F ⊸ G) .preserves-id {Y} {Z} f η .eqat X (x , h) =
+(F ⊸ G) .preserves-id {Y} {Z} {f = f} η .eqat X (x , h) =
   η .at-resp-≈ X (x , ∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid .isEquivalence .refl) h)
 
 eval : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ((F ⊸ G) ⊗ F) ⇒ G
@@ -195,13 +195,13 @@ lambda {F = F} η .at X x .at-resp-≈ Y (y , f) =
   η .at-resp-≈ Y (F .map-resp-≈ f (F .obj X .isEquivalence .refl) , y)
 lambda {F = F} {G} {H} η .at X x .commute {Y} {Z} f (z , g) =
   H .obj Y .isEquivalence .trans
-    (η .at-resp-≈ Y (F .obj Y .isEquivalence .sym (F .preserves-∘ g f x) , G .obj Y .isEquivalence .refl))
+    (η .at-resp-≈ Y (F .obj Y .isEquivalence .sym (F .preserves-∘ x) , G .obj Y .isEquivalence .refl))
     (η .commute f (F .map g x , z))
 lambda {F = F} {G} η .at-resp-≈ X x .eqat Y (y , f) = η .at-resp-≈ Y (F .map-resp-≈ f x , y)
 lambda {F = F} {G} η .commute {X} {Y} f x .eqat Z (z , g) =
   η .at-resp-≈ Z (
     F .obj Z .isEquivalence .trans
-      (F .preserves-∘ f _ x)
+      (F .preserves-∘ x)
       (F .map-resp-≈ (∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid .isEquivalence .refl) g) (F .obj Y .isEquivalence .refl)) ,
     z
   )
@@ -213,8 +213,8 @@ Disc : Set → FOApproxSetPSh 0ℓ
 Disc A .obj X = setoid A
 Disc A .map f = idₛ
 Disc A .map-resp-≈ f = idₛ
-Disc A .preserves-∘ f g x = ≡-refl
-Disc A .preserves-id f x = ≡-refl
+Disc A .preserves-∘ x = ≡-refl
+Disc A .preserves-id x = ≡-refl
 
 Disc-f : ∀ {A B} → (A → B) → Disc A ⇒ Disc B
 Disc-f f .at X = f
@@ -247,18 +247,15 @@ module _ where
   ... | yes _ = ≡-refl
   ... | no _ = ≡-refl
 
--- Lifting
+-- Lifting is a comonad
 ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a
 ℒ F .obj X = F .obj (ℒₐ X)
 ℒ F .map f = F .map (ℒₐ-map f)
 ℒ F .map-resp-≈ f = F .map-resp-≈ (ℒₐ-map-resp-≃ f)
-ℒ F .preserves-∘ {X} {Y} {Z} f g x =
+ℒ F .preserves-∘ {X} {Y} {Z} x =
   F .obj (ℒₐ X) .isEquivalence .trans
-    (F .preserves-∘ (ℒₐ-map f) (ℒₐ-map g) x)
-    (F .map-resp-≈ (ℒₐ-map-preserves-∘ f g) (F .obj (ℒₐ Z) .isEquivalence .refl))
-ℒ F .preserves-id f x = F .preserves-id (ℒₐ-map f) x
-
--- Don't need map
+    (F .preserves-∘ x) (F .map-resp-≈ ℒₐ-map-preserves-∘ (F .obj (ℒₐ Z) .isEquivalence .refl))
+ℒ F .preserves-id x = F .preserves-id x
 
 ℒ-counit : ∀ {a} {F : FOApproxSetPSh a} → ℒ F ⇒ F
 ℒ-counit {F = F} .at X = F .map ℒₐ-unit
@@ -266,18 +263,28 @@ module _ where
 ℒ-counit {F = F} .commute {X} f x =
   begin
     F .map ℒₐ-unit (F .map (ℒₐ-map f) x)
-  ≈⟨ F .preserves-∘ (ℒₐ-map f) ℒₐ-unit x  ⟩
+  ≈⟨ F .preserves-∘ x ⟩
     F .map (ℒₐ-map f ∘ₐ ℒₐ-unit) x
   ≈⟨ F .map-resp-≈ (≃mₐ-setoid .isEquivalence .sym (ℒₐ-unit-commute f)) (F .obj _ .isEquivalence .refl) ⟩
     F .map (ℒₐ-unit ∘ₐ f) x
-  ≈⟨ F .obj X .isEquivalence .sym (F .preserves-∘ ℒₐ-unit f x) ⟩
+  ≈⟨ F .obj X .isEquivalence .sym (F .preserves-∘ x) ⟩
     F .map f (F .map ℒₐ-unit x)
   ∎
   where open ≃-Reasoning (F .obj X)
 
 ℒ-dup : ∀ {a} {F : FOApproxSetPSh a} → ℒ F ⇒ ℒ (ℒ F)
 ℒ-dup {F = F} .at X = F .map ℒₐ-join
-ℒ-dup {F = F} .at-resp-≈ X = {!   !}
-ℒ-dup {F = F} .commute f x = {!   !}
+ℒ-dup {F = F} .at-resp-≈ X = F .map-resp-≈ (≃mₐ-setoid .isEquivalence .refl)
+ℒ-dup {F = F} .commute {X} {Y} f x =
+  begin
+    F .map ℒₐ-join (F .map (ℒₐ-map f) x)
+  ≈⟨ F .preserves-∘ x ⟩
+    F .map (ℒₐ-map f ∘ₐ ℒₐ-join) x
+  ≈⟨ F .map-resp-≈ (≃mₐ-setoid .isEquivalence .sym (ℒₐ-join-commute _)) (F .obj (ℒₐ Y) .isEquivalence .refl) ⟩
+    F .map (ℒₐ-join ∘ₐ ℒₐ-map (ℒₐ-map f)) x
+  ≈⟨ F .obj (ℒₐ (ℒₐ X)) .isEquivalence .sym (F .preserves-∘ x) ⟩
+    F .map (ℒₐ-map (ℒₐ-map f)) (F .map ℒₐ-join x)
+  ∎
+  where open ≃-Reasoning (F .obj (ℒₐ (ℒₐ X)))
 
--- ℒ has a join but not a unit
+-- ℒ has join but not unit
