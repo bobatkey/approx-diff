@@ -136,6 +136,27 @@ module AsFOApproxSet where
   ⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-map ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id ⟦ s ⟧
 
 module AsFOApproxSetPSh where
-  open import Data.Product using (_×_; _,_)
+  open import Level
+  open import Data.Product using (Σ; _×_; _,_)
   open import fo-approxset-presheaf
   open _⇒_
+
+  -- type with universe level of its interpretation; kludge for now..
+  data type' : type -> Level -> Set where
+    unit : type' unit 0ℓ
+    num : type' num 0ℓ
+    _`×_ : ∀ {a b σ τ} → type' σ a → type' τ b → type' (σ `× τ) (a ⊔ b)
+    _`⇒_ : ∀ {a b σ τ} → type' σ a → type' τ b → type' (σ `⇒ τ) (suc (a ⊔ b))
+    _`+_ : ∀ {a σ τ} → type' σ a → type' τ a → type' (σ `+ τ) a
+    lift : ∀ {a τ} → type' τ a → type' (lift τ) a
+
+  module _ where
+    open FOApproxSetPSh
+
+    ⟦_⟧ty : ∀ {a τ} → type' τ a → FOApproxSetPSh a
+    ⟦ unit ⟧ty = ⊤
+    ⟦ num ⟧ty = Disc ℕ
+    ⟦ σ `× τ ⟧ty = ⟦ σ ⟧ty ⊗ ⟦ τ ⟧ty
+    ⟦ σ `⇒ τ ⟧ty = ⟦ σ ⟧ty ⊸ ⟦ τ ⟧ty
+    ⟦ σ `+ τ ⟧ty = ⟦ σ ⟧ty + ⟦ τ ⟧ty
+    ⟦ lift τ ⟧ty = ℒ ⟦ τ ⟧ty
