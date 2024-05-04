@@ -288,3 +288,20 @@ module _ where
   where open ≃-Reasoning (F .obj (ℒₐ (ℒₐ X)))
 
 -- ℒ has join but not unit
+-- TODO: check comonad laws
+
+ℒ-costrength : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ℒ (F ⊗ G) ⇒ (F ⊗ ℒ G)
+ℒ-costrength {F = F} .at Z (x , y) = F .map ℒₐ-unit x , y
+ℒ-costrength {F = F} .at-resp-≈ Z (x , y) = F .map-resp-≈ (≃mₐ-setoid .isEquivalence .refl) x , y
+ℒ-costrength {F = F} {G} .commute {X} {Y} f (x , y) .proj₁ =
+  begin
+    F .map ℒₐ-unit (F .map (ℒₐ-map f) x)
+  ≈⟨ F .preserves-∘ x ⟩
+    F .map (ℒₐ-map f ∘ₐ ℒₐ-unit) x
+  ≈⟨ F .map-resp-≈ (≃mₐ-setoid .isEquivalence .sym (ℒₐ-unit-commute f)) (F .obj _ .isEquivalence .refl) ⟩
+    F .map (ℒₐ-unit ∘ₐ f) x
+  ≈⟨ F .obj X .isEquivalence .sym (F .preserves-∘ x) ⟩
+    F .map f (F .map ℒₐ-unit x)
+  ∎
+  where open ≃-Reasoning (F .obj X)
+ℒ-costrength {G = G} .commute {X} f (x , y) .proj₂ = G .obj (ℒₐ X) .isEquivalence .refl
