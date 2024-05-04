@@ -221,8 +221,8 @@ binPred _∼_ .bwd (x , y) with x ∼ y
 
 ℒ-unit : ∀ {X} → X ⇒ ℒ X
 ℒ-unit .func x = x
-ℒ-unit .fwd x = L-unit
-ℒ-unit .bwd x = ⊥-map
+ℒ-unit .fwd x = meet-semilattice.L-unit
+ℒ-unit .bwd x = join-semilattice.L-counit
 
 ℒ-join : ∀ {X} → ℒ (ℒ X) ⇒ ℒ X
 ℒ-join .func x = x

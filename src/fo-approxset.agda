@@ -49,7 +49,7 @@ record _≃m_ {X Y : FOApproxSet} (f g : X ⇒ Y) : Set where
 
 open _≃m_
 
-module _ (X Y : FOApproxSet) where
+module _ {X Y : FOApproxSet} where
   ≃m-setoid : Setoid 0ℓ 0ℓ
   ≃m-setoid .Carrier = X ⇒ Y
   ≃m-setoid ._≈_ f g = f ≃m g

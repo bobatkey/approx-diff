@@ -12,14 +12,19 @@ open import Relation.Binary.PropositionalEquality
   using (cong; cong₂; _≡_; setoid) renaming (refl to ≡-refl; trans to ≡-trans)
 open IsEquivalence
 open Setoid using (Carrier; _≈_; isEquivalence)
+import Relation.Binary.Reasoning.Setoid
 open import basics
 open import fo-approxset
-    using (FOApproxSet; ℒ-map; ℒ-map-resp-≃; ℒ-map-preserves-id; ℒ-map-preserves-∘; ℒ-unit-commute)
+    using (FOApproxSet)
     renaming (
       _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-setoid to ≃mₐ-setoid; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
       ∘-resp-≃m to ∘ₐ-resp-≃mₐ; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ;
-      ℒ to ℒₐ; ℒ-unit to ℒₐ-unit; ℒ-join to ℒₐ-join
+      ℒ to ℒₐ; ℒ-map to ℒₐ-map; ℒ-map-resp-≃ to ℒₐ-map-resp-≃; ℒ-map-preserves-id to ℒₐ-map-preserves-id;
+      ℒ-map-preserves-∘ to ℒₐ-map-preserves-∘; ℒ-unit-commute to ℒₐ-unit-commute; ℒ-unit to ℒₐ-unit;
+      ℒ-join to ℒₐ-join; ℒ-strength to ℒₐ-strength
     )
+
+module ≃-Reasoning = Relation.Binary.Reasoning.Setoid
 
 -- Presheaf on FOApproxSet.
 record FOApproxSetPSh a : Set (suc a) where
@@ -47,13 +52,13 @@ record _≃m_ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} (η ζ : F ⇒
 open _≃m_
 
 module _ where
-  ≃m-setoid : ∀ {a b} (F : FOApproxSetPSh a) (G : FOApproxSetPSh b) → Setoid (suc (a ⊔ b)) (suc (a ⊔ b))
-  ≃m-setoid F G .Carrier = F ⇒ G
-  ≃m-setoid F G ._≈_ η ζ = η ≃m ζ
-  ≃m-setoid F G .isEquivalence .refl {η} .eqat X x = η .at-resp-≈ X x
-  ≃m-setoid F G .isEquivalence .sym η≃ζ .eqat X x =
+  ≃m-setoid : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → Setoid (suc (a ⊔ b)) (suc (a ⊔ b))
+  ≃m-setoid {F = F} {G} .Carrier = F ⇒ G
+  ≃m-setoid ._≈_ η ζ = η ≃m ζ
+  ≃m-setoid .isEquivalence .refl {η} .eqat X x = η .at-resp-≈ X x
+  ≃m-setoid {F = F} {G} .isEquivalence .sym η≃ζ .eqat X x =
     G .obj X .isEquivalence .sym (η≃ζ .eqat X (F .obj X .isEquivalence .sym x))
-  ≃m-setoid F G .isEquivalence .trans η≃ζ ζ≃ε .eqat X x =
+  ≃m-setoid {F = F} {G} .isEquivalence .trans η≃ζ ζ≃ε .eqat X x =
     G .obj X .isEquivalence .trans (η≃ζ .eqat X x) (ζ≃ε .eqat X (F .obj X .isEquivalence .refl))
 
 -- Definitions for category
@@ -148,20 +153,20 @@ inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 
 -- Yoneda embedding Y ↦ Hom(-, Y)
 よ : FOApproxSet -> FOApproxSetPSh 0ℓ
-よ Y .obj X = ≃mₐ-setoid X Y
+よ Y .obj X = ≃mₐ-setoid {X = X} {Y}
 よ Y .map f g = g ∘ₐ f
 よ Y .map-resp-≈ f g = ∘ₐ-resp-≃mₐ g f
-よ Y .preserves-∘ {X} f g h = ≃mₐ-setoid X Y .isEquivalence .sym (∘ₐ-assoc h f g)
+よ Y .preserves-∘ {X} f g h = ≃mₐ-setoid .isEquivalence .sym (∘ₐ-assoc h f g)
 よ Y .preserves-id {X} f g =
-  ≃mₐ-setoid X Y .isEquivalence .trans
-    (≡-to-≈ (≃mₐ-setoid X Y) ≡-refl) (≡-to-≈ (≃mₐ-setoid X Y) (cong (λ g' → g' ∘ₐ f) {_} {g} ≡-refl))
+  ≃mₐ-setoid .isEquivalence .trans
+    (≡-to-≈ ≃mₐ-setoid ≡-refl) (≡-to-≈ ≃mₐ-setoid (cong (λ g' → g' ∘ₐ f) {_} {g} ≡-refl))
 
 -- Functions. (F ⊗ よ X) ⇒ G and よ X ⇒ (F ⊸ G) are isomorphic
 _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (suc (a ⊔ b))
-(F ⊸ G) .obj X = ≃m-setoid (F ⊗ よ X) G
+(F ⊸ G) .obj X = ≃m-setoid {F = F ⊗ よ X} {G}
 (F ⊸ G) .map f η .at X (x , g) = η .at X (x , f ∘ₐ g)
 (F ⊸ G) .map f η .at-resp-≈ X (x , g) =
-  η .at-resp-≈ X (x , ∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid _ _ .isEquivalence .refl) g)
+  η .at-resp-≈ X (x , ∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid .isEquivalence .refl) g)
 (F ⊸ G) .map f η .commute {Y} {Z} g (x , h) =
   G .obj Y .isEquivalence .trans
     (η .at-resp-≈ Y (F .obj Y .isEquivalence .refl , ∘ₐ-assoc f h g)) (η .commute g (x , f ∘ₐ h))
@@ -169,19 +174,19 @@ _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
 (F ⊸ G) .preserves-∘ {Y} {Z = Z} f g η .eqat X {_ , h₁} (x , h) =
   η .at-resp-≈ X (
     x ,
-    ≃mₐ-setoid X Z .isEquivalence .trans
-      (∘ₐ-assoc f g h₁) (∘ₐ-resp-≃mₐ {f = f ∘ₐ g} (≃mₐ-setoid Y Z .isEquivalence .refl) h)
+    ≃mₐ-setoid .isEquivalence .trans
+      (∘ₐ-assoc f g h₁) (∘ₐ-resp-≃mₐ {f = f ∘ₐ g} (≃mₐ-setoid .isEquivalence .refl) h)
   )
 (F ⊸ G) .preserves-id {Y} {Z} f η .eqat X (x , h) =
-  η .at-resp-≈ X (x , ∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid Y Z .isEquivalence .refl) h)
+  η .at-resp-≈ X (x , ∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid .isEquivalence .refl) h)
 
 eval : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ((F ⊸ G) ⊗ F) ⇒ G
 eval .at X (η , x) = η .at X (x , idₐ)
-eval .at-resp-≈ X (η , x) = η .eqat X (x , ≃mₐ-setoid X _ .isEquivalence .refl)
+eval .at-resp-≈ X (η , x) = η .eqat X (x , ≃mₐ-setoid .isEquivalence .refl)
 eval {F = F} {G} .commute {X} {Y} f (η , y) =
   G .obj X .isEquivalence .trans
     (η .at-resp-≈ X (F .obj X .isEquivalence .refl ,
-     ≃mₐ-setoid X Y .isEquivalence .trans (∘ₐ-unitᵣ f) (≃mₐ-setoid X Y .isEquivalence .sym (∘ₐ-unitₗ f))))
+     ≃mₐ-setoid .isEquivalence .trans (∘ₐ-unitᵣ f) (≃mₐ-setoid .isEquivalence .sym (∘ₐ-unitₗ f))))
     (η .commute f (y , idₐ))
 
 lambda : ∀ {a b c} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} {H : FOApproxSetPSh c} → (F ⊗ G) ⇒ H → F ⇒ (G ⊸ H)
@@ -197,7 +202,7 @@ lambda {F = F} {G} η .commute {X} {Y} f x .eqat Z (z , g) =
   η .at-resp-≈ Z (
     F .obj Z .isEquivalence .trans
       (F .preserves-∘ f _ x)
-      (F .map-resp-≈ (∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid X Y .isEquivalence .refl) g) (F .obj Y .isEquivalence .refl)) ,
+      (F .map-resp-≈ (∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid .isEquivalence .refl) g) (F .obj Y .isEquivalence .refl)) ,
     z
   )
 
@@ -245,26 +250,34 @@ module _ where
 -- Lifting
 ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a
 ℒ F .obj X = F .obj (ℒₐ X)
-ℒ F .map f = F .map (ℒ-map f)
-ℒ F .map-resp-≈ f = F .map-resp-≈ (ℒ-map-resp-≃ f)
+ℒ F .map f = F .map (ℒₐ-map f)
+ℒ F .map-resp-≈ f = F .map-resp-≈ (ℒₐ-map-resp-≃ f)
 ℒ F .preserves-∘ {X} {Y} {Z} f g x =
   F .obj (ℒₐ X) .isEquivalence .trans
-    (F .preserves-∘ (ℒ-map f) (ℒ-map g) x)
-    (F .map-resp-≈ (ℒ-map-preserves-∘ f g) (F .obj (ℒₐ Z) .isEquivalence .refl))
-ℒ F .preserves-id f x = F .preserves-id (ℒ-map f) x
+    (F .preserves-∘ (ℒₐ-map f) (ℒₐ-map g) x)
+    (F .map-resp-≈ (ℒₐ-map-preserves-∘ f g) (F .obj (ℒₐ Z) .isEquivalence .refl))
+ℒ F .preserves-id f x = F .preserves-id (ℒₐ-map f) x
 
-ℒ-join : ∀ {F : FOApproxSetPSh 0ℓ} → ℒ (ℒ F) ⇒ ℒ F
-ℒ-join {F} .at X = F .map ℒₐ-unit
-ℒ-join {F} .at-resp-≈ X = F .map-resp-≈ (≃mₐ-setoid (ℒₐ X) _ .isEquivalence .refl)
-ℒ-join {F} .commute {X} {Y} f x =
+-- Don't need map
+
+ℒ-counit : ∀ {a} {F : FOApproxSetPSh a} → ℒ F ⇒ F
+ℒ-counit {F = F} .at X = F .map ℒₐ-unit
+ℒ-counit {F = F} .at-resp-≈ X = F .map-resp-≈ (≃mₐ-setoid .isEquivalence .refl)
+ℒ-counit {F = F} .commute {X} f x =
   begin
-    F .map ℒₐ-unit (F .map (ℒ-map (ℒ-map f)) x)
-  ≈⟨ F .preserves-∘ _ _ x ⟩
-    F .map (ℒ-map (ℒ-map f) ∘ₐ ℒₐ-unit {ℒₐ X}) x
-  ≈⟨ F .map-resp-≈ (≃mₐ-setoid _ _ .isEquivalence .sym (ℒ-unit-commute (ℒ-map f)))
-                   (F .obj (ℒₐ (ℒₐ Y)) .isEquivalence .refl) ⟩
-    F .map (ℒₐ-unit {ℒₐ Y} ∘ₐ ℒ-map f) x
-  ≈⟨ F .obj (ℒₐ X) .isEquivalence .sym (F .preserves-∘ _ _ x) ⟩
-    F .map (ℒ-map f) (F .map (ℒₐ-unit {ℒₐ Y}) x)
+    F .map ℒₐ-unit (F .map (ℒₐ-map f) x)
+  ≈⟨ F .preserves-∘ (ℒₐ-map f) ℒₐ-unit x  ⟩
+    F .map (ℒₐ-map f ∘ₐ ℒₐ-unit) x
+  ≈⟨ F .map-resp-≈ (≃mₐ-setoid .isEquivalence .sym (ℒₐ-unit-commute f)) (F .obj _ .isEquivalence .refl) ⟩
+    F .map (ℒₐ-unit ∘ₐ f) x
+  ≈⟨ F .obj X .isEquivalence .sym (F .preserves-∘ ℒₐ-unit f x) ⟩
+    F .map f (F .map ℒₐ-unit x)
   ∎
-  where open import Relation.Binary.Reasoning.Setoid (F .obj (ℒₐ X))
+  where open ≃-Reasoning (F .obj X)
+
+ℒ-dup : ∀ {a} {F : FOApproxSetPSh a} → ℒ F ⇒ ℒ (ℒ F)
+ℒ-dup {F = F} .at X = F .map ℒₐ-join
+ℒ-dup {F = F} .at-resp-≈ X = {!   !}
+ℒ-dup {F = F} .commute f x = {!   !}
+
+-- ℒ has a join but not a unit
