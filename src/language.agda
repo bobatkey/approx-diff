@@ -62,47 +62,6 @@ data _⊢_ : ctxt → type → Set where
                      Γ ⊢ σ
 -}
 
-open import Data.Product using (_×_; _,_)
-open import approxset
-open _⇒_
-
-⟦_⟧ty : type → ApproxSet
-⟦ unit ⟧ty = ⊤ₐ
-⟦ num ⟧ty = Disc ℕ
-⟦ σ `× τ ⟧ty = ⟦ σ ⟧ty ⊗ ⟦ τ ⟧ty
-⟦ σ `⇒ τ ⟧ty = ⟦ σ ⟧ty ⊸ ⟦ τ ⟧ty
-⟦ σ `+ τ ⟧ty = ⟦ σ ⟧ty + ⟦ τ ⟧ty
-⟦ lift τ ⟧ty = ℒ ⟦ τ ⟧ty
-
-⟦_⟧ctxt : ctxt → ApproxSet
-⟦ ε ⟧ctxt      = ⊤ₐ
-⟦ Γ -, τ ⟧ctxt = ⟦ Γ ⟧ctxt ⊗ ⟦ τ ⟧ty
-
-⟦_⟧var : ∀ {Γ τ} → Γ ∋ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
-⟦ ze ⟧var = π₂
-⟦ su x ⟧var = ⟦ x ⟧var ∘ π₁
-
-binOp : (ℕ → ℕ → ℕ) → (Disc ℕ ⊗ Disc ℕ) ⇒ Disc ℕ
-binOp f = (Disc-f λ (x , y) → f x y) ∘ Disc-reflects-products
-
-⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
-⟦ var x ⟧ = ⟦ x ⟧var
-⟦ unit ⟧ = terminal
-⟦ nat n ⟧ = Disc-const n ∘ terminal
-⟦ plus s t ⟧ = binOp Data.Nat._+_ ∘ pair ⟦ s ⟧ ⟦ t ⟧
-⟦ times s t ⟧ = binOp Data.Nat._*_ ∘ pair ⟦ s ⟧ ⟦ t ⟧
-⟦ eq s t ⟧ = (binPred _≟_ ∘ Disc-reflects-products) ∘ pair ⟦ s ⟧ ⟦ t ⟧
-⟦ lam t ⟧ = lambda ⟦ t ⟧
-⟦ app s t ⟧ = eval ∘ pair ⟦ s ⟧ ⟦ t ⟧
-⟦ fst t ⟧ = π₁ ∘ ⟦ t ⟧
-⟦ snd t ⟧ = π₂ ∘ ⟦ t ⟧
-⟦ mkPair s t ⟧ = pair ⟦ s ⟧ ⟦ t ⟧
-⟦ inj₁ t ⟧ = inl ∘ ⟦ t ⟧
-⟦ inj₂ t ⟧ = inr ∘ ⟦ t ⟧
-⟦ case t₁ t₂ s ⟧ = [ ⟦ t₁ ⟧ , ⟦ t₂ ⟧ ] ∘ pair id ⟦ s ⟧
-⟦ return t ⟧ = ℒ-unit ∘ ⟦ t ⟧
-⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-map ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id ⟦ s ⟧
-
 -- A renaming is a context morphism
 Ren : ctxt → ctxt → Set
 Ren Γ Γ' = ∀ {τ} → Γ ∋ τ → Γ' ∋ τ
@@ -133,3 +92,50 @@ _*_ : ∀ {Γ Γ' τ} → Ren Γ Γ' → Γ ⊢ τ → Γ' ⊢ τ
 ρ * case t₁ t₂ s = case (ext ρ * t₁) (ext ρ * t₂) (ρ * s)
 ρ * return t = return (ρ * t)
 ρ * bind s t = bind (ρ * s) (ext ρ * t)
+
+module AsFOApproxSet where
+  open import Data.Product using (_×_; _,_)
+  open import approxset
+  open _⇒_
+
+  ⟦_⟧ty : type → ApproxSet
+  ⟦ unit ⟧ty = ⊤ₐ
+  ⟦ num ⟧ty = Disc ℕ
+  ⟦ σ `× τ ⟧ty = ⟦ σ ⟧ty ⊗ ⟦ τ ⟧ty
+  ⟦ σ `⇒ τ ⟧ty = ⟦ σ ⟧ty ⊸ ⟦ τ ⟧ty
+  ⟦ σ `+ τ ⟧ty = ⟦ σ ⟧ty + ⟦ τ ⟧ty
+  ⟦ lift τ ⟧ty = ℒ ⟦ τ ⟧ty
+
+  ⟦_⟧ctxt : ctxt → ApproxSet
+  ⟦ ε ⟧ctxt      = ⊤ₐ
+  ⟦ Γ -, τ ⟧ctxt = ⟦ Γ ⟧ctxt ⊗ ⟦ τ ⟧ty
+
+  ⟦_⟧var : ∀ {Γ τ} → Γ ∋ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
+  ⟦ ze ⟧var = π₂
+  ⟦ su x ⟧var = ⟦ x ⟧var ∘ π₁
+
+  binOp : (ℕ → ℕ → ℕ) → (Disc ℕ ⊗ Disc ℕ) ⇒ Disc ℕ
+  binOp f = (Disc-f λ (x , y) → f x y) ∘ Disc-reflects-products
+
+  ⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
+  ⟦ var x ⟧ = ⟦ x ⟧var
+  ⟦ unit ⟧ = terminal
+  ⟦ nat n ⟧ = Disc-const n ∘ terminal
+  ⟦ plus s t ⟧ = binOp Data.Nat._+_ ∘ pair ⟦ s ⟧ ⟦ t ⟧
+  ⟦ times s t ⟧ = binOp Data.Nat._*_ ∘ pair ⟦ s ⟧ ⟦ t ⟧
+  ⟦ eq s t ⟧ = (binPred _≟_ ∘ Disc-reflects-products) ∘ pair ⟦ s ⟧ ⟦ t ⟧
+  ⟦ lam t ⟧ = lambda ⟦ t ⟧
+  ⟦ app s t ⟧ = eval ∘ pair ⟦ s ⟧ ⟦ t ⟧
+  ⟦ fst t ⟧ = π₁ ∘ ⟦ t ⟧
+  ⟦ snd t ⟧ = π₂ ∘ ⟦ t ⟧
+  ⟦ mkPair s t ⟧ = pair ⟦ s ⟧ ⟦ t ⟧
+  ⟦ inj₁ t ⟧ = inl ∘ ⟦ t ⟧
+  ⟦ inj₂ t ⟧ = inr ∘ ⟦ t ⟧
+  ⟦ case t₁ t₂ s ⟧ = [ ⟦ t₁ ⟧ , ⟦ t₂ ⟧ ] ∘ pair id ⟦ s ⟧
+  ⟦ return t ⟧ = ℒ-unit ∘ ⟦ t ⟧
+  ⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-map ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id ⟦ s ⟧
+
+module AsFOApproxSetPSh where
+  open import Data.Product using (_×_; _,_)
+  open import fo-approxset-presheaf
+  open _⇒_

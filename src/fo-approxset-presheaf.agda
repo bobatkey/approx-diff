@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --without-K #-}
+{-# OPTIONS --postfix-projections --safe --without-K #-}
 
 module fo-approxset-presheaf where
 
