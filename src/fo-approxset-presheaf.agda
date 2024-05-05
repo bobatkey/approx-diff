@@ -251,6 +251,7 @@ module _ where
   ... | yes _ = ≡-refl
   ... | no _ = ≡-refl
 
+{-
 -- With this setup, the ℒ monad in FOApproxSet induces a comonad in FOApproxSetPSh, but we need a monad
 -- Need to represent FOApproxSet in a way that preserves direction of 2-morphisms
 ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a
@@ -328,7 +329,7 @@ module _ where
     (∘ₐ-resp-≃mₐ {f = h} (≃mₐ-setoid .isEquivalence .refl) ℒₐ-map-preserves-∘)
 よℒₐ Y .preserves-id f = ≡-to-≈ ≃mₐ-setoid ≡-refl
 
--- Attempt 2, but can't derive unit or counit
+-- Attempt 2, but still can't derive unit
 ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh (suc a)
 ℒ F .obj X = ≃m-setoid {F = よℒₐ X} {F}
 ℒ F .map f η .at X g = η .at X (f ∘ₐ g)
