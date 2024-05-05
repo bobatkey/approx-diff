@@ -67,11 +67,15 @@ id .at X = idₛ
 id .at-resp-≈ X = idₛ
 id {F = F} .commute f = F .preserves-id
 
-_∘_ : ∀ {a} {F G H : FOApproxSetPSh a} → G ⇒ H → F ⇒ G → F ⇒ H
+_∘_ : ∀ {a b c} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} {H : FOApproxSetPSh c} → G ⇒ H → F ⇒ G → F ⇒ H
 (ζ ∘ η) .at X = ζ .at X ∘ₛ η .at X
 (ζ ∘ η) .at-resp-≈ X = ζ .at-resp-≈ X ∘ₛ η .at-resp-≈ X
-_∘_ {H = H} ζ η .commute {X}{Y} f y =
+_∘_ {H = H} ζ η .commute {X} {Y} f y =
   H .obj X .isEquivalence .trans (ζ .at-resp-≈ X (η .commute f y)) (ζ .commute f (η .at Y y))
+
+∘-resp-≃m : ∀ {a b c} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} {H : FOApproxSetPSh c} →
+            ∀ {η η' : G ⇒ H} → ∀ {ζ ζ' : F ⇒ G} → η ≃m η' → ζ ≃m ζ' → (η ∘ ζ) ≃m (η' ∘ ζ')
+∘-resp-≃m η ζ .eqat X x = η .eqat X (ζ .eqat X x)
 
 infixr 10 _∘_
 
@@ -324,12 +328,13 @@ module _ where
     (∘ₐ-resp-≃mₐ {f = h} (≃mₐ-setoid .isEquivalence .refl) ℒₐ-map-preserves-∘)
 よℒₐ Y .preserves-id f = ≡-to-≈ ≃mₐ-setoid ≡-refl
 
--- Lifting
+-- Lifting (covariant on 2-morphisms)
+-- ℒ F X = F (ℒₐ X) would be contravariant on 2-morphisms (and so take monads to comonads)
 ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh (suc a)
 ℒ F .obj X = ≃m-setoid {F = よℒₐ X} {F}
 ℒ F .map f η .at X g = η .at X (f ∘ₐ g)
 ℒ F .map f η .at-resp-≈ X g = η .at-resp-≈ X (∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid .isEquivalence .refl) g)
-ℒ F .map {W} {Z} f η .commute {X} {Y} g h =
+ℒ F .map {W} {Z} f η .commute {X} g h =
   F .obj X .isEquivalence .trans (η .at-resp-≈ X (∘ₐ-assoc f h (ℒₐ-map g))) (η .commute g (f ∘ₐ h))
 ℒ F .map-resp-≈ f η .eqat X g = η .eqat X (∘ₐ-resp-≃mₐ f g)
 ℒ F .preserves-∘ {f = f} {g} η .eqat X {h₁} h =
@@ -338,3 +343,9 @@ module _ where
     (η .at-resp-≈ X (∘ₐ-resp-≃mₐ {f = f ∘ₐ g} (≃mₐ-setoid .isEquivalence .refl) h))
 ℒ F .preserves-id {f = f} η .eqat X {g₁} {g₂} g =
   η .at-resp-≈ X (∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid .isEquivalence .refl) g)
+
+ℒ-map : ∀ {a} {F G : FOApproxSetPSh a} → F ⇒ G → ℒ F ⇒ ℒ G
+ℒ-map η .at X ζ = η ∘ ζ
+ℒ-map η .at-resp-≈ X ζ = ∘-resp-≃m {η = η} (≃m-setoid .isEquivalence .refl) ζ
+ℒ-map {G = G} η .commute f ζ .eqat X g =
+  η .at-resp-≈ X (ζ .at-resp-≈ X (∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid .isEquivalence .refl) g))
