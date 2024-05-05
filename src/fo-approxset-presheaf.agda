@@ -317,7 +317,7 @@ module _ where
 ℒ-costrength {G = G} .commute {X} f (x , y) .proj₂ = G .obj (ℒₐ X) .isEquivalence .refl
 -}
 
--- Right Kan extension of よ along ℒₐ (I think)
+-- Y ↦ Hom(ℒₐ -, Y)
 よℒₐ : FOApproxSet → FOApproxSetPSh 0ℓ
 よℒₐ Y .obj X = ≃mₐ-setoid {X = ℒₐ X} {Y}
 よℒₐ Y .map f g = g ∘ₐ ℒₐ-map f
@@ -328,8 +328,7 @@ module _ where
     (∘ₐ-resp-≃mₐ {f = h} (≃mₐ-setoid .isEquivalence .refl) ℒₐ-map-preserves-∘)
 よℒₐ Y .preserves-id f = ≡-to-≈ ≃mₐ-setoid ≡-refl
 
--- Lifting (covariant on 2-morphisms)
--- ℒ F X = F (ℒₐ X) would be contravariant on 2-morphisms (and so take monads to comonads)
+-- Attempt 2, but can't derive unit or counit
 ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh (suc a)
 ℒ F .obj X = ≃m-setoid {F = よℒₐ X} {F}
 ℒ F .map f η .at X g = η .at X (f ∘ₐ g)
