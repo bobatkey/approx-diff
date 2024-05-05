@@ -247,6 +247,7 @@ module _ where
   ... | yes _ = ≡-refl
   ... | no _ = ≡-refl
 
+{-
 -- Lifting as defined here is a comonad, but we want a monad..
 ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a
 ℒ F .obj X = F .obj (ℒₐ X)
@@ -310,8 +311,9 @@ module _ where
   ∎
   where open ≃-Reasoning (F .obj X)
 ℒ-costrength {G = G} .commute {X} f (x , y) .proj₂ = G .obj (ℒₐ X) .isEquivalence .refl
+-}
 
--- Right Kan extension of Yoneda embedding along ℒₐ (I think)
+-- Right Kan extension of よ along ℒₐ (I think)
 よℒₐ : FOApproxSet → FOApproxSetPSh 0ℓ
 よℒₐ Y .obj X = ≃mₐ-setoid {X = ℒₐ X} {Y}
 よℒₐ Y .map f g = g ∘ₐ ℒₐ-map f
@@ -320,12 +322,19 @@ module _ where
   ≃mₐ-setoid .isEquivalence .trans
     (≃mₐ-setoid .isEquivalence .sym (∘ₐ-assoc h (ℒₐ-map f) (ℒₐ-map g)))
     (∘ₐ-resp-≃mₐ {f = h} (≃mₐ-setoid .isEquivalence .refl) ℒₐ-map-preserves-∘)
-よℒₐ Y .preserves-id g = ≡-to-≈ ≃mₐ-setoid ≡-refl
+よℒₐ Y .preserves-id f = ≡-to-≈ ≃mₐ-setoid ≡-refl
 
--- Now try to preserve direction of natural transformations
-ℒ2 : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh (suc a)
-ℒ2 F .obj X = ≃m-setoid {F = よℒₐ X} {F}
-ℒ2 F .map f = {!   !}
-ℒ2 F .map-resp-≈ f = {!   !}
-ℒ2 F .preserves-∘ x = {!   !}
-ℒ2 F .preserves-id x = {!   !}
+-- Lifting
+ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh (suc a)
+ℒ F .obj X = ≃m-setoid {F = よℒₐ X} {F}
+ℒ F .map f η .at X g = η .at X (f ∘ₐ g)
+ℒ F .map f η .at-resp-≈ X g = η .at-resp-≈ X (∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid .isEquivalence .refl) g)
+ℒ F .map {W} {Z} f η .commute {X} {Y} g h =
+  F .obj X .isEquivalence .trans (η .at-resp-≈ X (∘ₐ-assoc f h (ℒₐ-map g))) (η .commute g (f ∘ₐ h))
+ℒ F .map-resp-≈ f η .eqat X g = η .eqat X (∘ₐ-resp-≃mₐ f g)
+ℒ F .preserves-∘ {f = f} {g} η .eqat X {h₁} h =
+  F .obj X .isEquivalence .trans
+    (η .at-resp-≈ X (∘ₐ-assoc f g h₁))
+    (η .at-resp-≈ X (∘ₐ-resp-≃mₐ {f = f ∘ₐ g} (≃mₐ-setoid .isEquivalence .refl) h))
+ℒ F .preserves-id {f = f} η .eqat X {g₁} {g₂} g =
+  η .at-resp-≈ X (∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid .isEquivalence .refl) g)
