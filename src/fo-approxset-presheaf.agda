@@ -251,8 +251,8 @@ module _ where
   ... | yes _ = ≡-refl
   ... | no _ = ≡-refl
 
-{-
--- Lifting as defined here is a comonad, but we want a monad..
+-- With this setup, the ℒ monad in FOApproxSet induces a comonad in FOApproxSetPSh, but we need a monad
+-- Need to represent FOApproxSet in a way that preserves direction of 2-morphisms
 ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a
 ℒ F .obj X = F .obj (ℒₐ X)
 ℒ F .map f = F .map (ℒₐ-map f)
