@@ -252,8 +252,7 @@ module _ where
   ... | no _ = ≡-refl
 
 {-
--- With this setup, the ℒ monad in FOApproxSet induces a comonad in FOApproxSetPSh, but we need a monad
--- Need to represent FOApproxSet in a way that preserves direction of 2-morphisms
+-- Inverse image functor for the monad ℒₐ, which is a comonad.
 ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a
 ℒ F .obj X = F .obj (ℒₐ X)
 ℒ F .map f = F .map (ℒₐ-map f)
@@ -329,6 +328,8 @@ module _ where
     (∘ₐ-resp-≃mₐ {f = h} (≃mₐ-setoid .isEquivalence .refl) ℒₐ-map-preserves-∘)
 よℒₐ Y .preserves-id f = ≡-to-≈ ≃mₐ-setoid ≡-refl
 
+-- Direct image functor for the monad ℒₐ, which is also a monad. (However I think this is the right Kan
+-- extension, not the left.)
 ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh (suc a)
 ℒ F .obj X = ≃m-setoid {F = よℒₐ X} {F}
 ℒ F .map f η .at X g = η .at X (f ∘ₐ g)
@@ -351,7 +352,20 @@ module _ where
 
 ℒ-unit : ∀ {a} {F : FOApproxSetPSh a} → F ⇒ ℒ F
 ℒ-unit {F = F} .at X x .at Y f = F .map ℒₐ-unit (F .map f x)
-ℒ-unit {F = F} .at X x .at-resp-≈ = {!   !}
-ℒ-unit {F = F} .at X x .commute = {!   !}
+ℒ-unit {F = F} .at X x .at-resp-≈ Y f =
+  F .map-resp-≈ (≃mₐ-setoid .isEquivalence .refl) (F .map-resp-≈ f (F .obj X .isEquivalence .refl))
+ℒ-unit {F = F} .at X x .commute {Y} {Z} f g =
+  begin
+    F .map ℒₐ-unit (F .map (g ∘ₐ ℒₐ-map f) x)
+  ≈⟨ F .map-resp-≈ (≃mₐ-setoid .isEquivalence .refl) (F .obj (ℒₐ Y) .isEquivalence .sym (F .preserves-∘ x)) ⟩
+    F .map ℒₐ-unit (F .map (ℒₐ-map f) (F .map g x))
+  ≈⟨ F .preserves-∘ (F .map g x) ⟩
+    F .map (ℒₐ-map f ∘ₐ ℒₐ-unit) (F .map g x)
+  ≈⟨ F .map-resp-≈ (≃mₐ-setoid .isEquivalence .sym (ℒₐ-unit-commute f)) (F .obj (ℒₐ Z) .isEquivalence .refl) ⟩
+    F .map (ℒₐ-unit ∘ₐ f) (F .map g x)
+  ≈⟨ F .obj Y .isEquivalence .sym (F .preserves-∘ (F .map g x)) ⟩
+    F .map f (F .map ℒₐ-unit (F .map g x))
+  ∎
+  where open ≃-Reasoning (F .obj Y)
 ℒ-unit {F = F} .at-resp-≈ X x = {!   !} -- .at Y f = F .map-resp-≈ (≃mₐ-setoid .isEquivalence .refl) (F .map f x)
 ℒ-unit .commute f x = {!   !}
