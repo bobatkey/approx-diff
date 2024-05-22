@@ -329,7 +329,7 @@ module _ where
 よℒₐ Y .preserves-id f = ≡-to-≈ ≃mₐ-setoid ≡-refl
 
 -- Direct image functor for the monad ℒₐ, which is also a monad. (However I think this is the right Kan
--- extension, not the left.)
+-- extension, not the left..)
 ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh (suc a)
 ℒ F .obj X = ≃m-setoid {F = よℒₐ X} {F}
 ℒ F .map f η .at X g = η .at X (f ∘ₐ g)
@@ -367,5 +367,10 @@ module _ where
     F .map f (F .map ℒₐ-unit (F .map g x))
   ∎
   where open ≃-Reasoning (F .obj Y)
-ℒ-unit {F = F} .at-resp-≈ X x = {!   !} -- .at Y f = F .map-resp-≈ (≃mₐ-setoid .isEquivalence .refl) (F .map f x)
-ℒ-unit .commute f x = {!   !}
+ℒ-unit {F = F} .at-resp-≈ X x .eqat Y f =
+  F .map-resp-≈ (≃mₐ-setoid .isEquivalence .refl) (F .map-resp-≈ f x)
+ℒ-unit {F = F} .commute {Y} {Z} f x .eqat X g =
+  F .map-resp-≈ (≃mₐ-setoid .isEquivalence .refl)
+  (F .obj (ℒₐ X) .isEquivalence .trans
+    (F .preserves-∘ x)
+    (F .map-resp-≈ (∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid .isEquivalence .refl) g) (F .obj Z .isEquivalence .refl)))
