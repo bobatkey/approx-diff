@@ -9,7 +9,7 @@ open import Data.Unit using (tt)
 open import Function renaming (id to idₛ; _∘_ to _∘ₛ_)
 open import Relation.Binary using (Setoid; IsEquivalence)
 open import Relation.Binary.PropositionalEquality
-  using (cong; cong₂; _≡_; setoid) renaming (refl to ≡-refl; trans to ≡-trans)
+  using (cong; cong₂; _≡_; setoid) renaming (refl to ≡-refl; trans to ≡-trans; sym to ≡-sym)
 open IsEquivalence
 open Setoid using (Carrier; _≈_; isEquivalence)
 import Relation.Binary.Reasoning.Setoid
@@ -329,7 +329,6 @@ module _ where
     (∘ₐ-resp-≃mₐ {f = h} (≃mₐ-setoid .isEquivalence .refl) ℒₐ-map-preserves-∘)
 よℒₐ Y .preserves-id f = ≡-to-≈ ≃mₐ-setoid ≡-refl
 
--- Attempt 2, but still can't derive unit
 ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh (suc a)
 ℒ F .obj X = ≃m-setoid {F = よℒₐ X} {F}
 ℒ F .map f η .at X g = η .at X (f ∘ₐ g)
@@ -349,3 +348,10 @@ module _ where
 ℒ-map η .at-resp-≈ X ζ = ∘-resp-≃m {η = η} (≃m-setoid .isEquivalence .refl) ζ
 ℒ-map {G = G} η .commute f ζ .eqat X g =
   η .at-resp-≈ X (ζ .at-resp-≈ X (∘ₐ-resp-≃mₐ {f = f} (≃mₐ-setoid .isEquivalence .refl) g))
+
+ℒ-unit : ∀ {a} {F : FOApproxSetPSh a} → F ⇒ ℒ F
+ℒ-unit {F = F} .at X x .at Y f = F .map ℒₐ-unit (F .map f x)
+ℒ-unit {F = F} .at X x .at-resp-≈ = {!   !}
+ℒ-unit {F = F} .at X x .commute = {!   !}
+ℒ-unit {F = F} .at-resp-≈ X x = {!   !} -- .at Y f = F .map-resp-≈ (≃mₐ-setoid .isEquivalence .refl) (F .map f x)
+ℒ-unit .commute f x = {!   !}
