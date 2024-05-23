@@ -193,8 +193,8 @@ module _ where
   ℒ-map-resp-≃ : ∀ {X Y} {f g : X ⇒ Y} → f ≃m g → ℒ-map f ≃m ℒ-map g
   ℒ-map-resp-≃ f≃g .eqfunc x = f≃g .eqfunc x
 
-  ℒ-map-preserves-∘ : ∀ {X Y Z} {f : Y ⇒ Z} {g : X ⇒ Y} → (ℒ-map f ∘ ℒ-map g) ≃m (ℒ-map (f ∘ g))
-  ℒ-map-preserves-∘ {f = f} {g} .eqfunc x = refl
+  ℒ-preserves-∘ : ∀ {X Y Z} {f : Y ⇒ Z} {g : X ⇒ Y} → (ℒ-map f ∘ ℒ-map g) ≃m (ℒ-map (f ∘ g))
+  ℒ-preserves-∘ {f = f} {g} .eqfunc x = refl
 
   ℒ-unit : ∀ {X} → X ⇒ ℒ X
   ℒ-unit .func x = x

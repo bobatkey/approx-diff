@@ -15,13 +15,10 @@ open Setoid using (Carrier; _≈_; isEquivalence)
 import Relation.Binary.Reasoning.Setoid
 open import basics
 open import fo-approxset
-    using (FOApproxSet)
+    using (FOApproxSet; ℒ; ℒ-map; ℒ-map-resp-≃; ℒ-preserves-∘; ℒ-unit; ℒ-unit-commute; ℒ-join; ℒ-join-commute)
     renaming (
       _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-setoid to ≃mₐ-setoid; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
-      ∘-resp-≃m to ∘ₐ-resp-≃mₐ; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ;
-      ℒ to ℒₐ; ℒ-map to ℒₐ-map; ℒ-map-resp-≃ to ℒₐ-map-resp-≃; ℒ-map-preserves-id to ℒₐ-map-preserves-id;
-      ℒ-map-preserves-∘ to ℒₐ-map-preserves-∘; ℒ-unit-commute to ℒₐ-unit-commute; ℒ-unit to ℒₐ-unit;
-      ℒ-join to ℒₐ-join; ℒ-join-commute to ℒₐ-join-commute; ℒ-strength to ℒₐ-strength
+      ∘-resp-≃m to ∘ₐ-resp-≃m; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ
     )
 
 module ≃-Reasoning = Relation.Binary.Reasoning.Setoid
@@ -163,7 +160,7 @@ inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 よ : FOApproxSet -> FOApproxSetPSh 0ℓ
 よ Y .obj X = ≃mₐ-setoid {X = X} {Y}
 よ Y .map f g = g ∘ₐ f
-よ Y .map-resp-≈ f g = ∘ₐ-resp-≃mₐ g f
+よ Y .map-resp-≈ f g = ∘ₐ-resp-≃m g f
 よ Y .preserves-∘ {X} {f = f} {g} h = ≃mₐ-sym (∘ₐ-assoc h f g)
 よ Y .preserves-id {X} {f = f} g =
   ≃mₐ-trans (≡-to-≈ ≃mₐ-setoid ≡-refl) (≡-to-≈ ≃mₐ-setoid (cong (λ g' → g' ∘ₐ f) {y = g} ≡-refl))
@@ -173,15 +170,15 @@ _⊸_ : ∀ {a b} → FOApproxSetPSh a → FOApproxSetPSh b → FOApproxSetPSh (
 (F ⊸ G) .obj X = ≃m-setoid {F = F ⊗ よ X} {G}
 (F ⊸ G) .map f η .at X (x , g) = η .at X (x , f ∘ₐ g)
 (F ⊸ G) .map f η .at-resp-≈ X (x , g) =
-  η .at-resp-≈ X (x , ∘ₐ-resp-≃mₐ {f = f} ≃mₐ-refl g)
+  η .at-resp-≈ X (x , ∘ₐ-resp-≃m {f = f} ≃mₐ-refl g)
 (F ⊸ G) .map f η .commute {Y} {Z} g (x , h) =
   G .obj Y .isEquivalence .trans
     (η .at-resp-≈ Y (F .obj Y .isEquivalence .refl , ∘ₐ-assoc f h g)) (η .commute g (x , f ∘ₐ h))
-(F ⊸ G) .map-resp-≈ f η .eqat X (x , g) = η .eqat X (x , ∘ₐ-resp-≃mₐ f g)
+(F ⊸ G) .map-resp-≈ f η .eqat X (x , g) = η .eqat X (x , ∘ₐ-resp-≃m f g)
 (F ⊸ G) .preserves-∘ {Y} {Z = Z} {f = f} {g} η .eqat X {_ , h₁} (x , h) =
-  η .at-resp-≈ X (x , ≃mₐ-trans (∘ₐ-assoc f g h₁) (∘ₐ-resp-≃mₐ {f = f ∘ₐ g} ≃mₐ-refl h))
+  η .at-resp-≈ X (x , ≃mₐ-trans (∘ₐ-assoc f g h₁) (∘ₐ-resp-≃m {f = f ∘ₐ g} ≃mₐ-refl h))
 (F ⊸ G) .preserves-id {Y} {Z} {f = f} η .eqat X (x , h) =
-  η .at-resp-≈ X (x , ∘ₐ-resp-≃mₐ {f = f} ≃mₐ-refl h)
+  η .at-resp-≈ X (x , ∘ₐ-resp-≃m {f = f} ≃mₐ-refl h)
 
 eval : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ((F ⊸ G) ⊗ F) ⇒ G
 eval .at X (η , x) = η .at X (x , idₐ)
@@ -204,11 +201,11 @@ lambda {F = F} {G} η .commute {X} {Y} f x .eqat Z (z , g) =
   η .at-resp-≈ Z (
     F .obj Z .isEquivalence .trans
       (F .preserves-∘ x)
-      (F .map-resp-≈ (∘ₐ-resp-≃mₐ {f = f} ≃mₐ-refl g) (F .obj Y .isEquivalence .refl)) ,
+      (F .map-resp-≈ (∘ₐ-resp-≃m {f = f} ≃mₐ-refl g) (F .obj Y .isEquivalence .refl)) ,
     z
   )
 
--- prove law relating eval and lambda
+-- TODO: verify law relating eval and lambda
 
 -- Any old set becomes a constant presheaf
 Disc : Set → FOApproxSetPSh 0ℓ
@@ -249,170 +246,189 @@ module _ where
   ... | yes _ = ≡-refl
   ... | no _ = ≡-refl
 
-{-
--- Inverse image functor for the monad ℒₐ, which is a comonad.
+-- Y ↦ Hom(ℒ -, Y)
+よℒ : FOApproxSet → FOApproxSetPSh 0ℓ
+よℒ Y .obj X = ≃mₐ-setoid {X = ℒ X} {Y}
+よℒ Y .map f g = g ∘ₐ ℒ-map f
+よℒ Y .map-resp-≈ f {g₁} g = ∘ₐ-resp-≃m {f = g₁} g (ℒ-map-resp-≃ f)
+よℒ Y .preserves-∘ {f = f} {g = g} h =
+  ≃mₐ-trans (≃mₐ-sym (∘ₐ-assoc h (ℒ-map f) (ℒ-map g))) (∘ₐ-resp-≃m {f = h} ≃mₐ-refl ℒ-preserves-∘)
+よℒ Y .preserves-id f = ≡-to-≈ ≃mₐ-setoid ≡-refl
+
+-- Direct image functor for the monad ℒ, which is also a monad. (However I think this is the right Kan
+-- extension, not the left, i.e. right adjoint to inverse image functor for ℒ, whereas we want left adjoint.)
+ℒ* : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh (suc a)
+ℒ* F .obj X = ≃m-setoid {F = よℒ X} {F}
+ℒ* F .map f η .at X g = η .at X (f ∘ₐ g)
+ℒ* F .map f η .at-resp-≈ X g = η .at-resp-≈ X (∘ₐ-resp-≃m {f = f} ≃mₐ-refl g)
+ℒ* F .map f η .commute {X} g h =
+  F .obj X .isEquivalence .trans (η .at-resp-≈ X (∘ₐ-assoc f h (ℒ-map g))) (η .commute g (f ∘ₐ h))
+ℒ* F .map-resp-≈ f η .eqat X g = η .eqat X (∘ₐ-resp-≃m f g)
+ℒ* F .preserves-∘ {f = f} {g} η .eqat X {h₁} h =
+  F .obj X .isEquivalence .trans
+    (η .at-resp-≈ X (∘ₐ-assoc f g h₁))
+    (η .at-resp-≈ X (∘ₐ-resp-≃m {f = f ∘ₐ g} ≃mₐ-refl h))
+ℒ* F .preserves-id {f = f} η .eqat X {g₁} {g₂} g =
+  η .at-resp-≈ X (∘ₐ-resp-≃m {f = f} ≃mₐ-refl g)
+
+ℒ*-map : ∀ {a} {F G : FOApproxSetPSh a} → F ⇒ G → ℒ* F ⇒ ℒ* G
+ℒ*-map η .at X ζ = η ∘ ζ
+ℒ*-map η .at-resp-≈ X ζ = ∘-resp-≃m {η = η} (≃m-setoid .isEquivalence .refl) ζ
+ℒ*-map {G = G} η .commute f ζ .eqat X g =
+  η .at-resp-≈ X (ζ .at-resp-≈ X (∘ₐ-resp-≃m {f = f} ≃mₐ-refl g))
+
+ℒ*-unit : ∀ {a} {F : FOApproxSetPSh a} → F ⇒ ℒ* F
+ℒ*-unit {F = F} .at X x .at Y f = F .map ℒ-unit (F .map f x)
+ℒ*-unit {F = F} .at X x .at-resp-≈ Y f =
+  F .map-resp-≈ ≃mₐ-refl (F .map-resp-≈ f (F .obj X .isEquivalence .refl))
+ℒ*-unit {F = F} .at X x .commute {Y} {Z} f g =
+  begin
+    F .map ℒ-unit (F .map (g ∘ₐ ℒ-map f) x)
+  ≈⟨ F .map-resp-≈ ≃mₐ-refl (F .obj (ℒ Y) .isEquivalence .sym (F .preserves-∘ x)) ⟩
+    F .map ℒ-unit (F .map (ℒ-map f) (F .map g x))
+  ≈⟨ F .preserves-∘ (F .map g x) ⟩
+    F .map (ℒ-map f ∘ₐ ℒ-unit) (F .map g x)
+  ≈⟨ F .map-resp-≈ (≃mₐ-sym (ℒ-unit-commute f)) (F .obj (ℒ Z) .isEquivalence .refl) ⟩
+    F .map (ℒ-unit ∘ₐ f) (F .map g x)
+  ≈⟨ F .obj Y .isEquivalence .sym (F .preserves-∘ (F .map g x)) ⟩
+    F .map f (F .map ℒ-unit (F .map g x))
+  ∎
+  where open ≃-Reasoning (F .obj Y)
+ℒ*-unit {F = F} .at-resp-≈ X x .eqat Y f =
+  F .map-resp-≈ ≃mₐ-refl (F .map-resp-≈ f x)
+ℒ*-unit {F = F} .commute {Y} {Z} f x .eqat X g =
+  F .map-resp-≈ ≃mₐ-refl
+  (F .obj (ℒ X) .isEquivalence .trans
+    (F .preserves-∘ x)
+    (F .map-resp-≈ (∘ₐ-resp-≃m {f = f} ≃mₐ-refl g) (F .obj Z .isEquivalence .refl)))
+
+ℒ*-join : ∀ {a} {F : FOApproxSetPSh a} → ℒ* (ℒ* F) ⇒ ℒ* F
+ℒ*-join {F = F} .at X η .at Z f = F .map ℒ-unit (η .at (ℒ Z) (f ∘ₐ ℒ-join) .at (ℒ Z) ℒ-join)
+ℒ*-join {F = F} .at X η .at-resp-≈ Z f =
+  F .map-resp-≈ ≃mₐ-refl
+    (η .at-resp-≈ (ℒ Z) (∘ₐ-resp-≃m {g = ℒ-join} f ≃mₐ-refl) .eqat (ℒ Z) ≃mₐ-refl)
+ℒ*-join {F = F} .at X η .commute {Y} {Z} f g =
+  begin
+    F .map ℒ-unit (η .at (ℒ Y) ((g ∘ₐ ℒ-map f) ∘ₐ ℒ-join) .at (ℒ Y) ℒ-join)
+  ≈⟨ F .map-resp-≈ ≃mₐ-refl (η .at-resp-≈ (ℒ Y) (≃mₐ-sym (∘ₐ-assoc g (ℒ-map f) ℒ-join)) .eqat (ℒ Y) ≃mₐ-refl ) ⟩
+    F .map ℒ-unit (η .at (ℒ Y) (g ∘ₐ (ℒ-map f ∘ₐ ℒ-join)) .at (ℒ Y) ℒ-join)
+  ≈⟨ F .map-resp-≈ ≃mₐ-refl (η .at-resp-≈ (ℒ Y) (∘ₐ-resp-≃m {f = g} ≃mₐ-refl (≃mₐ-sym (ℒ-join-commute f))) .eqat (ℒ Y) ≃mₐ-refl ) ⟩
+    F .map ℒ-unit (η .at (ℒ Y) (g ∘ₐ ℒ-join ∘ₐ ℒ-map (ℒ-map f)) .at (ℒ Y) ℒ-join)
+  ≈⟨ F .map-resp-≈ ≃mₐ-refl (η .at-resp-≈ (ℒ Y) (∘ₐ-assoc g ℒ-join (ℒ-map (ℒ-map f))) .eqat (ℒ Y) ≃mₐ-refl) ⟩
+    F .map ℒ-unit (η .at (ℒ Y) ((g ∘ₐ ℒ-join) ∘ₐ ℒ-map (ℒ-map f)) .at (ℒ Y) ℒ-join)
+  ≈⟨ F .map-resp-≈ ≃mₐ-refl (η .commute (ℒ-map f) (g ∘ₐ ℒ-join) .eqat (ℒ Y) ≃mₐ-refl) ⟩
+    F .map ℒ-unit (η .at (ℒ Z) (g ∘ₐ ℒ-join) .at (ℒ Y) (ℒ-map f ∘ₐ ℒ-join))
+  ≈⟨ F .map-resp-≈ ≃mₐ-refl (η .at-resp-≈ (ℒ Z) ≃mₐ-refl .eqat (ℒ Y) (≃mₐ-sym (ℒ-join-commute f))) ⟩
+    F .map ℒ-unit (η .at (ℒ Z) (g ∘ₐ ℒ-join) .at (ℒ Y) (ℒ-join ∘ₐ ℒ-map (ℒ-map f)))
+  ≈⟨ F .map-resp-≈ ≃mₐ-refl (η .at (ℒ Z) (g ∘ₐ ℒ-join) .commute (ℒ-map f) ℒ-join) ⟩
+    F .map ℒ-unit (F .map (ℒ-map f) (η .at (ℒ Z) (g ∘ₐ ℒ-join) .at (ℒ Z) ℒ-join))
+  ≈⟨ F .preserves-∘ _ ⟩
+    F .map (ℒ-map f ∘ₐ ℒ-unit) (η .at (ℒ Z) (g ∘ₐ ℒ-join) .at (ℒ Z) ℒ-join)
+  ≈⟨ F .map-resp-≈ (≃mₐ-sym (ℒ-unit-commute _)) (F .obj (ℒ Z) .isEquivalence .refl) ⟩
+    F .map (ℒ-unit ∘ₐ f) (η .at (ℒ Z) (g ∘ₐ ℒ-join) .at (ℒ Z) ℒ-join)
+  ≈⟨ F .obj Y .isEquivalence .sym (F .preserves-∘ _) ⟩
+    F .map f (F .map ℒ-unit (η .at (ℒ Z) (g ∘ₐ ℒ-join) .at (ℒ Z) ℒ-join))
+  ∎
+  where open ≃-Reasoning (F .obj Y)
+ℒ*-join {F = F} .at-resp-≈ X η .eqat Z f =
+  F .map-resp-≈ ≃mₐ-refl (η .eqat (ℒ Z) (∘ₐ-resp-≃m {g = ℒ-join} f ≃mₐ-refl) .eqat (ℒ Z) ≃mₐ-refl)
+ℒ*-join {F = F} .commute f g .eqat Z {h₁} {h₂} h =
+  begin
+    F .map ℒ-unit (g .at (ℒ Z) (f ∘ₐ h₁ ∘ₐ ℒ-join) .at (ℒ Z) ℒ-join)
+  ≈⟨ F .map-resp-≈ ≃mₐ-refl (g .at-resp-≈ (ℒ Z) (∘ₐ-assoc f h₁ ℒ-join) .eqat (ℒ Z) ≃mₐ-refl) ⟩
+    F .map ℒ-unit (g .at (ℒ Z) ((f ∘ₐ h₁) ∘ₐ ℒ-join) .at (ℒ Z) ℒ-join)
+  ≈⟨ F .map-resp-≈ ≃mₐ-refl (g .at-resp-≈ (ℒ Z) (∘ₐ-resp-≃m {g = ℒ-join} (∘ₐ-resp-≃m {f = f} ≃mₐ-refl h) ≃mₐ-refl) .eqat (ℒ Z) ≃mₐ-refl) ⟩
+    F .map ℒ-unit (g .at (ℒ Z) ((f ∘ₐ h₂) ∘ₐ ℒ-join) .at (ℒ Z) ℒ-join)
+  ∎
+  where open ≃-Reasoning (F .obj Z)
+
+-- TODO: verify monad laws
+
+ℒ*-strength : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → (F ⊗ ℒ* G) ⇒ ℒ* (F ⊗ G)
+ℒ*-strength {F = F} .at X (x , η) .at Y f .proj₁ = F .map ℒ-unit (F .map f x)
+ℒ*-strength .at X (x , η) .at Y f .proj₂ = η .at Y f
+ℒ*-strength {F = F} .at X (x , η) .at-resp-≈ Y f .proj₁ =
+  F .map-resp-≈ ≃mₐ-refl (F .map-resp-≈ f (F .obj X .isEquivalence .refl))
+ℒ*-strength .at X (x , η) .at-resp-≈ Y f .proj₂ = η .at-resp-≈ Y f
+ℒ*-strength {F = F} .at X (x , η) .commute {Y} {Z} f g .proj₁ =
+  begin
+    F .map ℒ-unit (F .map (g ∘ₐ ℒ-map f) x)
+  ≈⟨ F .preserves-∘ _ ⟩
+    F .map ((g ∘ₐ ℒ-map f) ∘ₐ ℒ-unit) x
+  ≈⟨ F .map-resp-≈ (≃mₐ-sym (∘ₐ-assoc g (ℒ-map f) ℒ-unit)) (F .obj X .isEquivalence .refl) ⟩
+    F .map (g ∘ₐ (ℒ-map f ∘ₐ ℒ-unit)) x
+  ≈⟨ F .map-resp-≈ (∘ₐ-resp-≃m {f = g} ≃mₐ-refl (≃mₐ-sym (ℒ-unit-commute _))) (F .obj X .isEquivalence .refl) ⟩
+    F .map (g ∘ₐ (ℒ-unit ∘ₐ f)) x
+  ≈⟨ F .obj Y .isEquivalence .sym (F .obj Y .isEquivalence .trans (F .preserves-∘ _) (F .preserves-∘ _) ) ⟩
+    F .map f (F .map ℒ-unit (F .map g x))
+  ∎ where open ≃-Reasoning (F .obj Y)
+ℒ*-strength .at X (x , η) .commute f g .proj₂ = η .commute f g
+ℒ*-strength {F = F} .at-resp-≈ X (x , η) .eqat Y f .proj₁ = F .map-resp-≈ ≃mₐ-refl (F .map-resp-≈ f x)
+ℒ*-strength .at-resp-≈ X (x , η) .eqat Y f .proj₂ = η .eqat Y f
+ℒ*-strength {F = F} .commute {Y} {Z} f (x , η) .eqat X {g₁} {g₂} g .proj₁ =
+  F .map-resp-≈ ≃mₐ-refl
+    (F .obj (ℒ X) .isEquivalence .trans (F .preserves-∘ _)
+      (F .map-resp-≈ (∘ₐ-resp-≃m {f = f} ≃mₐ-refl g) (F .obj Z .isEquivalence .refl)))
+ℒ*-strength .commute f (x , η) .eqat X g .proj₂ = η .at-resp-≈ X (∘ₐ-resp-≃m {f = f} ≃mₐ-refl g)
+
+{- Inverse image functor for the monad ℒ, which is a comonad. Retained here for reference.
 ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a
-ℒ F .obj X = F .obj (ℒₐ X)
-ℒ F .map f = F .map (ℒₐ-map f)
-ℒ F .map-resp-≈ f = F .map-resp-≈ (ℒₐ-map-resp-≃ f)
+ℒ F .obj X = F .obj (ℒ X)
+ℒ F .map f = F .map (ℒ-map f)
+ℒ F .map-resp-≈ f = F .map-resp-≈ (ℒ-map-resp-≃ f)
 ℒ F .preserves-∘ {X} {Y} {Z} x =
-  F .obj (ℒₐ X) .isEquivalence .trans
-    (F .preserves-∘ x) (F .map-resp-≈ ℒₐ-map-preserves-∘ (F .obj (ℒₐ Z) .isEquivalence .refl))
+  F .obj (ℒ X) .isEquivalence .trans
+    (F .preserves-∘ x) (F .map-resp-≈ ℒ-map-preserves-∘ (F .obj (ℒ Z) .isEquivalence .refl))
 ℒ F .preserves-id x = F .preserves-id x
 
 ℒ-map : ∀ {a} {F G : FOApproxSetPSh a} → F ⇒ G → ℒ F ⇒ ℒ G
-ℒ-map {F = F} η .at X = η .at (ℒₐ X)
-ℒ-map {F = F} η .at-resp-≈ X = η .at-resp-≈ (ℒₐ X)
-ℒ-map {F = F} {G} η .commute f x = η .commute (ℒₐ-map f) x
+ℒ-map {F = F} η .at X = η .at (ℒ X)
+ℒ-map {F = F} η .at-resp-≈ X = η .at-resp-≈ (ℒ X)
+ℒ-map {F = F} {G} η .commute f x = η .commute (ℒ-map f) x
 
 ℒ-counit : ∀ {a} {F : FOApproxSetPSh a} → ℒ F ⇒ F
-ℒ-counit {F = F} .at X = F .map ℒₐ-unit
+ℒ-counit {F = F} .at X = F .map ℒ-unit
 ℒ-counit {F = F} .at-resp-≈ X = F .map-resp-≈ ≃mₐ-refl
 ℒ-counit {F = F} .commute {X} f x =
   begin
-    F .map ℒₐ-unit (F .map (ℒₐ-map f) x)
+    F .map ℒ-unit (F .map (ℒ-map f) x)
   ≈⟨ F .preserves-∘ x ⟩
-    F .map (ℒₐ-map f ∘ₐ ℒₐ-unit) x
-  ≈⟨ F .map-resp-≈ (≃mₐ-sym (ℒₐ-unit-commute f)) (F .obj _ .isEquivalence .refl) ⟩
-    F .map (ℒₐ-unit ∘ₐ f) x
+    F .map (ℒ-map f ∘ₐ ℒ-unit) x
+  ≈⟨ F .map-resp-≈ (≃mₐ-sym (ℒ-unit-commute f)) (F .obj _ .isEquivalence .refl) ⟩
+    F .map (ℒ-unit ∘ₐ f) x
   ≈⟨ F .obj X .isEquivalence .sym (F .preserves-∘ x) ⟩
-    F .map f (F .map ℒₐ-unit x)
+    F .map f (F .map ℒ-unit x)
   ∎
   where open ≃-Reasoning (F .obj X)
 
 ℒ-dup : ∀ {a} {F : FOApproxSetPSh a} → ℒ F ⇒ ℒ (ℒ F)
-ℒ-dup {F = F} .at X = F .map ℒₐ-join
+ℒ-dup {F = F} .at X = F .map ℒ-join
 ℒ-dup {F = F} .at-resp-≈ X = F .map-resp-≈ ≃mₐ-refl
 ℒ-dup {F = F} .commute {X} {Y} f x =
   begin
-    F .map ℒₐ-join (F .map (ℒₐ-map f) x)
+    F .map ℒ-join (F .map (ℒ-map f) x)
   ≈⟨ F .preserves-∘ x ⟩
-    F .map (ℒₐ-map f ∘ₐ ℒₐ-join) x
-  ≈⟨ F .map-resp-≈ (≃mₐ-sym (ℒₐ-join-commute _)) (F .obj (ℒₐ Y) .isEquivalence .refl) ⟩
-    F .map (ℒₐ-join ∘ₐ ℒₐ-map (ℒₐ-map f)) x
-  ≈⟨ F .obj (ℒₐ (ℒₐ X)) .isEquivalence .sym (F .preserves-∘ x) ⟩
-    F .map (ℒₐ-map (ℒₐ-map f)) (F .map ℒₐ-join x)
+    F .map (ℒ-map f ∘ₐ ℒ-join) x
+  ≈⟨ F .map-resp-≈ (≃mₐ-sym (ℒ-join-commute _)) (F .obj (ℒ Y) .isEquivalence .refl) ⟩
+    F .map (ℒ-join ∘ₐ ℒ-map (ℒ-map f)) x
+  ≈⟨ F .obj (ℒ (ℒ X)) .isEquivalence .sym (F .preserves-∘ x) ⟩
+    F .map (ℒ-map (ℒ-map f)) (F .map ℒ-join x)
   ∎
-  where open ≃-Reasoning (F .obj (ℒₐ (ℒₐ X)))
-
--- ℒ has join but not unit
--- TODO: check comonad laws
+  where open ≃-Reasoning (F .obj (ℒ (ℒ X)))
 
 ℒ-costrength : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ℒ (F ⊗ G) ⇒ (F ⊗ ℒ G)
-ℒ-costrength {F = F} .at Z (x , y) = F .map ℒₐ-unit x , y
+ℒ-costrength {F = F} .at Z (x , y) = F .map ℒ-unit x , y
 ℒ-costrength {F = F} .at-resp-≈ Z (x , y) = F .map-resp-≈ ≃mₐ-refl x , y
 ℒ-costrength {F = F} {G} .commute {X} {Y} f (x , y) .proj₁ =
   begin
-    F .map ℒₐ-unit (F .map (ℒₐ-map f) x)
+    F .map ℒ-unit (F .map (ℒ-map f) x)
   ≈⟨ F .preserves-∘ x ⟩
-    F .map (ℒₐ-map f ∘ₐ ℒₐ-unit) x
-  ≈⟨ F .map-resp-≈ (≃mₐ-sym (ℒₐ-unit-commute f)) (F .obj _ .isEquivalence .refl) ⟩
-    F .map (ℒₐ-unit ∘ₐ f) x
+    F .map (ℒ-map f ∘ₐ ℒ-unit) x
+  ≈⟨ F .map-resp-≈ (≃mₐ-sym (ℒ-unit-commute f)) (F .obj _ .isEquivalence .refl) ⟩
+    F .map (ℒ-unit ∘ₐ f) x
   ≈⟨ F .obj X .isEquivalence .sym (F .preserves-∘ x) ⟩
-    F .map f (F .map ℒₐ-unit x)
+    F .map f (F .map ℒ-unit x)
   ∎
   where open ≃-Reasoning (F .obj X)
-ℒ-costrength {G = G} .commute {X} f (x , y) .proj₂ = G .obj (ℒₐ X) .isEquivalence .refl
+ℒ-costrength {G = G} .commute {X} f (x , y) .proj₂ = G .obj (ℒ X) .isEquivalence .refl
 -}
-
--- Y ↦ Hom(ℒₐ -, Y)
-よℒₐ : FOApproxSet → FOApproxSetPSh 0ℓ
-よℒₐ Y .obj X = ≃mₐ-setoid {X = ℒₐ X} {Y}
-よℒₐ Y .map f g = g ∘ₐ ℒₐ-map f
-よℒₐ Y .map-resp-≈ f {g₁} g = ∘ₐ-resp-≃mₐ {f = g₁} g (ℒₐ-map-resp-≃ f)
-よℒₐ Y .preserves-∘ {f = f} {g = g} h =
-  ≃mₐ-trans
-    (≃mₐ-sym (∘ₐ-assoc h (ℒₐ-map f) (ℒₐ-map g)))
-    (∘ₐ-resp-≃mₐ {f = h} ≃mₐ-refl ℒₐ-map-preserves-∘)
-よℒₐ Y .preserves-id f = ≡-to-≈ ≃mₐ-setoid ≡-refl
-
--- Direct image functor for the monad ℒₐ, which is also a monad. (However I think this is the right Kan
--- extension, not the left..)
-ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh (suc a)
-ℒ F .obj X = ≃m-setoid {F = よℒₐ X} {F}
-ℒ F .map f η .at X g = η .at X (f ∘ₐ g)
-ℒ F .map f η .at-resp-≈ X g = η .at-resp-≈ X (∘ₐ-resp-≃mₐ {f = f} ≃mₐ-refl g)
-ℒ F .map {W} {Z} f η .commute {X} g h =
-  F .obj X .isEquivalence .trans (η .at-resp-≈ X (∘ₐ-assoc f h (ℒₐ-map g))) (η .commute g (f ∘ₐ h))
-ℒ F .map-resp-≈ f η .eqat X g = η .eqat X (∘ₐ-resp-≃mₐ f g)
-ℒ F .preserves-∘ {f = f} {g} η .eqat X {h₁} h =
-  F .obj X .isEquivalence .trans
-    (η .at-resp-≈ X (∘ₐ-assoc f g h₁))
-    (η .at-resp-≈ X (∘ₐ-resp-≃mₐ {f = f ∘ₐ g} ≃mₐ-refl h))
-ℒ F .preserves-id {f = f} η .eqat X {g₁} {g₂} g =
-  η .at-resp-≈ X (∘ₐ-resp-≃mₐ {f = f} ≃mₐ-refl g)
-
-ℒ-map : ∀ {a} {F G : FOApproxSetPSh a} → F ⇒ G → ℒ F ⇒ ℒ G
-ℒ-map η .at X ζ = η ∘ ζ
-ℒ-map η .at-resp-≈ X ζ = ∘-resp-≃m {η = η} (≃m-setoid .isEquivalence .refl) ζ
-ℒ-map {G = G} η .commute f ζ .eqat X g =
-  η .at-resp-≈ X (ζ .at-resp-≈ X (∘ₐ-resp-≃mₐ {f = f} ≃mₐ-refl g))
-
-ℒ-unit : ∀ {a} {F : FOApproxSetPSh a} → F ⇒ ℒ F
-ℒ-unit {F = F} .at X x .at Y f = F .map ℒₐ-unit (F .map f x)
-ℒ-unit {F = F} .at X x .at-resp-≈ Y f =
-  F .map-resp-≈ ≃mₐ-refl (F .map-resp-≈ f (F .obj X .isEquivalence .refl))
-ℒ-unit {F = F} .at X x .commute {Y} {Z} f g =
-  begin
-    F .map ℒₐ-unit (F .map (g ∘ₐ ℒₐ-map f) x)
-  ≈⟨ F .map-resp-≈ ≃mₐ-refl (F .obj (ℒₐ Y) .isEquivalence .sym (F .preserves-∘ x)) ⟩
-    F .map ℒₐ-unit (F .map (ℒₐ-map f) (F .map g x))
-  ≈⟨ F .preserves-∘ (F .map g x) ⟩
-    F .map (ℒₐ-map f ∘ₐ ℒₐ-unit) (F .map g x)
-  ≈⟨ F .map-resp-≈ (≃mₐ-sym (ℒₐ-unit-commute f)) (F .obj (ℒₐ Z) .isEquivalence .refl) ⟩
-    F .map (ℒₐ-unit ∘ₐ f) (F .map g x)
-  ≈⟨ F .obj Y .isEquivalence .sym (F .preserves-∘ (F .map g x)) ⟩
-    F .map f (F .map ℒₐ-unit (F .map g x))
-  ∎
-  where open ≃-Reasoning (F .obj Y)
-ℒ-unit {F = F} .at-resp-≈ X x .eqat Y f =
-  F .map-resp-≈ ≃mₐ-refl (F .map-resp-≈ f x)
-ℒ-unit {F = F} .commute {Y} {Z} f x .eqat X g =
-  F .map-resp-≈ ≃mₐ-refl
-  (F .obj (ℒₐ X) .isEquivalence .trans
-    (F .preserves-∘ x)
-    (F .map-resp-≈ (∘ₐ-resp-≃mₐ {f = f} ≃mₐ-refl g) (F .obj Z .isEquivalence .refl)))
-
-ℒ-join : ∀ {a} {F : FOApproxSetPSh a} → ℒ (ℒ F) ⇒ ℒ F
-ℒ-join {F = F} .at X η .at Z f = F .map ℒₐ-unit (η .at (ℒₐ Z) (f ∘ₐ ℒₐ-join) .at (ℒₐ Z) ℒₐ-join)
-ℒ-join {F = F} .at X η .at-resp-≈ Z f =
-  F .map-resp-≈ ≃mₐ-refl
-    (η .at-resp-≈ (ℒₐ Z) (∘ₐ-resp-≃mₐ {g = ℒₐ-join} f ≃mₐ-refl) .eqat (ℒₐ Z) ≃mₐ-refl)
-ℒ-join {F = F} .at X η .commute {Y} {Z} f g =
-  begin
-    F .map ℒₐ-unit (η .at (ℒₐ Y) ((g ∘ₐ ℒₐ-map f) ∘ₐ ℒₐ-join) .at (ℒₐ Y) ℒₐ-join)
-  ≈⟨ F .map-resp-≈ ≃mₐ-refl (η .at-resp-≈ (ℒₐ Y) (≃mₐ-sym (∘ₐ-assoc g (ℒₐ-map f) ℒₐ-join)) .eqat (ℒₐ Y) ≃mₐ-refl ) ⟩
-    F .map ℒₐ-unit (η .at (ℒₐ Y) (g ∘ₐ (ℒₐ-map f ∘ₐ ℒₐ-join)) .at (ℒₐ Y) ℒₐ-join)
-  ≈⟨ F .map-resp-≈ ≃mₐ-refl (η .at-resp-≈ (ℒₐ Y) (∘ₐ-resp-≃mₐ {f = g} ≃mₐ-refl (≃mₐ-sym (ℒₐ-join-commute f))) .eqat (ℒₐ Y) ≃mₐ-refl ) ⟩
-    F .map ℒₐ-unit (η .at (ℒₐ Y) (g ∘ₐ ℒₐ-join ∘ₐ ℒₐ-map (ℒₐ-map f)) .at (ℒₐ Y) ℒₐ-join)
-  ≈⟨ F .map-resp-≈ ≃mₐ-refl (η .at-resp-≈ (ℒₐ Y) (∘ₐ-assoc g ℒₐ-join (ℒₐ-map (ℒₐ-map f))) .eqat (ℒₐ Y) ≃mₐ-refl) ⟩
-    F .map ℒₐ-unit (η .at (ℒₐ Y) ((g ∘ₐ ℒₐ-join) ∘ₐ ℒₐ-map (ℒₐ-map f)) .at (ℒₐ Y) ℒₐ-join)
-  ≈⟨ F .map-resp-≈ ≃mₐ-refl (η .commute (ℒₐ-map f) (g ∘ₐ ℒₐ-join) .eqat (ℒₐ Y) ≃mₐ-refl) ⟩
-    F .map ℒₐ-unit (η .at (ℒₐ Z) (g ∘ₐ ℒₐ-join) .at (ℒₐ Y) (ℒₐ-map f ∘ₐ ℒₐ-join))
-  ≈⟨ F .map-resp-≈ ≃mₐ-refl (η .at-resp-≈ (ℒₐ Z) ≃mₐ-refl .eqat (ℒₐ Y) (≃mₐ-sym (ℒₐ-join-commute f))) ⟩
-    F .map ℒₐ-unit (η .at (ℒₐ Z) (g ∘ₐ ℒₐ-join) .at (ℒₐ Y) (ℒₐ-join ∘ₐ ℒₐ-map (ℒₐ-map f)))
-  ≈⟨ F .map-resp-≈ ≃mₐ-refl (η .at (ℒₐ Z) (g ∘ₐ ℒₐ-join) .commute (ℒₐ-map f) ℒₐ-join) ⟩
-    F .map ℒₐ-unit (F .map (ℒₐ-map f) (η .at (ℒₐ Z) (g ∘ₐ ℒₐ-join) .at (ℒₐ Z) ℒₐ-join))
-  ≈⟨ F .preserves-∘ _ ⟩
-    F .map (ℒₐ-map f ∘ₐ ℒₐ-unit) (η .at (ℒₐ Z) (g ∘ₐ ℒₐ-join) .at (ℒₐ Z) ℒₐ-join)
-  ≈⟨ F .map-resp-≈ (≃mₐ-sym (ℒₐ-unit-commute _)) (F .obj (ℒₐ Z) .isEquivalence .refl) ⟩
-    F .map (ℒₐ-unit ∘ₐ f) (η .at (ℒₐ Z) (g ∘ₐ ℒₐ-join) .at (ℒₐ Z) ℒₐ-join)
-  ≈⟨ F .obj Y .isEquivalence .sym (F .preserves-∘ _) ⟩
-    F .map f (F .map ℒₐ-unit (η .at (ℒₐ Z) (g ∘ₐ ℒₐ-join) .at (ℒₐ Z) ℒₐ-join))
-  ∎
-  where open ≃-Reasoning (F .obj Y)
-ℒ-join {F = F} .at-resp-≈ X η .eqat Z f =
-  F .map-resp-≈ ≃mₐ-refl (η .eqat (ℒₐ Z) (∘ₐ-resp-≃mₐ {g = ℒₐ-join} f ≃mₐ-refl) .eqat (ℒₐ Z) ≃mₐ-refl)
-ℒ-join {F = F} .commute {X} {Y} f g .eqat Z {h₁} {h₂} h =
-  begin
-    F .map ℒₐ-unit (g .at (ℒₐ Z) (f ∘ₐ h₁ ∘ₐ ℒₐ-join) .at (ℒₐ Z) ℒₐ-join)
-  ≈⟨ F .map-resp-≈ ≃mₐ-refl (g .at-resp-≈ (ℒₐ Z) (∘ₐ-assoc f h₁ ℒₐ-join) .eqat (ℒₐ Z) ≃mₐ-refl) ⟩
-    F .map ℒₐ-unit (g .at (ℒₐ Z) ((f ∘ₐ h₁) ∘ₐ ℒₐ-join) .at (ℒₐ Z) ℒₐ-join)
-  ≈⟨ F .map-resp-≈ ≃mₐ-refl (g .at-resp-≈ (ℒₐ Z) (∘ₐ-resp-≃mₐ {g = ℒₐ-join} (∘ₐ-resp-≃mₐ {f = f} ≃mₐ-refl h) ≃mₐ-refl) .eqat (ℒₐ Z) ≃mₐ-refl) ⟩
-    F .map ℒₐ-unit (g .at (ℒₐ Z) ((f ∘ₐ h₂) ∘ₐ ℒₐ-join) .at (ℒₐ Z) ℒₐ-join)
-  ∎
-  where open ≃-Reasoning (F .obj Z)
-
--- TODO
--- ℒ-strength : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → (F ⊗ ℒ G) ⇒ ℒ (F ⊗ G)
--- ℒ-strength = {!   !}
