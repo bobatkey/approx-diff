@@ -81,7 +81,7 @@ _∘_ : ∀ {X Y Z} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
 
 infixr 10 _∘_
 
-∘-assoc : ∀ {W X Y Z} (f : Y ⇒ Z) (g : X ⇒ Y) (h : W ⇒ X) → (f ∘ (g ∘ h)) ≃m ((f ∘ g) ∘ h)
+∘-assoc : ∀ {W X Y Z} (f : Y ⇒ Z) (g : X ⇒ Y) (h : W ⇒ X) → (f ∘ g ∘ h) ≃m ((f ∘ g) ∘ h)
 ∘-assoc f g h .eqfunc x = refl
 
 ∘-unitᵣ : ∀ {X Y} (f : X ⇒ Y) → (f ∘ id) ≃m f
