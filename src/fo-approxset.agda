@@ -81,7 +81,7 @@ _∘_ : ∀ {X Y Z} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
 
 infixr 10 _∘_
 
-∘-assoc : ∀ {W X Y Z} (f : Y ⇒ Z) (g : X ⇒ Y) (h : W ⇒ X) → (f ∘ (g ∘ h)) ≃m ((f ∘ g) ∘ h)
+∘-assoc : ∀ {W X Y Z} (f : Y ⇒ Z) (g : X ⇒ Y) (h : W ⇒ X) → (f ∘ g ∘ h) ≃m ((f ∘ g) ∘ h)
 ∘-assoc f g h .eqfunc x = refl
 
 ∘-unitᵣ : ∀ {X Y} (f : X ⇒ Y) → (f ∘ id) ≃m f
@@ -193,8 +193,8 @@ module _ where
   ℒ-map-resp-≃ : ∀ {X Y} {f g : X ⇒ Y} → f ≃m g → ℒ-map f ≃m ℒ-map g
   ℒ-map-resp-≃ f≃g .eqfunc x = f≃g .eqfunc x
 
-  ℒ-map-preserves-∘ : ∀ {X Y Z} {f : Y ⇒ Z} {g : X ⇒ Y} → (ℒ-map f ∘ ℒ-map g) ≃m (ℒ-map (f ∘ g))
-  ℒ-map-preserves-∘ {f = f} {g} .eqfunc x = refl
+  ℒ-preserves-∘ : ∀ {X Y Z} {f : Y ⇒ Z} {g : X ⇒ Y} → (ℒ-map f ∘ ℒ-map g) ≃m (ℒ-map (f ∘ g))
+  ℒ-preserves-∘ {f = f} {g} .eqfunc x = refl
 
   ℒ-unit : ∀ {X} → X ⇒ ℒ X
   ℒ-unit .func x = x
