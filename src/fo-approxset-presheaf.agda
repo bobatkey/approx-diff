@@ -381,7 +381,6 @@ module _ where
 ℒ-join {F = F} .at X η .commute {Y} {Z} f g =
   begin
     F .map ℒₐ-unit (η .at (ℒₐ Y) ((g ∘ₐ ℒₐ-map f) ∘ₐ ℒₐ-join) .at (ℒₐ Y) ℒₐ-join)
-  -- TODO: elide some of the recurring context
   ≈⟨ F .map-resp-≈ ≃mₐ-refl (η .at-resp-≈ (ℒₐ Y) (≃mₐ-sym (∘ₐ-assoc g (ℒₐ-map f) ℒₐ-join)) .eqat (ℒₐ Y) ≃mₐ-refl ) ⟩
     F .map ℒₐ-unit (η .at (ℒₐ Y) (g ∘ₐ (ℒₐ-map f ∘ₐ ℒₐ-join)) .at (ℒₐ Y) ℒₐ-join)
   ≈⟨ F .map-resp-≈ ≃mₐ-refl (η .at-resp-≈ (ℒₐ Y) (∘ₐ-resp-≃mₐ {f = g} ≃mₐ-refl (≃mₐ-sym (ℒₐ-join-commute f))) .eqat (ℒₐ Y) ≃mₐ-refl ) ⟩
@@ -413,3 +412,7 @@ module _ where
     F .map ℒₐ-unit (g .at (ℒₐ Z) ((f ∘ₐ h₂) ∘ₐ ℒₐ-join) .at (ℒₐ Z) ℒₐ-join)
   ∎
   where open ≃-Reasoning (F .obj Z)
+
+-- TODO
+-- ℒ-strength : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → (F ⊗ ℒ G) ⇒ ℒ (F ⊗ G)
+-- ℒ-strength = {!   !}
