@@ -371,25 +371,26 @@ module _ where
       (F .map-resp-≈ (∘ₐ-resp-≃m {f = f} ≃mₐ-refl g) (F .obj Z .isEquivalence .refl)))
 ℒ*-strength .commute f (x , η) .eqat X g .proj₂ = η .at-resp-≈ X (∘ₐ-resp-≃m {f = f} ≃mₐ-refl g)
 
-{- Inverse image functor for the monad ℒ, which is a comonad. Retained here for reference.
-ℒ : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a
-ℒ F .obj X = F .obj (ℒ X)
-ℒ F .map f = F .map (ℒ-map f)
-ℒ F .map-resp-≈ f = F .map-resp-≈ (ℒ-map-resp-≃ f)
-ℒ F .preserves-∘ {X} {Y} {Z} x =
+{-
+-- Inverse image functor for the monad ℒ, which is a comonad. Retained for reference.
+ℒ* : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh a
+ℒ* F .obj X = F .obj (ℒ X)
+ℒ* F .map f = F .map (ℒ-map f)
+ℒ* F .map-resp-≈ f = F .map-resp-≈ (ℒ-map-resp-≃ f)
+ℒ* F .preserves-∘ {X} {Y} {Z} x =
   F .obj (ℒ X) .isEquivalence .trans
-    (F .preserves-∘ x) (F .map-resp-≈ ℒ-map-preserves-∘ (F .obj (ℒ Z) .isEquivalence .refl))
-ℒ F .preserves-id x = F .preserves-id x
+    (F .preserves-∘ x) (F .map-resp-≈ ℒ-preserves-∘ (F .obj (ℒ Z) .isEquivalence .refl))
+ℒ* F .preserves-id x = F .preserves-id x
 
-ℒ-map : ∀ {a} {F G : FOApproxSetPSh a} → F ⇒ G → ℒ F ⇒ ℒ G
-ℒ-map {F = F} η .at X = η .at (ℒ X)
-ℒ-map {F = F} η .at-resp-≈ X = η .at-resp-≈ (ℒ X)
-ℒ-map {F = F} {G} η .commute f x = η .commute (ℒ-map f) x
+ℒ*-map : ∀ {a} {F G : FOApproxSetPSh a} → F ⇒ G → ℒ* F ⇒ ℒ* G
+ℒ*-map {F = F} η .at X = η .at (ℒ X)
+ℒ*-map {F = F} η .at-resp-≈ X = η .at-resp-≈ (ℒ X)
+ℒ*-map {F = F} {G} η .commute f x = η .commute (ℒ-map f) x
 
-ℒ-counit : ∀ {a} {F : FOApproxSetPSh a} → ℒ F ⇒ F
-ℒ-counit {F = F} .at X = F .map ℒ-unit
-ℒ-counit {F = F} .at-resp-≈ X = F .map-resp-≈ ≃mₐ-refl
-ℒ-counit {F = F} .commute {X} f x =
+ℒ*-counit : ∀ {a} {F : FOApproxSetPSh a} → ℒ* F ⇒ F
+ℒ*-counit {F = F} .at X = F .map ℒ-unit
+ℒ*-counit {F = F} .at-resp-≈ X = F .map-resp-≈ ≃mₐ-refl
+ℒ*-counit {F = F} .commute {X} f x =
   begin
     F .map ℒ-unit (F .map (ℒ-map f) x)
   ≈⟨ F .preserves-∘ x ⟩
@@ -401,10 +402,10 @@ module _ where
   ∎
   where open ≃-Reasoning (F .obj X)
 
-ℒ-dup : ∀ {a} {F : FOApproxSetPSh a} → ℒ F ⇒ ℒ (ℒ F)
-ℒ-dup {F = F} .at X = F .map ℒ-join
-ℒ-dup {F = F} .at-resp-≈ X = F .map-resp-≈ ≃mₐ-refl
-ℒ-dup {F = F} .commute {X} {Y} f x =
+ℒ*-dup : ∀ {a} {F : FOApproxSetPSh a} → ℒ* F ⇒ ℒ* (ℒ* F)
+ℒ*-dup {F = F} .at X = F .map ℒ-join
+ℒ*-dup {F = F} .at-resp-≈ X = F .map-resp-≈ ≃mₐ-refl
+ℒ*-dup {F = F} .commute {X} {Y} f x =
   begin
     F .map ℒ-join (F .map (ℒ-map f) x)
   ≈⟨ F .preserves-∘ x ⟩
@@ -416,10 +417,10 @@ module _ where
   ∎
   where open ≃-Reasoning (F .obj (ℒ (ℒ X)))
 
-ℒ-costrength : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ℒ (F ⊗ G) ⇒ (F ⊗ ℒ G)
-ℒ-costrength {F = F} .at Z (x , y) = F .map ℒ-unit x , y
-ℒ-costrength {F = F} .at-resp-≈ Z (x , y) = F .map-resp-≈ ≃mₐ-refl x , y
-ℒ-costrength {F = F} {G} .commute {X} {Y} f (x , y) .proj₁ =
+ℒ*-costrength : ∀ {a b} {F : FOApproxSetPSh a} {G : FOApproxSetPSh b} → ℒ* (F ⊗ G) ⇒ (F ⊗ ℒ* G)
+ℒ*-costrength {F = F} .at Z (x , y) = F .map ℒ-unit x , y
+ℒ*-costrength {F = F} .at-resp-≈ Z (x , y) = F .map-resp-≈ ≃mₐ-refl x , y
+ℒ*-costrength {F = F} {G} .commute {X} {Y} f (x , y) .proj₁ =
   begin
     F .map ℒ-unit (F .map (ℒ-map f) x)
   ≈⟨ F .preserves-∘ x ⟩
@@ -430,5 +431,5 @@ module _ where
     F .map f (F .map ℒ-unit x)
   ∎
   where open ≃-Reasoning (F .obj X)
-ℒ-costrength {G = G} .commute {X} f (x , y) .proj₂ = G .obj (ℒ X) .isEquivalence .refl
+ℒ*-costrength {G = G} .commute {X} f (x , y) .proj₂ = G .obj (ℒ X) .isEquivalence .refl
 -}
