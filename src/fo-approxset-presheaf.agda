@@ -382,16 +382,11 @@ module _ where
 ℒ! F .map-resp-≈ {X} f x =
   F .obj (ℒ X) .isEquivalence .trans (F .obj (ℒ X) .isEquivalence .sym (F .preserves-∘ _))
     (F .obj (ℒ X) .isEquivalence .trans (F .map-resp-≈ (ℒ-map-resp-≃ f) x) (F .preserves-∘ _))
-ℒ! F .preserves-∘ {X} {Y} {Z} {f} {g} (W , h , x) =
-  begin
-    F .map ((h ∘ₐ ℒ-map f) ∘ₐ ℒ-map g) x
-  ≈⟨ F .map-resp-≈ (≃mₐ-sym (∘ₐ-assoc h (ℒ-map f) (ℒ-map g))) (F .obj W .isEquivalence .refl) ⟩
-    F .map (h ∘ₐ ℒ-map f ∘ₐ ℒ-map g) x
-  ≈⟨ F .map-resp-≈ (∘ₐ-resp-≃m {f = h} ≃mₐ-refl ℒ-preserves-∘) (F .obj W .isEquivalence .refl) ⟩
-    F .map (h ∘ₐ ℒ-map (f ∘ₐ g)) x
-  ∎
-  where open ≃-Reasoning (F .obj (ℒ X))
-ℒ! F .preserves-id x = {!   !}
+ℒ! F .preserves-∘ {f = f} {g} (X , h , x) =
+  F .map-resp-≈
+    (≃mₐ-trans (≃mₐ-sym (∘ₐ-assoc h (ℒ-map f) (ℒ-map g))) (∘ₐ-resp-≃m {f = h} ≃mₐ-refl ℒ-preserves-∘))
+    (F .obj X .isEquivalence .refl)
+ℒ! F .preserves-id {X} (Y , f , x) = F .obj (ℒ X) .isEquivalence .refl
 
 {-
 -- Inverse image functor for the monad ℒ, which is a comonad. Retained for reference.
