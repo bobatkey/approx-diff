@@ -372,21 +372,16 @@ module _ where
       (F .map-resp-≈ (∘ₐ-resp-≃m {f = f} ≃mₐ-refl g) (F .obj Z .isEquivalence .refl)))
 ℒ*-strength .commute f (x , η) .eqat X g .proj₂ = η .at-resp-≈ X (∘ₐ-resp-≃m {f = f} ≃mₐ-refl g)
 
-blah-setoid : ∀ {a b} → FOApproxSet → FOApproxSetPSh a b → Setoid (suc zero ⊔ a) b
-blah-setoid X F .Carrier = Σ FOApproxSet λ Y → (ℒ X ⇒ₐ Y) × F .obj Y .Carrier
-blah-setoid X F ._≈_ (Y , f , y) (Z , g , z) = F .obj (ℒ X) ._≈_ (F .map f y) (F .map g z)
-blah-setoid X F .isEquivalence .refl = F .obj (ℒ X) .isEquivalence .refl
-blah-setoid X F .isEquivalence .sym = F .obj (ℒ X) .isEquivalence .sym
-blah-setoid X F .isEquivalence .trans = F .obj (ℒ X) .isEquivalence .trans
-
-{-
-ℒ! : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh (suc (0ℓ ⊔ a))
-ℒ! F .obj X = blah-setoid X F
+ℒ! : ∀ {a b} → FOApproxSetPSh a b → FOApproxSetPSh (suc zero ⊔ a) b
+ℒ! F .obj X .Carrier = Σ FOApproxSet λ Y → (ℒ X ⇒ₐ Y) × F .obj Y .Carrier
+ℒ! F .obj X ._≈_ (Y , f , y) (Z , g , z) = F .obj (ℒ X) ._≈_ (F .map f y) (F .map g z)
+ℒ! F .obj X .isEquivalence .refl = F .obj (ℒ X) .isEquivalence .refl
+ℒ! F .obj X .isEquivalence .sym = F .obj (ℒ X) .isEquivalence .sym
+ℒ! F .obj X .isEquivalence .trans = F .obj (ℒ X) .isEquivalence .trans
 ℒ! F .map f = {!   !}
 ℒ! F .map-resp-≈ f = {!   !}
 ℒ! F .preserves-∘ x = {!   !}
 ℒ! F .preserves-id x = {!   !}
--}
 
 -- Inverse image functor for the monad ℒ, which is a comonad. Retained for reference.
 ℒ^ : ∀ {a b} → FOApproxSetPSh a b → FOApproxSetPSh a b
