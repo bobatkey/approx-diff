@@ -378,11 +378,22 @@ module _ where
 ℒ! F .obj X .isEquivalence .refl = F .obj (ℒ X) .isEquivalence .refl
 ℒ! F .obj X .isEquivalence .sym = F .obj (ℒ X) .isEquivalence .sym
 ℒ! F .obj X .isEquivalence .trans = F .obj (ℒ X) .isEquivalence .trans
-ℒ! F .map f = {!   !}
-ℒ! F .map-resp-≈ f = {!   !}
-ℒ! F .preserves-∘ x = {!   !}
+ℒ! F .map f (X , g , x) = X , g  ∘ₐ ℒ-map f , x
+ℒ! F .map-resp-≈ {X} f x =
+  F .obj (ℒ X) .isEquivalence .trans (F .obj (ℒ X) .isEquivalence .sym (F .preserves-∘ _))
+    (F .obj (ℒ X) .isEquivalence .trans (F .map-resp-≈ (ℒ-map-resp-≃ f) x) (F .preserves-∘ _))
+ℒ! F .preserves-∘ {X} {Y} {Z} {f} {g} (W , h , x) =
+  begin
+    F .map ((h ∘ₐ ℒ-map f) ∘ₐ ℒ-map g) x
+  ≈⟨ F .map-resp-≈ (≃mₐ-sym (∘ₐ-assoc h (ℒ-map f) (ℒ-map g))) (F .obj W .isEquivalence .refl) ⟩
+    F .map (h ∘ₐ ℒ-map f ∘ₐ ℒ-map g) x
+  ≈⟨ F .map-resp-≈ (∘ₐ-resp-≃m {f = h} ≃mₐ-refl ℒ-preserves-∘) (F .obj W .isEquivalence .refl) ⟩
+    F .map (h ∘ₐ ℒ-map (f ∘ₐ g)) x
+  ∎
+  where open ≃-Reasoning (F .obj (ℒ X))
 ℒ! F .preserves-id x = {!   !}
 
+{-
 -- Inverse image functor for the monad ℒ, which is a comonad. Retained for reference.
 ℒ^ : ∀ {a b} → FOApproxSetPSh a b → FOApproxSetPSh a b
 ℒ^ F .obj X = F .obj (ℒ X)
@@ -443,3 +454,4 @@ module _ where
   ∎
   where open ≃-Reasoning (F .obj X)
 ℒ^-costrength {G = G} .commute {X} f (x , y) .proj₂ = G .obj (ℒ X) .isEquivalence .refl
+-}
