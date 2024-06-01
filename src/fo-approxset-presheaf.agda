@@ -372,14 +372,14 @@ module _ where
       (F .map-resp-≈ (∘ₐ-resp-≃m {f = f} ≃mₐ-refl g) (F .obj Z .isEquivalence .refl)))
 ℒ*-strength .commute f (x , η) .eqat X g .proj₂ = η .at-resp-≈ X (∘ₐ-resp-≃m {f = f} ≃mₐ-refl g)
 
-{-
 blah-setoid : ∀ {a b} → FOApproxSet → FOApproxSetPSh a b → Setoid (suc zero ⊔ a) b
 blah-setoid X F .Carrier = Σ FOApproxSet λ Y → (ℒ X ⇒ₐ Y) × F .obj Y .Carrier
 blah-setoid X F ._≈_ (Y , f , y) (Z , g , z) = F .obj (ℒ X) ._≈_ (F .map f y) (F .map g z)
-blah-setoid X F .isEquivalence .refl = {!   !}
-blah-setoid X F .isEquivalence .sym = {!   !}
-blah-setoid X F .isEquivalence .trans = {!   !}
+blah-setoid X F .isEquivalence .refl = F .obj (ℒ X) .isEquivalence .refl
+blah-setoid X F .isEquivalence .sym = F .obj (ℒ X) .isEquivalence .sym
+blah-setoid X F .isEquivalence .trans = F .obj (ℒ X) .isEquivalence .trans
 
+{-
 ℒ! : ∀ {a} → FOApproxSetPSh a → FOApproxSetPSh (suc (0ℓ ⊔ a))
 ℒ! F .obj X = blah-setoid X F
 ℒ! F .map f = {!   !}
