@@ -17,8 +17,7 @@ module _ where
   ≡-to-≈ : ∀ {a b} (X : Setoid a b) {x y : X .Carrier} → x ≡ y → X ._≈_ x y
   ≡-to-≈ X {x} {.x} ≡-refl = X .isEquivalence .refl
 
-  -- Slightly less general in universe level than they could be, but sufficient for our purposes
-  ⊗-setoid : ∀ {a b} → Setoid a a → Setoid b b → Setoid (a ⊔ b) (a ⊔ b)
+  ⊗-setoid : ∀ {a b c d} → Setoid a b → Setoid c d → Setoid (a ⊔ c) (b ⊔ d)
   ⊗-setoid X Y .Carrier = X .Carrier × Y .Carrier
   ⊗-setoid X Y ._≈_ (x₁ , y₁) (x₂ , y₂) = X ._≈_ x₁ x₂ × Y ._≈_ y₁ y₂
   ⊗-setoid X Y .isEquivalence .refl .proj₁ = X .isEquivalence .refl
@@ -28,7 +27,7 @@ module _ where
   ⊗-setoid X Y .isEquivalence .trans (x₁≈y₁ , _) (y₁≈z₁ , _) .proj₁ = X .isEquivalence .trans x₁≈y₁ y₁≈z₁
   ⊗-setoid X Y .isEquivalence .trans (_ , x₂≈y₂) (_ , y₂≈z₂) .proj₂ = Y .isEquivalence .trans x₂≈y₂ y₂≈z₂
 
-  +-setoid : ∀ {a} (X : Setoid a a) (Y : Setoid a a) → Setoid a a
+  +-setoid : ∀ {a b} (X : Setoid a b) (Y : Setoid a b) → Setoid a b
   +-setoid X Y .Carrier = X .Carrier ⊎ Y .Carrier
   +-setoid X Y ._≈_ (inj₁ x) (inj₁ y) = X ._≈_ x y
   +-setoid X Y ._≈_ (inj₂ x) (inj₂ y) = Y ._≈_ x y
