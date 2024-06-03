@@ -156,6 +156,10 @@ inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 [ ζ , η ] .commute f (x , inj₁ y) = ζ .commute f (x , y)
 [ ζ , η ] .commute f (x , inj₂ y) = η .commute f (x , y)
 
+-- Arbitrary coproducts
+∐ : ∀ {a b} → (I : Set) → FOApproxSetPSh a b
+∐ = {!   !}
+
 -- Yoneda embedding Y ↦ Hom(-, Y)
 よ : FOApproxSet -> FOApproxSetPSh 0ℓ 0ℓ
 よ Y .obj X = ≃mₐ-setoid {X = X} {Y}

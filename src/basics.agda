@@ -4,7 +4,7 @@ module basics where
 
 open import Level
 open import Data.Empty using () renaming (⊥ to 𝟘)
-open import Data.Product using (_×_; _,_; proj₁; proj₂)
+open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Relation.Binary using (Setoid; IsEquivalence)
 
@@ -40,6 +40,13 @@ module _ where
   +-setoid X Y .isEquivalence .trans {inj₁ x} {inj₁ y} {inj₁ z} = X .isEquivalence .trans
   +-setoid X Y .isEquivalence .trans {inj₂ x} {inj₂ y} {inj₂ z} = Y .isEquivalence .trans
 
+{-
+  -- Arbitrary coproducts. Think we run into issue where index set needs decidable equality
+  ∐-setoid : ∀ {a b} (I : Set) (X : I → Setoid a b) → Setoid a b
+  ∐-setoid I X .Carrier = Σ I λ i → X i .Carrier
+  ∐-setoid I X ._≈_ (i , x) (j , y) = {!   !}
+  ∐-setoid I X .isEquivalence = {!   !}
+-}
 -- Also should be in stdlib somewhere
 module _ where
   infix 4 _⇔_
