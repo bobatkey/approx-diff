@@ -40,13 +40,54 @@ module _ where
   +-setoid X Y .isEquivalence .trans {inj₁ x} {inj₁ y} {inj₁ z} = X .isEquivalence .trans
   +-setoid X Y .isEquivalence .trans {inj₂ x} {inj₂ y} {inj₂ z} = Y .isEquivalence .trans
 
+  record _⇒_ {a b} (X Y : Setoid a b) : Set (a ⊔ b) where
+    field
+      func : X .Carrier → Y .Carrier
+      func-resp-≈ : ∀ {x y} → X ._≈_ x y → Y ._≈_ (func x) (func y)
+
+  open _⇒_
+
+  record _≃m_ {a b} {X Y : Setoid a b} (f g : X ⇒ Y) : Set (suc (a ⊔ b)) where
+    field
+      eqfunc : ∀ {x} → Y ._≈_ (f .func x) (g .func x)
+
+  open _≃m_
+
+  id : ∀ {a b} {X : Setoid a b} → X ⇒ X
+  id .func x = x
+  id .func-resp-≈ x = x
+
+  _∘_ : ∀ {a b} {X Y Z : Setoid a b} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
+  (f ∘ g) .func x = f .func (g .func x)
+  (f ∘ g) .func-resp-≈ x = f .func-resp-≈ (g .func-resp-≈ x)
+
+  record Iso {a b} (X Y : Setoid a b) : Set (a ⊔ b) where
+    field
+      right : X .Carrier → Y .Carrier
+      left : Y .Carrier → X .Carrier
+      isoᵣ : ∀ y → Y ._≈_ (right (left y)) y
+      isoₗ : ∀ x → X ._≈_ (left (right x)) x
+
+  record Iso2 {a b} (X Y : Setoid a b) : Set (suc (a ⊔ b)) where
+    field
+      right : X ⇒ Y
+      left : Y ⇒ X
+      isoᵣ : (right ∘ left) ≃m id
+      isoₗ : (left ∘ right) ≃m id
 {-
-  -- Arbitrary coproducts. Think we run into issue where index set needs decidable equality
-  ∐-setoid : ∀ {a b} (I : Set) (X : I → Setoid a b) → Setoid a b
-  ∐-setoid I X .Carrier = Σ I λ i → X i .Carrier
-  ∐-setoid I X ._≈_ (i , x) (j , y) = {!   !}
-  ∐-setoid I X .isEquivalence = {!   !}
+
+  record Blah {a b} (I : Setoid a b) (X : I .Carrier → Setoid a b) : Set (a ⊔ b) where
+    field
+      eq : ∀ {i j} → I ._≈_ i j → Iso (X i) (X j)
+      blah : ∀ {i : I .Carrier} → (eq (I .isEquivalence .refl {i}) .Iso.right) ≃m id
 -}
+
+  -- Coproduct of setoid-indexed family of setoids.
+  ∐-setoid : ∀ {a b} (I : Setoid a b) (X : I .Carrier → Setoid a b) → (∀ {i j} → I ._≈_ i j → Iso (X i) (X j)) → Setoid a b
+  ∐-setoid I X resp-≈ .Carrier = Σ (I .Carrier) λ i → X i .Carrier
+  ∐-setoid I X resp-≈ ._≈_ (i , x) (j , y) = Σ (I ._≈_ i j) λ eq → X i ._≈_ x (resp-≈ eq .Iso.left y)
+  ∐-setoid I X resp-≈ .isEquivalence = {!   !}
+
 -- Also should be in stdlib somewhere
 module _ where
   infix 4 _⇔_
