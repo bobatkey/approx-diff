@@ -389,6 +389,12 @@ module _ where
 ℒ! F .preserves-id {X} (Y , f , x) = F .obj (ℒ X) .isEquivalence .refl
 
 {-
+ℒ!-unit : ∀ {a b} {F : FOApproxSetPSh a b} → F ⇒ ℒ! F
+ℒ!-unit {F = F} .at X x = {!   !}
+ℒ!-unit .at-resp-≈ X = {!   !}
+ℒ!-unit .commute f x = {!   !}
+-}
+{-
 -- Inverse image functor for the monad ℒ, which is a comonad. Retained for reference.
 ℒ^ : ∀ {a b} → FOApproxSetPSh a b → FOApproxSetPSh a b
 ℒ^ F .obj X = F .obj (ℒ X)
