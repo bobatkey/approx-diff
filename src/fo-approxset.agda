@@ -128,16 +128,6 @@ module _ where
     g .bwd⊣fwd x .proj₂ (≤-trans (X .order x) inr ≤x')
     where open IsJoin (X .rapprox x .∨-isJoin)
 
--- Big products (for presheaf category)
-module _ (I : Set) {X : I → FOApproxSet}  where
-  open Preorder
-
-  ⨂ : FOApproxSet
-  ⨂ .elem = ∀ i → X i .elem
-  ⨂ .order x = preorder.Π I λ i → X i .order (x i)
-  ⨂ .fapprox = {!   !}
-  ⨂ .rapprox = {!   !}
-
 -- Sums
 module _ where
   _+_ : FOApproxSet → FOApproxSet → FOApproxSet
