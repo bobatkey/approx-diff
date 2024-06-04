@@ -19,7 +19,7 @@ open import fo-approxset
       _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-setoid to ≃mₐ-setoid; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
       ∘-resp-≃m to ∘ₐ-resp-≃m; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ
     )
-open import setoid using (⊗-setoid; +-setoid; ≡-to-≈)
+open import setoid using (⊗-setoid; +-setoid; ∐-setoid; Resp-≈; ≡-to-≈)
 
 module ≃-Reasoning = Relation.Binary.Reasoning.Setoid
 
@@ -156,10 +156,6 @@ inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 [ ζ , η ] .at-resp-≈ X {x₁ , inj₂ y₁} {x₂ , inj₂ y₂} = η .at-resp-≈ X
 [ ζ , η ] .commute f (x , inj₁ y) = ζ .commute f (x , y)
 [ ζ , η ] .commute f (x , inj₂ y) = η .commute f (x , y)
-
--- Arbitrary coproducts
-∐ : ∀ {a b} → (I : Setoid a b) (X : I .Carrier → Setoid a b) → FOApproxSetPSh a b
-∐ = {!   !}
 
 -- Yoneda embedding Y ↦ Hom(-, Y)
 よ : FOApproxSet -> FOApproxSetPSh 0ℓ 0ℓ

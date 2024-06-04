@@ -41,6 +41,7 @@ module ≃-Reasoning = Relation.Binary.Reasoning.Setoid
 +-setoid X Y .isEquivalence .trans {inj₁ x} {inj₁ y} {inj₁ z} = X .isEquivalence .trans
 +-setoid X Y .isEquivalence .trans {inj₂ x} {inj₂ y} {inj₂ z} = Y .isEquivalence .trans
 
+{-
 record _⇒_ {a b} (X Y : Setoid a b) : Set (a ⊔ b) where
   field
     func : X .Carrier → Y .Carrier
@@ -71,8 +72,8 @@ record Iso {a b} (X Y : Setoid a b) : Set (suc (a ⊔ b)) where
 
 open Iso
 
--- For a setoid-indexed family of setoids, each proof p : i = j gives rise to an extensional "reindexing"
--- bijection φ p : X i → X j.
+-- For a setoid-indexed family of setoids, each proof p : i = j gives rise to an extensional
+-- "reindexing" bijection φ p : X i → X j.
 record Resp-≈ {a b} (I : Setoid a b) (X : I .Carrier → Setoid a b) : Set (suc (a ⊔ b)) where
   field
     eq : ∀ {i j} → I ._≈_ i j → Iso (X i) (X j)
@@ -83,7 +84,7 @@ record Resp-≈ {a b} (I : Setoid a b) (X : I .Carrier → Setoid a b) : Set (su
 
 open Resp-≈
 
--- Coproduct of setoid-indexed family of setoids.
+-- Coproduct of setoid-indexed family of setoids
 ∐-setoid : ∀ {a b} (I : Setoid a b) (X : I .Carrier → Setoid a b) → Resp-≈ I X → Setoid a b
 ∐-setoid I X resp-≈ .Carrier = Σ (I .Carrier) λ i → X i .Carrier
 ∐-setoid I X resp-≈ ._≈_ (i , x) (j , y) =
@@ -108,3 +109,4 @@ open Resp-≈
   X k .isEquivalence .trans
     (X k .isEquivalence .sym (resp-≈ .eq-trans i≈j j≈k (I .isEquivalence .trans i≈j j≈k) .eqfunc x))
     (X k .isEquivalence .trans (resp-≈ .eq j≈k .right .func-resp-≈ x≈y) y≈z)
+-}
