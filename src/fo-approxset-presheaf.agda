@@ -19,6 +19,7 @@ open import fo-approxset
       _⇒_ to _⇒ₐ_; _≃m_ to _≃mₐ_; ≃m-setoid to ≃mₐ-setoid; id to idₐ; _∘_ to _∘ₐ_; _⊗_ to _⊗ₐ_;
       ∘-resp-≃m to ∘ₐ-resp-≃m; ∘-assoc to ∘ₐ-assoc; ∘-unitₗ to ∘ₐ-unitₗ; ∘-unitᵣ to ∘ₐ-unitᵣ
     )
+open import setoid using (⊗-setoid; +-setoid; ≡-to-≈)
 
 module ≃-Reasoning = Relation.Binary.Reasoning.Setoid
 
