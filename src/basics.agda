@@ -63,14 +63,7 @@ module _ where
   _∘_ : ∀ {a b} {X Y Z : Setoid a b} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
   (f ∘ g) .func x = f .func (g .func x)
   (f ∘ g) .func-resp-≈ x = f .func-resp-≈ (g .func-resp-≈ x)
-{-
-  record Iso {a b} (X Y : Setoid a b) : Set (a ⊔ b) where
-    field
-      right : X .Carrier → Y .Carrier
-      left : Y .Carrier → X .Carrier
-      isoᵣ : ∀ y → Y ._≈_ (right (left y)) y
-      isoₗ : ∀ x → X ._≈_ (left (right x)) x
--}
+
   record Iso {a b} (X Y : Setoid a b) : Set (suc (a ⊔ b)) where
     field
       right : X ⇒ Y
@@ -79,7 +72,7 @@ module _ where
       isoₗ : (left ∘ right) ≃m id
 
   -- Each proof p : i = j gives rise to an extensional "reindexing" bijection φ p : X i → X j.
-  record Blah {a b} (I : Setoid a b) (X : I .Carrier → Setoid a b) : Set (suc (a ⊔ b)) where
+  record Resp-≈ {a b} (I : Setoid a b) (X : I .Carrier → Setoid a b) : Set (suc (a ⊔ b)) where
     open Iso
     field
       eq : ∀ {i j} → I ._≈_ i j → Iso (X i) (X j)
@@ -87,15 +80,18 @@ module _ where
       eq-trans : ∀ {i j k} (p : I ._≈_ i j) (q : I ._≈_ j k) (r : I ._≈_ i k) →
                  (eq q .right ∘ eq p .right) ≃m eq r .right
 
+  open Resp-≈
+
   -- Coproduct of setoid-indexed family of setoids.
-  ∐-setoid : ∀ {a b} (I : Setoid a b) (X : I .Carrier → Setoid a b) → Blah I X → Setoid a b
+  ∐-setoid : ∀ {a b} (I : Setoid a b) (X : I .Carrier → Setoid a b) → Resp-≈ I X → Setoid a b
   ∐-setoid I X resp-≈ .Carrier = Σ (I .Carrier) λ i → X i .Carrier
   ∐-setoid I X resp-≈ ._≈_ (i , x) (j , y) =
-    Σ (I ._≈_ i j) λ eq → X j ._≈_ (resp-≈ .Blah.eq eq .Iso.right .func x) y
+    Σ (I ._≈_ i j) λ p → X j ._≈_ (resp-≈ .eq p .Iso.right .func x) y
   ∐-setoid I X resp-≈ .isEquivalence .refl {i , x} =
-    I .isEquivalence .refl , resp-≈ .Blah.eq-refl {i} .eqfunc x
+    I .isEquivalence .refl , resp-≈ .eq-refl {i} .eqfunc x
   ∐-setoid I X resp-≈ .isEquivalence .sym = {!   !}
-  ∐-setoid I X resp-≈ .isEquivalence .trans = {!   !}
+  ∐-setoid I X resp-≈ .isEquivalence .trans {i , x} {j , y} {k , z} (i≈j , x≈y) (j≈k , y≈z) =
+    I .isEquivalence .trans i≈j j≈k , {!   !}
 
 -- Also should be in stdlib somewhere
 module _ where
