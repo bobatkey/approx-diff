@@ -7,6 +7,9 @@ open import Data.Empty using () renaming (⊥ to 𝟘)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Relation.Binary using (Setoid; IsEquivalence)
+import Relation.Binary.Reasoning.Setoid
+
+module ≃-Reasoning = Relation.Binary.Reasoning.Setoid
 
 -- Some setoid gunk that is probably in stdlib somewhere
 module _ where
@@ -49,7 +52,7 @@ module _ where
 
   record _≃m_ {a b} {X Y : Setoid a b} (f g : X ⇒ Y) : Set (suc (a ⊔ b)) where
     field
-      eqfunc : ∀ {x} → Y ._≈_ (f .func x) (g .func x)
+      eqfunc : ∀ x → Y ._≈_ (f .func x) (g .func x)
 
   open _≃m_
 
@@ -60,33 +63,39 @@ module _ where
   _∘_ : ∀ {a b} {X Y Z : Setoid a b} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
   (f ∘ g) .func x = f .func (g .func x)
   (f ∘ g) .func-resp-≈ x = f .func-resp-≈ (g .func-resp-≈ x)
-
+{-
   record Iso {a b} (X Y : Setoid a b) : Set (a ⊔ b) where
     field
       right : X .Carrier → Y .Carrier
       left : Y .Carrier → X .Carrier
       isoᵣ : ∀ y → Y ._≈_ (right (left y)) y
       isoₗ : ∀ x → X ._≈_ (left (right x)) x
-
-  record Iso2 {a b} (X Y : Setoid a b) : Set (suc (a ⊔ b)) where
+-}
+  record Iso {a b} (X Y : Setoid a b) : Set (suc (a ⊔ b)) where
     field
       right : X ⇒ Y
       left : Y ⇒ X
       isoᵣ : (right ∘ left) ≃m id
       isoₗ : (left ∘ right) ≃m id
-{-
 
-  record Blah {a b} (I : Setoid a b) (X : I .Carrier → Setoid a b) : Set (a ⊔ b) where
+  -- Each proof p : i = j gives rise to an extensional "reindexing" bijection φ p : X i → X j.
+  record Blah {a b} (I : Setoid a b) (X : I .Carrier → Setoid a b) : Set (suc (a ⊔ b)) where
+    open Iso
     field
       eq : ∀ {i j} → I ._≈_ i j → Iso (X i) (X j)
-      blah : ∀ {i : I .Carrier} → (eq (I .isEquivalence .refl {i}) .Iso.right) ≃m id
--}
+      eq-refl : ∀ {i} → (eq (I .isEquivalence .refl {i}) .right) ≃m id
+      eq-trans : ∀ {i j k} (p : I ._≈_ i j) (q : I ._≈_ j k) (r : I ._≈_ i k) →
+                 (eq q .right ∘ eq p .right) ≃m eq r .right
 
   -- Coproduct of setoid-indexed family of setoids.
-  ∐-setoid : ∀ {a b} (I : Setoid a b) (X : I .Carrier → Setoid a b) → (∀ {i j} → I ._≈_ i j → Iso (X i) (X j)) → Setoid a b
+  ∐-setoid : ∀ {a b} (I : Setoid a b) (X : I .Carrier → Setoid a b) → Blah I X → Setoid a b
   ∐-setoid I X resp-≈ .Carrier = Σ (I .Carrier) λ i → X i .Carrier
-  ∐-setoid I X resp-≈ ._≈_ (i , x) (j , y) = Σ (I ._≈_ i j) λ eq → X i ._≈_ x (resp-≈ eq .Iso.left y)
-  ∐-setoid I X resp-≈ .isEquivalence = {!   !}
+  ∐-setoid I X resp-≈ ._≈_ (i , x) (j , y) =
+    Σ (I ._≈_ i j) λ eq → X j ._≈_ (resp-≈ .Blah.eq eq .Iso.right .func x) y
+  ∐-setoid I X resp-≈ .isEquivalence .refl {i , x} =
+    I .isEquivalence .refl , resp-≈ .Blah.eq-refl {i} .eqfunc x
+  ∐-setoid I X resp-≈ .isEquivalence .sym = {!   !}
+  ∐-setoid I X resp-≈ .isEquivalence .trans = {!   !}
 
 -- Also should be in stdlib somewhere
 module _ where
