@@ -80,7 +80,7 @@ module _ where
       eq : ∀ {i j} → I ._≈_ i j → Iso (X i) (X j)
       -- proof irrelevance:
       eq-refl : ∀ {i} → (eq (I .isEquivalence .refl {i}) .right) ≃m id
-      eq-trans : ∀ {i j k} (p : I ._≈_ i j) (q : I ._≈_ j k) (r : I ._≈_ i k) →
+      eq-trans : ∀ {i j k} → (p : I ._≈_ i j) (q : I ._≈_ j k) (r : I ._≈_ i k) →
                  (eq q .right ∘ eq p .right) ≃m eq r .right
 
   open Resp-≈
@@ -91,8 +91,19 @@ module _ where
   ∐-setoid I X resp-≈ ._≈_ (i , x) (j , y) =
     Σ (I ._≈_ i j) λ p → X j ._≈_ (resp-≈ .eq p .Iso.right .func x) y
   ∐-setoid I X resp-≈ .isEquivalence .refl {i , x} =
-    I .isEquivalence .refl , resp-≈  .eq-refl {i} .eqfunc x
-  ∐-setoid I X resp-≈ .isEquivalence .sym = {!   !}
+    I .isEquivalence .refl , resp-≈ .eq-refl {i} .eqfunc x
+  ∐-setoid I X resp-≈ .isEquivalence .sym {i , x} {j , y} (i≈j , x≈y) =
+    I .isEquivalence .sym i≈j ,
+    (begin
+      resp-≈ .eq (I .isEquivalence .sym i≈j) .right .func y
+    ≈⟨ resp-≈ .eq (I .isEquivalence .sym i≈j) .right .func-resp-≈ (X j .isEquivalence .sym x≈y) ⟩
+      resp-≈ .eq (I .isEquivalence .sym i≈j) .right .func (resp-≈ .eq i≈j .right .func x)
+    ≈⟨ resp-≈ .eq-trans i≈j (I .isEquivalence .sym i≈j) (I .isEquivalence .refl {i}) .eqfunc x ⟩
+      resp-≈ .eq (I .isEquivalence .refl) .right .func x
+    ≈⟨ resp-≈ .eq-refl {i} .eqfunc x ⟩
+      x
+    ∎)
+    where open ≃-Reasoning (X i)
   ∐-setoid I X resp-≈ .isEquivalence .trans {i , x} {j , y} {k , z} (i≈j , x≈y) (j≈k , y≈z) =
     I .isEquivalence .trans i≈j j≈k ,
     X k .isEquivalence .trans
