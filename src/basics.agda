@@ -71,11 +71,14 @@ module _ where
       isoᵣ : (right ∘ left) ≃m id
       isoₗ : (left ∘ right) ≃m id
 
-  -- Each proof p : i = j gives rise to an extensional "reindexing" bijection φ p : X i → X j.
+  open Iso
+
+  -- For a setoid-indexed family of setoids, each proof p : i = j gives rise to an extensional "reindexing"
+  -- bijection φ p : X i → X j.
   record Resp-≈ {a b} (I : Setoid a b) (X : I .Carrier → Setoid a b) : Set (suc (a ⊔ b)) where
-    open Iso
     field
       eq : ∀ {i j} → I ._≈_ i j → Iso (X i) (X j)
+      -- proof irrelevance:
       eq-refl : ∀ {i} → (eq (I .isEquivalence .refl {i}) .right) ≃m id
       eq-trans : ∀ {i j k} (p : I ._≈_ i j) (q : I ._≈_ j k) (r : I ._≈_ i k) →
                  (eq q .right ∘ eq p .right) ≃m eq r .right
@@ -88,10 +91,13 @@ module _ where
   ∐-setoid I X resp-≈ ._≈_ (i , x) (j , y) =
     Σ (I ._≈_ i j) λ p → X j ._≈_ (resp-≈ .eq p .Iso.right .func x) y
   ∐-setoid I X resp-≈ .isEquivalence .refl {i , x} =
-    I .isEquivalence .refl , resp-≈ .eq-refl {i} .eqfunc x
+    I .isEquivalence .refl , resp-≈  .eq-refl {i} .eqfunc x
   ∐-setoid I X resp-≈ .isEquivalence .sym = {!   !}
   ∐-setoid I X resp-≈ .isEquivalence .trans {i , x} {j , y} {k , z} (i≈j , x≈y) (j≈k , y≈z) =
-    I .isEquivalence .trans i≈j j≈k , {!   !}
+    I .isEquivalence .trans i≈j j≈k ,
+    X k .isEquivalence .trans
+      (X k .isEquivalence .sym (resp-≈ .eq-trans i≈j j≈k (I .isEquivalence .trans i≈j j≈k) .eqfunc x))
+      (X k .isEquivalence .trans (resp-≈ .eq j≈k .right .func-resp-≈ x≈y) y≈z)
 
 -- Also should be in stdlib somewhere
 module _ where
