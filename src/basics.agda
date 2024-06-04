@@ -90,11 +90,11 @@ module _ where
   ∐-setoid I X resp-≈ .Carrier = Σ (I .Carrier) λ i → X i .Carrier
   ∐-setoid I X resp-≈ ._≈_ (i , x) (j , y) =
     Σ (I ._≈_ i j) λ p → X j ._≈_ (resp-≈ .eq p .Iso.right .func x) y
-  ∐-setoid I X resp-≈ .isEquivalence .refl {i , x} =
-    I .isEquivalence .refl , resp-≈ .eq-refl {i} .eqfunc x
-  ∐-setoid I X resp-≈ .isEquivalence .sym {i , x} {j , y} (i≈j , x≈y) =
-    I .isEquivalence .sym i≈j ,
-    (begin
+  ∐-setoid I X resp-≈ .isEquivalence .refl .proj₁ = I .isEquivalence .refl
+  ∐-setoid I X resp-≈ .isEquivalence .refl {i , x} .proj₂ = resp-≈ .eq-refl {i} .eqfunc x
+  ∐-setoid I X resp-≈ .isEquivalence .sym (i≈j , x≈y) .proj₁ = I .isEquivalence .sym i≈j
+  ∐-setoid I X resp-≈ .isEquivalence .sym {i , x} {j , y} (i≈j , x≈y) .proj₂ =
+    begin
       resp-≈ .eq (I .isEquivalence .sym i≈j) .right .func y
     ≈⟨ resp-≈ .eq (I .isEquivalence .sym i≈j) .right .func-resp-≈ (X j .isEquivalence .sym x≈y) ⟩
       resp-≈ .eq (I .isEquivalence .sym i≈j) .right .func (resp-≈ .eq i≈j .right .func x)
@@ -102,10 +102,11 @@ module _ where
       resp-≈ .eq (I .isEquivalence .refl) .right .func x
     ≈⟨ resp-≈ .eq-refl {i} .eqfunc x ⟩
       x
-    ∎)
+    ∎
     where open ≃-Reasoning (X i)
-  ∐-setoid I X resp-≈ .isEquivalence .trans {i , x} {j , y} {k , z} (i≈j , x≈y) (j≈k , y≈z) =
-    I .isEquivalence .trans i≈j j≈k ,
+  ∐-setoid I X resp-≈ .isEquivalence .trans (i≈j , x≈y) (j≈k , y≈z) .proj₁ =
+    I .isEquivalence .trans i≈j j≈k
+  ∐-setoid I X resp-≈ .isEquivalence .trans {i , x} {j , y} {k , z} (i≈j , x≈y) (j≈k , y≈z) .proj₂ =
     X k .isEquivalence .trans
       (X k .isEquivalence .sym (resp-≈ .eq-trans i≈j j≈k (I .isEquivalence .trans i≈j j≈k) .eqfunc x))
       (X k .isEquivalence .trans (resp-≈ .eq j≈k .right .func-resp-≈ x≈y) y≈z)
