@@ -109,17 +109,17 @@ _⊗_ : ∀ {a b c d} → FOApproxSetPSh a b → FOApproxSetPSh c d → FOApprox
 (F ⊗ G) .preserves-id (x , y) .proj₁ = F .preserves-id x
 (F ⊗ G) .preserves-id (x , y) .proj₂ = G .preserves-id y
 
-π₁ : ∀ {a b} {F : FOApproxSetPSh a b} {G : FOApproxSetPSh a b} → (F ⊗ G) ⇒ F
+π₁ : ∀ {a b c d} {F : FOApproxSetPSh a b} {G : FOApproxSetPSh c d} → (F ⊗ G) ⇒ F
 π₁ .at X = proj₁
 π₁ .at-resp-≈ X = proj₁
 π₁ {F = F} .commute {X} f _ = F .obj X .isEquivalence .refl
 
-π₂ : ∀ {a b} {F : FOApproxSetPSh a b} {G : FOApproxSetPSh a b} → (F ⊗ G) ⇒ G
+π₂ : ∀ {a b c d} {F : FOApproxSetPSh a b} {G : FOApproxSetPSh c d} → (F ⊗ G) ⇒ G
 π₂ .at X = proj₂
 π₂ .at-resp-≈ X = proj₂
 π₂ {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
 
-pair : ∀ {a b} {F : FOApproxSetPSh a b} {G : FOApproxSetPSh a b} {H : FOApproxSetPSh a b} → F ⇒ G → F ⇒ H → F ⇒ (G ⊗ H)
+pair : ∀ {a b c d e f} {F : FOApproxSetPSh a b} {G : FOApproxSetPSh c d} {H : FOApproxSetPSh e f} → F ⇒ G → F ⇒ H → F ⇒ (G ⊗ H)
 pair ζ η .at X x .proj₁ = ζ .at X x
 pair ζ η .at X x .proj₂ = η .at X x
 pair ζ η .at-resp-≈ X x .proj₁ = ζ .at-resp-≈ X x

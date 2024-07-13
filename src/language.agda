@@ -140,19 +140,32 @@ module presheaf-semantics where
   open import Data.Product using (_×_; _,_)
   open import fo-approxset-presheaf
 
-  -- Is there a better way of dealing with the universe levels in FOApproxSetPSh?
-  level : type → Level × Level
-  level unit = 0ℓ , 0ℓ
-  level num = 0ℓ , 0ℓ
-  level (σ `× τ) = let (a , b) , c , d = level σ , level τ in a ⊔ c , b ⊔ d
-  level (σ `⇒ τ) = let (a , b) , c , d = level σ , level τ in suc (a ⊔ b ⊔ c ⊔ d) , suc (a ⊔ b ⊔ c ⊔ d)
-  level (σ `+ τ) = let (a , b) , c , d = level σ , level τ in (a ⊔ c) , (b ⊔ d)
-  level (lift σ) = let a , b = level σ in suc (a ⊔ b) , suc (a ⊔ b)
+  -- Universe level boilerplate. Is there a better way?
+  module level where
+    ty : type → Level × Level
+    ty unit = 0ℓ , 0ℓ
+    ty num = 0ℓ , 0ℓ
+    ty (σ `× τ) = let (a , b) , c , d = ty σ , ty τ in a ⊔ c , b ⊔ d
+    ty (σ `⇒ τ) = let (a , b) , c , d = ty σ , ty τ in suc (a ⊔ b ⊔ c ⊔ d) , suc (a ⊔ b ⊔ c ⊔ d)
+    ty (σ `+ τ) = let (a , b) , c , d = ty σ , ty τ in a ⊔ c , b ⊔ d
+    ty (lift σ) = let a , b = ty σ in suc (a ⊔ b) , suc (a ⊔ b)
 
-  ⟦_⟧ty : (σ : type) → let a , b = level σ in FOApproxSetPSh a b
+    ctx : ctxt → Level × Level
+    ctx ε = 0ℓ , 0ℓ
+    ctx (Γ -, σ) = let (a , b) , c , d = ctx Γ , ty σ in a ⊔ c , b ⊔ d
+
+  ⟦_⟧ty : (σ : type) → let a , b = level.ty σ in FOApproxSetPSh a b
   ⟦ unit ⟧ty = ⊤
   ⟦ num ⟧ty = Disc ℕ
   ⟦ σ `× τ ⟧ty = ⟦ σ ⟧ty ⊗ ⟦ τ ⟧ty
   ⟦ σ `⇒ τ ⟧ty = ⟦ σ ⟧ty ⊸ ⟦ τ ⟧ty
   ⟦ σ `+ τ ⟧ty = ⟦ σ ⟧ty + ⟦ τ ⟧ty
   ⟦ lift σ ⟧ty = ℒ* ⟦ σ ⟧ty
+
+  ⟦_⟧ctxt : (Γ : ctxt) → let a , b = level.ctx Γ in FOApproxSetPSh a b
+  ⟦ ε ⟧ctxt = ⊤
+  ⟦ Γ -, σ ⟧ctxt = ⟦ Γ ⟧ctxt ⊗ ⟦ σ ⟧ty
+
+  ⟦_⟧var : ∀ {Γ τ} → Γ ∋ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
+  ⟦ ze ⟧var = π₂
+  ⟦ su x ⟧var = ⟦ x ⟧var ∘ π₁
