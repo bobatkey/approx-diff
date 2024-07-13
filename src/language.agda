@@ -160,7 +160,7 @@ module presheaf-semantics where
   ⟦ σ `× τ ⟧ty = ⟦ σ ⟧ty ⊗ ⟦ τ ⟧ty
   ⟦ σ `⇒ τ ⟧ty = ⟦ σ ⟧ty ⊸ ⟦ τ ⟧ty
   ⟦ σ `+ τ ⟧ty = ⟦ σ ⟧ty + ⟦ τ ⟧ty
-  ⟦ lift σ ⟧ty = ℒ* ⟦ σ ⟧ty
+  ⟦ lift σ ⟧ty = ℒ* ⟦ σ ⟧ty  -- want ℒ! instead
 
   ⟦_⟧ctxt : (Γ : ctxt) → let a , b = level.ctx Γ in FOApproxSetPSh a b
   ⟦ ε ⟧ctxt = ⊤
