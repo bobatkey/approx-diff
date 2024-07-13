@@ -92,10 +92,10 @@ module _ where
   ⊤ {a} .preserves-∘ _ = 𝟙 a .isEquivalence .refl
   ⊤ {a} .preserves-id _ = 𝟙 a .isEquivalence .refl
 
-  terminal : ∀ {a} {F : FOApproxSetPSh a a} → F ⇒ ⊤
+  terminal : ∀ {a b c} {F : FOApproxSetPSh a b} → F ⇒ ⊤ {c}
   terminal .at X _ = tt
-  terminal {a} .at-resp-≈ X _ = 𝟙 a .isEquivalence .refl
-  terminal {a} .commute f x = 𝟙 a .isEquivalence .refl
+  terminal {c = c} .at-resp-≈ X _ = 𝟙 c .isEquivalence .refl
+  terminal {c = c} .commute f x = 𝟙 c .isEquivalence .refl
 
 -- Products
 _⊗_ : ∀ {a b c d} → FOApproxSetPSh a b → FOApproxSetPSh c d → FOApproxSetPSh (a ⊔ c) (b ⊔ d)
@@ -139,17 +139,19 @@ _+_ : ∀ {a b c d} → FOApproxSetPSh a b → FOApproxSetPSh c d → FOApproxSe
 (F + G) .preserves-id (inj₁ x) .lower = F .preserves-id x
 (F + G) .preserves-id (inj₂ x) .lower = G .preserves-id x
 
-inl : ∀ {a b} {F G : FOApproxSetPSh a b} → F ⇒ (F + G)
+inl : ∀ {a b c d} {F : FOApproxSetPSh a b} {G : FOApproxSetPSh c d} → F ⇒ (F + G)
 inl .at X = inj₁
 inl .at-resp-≈ X x≈y .lower = idₛ x≈y
 inl {F = F} .commute {X} f _ .lower = F .obj X .isEquivalence .refl
 
-inr : ∀ {a b} {F G : FOApproxSetPSh a b} → G ⇒ (F + G)
+inr : ∀ {a b c d} {F : FOApproxSetPSh a b} {G : FOApproxSetPSh c d} → G ⇒ (F + G)
 inr .at X = inj₂
 inr .at-resp-≈ X x≈y .lower = idₛ x≈y
 inr {G = G} .commute {X} f _ .lower = G .obj X .isEquivalence .refl
 
-[_,_] : ∀ {a b} {E F G H : FOApproxSetPSh a b} → (E ⊗ F) ⇒ H → (E ⊗ G) ⇒ H → (E ⊗ (F + G)) ⇒ H
+[_,_] : ∀ {a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂}
+        {E : FOApproxSetPSh a₁ b₁} {F : FOApproxSetPSh c₁ d₁} {G : FOApproxSetPSh a₂ b₂} {H : FOApproxSetPSh c₂ d₂} →
+        (E ⊗ F) ⇒ H → (E ⊗ G) ⇒ H → (E ⊗ (F + G)) ⇒ H
 [ ζ , η ] .at X (x , inj₁ y) = ζ .at X (x , y)
 [ ζ , η ] .at X (x , inj₂ y) = η .at X (x , y)
 [ ζ , η ] .at-resp-≈ X {x₁ , inj₁ y₁} {x₂ , inj₁ y₂} (x₁≈x₂ , y₁≈y₂) = ζ .at-resp-≈ X (x₁≈x₂ , y₁≈y₂ .lower)
@@ -181,7 +183,7 @@ _⊸_ : ∀ {a b c d} → FOApproxSetPSh a b → FOApproxSetPSh c d → FOApprox
 (F ⊸ G) .preserves-id {Y} {Z} {f = f} η .eqat X (x , h) =
   η .at-resp-≈ X (x , ∘ₐ-resp-≃m {f = f} ≃mₐ-refl h)
 
-eval : ∀ {a b} {F : FOApproxSetPSh a b} {G : FOApproxSetPSh a b} → ((F ⊸ G) ⊗ F) ⇒ G
+eval : ∀ {a b c d} {F : FOApproxSetPSh a b} {G : FOApproxSetPSh c d} → ((F ⊸ G) ⊗ F) ⇒ G
 eval .at X (η , x) = η .at X (x , idₐ)
 eval .at-resp-≈ X (η , x) = η .eqat X (x , ≃mₐ-setoid .isEquivalence .refl)
 eval {F = F} {G} .commute {X} {Y} f (η , y) =
@@ -189,7 +191,8 @@ eval {F = F} {G} .commute {X} {Y} f (η , y) =
     (η .at-resp-≈ X (F .obj X .isEquivalence .refl , ≃mₐ-trans (∘ₐ-unitᵣ f) (≃mₐ-sym (∘ₐ-unitₗ f))))
     (η .commute f (y , idₐ))
 
-lambda : ∀ {a b} {F : FOApproxSetPSh a b} {G : FOApproxSetPSh a b} {H : FOApproxSetPSh a b} → (F ⊗ G) ⇒ H → F ⇒ (G ⊸ H)
+lambda : ∀ {a b c d e f} {F : FOApproxSetPSh a b} {G : FOApproxSetPSh c d} {H : FOApproxSetPSh e f} →
+         (F ⊗ G) ⇒ H → F ⇒ (G ⊸ H)
 lambda {F = F} η .at X x .at Y (y , f) = η .at Y (F .map f x , y)
 lambda {F = F} η .at X x .at-resp-≈ Y (y , f) =
   η .at-resp-≈ Y (F .map-resp-≈ f (F .obj X .isEquivalence .refl) , y)
