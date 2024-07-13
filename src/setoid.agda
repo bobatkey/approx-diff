@@ -7,7 +7,7 @@ open import Level
 open import Data.Empty using () renaming (⊥ to 𝟘)
 open import Data.Product using (_×_; _,_; Σ; proj₁; proj₂)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Relation.Binary using (Setoid; IsEquivalence)
+open import Relation.Binary using (Rel; Setoid; IsEquivalence)
 import Relation.Binary.Reasoning.Setoid
 open import Relation.Binary.PropositionalEquality using (_≡_) renaming (refl to ≡-refl)
 open Setoid
@@ -27,6 +27,10 @@ module ≃-Reasoning = Relation.Binary.Reasoning.Setoid
 ⊗-setoid X Y .isEquivalence .sym (_ , x₂≈y₂) .proj₂ = Y .isEquivalence .sym x₂≈y₂
 ⊗-setoid X Y .isEquivalence .trans (x₁≈y₁ , _) (y₁≈z₁ , _) .proj₁ = X .isEquivalence .trans x₁≈y₁ y₁≈z₁
 ⊗-setoid X Y .isEquivalence .trans (_ , x₂≈y₂) (_ , y₂≈z₂) .proj₂ = Y .isEquivalence .trans x₂≈y₂ y₂≈z₂
+
+-- Function to lift a relation to a higher universe level
+liftRel : ∀ {c ℓ₁ ℓ₂} {A : Set c} → Rel A ℓ₁ → Rel A (ℓ₁ ⊔ ℓ₂)
+liftRel {c} {ℓ₁} {ℓ₂} {A} _≈_ x y = Lift ℓ₂ (_≈_ x y)
 
 +-setoid : ∀ {a b} (X : Setoid a b) (Y : Setoid a b) → Setoid a b
 +-setoid X Y .Carrier = X .Carrier ⊎ Y .Carrier
