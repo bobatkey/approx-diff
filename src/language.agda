@@ -134,3 +134,24 @@ module semantics where
   ⟦ case t₁ t₂ s ⟧ = [ ⟦ t₁ ⟧ , ⟦ t₂ ⟧ ] ∘ pair id ⟦ s ⟧
   ⟦ return t ⟧ = ℒ-unit ∘ ⟦ t ⟧
   ⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-map ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id ⟦ s ⟧
+
+module semantics2 where
+  open import Level
+  open import Data.Product using (_×_; _,_)
+  open import fo-approxset-presheaf
+
+  level : type → Level × Level
+  level unit = 0ℓ , 0ℓ
+  level num = 0ℓ , 0ℓ
+  level (σ `× τ) = let (a , b) , c , d = level σ , level τ in a ⊔ c , b ⊔ d
+  level (σ `⇒ τ) = let (a , b) , c , d = level σ , level τ in suc (a ⊔ b ⊔ c ⊔ d) , suc (a ⊔ b ⊔ c ⊔ d)
+  level (σ `+ τ) = let (a , b) , c , d = level σ , level τ in {!   !}
+  level (lift σ) = let a , b = level σ in suc (a ⊔ b) , suc (a ⊔ b)
+
+  ⟦_⟧ty : (σ : type) → let a , b = level σ in FOApproxSetPSh a b
+  ⟦ unit ⟧ty = ⊤
+  ⟦ num ⟧ty = Disc ℕ
+  ⟦ σ `× τ ⟧ty = ⟦ σ ⟧ty ⊗ ⟦ τ ⟧ty
+  ⟦ σ `⇒ τ ⟧ty = ⟦ σ ⟧ty ⊸ ⟦ τ ⟧ty
+  ⟦ σ `+ τ ⟧ty = {!   !} --⟦ σ ⟧ty + ⟦ τ ⟧ty
+  ⟦ lift σ ⟧ty = ℒ* ⟦ σ ⟧ty
