@@ -62,7 +62,10 @@ module _ (I : Set) {A : I → Preorder} (X : (i : I) → MeetSemilattice (A i)) 
   open MeetSemilattice
   open _=>_
 
-  Π : MeetSemilattice (preorder.Π I A)
+  Π-preorder : Preorder
+  Π-preorder = preorder.Π I A
+
+  Π : MeetSemilattice Π-preorder
   Π ._∧_ x₁ x₂ i = X i ._∧_ (x₁ i) (x₂ i)
   Π .⊤ i = X i .⊤
   Π .∧-isMeet .IsMeet.π₁ i = X i .∧-isMeet .IsMeet.π₁
