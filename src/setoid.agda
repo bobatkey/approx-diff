@@ -28,22 +28,20 @@ module ≃-Reasoning = Relation.Binary.Reasoning.Setoid
 ⊗-setoid X Y .isEquivalence .trans (x₁≈y₁ , _) (y₁≈z₁ , _) .proj₁ = X .isEquivalence .trans x₁≈y₁ y₁≈z₁
 ⊗-setoid X Y .isEquivalence .trans (_ , x₂≈y₂) (_ , y₂≈z₂) .proj₂ = Y .isEquivalence .trans x₂≈y₂ y₂≈z₂
 
--- Function to lift a relation to a higher universe level
-liftRel : ∀ {c ℓ₁ ℓ₂} {A : Set c} → Rel A ℓ₁ → Rel A (ℓ₁ ⊔ ℓ₂)
-liftRel {c} {ℓ₁} {ℓ₂} {A} _≈_ x y = Lift ℓ₂ (_≈_ x y)
-
-+-setoid : ∀ {a b} (X : Setoid a b) (Y : Setoid a b) → Setoid a b
++-setoid : ∀ {a b c d} (X : Setoid a b) (Y : Setoid c d) → Setoid (a ⊔ c) (b ⊔ d)
 +-setoid X Y .Carrier = X .Carrier ⊎ Y .Carrier
-+-setoid X Y ._≈_ (inj₁ x) (inj₁ y) = X ._≈_ x y
-+-setoid X Y ._≈_ (inj₂ x) (inj₂ y) = Y ._≈_ x y
++-setoid {a} {b} {c} {d} X Y ._≈_ (inj₁ x) (inj₁ y) = Lift (b ⊔ d) (X ._≈_ x y)
++-setoid {a} {b} {c} {d} X Y ._≈_ (inj₂ x) (inj₂ y) = Lift (b ⊔ d) (Y ._≈_ x y)
 +-setoid X Y ._≈_ (inj₁ x) (inj₂ y) = Lift _ 𝟘
 +-setoid X Y ._≈_ (inj₂ x) (inj₁ y) = Lift _ 𝟘
-+-setoid X Y .isEquivalence .refl {inj₁ x} = X .isEquivalence .refl
-+-setoid X Y .isEquivalence .refl {inj₂ x} = Y .isEquivalence .refl
-+-setoid X Y .isEquivalence .sym {inj₁ x} {inj₁ y} = X .isEquivalence .sym
-+-setoid X Y .isEquivalence .sym {inj₂ x} {inj₂ y} = Y .isEquivalence .sym
-+-setoid X Y .isEquivalence .trans {inj₁ x} {inj₁ y} {inj₁ z} = X .isEquivalence .trans
-+-setoid X Y .isEquivalence .trans {inj₂ x} {inj₂ y} {inj₂ z} = Y .isEquivalence .trans
++-setoid X Y .isEquivalence .refl {inj₁ x} .lower = X .isEquivalence .refl
++-setoid X Y .isEquivalence .refl {inj₂ x} .lower = Y .isEquivalence .refl
++-setoid X Y .isEquivalence .sym {inj₁ x} {inj₁ y} x≈y .lower = X .isEquivalence .sym (x≈y .lower)
++-setoid X Y .isEquivalence .sym {inj₂ x} {inj₂ y} x≈y .lower = Y .isEquivalence .sym (x≈y .lower)
++-setoid X Y .isEquivalence .trans {inj₁ x} {inj₁ y} {inj₁ z} x≈y y≈z .lower =
+  X .isEquivalence .trans (x≈y .lower) (y≈z .lower)
++-setoid X Y .isEquivalence .trans {inj₂ x} {inj₂ y} {inj₂ z} x≈y y≈z .lower =
+  Y .isEquivalence .trans (x≈y .lower) (y≈z .lower)
 
 {-
 record _⇒_ {a b} (X Y : Setoid a b) : Set (a ⊔ b) where
