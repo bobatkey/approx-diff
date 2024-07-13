@@ -128,32 +128,32 @@ pair ζ η .commute f x .proj₁ = ζ .commute f x
 pair ζ η .commute f x .proj₂ = η .commute f x
 
 -- Sums
-_+_ : ∀ {a b} → FOApproxSetPSh a b → FOApproxSetPSh a b → FOApproxSetPSh a b
+_+_ : ∀ {a b c d} → FOApproxSetPSh a b → FOApproxSetPSh c d → FOApproxSetPSh (a ⊔ c) (b ⊔ d)
 (F + G) .obj X = +-setoid (F .obj X) (G .obj X)
 (F + G) .map f (inj₁ x) = inj₁ (F .map f x)
 (F + G) .map f (inj₂ x) = inj₂ (G .map f x)
-(F + G) .map-resp-≈ f {inj₁ x} {inj₁ y} = F .map-resp-≈ f
-(F + G) .map-resp-≈ f {inj₂ x} {inj₂ y} = G .map-resp-≈ f
-(F + G) .preserves-∘ (inj₁ x) = F .preserves-∘ x
-(F + G) .preserves-∘ (inj₂ x) = G .preserves-∘ x
-(F + G) .preserves-id (inj₁ x) = F .preserves-id x
-(F + G) .preserves-id (inj₂ x) = G .preserves-id x
+(F + G) .map-resp-≈ f {inj₁ x} {inj₁ y} x≈y .lower = F .map-resp-≈ f (x≈y .lower)
+(F + G) .map-resp-≈ f {inj₂ x} {inj₂ y} x≈y .lower = G .map-resp-≈ f (x≈y .lower)
+(F + G) .preserves-∘ (inj₁ x) .lower = F .preserves-∘ x
+(F + G) .preserves-∘ (inj₂ x) .lower = G .preserves-∘ x
+(F + G) .preserves-id (inj₁ x) .lower = F .preserves-id x
+(F + G) .preserves-id (inj₂ x) .lower = G .preserves-id x
 
 inl : ∀ {a b} {F G : FOApproxSetPSh a b} → F ⇒ (F + G)
 inl .at X = inj₁
-inl .at-resp-≈ X = idₛ
-inl {F = F} .commute {X} f _ = F .obj X .isEquivalence .refl
+inl .at-resp-≈ X x≈y .lower = idₛ x≈y
+inl {F = F} .commute {X} f _ .lower = F .obj X .isEquivalence .refl
 
 inr : ∀ {a b} {F G : FOApproxSetPSh a b} → G ⇒ (F + G)
 inr .at X = inj₂
-inr .at-resp-≈ X = idₛ
-inr {G = G} .commute {X} f _ = G .obj X .isEquivalence .refl
+inr .at-resp-≈ X x≈y .lower = idₛ x≈y
+inr {G = G} .commute {X} f _ .lower = G .obj X .isEquivalence .refl
 
 [_,_] : ∀ {a b} {E F G H : FOApproxSetPSh a b} → (E ⊗ F) ⇒ H → (E ⊗ G) ⇒ H → (E ⊗ (F + G)) ⇒ H
 [ ζ , η ] .at X (x , inj₁ y) = ζ .at X (x , y)
 [ ζ , η ] .at X (x , inj₂ y) = η .at X (x , y)
-[ ζ , η ] .at-resp-≈ X {x₁ , inj₁ y₁} {x₂ , inj₁ y₂} = ζ .at-resp-≈ X
-[ ζ , η ] .at-resp-≈ X {x₁ , inj₂ y₁} {x₂ , inj₂ y₂} = η .at-resp-≈ X
+[ ζ , η ] .at-resp-≈ X {x₁ , inj₁ y₁} {x₂ , inj₁ y₂} (x₁≈x₂ , y₁≈y₂) = ζ .at-resp-≈ X (x₁≈x₂ , y₁≈y₂ .lower)
+[ ζ , η ] .at-resp-≈ X {x₁ , inj₂ y₁} {x₂ , inj₂ y₂} (x₁≈x₂ , y₁≈y₂) = η .at-resp-≈ X ((x₁≈x₂ , y₁≈y₂ .lower))
 [ ζ , η ] .commute f (x , inj₁ y) = ζ .commute f (x , y)
 [ ζ , η ] .commute f (x , inj₂ y) = η .commute f (x , y)
 
@@ -237,16 +237,16 @@ module _ where
   open import Relation.Binary using (Decidable; Rel)
   open import Relation.Nullary
 
-  binPred : ∀ {a b A} {_∼_ : Rel A b} → Decidable _∼_ → Disc (A × A) ⇒ (⊤ {a} + ⊤)
+  binPred : ∀ {a b A} {_∼_ : Rel A b} → Decidable _∼_ → Disc (A × A) ⇒ (⊤ {a} + ⊤ {a})
   binPred _∼_ .at X (x , y) with x ∼ y
   ... | yes _ = inj₁ tt
   ... | no _ = inj₂ tt
   binPred _∼_ .at-resp-≈ X {x , y} ≡-refl with x ∼ y
-  ... | yes _ = ≡-refl
-  ... | no _ = ≡-refl
+  ... | yes _ = lift ≡-refl
+  ... | no _ = lift ≡-refl
   binPred _∼_ .commute f (x , y) with x ∼ y
-  ... | yes _ = ≡-refl
-  ... | no _ = ≡-refl
+  ... | yes _ = lift ≡-refl
+  ... | no _ = lift ≡-refl
 
 -- Hom(ℒ -, X)
 よℒ : FOApproxSet → FOApproxSetPSh 0ℓ 0ℓ
