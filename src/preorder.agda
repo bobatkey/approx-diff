@@ -61,3 +61,13 @@ module _ where
   (X × Y) .≤-isPreorder .IsPreorder.refl = (X .≤-refl) , (Y .≤-refl)
   (X × Y) .≤-isPreorder .IsPreorder.trans (x₁≤y₁ , x₂≤y₂) (y₁≤z₁ , y₂≤z₂) =
     (X .≤-trans x₁≤y₁ y₁≤z₁) , (Y .≤-trans x₂≤y₂ y₂≤z₂)
+
+-- Arbitrary products
+module _ (I : Set) (A : I → Preorder) where
+  open Preorder
+
+  Π : Preorder
+  Π .Carrier = ∀ i → A i .Carrier
+  Π ._≤_ x₁ x₂ = ∀ i → A i ._≤_ (x₁ i) (x₂ i)
+  Π .≤-isPreorder .IsPreorder.refl i = A i .≤-refl
+  Π .≤-isPreorder .IsPreorder.trans x≤y y≤z i = A i .≤-trans (x≤y i) (y≤z i)

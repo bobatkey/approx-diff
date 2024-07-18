@@ -134,3 +134,59 @@ module semantics where
   ⟦ case t₁ t₂ s ⟧ = [ ⟦ t₁ ⟧ , ⟦ t₂ ⟧ ] ∘ pair id ⟦ s ⟧
   ⟦ return t ⟧ = ℒ-unit ∘ ⟦ t ⟧
   ⟦ bind s t ⟧ = ((ℒ-join ∘ ℒ-map ⟦ t ⟧) ∘ ℒ-strength) ∘ pair id ⟦ s ⟧
+
+module presheaf-semantics where
+  open import Level
+  open import Data.Product using (_×_; _,_)
+  open import fo-approxset-presheaf
+
+  -- Universe level boilerplate..might be a better way
+  module level where
+    ty : type → Level × Level
+    ty unit = 0ℓ , 0ℓ
+    ty num = 0ℓ , 0ℓ
+    ty (σ `× τ) = let (a , b) , c , d = ty σ , ty τ in a ⊔ c , b ⊔ d
+    ty (σ `⇒ τ) = let (a , b) , c , d = ty σ , ty τ in suc (a ⊔ b ⊔ c ⊔ d) , suc (a ⊔ b ⊔ c ⊔ d)
+    ty (σ `+ τ) = let (a , b) , c , d = ty σ , ty τ in a ⊔ c , b ⊔ d
+    ty (lift σ) = let a , b = ty σ in suc (a ⊔ b) , suc (a ⊔ b)
+
+    ctx : ctxt → Level × Level
+    ctx ε = 0ℓ , 0ℓ
+    ctx (Γ -, σ) = let (a , b) , c , d = ctx Γ , ty σ in a ⊔ c , b ⊔ d
+
+  ⟦_⟧ty : (σ : type) → let a , b = level.ty σ in FOApproxSetPSh a b
+  ⟦ unit ⟧ty = ⊤
+  ⟦ num ⟧ty = Disc ℕ
+  ⟦ σ `× τ ⟧ty = ⟦ σ ⟧ty ⊗ ⟦ τ ⟧ty
+  ⟦ σ `⇒ τ ⟧ty = ⟦ σ ⟧ty ⊸ ⟦ τ ⟧ty
+  ⟦ σ `+ τ ⟧ty = ⟦ σ ⟧ty + ⟦ τ ⟧ty
+  ⟦ lift σ ⟧ty = ℒ* ⟦ σ ⟧ty  -- want ℒ! instead
+
+  ⟦_⟧ctxt : (Γ : ctxt) → let a , b = level.ctx Γ in FOApproxSetPSh a b
+  ⟦ ε ⟧ctxt = ⊤
+  ⟦ Γ -, σ ⟧ctxt = ⟦ Γ ⟧ctxt ⊗ ⟦ σ ⟧ty
+
+  ⟦_⟧var : ∀ {Γ τ} → Γ ∋ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
+  ⟦ ze ⟧var = π₂
+  ⟦ su x ⟧var = ⟦ x ⟧var ∘ π₁
+
+  binOp : (ℕ → ℕ → ℕ) → (Disc ℕ ⊗ Disc ℕ) ⇒ Disc ℕ
+  binOp f = (Disc-f λ (x , y) → f x y) ∘ Disc-reflects-products
+
+  ⟦_⟧ : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
+  ⟦ var x ⟧ = ⟦ x ⟧var
+  ⟦ unit ⟧ = terminal
+  ⟦ nat n ⟧ = Disc-const {0ℓ} n ∘ terminal
+  ⟦ plus s t ⟧ = binOp Data.Nat._+_ ∘ pair ⟦ s ⟧ ⟦ t ⟧
+  ⟦ times s t ⟧ = binOp Data.Nat._*_ ∘ pair ⟦ s ⟧ ⟦ t ⟧
+  ⟦ eq s t ⟧ = (binPred _≟_ ∘ Disc-reflects-products) ∘ pair ⟦ s ⟧ ⟦ t ⟧
+  ⟦ lam t ⟧ = lambda ⟦ t ⟧
+  ⟦ app s t ⟧ = eval ∘ pair ⟦ s ⟧ ⟦ t ⟧
+  ⟦ fst t ⟧ = π₁ ∘ ⟦ t ⟧
+  ⟦ snd t ⟧ = π₂ ∘ ⟦ t ⟧
+  ⟦ mkPair s t ⟧ = pair ⟦ s ⟧ ⟦ t ⟧
+  ⟦ inj₁ t ⟧ = inl ∘ ⟦ t ⟧
+  ⟦ inj₂ t ⟧ = inr ∘ ⟦ t ⟧
+  ⟦ case t₁ t₂ s ⟧ = [ ⟦ t₁ ⟧ , ⟦ t₂ ⟧ ] ∘ pair id ⟦ s ⟧
+  ⟦ return t ⟧ = ℒ*-unit ∘ ⟦ t ⟧
+  ⟦ bind s t ⟧ = ((ℒ*-join ∘ ℒ*-map ⟦ t ⟧) ∘ ℒ*-strength) ∘ pair id ⟦ s ⟧

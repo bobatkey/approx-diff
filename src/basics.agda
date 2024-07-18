@@ -3,43 +3,8 @@
 module basics where
 
 open import Level
-open import Data.Empty using () renaming (⊥ to 𝟘)
-open import Data.Product using (_×_; _,_; proj₁; proj₂)
-open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ)
 open import Relation.Binary using (Setoid; IsEquivalence)
-
--- Some setoid gunk that is probably in stdlib somewhere
-module _ where
-  open Setoid
-  open import Relation.Binary.PropositionalEquality using (_≡_) renaming (refl to ≡-refl)
-  open IsEquivalence
-
-  ≡-to-≈ : ∀ {a b} (X : Setoid a b) {x y : X .Carrier} → x ≡ y → X ._≈_ x y
-  ≡-to-≈ X {x} {.x} ≡-refl = X .isEquivalence .refl
-
-  -- Slightly less general in universe level than they could be, but sufficient for our purposes
-  ⊗-setoid : ∀ {a b} → Setoid a a → Setoid b b → Setoid (a ⊔ b) (a ⊔ b)
-  ⊗-setoid X Y .Carrier = X .Carrier × Y .Carrier
-  ⊗-setoid X Y ._≈_ (x₁ , y₁) (x₂ , y₂) = X ._≈_ x₁ x₂ × Y ._≈_ y₁ y₂
-  ⊗-setoid X Y .isEquivalence .refl .proj₁ = X .isEquivalence .refl
-  ⊗-setoid X Y .isEquivalence .refl .proj₂ = Y .isEquivalence .refl
-  ⊗-setoid X Y .isEquivalence .sym (x₁≈y₁ , _) .proj₁ = X .isEquivalence .sym x₁≈y₁
-  ⊗-setoid X Y .isEquivalence .sym (_ , x₂≈y₂) .proj₂ = Y .isEquivalence .sym x₂≈y₂
-  ⊗-setoid X Y .isEquivalence .trans (x₁≈y₁ , _) (y₁≈z₁ , _) .proj₁ = X .isEquivalence .trans x₁≈y₁ y₁≈z₁
-  ⊗-setoid X Y .isEquivalence .trans (_ , x₂≈y₂) (_ , y₂≈z₂) .proj₂ = Y .isEquivalence .trans x₂≈y₂ y₂≈z₂
-
-  +-setoid : ∀ {a} (X : Setoid a a) (Y : Setoid a a) → Setoid a a
-  +-setoid X Y .Carrier = X .Carrier ⊎ Y .Carrier
-  +-setoid X Y ._≈_ (inj₁ x) (inj₁ y) = X ._≈_ x y
-  +-setoid X Y ._≈_ (inj₂ x) (inj₂ y) = Y ._≈_ x y
-  +-setoid X Y ._≈_ (inj₁ x) (inj₂ y) = Lift _ 𝟘
-  +-setoid X Y ._≈_ (inj₂ x) (inj₁ y) = Lift _ 𝟘
-  +-setoid X Y .isEquivalence .refl {inj₁ x} = X .isEquivalence .refl
-  +-setoid X Y .isEquivalence .refl {inj₂ x} = Y .isEquivalence .refl
-  +-setoid X Y .isEquivalence .sym {inj₁ x} {inj₁ y} = X .isEquivalence .sym
-  +-setoid X Y .isEquivalence .sym {inj₂ x} {inj₂ y} = Y .isEquivalence .sym
-  +-setoid X Y .isEquivalence .trans {inj₁ x} {inj₁ y} {inj₁ z} = X .isEquivalence .trans
-  +-setoid X Y .isEquivalence .trans {inj₂ x} {inj₂ y} {inj₂ z} = Y .isEquivalence .trans
 
 -- Also should be in stdlib somewhere
 module _ where

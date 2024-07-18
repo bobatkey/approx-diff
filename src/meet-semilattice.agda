@@ -63,10 +63,7 @@ module _ (I : Set) {A : I → Preorder} (X : (i : I) → MeetSemilattice (A i)) 
   open _=>_
 
   Π-preorder : Preorder
-  Π-preorder .Carrier = ∀ i → A i .Carrier
-  Π-preorder ._≤_ x₁ x₂ = ∀ i → A i ._≤_ (x₁ i) (x₂ i)
-  Π-preorder .≤-isPreorder .IsPreorder.refl i = A i .≤-refl
-  Π-preorder .≤-isPreorder .IsPreorder.trans x≤y y≤z i = A i .≤-trans (x≤y i) (y≤z i)
+  Π-preorder = preorder.Π I A
 
   Π : MeetSemilattice Π-preorder
   Π ._∧_ x₁ x₂ i = X i ._∧_ (x₁ i) (x₂ i)
