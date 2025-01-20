@@ -51,7 +51,7 @@ open import meet-semilattice
 record ApproxSet : Set (suc 0ℓ) where
   field
     elem    : Set
-    forder : elem -> Preorder
+    forder : elem → Preorder
     rorder : elem → Preorder
     fapprox : (x : elem) → MeetSemilattice (forder x)
     rapprox : (x : elem) → JoinSemilattice (rorder x)
