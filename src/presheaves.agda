@@ -7,6 +7,7 @@ open import prop
 open import prop-setoid
   using (IsEquivalence; Setoid; 𝟙; +-setoid; ⊗-setoid; idS; _∘S_; module ≈-Reasoning; ∘S-cong)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_; ≃m-isEquivalence to ≈s-isEquivalence)
+open import setoid-cat
 
 module presheaves {o m e} os es (𝒞 : Category o m e) where
 
@@ -129,40 +130,53 @@ module _ where
       pairS (idS _ ∘S project₁) (idS _ ∘S project₂)
     ≈⟨ prop-setoid.pair-cong prop-setoid.id-left prop-setoid.id-left ⟩
       pairS project₁ project₂
-    ≈⟨ {!!} ⟩
+    ≈⟨ pair-ext0 (Setoid-products _ _) ⟩
       idS (⊗-setoid (F .fobj x) (G .fobj x))
     ∎ where open ≈-Reasoning ≈s-isEquivalence
-  (F ⊗ G) .fmap-∘ f g = {!!}
+  (F ⊗ G) .fmap-∘ f g ._≈s_.func-eq (x₁≈x₂ , y₁≈y₂) .proj₁ = F .fmap-∘ _ _ ._≈s_.func-eq x₁≈x₂
+  (F ⊗ G) .fmap-∘ f g ._≈s_.func-eq (x₁≈x₂ , y₁≈y₂) .proj₂ = G .fmap-∘ _ _ ._≈s_.func-eq y₁≈y₂
 
   products : HasProducts cat
   products .prod = _⊗_
   products .p₁ .transf x = project₁
-  products .p₁ .natural f = {!!}
+  products .p₁ {X} {Y} .natural f ._≈s_.func-eq (x₁≈x₂ , y₁≈y₂) = X .fmap f ._⇒s_.func-resp-≈ x₁≈x₂
   products .p₂ .transf x = project₂
-  products .p₂ .natural = {!!}
+  products .p₂ {X} {Y} .natural f ._≈s_.func-eq (x₁≈x₂ , y₁≈y₂) = Y .fmap f ._⇒s_.func-resp-≈ y₁≈y₂
   products .pair α β .transf x = pairS (α .transf x) (β .transf x)
-  products .pair {F}{G}{H} α β .natural f = {!!}
+  products .pair {F} {G} {H} α β .natural f ._≈s_.func-eq x₁≈x₂ .proj₁ = α .natural f ._≈s_.func-eq x₁≈x₂
+  products .pair {F} {G} {H} α β .natural f ._≈s_.func-eq x₁≈x₂ .proj₂ = β .natural f ._≈s_.func-eq x₁≈x₂
+  products .pair-cong e₁ e₂ .transf-eq x = prop-setoid.pair-cong (e₁ .transf-eq x) (e₂ .transf-eq x)
+  products .pair-p₁ f g .transf-eq x = Setoid-products _ _ .pair-p₁ _ _
+  products .pair-p₂ f g .transf-eq x = Setoid-products _ _ .pair-p₂ _ _
+  products .pair-ext f .transf-eq x = Setoid-products _ _ .pair-ext _
 
   open HasStrongCoproducts
+  open import Data.Sum using (_⊎_; inj₁; inj₂)
 
   _+_ : PreSheaf → PreSheaf → PreSheaf
   (F + G) .fobj x = +-setoid (F .fobj x) (G .fobj x)
   (F + G) .fmap f =
     prop-setoid.copair (prop-setoid.inject₁ ∘S (F .fmap f))
                        (prop-setoid.inject₂ ∘S (G .fmap f))
-  (F + G) .fmap-cong f≈g = {!!}
-  (F + G) .fmap-id x = {!!}
-  (F + G) .fmap-∘ f g = {!!}
+  (F + G) .fmap-cong f≈g ._≈s_.func-eq {inj₁ x} {inj₁ x₁} (lift e) = lift (F .fmap-cong f≈g ._≈s_.func-eq e)
+  (F + G) .fmap-cong f≈g ._≈s_.func-eq {inj₂ y} {inj₂ y₁} (lift e) = lift (G .fmap-cong f≈g ._≈s_.func-eq e)
+  (F + G) .fmap-id x ._≈s_.func-eq {inj₁ x₁} {inj₁ x₂} (lift e) = lift (F .fmap-id x ._≈s_.func-eq e)
+  (F + G) .fmap-id x ._≈s_.func-eq {inj₂ y₁} {inj₂ y₂} (lift e) = lift (G .fmap-id x ._≈s_.func-eq e)
+  (F + G) .fmap-∘ f g ._≈s_.func-eq {inj₁ x} {inj₁ x₁} (lift e) = lift (F .fmap-∘ f g ._≈s_.func-eq e)
+  (F + G) .fmap-∘ f g ._≈s_.func-eq {inj₂ y} {inj₂ y₁} (lift e) = lift (G .fmap-∘ f g ._≈s_.func-eq e)
 
   strongCoproducts : HasStrongCoproducts cat products
   strongCoproducts .coprod = _+_
   strongCoproducts .in₁ .transf x = prop-setoid.inject₁
-  strongCoproducts .in₁ .natural f = {!!}
+  strongCoproducts .in₁ {F}{G} .natural f ._≈s_.func-eq x₁≈x₂ = lift (F .fmap f ._⇒s_.func-resp-≈ x₁≈x₂)
   strongCoproducts .in₂ .transf x = prop-setoid.inject₂
-  strongCoproducts .in₂ .natural = {!!}
+  strongCoproducts .in₂ {F}{G} .natural f ._≈s_.func-eq x₁≈x₂ = lift (G .fmap f ._⇒s_.func-resp-≈ x₁≈x₂)
   strongCoproducts .copair {F}{G}{H}{I} α β .transf x =
     prop-setoid.case (α .transf x) (β .transf x)
-  strongCoproducts .copair {F}{G}{H}{I} α β .natural f = {!!}
+  strongCoproducts .copair {F} {G} {H} {I} α β .natural f ._≈s_.func-eq {x₁ , inj₁ x} {x₂ , inj₁ x₃} (x₁≈x₂ , lift e) = α .natural f ._≈s_.func-eq (x₁≈x₂ , e)
+  strongCoproducts .copair {F} {G} {H} {I} α β .natural f ._≈s_.func-eq {x₁ , inj₂ y} {x₂ , inj₂ y₁} (x₁≈x₂ , lift e) = β .natural f ._≈s_.func-eq (x₁≈x₂ , e)
+
+  -- FIXME: equations for strong coproducts
 
 -- Yoneda embedding and exponentials
 module _ where
