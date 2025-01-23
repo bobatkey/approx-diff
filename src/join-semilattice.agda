@@ -1,13 +1,14 @@
-{-# OPTIONS --postfix-projections --safe --without-K #-}
+{-# OPTIONS --postfix-projections --safe --prop #-}
 
 module join-semilattice where
 
 open import Data.Product using (proj₁; proj₂; _,_)
 open import Data.Unit using (tt) renaming (⊤ to Unit)
 open import Level
-open import Relation.Binary using (IsEquivalence)
 open import basics
+open import prop renaming (⊥ to ⊥p)
 open import preorder using (Preorder; _×_)
+open import prop-setoid using (IsEquivalence)
 
 record JoinSemilattice (A : Preorder) : Set (suc 0ℓ) where
   no-eta-equality
@@ -19,10 +20,11 @@ record JoinSemilattice (A : Preorder) : Set (suc 0ℓ) where
     ∨-isJoin     : IsJoin (A .≤-isPreorder) _∨_
     ⊥-isBottom   : IsBottom (A .≤-isPreorder) ⊥
 
-  open IsEquivalence (isEquivalenceOf (A .≤-isPreorder)) renaming (refl to ≃-refl; sym to ≃-sym) public
-
 module _ {A B : Preorder} where
   open Preorder
+  private
+    module A = Preorder A
+    module B = Preorder B
 
   record _=>_ (X : JoinSemilattice A) (Y : JoinSemilattice B) : Set where
     open JoinSemilattice
@@ -32,10 +34,19 @@ module _ {A B : Preorder} where
       ∨-preserving : ∀ {x x'} → B ._≤_ (func (X ._∨_ x x')) (Y ._∨_ (func x) (func x'))
       ⊥-preserving : B ._≤_ (func (X .⊥)) (Y .⊥)
 
-  record _≃m_ {X : JoinSemilattice A} {Y : JoinSemilattice B} (f g : X => Y) : Set where
+  record _≃m_ {X : JoinSemilattice A} {Y : JoinSemilattice B} (f g : X => Y) : Prop where
     open _=>_
     field
       eqfunc : ∀ x → _≃_ B (f .func x) (g .func x)
+
+  open _≃m_
+
+  open IsEquivalence
+
+  ≃m-isEquivalence : ∀ {X Y} → IsEquivalence (_≃m_ {X} {Y})
+  ≃m-isEquivalence .refl .eqfunc x = B.≃-refl
+  ≃m-isEquivalence .sym e .eqfunc x = B.≃-sym (e .eqfunc x)
+  ≃m-isEquivalence .trans e₁ e₂ .eqfunc x = B.≃-trans (e₁ .eqfunc x) (e₂ .eqfunc x)
 
 module _ where
   open JoinSemilattice
@@ -47,7 +58,8 @@ module _ where
   id {X} .∨-preserving = X .≤-refl
   id {X} .⊥-preserving = X .≤-refl
 
-  _∘_ : ∀ {A B C}{X : JoinSemilattice A}{Y : JoinSemilattice B}{Z : JoinSemilattice C} → Y => Z → X => Y → X => Z
+  _∘_ : ∀ {A B C}{X : JoinSemilattice A}{Y : JoinSemilattice B}{Z : JoinSemilattice C} →
+           Y => Z → X => Y → X => Z
   (f ∘ g) .func x = f .func (g .func x)
   (f ∘ g) .monotone x≤x' = f .monotone (g .monotone x≤x')
   _∘_ {C = C} f g .∨-preserving = C .≤-trans (f .monotone (g .∨-preserving)) (f .∨-preserving)
@@ -170,21 +182,22 @@ module _ where
   L-coassoc : ∀ {A}{X : JoinSemilattice A} → (L-map L-dup ∘ L-dup) ≃m (L-dup ∘ L-dup {X = X})
   L-coassoc ._≃m_.eqfunc bottom .proj₁ = tt
   L-coassoc ._≃m_.eqfunc bottom .proj₂ = tt
-  L-coassoc {X = X} ._≃m_.eqfunc < x > = X. ≃-refl
+  L-coassoc {A} ._≃m_.eqfunc < x > = A .≃-refl
 
   L-unit1 : ∀ {A}{X : JoinSemilattice A} → (L-counit ∘ L-dup) ≃m id {X = L X}
   L-unit1 ._≃m_.eqfunc bottom .proj₁ = tt
   L-unit1 ._≃m_.eqfunc bottom .proj₂ = tt
-  L-unit1 {X = X} ._≃m_.eqfunc < x > = X. ≃-refl
+  L-unit1 {A} ._≃m_.eqfunc < x > = A .≃-refl
 
   L-unit2 : ∀ {A}{X : JoinSemilattice A} → (L-map L-counit ∘ L-dup) ≃m id {X = L X}
   L-unit2 ._≃m_.eqfunc bottom .proj₁ = tt
   L-unit2 ._≃m_.eqfunc bottom .proj₂ = tt
-  L-unit2 {X = X} ._≃m_.eqfunc < x > = X. ≃-refl
+  L-unit2 {A} ._≃m_.eqfunc < x > = A .≃-refl
 
 ------------------------------------------------------------------------------
 -- Set-wide direct sums of JoinSemilattices
 module _ (I : Set) {A : I -> Preorder} (X : (i : I) → JoinSemilattice (A i)) where
+    -- Now where I is a Setoid, and (A,X) is a family of JoinSemilattices respecting equality
   open JoinSemilattice
   open _=>_
 
@@ -206,23 +219,23 @@ module _ (I : Set) {A : I -> Preorder} (X : (i : I) → JoinSemilattice (A i)) w
 
   ⨁-preorder : Preorder
   ⨁-preorder .Carrier = FormalJoin
-  ⨁-preorder ._≤_ = _≤f_
-  ⨁-preorder .≤-isPreorder .IsPreorder.refl = ≤f-refl
-  ⨁-preorder .≤-isPreorder .IsPreorder.trans = ≤f-trans
+  ⨁-preorder ._≤_ j₁ j₂ = LiftS 0ℓ (j₁ ≤f j₂)
+  ⨁-preorder .≤-isPreorder .IsPreorder.refl {x} = liftS (≤f-refl {x})
+  ⨁-preorder .≤-isPreorder .IsPreorder.trans (liftS x) (liftS y) = liftS (≤f-trans x y)
 
   ⨁ : JoinSemilattice ⨁-preorder
   ⨁ ._∨_ = join
   ⨁ .⊥ = bot
-  ⨁ .∨-isJoin .IsJoin.inl = ≤f-inl
-  ⨁ .∨-isJoin .IsJoin.inr = ≤f-inr
-  ⨁ .∨-isJoin .IsJoin.[_,_] = ≤f-case
-  ⨁ .⊥-isBottom .IsBottom.≤-bottom = ≤f-bot
+  ⨁ .∨-isJoin .IsJoin.inl = liftS ≤f-inl
+  ⨁ .∨-isJoin .IsJoin.inr = liftS ≤f-inr
+  ⨁ .∨-isJoin .IsJoin.[_,_] (liftS x) (liftS y) = liftS (≤f-case x y)
+  ⨁ .⊥-isBottom .IsBottom.≤-bottom = liftS ≤f-bot
 
   inj-⨁ : (i : I) → X i => ⨁
   inj-⨁ i .func x = el i x
-  inj-⨁ i .monotone = ≤f-el-mono i
-  inj-⨁ i .∨-preserving = ≤f-el-join i
-  inj-⨁ i .⊥-preserving = ≤f-el-bot i
+  inj-⨁ i .monotone x = liftS (≤f-el-mono i x)
+  inj-⨁ i .∨-preserving = liftS (≤f-el-join i)
+  inj-⨁ i .⊥-preserving = liftS (≤f-el-bot i)
 
   module _ {B} (Z : JoinSemilattice B) (X=>Z : ∀ i → X i => Z) where
     open IsJoin (Z .∨-isJoin)
@@ -247,7 +260,7 @@ module _ (I : Set) {A : I -> Preorder} (X : (i : I) → JoinSemilattice (A i)) w
 
     elim-⨁ : ⨁ => Z
     elim-⨁ .func = elim-⨁-func
-    elim-⨁ .monotone = elim-⨁-func-monotone
+    elim-⨁ .monotone (liftS x) = elim-⨁-func-monotone x
     elim-⨁ .∨-preserving = B .≤-refl
     elim-⨁ .⊥-preserving = B .≤-refl
 
@@ -312,13 +325,13 @@ module _ where
 
   -- Biproduct properties
   proj₁-inverts-inj₁ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (project₁ {X = X}{Y} ∘ inject₁) ≃m id
-  proj₁-inverts-inj₁ {X = X} ._≃m_.eqfunc x = ≃-refl X
+  proj₁-inverts-inj₁ {A} ._≃m_.eqfunc x = ≃-refl A
 
   proj₂-inverts-inj₂ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (project₁ {X = X}{Y} ∘ inject₁) ≃m id
-  proj₂-inverts-inj₂ {X = X} ._≃m_.eqfunc x = ≃-refl X
+  proj₂-inverts-inj₂ {A} ._≃m_.eqfunc x = ≃-refl A
 
   proj₁-zeroes-inj₂ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (project₁ {X = X}{Y} ∘ inject₂) ≃m ⊥-map
-  proj₁-zeroes-inj₂ {X = X} ._≃m_.eqfunc x = ≃-refl X
+  proj₁-zeroes-inj₂ {A} ._≃m_.eqfunc x = ≃-refl A
 
   proj₂-zeroes-inj₁ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (project₂ {X = X}{Y} ∘ inject₁) ≃m ⊥-map
-  proj₂-zeroes-inj₁ {X = X}{Y} ._≃m_.eqfunc x = ≃-refl Y
+  proj₂-zeroes-inj₁ {A}{B} ._≃m_.eqfunc x = ≃-refl B

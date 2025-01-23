@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --safe --without-K #-}
+{-# OPTIONS --postfix-projections --safe --prop #-}
 
 module fo-approxset where
 
@@ -6,9 +6,11 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Unit using (tt)
 open import Level
-open import Relation.Binary using (Setoid; IsEquivalence)
+-- open import Relation.Binary using (Setoid; IsEquivalence)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
-open Setoid using (Carrier; _≈_; isEquivalence)
+-- open Setoid using (Carrier; _≈_; isEquivalence)
+open import prop
+open import prop-setoid renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_)
 open import basics
 open import preorder using (Preorder; L)
 open import meet-semilattice
@@ -50,6 +52,8 @@ record _≃m_ {X Y : FOApproxSet} (f g : X ⇒ Y) : Set where
 open _≃m_
 
 module _ {X Y : FOApproxSet} where
+  open Setoid
+
   ≃m-setoid : Setoid 0ℓ 0ℓ
   ≃m-setoid .Carrier = X ⇒ Y
   ≃m-setoid ._≈_ f g = f ≃m g

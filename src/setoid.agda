@@ -7,9 +7,12 @@ open import Level
 open import Data.Empty using () renaming (⊥ to 𝟘)
 open import Data.Product using (_×_; _,_; Σ; proj₁; proj₂)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Data.Unit using (⊤; tt)
 open import Relation.Binary using (Rel; Setoid; IsEquivalence)
 import Relation.Binary.Reasoning.Setoid
-open import Relation.Binary.PropositionalEquality using (_≡_) renaming (refl to ≡-refl)
+open import Relation.Binary.PropositionalEquality
+   using (_≡_)
+   renaming (refl to ≡-refl; sym to ≡-sym; trans to ≡-trans)
 open Setoid
 open IsEquivalence
 
@@ -17,6 +20,25 @@ module ≃-Reasoning = Relation.Binary.Reasoning.Setoid
 
 ≡-to-≈ : ∀ {a b} (X : Setoid a b) {x y : X .Carrier} → x ≡ y → X ._≈_ x y
 ≡-to-≈ X {x} {.x} ≡-refl = X .isEquivalence .refl
+
+record _⇒_ {a b} (X Y : Setoid a b) : Set (a ⊔ b) where
+  field
+    func : X .Carrier → Y .Carrier
+    func-resp-≈ : ∀ {x y} → X ._≈_ x y → Y ._≈_ (func x) (func y)
+
+ofSet : ∀ {a} → Set a → Setoid a a
+ofSet X .Carrier = X
+ofSet X ._≈_ = _≡_
+ofSet X .isEquivalence .refl = ≡-refl
+ofSet X .isEquivalence .sym = ≡-sym
+ofSet X .isEquivalence .trans = ≡-trans
+
+⊤-setoid : ∀ {a b} → Setoid a b
+⊤-setoid .Carrier = Lift _ ⊤
+⊤-setoid ._≈_ _ _ = Lift _ ⊤
+⊤-setoid .isEquivalence .refl = lift tt
+⊤-setoid .isEquivalence .sym _ = lift tt
+⊤-setoid .isEquivalence .trans _ _ = lift tt
 
 ⊗-setoid : ∀ {a b c d} → Setoid a b → Setoid c d → Setoid (a ⊔ c) (b ⊔ d)
 ⊗-setoid X Y .Carrier = X .Carrier × Y .Carrier
@@ -44,12 +66,6 @@ module ≃-Reasoning = Relation.Binary.Reasoning.Setoid
   Y .isEquivalence .trans (x≈y .lower) (y≈z .lower)
 
 {-
-record _⇒_ {a b} (X Y : Setoid a b) : Set (a ⊔ b) where
-  field
-    func : X .Carrier → Y .Carrier
-    func-resp-≈ : ∀ {x y} → X ._≈_ x y → Y ._≈_ (func x) (func y)
-
-open _⇒_
 
 record _≃m_ {a b} {X Y : Setoid a b} (f g : X ⇒ Y) : Set (suc (a ⊔ b)) where
   field

@@ -1,45 +1,60 @@
-{-# OPTIONS --postfix-projections --safe --without-K #-}
+{-# OPTIONS --postfix-projections --safe --prop #-}
 
 module basics where
 
 open import Level
+open import prop renaming (⊥ to ⊥p)
+open import prop-setoid hiding (assoc)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ)
-open import Relation.Binary using (Setoid; IsEquivalence)
 
--- Also should be in stdlib somewhere
 module _ where
   infix 4 _⇔_
 
-  _⇔_ : Set → Set → Set
-  P ⇔ Q = (P → Q) × (Q → P)
+  _⇔_ : Prop → Prop → Prop
+  P ⇔ Q = (P → Q) ∧ (Q → P)
+
+  refl-⇔ : ∀ {P} → P ⇔ P
+  refl-⇔ .proj₁ x = x
+  refl-⇔ .proj₂ x = x
+
+  trans-⇔ : ∀ {P Q R} → P ⇔ Q → Q ⇔ R → P ⇔ R
+  trans-⇔ e₁ e₂ .proj₁ p = e₂ .proj₁ (e₁ .proj₁ p)
+  trans-⇔ e₁ e₂ .proj₂ r = e₁ .proj₂ (e₂ .proj₂ r)
 
 module _ {a} {A : Set a} where
 
-  SymmetricClosure : ∀ {b} → (A → A → Set b) → (A → A → Set b)
-  SymmetricClosure R x y = R x y × R y x
+  SymmetricCore : ∀ {b} → (A → A → Prop b) → (A → A → Prop b)
+  SymmetricCore R x y = R x y ∧ R y x
 
-  record IsPreorder {b} (_≤_ : A → A → Set b) : Set (a ⊔ b) where
+  record IsPreorder {b} (_≤_ : A → A → Prop b) : Prop (a ⊔ b) where
     field
       refl  : ∀ {x} → x ≤ x
       trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
-    _≃_ = SymmetricClosure _≤_
+    _≃_ = SymmetricCore _≤_
+
+    isEquivalence : IsEquivalence _≃_
+    isEquivalence .IsEquivalence.refl = refl , refl
+    isEquivalence .IsEquivalence.sym (x≤y , y≤x) = y≤x , x≤y
+    isEquivalence .IsEquivalence.trans (x≤y , y≤x) (y≤z , z≤y) =
+      (trans x≤y y≤z) , (trans z≤y y≤x)
+
     infix 4 _≃_
 
-module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreorder _≤_) where
+module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreorder _≤_) where
 
   module _ where
     open IsPreorder ≤-isPreorder
 
-    isEquivalenceOf : IsEquivalence (SymmetricClosure _≤_)
-    isEquivalenceOf .IsEquivalence.refl = refl , refl
-    isEquivalenceOf .IsEquivalence.sym (x≤y , y≤x) = y≤x , x≤y
-    isEquivalenceOf .IsEquivalence.trans (x≤y , y≤x) (y≤z , z≤y) =
-      (trans x≤y y≤z) , (trans z≤y y≤x)
+    -- isEquivalenceOf : IsEquivalence (SymmetricCore _≤_)
+    -- isEquivalenceOf .IsEquivalence.refl = refl , refl
+    -- isEquivalenceOf .IsEquivalence.sym (x≤y , y≤x) = y≤x , x≤y
+    -- isEquivalenceOf .IsEquivalence.trans (x≤y , y≤x) (y≤z , z≤y) =
+    --   (trans x≤y y≤z) , (trans z≤y y≤x)
 
     setoidOf : Setoid a b
     setoidOf .Setoid.Carrier = A
-    setoidOf .Setoid._≈_ = SymmetricClosure _≤_
-    setoidOf .Setoid.isEquivalence = isEquivalenceOf
+    setoidOf .Setoid._≈_ = SymmetricCore _≤_
+    setoidOf .Setoid.isEquivalence = isEquivalence
 
   record IsMonoid (_∙_ : A → A → A) (ε : A) : Set (a ⊔ b) where
     open IsPreorder ≤-isPreorder
@@ -193,7 +208,7 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     ∙-∨-distrib : ∀ {x y z} → (x ∙ (y ∨ z)) ≤ ((x ∙ y) ∨ (x ∙ z))
     ∙-∨-distrib =
       trans ∙-sym (lambda⁻¹ [ lambda (trans ∙-sym inl) , lambda (trans ∙-sym inr) ])
-
+{-
   ------------------------------------------------------------------------------
   -- *-autonomous categories and all their structure
   record IsStarAuto {_⊗_ : A → A → A} {ε : A}
@@ -302,3 +317,4 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
       mu       : (ι ⊗ ι) ≤ ι
       -- (Δ : ε ≤ (ε ▷ ε)) -- what is this needed for?
       -- (u : ε ≤ ι) -- what is this needed for?
+-}

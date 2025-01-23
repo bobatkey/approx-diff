@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --safe --without-K #-}
+{-# OPTIONS --postfix-projections --safe --prop #-}
 
 module meet-semilattice where
 
@@ -6,8 +6,9 @@ open import Level
 open import Data.Product using (Σ; proj₁; proj₂; _,_)
 open import Data.Unit using (tt) renaming (⊤ to Unit)
 open import Data.Empty using () renaming (⊥ to 𝟘)
-open import Relation.Binary using (IsEquivalence; Reflexive)
 open import basics
+open import prop renaming (_∧_ to _∧p_; ⊤ to ⊤p)
+open import prop-setoid using (IsEquivalence)
 open import preorder using (Preorder; _×_)
 
 record MeetSemilattice (A : Preorder) : Set (suc 0ℓ) where
@@ -15,13 +16,16 @@ record MeetSemilattice (A : Preorder) : Set (suc 0ℓ) where
   open Preorder public
 
   field
-    _∧_     : A .Carrier → A .Carrier → A .Carrier
-    ⊤       : A. Carrier
+    _∧_       : A .Carrier → A .Carrier → A .Carrier
+    ⊤         : A. Carrier
     ∧-isMeet  : IsMeet (A .≤-isPreorder) _∧_
     ⊤-isTop   : IsTop (A. ≤-isPreorder) ⊤
 
 module _ {A B : Preorder} where
   open Preorder
+  private
+    module A = Preorder A
+    module B = Preorder B
 
   record _=>_ (X : MeetSemilattice A) (Y : MeetSemilattice B) : Set where
     open MeetSemilattice
@@ -30,11 +34,19 @@ module _ {A B : Preorder} where
       monotone : ∀ {x₁ x₂} → A ._≤_ x₁ x₂ → B ._≤_ (func x₁) (func x₂)
       ∧-preserving : ∀ {x x'} → B ._≤_ (Y ._∧_ (func x) (func x')) (func (X ._∧_ x x'))
       ⊤-preserving : B ._≤_ (Y .⊤) (func (X .⊤))
+  open _=>_
 
-  record _≃m_ {X : MeetSemilattice A} {Y : MeetSemilattice B} (f g : X => Y) : Set where
-    open _=>_
+  record _≃m_ {X : MeetSemilattice A} {Y : MeetSemilattice B} (f g : X => Y) : Prop where
     field
-      eqfunc : ∀ x → _≃_ B (f .func x) (g .func x)
+      eqfunc : ∀ x → f .func x B.≃ g .func x
+
+  open IsEquivalence
+  open _≃m_
+
+  ≃m-isEquivalence : ∀ {X Y} → IsEquivalence (_≃m_ {X} {Y})
+  ≃m-isEquivalence .refl .eqfunc x = B.≃-refl
+  ≃m-isEquivalence .sym e .eqfunc x = B.≃-sym (e .eqfunc x)
+  ≃m-isEquivalence .trans e₁ e₂ .eqfunc x = B.≃-trans (e₁ .eqfunc x) (e₂ .eqfunc x)
 
 ------------------------------------------------------------------------------
 module _ where
@@ -216,7 +228,8 @@ module _ where
   inject₂ {B = B} .∧-preserving .proj₂ = B .≤-refl
   inject₂ {A = A}{B = B} .⊤-preserving = A .≤-refl , B .≤-refl
 
-  [_,_] : ∀ {A B C}{X : MeetSemilattice A}{Y : MeetSemilattice B}{Z : MeetSemilattice C} → X => Z → Y => Z → (X ⊕ Y) => Z
+  [_,_] : ∀ {A B C}{X : MeetSemilattice A}{Y : MeetSemilattice B}{Z : MeetSemilattice C} →
+    X => Z → Y => Z → (X ⊕ Y) => Z
   [_,_] {Z = Z} f g .func (x , y) = Z ._∧_ (f .func x) (g .func y)
   [_,_] {Z = Z} f g .monotone (x₁≤x₂ , y₁≤y₂) =
     mono (f .monotone x₁≤x₂) (g .monotone y₁≤y₂)

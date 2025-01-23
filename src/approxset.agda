@@ -7,20 +7,22 @@ open import Data.Product using (proj₁; proj₂; _×_; _,_)
 open import Data.Unit using (⊤; tt)
 open import Data.Empty using (⊥)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Relation.Binary using (Decidable; Rel)
+open import Relation.Binary using (Decidable; Rel; Setoid; IsEquivalence)
+open import Relation.Binary.PropositionalEquality using (_≡_; subst)
+  renaming (refl to ≡-refl; sym to ≡-sym)
 open import Relation.Nullary
 open import preorder using (Preorder)
 
 open import join-semilattice
   renaming (_=>_ to _=>J_; 𝟙 to 𝟙J; _⊕_ to _⊕J_; ⟨_,_⟩ to ⟨_,_⟩J; [_,_] to [_,_]J;
             project₁ to project₁J; project₂ to project₂J;
-            L to LJ; _∘_ to _∘J_; id to idJ)
+            L to LJ; _∘_ to _∘J_; id to idJ; _≃m_ to _≃J_)
   hiding (initial)
 open import meet-semilattice
   renaming (_=>_ to _=>M_; 𝟙 to 𝟙M; _⊕_ to _⊕M_; ⟨_,_⟩ to ⟨_,_⟩M; [_,_] to [_,_]M;
             project₁ to project₁M; project₂ to project₂M;
             inject₁ to inject₁M; inject₂ to inject₂M;
-            L to LM; _∘_ to _∘M_; id to idM)
+            L to LM; _∘_ to _∘M_; id to idM; _≃m_ to _≃M_)
   hiding (terminal)
 
 ------------------------------------------------------------------------------
@@ -50,12 +52,18 @@ open import meet-semilattice
 
 record ApproxSet : Set (suc 0ℓ) where
   field
-    elem    : Set
-    forder : elem → Preorder
-    rorder : elem → Preorder
+    elem    : Set -- setoid?
+    forder  : elem → Preorder
+    rorder  : elem → Preorder
     fapprox : (x : elem) → MeetSemilattice (forder x)
     rapprox : (x : elem) → JoinSemilattice (rorder x)
 open ApproxSet
+
+-- New plan:
+-- 1. elem is a Setoid
+-- 2. fapprox / rapprox are functors from the groupoid of elem to Meet-/Join-Semilattices
+--    (a) a mapping from elements to objects
+--    (b) such that
 
 record _⇒_ (X Y : ApproxSet) : Set where
   field
@@ -64,6 +72,38 @@ record _⇒_ (X Y : ApproxSet) : Set where
     bwd : (x : X .elem) → Y .rapprox (func x) =>J X .rapprox x
 open _⇒_
 
+{-
+record _≃m_ {X Y} (f g : X ⇒ Y) : Set where
+  open _⇒_
+  field
+    funceq : ∀ x → f .func x ≡ g .func x
+    fwd-eq : ∀ {x} → subst (λ □ → X .fapprox x =>M Y .fapprox □) (funceq x) (f .fwd x) ≃M g .fwd x
+    bwd-eq : ∀ {x} → subst (λ □ → Y .rapprox □ =>J X .rapprox x) (funceq x) (f .bwd x) ≃J g .bwd x
+open _≃m_
+
+≃m-refl : ∀ {X Y} {f : X ⇒ Y} → f ≃m f
+≃m-refl .funceq x = ≡-refl
+≃m-refl .fwd-eq = {!!}
+≃m-refl .bwd-eq = {!!}
+
+≃m-sym : ∀ {X Y} {f g : X ⇒ Y} → f ≃m g → g ≃m f
+≃m-sym f≃g .funceq x = ≡-sym (f≃g .funceq x)
+≃m-sym f≃g .fwd-eq {x} ._≃M_.eqfunc a = {!!}
+≃m-sym f≃g .bwd-eq = {!!}
+
+-- Hom-setoids
+module _ where
+  open Setoid
+  open IsEquivalence
+
+  ApproxSet[_,_] : ApproxSet → ApproxSet → Setoid 0ℓ 0ℓ
+  ApproxSet[ X , Y ] .Carrier = X ⇒ Y
+  ApproxSet[ X , Y ] ._≈_ = _≃m_
+  ApproxSet[ X , Y ] .isEquivalence = {!!}
+
+-}
+
+------------------------------------------------------------------------------
 -- Have a bicartesian closed category... here's the definitions at least:
 
 id : ∀ {X} → X ⇒ X
@@ -77,6 +117,29 @@ _∘_ : ∀ {X Y Z} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
 (f ∘ g) .bwd x = g .bwd x ∘J f .bwd (g .func x)
 
 infixr 10 _∘_
+
+------------------------------------------------------------------------------
+-- Functor from FOApproxSet to ApproxSet
+
+module _ where
+
+  open import fo-approxset using (FOApproxSet) renaming (_⇒_ to _⇒fo_)
+
+  Ψ : FOApproxSet → ApproxSet
+  Ψ x .elem    = x .FOApproxSet.elem
+  Ψ x .forder  = x .FOApproxSet.order
+  Ψ x .rorder  = x .FOApproxSet.order
+  Ψ x .fapprox = x .FOApproxSet.fapprox
+  Ψ x .rapprox = x .FOApproxSet.rapprox
+
+  Ψ-mor : ∀ {X Y} → X ⇒fo Y → Ψ X ⇒ Ψ Y
+  Ψ-mor f .func = f ._⇒fo_.func
+  Ψ-mor f .fwd = f ._⇒fo_.fwd
+  Ψ-mor f .bwd = f ._⇒fo_.bwd
+
+  -- FIXME: preserves identities and composition
+
+------------------------------------------------------------------------------
 
 -- Terminal Object
 ⊤ₐ : ApproxSet
