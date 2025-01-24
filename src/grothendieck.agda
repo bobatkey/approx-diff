@@ -11,6 +11,7 @@ open import prop-setoid
   using (IsEquivalence; Setoid; 𝟙; +-setoid; ⊗-setoid; idS; _∘S_; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_; ≃m-isEquivalence to ≈s-isEquivalence)
 open import categories
+open import setoid-cat
 open import fam
 
 -- Categories of Families, a special case of the Grothendieck
@@ -263,17 +264,77 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     products .prod = _⊗_
     products .p₁ .idxf = prop-setoid.project₁
     products .p₁ .famf .transf (x , y) = P .p₁
-    products .p₁ .famf .natural (e₁ , e₂) = {!!}
+    products .p₁ {X} {Y} .famf .natural (e₁ , e₂) =
+      begin
+        P .p₁ ∘ P .pair (X .fam .subst _ ∘ P .p₁) (Y .fam .subst _ ∘ P .p₂)
+      ≈⟨ P .pair-p₁ _ _ ⟩
+        X .fam .subst _ ∘ P .p₁
+      ∎ where open ≈-Reasoning isEquiv
     products .p₂ .idxf = prop-setoid.project₂
     products .p₂ .famf .transf (x , y) = P .p₂
-    products .p₂ .famf .natural (e₁ , e₂) = {!!}
+    products .p₂ {X} {Y} .famf .natural (e₁ , e₂) =
+      begin
+        P .p₂ ∘ P .pair (X .fam .subst _ ∘ P .p₁) (Y .fam .subst _ ∘ P .p₂)
+      ≈⟨ P .pair-p₂ _ _ ⟩
+        Y .fam .subst _ ∘ P .p₂
+      ∎ where open ≈-Reasoning isEquiv
     products .pair f g .idxf = prop-setoid.pair (f .idxf) (g .idxf)
     products .pair f g .famf .transf x = P .pair (f .famf .transf x) (g .famf .transf x)
-    products .pair f g .famf .natural {x₁} {x₂} x₁≈x₂ = {!!}
-    products .pair-cong = {!!}
-    products .pair-p₁ = {!!}
-    products .pair-p₂ = {!!}
-    products .pair-ext = {!!}
+    products .pair {X} {Y} {Z} f g .famf .natural {x₁} {x₂} x₁≈x₂ =
+      begin
+        P .pair (f .famf .transf x₂) (g .famf .transf x₂) ∘ X .fam .subst _
+      ≈⟨ pair-natural P _ _ _ ⟩
+        P .pair (f .famf .transf x₂ ∘ X .fam .subst _) (g .famf .transf x₂ ∘ X .fam .subst _)
+      ≈⟨ P .pair-cong (f .famf .natural x₁≈x₂) (g .famf .natural x₁≈x₂) ⟩
+        P .pair (Y .fam .subst _ ∘ f .famf .transf x₁) (Z .fam .subst _ ∘ g .famf .transf x₁)
+      ≈⟨ isEquiv .sym (P .pair-cong (∘-cong (isEquiv .refl) (P .pair-p₁ _ _)) (∘-cong (isEquiv .refl) (P .pair-p₂ _ _))) ⟩
+        P .pair (Y .fam .subst _ ∘ (P .p₁ ∘ P .pair (f .famf .transf x₁) (g .famf .transf x₁))) (Z .fam .subst _ ∘ (P .p₂ ∘ P .pair (f .famf .transf x₁) (g .famf .transf x₁)))
+      ≈⟨ isEquiv .sym (P .pair-cong (assoc _ _ _) (assoc _ _ _)) ⟩
+        P .pair ((Y .fam .subst _ ∘ P .p₁) ∘ P .pair (f .famf .transf x₁) (g .famf .transf x₁)) ((Z .fam .subst _ ∘ P .p₂) ∘ P .pair (f .famf .transf x₁) (g .famf .transf x₁))
+      ≈⟨ isEquiv .sym (pair-natural P _ _ _) ⟩
+        P .pair (Y .fam .subst _ ∘ P .p₁) (Z .fam .subst _ ∘ P .p₂) ∘ P .pair (f .famf .transf x₁) (g .famf .transf x₁)
+      ∎
+      where open ≈-Reasoning isEquiv
+    products .pair-cong f₁≈f₂ g₁≈g₂ .idxf-eq = prop-setoid.pair-cong (f₁≈f₂ .idxf-eq) (g₁≈g₂ .idxf-eq)
+    products .pair-cong {X}{Y}{Z} {f₁}{f₂}{g₁}{g₂} f₁≈f₂ g₁≈g₂ .famf-eq ._≃f_.transf-eq {x} =
+      begin
+        P .pair (Y .fam .subst _ ∘ P .p₁) (Z .fam .subst _ ∘ P .p₂) ∘ P .pair (f₁ .famf .transf x) (g₁ .famf .transf x)
+      ≈⟨ pair-compose P _ _ _ _ ⟩
+        P .pair (Y .fam .subst _ ∘ f₁ .famf .transf x) (Z .fam .subst _ ∘ g₁ .famf .transf x)
+      ≈⟨ P .pair-cong (f₁≈f₂ .famf-eq ._≃f_.transf-eq) (g₁≈g₂ .famf-eq ._≃f_.transf-eq) ⟩
+        P .pair (f₂ .famf .transf x) (g₂ .famf .transf x)
+      ∎  where open ≈-Reasoning isEquiv
+    products .pair-p₁ {X} {Y} {Z} f g .idxf-eq = Setoid-products _ _ .pair-p₁ _ _
+    products .pair-p₁ {X} {Y} {Z} f g .famf-eq ._≃f_.transf-eq {x} =
+      begin
+        Y .fam .subst _ ∘ (P .p₁ ∘ P .pair (f .famf .transf x) (g .famf .transf x))
+      ≈⟨ ∘-cong (Y .fam .refl*) (P .pair-p₁ _ _) ⟩
+        id _ ∘ f .famf .transf x
+      ≈⟨ id-left ⟩
+        f .famf .transf x
+      ∎ where open ≈-Reasoning isEquiv
+    products .pair-p₂ {X} {Y} {Z} f g .idxf-eq = Setoid-products _ _ .pair-p₂ _ _
+    products .pair-p₂ {X} {Y} {Z} f g .famf-eq ._≃f_.transf-eq {x} =
+      begin
+        Z .fam .subst _ ∘ (P .p₂ ∘ P .pair (f .famf .transf x) (g .famf .transf x))
+      ≈⟨ ∘-cong (Z .fam .refl*) (P .pair-p₂ _ _) ⟩
+        id _ ∘ g .famf .transf x
+      ≈⟨ id-left ⟩
+        g .famf .transf x
+      ∎ where open ≈-Reasoning isEquiv
+    products .pair-ext f .idxf-eq = Setoid-products _ _ .pair-ext _
+    products .pair-ext {X}{Y}{Z} f .famf-eq ._≃f_.transf-eq {x} =
+      begin
+        P .pair (Y .fam .subst _ ∘ P .p₁) (Z .fam .subst _ ∘ P .p₂) ∘ P .pair (P .p₁ ∘ f .famf .transf x) (P .p₂ ∘ f .famf .transf x)
+      ≈⟨ pair-compose P _ _ _ _ ⟩
+        P .pair (Y .fam .subst _ ∘ (P .p₁ ∘ f .famf .transf x)) (Z .fam .subst _ ∘ (P .p₂ ∘ f .famf .transf x))
+      ≈⟨ P .pair-cong (∘-cong (Y .fam .refl*) (isEquiv .refl)) (∘-cong (Z .fam .refl*) (isEquiv .refl)) ⟩
+        P .pair (id _ ∘ (P .p₁ ∘ f .famf .transf x)) (id _ ∘ (P .p₂ ∘ f .famf .transf x))
+      ≈⟨ P .pair-cong id-left id-left ⟩
+        P .pair (P .p₁ ∘ f .famf .transf x) (P .p₂ ∘ f .famf .transf x)
+      ≈⟨ P .pair-ext _ ⟩
+        f .famf .transf x
+      ∎ where open ≈-Reasoning isEquiv
 
     open HasStrongCoproducts
 

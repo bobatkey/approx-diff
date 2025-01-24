@@ -78,6 +78,20 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     where open ≈-Reasoning isEquiv
           open IsEquivalence
 
+  pair-compose : ∀ {x y₁ y₂ z₁ z₂} (f₁ : y₁ ⇒ z₁) (f₂ : y₂ ⇒ z₂) (g₁ : x ⇒ y₁) (g₂ : x ⇒ y₂) →
+    (pair (f₁ ∘ p₁) (f₂ ∘ p₂) ∘ pair g₁ g₂) ≈ pair (f₁ ∘ g₁) (f₂ ∘ g₂)
+  pair-compose f₁ f₂ g₁ g₂ =
+    begin
+      pair (f₁ ∘ p₁) (f₂ ∘ p₂) ∘ pair g₁ g₂
+    ≈⟨ pair-natural _ _ _ ⟩
+      pair ((f₁ ∘ p₁) ∘ pair g₁ g₂) ((f₂ ∘ p₂) ∘ pair g₁ g₂)
+    ≈⟨ pair-cong (assoc _ _ _) (assoc _ _ _) ⟩
+      pair (f₁ ∘ (p₁ ∘ pair g₁ g₂)) (f₂ ∘ (p₂ ∘ pair g₁ g₂))
+    ≈⟨ pair-cong (∘-cong (isEquiv .refl) (pair-p₁ _ _)) (∘-cong (isEquiv .refl) (pair-p₂ _ _)) ⟩
+      pair (f₁ ∘ g₁) (f₂ ∘ g₂)
+    ∎ where open ≈-Reasoning isEquiv
+            open IsEquivalence
+
   pair-functorial : ∀ {x₁ x₂ y₁ y₂ z₁ z₂} (f₁ : y₁ ⇒ z₁) (f₂ : y₂ ⇒ z₂) (g₁ : x₁ ⇒ y₁) (g₂ : x₂ ⇒ y₂) →
     pair ((f₁ ∘ g₁) ∘ p₁) ((f₂ ∘ g₂) ∘ p₂) ≈ (pair (f₁ ∘ p₁) (f₂ ∘ p₂) ∘ pair (g₁ ∘ p₁) (g₂ ∘ p₂))
   pair-functorial f₁ f₂ g₁ g₂ =
