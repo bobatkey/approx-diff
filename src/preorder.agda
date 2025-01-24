@@ -17,7 +17,8 @@ record Preorder : Set (suc 0ℓ) where
     _≤_          : Carrier → Carrier → Prop
     ≤-isPreorder : IsPreorder _≤_
 
-  open IsPreorder ≤-isPreorder renaming (refl to ≤-refl; trans to ≤-trans) public
+  open IsPreorder ≤-isPreorder
+    renaming (refl to ≤-refl; trans to ≤-trans) public
   open IsEquivalence isEquivalence
     renaming (refl to ≃-refl; sym to ≃-sym; trans to ≃-trans) public
 
@@ -63,6 +64,11 @@ module _ where
   (X × Y) .≤-isPreorder .IsPreorder.refl = (X .≤-refl) , (Y .≤-refl)
   (X × Y) .≤-isPreorder .IsPreorder.trans (x₁≤y₁ , x₂≤y₂) (y₁≤z₁ , y₂≤z₂) =
     (X .≤-trans x₁≤y₁ y₁≤z₁) , (Y .≤-trans x₂≤y₂ y₂≤z₂)
+
+  ×-≃ : ∀ {X Y : Preorder} {x₁ x₂ : X .Carrier} {y₁ y₂ : Y .Carrier} →
+        _≃_ X x₁ x₂ → _≃_ Y y₁ y₂ → _≃_ (X × Y) (x₁ , y₁) (x₂ , y₂)
+  ×-≃ (x₁≤x₂ , x₂≤x₁) (y₁≤y₂ , y₂≤y₁) .proj₁ = x₁≤x₂ , y₁≤y₂
+  ×-≃ (x₁≤x₂ , x₂≤x₁) (y₁≤y₂ , y₂≤y₁) .proj₂ = x₂≤x₁ , y₂≤y₁
 
 -- Arbitrary products
 module _ (I : Set) (A : I → Preorder) where
