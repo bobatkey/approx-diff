@@ -451,6 +451,54 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
       ∎
       where open ≈-Reasoning isEquiv
 
+  module _ (T : HasTerminal 𝒞) (P : HasProducts 𝒞) where
+
+    open import Data.List using ([]; _∷_)
+    open Category 𝒞
+    open IsEquivalence
+    open HasTerminal
+    open HasProducts
+
+    ListFam : (X : Obj) → Fam os es 𝒞 (prop-setoid.ListS (X .idx))
+    ListFam X .fm [] = T .witness
+    ListFam X .fm (x ∷ xs) = P .prod (X .fam .fm x) (ListFam X .fm xs)
+    ListFam X .subst {[]} {[]} tt = id _
+    ListFam X .subst {x ∷ xs} {y ∷ ys} (x≈y , xs≈ys) = prod-m P (X .fam .subst x≈y) (ListFam X .subst xs≈ys)
+    ListFam X .refl* {[]} = isEquiv .refl
+    ListFam X .refl* {x ∷ xs} =
+      begin
+        prod-m P (X .fam .subst (X .idx .Setoid.refl {x})) (ListFam X .subst (prop-setoid.List-≈-refl (X .idx) {xs}))
+      ≈⟨ prod-m-cong P (X .fam .refl*) (ListFam X .refl* {xs}) ⟩
+        prod-m P (id _) (id _)
+      ≈⟨ prod-m-id P ⟩
+        id _
+      ∎ where open ≈-Reasoning isEquiv
+    ListFam X .trans* {[]} {[]} {[]} e₁ e₂ = isEquiv .sym id-left
+    ListFam X .trans* {x ∷ xs} {y ∷ ys} {z ∷ zs} (x≈y , xs≈ys) (y≈z , ys≈zs) =
+      begin
+        prod-m P (X .fam .subst (X .idx .Setoid.trans y≈z x≈y)) (ListFam X .subst (prop-setoid.List-≈-trans (X .idx) ys≈zs xs≈ys))
+      ≈⟨ prod-m-cong P (X .fam .trans* x≈y y≈z) (ListFam X .trans* xs≈ys ys≈zs) ⟩
+        prod-m P (X .fam .subst x≈y ∘ X .fam .subst y≈z) (ListFam X .subst xs≈ys ∘ ListFam X .subst ys≈zs)
+      ≈⟨ pair-functorial P _ _ _ _ ⟩
+       prod-m P (X .fam .subst x≈y) (ListFam X .subst xs≈ys) ∘ prod-m P (X .fam .subst y≈z) (ListFam X .subst ys≈zs)
+      ∎
+      where open ≈-Reasoning isEquiv
+
+    ListF : Obj → Obj
+    ListF X .idx = prop-setoid.ListS (X .idx)
+    ListF X .fam = ListFam X
+
+    module FT = HasTerminal (terminal T)
+    open _⇒f_
+    open _≃f_
+
+    nil : ∀ {X} → Mor FT.witness (ListF X)
+    nil .idxf = prop-setoid.nil
+    nil .famf .transf (lift tt) = id _
+    nil .famf .natural x₁≈x₂ = isEquiv .refl
+
+    -- FIXME: cons and foldr
+
   -- If 𝒞 has binary biproducts and Setoid-indexed products, then this
   -- category has exponentials
   module _ (P : HasBiproducts 𝒞) (SP : HasSetoidProducts os es 𝒞) where

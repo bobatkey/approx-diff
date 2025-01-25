@@ -189,3 +189,39 @@ case f g .func (w , inj₁ x) = f .func (w , x)
 case f g .func (w , inj₂ y) = g .func (w , y)
 case f g .func-resp-≈ {w₁ , inj₁ x₁} {w₂ , inj₁ x₂} (w₁≈w₂ , lift x₁≈x₂) = f .func-resp-≈ (w₁≈w₂ , x₁≈x₂)
 case f g .func-resp-≈ {w₁ , inj₂ y₁} {w₂ , inj₂ y₂} (w₁≈w₂ , lift y₁≈y₂) = g .func-resp-≈ (w₁≈w₂ , y₁≈y₂)
+
+-- Lists
+module _ {o e} where
+
+  open import Data.List using (List; []; _∷_)
+
+  List-≈ : (A : Setoid o e) → List (A .Carrier) → List (A .Carrier) → Prop e
+  List-≈ A [] [] = ⊤
+  List-≈ A [] (_ ∷ _) = ⊥
+  List-≈ A (x ∷ xs) [] = ⊥
+  List-≈ A (x ∷ xs) (y ∷ ys) = A ._≈_ x y ∧ List-≈ A xs ys
+
+  List-≈-refl : ∀ A {xs : List (A .Carrier)} → List-≈ A xs xs
+  List-≈-refl A {[]} = tt
+  List-≈-refl A {x ∷ xs} = A .refl , List-≈-refl A
+
+  List-≈-sym : ∀ A {xs ys : List (A .Carrier)} → List-≈ A xs ys → List-≈ A ys xs
+  List-≈-sym A {[]} {[]} tt = tt
+  List-≈-sym A {x ∷ xs} {y ∷ ys} (x≈y , xs≈ys)  = A .sym x≈y , List-≈-sym A xs≈ys
+
+  List-≈-trans : ∀ A {xs ys zs : List (A .Carrier)} → List-≈ A xs ys → List-≈ A ys zs → List-≈ A xs zs
+  List-≈-trans A {[]} {[]} {[]} tt tt = tt
+  List-≈-trans A {x ∷ xs} {y ∷ ys} {z ∷ zs} (x≈y , xs≈ys) (y≈z , ys≈zs) =
+    A .trans x≈y y≈z , List-≈-trans A xs≈ys ys≈zs
+
+  ListS : Setoid o e → Setoid o e
+  ListS A .Carrier = List (A .Carrier)
+  ListS A ._≈_ = List-≈ A
+  ListS A .isEquivalence .refl = List-≈-refl A
+  ListS A .isEquivalence .sym = List-≈-sym A
+  ListS A .isEquivalence .trans = List-≈-trans A
+
+  -- FIXME: nil, cons, and parameterised iteration
+  nil : ∀ {A : Setoid o e} → (𝟙 {o} {e}) ⇒ ListS A
+  nil .func _ = []
+  nil .func-resp-≈ _ = tt

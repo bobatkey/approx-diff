@@ -92,8 +92,11 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     ∎ where open ≈-Reasoning isEquiv
             open IsEquivalence
 
+  prod-m : ∀ {x₁ x₂ y₁ y₂} → x₁ ⇒ y₁ → x₂ ⇒ y₂ → prod x₁ x₂ ⇒ prod y₁ y₂
+  prod-m f₁ f₂ = pair (f₁ ∘ p₁) (f₂ ∘ p₂)
+
   pair-functorial : ∀ {x₁ x₂ y₁ y₂ z₁ z₂} (f₁ : y₁ ⇒ z₁) (f₂ : y₂ ⇒ z₂) (g₁ : x₁ ⇒ y₁) (g₂ : x₂ ⇒ y₂) →
-    pair ((f₁ ∘ g₁) ∘ p₁) ((f₂ ∘ g₂) ∘ p₂) ≈ (pair (f₁ ∘ p₁) (f₂ ∘ p₂) ∘ pair (g₁ ∘ p₁) (g₂ ∘ p₂))
+    prod-m (f₁ ∘ g₁) (f₂ ∘ g₂) ≈ (prod-m f₁ f₂ ∘ prod-m g₁ g₂)
   pair-functorial f₁ f₂ g₁ g₂ =
     begin
       pair ((f₁ ∘ g₁) ∘ p₁) ((f₂ ∘ g₂) ∘ p₂)
@@ -109,12 +112,30 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     where open ≈-Reasoning isEquiv
           open IsEquivalence
 
+  prod-m-cong : ∀ {x₁ x₂ y₁ y₂} {f₁ f₂ : x₁ ⇒ y₁} {g₁ g₂ : x₂ ⇒ y₂} →
+                f₁ ≈ f₂ → g₁ ≈ g₂ → prod-m f₁ g₁ ≈ prod-m f₂ g₂
+  prod-m-cong f₁≈f₂ g₁≈g₂ =
+    pair-cong (∘-cong f₁≈f₂ (isEquiv .refl)) (∘-cong g₁≈g₂ (isEquiv .refl))
+    where open IsEquivalence
+
   pair-ext0 : ∀ {x y} → pair p₁ p₂ ≈ id (prod x y)
   pair-ext0 = begin pair p₁ p₂
                       ≈⟨ isEquiv .sym (pair-cong id-right id-right) ⟩
                     pair (p₁ ∘ id _) (p₂ ∘ id _)
                       ≈⟨ pair-ext (id _) ⟩
                     id _ ∎
+    where open ≈-Reasoning isEquiv
+          open IsEquivalence
+
+  prod-m-id : ∀ {x y} → prod-m (id x) (id y) ≈ id (prod x y)
+  prod-m-id =
+    begin
+      pair (id _ ∘ p₁) (id _ ∘ p₂)
+    ≈⟨ pair-cong id-left id-left ⟩
+      pair p₁ p₂
+    ≈⟨ pair-ext0 ⟩
+      id _
+    ∎
     where open ≈-Reasoning isEquiv
           open IsEquivalence
 
