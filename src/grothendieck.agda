@@ -350,6 +350,108 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     strongCoproducts .copair f g .famf .natural {w₁ , inj₂ y} {w₂ , inj₂ y₁} (w₁≈w₂ , lift e) =
       g .famf .natural (w₁≈w₂ , e)
 
+  module monad (Mon : Monad 𝒞) where
+
+    open Category 𝒞
+    open IsEquivalence
+    open Monad
+    open _⇒f_
+    open _≃f_
+
+    monad : Monad cat
+    monad .M X .idx = X .idx
+    monad .M X .fam .fm x = Mon .M (X .fam .fm x)
+    monad .M X .fam .subst x≈y = Mon .map (X .fam .subst x≈y)
+    monad .M X .fam .refl* =
+      begin
+        Mon .map (X .fam .subst _)
+      ≈⟨ Mon .map-cong (X .fam .refl*) ⟩
+        Mon .map (id _)
+      ≈⟨ Mon .map-id ⟩
+        id _
+      ∎ where open ≈-Reasoning isEquiv
+    monad .M X .fam .trans* y≈z x≈y =
+      begin
+        Mon .map (X .fam .subst _)
+      ≈⟨ Mon .map-cong (X .fam .trans* _ _) ⟩
+        Mon .map (X .fam .subst _ ∘ X .fam .subst _)
+      ≈⟨ Mon .map-comp _ _ ⟩
+        Mon .map (X .fam .subst _) ∘ Mon .map (X .fam .subst _)
+      ∎ where open ≈-Reasoning isEquiv
+    monad .map f .idxf = f .idxf
+    monad .map f .famf .transf x = Mon .map (f .famf .transf x)
+    monad .map {X} {Y} f .famf .natural x₁≈x₂ =
+      begin
+        Mon .map (f .famf .transf _) ∘ Mon .map (X .fam .subst _)
+      ≈⟨ isEquiv .sym (Mon .map-comp _ _) ⟩
+        Mon .map (f .famf .transf _ ∘ X .fam .subst _)
+      ≈⟨ Mon .map-cong (f .famf .natural _) ⟩
+        Mon .map (Y .fam .subst _ ∘ f .famf .transf _)
+      ≈⟨ Mon .map-comp _ _ ⟩
+        Mon .map (Y .fam .subst _) ∘ Mon .map (f .famf .transf _)
+      ∎ where open ≈-Reasoning isEquiv
+    monad .unit .idxf = idS _
+    monad .unit .famf .transf x = Mon .unit
+    monad .unit .famf .natural e = Mon .unit-natural _
+    monad .join .idxf = idS _
+    monad .join .famf .transf x = Mon .join
+    monad .join .famf .natural e = Mon .join-natural _
+    monad .map-cong eq .idxf-eq = eq .idxf-eq
+    monad .map-cong eq .famf-eq .transf-eq {x} =
+      isEquiv .trans (isEquiv .sym (Mon .map-comp _ _))
+                     (Mon .map-cong (eq .famf-eq .transf-eq))
+    monad .map-id .idxf-eq = ≈s-isEquivalence .refl
+    monad .map-id {X} .famf-eq .transf-eq {x} =
+      begin
+        Mon .map (X .fam .subst _) ∘ Mon .map (id _)
+      ≈⟨ ∘-cong (Mon .map-cong (X .fam .refl*)) (isEquiv .refl) ⟩
+        Mon .map (id _) ∘ Mon .map (id _)
+      ≈⟨ ∘-cong (Mon .map-id) (Mon .map-id) ⟩
+        id _ ∘ id _
+      ≈⟨ id-left ⟩
+        id _
+      ∎
+      where open ≈-Reasoning isEquiv
+    monad .map-comp f g .idxf-eq = ≈s-isEquivalence .refl
+    monad .map-comp {X} {Y} {Z} f g .famf-eq .transf-eq {x} =
+      begin
+        Mon .map (Z .fam .subst _) ∘ Mon .map (f .famf .transf _ ∘ g .famf .transf x)
+      ≈⟨ ∘-cong (Mon .map-cong (Z .fam .refl*)) (isEquiv .refl) ⟩
+        Mon .map (id _) ∘ Mon .map (f .famf .transf _ ∘ g .famf .transf x)
+      ≈⟨ ∘-cong (Mon .map-id) (Mon .map-comp _ _) ⟩
+        id _ ∘ (Mon .map (f .famf .transf _) ∘ Mon .map (g .famf .transf x))
+      ≈⟨ id-left ⟩
+        Mon .map (f .famf .transf _) ∘ Mon .map (g .famf .transf x)
+      ∎
+      where open ≈-Reasoning isEquiv
+    monad .unit-natural f .idxf-eq =
+      ≈s-isEquivalence .trans prop-setoid.id-left (≈s-isEquivalence .sym prop-setoid.id-right)
+    monad .unit-natural {X}{Y} f .famf-eq .transf-eq {x} =
+      begin
+        Mon .map (Y .fam .subst _) ∘ (Mon .unit ∘ f .famf .transf x)
+      ≈⟨ ∘-cong (Mon .map-cong (Y .fam .refl*)) (Mon .unit-natural (f .famf .transf x)) ⟩
+        Mon .map (id _) ∘ (Mon .map (f .famf .transf x) ∘ Mon .unit)
+      ≈⟨ ∘-cong (Mon .map-id) (isEquiv .refl) ⟩
+        id _ ∘ (Mon .map (f .famf .transf x) ∘ Mon .unit)
+      ≈⟨ id-left ⟩
+        Mon .map (f .famf .transf x) ∘ Mon .unit
+      ∎
+      where open ≈-Reasoning isEquiv
+    monad .join-natural f .idxf-eq =
+      ≈s-isEquivalence .trans prop-setoid.id-left (≈s-isEquivalence .sym prop-setoid.id-right)
+    monad .join-natural {X} {Y} f .famf-eq .transf-eq {x} =
+      begin
+        Mon .map (Y .fam .subst _) ∘ (Mon .join ∘ Mon .map (Mon .map (f .famf .transf x)))
+      ≈⟨ ∘-cong (Mon .map-cong (Y .fam .refl*)) (Mon .join-natural _) ⟩
+        Mon .map (id _) ∘ (Mon .map (f .famf .transf x) ∘ Mon .join)
+      ≈⟨ ∘-cong (Mon .map-id) (isEquiv .refl) ⟩
+        id _ ∘ (Mon .map (f .famf .transf x) ∘ Mon .join)
+      ≈⟨ id-left ⟩
+        Mon .map (f .famf .transf x) ∘ Mon .join
+      ∎
+      where open ≈-Reasoning isEquiv
+
+{-
   -- If 𝒞 has binary biproducts and Setoid-indexed products, then this
   -- category has exponentials
   module _ (P : HasBiproducts 𝒞) (SP : HasSetoidProducts os es 𝒞) where
@@ -410,27 +512,4 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
                           })
          .transf (lift tt)
     exponentials .lambda {X} {Y} {Z} f .famf .natural x₁≈x₂ = {!!}
-
-{-
-  -- If 𝒞 has a strong monad, then so does this category
-  module _ (T : HasTerminal 𝒞) (P : HasProducts 𝒞) (Mon : StrongMonad 𝒞 P) where
-
-    open Category 𝒞
-    open StrongMonad
-    private
-      module P = HasProducts P
-      module Mon = StrongMonad Mon
-
-    strongMonad : StrongMonad cat (products P)
-    strongMonad .M X .idx = X .idx
-    strongMonad .M X .iobj x = Mon.M (X .iobj x)
-    strongMonad .M X .iobj-transport = {!!}
-    strongMonad .M X .iobj-id = {!!}
-    strongMonad .M X .iobj-trans = {!!}
-    strongMonad .unit .idxf = idS _
-    strongMonad .unit .ifunc = {!!}
-    strongMonad .unit .ifunc-≈ = {!!}
-    strongMonad .extend f .idxf = f .idxf
-    strongMonad .extend f .ifunc = {!!}
-    strongMonad .extend f .ifunc-≈ = {!!}
 -}
