@@ -451,7 +451,6 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
       ∎
       where open ≈-Reasoning isEquiv
 
-{-
   -- If 𝒞 has binary biproducts and Setoid-indexed products, then this
   -- category has exponentials
   module _ (P : HasBiproducts 𝒞) (SP : HasSetoidProducts os es 𝒞) where
@@ -471,45 +470,69 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
 
     _⟶_ : Obj → Obj → Obj
     (X ⟶ Y) .idx = Category.hom-setoid cat X Y
-    (X ⟶ Y) .fam .fm f =
-      SP .Π 𝟙 (X .idx) (Y .fam [ f .idxf ∘S prop-setoid.project₂ ]) .fm (lift tt)
+    (X ⟶ Y) .fam .fm f = SP .Π (X .idx) (Y .fam [ f .idxf ])
     (X ⟶ Y) .fam .subst {f} {g} e =
-      SP .lambdaΠ {X = 𝟙} {Y = X .idx}
-           {P = SP .Π 𝟙 (X .idx) (Y .fam [ f .idxf ∘S prop-setoid.project₂ ])}
-           (Y .fam [ g .idxf ∘S prop-setoid.project₂ ])
-           (reindex-≈ {P = Y .fam}
-                      (f .idxf ∘S prop-setoid.project₂)
-                      (g .idxf ∘S prop-setoid.project₂)
-                      (prop-setoid.∘S-cong (e .idxf-eq)
-                         (≈s-isEquivalence .refl {prop-setoid.project₂})) ∘f SP .evalΠ _)
-           .transf (lift tt)
+        -- FIXME: this is a general 'map' on Π, do the definitions earlier
+        SP .lambdaΠ
+           (SP .Π (X .idx) (Y .fam [ f .idxf ]))
+           (Y .fam [ g .idxf ])
+           (record { transf = λ x →
+                  Y .fam .subst (e .idxf-eq .func-eq (X .idx .Setoid.refl)) ∘ (SP .evalΠ _ x)
+                   ; natural = {!!} })
     (X ⟶ Y) .fam .refl* = {!!}
     (X ⟶ Y) .fam .trans* = {!!}
 
     eval⟶ : ∀ {X Y : Obj} → Mor (X ⊗ (X ⟶ Y)) Y
     eval⟶ .idxf .func (x , f) = f .idxf .func x
     eval⟶ .idxf .func-resp-≈ (x₁≈x₂ , f₁≈f₂) = f₁≈f₂ .idxf-eq .func-eq x₁≈x₂
-    eval⟶ .famf .transf (x , f) = SP .evalΠ _ .transf (lift tt , x)  ∘ P .p₂
-    eval⟶ .famf .natural = {!!}
+    eval⟶ .famf .transf (x , f) = SP .evalΠ _ x ∘ P .p₂
+    eval⟶ {X} {Y} .famf .natural {x₁ , f₁} {x₂ , f₂} (x₁≈x₂ , f₁≈f₂) =
+      begin
+        (SP .evalΠ (Y .fam [ f₂ .idxf ]) x₂ ∘ P .p₂) ∘ (X ⊗ (X ⟶ Y)) .fam .subst (x₁≈x₂ , f₁≈f₂)
+      ≈⟨ {!!} ⟩ -- FIXME: naturality of evalΠ
+        Y .fam .subst _ ∘ (SP .evalΠ (Y .fam [ f₁ .idxf ]) x₁ ∘ P .p₂)
+      ∎
+      where open ≈-Reasoning isEquiv
+
+    lambda⟶ : ∀ {X Y Z} → Mor (X ⊗ Y) Z → Mor X (Y ⟶ Z)
+    lambda⟶ f .idxf .func x .idxf .func y = f .idxf .func (x , y)
+    lambda⟶ {X} f .idxf .func x .idxf .func-resp-≈ y₁≈y₂ = f .idxf .func-resp-≈ ((X .idx .Setoid.refl) , y₁≈y₂)
+    lambda⟶ f .idxf .func x .famf .transf y = f .famf .transf (x , y) ∘ (P .in₂)
+    lambda⟶ {X} {Y} {Z} f .idxf .func x .famf .natural {y₁} {y₂} y₁≈y₂ =
+      begin
+        (f .famf .transf (x , y₂) ∘ P .in₂) ∘ Y .fam .subst _
+      ≈⟨ {!!} ⟩ -- FIXME: need naturality of in₂
+        Z .fam .subst _ ∘ (f .famf .transf (x , y₁) ∘ P .in₂)
+      ∎
+      where open ≈-Reasoning isEquiv
+    lambda⟶ f .idxf .func-resp-≈ x₁≈x₂ .idxf-eq .func-eq y₁≈y₂ = f .idxf .func-resp-≈ (x₁≈x₂ , y₁≈y₂)
+    lambda⟶ {X} {Y} {Z} f .idxf .func-resp-≈ {x₁} {x₂} x₁≈x₂ .famf-eq .transf-eq {y} =
+      begin
+        Z .fam .subst _ ∘ (f .famf .transf (x₁ , y) ∘ P .in₂)
+      ≈⟨ isEquiv .sym (assoc _ _ _) ⟩
+        (Z .fam .subst _ ∘ f .famf .transf (x₁ , y)) ∘ P .in₂
+      ≈⟨ isEquiv .sym (∘-cong (f .famf .natural (x₁≈x₂ , Y .idx .Setoid.refl)) (isEquiv .refl)) ⟩
+        (f .famf .transf (x₂ , y) ∘ (X ⊗ Y) .fam .subst _) ∘ P .in₂
+      ≈⟨ assoc _ _ _ ⟩
+        f .famf .transf (x₂ , y) ∘ ((X ⊗ Y) .fam .subst _ ∘ P .in₂)
+      ≈⟨ ∘-cong (isEquiv .refl) {!!} ⟩ -- FIXME: need naturality of in₂
+        f .famf .transf (x₂ , y) ∘ (P .in₂ ∘ Y .fam .subst _)
+      ≈⟨ ∘-cong (isEquiv .refl) (∘-cong (isEquiv .refl) (Y .fam .refl*)) ⟩
+        f .famf .transf (x₂ , y) ∘ (P .in₂ ∘ id _)
+      ≈⟨ ∘-cong (isEquiv .refl) id-right ⟩
+        f .famf .transf (x₂ , y) ∘ P .in₂
+      ∎
+      where open ≈-Reasoning isEquiv
+    lambda⟶ {X} {Y} {Z} f .famf .transf x =
+      SP .lambdaΠ
+        (X .fam .fm x)
+        (Z .fam [ lambda⟶ {X} {Y} {Z} f .idxf .func x .idxf ])
+        (record { transf = λ y →  f .famf .transf (x , y) ∘ P .in₁
+                ; natural = λ {y₁} {y₂} y₁≈y₂ → {!!} -- FIXME: need naturality of in₁
+                })
+    lambda⟶ f .famf .natural x₁≈₂ = {!!}
 
     exponentials : HasExponentials cat products
     exponentials .exp = _⟶_
     exponentials .eval = eval⟶
-    exponentials .lambda {X} {Y} {Z} f .idxf .func x .idxf .func y = f .idxf .func (x , y)
-    exponentials .lambda {X} {Y} {Z} f .idxf .func x .idxf .func-resp-≈ y₁≈y₂ = f .idxf .func-resp-≈ (X .idx .Setoid.refl , y₁≈y₂)
-    exponentials .lambda {X} {Y} {Z} f .idxf .func x .famf .transf y = f .famf .transf (x , y) ∘ P .in₂
-    exponentials .lambda {X} {Y} {Z} f .idxf .func x .famf .natural x₁≈x₂ = {!!}
-    exponentials .lambda {X} {Y} {Z} f .idxf .func-resp-≈ x₁≈x₂ .idxf-eq .func-eq y₁≈y₂ = f .idxf .func-resp-≈ (x₁≈x₂ , y₁≈y₂)
-    exponentials .lambda {X} {Y} {Z} f .idxf .func-resp-≈ x₁≈x₂ .famf-eq .transf-eq = {!!}
-    exponentials .lambda {X} {Y} {Z} f .famf .transf x =
-      SP .lambdaΠ {X = 𝟙} {Y = Y .idx}
-                  {P = X .fam [ prop-setoid.const (X .idx) x ]}
-                  (Z .fam [ record { func = λ y → f .idxf .func (x , y)
-                                   ; func-resp-≈ = λ y₁≈y₂ → f .idxf .func-resp-≈ (X .idx .Setoid.refl , y₁≈y₂) }
-                            ∘S prop-setoid.project₂ {X = 𝟙} {Y = Y .idx} ])
-                  (record { transf = λ (_ , y) → f .famf .transf (x , y) ∘ P .in₁
-                          ; natural = λ (_ , y₁≈y₂) → {!!}
-                          })
-         .transf (lift tt)
-    exponentials .lambda {X} {Y} {Z} f .famf .natural x₁≈x₂ = {!!}
--}
+    exponentials .lambda = lambda⟶

@@ -173,6 +173,7 @@ module _ {o m e os es} {𝒞 : Category o m e} where
       ≃f reindex-≈ {P = P [ f ]} g₁ g₂ e
   reindex-≈-comp-2 P f g₁ g₂ e .transf-eq = isEquiv .refl
 
+{-
 -- We can now say what it means for a category to have setoid-indexed
 -- products. This definition works in any indexed category with
 -- products.
@@ -183,6 +184,17 @@ record HasSetoidProducts {o m e} os es (𝒞 : Category o m e) : Set (o ⊔ suc 
                 (P [ prop-setoid.project₁ {X = X} {Y = Y} ]) ⇒f Q →
                 P ⇒f (Π X Y Q)
     evalΠ : ∀ {X Y} Q → (Π X Y Q [ prop-setoid.project₁ {X = X} {Y = Y} ]) ⇒f Q
+-}
 
--- Could also have the more usable version that states:
---    (Const P ⇒f Q) ≅ P ⇒ Π Y Q
+--
+record HasSetoidProducts {o m e} os es (𝒞 : Category o m e) : Set (o ⊔ suc m ⊔ suc e ⊔ suc os ⊔ suc es) where
+  open Category 𝒞
+  field
+    Π : (A : Setoid _ _) → Fam os es 𝒞 A → obj
+    lambdaΠ : ∀ {A} (x : obj) (P : Fam os es 𝒞 A) → (constantFam os es 𝒞 A x ⇒f P) → (x ⇒ Π A P)
+    lambdaΠ-cong : ∀ {A x P} {f₁ f₂ : constantFam os es 𝒞 A x ⇒f P} → f₁ ≃f f₂ → lambdaΠ x P f₁ ≈ lambdaΠ x P f₂
+    evalΠ : ∀ {A} P (a : A .Setoid.Carrier) → Π A P ⇒ P .Fam.fm a
+    evalΠ-cong : ∀ {A} {P : Fam os es 𝒞 A} {a₁ a₂ : A .Setoid.Carrier} →
+      (e : A .Setoid._≈_ a₁ a₂) → (P .Fam.subst e ∘ evalΠ P a₁) ≈ evalΠ P a₂
+
+    -- plus the projection and extensionality equations
