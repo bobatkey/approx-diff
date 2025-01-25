@@ -51,6 +51,9 @@ record _⇒g_ (X Y : Obj) : Set where
     fwd : X .meets =>M Y .meets
     bwd : Y .joins =>J X .joins
     bwd⊣fwd : ∀ {x y} → y Y.≤ (fwd ._=>M_.func x) ⇔ (bwd ._=>J_.func y) X.≤ x
+
+  -- FIXME: preservation of meets and joins comes for free! but then
+  -- it would be harder to reuse the defined morphisms from before.
 open _⇒g_
 
 record _≃g_ {X Y : Obj} (f g : X ⇒g Y) : Prop where
@@ -177,17 +180,18 @@ module _ where
   𝕃-map : ∀ {X Y} → X ⇒g Y → 𝕃 X ⇒g 𝕃 Y
   𝕃-map f .fwd = meet-semilattice.L-map (f .fwd)
   𝕃-map f .bwd = join-semilattice.L-map (f .bwd)
-  𝕃-map {X} {Y} f .bwd⊣fwd {bottom} {bottom} .proj₁ y≤Lfx = tt
-  𝕃-map {X} {Y} f .bwd⊣fwd {< x >} {bottom} .proj₁ y≤Lfx = tt
-  𝕃-map {X} {Y} f .bwd⊣fwd {< x >} {< y >} .proj₁ y≤Lfx = f .bwd⊣fwd .proj₁ y≤Lfx
-  𝕃-map {X} {Y} f .bwd⊣fwd {bottom} {bottom} .proj₂ Lfy≤x = tt
-  𝕃-map {X} {Y} f .bwd⊣fwd {< x >} {bottom} .proj₂ Lfy≤x = tt
-  𝕃-map {X} {Y} f .bwd⊣fwd {< x >} {< y >} .proj₂ Lfy≤x = f .bwd⊣fwd .proj₂ Lfy≤x
+  𝕃-map f .bwd⊣fwd {bottom} {bottom} .proj₁ y≤Lfx = tt
+  𝕃-map f .bwd⊣fwd {< x >} {bottom} .proj₁ y≤Lfx = tt
+  𝕃-map f .bwd⊣fwd {< x >} {< y >} .proj₁ y≤Lfx = f .bwd⊣fwd .proj₁ y≤Lfx
+  𝕃-map f .bwd⊣fwd {bottom} {bottom} .proj₂ Lfy≤x = tt
+  𝕃-map f .bwd⊣fwd {< x >} {bottom} .proj₂ Lfy≤x = tt
+  𝕃-map f .bwd⊣fwd {< x >} {< y >} .proj₂ Lfy≤x = f .bwd⊣fwd .proj₂ Lfy≤x
 
   𝕃-unit : ∀ {X} → X ⇒g 𝕃 X
   𝕃-unit .fwd = meet-semilattice.L-unit
   𝕃-unit .bwd = join-semilattice.L-counit
-  𝕃-unit {X} .bwd⊣fwd {x} {bottom} .proj₁ tt = X .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom
+  𝕃-unit {X} .bwd⊣fwd {x} {bottom} .proj₁ tt =
+    X .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom
   𝕃-unit .bwd⊣fwd {x} {< x₁ >} .proj₁ x₁≤x = x₁≤x
   𝕃-unit .bwd⊣fwd {x} {bottom} .proj₂ x₁ = tt
   𝕃-unit .bwd⊣fwd {x} {< x₁ >} .proj₂ x₁≤x = x₁≤x
@@ -207,8 +211,10 @@ module _ where
   𝕃-strength : ∀ {X Y} → (X ⊗ 𝕃 Y) ⇒g 𝕃 (X ⊗ Y)
   𝕃-strength .fwd = meet-semilattice.L-strength
   𝕃-strength .bwd = join-semilattice.L-costrength
-  𝕃-strength {X} {Y} .bwd⊣fwd {x , bottom} {bottom} .proj₁ e = X .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom , tt
-  𝕃-strength {X} {Y} .bwd⊣fwd {x , < x₁ >} {bottom} .proj₁ e = X .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom , tt
+  𝕃-strength {X} {Y} .bwd⊣fwd {x , bottom} {bottom} .proj₁ e =
+    X .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom , tt
+  𝕃-strength {X} {Y} .bwd⊣fwd {x , < x₁ >} {bottom} .proj₁ e =
+    X .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom , tt
   𝕃-strength {X} {Y} .bwd⊣fwd {x , < x₂ >} {< x₁ >} .proj₁ e = e
   𝕃-strength {X} {Y} .bwd⊣fwd {x , bottom} {bottom} .proj₂ e = tt
   𝕃-strength {X} {Y} .bwd⊣fwd {x , < x₁ >} {bottom} .proj₂ e = tt

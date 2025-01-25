@@ -137,7 +137,7 @@ module _ where
       f .func tt
     ≈⟨ ⊥-preserving-≃ f ⟩
       X .⊥
-    ≈⟨ isEquivalence A .IsEquivalence.sym (⊥-preserving-≃ g) ⟩
+    ≈⟨ A .≃-sym (⊥-preserving-≃ g) ⟩
       g .func tt
     ∎
     where open ≈-Reasoning (isEquivalence A)
@@ -269,7 +269,8 @@ module _ where
   inject₂ {B = B}{X = X} .∨-preserving = IsJoin.idem (X .∨-isJoin) .proj₂ , B .≤-refl
   inject₂ {A}{B} .⊥-preserving = A .≤-refl , B .≤-refl
 
-  [_,_] : ∀ {A B C}{X : JoinSemilattice A}{Y : JoinSemilattice B}{Z : JoinSemilattice C} → X => Z → Y => Z → (X ⊕ Y) => Z
+  [_,_] : ∀ {A B C}{X : JoinSemilattice A}{Y : JoinSemilattice B}{Z : JoinSemilattice C} →
+          X => Z → Y => Z → (X ⊕ Y) => Z
   [_,_] {Z = Z} f g .func (x , y) = Z ._∨_ (f .func x) (g .func y)
   [_,_] {Z = Z} f g .monotone (x₁≤x₁' , x₂≤x₂') =
     IsJoin.mono (Z .∨-isJoin) (f .monotone x₁≤x₁') (g .monotone x₂≤x₂')
@@ -294,7 +295,7 @@ module _ where
   inj₁-copair {C = C} {Y = Y} {Z = Z} f g .eqfunc x =
     begin
       f .func x Z.∨ g .func (Y .⊥)
-    ≈⟨ MZ.cong (isEquivalence C .IsEquivalence.refl) (⊥-preserving-≃ g) ⟩
+    ≈⟨ MZ.cong (C .≃-refl) (⊥-preserving-≃ g) ⟩
       f .func x Z.∨ Z .⊥
     ≈⟨ MZ.runit ⟩
       f .func x
@@ -311,7 +312,7 @@ module _ where
   inj₂-copair {C = C} {X = X} {Z = Z} f g .eqfunc y =
     begin
       f .func (X .⊥) Z.∨ g .func y
-    ≈⟨ MZ.cong (⊥-preserving-≃ f) (isEquivalence C .IsEquivalence.refl) ⟩
+    ≈⟨ MZ.cong (⊥-preserving-≃ f) (C .≃-refl) ⟩
       Z .⊥ Z.∨ g .func y
     ≈⟨ MZ.lunit ⟩
       g .func y
@@ -329,7 +330,7 @@ module _ where
   copair-ext {A} {B} {C} {X} {Y} {Z} f .eqfunc (x , y) =
     begin
       f .func (x , Y .⊥) Z.∨ f .func (X .⊥ , y)
-    ≈⟨ isEquivalence C .IsEquivalence.sym (∨-preserving-≃ f) ⟩
+    ≈⟨ C .≃-sym (∨-preserving-≃ f) ⟩
       f .func (x X.∨ X.⊥ , Y .⊥ Y.∨ y)
     ≈⟨ resp-≃ f (preorder.×-≃ {X = A} {Y = B} MX.runit MY.lunit) ⟩
       f .func (x , y)

@@ -4,8 +4,7 @@ module preorder where
 
 open import Level
 open import prop
-import Data.Unit using (tt) renaming (⊤ to 𝟙)
-open Data.Unit using (tt)
+open import Data.Unit using (tt)
 open import Data.Product using (_,_)
 open import basics
 open import prop-setoid using (IsEquivalence)
@@ -27,7 +26,7 @@ module _ where
 
   -- Unit preorder
   𝟙 : Preorder
-  𝟙 .Carrier = Data.Unit.𝟙
+  𝟙 .Carrier = Data.Unit.⊤
   𝟙 ._≤_ tt tt = ⊤
   𝟙 .≤-isPreorder .IsPreorder.refl = tt
   𝟙 .≤-isPreorder .IsPreorder.trans tt tt = tt
