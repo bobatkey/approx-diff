@@ -225,3 +225,7 @@ module _ {o e} where
   nil : ∀ {A : Setoid o e} → (𝟙 {o} {e}) ⇒ ListS A
   nil .func _ = []
   nil .func-resp-≈ _ = tt
+
+  cons : ∀ {A : Setoid o e} → ⊗-setoid A (ListS A) ⇒ ListS A
+  cons .func (x , xs) = x ∷ xs
+  cons .func-resp-≈ e = e

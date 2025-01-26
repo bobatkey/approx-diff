@@ -501,7 +501,13 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     nil .famf .transf (lift tt) = id _
     nil .famf .natural x₁≈x₂ = isEquiv .refl
 
-    -- FIXME: cons and foldr
+    cons : ∀ {X} → Mor (X ⊗ (ListF X)) (ListF X)
+    cons .idxf = prop-setoid.cons
+    cons .famf .transf x = id _
+    cons .famf .natural x₁≈x₂ =
+      isEquiv .trans id-left (isEquiv .sym id-right)
+
+    -- FIXME: foldr
 
   -- If 𝒞 has binary biproducts and Setoid-indexed products, then this
   -- category has exponentials.
