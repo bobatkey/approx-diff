@@ -227,7 +227,9 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     coproducts .copair f g .famf .natural {inj₁ x} {inj₁ x₁} (lift e) = f .famf .natural e
     coproducts .copair f g .famf .natural {inj₂ y} {inj₂ y₁} (lift e) = g .famf .natural e
 
-  -- If 𝒞 has products, then so does the category of families
+  -- If 𝒞 has products, then so does the category of families. FIXME:
+  -- redo the core of this to just get monoidal products from monoidal
+  -- products.
   module products (P : HasProducts 𝒞) where
 
     open Category 𝒞
@@ -239,8 +241,9 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     (X ⊗ Y) .idx = ⊗-setoid (X .idx) (Y .idx)
     (X ⊗ Y) .fam .fm (x , y) = P .prod (X .fam .fm x) (Y .fam .fm y)
     (X ⊗ Y) .fam .subst (e₁ , e₂) =
-      P .pair (X .fam .subst e₁ ∘ P .p₁) (Y .fam .subst e₂ ∘ P .p₂)
+      prod-m P (X .fam .subst e₁) (Y .fam .subst e₂)
     (X ⊗ Y) .fam .refl* =
+      -- FIXME: redo this just using prod-m
       begin
         P .pair (X .fam .subst _ ∘ P .p₁) (Y .fam .subst _ ∘ P .p₂)
       ≈⟨ P .pair-cong (∘-cong (X .fam .refl*) (isEquiv .refl)) (∘-cong (Y .fam .refl*) (isEquiv .refl)) ⟩
@@ -489,6 +492,7 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     ListF X .fam = ListFam X
 
     module FT = HasTerminal (terminal T)
+    open products P
     open _⇒f_
     open _≃f_
 
@@ -500,7 +504,12 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     -- FIXME: cons and foldr
 
   -- If 𝒞 has binary biproducts and Setoid-indexed products, then this
-  -- category has exponentials
+  -- category has exponentials.
+  --
+  -- More precisely, if 𝒞 has binary coproducts and Setoid-indexed
+  -- products, then the category of families has symmetric monoidal
+  -- structure. If the coproducts are in fact biproducts, then Fam(𝒞)
+  -- is cartesian closed.
   module _ (P : HasBiproducts 𝒞) (SP : HasSetoidProducts os es 𝒞) where
 
     open Category 𝒞
@@ -520,7 +529,7 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     (X ⟶ Y) .idx = Category.hom-setoid cat X Y
     (X ⟶ Y) .fam .fm f = SP .Π (X .idx) (Y .fam [ f .idxf ])
     (X ⟶ Y) .fam .subst {f} {g} e =
-        -- FIXME: this is a general 'map' on Π, do the definitions earlier
+        -- FIXME: this is a general 'map' on Π, do the definitions in HasSetoidProducts
         SP .lambdaΠ
            (SP .Π (X .idx) (Y .fam [ f .idxf ]))
            (Y .fam [ g .idxf ])
@@ -533,19 +542,20 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     eval⟶ : ∀ {X Y : Obj} → Mor (X ⊗ (X ⟶ Y)) Y
     eval⟶ .idxf .func (x , f) = f .idxf .func x
     eval⟶ .idxf .func-resp-≈ (x₁≈x₂ , f₁≈f₂) = f₁≈f₂ .idxf-eq .func-eq x₁≈x₂
-    eval⟶ .famf .transf (x , f) = SP .evalΠ _ x ∘ P .p₂
+    eval⟶ .famf .transf (x , f) =
+      P .copair (f .famf .transf x) (SP .evalΠ _ x)
     eval⟶ {X} {Y} .famf .natural {x₁ , f₁} {x₂ , f₂} (x₁≈x₂ , f₁≈f₂) =
       begin
-        (SP .evalΠ (Y .fam [ f₂ .idxf ]) x₂ ∘ P .p₂) ∘ (X ⊗ (X ⟶ Y)) .fam .subst (x₁≈x₂ , f₁≈f₂)
-      ≈⟨ {!!} ⟩ -- FIXME: naturality of evalΠ
-        Y .fam .subst _ ∘ (SP .evalΠ (Y .fam [ f₁ .idxf ]) x₁ ∘ P .p₂)
+        P .copair (f₂ .famf .transf x₂) (SP .evalΠ (Y .fam [ f₂ .idxf ]) x₂) ∘ prod-m P (X .fam .subst x₁≈x₂) ((X ⟶ Y) .fam .subst f₁≈f₂)
+      ≈⟨ {!!} ⟩
+        Y .fam .subst _ ∘ P .copair (f₁ .famf .transf x₁) (SP .evalΠ (Y .fam [ f₁ .idxf ]) x₁)
       ∎
       where open ≈-Reasoning isEquiv
 
     lambda⟶ : ∀ {X Y Z} → Mor (X ⊗ Y) Z → Mor X (Y ⟶ Z)
     lambda⟶ f .idxf .func x .idxf .func y = f .idxf .func (x , y)
     lambda⟶ {X} f .idxf .func x .idxf .func-resp-≈ y₁≈y₂ = f .idxf .func-resp-≈ ((X .idx .Setoid.refl) , y₁≈y₂)
-    lambda⟶ f .idxf .func x .famf .transf y = f .famf .transf (x , y) ∘ (P .in₂)
+    lambda⟶ f .idxf .func x .famf .transf y = f .famf .transf (x , y) ∘ P .in₂
     lambda⟶ {X} {Y} {Z} f .idxf .func x .famf .natural {y₁} {y₂} y₁≈y₂ =
       begin
         (f .famf .transf (x , y₂) ∘ P .in₂) ∘ Y .fam .subst _

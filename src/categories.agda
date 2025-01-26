@@ -177,6 +177,8 @@ record HasBiproducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   hasProducts .HasProducts.pair-p₂ = pair-p₂
   hasProducts .HasProducts.pair-ext = pair-ext
 
+  open HasProducts hasProducts public
+
 record HasExponentials {o m e} (𝒞 : Category o m e) (P : HasProducts 𝒞) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞
   open HasProducts P
