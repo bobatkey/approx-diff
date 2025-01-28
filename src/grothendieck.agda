@@ -243,25 +243,21 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     (X ⊗ Y) .fam .subst (e₁ , e₂) =
       prod-m P (X .fam .subst e₁) (Y .fam .subst e₂)
     (X ⊗ Y) .fam .refl* =
-      -- FIXME: redo this just using prod-m
       begin
-        P .pair (X .fam .subst _ ∘ P .p₁) (Y .fam .subst _ ∘ P .p₂)
-      ≈⟨ P .pair-cong (∘-cong (X .fam .refl*) (isEquiv .refl)) (∘-cong (Y .fam .refl*) (isEquiv .refl)) ⟩
-        P .pair (id _ ∘ P .p₁) (id _ ∘ P .p₂)
-      ≈⟨ P .pair-cong id-left id-left ⟩
-        P .pair (P .p₁) (P .p₂)
-      ≈⟨ pair-ext0 P ⟩
+        prod-m P (X .fam .subst _) (Y .fam .subst _)
+      ≈⟨ prod-m-cong P (X .fam .refl*) (Y .fam .refl*) ⟩
+        prod-m P (id _) (id _)
+      ≈⟨ prod-m-id P ⟩
         id _
       ∎ where open ≈-Reasoning isEquiv
     (X ⊗ Y) .fam .trans* {x₁ , y₁} {x₂ , y₂} {x₃ , y₃} (x₂≈x₃ , y₂≈y₃) (x₁≈x₂ , y₁≈y₂) =
       begin
-        P .pair (X .fam .subst _ ∘ P .p₁) (Y .fam .subst _ ∘ P .p₂)
-      ≈⟨ P .pair-cong (∘-cong (X .fam .trans* _ _) (isEquiv .refl)) (∘-cong (Y .fam .trans* _ _) (isEquiv .refl)) ⟩
-        P .pair ((X .fam .subst _ ∘ X .fam .subst _) ∘ P .p₁) ((Y .fam .subst _ ∘ Y .fam .subst _) ∘ P .p₂)
+        prod-m P (X .fam .subst _) (Y .fam .subst _)
+      ≈⟨ prod-m-cong P (X .fam .trans* _ _) (Y .fam .trans* _ _) ⟩
+        prod-m P (X .fam .subst _ ∘ X .fam .subst _) (Y .fam .subst _ ∘ Y .fam .subst _)
       ≈⟨ pair-functorial P _ _ _ _ ⟩
-        P .pair (X .fam .subst _ ∘ P .p₁) (Y .fam .subst _ ∘ P .p₂) ∘ P .pair (X .fam .subst _ ∘ P .p₁) (Y .fam .subst _ ∘ P .p₂)
-      ∎
-      where open ≈-Reasoning isEquiv
+        prod-m P (X .fam .subst _) (Y .fam .subst _) ∘ prod-m P (X .fam .subst _) (Y .fam .subst _)
+      ∎ where open ≈-Reasoning isEquiv
 
     products : HasProducts cat
     products .prod = _⊗_
@@ -296,8 +292,7 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
         P .pair ((Y .fam .subst _ ∘ P .p₁) ∘ P .pair (f .famf .transf x₁) (g .famf .transf x₁)) ((Z .fam .subst _ ∘ P .p₂) ∘ P .pair (f .famf .transf x₁) (g .famf .transf x₁))
       ≈⟨ isEquiv .sym (pair-natural P _ _ _) ⟩
         P .pair (Y .fam .subst _ ∘ P .p₁) (Z .fam .subst _ ∘ P .p₂) ∘ P .pair (f .famf .transf x₁) (g .famf .transf x₁)
-      ∎
-      where open ≈-Reasoning isEquiv
+      ∎ where open ≈-Reasoning isEquiv
     products .pair-cong f₁≈f₂ g₁≈g₂ .idxf-eq = prop-setoid.pair-cong (f₁≈f₂ .idxf-eq) (g₁≈g₂ .idxf-eq)
     products .pair-cong {X}{Y}{Z} {f₁}{f₂}{g₁}{g₂} f₁≈f₂ g₁≈g₂ .famf-eq ._≃f_.transf-eq {x} =
       begin
@@ -306,7 +301,7 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
         P .pair (Y .fam .subst _ ∘ f₁ .famf .transf x) (Z .fam .subst _ ∘ g₁ .famf .transf x)
       ≈⟨ P .pair-cong (f₁≈f₂ .famf-eq ._≃f_.transf-eq) (g₁≈g₂ .famf-eq ._≃f_.transf-eq) ⟩
         P .pair (f₂ .famf .transf x) (g₂ .famf .transf x)
-      ∎  where open ≈-Reasoning isEquiv
+      ∎ where open ≈-Reasoning isEquiv
     products .pair-p₁ {X} {Y} {Z} f g .idxf-eq = Setoid-products _ _ .pair-p₁ _ _
     products .pair-p₁ {X} {Y} {Z} f g .famf-eq ._≃f_.transf-eq {x} =
       begin
