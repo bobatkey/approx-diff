@@ -101,7 +101,68 @@ module _ {o m e} {os es} {𝒞 : Category o m e} {A : Setoid (m ⊔ e ⊔ os ⊔
       ((f ∘f g) ∘f h) ≃f (f ∘f (g ∘f h))
   ≃f-assoc f g h .transf-eq = assoc _ _ _
 
+  constF : ∀ {x y} → x ⇒ y → constantFam os es 𝒞 A x ⇒f constantFam os es 𝒞 A y
+  constF f .transf _ = f
+  constF f .natural _ = isEquiv .trans id-right (isEquiv .sym id-left)
+
+
 -- FIXME: families over a fixed setoid form a category
+
+------------------------------------------------------------------------------
+-- Change of indexed category
+open import functor
+
+module _ {o m e} os es {𝒞 𝒟 : Category o m e}
+         (A : Setoid (m ⊔ e ⊔ os ⊔ es) (m ⊔ e ⊔ os ⊔ es))
+         (F : Functor 𝒞 𝒟) where
+
+  open Fam
+  open Functor
+  open Category
+  open IsEquivalence
+  private
+    module 𝒞 = Category 𝒞
+    module 𝒟 = Category 𝒟
+
+  -- FIXME: might need this to be more flexible about universe levels
+  changeCat : Fam os es 𝒞 A → Fam os es 𝒟 A
+  changeCat P .fm a = F .fobj (P .fm a)
+  changeCat P .subst a₁≈a₂ = F .fmor (P .subst a₁≈a₂)
+  changeCat P .refl* =
+    𝒟 .isEquiv .trans (F .fmor-cong (P .refl*)) (F .fmor-id)
+  changeCat P .trans* e₁ e₂ =
+    𝒟 .isEquiv .trans (F .fmor-cong (P .trans* e₁ e₂)) (F .fmor-comp _ _)
+
+  open _⇒f_
+  open _≃f_
+
+  changeCatF : ∀ {P Q : Fam os es 𝒞 A} → P ⇒f Q → changeCat P ⇒f changeCat Q
+  changeCatF f .transf x = F .fmor (f .transf x)
+  changeCatF {P} {Q} f .natural {x₁} {x₂} x₁≈x₂ =
+    begin
+      F .fmor (f .transf x₂) 𝒟.∘ F .fmor (P .subst _)
+    ≈⟨ 𝒟.isEquiv .sym (F .fmor-comp _ _) ⟩
+      F .fmor (f .transf x₂ 𝒞.∘ P .subst _)
+    ≈⟨ F .fmor-cong (f .natural _) ⟩
+      F .fmor (Q .subst x₁≈x₂ 𝒞.∘ f .transf x₁)
+    ≈⟨ F .fmor-comp _ _ ⟩
+      F .fmor (Q .subst x₁≈x₂) 𝒟.∘ F .fmor (f .transf x₁)
+    ∎ where open ≈-Reasoning 𝒟.isEquiv
+
+  preserveConst : ∀ x → changeCat (constantFam os es 𝒞 A x) ⇒f constantFam os es 𝒟 A (F .fobj x)
+  preserveConst x .transf a = 𝒟.id _
+  preserveConst x .natural a₁≈a₂ =
+    begin
+      𝒟.id _ 𝒟.∘ F .fmor (𝒞.id _)
+    ≈⟨ 𝒟.∘-cong (𝒟.isEquiv .refl) (F .fmor-id) ⟩
+      𝒟.id _ 𝒟.∘ 𝒟.id _
+    ∎ where open ≈-Reasoning 𝒟.isEquiv
+
+  preserveConst⁻¹ : ∀ x → constantFam os es 𝒟 A (F .fobj x) ⇒f changeCat (constantFam os es 𝒞 A x)
+  preserveConst⁻¹ x .transf a = 𝒟.id _
+  preserveConst⁻¹ x .natural a₁≈a₂ = 𝒟.∘-cong (𝒟.isEquiv .sym (F .fmor-id)) (𝒟.isEquiv .refl)
+
+  -- FIXME: preserves id and composition, and preserveConst is a natural isomorphism
 
 ------------------------------------------------------------------------------
 -- reindexing of families (so that Fam is an indexed category)
@@ -197,4 +258,14 @@ record HasSetoidProducts {o m e} os es (𝒞 : Category o m e) : Set (o ⊔ suc 
     evalΠ-cong : ∀ {A} {P : Fam os es 𝒞 A} {a₁ a₂ : A .Setoid.Carrier} →
       (e : A .Setoid._≈_ a₁ a₂) → (P .Fam.subst e ∘ evalΠ P a₁) ≈ evalΠ P a₂
 
-    -- plus the projection and extensionality equations
+  open IsEquivalence
+
+  evalΠf : ∀ {A} P → constantFam os es 𝒞 A (Π A P) ⇒f P
+  evalΠf P = record { transf = evalΠ P
+                    ; natural = λ x₁≈x₂ →
+                       isEquiv .trans id-right (isEquiv .sym (evalΠ-cong x₁≈x₂)) }
+
+  field
+    lambda-eval : ∀ {A} {P : Fam os es 𝒞 A} {x} {f} a →
+      (evalΠ P a ∘ lambdaΠ x P f) ≈ f ._⇒f_.transf a
+    lambda-ext : ∀ {A} {P : Fam os es 𝒞 A} {x} {f} → lambdaΠ x P (evalΠf P ∘f constF f) ≈ f
