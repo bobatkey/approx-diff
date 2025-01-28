@@ -5,7 +5,7 @@ open import Data.Product using (_,_; proj₁; proj₂)
 open import categories
 open import prop
 open import prop-setoid
-  using (IsEquivalence; Setoid; 𝟙; +-setoid; ⊗-setoid; idS; _∘S_; module ≈-Reasoning; ∘S-cong)
+  using (IsEquivalence; Setoid; 𝟙; +-setoid; idS; _∘S_; module ≈-Reasoning; ∘S-cong)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_; ≃m-isEquivalence to ≈s-isEquivalence)
 open import setoid-cat
 
@@ -111,44 +111,52 @@ module _ where
 
   open Category 𝒞
   open HasProducts
-  open prop-setoid using (project₁; project₂) renaming (pair to pairS)
+
+  module SP = HasProducts (Setoid-products (o ⊔ m ⊔ e ⊔ os ⊔ es) (o ⊔ m ⊔ e ⊔ es ⊔ os))
 
   _⊗_ : PreSheaf → PreSheaf → PreSheaf
-  (F ⊗ G) .fobj x =
-    ⊗-setoid (F .fobj x) (G .fobj x)
-  (F ⊗ G) .fmap f =
-    pairS (F .fmap f ∘S project₁) (G .fmap f ∘S project₂)
+  (F ⊗ G) .fobj x = SP.prod (F .fobj x) (G .fobj x)
+  (F ⊗ G) .fmap f = SP.prod-m (F .fmap f) (G .fmap f)
   (F ⊗ G) .fmap-cong f≈g =
-    prop-setoid.pair-cong (∘S-cong (F .fmap-cong f≈g) (≈s-isEquivalence .refl))
-                          (∘S-cong (G .fmap-cong f≈g) (≈s-isEquivalence .refl))
+    SP.prod-m-cong (F .fmap-cong f≈g) (G .fmap-cong f≈g)
   (F ⊗ G) .fmap-id x =
     begin
-      pairS (F .fmap (Category.id 𝒞 x) ∘S project₁) (G .fmap (Category.id 𝒞 x) ∘S project₂)
-    ≈⟨ prop-setoid.pair-cong
-        (∘S-cong (F .fmap-id x) (≈s-isEquivalence .refl))
-        (∘S-cong (G .fmap-id x) (≈s-isEquivalence .refl)) ⟩
-      pairS (idS _ ∘S project₁) (idS _ ∘S project₂)
-    ≈⟨ prop-setoid.pair-cong prop-setoid.id-left prop-setoid.id-left ⟩
-      pairS project₁ project₂
-    ≈⟨ pair-ext0 (Setoid-products _ _) ⟩
-      idS (⊗-setoid (F .fobj x) (G .fobj x))
+      SP.prod-m (F .fmap (Category.id 𝒞 x)) (G .fmap (Category.id 𝒞 x))
+    ≈⟨ SP.prod-m-cong (F .fmap-id x) (G .fmap-id x) ⟩
+      SP.prod-m (idS _) (idS _)
+    ≈⟨ SP.prod-m-id ⟩
+      idS _
     ∎ where open ≈-Reasoning ≈s-isEquivalence
-  (F ⊗ G) .fmap-∘ f g ._≈s_.func-eq (x₁≈x₂ , y₁≈y₂) .proj₁ = F .fmap-∘ _ _ ._≈s_.func-eq x₁≈x₂
-  (F ⊗ G) .fmap-∘ f g ._≈s_.func-eq (x₁≈x₂ , y₁≈y₂) .proj₂ = G .fmap-∘ _ _ ._≈s_.func-eq y₁≈y₂
+  (F ⊗ G) .fmap-∘ f g =
+    begin
+      SP.prod-m (F .fmap (f ∘ g)) (G .fmap (f ∘ g))
+    ≈⟨ SP.prod-m-cong (F .fmap-∘ _ _) (G .fmap-∘ _ _) ⟩
+      SP.prod-m (F .fmap g ∘S F .fmap f) (G .fmap g ∘S G .fmap f)
+    ≈⟨ SP.pair-functorial _ _ _ _ ⟩
+      SP.prod-m (F .fmap g) (G .fmap g) ∘S SP.prod-m (F .fmap f) (G .fmap f)
+    ∎ where open ≈-Reasoning ≈s-isEquivalence
 
   products : HasProducts cat
   products .prod = _⊗_
-  products .p₁ .transf x = project₁
-  products .p₁ {X} {Y} .natural f ._≈s_.func-eq (x₁≈x₂ , y₁≈y₂) = X .fmap f ._⇒s_.func-resp-≈ x₁≈x₂
-  products .p₂ .transf x = project₂
-  products .p₂ {X} {Y} .natural f ._≈s_.func-eq (x₁≈x₂ , y₁≈y₂) = Y .fmap f ._⇒s_.func-resp-≈ y₁≈y₂
-  products .pair α β .transf x = pairS (α .transf x) (β .transf x)
-  products .pair {F} {G} {H} α β .natural f ._≈s_.func-eq x₁≈x₂ .proj₁ = α .natural f ._≈s_.func-eq x₁≈x₂
-  products .pair {F} {G} {H} α β .natural f ._≈s_.func-eq x₁≈x₂ .proj₂ = β .natural f ._≈s_.func-eq x₁≈x₂
-  products .pair-cong e₁ e₂ .transf-eq x = prop-setoid.pair-cong (e₁ .transf-eq x) (e₂ .transf-eq x)
-  products .pair-p₁ f g .transf-eq x = Setoid-products _ _ .pair-p₁ _ _
-  products .pair-p₂ f g .transf-eq x = Setoid-products _ _ .pair-p₂ _ _
-  products .pair-ext f .transf-eq x = Setoid-products _ _ .pair-ext _
+  products .p₁ .transf x = SP.p₁
+  products .p₁ .natural f = ≈s-isEquivalence .sym (SP.pair-p₁ _ _)
+  products .p₂ .transf x = SP.p₂
+  products .p₂ .natural f = ≈s-isEquivalence .sym (SP.pair-p₂ _ _)
+  products .pair α β .transf x = SP.pair (α .transf x) (β .transf x)
+  products .pair {F} {G} {H} α β .natural {x} {y} f =
+    begin
+      SP.prod-m (G .fmap f) (H .fmap f) ∘S SP.pair (α .transf y) (β .transf y)
+    ≈⟨ SP.pair-compose _ _ _ _ ⟩
+      SP.pair (G .fmap f ∘S α .transf y) (H .fmap f ∘S β .transf y)
+    ≈⟨ SP.pair-cong (α .natural f) (β .natural f) ⟩
+      SP.pair (α .transf x ∘S F .fmap f) (β .transf x ∘S F .fmap f)
+    ≈⟨ ≈s-isEquivalence .sym (SP.pair-natural _ _ _) ⟩
+      SP.pair (α .transf x) (β .transf x) ∘S F .fmap f
+    ∎ where open ≈-Reasoning ≈s-isEquivalence
+  products .pair-cong e₁ e₂ .transf-eq x = SP.pair-cong (e₁ .transf-eq x) (e₂ .transf-eq x)
+  products .pair-p₁ f g .transf-eq x = SP.pair-p₁ _ _
+  products .pair-p₂ f g .transf-eq x = SP.pair-p₂ _ _
+  products .pair-ext f .transf-eq x = SP.pair-ext _
 
   open HasStrongCoproducts
   open import Data.Sum using (_⊎_; inj₁; inj₂)
