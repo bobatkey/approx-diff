@@ -286,7 +286,7 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
         P .pair (f .famf .transf x₂ ∘ X .fam .subst _) (g .famf .transf x₂ ∘ X .fam .subst _)
       ≈⟨ P .pair-cong (f .famf .natural x₁≈x₂) (g .famf .natural x₁≈x₂) ⟩
         P .pair (Y .fam .subst _ ∘ f .famf .transf x₁) (Z .fam .subst _ ∘ g .famf .transf x₁)
-      ≈⟨ isEquiv .sym (P .pair-cong (∘-cong (isEquiv .refl) (P .pair-p₁ _ _)) (∘-cong (isEquiv .refl) (P .pair-p₂ _ _))) ⟩
+      ≈⟨ isEquiv .sym (P .pair-cong (∘-cong ≈-refl (P .pair-p₁ _ _)) (∘-cong ≈-refl (P .pair-p₂ _ _))) ⟩
         P .pair (Y .fam .subst _ ∘ (P .p₁ ∘ P .pair (f .famf .transf x₁) (g .famf .transf x₁))) (Z .fam .subst _ ∘ (P .p₂ ∘ P .pair (f .famf .transf x₁) (g .famf .transf x₁)))
       ≈⟨ isEquiv .sym (P .pair-cong (assoc _ _ _) (assoc _ _ _)) ⟩
         P .pair ((Y .fam .subst _ ∘ P .p₁) ∘ P .pair (f .famf .transf x₁) (g .famf .transf x₁)) ((Z .fam .subst _ ∘ P .p₂) ∘ P .pair (f .famf .transf x₁) (g .famf .transf x₁))
@@ -326,7 +326,7 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
         P .pair (Y .fam .subst _ ∘ P .p₁) (Z .fam .subst _ ∘ P .p₂) ∘ P .pair (P .p₁ ∘ f .famf .transf x) (P .p₂ ∘ f .famf .transf x)
       ≈⟨ pair-compose P _ _ _ _ ⟩
         P .pair (Y .fam .subst _ ∘ (P .p₁ ∘ f .famf .transf x)) (Z .fam .subst _ ∘ (P .p₂ ∘ f .famf .transf x))
-      ≈⟨ P .pair-cong (∘-cong (Y .fam .refl*) (isEquiv .refl)) (∘-cong (Z .fam .refl*) (isEquiv .refl)) ⟩
+      ≈⟨ P .pair-cong (∘-cong (Y .fam .refl*) ≈-refl) (∘-cong (Z .fam .refl*) ≈-refl) ⟩
         P .pair (id _ ∘ (P .p₁ ∘ f .famf .transf x)) (id _ ∘ (P .p₂ ∘ f .famf .transf x))
       ≈⟨ P .pair-cong id-left id-left ⟩
         P .pair (P .p₁ ∘ f .famf .transf x) (P .p₂ ∘ f .famf .transf x)
@@ -402,7 +402,7 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     monad .map-id {X} .famf-eq .transf-eq {x} =
       begin
         Mon .map (X .fam .subst _) ∘ Mon .map (id _)
-      ≈⟨ ∘-cong (Mon .map-cong (X .fam .refl*)) (isEquiv .refl) ⟩
+      ≈⟨ ∘-cong (Mon .map-cong (X .fam .refl*)) ≈-refl ⟩
         Mon .map (id _) ∘ Mon .map (id _)
       ≈⟨ ∘-cong (Mon .map-id) (Mon .map-id) ⟩
         id _ ∘ id _
@@ -414,7 +414,7 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     monad .map-comp {X} {Y} {Z} f g .famf-eq .transf-eq {x} =
       begin
         Mon .map (Z .fam .subst _) ∘ Mon .map (f .famf .transf _ ∘ g .famf .transf x)
-      ≈⟨ ∘-cong (Mon .map-cong (Z .fam .refl*)) (isEquiv .refl) ⟩
+      ≈⟨ ∘-cong (Mon .map-cong (Z .fam .refl*)) ≈-refl ⟩
         Mon .map (id _) ∘ Mon .map (f .famf .transf _ ∘ g .famf .transf x)
       ≈⟨ ∘-cong (Mon .map-id) (Mon .map-comp _ _) ⟩
         id _ ∘ (Mon .map (f .famf .transf _) ∘ Mon .map (g .famf .transf x))
@@ -429,7 +429,7 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
         Mon .map (Y .fam .subst _) ∘ (Mon .unit ∘ f .famf .transf x)
       ≈⟨ ∘-cong (Mon .map-cong (Y .fam .refl*)) (Mon .unit-natural (f .famf .transf x)) ⟩
         Mon .map (id _) ∘ (Mon .map (f .famf .transf x) ∘ Mon .unit)
-      ≈⟨ ∘-cong (Mon .map-id) (isEquiv .refl) ⟩
+      ≈⟨ ∘-cong (Mon .map-id) ≈-refl ⟩
         id _ ∘ (Mon .map (f .famf .transf x) ∘ Mon .unit)
       ≈⟨ id-left ⟩
         Mon .map (f .famf .transf x) ∘ Mon .unit
@@ -442,7 +442,7 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
         Mon .map (Y .fam .subst _) ∘ (Mon .join ∘ Mon .map (Mon .map (f .famf .transf x)))
       ≈⟨ ∘-cong (Mon .map-cong (Y .fam .refl*)) (Mon .join-natural _) ⟩
         Mon .map (id _) ∘ (Mon .map (f .famf .transf x) ∘ Mon .join)
-      ≈⟨ ∘-cong (Mon .map-id) (isEquiv .refl) ⟩
+      ≈⟨ ∘-cong (Mon .map-id) ≈-refl ⟩
         id _ ∘ (Mon .map (f .famf .transf x) ∘ Mon .join)
       ≈⟨ id-left ⟩
         Mon .map (f .famf .transf x) ∘ Mon .join
@@ -455,30 +455,30 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     open Category 𝒞
     open IsEquivalence
     open HasTerminal
-    open HasProducts
+    open HasProducts P
 
     ListFam : (X : Obj) → Fam os es 𝒞 (prop-setoid.ListS (X .idx))
     ListFam X .fm [] = T .witness
-    ListFam X .fm (x ∷ xs) = P .prod (X .fam .fm x) (ListFam X .fm xs)
+    ListFam X .fm (x ∷ xs) = prod (X .fam .fm x) (ListFam X .fm xs)
     ListFam X .subst {[]} {[]} tt = id _
-    ListFam X .subst {x ∷ xs} {y ∷ ys} (x≈y , xs≈ys) = prod-m P (X .fam .subst x≈y) (ListFam X .subst xs≈ys)
+    ListFam X .subst {x ∷ xs} {y ∷ ys} (x≈y , xs≈ys) = prod-m (X .fam .subst x≈y) (ListFam X .subst xs≈ys)
     ListFam X .refl* {[]} = isEquiv .refl
     ListFam X .refl* {x ∷ xs} =
       begin
-        prod-m P (X .fam .subst (X .idx .Setoid.refl {x})) (ListFam X .subst (prop-setoid.List-≈-refl (X .idx) {xs}))
-      ≈⟨ prod-m-cong P (X .fam .refl*) (ListFam X .refl* {xs}) ⟩
-        prod-m P (id _) (id _)
-      ≈⟨ prod-m-id P ⟩
+        prod-m (X .fam .subst (X .idx .Setoid.refl {x})) (ListFam X .subst (prop-setoid.List-≈-refl (X .idx) {xs}))
+      ≈⟨ prod-m-cong (X .fam .refl*) (ListFam X .refl* {xs}) ⟩
+        prod-m (id _) (id _)
+      ≈⟨ prod-m-id ⟩
         id _
       ∎ where open ≈-Reasoning isEquiv
     ListFam X .trans* {[]} {[]} {[]} e₁ e₂ = isEquiv .sym id-left
     ListFam X .trans* {x ∷ xs} {y ∷ ys} {z ∷ zs} (x≈y , xs≈ys) (y≈z , ys≈zs) =
       begin
-        prod-m P (X .fam .subst (X .idx .Setoid.trans y≈z x≈y)) (ListFam X .subst (prop-setoid.List-≈-trans (X .idx) ys≈zs xs≈ys))
-      ≈⟨ prod-m-cong P (X .fam .trans* x≈y y≈z) (ListFam X .trans* xs≈ys ys≈zs) ⟩
-        prod-m P (X .fam .subst x≈y ∘ X .fam .subst y≈z) (ListFam X .subst xs≈ys ∘ ListFam X .subst ys≈zs)
-      ≈⟨ pair-functorial P _ _ _ _ ⟩
-       prod-m P (X .fam .subst x≈y) (ListFam X .subst xs≈ys) ∘ prod-m P (X .fam .subst y≈z) (ListFam X .subst ys≈zs)
+        prod-m (X .fam .subst (X .idx .Setoid.trans y≈z x≈y)) (ListFam X .subst (prop-setoid.List-≈-trans (X .idx) ys≈zs xs≈ys))
+      ≈⟨ prod-m-cong (X .fam .trans* x≈y y≈z) (ListFam X .trans* xs≈ys ys≈zs) ⟩
+        prod-m (X .fam .subst x≈y ∘ X .fam .subst y≈z) (ListFam X .subst xs≈ys ∘ ListFam X .subst ys≈zs)
+      ≈⟨ pair-functorial _ _ _ _ ⟩
+       prod-m (X .fam .subst x≈y) (ListFam X .subst xs≈ys) ∘ prod-m (X .fam .subst y≈z) (ListFam X .subst ys≈zs)
       ∎
       where open ≈-Reasoning isEquiv
 
@@ -502,14 +502,103 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     cons .famf .natural x₁≈x₂ =
       isEquiv .trans id-left (isEquiv .sym id-right)
 
-    -- FIXME: foldr
+    private
+      _⊛_ = prod
+      _⊛f_ = prod-m
+
+      -- FIXME: if we had a DSL of finite products the naturality
+      -- would be easier
+      shuffle : ∀ {X Y Z} → (X ⊛ (Y ⊛ Z)) ⇒ (X ⊛ (Y ⊛ (X ⊛ Z)))
+      shuffle = pair p₁ (pair (p₁ ∘ p₂) (id _ ⊛f p₂))
+
+      shuffle-natural : ∀ {X₁ Y₁ Z₁ X₂ Y₂ Z₂} (f : X₁ ⇒ X₂) (g : Y₁ ⇒ Y₂) (h : Z₁ ⇒ Z₂) →
+          (shuffle ∘ (f ⊛f (g ⊛f h))) ≈ ((f ⊛f (g ⊛f (f ⊛f h))) ∘ shuffle)
+      shuffle-natural f g h =
+        begin
+          shuffle ∘ (f ⊛f (g ⊛f h))
+        ≈⟨ pair-natural _ _ _ ⟩
+          pair (p₁ ∘ (f ⊛f (g ⊛f h))) (pair (p₁ ∘ p₂) (id _ ⊛f p₂) ∘ (f ⊛f (g ⊛f h)))
+        ≈⟨ pair-cong (pair-p₁ _ _) (pair-natural _ _ _) ⟩
+          pair (f ∘ p₁) (pair ((p₁ ∘ p₂) ∘ (f ⊛f (g ⊛f h))) ((id _ ⊛f p₂) ∘ (f ⊛f (g ⊛f h))))
+        ≈⟨ pair-cong ≈-refl (pair-cong (assoc _ _ _) (isEquiv .sym (pair-functorial _ _ _ _))) ⟩
+          pair (f ∘ p₁) (pair (p₁ ∘ (p₂ ∘ (f ⊛f (g ⊛f h)))) ((id _ ∘ f) ⊛f (p₂ ∘ (g ⊛f h))))
+        ≈⟨ pair-cong ≈-refl (pair-cong (∘-cong ≈-refl (pair-p₂ _ _)) (prod-m-cong id-swap (pair-p₂ _ _))) ⟩
+           pair (f ∘ p₁) (pair (p₁ ∘ ((g ⊛f h) ∘ p₂)) ((f ∘ id _) ⊛f (h ∘ p₂)))
+        ≈⟨ pair-cong ≈-refl (pair-cong (isEquiv .sym (assoc _ _ _)) ≈-refl) ⟩
+           pair (f ∘ p₁) (pair ((p₁ ∘ (g ⊛f h)) ∘ p₂) ((f ∘ id _) ⊛f (h ∘ p₂)))
+        ≈⟨ pair-cong ≈-refl (pair-cong (∘-cong (pair-p₁ _ _) ≈-refl) ≈-refl) ⟩
+           pair (f ∘ p₁) (pair ((g ∘ p₁) ∘ p₂) ((f ∘ id _) ⊛f (h ∘ p₂)))
+        ≈⟨ pair-cong ≈-refl (pair-cong (assoc _ _ _) (pair-functorial _ _ _ _)) ⟩
+          pair (f ∘ p₁) (pair (g ∘ (p₁ ∘ p₂)) ((f ⊛f h) ∘ (id _ ⊛f p₂)))
+        ≈⟨ pair-cong ≈-refl (isEquiv .sym (pair-compose _ _ _ _)) ⟩
+          pair (f ∘ p₁) ((g ⊛f (f ⊛f h)) ∘ pair (p₁ ∘ p₂) (id _ ⊛f p₂))
+        ≈⟨ isEquiv .sym (pair-compose _ _ _ _) ⟩
+          (f ⊛f (g ⊛f (f ⊛f h))) ∘ shuffle
+        ∎
+        where open ≈-Reasoning isEquiv
+
+    foldr : ∀ {X Y Z} → Mor X Z → Mor (X ⊗ (Y ⊗ Z)) Z → Mor (X ⊗ ListF Y) Z
+    foldr nilCase consCase .idxf = prop-setoid.foldrP (nilCase .idxf) (consCase .idxf)
+    foldr nilCase consCase .famf .transf (x , []) = nilCase .famf .transf x ∘ p₁
+    foldr nilCase consCase .famf .transf (x , y ∷ ys) =
+      (consCase .famf .transf (x , _) ∘ prod-m (id _) (prod-m (id _) (foldr nilCase consCase .famf .transf (x , ys)))) ∘ shuffle
+    foldr {X} {Y} {Z} nilCase consCase .famf .natural {x₁ , []} {x₂ , []} (x₁≈x₂ , tt) =
+      begin
+        (nilCase .famf .transf x₂ ∘ p₁) ∘ prod-m (X .fam .subst _) (id _)
+      ≈⟨ assoc _ _ _ ⟩
+        nilCase .famf .transf x₂ ∘ (p₁ ∘ prod-m (X .fam .subst _) (id _))
+      ≈⟨ ∘-cong ≈-refl (pair-p₁ _ _) ⟩
+        nilCase .famf .transf x₂ ∘ (X .fam .subst _ ∘ p₁)
+      ≈⟨ isEquiv .sym (assoc _ _ _) ⟩
+        (nilCase .famf .transf x₂ ∘ X .fam .subst _) ∘ p₁
+      ≈⟨ ∘-cong (nilCase .famf .natural _) ≈-refl ⟩
+        (Z .fam .subst _ ∘ nilCase .famf .transf x₁) ∘ p₁
+      ≈⟨ assoc _ _ _ ⟩
+        Z .fam .subst _ ∘ (nilCase .famf .transf x₁ ∘ p₁)
+      ∎ where open ≈-Reasoning isEquiv
+    foldr {X} {Y} {Z} nilCase consCase .famf .natural {x₁ , y₁ ∷ ys₁} {x₂ , y₂ ∷ ys₂} (x₁≈x₂ , y₁≈y₂ , ys₁≈ys₂) =
+      begin
+        ((consCase .famf .transf (x₂ , _) ∘ prod-m (id _) (prod-m (id _) (foldr nilCase consCase .famf .transf (x₂ , ys₂)))) ∘ shuffle) ∘ (sX ⊛f (sY ⊛f sYS))
+      ≈⟨ assoc _ _ _ ⟩
+        (consCase .famf .transf (x₂ , _) ∘ prod-m (id _) (prod-m (id _) (foldr nilCase consCase .famf .transf (x₂ , ys₂)))) ∘ (shuffle ∘ (sX ⊛f (sY ⊛f sYS)))
+      ≈⟨ ∘-cong ≈-refl (shuffle-natural _ _ _) ⟩
+        (consCase .famf .transf (x₂ , _) ∘ prod-m (id _) (prod-m (id _) (foldr nilCase consCase .famf .transf (x₂ , ys₂)))) ∘ ((sX ⊛f (sY ⊛f (sX ⊛f sYS))) ∘ shuffle)
+      ≈⟨ isEquiv .sym (assoc _ _ _) ⟩
+        ((consCase .famf .transf (x₂ , _) ∘ prod-m (id _) (prod-m (id _) (foldr nilCase consCase .famf .transf (x₂ , ys₂)))) ∘ (sX ⊛f (sY ⊛f (sX ⊛f sYS)))) ∘ shuffle
+      ≈⟨ ∘-cong (assoc _ _ _) ≈-refl ⟩
+        (consCase .famf .transf (x₂ , _) ∘ (prod-m (id _) (prod-m (id _) (foldr nilCase consCase .famf .transf (x₂ , ys₂))) ∘ (sX ⊛f (sY ⊛f (sX ⊛f sYS))))) ∘ shuffle
+      ≈⟨ ∘-cong (∘-cong ≈-refl (isEquiv .sym (pair-functorial _ _ _ _))) ≈-refl ⟩
+        (consCase .famf .transf (x₂ , _) ∘ (prod-m (id _ ∘ sX) (prod-m (id _) (foldr nilCase consCase .famf .transf (x₂ , ys₂)) ∘ (sY ⊛f (sX ⊛f sYS))))) ∘ shuffle
+      ≈⟨ ∘-cong (∘-cong ≈-refl (prod-m-cong ≈-refl (isEquiv .sym (pair-functorial _ _ _ _)))) ≈-refl ⟩
+        (consCase .famf .transf (x₂ , _) ∘ (prod-m (id _ ∘ sX) (prod-m (id _ ∘ sY) (foldr nilCase consCase .famf .transf (x₂ , ys₂) ∘ (sX ⊛f sYS))))) ∘ shuffle
+      ≈⟨ ∘-cong (∘-cong ≈-refl (prod-m-cong id-swap (prod-m-cong id-swap (foldr nilCase consCase .famf .natural (x₁≈x₂ , ys₁≈ys₂))))) ≈-refl ⟩
+        (consCase .famf .transf (x₂ , _) ∘ (prod-m (sX ∘ id _) (prod-m (sY ∘ id _) (Z .fam .subst _ ∘ foldr nilCase consCase .famf .transf (x₁ , ys₁))))) ∘ shuffle
+      ≈⟨ ∘-cong (∘-cong ≈-refl (prod-m-cong ≈-refl (pair-functorial _ _ _ _))) ≈-refl ⟩
+        (consCase .famf .transf (x₂ , _) ∘ (prod-m (sX ∘ id _) (prod-m sY (Z .fam .subst _) ∘ prod-m (id _) (foldr nilCase consCase .famf .transf (x₁ , ys₁))))) ∘ shuffle
+      ≈⟨ ∘-cong (∘-cong ≈-refl (pair-functorial _ _ _ _)) ≈-refl ⟩
+        (consCase .famf .transf (x₂ , _) ∘ (prod-m sX (prod-m sY (Z .fam .subst _)) ∘ prod-m (id _) (prod-m (id _) (foldr nilCase consCase .famf .transf (x₁ , ys₁))))) ∘ shuffle
+      ≈⟨ ∘-cong (isEquiv .sym (assoc _ _ _)) ≈-refl ⟩
+        ((consCase .famf .transf (x₂ , _) ∘ prod-m sX (prod-m sY (Z .fam .subst _))) ∘ prod-m (id _) (prod-m (id _) (foldr nilCase consCase .famf .transf (x₁ , ys₁)))) ∘ shuffle
+      ≈⟨ ∘-cong (∘-cong (consCase .famf .natural (x₁≈x₂ , y₁≈y₂ , eq)) ≈-refl) ≈-refl ⟩
+        ((Z .fam .subst _ ∘ consCase .famf .transf (x₁ , _)) ∘ prod-m (id _) (prod-m (id _) (foldr nilCase consCase .famf .transf (x₁ , ys₁)))) ∘ shuffle
+      ≈⟨ ∘-cong (assoc _ _ _) ≈-refl ⟩
+        (Z .fam .subst _ ∘ (consCase .famf .transf (x₁ , _) ∘ prod-m (id _) (prod-m (id _) (foldr nilCase consCase .famf .transf (x₁ , ys₁))))) ∘ shuffle
+      ≈⟨ assoc _ _ _ ⟩
+        Z .fam .subst _ ∘ ((consCase .famf .transf (x₁ , _) ∘ prod-m (id _) (prod-m (id _) (foldr nilCase consCase .famf .transf (x₁ , ys₁)))) ∘ shuffle)
+      ∎
+      where open ≈-Reasoning isEquiv
+            sX = X .fam .subst x₁≈x₂
+            sY = Y .fam .subst y₁≈y₂
+            sYS = ListF Y .fam .subst ys₁≈ys₂
+            eq = prop-setoid.foldrP (nilCase .idxf) (consCase .idxf) ._⇒s_.func-resp-≈ (x₁≈x₂ , ys₁≈ys₂)
 
   -- If 𝒞 has binary biproducts and Setoid-indexed products, then this
   -- category has exponentials.
   --
   -- More precisely, if 𝒞 has binary coproducts and Setoid-indexed
   -- products, then the category of families has symmetric monoidal
-  -- structure. If the coproducts are in fact biproducts, then Fam(𝒞)
+  -- structure (with the monoidal product generated by the
+  -- coproduct). If the coproducts are in fact biproducts, then Fam(𝒞)
   -- is cartesian closed.
   module _ (P : HasBiproducts 𝒞) (SP : HasSetoidProducts os es 𝒞) where
 
@@ -534,11 +623,13 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
         SP .lambdaΠ
            (SP .Π (X .idx) (Y .fam [ f .idxf ]))
            (Y .fam [ g .idxf ])
-           (record { transf = λ x →
-                  Y .fam .subst (e .idxf-eq .func-eq (X .idx .Setoid.refl)) ∘ (SP .evalΠ _ x)
-                   ; natural = {!!} })
-    (X ⟶ Y) .fam .refl* = {!!}
-    (X ⟶ Y) .fam .trans* = {!!}
+           (record { transf = λ x → Y .fam .subst (e .idxf-eq .func-eq (X .idx .Setoid.refl)) ∘ SP .evalΠ _ x
+                   ; natural = λ {x₁} {x₂} x₁≈x₂ → {!!} })
+    (X ⟶ Y) .fam .refl* =
+      {!!}
+    (X ⟶ Y) .fam .trans* =
+      {!!}
+
 
     eval⟶ : ∀ {X Y : Obj} → Mor (X ⊗ (X ⟶ Y)) Y
     eval⟶ .idxf .func (x , f) = f .idxf .func x
@@ -570,15 +661,15 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
         Z .fam .subst _ ∘ (f .famf .transf (x₁ , y) ∘ P .in₂)
       ≈⟨ isEquiv .sym (assoc _ _ _) ⟩
         (Z .fam .subst _ ∘ f .famf .transf (x₁ , y)) ∘ P .in₂
-      ≈⟨ isEquiv .sym (∘-cong (f .famf .natural (x₁≈x₂ , Y .idx .Setoid.refl)) (isEquiv .refl)) ⟩
+      ≈⟨ isEquiv .sym (∘-cong (f .famf .natural (x₁≈x₂ , Y .idx .Setoid.refl)) ≈-refl) ⟩
         (f .famf .transf (x₂ , y) ∘ (X ⊗ Y) .fam .subst _) ∘ P .in₂
       ≈⟨ assoc _ _ _ ⟩
         f .famf .transf (x₂ , y) ∘ ((X ⊗ Y) .fam .subst _ ∘ P .in₂)
-      ≈⟨ ∘-cong (isEquiv .refl) {!!} ⟩ -- FIXME: need naturality of in₂
+      ≈⟨ ∘-cong ≈-refl {!!} ⟩ -- FIXME: need naturality of in₂
         f .famf .transf (x₂ , y) ∘ (P .in₂ ∘ Y .fam .subst _)
-      ≈⟨ ∘-cong (isEquiv .refl) (∘-cong (isEquiv .refl) (Y .fam .refl*)) ⟩
+      ≈⟨ ∘-cong ≈-refl (∘-cong ≈-refl (Y .fam .refl*)) ⟩
         f .famf .transf (x₂ , y) ∘ (P .in₂ ∘ id _)
-      ≈⟨ ∘-cong (isEquiv .refl) id-right ⟩
+      ≈⟨ ∘-cong ≈-refl id-right ⟩
         f .famf .transf (x₂ , y) ∘ P .in₂
       ∎
       where open ≈-Reasoning isEquiv

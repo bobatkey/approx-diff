@@ -5,6 +5,7 @@ module categories where
 open import Level
 open import prop
 open import prop-setoid using (IsEquivalence; Setoid; module ≈-Reasoning)
+open IsEquivalence
 
 -- Definition of category, and some basic structure one might want to
 -- have.
@@ -27,6 +28,12 @@ record Category o m e : Set (suc (o ⊔ m ⊔ e)) where
     id-right : ∀ {x y} {f : x ⇒ y} → (f ∘ id x) ≈ f
     assoc    : ∀ {w x y z} (f : y ⇒ z) (g : x ⇒ y) (h : w ⇒ x) →
       ((f ∘ g) ∘ h) ≈ (f ∘ (g ∘ h))
+
+  ≈-refl : ∀ {x y} {f : x ⇒ y} → f ≈ f
+  ≈-refl = isEquiv .refl
+
+  id-swap : ∀ {x y}{f : x ⇒ y} → (id y ∘ f) ≈ (f ∘ id x)
+  id-swap = isEquiv .trans id-left (isEquiv .sym id-right)
 
   open Setoid renaming (_≈_ to _≃_)
 
@@ -72,11 +79,10 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
       pair (p₁ ∘ (pair f g ∘ h)) (p₂ ∘ (pair f g ∘ h))
     ≈⟨ isEquiv .sym (pair-cong (assoc _ _ _) (assoc _ _ _)) ⟩
       pair ((p₁ ∘ pair f g) ∘ h) ((p₂ ∘ pair f g) ∘ h)
-    ≈⟨ pair-cong (∘-cong (pair-p₁ _ _) (isEquiv .refl)) (∘-cong (pair-p₂ _ _) (isEquiv .refl)) ⟩
+    ≈⟨ pair-cong (∘-cong (pair-p₁ _ _) ≈-refl) (∘-cong (pair-p₂ _ _) ≈-refl) ⟩
       pair (f ∘ h) (g ∘ h)
     ∎
     where open ≈-Reasoning isEquiv
-          open IsEquivalence
 
   pair-compose : ∀ {x y₁ y₂ z₁ z₂} (f₁ : y₁ ⇒ z₁) (f₂ : y₂ ⇒ z₂) (g₁ : x ⇒ y₁) (g₂ : x ⇒ y₂) →
     (pair (f₁ ∘ p₁) (f₂ ∘ p₂) ∘ pair g₁ g₂) ≈ pair (f₁ ∘ g₁) (f₂ ∘ g₂)
@@ -87,10 +93,9 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
       pair ((f₁ ∘ p₁) ∘ pair g₁ g₂) ((f₂ ∘ p₂) ∘ pair g₁ g₂)
     ≈⟨ pair-cong (assoc _ _ _) (assoc _ _ _) ⟩
       pair (f₁ ∘ (p₁ ∘ pair g₁ g₂)) (f₂ ∘ (p₂ ∘ pair g₁ g₂))
-    ≈⟨ pair-cong (∘-cong (isEquiv .refl) (pair-p₁ _ _)) (∘-cong (isEquiv .refl) (pair-p₂ _ _)) ⟩
+    ≈⟨ pair-cong (∘-cong ≈-refl (pair-p₁ _ _)) (∘-cong ≈-refl (pair-p₂ _ _)) ⟩
       pair (f₁ ∘ g₁) (f₂ ∘ g₂)
     ∎ where open ≈-Reasoning isEquiv
-            open IsEquivalence
 
   prod-m : ∀ {x₁ x₂ y₁ y₂} → x₁ ⇒ y₁ → x₂ ⇒ y₂ → prod x₁ x₂ ⇒ prod y₁ y₂
   prod-m f₁ f₂ = pair (f₁ ∘ p₁) (f₂ ∘ p₂)
@@ -102,7 +107,7 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
       pair ((f₁ ∘ g₁) ∘ p₁) ((f₂ ∘ g₂) ∘ p₂)
     ≈⟨ pair-cong (assoc _ _ _) (assoc _ _ _) ⟩
       pair (f₁ ∘ (g₁ ∘ p₁)) (f₂ ∘ (g₂ ∘ p₂))
-    ≈⟨ isEquiv .sym (pair-cong (∘-cong (isEquiv .refl) (pair-p₁ _ _)) (∘-cong (isEquiv .refl) (pair-p₂ _ _))) ⟩
+    ≈⟨ isEquiv .sym (pair-cong (∘-cong ≈-refl (pair-p₁ _ _)) (∘-cong ≈-refl (pair-p₂ _ _))) ⟩
       pair (f₁ ∘ (p₁ ∘ pair (g₁ ∘ p₁) (g₂ ∘ p₂))) (f₂ ∘ (p₂ ∘ pair (g₁ ∘ p₁) (g₂ ∘ p₂)))
     ≈⟨ isEquiv .sym (pair-cong (assoc _ _ _) (assoc _ _ _)) ⟩
       pair ((f₁ ∘ p₁) ∘ pair (g₁ ∘ p₁) (g₂ ∘ p₂)) ((f₂ ∘ p₂) ∘ pair (g₁ ∘ p₁) (g₂ ∘ p₂))
@@ -110,13 +115,11 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
       pair (f₁ ∘ p₁) (f₂ ∘ p₂) ∘ pair (g₁ ∘ p₁) (g₂ ∘ p₂)
     ∎
     where open ≈-Reasoning isEquiv
-          open IsEquivalence
 
   prod-m-cong : ∀ {x₁ x₂ y₁ y₂} {f₁ f₂ : x₁ ⇒ y₁} {g₁ g₂ : x₂ ⇒ y₂} →
                 f₁ ≈ f₂ → g₁ ≈ g₂ → prod-m f₁ g₁ ≈ prod-m f₂ g₂
   prod-m-cong f₁≈f₂ g₁≈g₂ =
-    pair-cong (∘-cong f₁≈f₂ (isEquiv .refl)) (∘-cong g₁≈g₂ (isEquiv .refl))
-    where open IsEquivalence
+    pair-cong (∘-cong f₁≈f₂ ≈-refl) (∘-cong g₁≈g₂ ≈-refl)
 
   pair-ext0 : ∀ {x y} → pair p₁ p₂ ≈ id (prod x y)
   pair-ext0 = begin pair p₁ p₂
@@ -125,7 +128,6 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
                       ≈⟨ pair-ext (id _) ⟩
                     id _ ∎
     where open ≈-Reasoning isEquiv
-          open IsEquivalence
 
   prod-m-id : ∀ {x y} → prod-m (id x) (id y) ≈ id (prod x y)
   prod-m-id =
@@ -137,7 +139,6 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
       id _
     ∎
     where open ≈-Reasoning isEquiv
-          open IsEquivalence
 
 record HasStrongCoproducts {o m e} (𝒞 : Category o m e) (P : HasProducts 𝒞) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞

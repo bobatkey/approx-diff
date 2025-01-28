@@ -49,11 +49,6 @@ record Setoid o e : Set (suc (o ⊔ e)) where
   open IsEquivalence isEquivalence public
 open Setoid
 
--- liftSetoid : ∀ {o e} o' e' → Setoid o e → Setoid (o ⊔ o') (e ⊔ e')
--- liftSetoid o' e' x .Carrier = {!!}
--- liftSetoid o' e' x ._≈_ = {!!}
--- liftSetoid o' e' x .isEquivalence = {!!}
-
 record _⇒_ {o₁ e₁ o₂ e₂} (X : Setoid o₁ e₁) (Y : Setoid o₂ e₂) : Set (o₁ ⊔ o₂ ⊔ e₁ ⊔ e₂) where
   no-eta-equality
   private
@@ -191,6 +186,8 @@ case f g .func-resp-≈ {w₁ , inj₁ x₁} {w₂ , inj₁ x₂} (w₁≈w₂ ,
 case f g .func-resp-≈ {w₁ , inj₂ y₁} {w₂ , inj₂ y₂} (w₁≈w₂ , lift y₁≈y₂) = g .func-resp-≈ (w₁≈w₂ , y₁≈y₂)
 
 -- Lists
+--
+-- FIXME: do this for a larger range of inductive datatypes
 module _ {o e} where
 
   open import Data.List using (List; []; _∷_)
@@ -221,7 +218,6 @@ module _ {o e} where
   ListS A .isEquivalence .sym = List-≈-sym A
   ListS A .isEquivalence .trans = List-≈-trans A
 
-  -- FIXME: nil, cons, and parameterised iteration
   nil : ∀ {A : Setoid o e} → (𝟙 {o} {e}) ⇒ ListS A
   nil .func _ = []
   nil .func-resp-≈ _ = tt
@@ -229,3 +225,25 @@ module _ {o e} where
   cons : ∀ {A : Setoid o e} → ⊗-setoid A (ListS A) ⇒ ListS A
   cons .func (x , xs) = x ∷ xs
   cons .func-resp-≈ e = e
+
+  foldr : ∀ {A B : Setoid o e} →
+          𝟙 {o} {e} ⇒ B →
+          ⊗-setoid A B ⇒ B →
+          ListS A ⇒ B
+  foldr nilCase consCase .func [] = nilCase .func (lift tt)
+  foldr nilCase consCase .func (x ∷ xs) = consCase .func (x , foldr nilCase consCase .func xs)
+  foldr nilCase consCase .func-resp-≈ {[]} {[]} tt = nilCase .func-resp-≈ tt
+  foldr nilCase consCase .func-resp-≈ {x₁ ∷ xs₁} {x₂ ∷ xs₂} (x₁≈x₂ , xs₁≈xs₂) =
+    consCase .func-resp-≈ (x₁≈x₂ , (foldr nilCase consCase .func-resp-≈ xs₁≈xs₂))
+
+  foldrP : ∀ {A B C : Setoid o e} →
+           C ⇒ B →
+           ⊗-setoid C (⊗-setoid A B) ⇒ B →
+           ⊗-setoid C (ListS A) ⇒ B
+  foldrP nilCase consCase .func (c , []) = nilCase .func c
+  foldrP nilCase consCase .func (c , x ∷ xs) = consCase .func (c , x , foldrP nilCase consCase .func (c , xs))
+  foldrP nilCase consCase .func-resp-≈ {c₁ , []}       {c₂ , []}        (c₁≈c₂ , tt) = nilCase .func-resp-≈ c₁≈c₂
+  foldrP nilCase consCase .func-resp-≈ {c₁ , x₁ ∷ xs₁} {c₂ , x₂ ∷ xs₂} (c₁≈c₂ , x₁≈x₂ , xs₁≈xs₂) =
+    consCase .func-resp-≈ (c₁≈c₂ , x₁≈x₂ , foldrP nilCase consCase .func-resp-≈ (c₁≈c₂ , xs₁≈xs₂))
+
+  -- FIXME: the equations...
