@@ -506,8 +506,7 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
       _⊛_ = prod
       _⊛f_ = prod-m
 
-      -- FIXME: if we had a DSL of finite products the naturality
-      -- would be easier
+      -- FIXME: if we had a DSL of finite products the naturality would be easie
       shuffle : ∀ {X Y Z} → (X ⊛ (Y ⊛ Z)) ⇒ (X ⊛ (Y ⊛ (X ⊛ Z)))
       shuffle = pair p₁ (pair (p₁ ∘ p₂) (id _ ⊛f p₂))
 
