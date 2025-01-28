@@ -3,8 +3,11 @@
 module categories where
 
 open import Level
+open import Data.Product using (_,_)
 open import prop
-open import prop-setoid using (IsEquivalence; Setoid; module ≈-Reasoning)
+open import prop-setoid
+  using (IsEquivalence; Setoid; module ≈-Reasoning; ⊗-setoid)
+  renaming (_⇒_ to _⇒s_)
 open IsEquivalence
 
 -- Definition of category, and some basic structure one might want to
@@ -41,6 +44,10 @@ record Category o m e : Set (suc (o ⊔ m ⊔ e)) where
   hom-setoid x y .Carrier = x ⇒ y
   hom-setoid x y ._≃_ = _≈_
   hom-setoid x y .isEquivalence = isEquiv
+
+  comp : ∀ {x y z} → ⊗-setoid (hom-setoid y z) (hom-setoid x y) ⇒s hom-setoid x z
+  comp ._⇒s_.func (f , g) = f ∘ g
+  comp ._⇒s_.func-resp-≈ (f₁≈f₂ , g₁≈g₂) = ∘-cong f₁≈f₂ g₁≈g₂
 
 record HasTerminal {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞

@@ -1,4 +1,4 @@
-{-# OPTIONS --prop --postfix-projections #-}
+{-# OPTIONS --prop --postfix-projections --safe #-}
 
 open import Level
 open import Data.Unit using (⊤; tt)

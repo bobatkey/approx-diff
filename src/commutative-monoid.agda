@@ -1,4 +1,4 @@
-{-# OPTIONS --prop --postfix-projections #-}
+{-# OPTIONS --prop --postfix-projections --safe #-}
 
 module commutative-monoid o where
 
@@ -51,6 +51,7 @@ module _ where
 ------------------------------------------------------------------------------
 -- The category of commutative monoids.
 record Obj : Set (suc o) where
+  no-eta-equality
   field
     carrier    : Setoid o o
     commMonoid : CommutativeMonoid carrier
@@ -77,6 +78,7 @@ open IsEquivalence
 
 module _ where
   open Obj
+  open _⇒s_
 
   id : (X : Obj) → X ⇒ X
   id X .function = idS (X .carrier)
@@ -86,9 +88,9 @@ module _ where
   _∘_ : ∀ {X Y Z} → Y ⇒ Z → X ⇒ Y → X ⇒ Z
   (f ∘ g) .function = f .function ∘S g .function
   _∘_ {Z = Z} f g .cmFunc .preserve-ε =
-    Z .trans (f .function ._⇒s_.func-resp-≈ (g .preserve-ε)) (f .preserve-ε)
+    Z .trans (f .function .func-resp-≈ (g .preserve-ε)) (f .preserve-ε)
   _∘_ {Z = Z} f g .cmFunc .preserve-+ =
-    Z .trans (f .function ._⇒s_.func-resp-≈ (g .preserve-+)) (f .preserve-+)
+    Z .trans (f .function .func-resp-≈ (g .preserve-+)) (f .preserve-+)
 
 cat : Category (suc o) o o
 cat .Category.obj = Obj
@@ -119,12 +121,15 @@ module _ where
   toSetoid .fmor-id = ≃s-isEquivalence .refl
   toSetoid .fmor-comp _ _ = ≃s-isEquivalence .refl
 
+-- FIXME: free commutative monoid functor
+
 ------------------------------------------------------------------------------
 -- Additive structure on morphisms, so that every homset is a
 -- commutative monoid, and composition is a commutative monoid
 -- morphism.
 module _ {X Y : Obj} where
   open _⇒s_
+  open _≃s_
 
   private
     module X = Obj X
@@ -160,7 +165,49 @@ module _ {X Y : Obj} where
           f' = f .function .func
           g' = g. function .func
 
-  -- this is a commutative monoid, and composition preserves addition and units
+module _ (X Y : Obj) where
+  open _⇒s_
+  open _≃s_
+
+  private
+    module X = Obj X
+    module Y = Obj Y
+
+  homCM : CommutativeMonoid (Category.hom-setoid cat X Y)
+  homCM .CommutativeMonoid.ε = εm
+  homCM .CommutativeMonoid._+_ = _+m_
+  homCM .CommutativeMonoid.+-cong f₁≈f₂ g₁≈g₂ .func-eq x₁≈x₂ =
+    Y.+-cong (f₁≈f₂ .func-eq x₁≈x₂) (g₁≈g₂ .func-eq x₁≈x₂)
+  homCM .CommutativeMonoid.+-lunit {f} .func-eq x₁≈x₂ =
+    Y.trans Y.+-lunit (f .function .func-resp-≈ x₁≈x₂)
+  homCM .CommutativeMonoid.+-assoc {f} {g} {h} .func-eq x₁≈x₂ =
+    Y.trans Y.+-assoc
+      (Y.+-cong (f .function .func-resp-≈ x₁≈x₂)
+                (Y.+-cong (g .function .func-resp-≈ x₁≈x₂)
+                          (h .function .func-resp-≈ x₁≈x₂)))
+  homCM .CommutativeMonoid.+-comm {f} {g} .func-eq x₁≈x₂ =
+    Y.trans Y.+-comm (Y.+-cong (g. function .func-resp-≈ x₁≈x₂)
+                               (f .function .func-resp-≈ x₁≈x₂))
+
+module _ where
+
+  open Obj
+  open _⇒s_
+  open _≃s_
+
+  comp-bilinear₁ : ∀ {X Y Z} (f₁ f₂ : Y ⇒ Z) (g : X ⇒ Y) →
+                   ((f₁ +m f₂) ∘ g) ≃ ((f₁ ∘ g) +m (f₂ ∘ g))
+  comp-bilinear₁ {Z = Z} f₁ f₂ g .func-eq x₁≈x₂ =
+    Z .+-cong (f₁ .function .func-resp-≈ (g .function .func-resp-≈ x₁≈x₂))
+              (f₂ .function .func-resp-≈ (g .function .func-resp-≈ x₁≈x₂))
+
+  comp-bilinear₂ : ∀ {X Y Z} (f : Y ⇒ Z) (g₁ g₂ : X ⇒ Y) →
+                   (f ∘ (g₁ +m g₂)) ≃ ((f ∘ g₁) +m (f ∘ g₂))
+  comp-bilinear₂ {Z = Z} f g₁ g₂ .func-eq x₁≈x₂ =
+    Z .trans
+       (f .cmFunc .preserve-+)
+       (Z .+-cong (f .function .func-resp-≈ (g₁ .function .func-resp-≈ x₁≈x₂))
+                  (f .function .func-resp-≈ (g₂ .function .func-resp-≈ x₁≈x₂)))
 
 ------------------------------------------------------------------------------
 -- Big Products
@@ -220,19 +267,46 @@ module _ where
     f .function ._⇒s_.func-resp-≈
 
 ------------------------------------------------------------------------------
+-- Tensor products and symmetric monoidal closed structure (FIXME)
+
+------------------------------------------------------------------------------
 -- Biproducts
--- _⊕_ : Obj → Obj → Obj
--- (X ⊕ Y) .carrier = ⊗-setoid (X .carrier) (Y .carrier)
--- (X ⊕ Y) .commMonoid = X .commMonoid ⊗ Y .commMonoid
+module _ where
+  open Obj
 
+  _⊕_ : Obj → Obj → Obj
+  (X ⊕ Y) .carrier = ⊗-setoid (X .carrier) (Y .carrier)
+  (X ⊕ Y) .commMonoid = X .commMonoid ⊗ Y .commMonoid
 
+  p₁ : ∀ {X Y} → (X ⊕ Y) ⇒ X
+  p₁ .function = prop-setoid.project₁
+  p₁ {X} {Y} .cmFunc .preserve-ε = X .refl
+  p₁ {X} {Y} .cmFunc .preserve-+ = X .refl
 
--- p₁ : ∀ {X Y} → (X ⊗ Y) ⇒ X
--- p₁ .function = prop-setoid.project₁
--- p₁ {X} {Y} .preserve-ε = X .refl
--- p₁ {X} {Y} .preserve-+ = X .refl
+  p₂ : ∀ {X Y} → (X ⊕ Y) ⇒ Y
+  p₂ .function = prop-setoid.project₂
+  p₂ {X} {Y} .cmFunc .preserve-ε = Y .refl
+  p₂ {X} {Y} .cmFunc .preserve-+ = Y .refl
 
--- p₂ : ∀ {X Y} → (X ⊗ Y) ⇒ Y
--- p₂ .function = prop-setoid.project₂
--- p₂ {X} {Y} .preserve-ε = Y .refl
--- p₂ {X} {Y} .preserve-+ = Y .refl
+  pair : ∀ {X Y Z} → X ⇒ Y → X ⇒ Z → X ⇒ (Y ⊕ Z)
+  pair f g .function = prop-setoid.pair (f .function) (g .function)
+  pair f g .cmFunc .preserve-ε = f .cmFunc .preserve-ε , g .cmFunc .preserve-ε
+  pair f g .cmFunc .preserve-+ = (f .cmFunc .preserve-+) , (g .cmFunc .preserve-+)
+
+  open import setoid-cat
+
+  products : HasProducts cat
+  products .HasProducts.prod = _⊕_
+  products .HasProducts.p₁ = p₁
+  products .HasProducts.p₂ = p₂
+  products .HasProducts.pair = pair
+  products .HasProducts.pair-cong f₁≈f₂ g₁≈g₂ =
+    Setoid-products _ _ .HasProducts.pair-cong f₁≈f₂ g₁≈g₂
+  products .HasProducts.pair-p₁ f g =
+    Setoid-products _ _ .HasProducts.pair-p₁ (f .function) (g .function)
+  products .HasProducts.pair-p₂ f g =
+    Setoid-products _ _ .HasProducts.pair-p₂ (f .function) (g .function)
+  products .HasProducts.pair-ext f =
+    Setoid-products _ _ .HasProducts.pair-ext (f .function)
+
+  -- FIXME: any additive category with products has biproducts
