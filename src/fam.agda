@@ -149,6 +149,9 @@ module _ {o m e} os es {𝒞 𝒟 : Category o m e}
       F .fmor (Q .subst x₁≈x₂) 𝒟.∘ F .fmor (f .transf x₁)
     ∎ where open ≈-Reasoning 𝒟.isEquiv
 
+  changeCatF-cong : ∀ {P Q : Fam os es 𝒞 A} {f₁ f₂ : P ⇒f Q} → f₁ ≃f f₂ → changeCatF f₁ ≃f changeCatF f₂
+  changeCatF-cong f₁≈f₂ .transf-eq = F .fmor-cong (f₁≈f₂ .transf-eq)
+
   preserveConst : ∀ x → changeCat (constantFam os es 𝒞 A x) ⇒f constantFam os es 𝒟 A (F .fobj x)
   preserveConst x .transf a = 𝒟.id _
   preserveConst x .natural a₁≈a₂ =
