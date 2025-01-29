@@ -117,6 +117,8 @@ module _ {o e} where
   const X x .func _ = x
   const X x .func-resp-≈ tt = X .refl
 
+open _≃m_
+
 +-setoid : ∀ {a b c d} (X : Setoid a b) (Y : Setoid c d) → Setoid (a ⊔ c) (b ⊔ d)
 +-setoid X Y .Carrier = X .Carrier ⊎ Y .Carrier
 +-setoid {a} {b} {c} {d} X Y ._≈_ (inj₁ x) (inj₁ y) = LiftP (b ⊔ d) (X ._≈_ x y)
@@ -146,6 +148,29 @@ copair f g .func (inj₂ y) = g .func y
 copair f g .func-resp-≈ {inj₁ x} {inj₁ x₁} (lift e) = f .func-resp-≈ e
 copair f g .func-resp-≈ {inj₂ y} {inj₂ y₁} (lift e) = g .func-resp-≈ e
 
+copair-cong : ∀ {o e} {X Y Z : Setoid o e}
+                {f₁ f₂ : X ⇒ Z} {g₁ g₂ : Y ⇒ Z} →
+                f₁ ≃m f₂ → g₁ ≃m g₂ →
+                copair f₁ g₁ ≃m copair f₂ g₂
+copair-cong f₁≈f₂ g₁≈g₂ .func-eq {inj₁ x} {inj₁ x₁} (lift e) = f₁≈f₂ .func-eq e
+copair-cong f₁≈f₂ g₁≈g₂ .func-eq {inj₂ y} {inj₂ y₁} (lift e) = g₁≈g₂ .func-eq e
+
+copair-in₁ : ∀ {o e} {X Y Z : Setoid o e}
+               (f : X ⇒ Z) (g : Y ⇒ Z) →
+               (copair f g ∘S inject₁) ≃m f
+copair-in₁ f g .func-eq = f .func-resp-≈
+
+copair-in₂ : ∀ {o e} {X Y Z : Setoid o e}
+               (f : X ⇒ Z) (g : Y ⇒ Z) →
+               (copair f g ∘S inject₂) ≃m g
+copair-in₂ f g .func-eq = g .func-resp-≈
+
+copair-ext : ∀ {o e} {X Y Z : Setoid o e}
+             (f : +-setoid X Y ⇒ Z) →
+             copair (f ∘S inject₁) (f ∘S inject₂) ≃m f
+copair-ext f .func-eq {inj₁ x} {inj₁ x₁} = f .func-resp-≈
+copair-ext f .func-eq {inj₂ y} {inj₂ y₁} = f .func-resp-≈
+
 ⊗-setoid : ∀ {a b c d} → Setoid a b → Setoid c d → Setoid (a ⊔ c) (b ⊔ d)
 ⊗-setoid X Y .Carrier = X .Carrier × Y .Carrier
 ⊗-setoid X Y ._≈_ (x₁ , y₁) (x₂ , y₂) = X ._≈_ x₁ x₂ ∧ Y ._≈_ y₁ y₂
@@ -167,8 +192,6 @@ project₂ .func-resp-≈ = proj₂
 pair : ∀ {o e} {X Y Z : Setoid o e} → X ⇒ Y → X ⇒ Z → X ⇒ ⊗-setoid Y Z
 pair f g .func x = f .func x , g .func x
 pair f g .func-resp-≈ e = f .func-resp-≈ e , g .func-resp-≈ e
-
-open _≃m_
 
 pair-cong : ∀ {o e} {X Y Z : Setoid o e} {f₁ f₂ : X ⇒ Y} {g₁ g₂ : X ⇒ Z} →
   f₁ ≃m f₂ → g₁ ≃m g₂ → pair f₁ g₁ ≃m pair f₂ g₂
