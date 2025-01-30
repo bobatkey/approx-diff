@@ -1,11 +1,11 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
-module functor where
+module functor {o₁ m₁ e₁ o₂ m₂ e₂} where
 
 open import Level
 open import categories
 
-record Functor {o₁ m₁ e₁ o₂ m₂ e₂}
+record Functor
          (𝒞 : Category o₁ m₁ e₁)
          (𝒟 : Category o₂ m₂ e₂) : Set (o₁ ⊔ o₂ ⊔ m₁ ⊔ m₂ ⊔ e₁ ⊔ e₂) where
   private
@@ -18,3 +18,14 @@ record Functor {o₁ m₁ e₁ o₂ m₂ e₂}
     fmor-id : ∀ {x} → fmor (𝒞.id x) 𝒟.≈ 𝒟.id _
     fmor-comp : ∀ {x y z} (f : y 𝒞.⇒ z) (g : x 𝒞.⇒ y) →
                 fmor (f 𝒞.∘ g) 𝒟.≈ (fmor f 𝒟.∘ fmor g)
+
+record NatTrans
+         {𝒞 : Category o₁ m₁ e₁} {𝒟 : Category o₂ m₂ e₂}
+         (F G : Functor 𝒞 𝒟) : Set (o₁ ⊔ o₂ ⊔ m₁ ⊔ m₂ ⊔ e₁ ⊔ e₂) where
+  private
+    module 𝒞 = Category 𝒞
+    module 𝒟 = Category 𝒟
+  open Functor
+  field
+    transf : ∀ x → F .fobj x 𝒟.⇒ G .fobj x
+    natural : ∀ {x y} (f : x 𝒞.⇒ y) → (G .fmor f 𝒟.∘ transf x) 𝒟.≈ (transf y 𝒟.∘ F .fmor f)
