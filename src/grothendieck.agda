@@ -225,12 +225,12 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     coproducts .coprod X Y .idx = +-setoid (X .idx) (Y .idx)
     coproducts .coprod X Y .fam .fm (inj₁ x) = X .fam .fm x
     coproducts .coprod X Y .fam .fm (inj₂ y) = Y .fam .fm y
-    coproducts .coprod X Y .fam .subst {inj₁ x} {inj₁ x₁} (lift e) = X .fam .subst e
-    coproducts .coprod X Y .fam .subst {inj₂ y} {inj₂ y₁} (lift e) = Y .fam .subst e
+    coproducts .coprod X Y .fam .subst {inj₁ x} {inj₁ x₁} = X .fam .subst
+    coproducts .coprod X Y .fam .subst {inj₂ y} {inj₂ y₁} = Y .fam .subst
     coproducts .coprod X Y .fam .refl* {inj₁ x} = X .fam .refl*
     coproducts .coprod X Y .fam .refl* {inj₂ y} = Y .fam .refl*
-    coproducts .coprod X Y .fam .trans* {inj₁ x} {inj₁ x₁} {inj₁ x₂} (lift e₁) (lift e₂) = X .fam .trans* e₁ e₂
-    coproducts .coprod X Y .fam .trans* {inj₂ y} {inj₂ y₁} {inj₂ y₂} (lift e₁) (lift e₂) = Y .fam .trans* e₁ e₂
+    coproducts .coprod X Y .fam .trans* {inj₁ x} {inj₁ x₁} {inj₁ x₂} = X .fam .trans*
+    coproducts .coprod X Y .fam .trans* {inj₂ y} {inj₂ y₁} {inj₂ y₂} = Y .fam .trans*
     coproducts .in₁ .idxf = prop-setoid.inject₁
     coproducts .in₁ .famf .transf x = id _
     coproducts .in₁ .famf .natural e = isEquiv .trans id-left (≈-sym id-right)
@@ -240,8 +240,8 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     coproducts .copair f g .idxf = prop-setoid.copair (f .idxf) (g .idxf)
     coproducts .copair f g .famf .transf (inj₁ x) = f .famf .transf x
     coproducts .copair f g .famf .transf (inj₂ y) = g .famf .transf y
-    coproducts .copair f g .famf .natural {inj₁ x} {inj₁ x₁} (lift e) = f .famf .natural e
-    coproducts .copair f g .famf .natural {inj₂ y} {inj₂ y₁} (lift e) = g .famf .natural e
+    coproducts .copair f g .famf .natural {inj₁ x} {inj₁ x₁} = f .famf .natural
+    coproducts .copair f g .famf .natural {inj₂ y} {inj₂ y₁} = g .famf .natural
     coproducts .copair-cong f₁≈f₂ g₁≈g₂ .idxf-eq = prop-setoid.copair-cong (f₁≈f₂ .idxf-eq) (g₁≈g₂ .idxf-eq)
     coproducts .copair-cong f₁≈f₂ g₁≈g₂ .famf-eq .transf-eq {inj₁ x} = f₁≈f₂ .famf-eq .transf-eq
     coproducts .copair-cong f₁≈f₂ g₁≈g₂ .famf-eq .transf-eq {inj₂ y} = g₁≈g₂ .famf-eq .transf-eq
@@ -387,9 +387,9 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     strongCoproducts .copair f g .idxf = prop-setoid.case (f .idxf) (g .idxf)
     strongCoproducts .copair f g .famf .transf (w , inj₁ x) = f .famf .transf (w , x)
     strongCoproducts .copair f g .famf .transf (w , inj₂ y) = g .famf .transf (w , y)
-    strongCoproducts .copair {W}{X}{Y}{Z} f g .famf .natural {w₁ , inj₁ x₁} {w₂ , inj₁ x₂} (w₁≈w₂ , lift e) =
+    strongCoproducts .copair {W}{X}{Y}{Z} f g .famf .natural {w₁ , inj₁ x₁} {w₂ , inj₁ x₂} (w₁≈w₂ , e) =
       f .famf .natural (w₁≈w₂ , e)
-    strongCoproducts .copair f g .famf .natural {w₁ , inj₂ y} {w₂ , inj₂ y₁} (w₁≈w₂ , lift e) =
+    strongCoproducts .copair f g .famf .natural {w₁ , inj₂ y} {w₂ , inj₂ y₁} (w₁≈w₂ , e) =
       g .famf .natural (w₁≈w₂ , e)
 
   module monad (Mon : Monad 𝒞) where

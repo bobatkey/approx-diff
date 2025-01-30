@@ -3,6 +3,7 @@
 module prop where
 
 open import Level
+open import Data.Sum using (_⊎_; inj₁; inj₂)
 
 data ⊥ {ℓ} : Prop ℓ where
 
@@ -40,3 +41,14 @@ record Prf {ℓ} (P : Prop ℓ) : Set ℓ where
   field
     prf : P
 open Prf
+
+------------------------------------------------------------------------------
+-- Relations
+
+_⊎R_ : ∀ {a b c d ℓ} {A : Set a} {B : Set b} {C : Set c} {D : Set d}
+       (R : A → C → Prop ℓ) (S : B → D → Prop ℓ) →
+       A ⊎ B → C ⊎ D → Prop ℓ
+(R ⊎R S) (inj₁ a) (inj₁ c) = R a c
+(R ⊎R S) (inj₁ _) (inj₂ _) = ⊥
+(R ⊎R S) (inj₂ _) (inj₁ _) = ⊥
+(R ⊎R S) (inj₂ b) (inj₂ d) = S b d

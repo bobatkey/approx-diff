@@ -16,6 +16,17 @@ record IsEquivalence {o e} {A : Set o} (_≈_ : A → A → Prop e) : Set (o ⊔
     trans : ∀ {x y z} → x ≈ y → y ≈ z → x ≈ z
 open IsEquivalence
 
+⊎-isEquivalence : ∀ {o e} {A B : Set o} {_≈₁_ : A → A → Prop e} {_≈₂_ : B → B → Prop e} →
+                  IsEquivalence _≈₁_ →
+                  IsEquivalence _≈₂_ →
+                  IsEquivalence (_≈₁_ ⊎R _≈₂_)
+⊎-isEquivalence isEq₁ isEq₂ .refl {inj₁ x} = isEq₁ .refl
+⊎-isEquivalence isEq₁ isEq₂ .refl {inj₂ y} = isEq₂ .refl
+⊎-isEquivalence isEq₁ isEq₂ .sym {inj₁ a₁} {inj₁ a₂} = isEq₁ .sym
+⊎-isEquivalence isEq₁ isEq₂ .sym {inj₂ b₁} {inj₂ b₂} = isEq₂ .sym
+⊎-isEquivalence isEq₁ isEq₂ .trans {inj₁ _} {inj₁ _} {inj₁ _} = isEq₁ .trans
+⊎-isEquivalence isEq₁ isEq₂ .trans {inj₂ _} {inj₂ _} {inj₂ _} = isEq₂ .trans
+
 module ≈-Reasoning {o e} {A : Set o} {_≈_ : A → A → Prop e} (equiv : IsEquivalence _≈_) where
 
   infix  1 begin_
@@ -119,41 +130,31 @@ module _ {o e} where
 
 open _≃m_
 
-+-setoid : ∀ {a b c d} (X : Setoid a b) (Y : Setoid c d) → Setoid (a ⊔ c) (b ⊔ d)
++-setoid : ∀ {a b} (X : Setoid a b) (Y : Setoid a b) → Setoid a b
 +-setoid X Y .Carrier = X .Carrier ⊎ Y .Carrier
-+-setoid {a} {b} {c} {d} X Y ._≈_ (inj₁ x) (inj₁ y) = LiftP (b ⊔ d) (X ._≈_ x y)
-+-setoid {a} {b} {c} {d} X Y ._≈_ (inj₂ x) (inj₂ y) = LiftP (b ⊔ d) (Y ._≈_ x y)
-+-setoid X Y ._≈_ (inj₁ x) (inj₂ y) = ⊥
-+-setoid X Y ._≈_ (inj₂ x) (inj₁ y) = ⊥
-+-setoid X Y .isEquivalence .refl {inj₁ x} .lower = X .isEquivalence .refl
-+-setoid X Y .isEquivalence .refl {inj₂ x} .lower = Y .isEquivalence .refl
-+-setoid X Y .isEquivalence .sym {inj₁ x} {inj₁ y} x≈y .lower = X .isEquivalence .sym (x≈y .lower)
-+-setoid X Y .isEquivalence .sym {inj₂ x} {inj₂ y} x≈y .lower = Y .isEquivalence .sym (x≈y .lower)
-+-setoid X Y .isEquivalence .trans {inj₁ x} {inj₁ y} {inj₁ z} x≈y y≈z .lower =
-    X .isEquivalence .trans (x≈y .lower) (y≈z .lower)
-+-setoid X Y .isEquivalence .trans {inj₂ x} {inj₂ y} {inj₂ z} x≈y y≈z .lower =
-    Y .isEquivalence .trans (x≈y .lower) (y≈z .lower)
++-setoid X Y ._≈_ = X ._≈_ ⊎R Y ._≈_
++-setoid X Y .isEquivalence = ⊎-isEquivalence (X .isEquivalence) (Y .isEquivalence)
 
 inject₁ : ∀ {o e} {X Y : Setoid o e} → X ⇒ +-setoid X Y
 inject₁ .func = inj₁
-inject₁ .func-resp-≈ = lift
+inject₁ .func-resp-≈ p = p
 
 inject₂ : ∀ {o e} {X Y : Setoid o e} → Y ⇒ +-setoid X Y
 inject₂ .func = inj₂
-inject₂ .func-resp-≈ = lift
+inject₂ .func-resp-≈ p = p
 
 copair : ∀ {o e} {X Y Z : Setoid o e} → X ⇒ Z → Y ⇒ Z → +-setoid X Y ⇒ Z
 copair f g .func (inj₁ x) = f .func x
 copair f g .func (inj₂ y) = g .func y
-copair f g .func-resp-≈ {inj₁ x} {inj₁ x₁} (lift e) = f .func-resp-≈ e
-copair f g .func-resp-≈ {inj₂ y} {inj₂ y₁} (lift e) = g .func-resp-≈ e
+copair f g .func-resp-≈ {inj₁ x} {inj₁ x₁} e = f .func-resp-≈ e
+copair f g .func-resp-≈ {inj₂ y} {inj₂ y₁} e = g .func-resp-≈ e
 
 copair-cong : ∀ {o e} {X Y Z : Setoid o e}
                 {f₁ f₂ : X ⇒ Z} {g₁ g₂ : Y ⇒ Z} →
                 f₁ ≃m f₂ → g₁ ≃m g₂ →
                 copair f₁ g₁ ≃m copair f₂ g₂
-copair-cong f₁≈f₂ g₁≈g₂ .func-eq {inj₁ x} {inj₁ x₁} (lift e) = f₁≈f₂ .func-eq e
-copair-cong f₁≈f₂ g₁≈g₂ .func-eq {inj₂ y} {inj₂ y₁} (lift e) = g₁≈g₂ .func-eq e
+copair-cong f₁≈f₂ g₁≈g₂ .func-eq {inj₁ x} {inj₁ x₁} = f₁≈f₂ .func-eq
+copair-cong f₁≈f₂ g₁≈g₂ .func-eq {inj₂ y} {inj₂ y₁} = g₁≈g₂ .func-eq
 
 copair-in₁ : ∀ {o e} {X Y Z : Setoid o e}
                (f : X ⇒ Z) (g : Y ⇒ Z) →
@@ -205,8 +206,8 @@ case : ∀ {o e} {W X Y Z : Setoid o e} →
           (⊗-setoid W (+-setoid X Y)) ⇒ Z
 case f g .func (w , inj₁ x) = f .func (w , x)
 case f g .func (w , inj₂ y) = g .func (w , y)
-case f g .func-resp-≈ {w₁ , inj₁ x₁} {w₂ , inj₁ x₂} (w₁≈w₂ , lift x₁≈x₂) = f .func-resp-≈ (w₁≈w₂ , x₁≈x₂)
-case f g .func-resp-≈ {w₁ , inj₂ y₁} {w₂ , inj₂ y₂} (w₁≈w₂ , lift y₁≈y₂) = g .func-resp-≈ (w₁≈w₂ , y₁≈y₂)
+case f g .func-resp-≈ {w₁ , inj₁ x₁} {w₂ , inj₁ x₂} (w₁≈w₂ , x₁≈x₂) = f .func-resp-≈ (w₁≈w₂ , x₁≈x₂)
+case f g .func-resp-≈ {w₁ , inj₂ y₁} {w₂ , inj₂ y₂} (w₁≈w₂ , y₁≈y₂) = g .func-resp-≈ (w₁≈w₂ , y₁≈y₂)
 
 -- Lists
 --

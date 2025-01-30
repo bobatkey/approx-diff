@@ -164,27 +164,25 @@ module _ where
   _+_ : PreSheaf → PreSheaf → PreSheaf
   (F + G) .fobj x = +-setoid (F .fobj x) (G .fobj x)
   (F + G) .fmap f =
-    prop-setoid.copair (prop-setoid.inject₁ ∘S (F .fmap f))
-                       (prop-setoid.inject₂ ∘S (G .fmap f))
-  (F + G) .fmap-cong f≈g ._≈s_.func-eq {inj₁ x} {inj₁ x₁} (lift e) = lift (F .fmap-cong f≈g ._≈s_.func-eq e)
-  (F + G) .fmap-cong f≈g ._≈s_.func-eq {inj₂ y} {inj₂ y₁} (lift e) = lift (G .fmap-cong f≈g ._≈s_.func-eq e)
-  (F + G) .fmap-id x ._≈s_.func-eq {inj₁ x₁} {inj₁ x₂} (lift e) = lift (F .fmap-id x ._≈s_.func-eq e)
-  (F + G) .fmap-id x ._≈s_.func-eq {inj₂ y₁} {inj₂ y₂} (lift e) = lift (G .fmap-id x ._≈s_.func-eq e)
-  (F + G) .fmap-∘ f g ._≈s_.func-eq {inj₁ x} {inj₁ x₁} (lift e) = lift (F .fmap-∘ f g ._≈s_.func-eq e)
-  (F + G) .fmap-∘ f g ._≈s_.func-eq {inj₂ y} {inj₂ y₁} (lift e) = lift (G .fmap-∘ f g ._≈s_.func-eq e)
+    prop-setoid.copair (prop-setoid.inject₁ ∘S F .fmap f)
+                       (prop-setoid.inject₂ ∘S G .fmap f)
+  (F + G) .fmap-cong f≈g ._≈s_.func-eq {inj₁ x} {inj₁ x₁} = F .fmap-cong f≈g ._≈s_.func-eq
+  (F + G) .fmap-cong f≈g ._≈s_.func-eq {inj₂ y} {inj₂ y₁} = G .fmap-cong f≈g ._≈s_.func-eq
+  (F + G) .fmap-id x ._≈s_.func-eq {inj₁ x₁} {inj₁ x₂} = F .fmap-id x ._≈s_.func-eq
+  (F + G) .fmap-id x ._≈s_.func-eq {inj₂ y₁} {inj₂ y₂} = G .fmap-id x ._≈s_.func-eq
+  (F + G) .fmap-∘ f g ._≈s_.func-eq {inj₁ x} {inj₁ x₁} = F .fmap-∘ f g ._≈s_.func-eq
+  (F + G) .fmap-∘ f g ._≈s_.func-eq {inj₂ y} {inj₂ y₁} = G .fmap-∘ f g ._≈s_.func-eq
 
   strongCoproducts : HasStrongCoproducts cat products
   strongCoproducts .coprod = _+_
   strongCoproducts .in₁ .transf x = prop-setoid.inject₁
-  strongCoproducts .in₁ {F}{G} .natural f ._≈s_.func-eq x₁≈x₂ = lift (F .fmap f ._⇒s_.func-resp-≈ x₁≈x₂)
+  strongCoproducts .in₁ {F}{G} .natural f ._≈s_.func-eq = F .fmap f ._⇒s_.func-resp-≈
   strongCoproducts .in₂ .transf x = prop-setoid.inject₂
-  strongCoproducts .in₂ {F}{G} .natural f ._≈s_.func-eq x₁≈x₂ = lift (G .fmap f ._⇒s_.func-resp-≈ x₁≈x₂)
-  strongCoproducts .copair {F}{G}{H}{I} α β .transf x =
-    prop-setoid.case (α .transf x) (β .transf x)
-  strongCoproducts .copair {F} {G} {H} {I} α β .natural f ._≈s_.func-eq {x₁ , inj₁ x} {x₂ , inj₁ x₃} (x₁≈x₂ , lift e) = α .natural f ._≈s_.func-eq (x₁≈x₂ , e)
-  strongCoproducts .copair {F} {G} {H} {I} α β .natural f ._≈s_.func-eq {x₁ , inj₂ y} {x₂ , inj₂ y₁} (x₁≈x₂ , lift e) = β .natural f ._≈s_.func-eq (x₁≈x₂ , e)
+  strongCoproducts .in₂ {F}{G} .natural f ._≈s_.func-eq = G .fmap f ._⇒s_.func-resp-≈
+  strongCoproducts .copair α β .transf x = prop-setoid.case (α .transf x) (β .transf x)
+  strongCoproducts .copair α β .natural f ._≈s_.func-eq {_ , inj₁ _} {_ , inj₁ _} = α .natural f ._≈s_.func-eq
+  strongCoproducts .copair α β .natural f ._≈s_.func-eq {_ , inj₂ _} {_ , inj₂ _} = β .natural f ._≈s_.func-eq
 
-  -- FIXME: equations for strong coproducts
 
 -- Yoneda embedding and exponentials
 module _ where
