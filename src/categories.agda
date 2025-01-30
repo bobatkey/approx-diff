@@ -52,6 +52,25 @@ record Category o m e : Set (suc (o ⊔ m ⊔ e)) where
   comp ._⇒s_.func (f , g) = f ∘ g
   comp ._⇒s_.func-resp-≈ (f₁≈f₂ , g₁≈g₂) = ∘-cong f₁≈f₂ g₁≈g₂
 
+
+
+------------------------------------------------------------------------------
+setoid→category : ∀ {o e} → Setoid o e → Category o e e
+setoid→category A .Category.obj = A .Setoid.Carrier
+setoid→category A .Category._⇒_ x y = Prf (A .Setoid._≈_ x y)
+setoid→category A .Category._≈_ _ _ = ⊤
+setoid→category A .Category.isEquiv = prop-setoid.⊤-isEquivalence
+setoid→category A .Category.id x = ⟪ A .Setoid.refl ⟫
+setoid→category A .Category._∘_ ⟪ f ⟫ ⟪ g ⟫ = ⟪ A .Setoid.trans g f ⟫
+setoid→category A .Category.∘-cong _ _ = tt
+setoid→category A .Category.id-left = tt
+setoid→category A .Category.id-right = tt
+setoid→category A .Category.assoc _ _ _ = tt
+
+
+------------------------------------------------------------------------------
+-- Some definitions of properties of categories
+
 record HasTerminal {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞
   field

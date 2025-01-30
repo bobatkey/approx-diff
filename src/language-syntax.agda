@@ -108,8 +108,11 @@ module language {ℓ} (Sig : Signature ℓ) where
   append : ∀ {Γ τ} → Γ ⊢ list τ → Γ ⊢ list τ → Γ ⊢ list τ
   append xs ys = fold ys (cons (var (succ zero)) (var zero)) xs
 
-  singleton : ∀ {Γ τ} → Γ ⊢ τ → Γ ⊢ list τ
-  singleton x = cons x nil
+  return : ∀ {Γ τ} → Γ ⊢ τ → Γ ⊢ list τ
+  return x = cons x nil
 
-  concatMap : ∀ {Γ τ₁ τ₂} → Γ ⊢ list τ₁ → Γ , τ₁ ⊢ list τ₂ → Γ ⊢ list τ₂
-  concatMap M N = fold nil (append (weaken * N) (var zero)) M
+  from_collect_ : ∀ {Γ τ₁ τ₂} → Γ ⊢ list τ₁ → Γ , τ₁ ⊢ list τ₂ → Γ ⊢ list τ₂
+  from M collect N = fold nil (append (weaken * N) (var zero)) M
+
+  when_；_ : ∀ {Γ τ} → Γ ⊢ bool → Γ ⊢ list τ → Γ ⊢ list τ
+  when M ； N = if M then N else nil

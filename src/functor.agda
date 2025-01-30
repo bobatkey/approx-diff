@@ -19,6 +19,8 @@ record Functor
     fmor-comp : ∀ {x y z} (f : y 𝒞.⇒ z) (g : x 𝒞.⇒ y) →
                 fmor (f 𝒞.∘ g) 𝒟.≈ (fmor f 𝒟.∘ fmor g)
 
+-- FIXME: composition of functors, and the identity functor
+
 record NatTrans
          {𝒞 : Category o₁ m₁ e₁} {𝒟 : Category o₂ m₂ e₂}
          (F G : Functor 𝒞 𝒟) : Set (o₁ ⊔ o₂ ⊔ m₁ ⊔ m₂ ⊔ e₁ ⊔ e₂) where
@@ -28,4 +30,9 @@ record NatTrans
   open Functor
   field
     transf : ∀ x → F .fobj x 𝒟.⇒ G .fobj x
-    natural : ∀ {x y} (f : x 𝒞.⇒ y) → (G .fmor f 𝒟.∘ transf x) 𝒟.≈ (transf y 𝒟.∘ F .fmor f)
+    natural : ∀ {x y} (f : x 𝒞.⇒ y) →
+      (G .fmor f 𝒟.∘ transf x) 𝒟.≈ (transf y 𝒟.∘ F .fmor f)
+
+
+
+--

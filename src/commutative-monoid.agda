@@ -221,8 +221,8 @@ module _ where
   open ΠS-Carrier
   open HasSetoidProducts
 
-  ΠCM : (A : Setoid o o) → Fam o o cat A → Obj
-  ΠCM A F .carrier = ΠS {o} {o} A (changeCat o o A toSetoid F)
+  ΠCM : (A : Setoid o o) → Fam A cat → Obj
+  ΠCM A F .carrier = ΠS A (changeCat A toSetoid F)
   ΠCM A F .commMonoid .ε .Π-func a = F .fm a .commMonoid .ε
   ΠCM A F .commMonoid .ε .Π-eq e = F .subst e .cmFunc .preserve-ε
   ΠCM A F .commMonoid ._+_ f₁ f₂ .Π-func a = F .fm a .commMonoid ._+_ (f₁ .Π-func a) (f₂ .Π-func a)
@@ -241,15 +241,15 @@ module _ where
   ΠCM A F .commMonoid .+-comm a = F .fm a .commMonoid .+-comm
 
   evalΠCM : ∀ {A} P (a : A .Setoid.Carrier) → ΠCM A P ⇒ P .fm a
-  evalΠCM P a .function = Setoid-BigProducts .evalΠ (changeCat o o _ toSetoid P) a
+  evalΠCM P a .function = Setoid-BigProducts .evalΠ (changeCat _ toSetoid P) a
   evalΠCM P a .cmFunc .preserve-ε = P .fm a .carrier .Setoid.refl
   evalΠCM P a .cmFunc .preserve-+ = P .fm a .carrier .Setoid.refl
 
-  lambdaΠCM : ∀ {A} (X : Obj) (P : Fam o o cat A) →
-              (constantFam o o cat A X ⇒f P) → (X ⇒ ΠCM A P)
+  lambdaΠCM : ∀ {A} (X : Obj) (P : Fam A cat) →
+              (constantFam A cat X ⇒f P) → (X ⇒ ΠCM A P)
   lambdaΠCM {A} X P f .function =
-    Setoid-BigProducts .lambdaΠ (X .carrier) (changeCat o o _ toSetoid P)
-      (changeCatF o o A toSetoid f ∘f preserveConst⁻¹ o o A toSetoid X)
+    Setoid-BigProducts .lambdaΠ (X .carrier) (changeCat _ toSetoid P)
+      (changeCatF A toSetoid f ∘f preserveConst⁻¹ A toSetoid X)
   lambdaΠCM X P f .cmFunc .preserve-ε a = f ._⇒f_.transf a .cmFunc .preserve-ε
   lambdaΠCM X P f .cmFunc .preserve-+ a = f ._⇒f_.transf a .cmFunc .preserve-+
 
@@ -257,7 +257,7 @@ module _ where
   bigProd .Π = ΠCM
   bigProd .lambdaΠ = lambdaΠCM
   bigProd .lambdaΠ-cong f₁≈f₂ =
-    Setoid-BigProducts .lambdaΠ-cong (∘f-cong (changeCatF-cong o o _ toSetoid f₁≈f₂) (≃f-isEquivalence .refl))
+    Setoid-BigProducts .lambdaΠ-cong (∘f-cong (changeCatF-cong _ toSetoid f₁≈f₂) (≃f-isEquivalence .refl))
   bigProd .evalΠ = evalΠCM
   bigProd .evalΠ-cong a₁≈a₂ = Setoid-BigProducts .evalΠ-cong a₁≈a₂
   bigProd .lambda-eval {A} {P} {x} {f} a ._≃s_.func-eq =

@@ -9,7 +9,9 @@ open import prop-setoid
 open import categories
 
 -- Families of objects over a setoid
-module _ {o m e} os es (𝒞 : Category o m e) (A : Setoid (m ⊔ e ⊔ os ⊔ es) (m ⊔ e ⊔ os ⊔ es)) where
+--
+-- FIXME: restate this as "Functor (setoid→category A) 𝒞"
+module _ {o m e os es} (A : Setoid os es) (𝒞 : Category o m e) where
 
   open Setoid A
   open Category 𝒞 renaming (_≈_ to _≈C_)
@@ -32,13 +34,13 @@ module _ {o m e} os es (𝒞 : Category o m e) (A : Setoid (m ⊔ e ⊔ os ⊔ e
   constantFam x .refl* = isEquiv .IsEquivalence.refl
   constantFam x .trans* _ _ = isEquiv .IsEquivalence.sym id-left
 
-module _ {o m e} {os es} {𝒞 : Category o m e} {A : Setoid (m ⊔ e ⊔ os ⊔ es) (m ⊔ e ⊔ os ⊔ es)} where
+module _ {o m e} {os es} {𝒞 : Category o m e} {A : Setoid os es} where
   open Setoid A using (_≈_)
   open Category 𝒞 renaming (_≈_ to _≈C_)
   open IsEquivalence
   open Fam
 
-  record _⇒f_ (P Q : Fam os es 𝒞 A) : Set (m ⊔ e ⊔ os ⊔ es) where
+  record _⇒f_ (P Q : Fam A 𝒞) : Set (m ⊔ e ⊔ os ⊔ es) where
     no-eta-equality
     field
       transf  : ∀ x → P .fm x ⇒ Q .fm x
@@ -75,7 +77,7 @@ module _ {o m e} {os es} {𝒞 : Category o m e} {A : Setoid (m ⊔ e ⊔ os ⊔
      ∎
     where open ≈-Reasoning isEquiv
 
-  record _≃f_ {P Q : Fam os es 𝒞 A} (f g : P ⇒f Q) : Prop (m ⊔ e ⊔ os ⊔ es) where
+  record _≃f_ {P Q : Fam A 𝒞} (f g : P ⇒f Q) : Prop (m ⊔ e ⊔ os ⊔ es) where
     no-eta-equality
     field
       transf-eq : ∀ {x} → f .transf x ≈C g .transf x
@@ -101,7 +103,7 @@ module _ {o m e} {os es} {𝒞 : Category o m e} {A : Setoid (m ⊔ e ⊔ os ⊔
       ((f ∘f g) ∘f h) ≃f (f ∘f (g ∘f h))
   ≃f-assoc f g h .transf-eq = assoc _ _ _
 
-  constF : ∀ {x y} → x ⇒ y → constantFam os es 𝒞 A x ⇒f constantFam os es 𝒞 A y
+  constF : ∀ {x y} → x ⇒ y → constantFam A 𝒞 x ⇒f constantFam A 𝒞 y
   constF f .transf _ = f
   constF f .natural _ = isEquiv .trans id-right (≈-sym id-left)
 
@@ -115,11 +117,13 @@ module _ {o m e} {os es} {𝒞 : Category o m e} {A : Setoid (m ⊔ e ⊔ os ⊔
 -- FIXME: families over a fixed setoid form a category
 
 ------------------------------------------------------------------------------
--- Change of indexed category
+-- Change of indexed category (post composition)
 open import functor
 
-module _ {o m e} os es {𝒞 𝒟 : Category o m e}
-         (A : Setoid (m ⊔ e ⊔ os ⊔ es) (m ⊔ e ⊔ os ⊔ es))
+module _ {o m e o' m' e' os es}
+         {𝒞 : Category o m e}
+         {𝒟 : Category o' m' e'}
+         (A : Setoid os es)
          (F : Functor 𝒞 𝒟) where
 
   open Fam
@@ -130,8 +134,7 @@ module _ {o m e} os es {𝒞 𝒟 : Category o m e}
     module 𝒞 = Category 𝒞
     module 𝒟 = Category 𝒟
 
-  -- FIXME: might need this to be more flexible about universe levels
-  changeCat : Fam os es 𝒞 A → Fam os es 𝒟 A
+  changeCat : Fam A 𝒞 → Fam A 𝒟
   changeCat P .fm a = F .fobj (P .fm a)
   changeCat P .subst a₁≈a₂ = F .fmor (P .subst a₁≈a₂)
   changeCat P .refl* =
@@ -142,7 +145,7 @@ module _ {o m e} os es {𝒞 𝒟 : Category o m e}
   open _⇒f_
   open _≃f_
 
-  changeCatF : ∀ {P Q : Fam os es 𝒞 A} → P ⇒f Q → changeCat P ⇒f changeCat Q
+  changeCatF : ∀ {P Q : Fam A 𝒞} → P ⇒f Q → changeCat P ⇒f changeCat Q
   changeCatF f .transf x = F .fmor (f .transf x)
   changeCatF {P} {Q} f .natural {x₁} {x₂} x₁≈x₂ =
     begin
@@ -155,10 +158,10 @@ module _ {o m e} os es {𝒞 𝒟 : Category o m e}
       F .fmor (Q .subst x₁≈x₂) 𝒟.∘ F .fmor (f .transf x₁)
     ∎ where open ≈-Reasoning 𝒟.isEquiv
 
-  changeCatF-cong : ∀ {P Q : Fam os es 𝒞 A} {f₁ f₂ : P ⇒f Q} → f₁ ≃f f₂ → changeCatF f₁ ≃f changeCatF f₂
+  changeCatF-cong : ∀ {P Q : Fam A 𝒞} {f₁ f₂ : P ⇒f Q} → f₁ ≃f f₂ → changeCatF f₁ ≃f changeCatF f₂
   changeCatF-cong f₁≈f₂ .transf-eq = F .fmor-cong (f₁≈f₂ .transf-eq)
 
-  preserveConst : ∀ x → changeCat (constantFam os es 𝒞 A x) ⇒f constantFam os es 𝒟 A (F .fobj x)
+  preserveConst : ∀ x → changeCat (constantFam A 𝒞 x) ⇒f constantFam A 𝒟 (F .fobj x)
   preserveConst x .transf a = 𝒟.id _
   preserveConst x .natural a₁≈a₂ =
     begin
@@ -167,11 +170,19 @@ module _ {o m e} os es {𝒞 𝒟 : Category o m e}
       𝒟.id _ 𝒟.∘ 𝒟.id _
     ∎ where open ≈-Reasoning 𝒟.isEquiv
 
-  preserveConst⁻¹ : ∀ x → constantFam os es 𝒟 A (F .fobj x) ⇒f changeCat (constantFam os es 𝒞 A x)
+  preserveConst⁻¹ : ∀ x → constantFam A 𝒟 (F .fobj x) ⇒f changeCat (constantFam A 𝒞 x)
   preserveConst⁻¹ x .transf a = 𝒟.id _
   preserveConst⁻¹ x .natural a₁≈a₂ = 𝒟.∘-cong (𝒟.≈-sym (F .fmor-id)) (𝒟.isEquiv .refl)
 
   -- FIXME: preserves id and composition, and preserveConst is a natural isomorphism
+
+module _ {o m e o' m' e'} os es
+         {𝒞 : Category o m e}
+         {𝒟 : Category o' m' e'}
+         (A : Setoid os es)
+         {F G : Functor 𝒞 𝒟}
+         (α : NatTrans F G)
+  where
 
 ------------------------------------------------------------------------------
 -- reindexing of families (so that Fam is an indexed category)
@@ -184,7 +195,7 @@ module _ {o m e os es} {𝒞 : Category o m e} where
   -- NOTE: This requires that all proofs of setoid equalities are
   -- equal for the iobj-id and iobj-trans to typecheck. This is why I
   -- am using Prop.
-  _[_] : ∀ {X Y} → Fam os es 𝒞 X → (Y ⇒s X) → Fam os es 𝒞 Y
+  _[_] : ∀ {X Y : Setoid os es} → Fam X 𝒞 → (Y ⇒s X) → Fam Y 𝒞
   _[_] P f .fm w    = P .fm (f .func w)
   _[_] P f .subst e = P .subst (f .func-resp-≈ e)
   _[_] P f .refl*   = P .refl*
@@ -195,101 +206,89 @@ module _ {o m e os es} {𝒞 : Category o m e} where
   open Category 𝒞
   open IsEquivalence
 
-  reindex-f : ∀ {X Y} {P Q : Fam os es 𝒞 X} (f : Y ⇒s X) → P ⇒f Q → (P [ f ]) ⇒f (Q [ f ])
+  reindex-f : ∀ {X Y} {P Q : Fam X 𝒞} (f : Y ⇒s X) → P ⇒f Q → (P [ f ]) ⇒f (Q [ f ])
   reindex-f f g .transf y = g .transf _
   reindex-f f g .natural x₁≈x₂ = g .natural (f .func-resp-≈ x₁≈x₂)
 
-  reindex-≈ : ∀ {X Y} {P : Fam os es 𝒞 X} (f g : Y ⇒s X) → f ≈s g → (P [ f ]) ⇒f (P [ g ])
+  reindex-≈ : ∀ {X Y} {P : Fam X 𝒞} (f g : Y ⇒s X) → f ≈s g → (P [ f ]) ⇒f (P [ g ])
   reindex-≈ {Y = Y} {P = P} f g f≈g .transf x = P .subst (f≈g .func-eq (Y .Setoid.refl))
   reindex-≈ {Y = Y} {P = P} f g f≈g .natural y₁≈y₂ =
     isEquiv .trans (≈-sym (P .trans* _ _)) (P .trans* _ _)
 
   open _≃f_
 
-  reindex-f-cong : ∀ {X Y} {P Q : Fam os es 𝒞 X} {f : Y ⇒s X} {g₁ g₂ : P ⇒f Q} → g₁ ≃f g₂ → reindex-f f g₁ ≃f reindex-f f g₂
+  reindex-f-cong : ∀ {X Y} {P Q : Fam X 𝒞} {f : Y ⇒s X} {g₁ g₂ : P ⇒f Q} → g₁ ≃f g₂ → reindex-f f g₁ ≃f reindex-f f g₂
   reindex-f-cong g₁≃g₂ .transf-eq = g₁≃g₂ .transf-eq
 
-  reindex-f-comp : ∀ {X Y} {P Q R : Fam os es 𝒞 X} {f : Y ⇒s X} (g₁ : Q ⇒f R) (g₂ : P ⇒f Q) →
+  reindex-f-comp : ∀ {X Y} {P Q R : Fam X 𝒞} {f : Y ⇒s X} (g₁ : Q ⇒f R) (g₂ : P ⇒f Q) →
     (reindex-f f g₁ ∘f reindex-f f g₂) ≃f reindex-f f (g₁ ∘f g₂)
   reindex-f-comp g₁ g₂ .transf-eq = isEquiv .refl
 
-  reindex-f-id : ∀ {X Y} (P : Fam os es 𝒞 X) (f : Y ⇒s X) →
+  reindex-f-id : ∀ {X Y} (P : Fam X 𝒞) (f : Y ⇒s X) →
     reindex-f f (idf P) ≃f idf (P [ f ])
   reindex-f-id P f .transf-eq = isEquiv .refl
 
   reindex-sq :
-    ∀ {X Y} {P Q : Fam os es 𝒞 X} {f₁ f₂ : Y ⇒s X} (g : P ⇒f Q) (e : f₁ ≈s f₂) →
+    ∀ {X Y} {P Q : Fam X 𝒞} {f₁ f₂ : Y ⇒s X} (g : P ⇒f Q) (e : f₁ ≈s f₂) →
     (reindex-f f₂ g ∘f reindex-≈ {P = P} f₁ f₂ e) ≃f (reindex-≈ {P = Q} f₁ f₂ e ∘f reindex-f f₁ g)
   reindex-sq {Y = Y} g e .transf-eq = g .natural (e .func-eq (Y .Setoid.refl))
 
-  reindex-≈-refl : ∀ {X Y} {P : Fam os es 𝒞 X} (f : Y ⇒s X) →
+  reindex-≈-refl : ∀ {X Y} {P : Fam X 𝒞} (f : Y ⇒s X) →
     reindex-≈ {P = P} f f (≈s-isEquivalence .refl {f}) ≃f idf (P [ f ])
   reindex-≈-refl {P = P} f .transf-eq = P .refl*
 
-  reindex-≈-trans : ∀ {X Y} {P : Fam os es 𝒞 X} {f g h : Y ⇒s X} →
+  reindex-≈-trans : ∀ {X Y} {P : Fam X 𝒞} {f g h : Y ⇒s X} →
     (e₁ : f ≈s g) (e₂ : g ≈s h) →
     reindex-≈ {P = P} f h (≈s-isEquivalence .trans e₁ e₂) ≃f (reindex-≈ {P = P} g h e₂ ∘f reindex-≈ {P = P} f g e₁)
   reindex-≈-trans {P = P} e₁ e₂ .transf-eq = P .trans* _ _
 
-  reindex-≈-comp-1 : ∀ {X Y Z} (P : Fam os es 𝒞 Z)
+  reindex-≈-comp-1 : ∀ {X Y Z} (P : Fam Z 𝒞)
     (f₁ f₂ : Y ⇒s Z) (g : X ⇒s Y) (e : f₁ ≈s f₂) →
     reindex-≈ {P = P} (f₁ ∘S g) (f₂ ∘S g) (prop-setoid.∘S-cong e (≈s-isEquivalence .refl))
       ≃f reindex-f g (reindex-≈ {P = P} f₁ f₂ e)
   reindex-≈-comp-1 P f₁ f₂ g e .transf-eq = isEquiv .refl
 
-  reindex-≈-comp-2 : ∀ {X Y Z} (P : Fam os es 𝒞 Z)
+  reindex-≈-comp-2 : ∀ {X Y Z} (P : Fam Z 𝒞)
     (f : Y ⇒s Z) (g₁ g₂ : X ⇒s Y) (e : g₁ ≈s g₂) →
     reindex-≈ {P = P} (f ∘S g₁) (f ∘S g₂) (prop-setoid.∘S-cong (≈s-isEquivalence .refl {f}) e)
       ≃f reindex-≈ {P = P [ f ]} g₁ g₂ e
   reindex-≈-comp-2 P f g₁ g₂ e .transf-eq = isEquiv .refl
 
-{-
--- We can now say what it means for a category to have setoid-indexed
--- products. This definition works in any indexed category with
--- products.
-record HasSetoidProducts {o m e} os es (𝒞 : Category o m e) : Set (o ⊔ suc m ⊔ suc e ⊔ suc os ⊔ suc es) where
-  field
-    Π : (X Y : Setoid _ _) → Fam os es 𝒞 (⊗-setoid X Y) → Fam os es 𝒞 X
-    lambdaΠ : ∀ {X Y} {P : Fam os es 𝒞 X} (Q : Fam os es 𝒞 (⊗-setoid X Y)) →
-                (P [ prop-setoid.project₁ {X = X} {Y = Y} ]) ⇒f Q →
-                P ⇒f (Π X Y Q)
-    evalΠ : ∀ {X Y} Q → (Π X Y Q [ prop-setoid.project₁ {X = X} {Y = Y} ]) ⇒f Q
--}
-
---
+-- FIXME: if we loosen this to any category instead of a setoid, then
+-- this is a definition of limits
 record HasSetoidProducts {o m e} os es (𝒞 : Category o m e) : Set (o ⊔ suc m ⊔ suc e ⊔ suc os ⊔ suc es) where
   open Category 𝒞
   field
-    Π : (A : Setoid _ _) → Fam os es 𝒞 A → obj
-    lambdaΠ : ∀ {A} (x : obj) (P : Fam os es 𝒞 A) → (constantFam os es 𝒞 A x ⇒f P) → (x ⇒ Π A P)
-    lambdaΠ-cong : ∀ {A x P} {f₁ f₂ : constantFam os es 𝒞 A x ⇒f P} → f₁ ≃f f₂ → lambdaΠ x P f₁ ≈ lambdaΠ x P f₂
+    Π : (A : Setoid os es) → Fam A 𝒞 → obj
+    lambdaΠ : ∀ {A} (x : obj) (P : Fam A 𝒞) → (constantFam A 𝒞 x ⇒f P) → (x ⇒ Π A P)
+    lambdaΠ-cong : ∀ {A x P} {f₁ f₂ : constantFam A 𝒞 x ⇒f P} → f₁ ≃f f₂ → lambdaΠ x P f₁ ≈ lambdaΠ x P f₂
     evalΠ : ∀ {A} P (a : A .Setoid.Carrier) → Π A P ⇒ P .Fam.fm a
-    evalΠ-cong : ∀ {A} {P : Fam os es 𝒞 A} {a₁ a₂ : A .Setoid.Carrier} →
+    evalΠ-cong : ∀ {A} {P : Fam A 𝒞} {a₁ a₂ : A .Setoid.Carrier} →
       (e : A .Setoid._≈_ a₁ a₂) → (P .Fam.subst e ∘ evalΠ P a₁) ≈ evalΠ P a₂
 
   open IsEquivalence
 
-  evalΠf : ∀ {A} P → constantFam os es 𝒞 A (Π A P) ⇒f P
+  evalΠf : ∀ {A} P → constantFam _ _ (Π A P) ⇒f P
   evalΠf P = record { transf = evalΠ P
                     ; natural = λ x₁≈x₂ →
                        isEquiv .trans id-right (≈-sym (evalΠ-cong x₁≈x₂)) }
 
   field
-    lambda-eval : ∀ {A} {P : Fam os es 𝒞 A} {x} {f} a →
+    lambda-eval : ∀ {A} {P : Fam A 𝒞} {x} {f} a →
       (evalΠ P a ∘ lambdaΠ x P f) ≈ f ._⇒f_.transf a
-    lambda-ext : ∀ {A} {P : Fam os es 𝒞 A} {x} {f} → lambdaΠ x P (evalΠf P ∘f constF f) ≈ f
+    lambda-ext : ∀ {A} {P : Fam A 𝒞} {x} {f} → lambdaΠ x P (evalΠf P ∘f constF f) ≈ f
 
-  lambda-evalf : ∀ {A} {P : Fam os es 𝒞 A} {x} f → (evalΠf P ∘f constF (lambdaΠ x P f)) ≃f f
+  lambda-evalf : ∀ {A} {P : Fam A 𝒞} {x} f → (evalΠf P ∘f constF (lambdaΠ x P f)) ≃f f
   lambda-evalf f ._≃f_.transf-eq {a} = lambda-eval a
 
-  Π-map : ∀ {A} {P Q : Fam os es 𝒞 A} → P ⇒f Q → Π A P ⇒ Π A Q
+  Π-map : ∀ {A} {P Q : Fam A 𝒞} → P ⇒f Q → Π A P ⇒ Π A Q
   Π-map {A} {P} {Q} f = lambdaΠ (Π A P) Q (f ∘f evalΠf P)
 
-  Π-map-cong : ∀ {A} {P Q : Fam os es 𝒞 A}
+  Π-map-cong : ∀ {A} {P Q : Fam A 𝒞}
                {f₁ f₂ : P ⇒f Q} → f₁ ≃f f₂ → Π-map f₁ ≈ Π-map f₂
   Π-map-cong f₁≃f₂ = lambdaΠ-cong (∘f-cong f₁≃f₂ (≃f-isEquivalence .refl))
 
-  Π-map-id : ∀ {A} {P : Fam os es 𝒞 A} → Π-map (idf _) ≈ id (Π A P)
+  Π-map-id : ∀ {A} {P : Fam A 𝒞} → Π-map (idf _) ≈ id (Π A P)
   Π-map-id {A} {P} =
     begin
       lambdaΠ (Π A P) P (idf _ ∘f evalΠf P)
@@ -304,8 +303,8 @@ record HasSetoidProducts {o m e} os es (𝒞 : Category o m e) : Set (o ⊔ suc 
     ∎
     where open ≈-Reasoning isEquiv
 
-  lambdaΠ-natural : ∀ {A} {P : Fam os es 𝒞 A} {x y} →
-                    (f : constantFam os es 𝒞 A y ⇒f P) →
+  lambdaΠ-natural : ∀ {A} {P : Fam A 𝒞} {x y} →
+                    (f : constantFam A 𝒞 y ⇒f P) →
                     (h : x ⇒ y) →
                     (lambdaΠ y P f ∘ h) ≈ lambdaΠ x P (f ∘f constF h)
   lambdaΠ-natural {A} {P} {x} {y} f h =
@@ -322,7 +321,7 @@ record HasSetoidProducts {o m e} os es (𝒞 : Category o m e) : Set (o ⊔ suc 
     ∎
     where open ≈-Reasoning isEquiv
 
-  Π-map-comp : ∀ {A} {P Q R : Fam os es 𝒞 A} (f : Q ⇒f R) (g : P ⇒f Q) →
+  Π-map-comp : ∀ {A} {P Q R : Fam A 𝒞} (f : Q ⇒f R) (g : P ⇒f Q) →
                Π-map (f ∘f g) ≈ (Π-map f ∘ Π-map g)
   Π-map-comp {A} {P} {Q} {R} f g =
     begin

@@ -4,9 +4,7 @@ module example where
 
 open import Level using (0ℓ)
 open import Data.List using (List; []; _∷_)
-open import Data.Product using (_,_)
 open import Data.Sum using (inj₁; inj₂)
-open import prop
 open import language-syntax
 import nat
 import label
@@ -33,7 +31,7 @@ Sig .Signature.rel = rel
 
 module L = language Sig
 
--- FIXME: example query. Given `List (label [×] nat)`, add up all the
+-- example query. Given `List (label [×] nat)`, add up all the
 -- elements labelled with a specific label:
 --
 --   sum [ snd e | e <- xs, equal-label 'a' (fst e) ]
@@ -41,6 +39,23 @@ module L = language Sig
 --   sum (concatMap x (e. if equal-label 'a' (fst e) then return (snd e) else nil))
 --
 --   sum = fold zero (add (var zero) (var (succ zero)))
+
+module ex where
+  open L
+
+  sum : ∀ {Γ} → Γ ⊢ list (base number) → Γ ⊢ base number
+  sum = fold (bop zero []) (bop add (var zero ∷ var (succ zero) ∷ []))
+
+  `_ : ∀ {Γ} → label.label → Γ ⊢ base label
+  ` l = bop (lbl l) []
+
+  _≟_ : ∀ {Γ} → Γ ⊢ base label → Γ ⊢ base label → Γ ⊢ bool
+  M ≟ N = brel equal-label (M ∷ N ∷ [])
+
+  query : label.label → emp , list (base label [×] base number) ⊢ base number
+  query l = sum (from var zero collect
+                 when fst (var zero) ≟ (` l) ；
+                 return (snd (var zero)))
 
 ------------------------------------------------------------------------------
 -- Step 2: Make a category for interpretation
@@ -67,6 +82,8 @@ module _ where
   open D.Mor
   open import fam
   open import categories
+  open import Data.Product using (_,_)
+  open import prop
   open prop-setoid using (⊗-setoid; +-setoid; 𝟙)
     renaming (_⇒_ to _⇒s_)
 
@@ -78,19 +95,34 @@ module _ where
   binary X G .famf ._⇒f_.transf x = pair p₁ (p₁ ∘ p₂)
     where open HasProducts galois.products
           open Category galois.cat
-  binary X G .famf ._⇒f_.natural (e₁ , e₂ , _) = {!!}
+  binary X G .famf ._⇒f_.natural (e₁ , e₂ , _) =
+    {!!}
     where open HasProducts galois.products
           open Category galois.cat
 
---  halp :
+  module _ where
+    open galois hiding (𝟙)
+    open prop-setoid using (IsEquivalence)
+    open IsEquivalence
 
-  predicate : ∀ {X G} → (X ⇒s +-setoid (𝟙 {0ℓ} {0ℓ}) (𝟙 {0ℓ} {0ℓ})) →
-              D.Mor D.simple[ X , G ]
-                    (DB .HasBooleans.Bool)
-  predicate f .idxf = f
-  predicate f .famf ._⇒f_.transf x = {!!}
-  predicate f .famf ._⇒f_.natural = {!!}
+    halp : ∀ {G} x → G ⇒g DB .HasBooleans.Bool .D.Obj.fam .Fam.fm x
+    halp (inj₁ _) = to-𝟙 _
+    halp (inj₂ _) = to-𝟙 _
 
+    halp-natural : ∀ {G x₁ x₂}
+                   (e : +-setoid (𝟙 {0ℓ} {0ℓ}) (𝟙 {0ℓ} {0ℓ}) .prop-setoid.Setoid._≈_ x₁ x₂) →
+                   halp {G} x₂ ≃g (DB .HasBooleans.Bool .D.Obj.fam .Fam.subst {x₁} {x₂} e ∘g halp {G} x₁)
+    halp-natural {G} {inj₁ x} {inj₁ x₁} e = galois.terminal .HasTerminal.terminal-unique _ _ _
+    halp-natural {G} {inj₂ y} {inj₂ y₁} e = galois.terminal .HasTerminal.terminal-unique _ _ _
+
+    predicate : ∀ {X G} → (X ⇒s +-setoid (𝟙 {0ℓ} {0ℓ}) (𝟙 {0ℓ} {0ℓ})) →
+                D.Mor D.simple[ X , G ]
+                      (DB .HasBooleans.Bool)
+    predicate f .idxf = f
+    predicate f .famf ._⇒f_.transf x = halp (f ._⇒s_.func x)
+    predicate f .famf ._⇒f_.natural {x₁} {x₂} e =
+      ≃g-isEquivalence .trans (cat .Category.id-right)
+                              (halp-natural {x₁ = f ._⇒s_.func x₁} {x₂ = f ._⇒s_.func x₂} (f ._⇒s_.func-resp-≈ e))
 
   BaseInterp : SignatureInterp Sig
   BaseInterp .SignatureInterp.⟦sort⟧ number = D.simple[ nat.ℕₛ , galois.Presence ]
@@ -102,5 +134,29 @@ module _ where
 
 open interp Sig BaseInterp
 
-interp : ∀ {Γ τ} → Γ L.⊢ τ → D.Mor ⟦ Γ ⟧ctxt ⟦ τ ⟧ty
-interp = ⟦_⟧tm
+open galois
+open import fam
+open _⇒f_
+open D.Mor
+open import Data.Product using (_,_; _×_; proj₁; proj₂)
+open import Data.Unit using (tt)
+open import join-semilattice
+
+input : List (label.label × nat.ℕ)
+input = (label.a , nat.zero) ∷
+        (label.b , nat.succ nat.zero) ∷
+        (label.a , nat.succ nat.zero) ∷
+        []
+
+back-slice : label.label → _
+back-slice l = ⟦ ex.query l ⟧tm .famf .transf (_ , input) ._⇒g_.bwd  ._=>_.func pr .proj₂
+
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+
+-- Querying for the 'a' label uses the 1st and 3rd numbers
+test1 : back-slice label.a ≡ ((ab , pr) , (ab , ab) , (ab , pr) , tt)
+test1 = refl
+
+-- Querying for the 'b' label uses the 2nd number
+test2 : back-slice label.b ≡ ((ab , ab) , (ab , pr) , (ab , ab) , tt)
+test2 = refl

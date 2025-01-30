@@ -71,13 +71,13 @@ module _ {o e} where
   open _⇒f_
   open _≃f_
 
-  record ΠS-Carrier (A : Setoid (o ⊔ e) (o ⊔ e)) (F : Fam o e (SetoidCat (o ⊔ e) (o ⊔ e)) A) : Set (o ⊔ e) where
+  record ΠS-Carrier (A : Setoid o e) (F : Fam A (SetoidCat (o ⊔ e) (o ⊔ e))) : Set (o ⊔ e) where
     field
       Π-func : (a : A .Carrier) → F .fm a .Carrier
       Π-eq   : ∀ {a₁ a₂} (e : A ._≈_ a₁ a₂) → F .fm a₂ ._≈_ (F .subst e .func (Π-func a₁)) (Π-func a₂)
   open ΠS-Carrier
 
-  ΠS : (A : Setoid (o ⊔ e) (o ⊔ e)) (F : Fam o e (SetoidCat (o ⊔ e) (o ⊔ e)) A) → Setoid (o ⊔ e) (o ⊔ e)
+  ΠS : (A : Setoid o e) (F : Fam A (SetoidCat (o ⊔ e) (o ⊔ e))) → Setoid (o ⊔ e) (o ⊔ e)
   ΠS A F .Carrier = ΠS-Carrier A F
   ΠS A F ._≈_ f₁ f₂ = ∀ a → F .fm a ._≈_ (f₁ .Π-func a) (f₂ .Π-func a)
   ΠS A F .isEquivalence .refl {f} a = F .fm a .refl

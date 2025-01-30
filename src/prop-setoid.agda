@@ -16,6 +16,11 @@ record IsEquivalence {o e} {A : Set o} (_≈_ : A → A → Prop e) : Set (o ⊔
     trans : ∀ {x y z} → x ≈ y → y ≈ z → x ≈ z
 open IsEquivalence
 
+⊤-isEquivalence : ∀ {o e} {A : Set o} → IsEquivalence {o} {e} {A} (λ _ _ → ⊤)
+⊤-isEquivalence .refl = tt
+⊤-isEquivalence .sym _ = tt
+⊤-isEquivalence .trans _ _ = tt
+
 ⊎-isEquivalence : ∀ {o e} {A B : Set o} {_≈₁_ : A → A → Prop e} {_≈₂_ : B → B → Prop e} →
                   IsEquivalence _≈₁_ →
                   IsEquivalence _≈₂_ →
