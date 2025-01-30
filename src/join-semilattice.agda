@@ -128,6 +128,12 @@ module _ where
   initial : ∀ {A}{X : JoinSemilattice A} → 𝟙 => X
   initial = ⊥-map
 
+  terminal : ∀ {A}{X : JoinSemilattice A} → X => 𝟙
+  terminal ._=>_.func _ = tt
+  terminal ._=>_.monotone _ = tt
+  terminal ._=>_.∨-preserving = tt
+  terminal ._=>_.⊥-preserving = tt
+
   open _=>_
   open _≃m_
 

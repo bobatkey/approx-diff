@@ -261,12 +261,12 @@ module _ {o e} where
 
   foldrP : ∀ {A B C : Setoid o e} →
            C ⇒ B →
-           ⊗-setoid C (⊗-setoid A B) ⇒ B →
+           ⊗-setoid (⊗-setoid C A) B ⇒ B →
            ⊗-setoid C (ListS A) ⇒ B
   foldrP nilCase consCase .func (c , []) = nilCase .func c
-  foldrP nilCase consCase .func (c , x ∷ xs) = consCase .func (c , x , foldrP nilCase consCase .func (c , xs))
+  foldrP nilCase consCase .func (c , x ∷ xs) = consCase .func ((c , x) , foldrP nilCase consCase .func (c , xs))
   foldrP nilCase consCase .func-resp-≈ {c₁ , []}       {c₂ , []}        (c₁≈c₂ , tt) = nilCase .func-resp-≈ c₁≈c₂
   foldrP nilCase consCase .func-resp-≈ {c₁ , x₁ ∷ xs₁} {c₂ , x₂ ∷ xs₂} (c₁≈c₂ , x₁≈x₂ , xs₁≈xs₂) =
-    consCase .func-resp-≈ (c₁≈c₂ , x₁≈x₂ , foldrP nilCase consCase .func-resp-≈ (c₁≈c₂ , xs₁≈xs₂))
+    consCase .func-resp-≈ ((c₁≈c₂ , x₁≈x₂) , foldrP nilCase consCase .func-resp-≈ (c₁≈c₂ , xs₁≈xs₂))
 
   -- FIXME: the equations...

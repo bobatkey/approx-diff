@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --prop #-}
+{-# OPTIONS --postfix-projections --prop --safe #-}
 
 module galois where
 
@@ -106,6 +106,8 @@ module _ where
   cat .assoc f g h .bwd-eq =
     ≃J-isEquivalence .sym (join-semilattice.assoc (h .bwd) (g .bwd) (f .bwd))
 
+  -- FIXME: this category is additive
+
 -- Terminal (FIXME: and initial)
 module _ where
   open HasTerminal
@@ -115,13 +117,16 @@ module _ where
   𝟙 .meets = meet-semilattice.𝟙
   𝟙 .joins = join-semilattice.𝟙
 
+  to-𝟙 : ∀ X → X ⇒g 𝟙
+  to-𝟙 X .fwd = meet-semilattice.terminal
+  to-𝟙 X .bwd = join-semilattice.initial
+  to-𝟙 X .bwd⊣fwd .proj₁ tt =
+    X .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom
+  to-𝟙 X .bwd⊣fwd .proj₂ _ = tt
+
   terminal : HasTerminal cat
   terminal .witness = 𝟙
-  terminal .terminal-mor X .fwd = meet-semilattice.terminal
-  terminal .terminal-mor X .bwd = join-semilattice.initial
-  terminal .terminal-mor X .bwd⊣fwd .proj₁ tt =
-    X .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom
-  terminal .terminal-mor X .bwd⊣fwd .proj₂ _ = tt
+  terminal .terminal-mor = to-𝟙
   terminal .terminal-unique X f g .fwd-eq = meet-semilattice.terminal-unique _ _ _
   terminal .terminal-unique X f g .bwd-eq = join-semilattice.initial-unique _ _ _
 
@@ -219,3 +224,107 @@ module _ where
   𝕃-strength {X} {Y} .bwd⊣fwd {x , bottom} {bottom} .proj₂ e = tt
   𝕃-strength {X} {Y} .bwd⊣fwd {x , < x₁ >} {bottom} .proj₂ e = tt
   𝕃-strength {X} {Y} .bwd⊣fwd {x , < x₁ >} {< x₂ >} .proj₂ e = e
+
+module _ where
+
+  -- FIXME: split these bits out into other modules, and consider
+  -- reusing booleans.
+
+  data presence : Set where
+    pr ab : presence
+
+  presence-≤ : presence → presence → Prop
+  presence-≤ pr pr = ⊤
+  presence-≤ pr ab = ⊥
+  presence-≤ ab _ = ⊤
+
+  presence-∧ : presence → presence → presence
+  presence-∧ pr y = y
+  presence-∧ ab y = ab
+
+  presence-∨ : presence → presence → presence
+  presence-∨ pr y = pr
+  presence-∨ ab y = y
+
+  open Preorder
+
+  Presence-preorder : Preorder
+  Presence-preorder .Carrier = presence
+  Presence-preorder ._≤_ = presence-≤
+  Presence-preorder .≤-isPreorder .IsPreorder.refl {pr} = tt
+  Presence-preorder .≤-isPreorder .IsPreorder.refl {ab} = tt
+  Presence-preorder .≤-isPreorder .IsPreorder.trans {pr} {pr} {pr} p q = tt
+  Presence-preorder .≤-isPreorder .IsPreorder.trans {ab} {pr} {pr} p q = tt
+  Presence-preorder .≤-isPreorder .IsPreorder.trans {ab} {ab} {pr} p q = tt
+  Presence-preorder .≤-isPreorder .IsPreorder.trans {ab} {ab} {ab} p q = tt
+
+  Presence : Obj
+  Presence .carrier = Presence-preorder
+  Presence .meets .MeetSemilattice._∧_ = presence-∧
+  Presence .meets .MeetSemilattice.⊤ = pr
+  Presence .meets .MeetSemilattice.∧-isMeet .IsMeet.π₁ {pr} {pr} = tt
+  Presence .meets .MeetSemilattice.∧-isMeet .IsMeet.π₁ {pr} {ab} = tt
+  Presence .meets .MeetSemilattice.∧-isMeet .IsMeet.π₁ {ab} {y} = tt
+  Presence .meets .MeetSemilattice.∧-isMeet .IsMeet.π₂ {pr} {pr} = tt
+  Presence .meets .MeetSemilattice.∧-isMeet .IsMeet.π₂ {pr} {ab} = tt
+  Presence .meets .MeetSemilattice.∧-isMeet .IsMeet.π₂ {ab} {pr} = tt
+  Presence .meets .MeetSemilattice.∧-isMeet .IsMeet.π₂ {ab} {ab} = tt
+  IsMeet.⟨_,_⟩ (Presence .meets .MeetSemilattice.∧-isMeet) {pr} {pr} {pr} p q = tt
+  IsMeet.⟨_,_⟩ (Presence .meets .MeetSemilattice.∧-isMeet) {ab} {pr} {pr} p q = tt
+  IsMeet.⟨_,_⟩ (Presence .meets .MeetSemilattice.∧-isMeet) {ab} {pr} {ab} p q = tt
+  IsMeet.⟨_,_⟩ (Presence .meets .MeetSemilattice.∧-isMeet) {ab} {ab} {z} p q = tt
+  Presence .meets .MeetSemilattice.⊤-isTop .IsTop.≤-top {pr} = tt
+  Presence .meets .MeetSemilattice.⊤-isTop .IsTop.≤-top {ab} = tt
+  Presence .joins .JoinSemilattice._∨_ = presence-∨
+  Presence .joins .JoinSemilattice.⊥ = ab
+  Presence .joins .JoinSemilattice.∨-isJoin .IsJoin.inl {pr} {y} = tt
+  Presence .joins .JoinSemilattice.∨-isJoin .IsJoin.inl {ab} {pr} = tt
+  Presence .joins .JoinSemilattice.∨-isJoin .IsJoin.inl {ab} {ab} = tt
+  Presence .joins .JoinSemilattice.∨-isJoin .IsJoin.inr {pr} {pr} = tt
+  Presence .joins .JoinSemilattice.∨-isJoin .IsJoin.inr {pr} {ab} = tt
+  Presence .joins .JoinSemilattice.∨-isJoin .IsJoin.inr {ab} {pr} = tt
+  Presence .joins .JoinSemilattice.∨-isJoin .IsJoin.inr {ab} {ab} = tt
+  IsJoin.[_,_] (Presence .joins .JoinSemilattice.∨-isJoin) {pr} {pr} {pr} p q = tt
+  IsJoin.[_,_] (Presence .joins .JoinSemilattice.∨-isJoin) {pr} {ab} {pr} p q = tt
+  IsJoin.[_,_] (Presence .joins .JoinSemilattice.∨-isJoin) {ab} {pr} {pr} p q = tt
+  IsJoin.[_,_] (Presence .joins .JoinSemilattice.∨-isJoin) {ab} {ab} {pr} p q = tt
+  IsJoin.[_,_] (Presence .joins .JoinSemilattice.∨-isJoin) {ab} {ab} {ab} p q = tt
+  Presence .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom {pr} = tt
+  Presence .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom {ab} = tt
+
+  -- FIXME: this ought to work for any object, since we can always use
+  -- the meets.
+  combinePresence : (Presence ⊗ Presence) ⇒g Presence
+  combinePresence .fwd ._=>M_.func (x , y) = presence-∧ x y
+  combinePresence .fwd ._=>M_.monotone {pr , pr} {pr , pr} (p , q) = tt
+  combinePresence .fwd ._=>M_.monotone {pr , ab} {x₂ , y₂} (p , q) = tt
+  combinePresence .fwd ._=>M_.monotone {ab , y₁} {x₂ , y₂} (p , q) = tt
+  combinePresence .fwd ._=>M_.∧-preserving {pr , pr} {x₂ , y₂} = Presence-preorder .≤-isPreorder .IsPreorder.refl
+  combinePresence .fwd ._=>M_.∧-preserving {pr , ab} {x₂ , y₂} = tt
+  combinePresence .fwd ._=>M_.∧-preserving {ab , y₁} {x₂ , y₂} = tt
+  combinePresence .fwd ._=>M_.⊤-preserving = tt
+  combinePresence .bwd ._=>J_.func x = x , x
+  combinePresence .bwd ._=>J_.monotone x₁≤x₂ = x₁≤x₂ , x₁≤x₂
+  combinePresence .bwd ._=>J_.∨-preserving {pr} {pr} = tt , tt
+  combinePresence .bwd ._=>J_.∨-preserving {pr} {ab} = tt , tt
+  combinePresence .bwd ._=>J_.∨-preserving {ab} {pr} = tt , tt
+  combinePresence .bwd ._=>J_.∨-preserving {ab} {ab} = tt , tt
+  combinePresence .bwd ._=>J_.⊥-preserving = tt , tt
+  combinePresence .bwd⊣fwd {pr , pr} {y} .proj₁ p = p , p
+  combinePresence .bwd⊣fwd {pr , ab} {ab} .proj₁ p = tt , tt
+  combinePresence .bwd⊣fwd {ab , pr} {ab} .proj₁ p = tt , tt
+  combinePresence .bwd⊣fwd {ab , ab} {ab} .proj₁ p = tt , tt
+  combinePresence .bwd⊣fwd {pr , pr} {pr} .proj₂ p = tt
+  combinePresence .bwd⊣fwd {pr , pr} {ab} .proj₂ p = tt
+  combinePresence .bwd⊣fwd {pr , ab} {ab} .proj₂ p = tt
+  combinePresence .bwd⊣fwd {ab , pr} {ab} .proj₂ p = tt
+  combinePresence .bwd⊣fwd {ab , ab} {ab} .proj₂ p = tt
+
+  present : 𝟙 ⇒g Presence
+  present .fwd ._=>M_.func _ = pr
+  present .fwd ._=>M_.monotone _ = tt
+  present .fwd ._=>M_.∧-preserving = tt
+  present .fwd ._=>M_.⊤-preserving = tt
+  present .bwd = join-semilattice.terminal
+  present .bwd⊣fwd {_} {pr} = refl-⇔
+  present .bwd⊣fwd {_} {ab} = refl-⇔

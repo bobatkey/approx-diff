@@ -53,7 +53,7 @@ module _ {o m e} {os es} {𝒞 : Category o m e} {A : Setoid (m ⊔ e ⊔ os ⊔
       id _ ∘ P .subst _
     ≈⟨ id-left ⟩
       P .subst _
-    ≈⟨ isEquiv .sym id-right ⟩
+    ≈⟨ ≈-sym id-right ⟩
       P .subst _ ∘ id _
     ∎ where open ≈-Reasoning isEquiv
 
@@ -66,7 +66,7 @@ module _ {o m e} {os es} {𝒞 : Category o m e} {A : Setoid (m ⊔ e ⊔ os ⊔
       f .transf x₂ ∘ (g .transf x₂ ∘ P .subst _)
          ≈⟨ ∘-cong (isEquiv .refl) (g .natural _) ⟩
       f .transf x₂ ∘ (Q .subst _ ∘ g .transf x₁)
-         ≈⟨ isEquiv .sym (assoc _ _ _) ⟩
+         ≈⟨ ≈-sym (assoc _ _ _) ⟩
       (f .transf x₂ ∘ Q .subst _) ∘ g .transf x₁
          ≈⟨ ∘-cong (f .natural _) (isEquiv .refl) ⟩
       (R .subst _ ∘ f .transf x₁) ∘ g .transf x₁
@@ -84,7 +84,7 @@ module _ {o m e} {os es} {𝒞 : Category o m e} {A : Setoid (m ⊔ e ⊔ os ⊔
 
   ≃f-isEquivalence : ∀ {P Q} → IsEquivalence (_≃f_ {P} {Q})
   ≃f-isEquivalence .refl .transf-eq = isEquiv .refl
-  ≃f-isEquivalence .sym {f} {g} f≈g .transf-eq = isEquiv .sym (f≈g .transf-eq)
+  ≃f-isEquivalence .sym {f} {g} f≈g .transf-eq = ≈-sym (f≈g .transf-eq)
   ≃f-isEquivalence .trans {f} {g} {h} f≈g g≈h .transf-eq = isEquiv .trans (f≈g .transf-eq) (g≈h .transf-eq)
 
   ∘f-cong : ∀ {P Q R} {f₁ f₂ : Q ⇒f R} {g₁ g₂ : P ⇒f Q} →
@@ -103,8 +103,14 @@ module _ {o m e} {os es} {𝒞 : Category o m e} {A : Setoid (m ⊔ e ⊔ os ⊔
 
   constF : ∀ {x y} → x ⇒ y → constantFam os es 𝒞 A x ⇒f constantFam os es 𝒞 A y
   constF f .transf _ = f
-  constF f .natural _ = isEquiv .trans id-right (isEquiv .sym id-left)
+  constF f .natural _ = isEquiv .trans id-right (≈-sym id-left)
 
+  constF-id : ∀ {x} → constF (id x) ≃f idf _
+  constF-id .transf-eq = ≈-refl
+
+  constF-comp : ∀ {x y z} (f : y ⇒ z) (g : x ⇒ y) →
+                constF (f ∘ g) ≃f (constF f ∘f constF g)
+  constF-comp f g .transf-eq = ≈-refl
 
 -- FIXME: families over a fixed setoid form a category
 
@@ -141,7 +147,7 @@ module _ {o m e} os es {𝒞 𝒟 : Category o m e}
   changeCatF {P} {Q} f .natural {x₁} {x₂} x₁≈x₂ =
     begin
       F .fmor (f .transf x₂) 𝒟.∘ F .fmor (P .subst _)
-    ≈⟨ 𝒟.isEquiv .sym (F .fmor-comp _ _) ⟩
+    ≈⟨ 𝒟.≈-sym (F .fmor-comp _ _) ⟩
       F .fmor (f .transf x₂ 𝒞.∘ P .subst _)
     ≈⟨ F .fmor-cong (f .natural _) ⟩
       F .fmor (Q .subst x₁≈x₂ 𝒞.∘ f .transf x₁)
@@ -163,7 +169,7 @@ module _ {o m e} os es {𝒞 𝒟 : Category o m e}
 
   preserveConst⁻¹ : ∀ x → constantFam os es 𝒟 A (F .fobj x) ⇒f changeCat (constantFam os es 𝒞 A x)
   preserveConst⁻¹ x .transf a = 𝒟.id _
-  preserveConst⁻¹ x .natural a₁≈a₂ = 𝒟.∘-cong (𝒟.isEquiv .sym (F .fmor-id)) (𝒟.isEquiv .refl)
+  preserveConst⁻¹ x .natural a₁≈a₂ = 𝒟.∘-cong (𝒟.≈-sym (F .fmor-id)) (𝒟.isEquiv .refl)
 
   -- FIXME: preserves id and composition, and preserveConst is a natural isomorphism
 
@@ -196,7 +202,7 @@ module _ {o m e os es} {𝒞 : Category o m e} where
   reindex-≈ : ∀ {X Y} {P : Fam os es 𝒞 X} (f g : Y ⇒s X) → f ≈s g → (P [ f ]) ⇒f (P [ g ])
   reindex-≈ {Y = Y} {P = P} f g f≈g .transf x = P .subst (f≈g .func-eq (Y .Setoid.refl))
   reindex-≈ {Y = Y} {P = P} f g f≈g .natural y₁≈y₂ =
-    isEquiv .trans (isEquiv .sym (P .trans* _ _)) (P .trans* _ _)
+    isEquiv .trans (≈-sym (P .trans* _ _)) (P .trans* _ _)
 
   open _≃f_
 
@@ -266,9 +272,68 @@ record HasSetoidProducts {o m e} os es (𝒞 : Category o m e) : Set (o ⊔ suc 
   evalΠf : ∀ {A} P → constantFam os es 𝒞 A (Π A P) ⇒f P
   evalΠf P = record { transf = evalΠ P
                     ; natural = λ x₁≈x₂ →
-                       isEquiv .trans id-right (isEquiv .sym (evalΠ-cong x₁≈x₂)) }
+                       isEquiv .trans id-right (≈-sym (evalΠ-cong x₁≈x₂)) }
 
   field
     lambda-eval : ∀ {A} {P : Fam os es 𝒞 A} {x} {f} a →
       (evalΠ P a ∘ lambdaΠ x P f) ≈ f ._⇒f_.transf a
     lambda-ext : ∀ {A} {P : Fam os es 𝒞 A} {x} {f} → lambdaΠ x P (evalΠf P ∘f constF f) ≈ f
+
+  lambda-evalf : ∀ {A} {P : Fam os es 𝒞 A} {x} f → (evalΠf P ∘f constF (lambdaΠ x P f)) ≃f f
+  lambda-evalf f ._≃f_.transf-eq {a} = lambda-eval a
+
+  Π-map : ∀ {A} {P Q : Fam os es 𝒞 A} → P ⇒f Q → Π A P ⇒ Π A Q
+  Π-map {A} {P} {Q} f = lambdaΠ (Π A P) Q (f ∘f evalΠf P)
+
+  Π-map-cong : ∀ {A} {P Q : Fam os es 𝒞 A}
+               {f₁ f₂ : P ⇒f Q} → f₁ ≃f f₂ → Π-map f₁ ≈ Π-map f₂
+  Π-map-cong f₁≃f₂ = lambdaΠ-cong (∘f-cong f₁≃f₂ (≃f-isEquivalence .refl))
+
+  Π-map-id : ∀ {A} {P : Fam os es 𝒞 A} → Π-map (idf _) ≈ id (Π A P)
+  Π-map-id {A} {P} =
+    begin
+      lambdaΠ (Π A P) P (idf _ ∘f evalΠf P)
+    ≈⟨ lambdaΠ-cong ≃f-id-left ⟩
+      lambdaΠ (Π A P) P (evalΠf P)
+    ≈⟨ ≈-sym (lambdaΠ-cong ≃f-id-right) ⟩
+      lambdaΠ (Π A P) P (evalΠf P ∘f idf _)
+    ≈⟨ ≈-sym (lambdaΠ-cong (∘f-cong (≃f-isEquivalence .refl) constF-id)) ⟩
+      lambdaΠ (Π A P) P (evalΠf P ∘f constF (id (Π A P)))
+    ≈⟨ lambda-ext ⟩
+      id (Π A P)
+    ∎
+    where open ≈-Reasoning isEquiv
+
+  lambdaΠ-natural : ∀ {A} {P : Fam os es 𝒞 A} {x y} →
+                    (f : constantFam os es 𝒞 A y ⇒f P) →
+                    (h : x ⇒ y) →
+                    (lambdaΠ y P f ∘ h) ≈ lambdaΠ x P (f ∘f constF h)
+  lambdaΠ-natural {A} {P} {x} {y} f h =
+    begin
+      lambdaΠ y P f ∘ h
+    ≈⟨ ≈-sym lambda-ext ⟩
+      lambdaΠ x P (evalΠf P ∘f constF (lambdaΠ y P f ∘ h))
+    ≈⟨ lambdaΠ-cong (∘f-cong (≃f-isEquivalence .refl) (constF-comp _ _)) ⟩
+      lambdaΠ x P (evalΠf P ∘f (constF (lambdaΠ y P f) ∘f constF h))
+    ≈⟨ ≈-sym (lambdaΠ-cong (≃f-assoc _ _ _)) ⟩
+      lambdaΠ x P ((evalΠf P ∘f constF (lambdaΠ y P f)) ∘f constF h)
+    ≈⟨ lambdaΠ-cong (∘f-cong (lambda-evalf _) (≃f-isEquivalence .refl)) ⟩
+      lambdaΠ x P (f ∘f constF h)
+    ∎
+    where open ≈-Reasoning isEquiv
+
+  Π-map-comp : ∀ {A} {P Q R : Fam os es 𝒞 A} (f : Q ⇒f R) (g : P ⇒f Q) →
+               Π-map (f ∘f g) ≈ (Π-map f ∘ Π-map g)
+  Π-map-comp {A} {P} {Q} {R} f g =
+    begin
+      lambdaΠ (Π A P) R ((f ∘f g) ∘f evalΠf P)
+    ≈⟨ lambdaΠ-cong (≃f-assoc _ _ _) ⟩
+      lambdaΠ (Π A P) R (f ∘f (g ∘f evalΠf P))
+    ≈⟨ ≈-sym (lambdaΠ-cong (∘f-cong (≃f-isEquivalence .refl) (lambda-evalf _))) ⟩
+      lambdaΠ (Π A P) R (f ∘f (evalΠf Q ∘f constF (lambdaΠ (Π A P) Q (g ∘f evalΠf P))))
+    ≈⟨ ≈-sym (lambdaΠ-cong (≃f-assoc _ _ _)) ⟩
+      lambdaΠ (Π A P) R ((f ∘f evalΠf Q) ∘f constF (lambdaΠ (Π A P) Q (g ∘f evalΠf P)))
+    ≈⟨ ≈-sym (lambdaΠ-natural _ _) ⟩
+      lambdaΠ (Π A Q) R (f ∘f evalΠf Q) ∘ lambdaΠ (Π A P) Q (g ∘f evalΠf P)
+    ∎
+    where open ≈-Reasoning isEquiv

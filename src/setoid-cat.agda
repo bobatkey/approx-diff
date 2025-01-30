@@ -50,7 +50,17 @@ module _ o e where
   Setoid-products .pair-p₂ f g .func-eq = g .func-resp-≈
   Setoid-products .pair-ext f .func-eq = f .func-resp-≈
 
--- FIXME: Setoid-coproducts
+  open HasCoproducts
+
+  Setoid-coproducts : HasCoproducts SetoidCat
+  Setoid-coproducts .coprod = +-setoid
+  Setoid-coproducts .in₁ = prop-setoid.inject₁
+  Setoid-coproducts .in₂ = prop-setoid.inject₂
+  Setoid-coproducts .copair = prop-setoid.copair
+  Setoid-coproducts .copair-cong = prop-setoid.copair-cong
+  Setoid-coproducts .copair-in₁ = prop-setoid.copair-in₁
+  Setoid-coproducts .copair-in₂ = prop-setoid.copair-in₂
+  Setoid-coproducts .copair-ext = prop-setoid.copair-ext
 
 -- FIXME: Setoid-exponentials
 

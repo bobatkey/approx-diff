@@ -2,83 +2,114 @@
 
 module language-syntax where
 
-open import Data.Nat using (ℕ)
+open import Level using (0ℓ; suc; _⊔_)
+open import Data.List using (List; []; _∷_)
 
-data type : Set where
-  unit num : type
-  _`×_ _`⇒_ _`+_ : type → type → type
-  lift : type → type
+data Every {ℓ₁ ℓ₂} {A : Set ℓ₁} (P : A → Set ℓ₂) : List A → Set (ℓ₁ ⊔ ℓ₂) where
+  []  : Every P []
+  _∷_ : ∀ {x xs} → P x → Every P xs → Every P (x ∷ xs)
 
-infix 4 _∋_ _⊢_
+record Signature ℓ : Set (suc ℓ) where
+  field
+    sort : Set ℓ
+    op   : List sort → sort → Set ℓ
+    rel  : List sort → Set ℓ
 
-data ctxt : Set where
-  ε : ctxt
-  _,_ : ctxt → type → ctxt
+module language {ℓ} (Sig : Signature ℓ) where
 
-data _∋_ : ctxt → type → Set where
-  zero : ∀ {Γ τ} → Γ , τ ∋ τ
-  su : ∀ {Γ τ σ} → Γ ∋ τ → Γ , σ ∋ τ
+  open Signature Sig
 
-data _⊢_ : ctxt → type → Set where
-  var : ∀ {Γ τ} → Γ ∋ τ → Γ ⊢ τ
+  data type : Set ℓ where
+    unit bool : type
+    base : sort → type
+    _[×]_ : type → type → type
+    list : type → type
 
-  -- The sole value of the unit type
-  unit : ∀ {Γ} → Γ ⊢ unit
+  infixl 40 _[×]_
 
-  -- Natural numbers and some operations
-  nat : ∀ {Γ} → ℕ → Γ ⊢ num
-  plus : ∀ {Γ} → Γ ⊢ num → Γ ⊢ num → Γ ⊢ num
-  times : ∀ {Γ} → Γ ⊢ num → Γ ⊢ num → Γ ⊢ num
-  eq : ∀ {Γ} → Γ ⊢ num → Γ ⊢ num → Γ ⊢ unit `+ unit
+  data ctxt : Set ℓ where
+    emp : ctxt
+    _,_ : ctxt → type → ctxt
 
-  -- lambda and application
-  lam : ∀ {Γ σ τ} → Γ , σ ⊢ τ → Γ ⊢ σ `⇒ τ
-  app : ∀ {Γ σ τ} → Γ ⊢ σ `⇒ τ → Γ ⊢ σ → Γ ⊢ τ
+  infixl 30 _,_
 
-  -- pairs
-  fst    : ∀ {Γ σ τ} → Γ ⊢ σ `× τ → Γ ⊢ σ
-  snd    : ∀ {Γ σ τ} → Γ ⊢ σ `× τ → Γ ⊢ τ
-  mkPair : ∀ {Γ σ τ} → Γ ⊢ σ → Γ ⊢ τ → Γ ⊢ σ `× τ
+  data _∋_ : ctxt → type → Set ℓ where
+    zero : ∀ {Γ τ} → (Γ , τ) ∋ τ
+    succ : ∀ {Γ τ τ'} → Γ ∋ τ → Γ , τ' ∋ τ
 
-  -- sums
-  inj₁ : ∀ {Γ σ τ} → Γ ⊢ σ → Γ ⊢ σ `+ τ
-  inj₂ : ∀ {Γ σ τ} → Γ ⊢ τ → Γ ⊢ σ `+ τ
-  case : ∀ {Γ ρ σ τ} → Γ , σ ⊢ ρ → Γ , τ ⊢ ρ → Γ ⊢ σ `+ τ → Γ ⊢ ρ
+  -- A renaming is a context morphism
+  Ren : ctxt → ctxt → Set ℓ
+  Ren Γ Γ' = ∀ {τ} → Γ ∋ τ → Γ' ∋ τ
 
-  -- lift
-  return : ∀ {Γ τ} → Γ ⊢ τ →
-                     Γ ⊢ lift τ
-  bind   : ∀ {Γ σ τ} → Γ ⊢ lift σ →
-                       Γ , σ ⊢ lift τ →
-                       Γ ⊢ lift τ
+  -- Push a renaming under a context extension.
+  ext : ∀ {Γ Γ' τ} → Ren Γ Γ' → Ren (Γ , τ) (Γ' , τ)
+  ext ρ zero = zero
+  ext ρ (succ x) = succ (ρ x)
 
--- A renaming is a context morphism
-Ren : ctxt → ctxt → Set
-Ren Γ Γ' = ∀ {τ} → Γ ∋ τ → Γ' ∋ τ
+  weaken : ∀ {Γ τ} → Ren Γ (Γ , τ)
+  weaken zero = succ zero
+  weaken (succ x) = succ (weaken x)
 
--- Push a renaming under a context extension.
-ext : ∀ {Γ Γ' τ} → Ren Γ Γ' → Ren (Γ , τ) (Γ' , τ)
-ext ρ zero = zero
-ext ρ (su x) = su (ρ x)
+  data _⊢_ : ctxt → type → Set ℓ where
+    var : ∀ {Γ τ} → Γ ∋ τ → Γ ⊢ τ
 
-weaken : ∀ {Γ τ} → Ren Γ (Γ , τ)
-weaken zero = su zero
-weaken (su x) = su (weaken x)
+    unit : ∀ {Γ} → Γ ⊢ unit
 
-_*_ : ∀ {Γ Γ' τ} → Ren Γ Γ' → Γ ⊢ τ → Γ' ⊢ τ
-ρ * var x = var (ρ x)
-ρ * nat n = nat n
-ρ * plus s t = plus (ρ * s) (ρ * t)
-ρ * times s t = times (ρ * s) (ρ * t)
-ρ * eq s t = eq (ρ * s) (ρ * t)
-ρ * unit = unit
-ρ * lam t = lam (ext ρ * t)
-ρ * app s t = app (ρ * s) (ρ * t)
-ρ * fst t = fst (ρ * t)
-ρ * snd t = snd (ρ * t)
-ρ * mkPair s t = mkPair (ρ * s) (ρ * t)
-ρ * inj₁ t = inj₁ (ρ * t)
-ρ * inj₂ t = inj₂ (ρ * t)
-ρ * case t₁ t₂ s = case (ext ρ * t₁) (ext ρ * t₂) (ρ * s)
-ρ * return t = return (ρ * t)
-ρ * bind s t = bind (ρ * s) (ext ρ * t)
+    -- booleans
+    true false : ∀ {Γ} → Γ ⊢ bool
+    if_then_else_ : ∀ {Γ τ} → Γ ⊢ bool → Γ ⊢ τ → Γ ⊢ τ → Γ ⊢ τ
+
+    -- products
+    pair : ∀ {Γ τ₁ τ₂} → Γ ⊢ τ₁ → Γ ⊢ τ₂ → Γ ⊢ τ₁ [×] τ₂
+    fst  : ∀ {Γ τ₁ τ₂} → Γ ⊢ τ₁ [×] τ₂ → Γ ⊢ τ₁
+    snd  : ∀ {Γ τ₁ τ₂} → Γ ⊢ τ₁ [×] τ₂ → Γ ⊢ τ₂
+
+    -- base operations
+    bop : ∀ {Γ in-sorts out-sort} →
+          op in-sorts out-sort →
+          Every (λ σ → Γ ⊢ base σ) in-sorts →
+          Γ ⊢ base out-sort
+    brel : ∀ {Γ in-sorts} →
+           rel in-sorts →
+           Every (λ σ → Γ ⊢ base σ) in-sorts →
+           Γ ⊢ bool
+
+    -- lists
+    nil  : ∀ {Γ τ} → Γ ⊢ list τ
+    cons : ∀ {Γ τ} → Γ ⊢ τ → Γ ⊢ list τ → Γ ⊢ list τ
+    fold : ∀ {Γ τ₁ τ₂} →
+           Γ ⊢ τ₂ →
+           Γ , τ₁ , τ₂ ⊢ τ₂ →
+           Γ ⊢ list τ₁ →
+           Γ ⊢ τ₂
+
+  -- Applying renamings to terms
+  mutual
+    _*_ : ∀ {Γ Γ' τ} → Ren Γ Γ' → Γ ⊢ τ → Γ' ⊢ τ
+    ρ * var x = var (ρ x)
+    ρ * unit = unit
+    ρ * true = true
+    ρ * false = false
+    ρ * (if M then M₁ else M₂) = if (ρ * M) then (ρ * M₁) else (ρ * M₂)
+    ρ * pair M N = pair (ρ * M) (ρ * N)
+    ρ * fst M = fst (ρ * M)
+    ρ * snd M = snd (ρ * M)
+    ρ * bop ω Ms = bop ω (ρ ** Ms)
+    ρ * brel ω Ms = brel ω (ρ ** Ms)
+    ρ * nil = nil
+    ρ * cons M N = cons (ρ * M) (ρ * N)
+    ρ * fold M₁ M₂ M = fold (ρ * M₁) (ext (ext ρ) * M₂) (ρ * M)
+
+    _**_ : ∀ {Γ Γ' σs} → Ren Γ Γ' → Every (λ σ → Γ ⊢ base σ) σs → Every (λ σ → Γ' ⊢ base σ) σs
+    ρ ** [] = []
+    ρ ** (M ∷ Ms) = (ρ * M) ∷ (ρ ** Ms)
+
+  -- “macros”
+  append : ∀ {Γ τ} → Γ ⊢ list τ → Γ ⊢ list τ → Γ ⊢ list τ
+  append xs ys = fold ys (cons (var (succ zero)) (var zero)) xs
+
+  singleton : ∀ {Γ τ} → Γ ⊢ τ → Γ ⊢ list τ
+  singleton x = cons x nil
+
+  concatMap : ∀ {Γ τ₁ τ₂} → Γ ⊢ list τ₁ → Γ , τ₁ ⊢ list τ₂ → Γ ⊢ list τ₂
+  concatMap M N = fold nil (append (weaken * N) (var zero)) M

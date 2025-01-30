@@ -35,8 +35,11 @@ record Category o m e : Set (suc (o ⊔ m ⊔ e)) where
   ≈-refl : ∀ {x y} {f : x ⇒ y} → f ≈ f
   ≈-refl = isEquiv .refl
 
+  ≈-sym : ∀ {x y} {f g : x ⇒ y} → f ≈ g → g ≈ f
+  ≈-sym = isEquiv .sym
+
   id-swap : ∀ {x y}{f : x ⇒ y} → (id y ∘ f) ≈ (f ∘ id x)
-  id-swap = isEquiv .trans id-left (isEquiv .sym id-right)
+  id-swap = isEquiv .trans id-left (≈-sym id-right)
 
   open Setoid renaming (_≈_ to _≃_)
 
@@ -63,7 +66,11 @@ record HasCoproducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     in₁    : ∀ {x y} → x ⇒ coprod x y
     in₂    : ∀ {x y} → y ⇒ coprod x y
     copair : ∀ {x y z} → x ⇒ z → y ⇒ z → coprod x y ⇒ z
-    -- FIXME: equations
+
+    copair-cong : ∀ {x y z} {f₁ f₂ : x ⇒ z} {g₁ g₂ : y ⇒ z} → f₁ ≈ f₂ → g₁ ≈ g₂ → copair f₁ g₁ ≈ copair f₂ g₂
+    copair-in₁ : ∀ {x y z} (f : x ⇒ z) (g : y ⇒ z) → (copair f g ∘ in₁) ≈ f
+    copair-in₂ : ∀ {x y z} (f : x ⇒ z) (g : y ⇒ z) → (copair f g ∘ in₂) ≈ g
+    copair-ext : ∀ {x y z} (f : coprod x y ⇒ z) → copair (f ∘ in₁) (f ∘ in₂) ≈ f
 
 record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞
@@ -82,9 +89,9 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   pair-natural h f g =
     begin
       pair f g ∘ h
-    ≈⟨ isEquiv .sym (pair-ext _) ⟩
+    ≈⟨ ≈-sym (pair-ext _) ⟩
       pair (p₁ ∘ (pair f g ∘ h)) (p₂ ∘ (pair f g ∘ h))
-    ≈⟨ isEquiv .sym (pair-cong (assoc _ _ _) (assoc _ _ _)) ⟩
+    ≈⟨ ≈-sym (pair-cong (assoc _ _ _) (assoc _ _ _)) ⟩
       pair ((p₁ ∘ pair f g) ∘ h) ((p₂ ∘ pair f g) ∘ h)
     ≈⟨ pair-cong (∘-cong (pair-p₁ _ _) ≈-refl) (∘-cong (pair-p₂ _ _) ≈-refl) ⟩
       pair (f ∘ h) (g ∘ h)
@@ -114,11 +121,11 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
       pair ((f₁ ∘ g₁) ∘ p₁) ((f₂ ∘ g₂) ∘ p₂)
     ≈⟨ pair-cong (assoc _ _ _) (assoc _ _ _) ⟩
       pair (f₁ ∘ (g₁ ∘ p₁)) (f₂ ∘ (g₂ ∘ p₂))
-    ≈⟨ isEquiv .sym (pair-cong (∘-cong ≈-refl (pair-p₁ _ _)) (∘-cong ≈-refl (pair-p₂ _ _))) ⟩
+    ≈⟨ ≈-sym (pair-cong (∘-cong ≈-refl (pair-p₁ _ _)) (∘-cong ≈-refl (pair-p₂ _ _))) ⟩
       pair (f₁ ∘ (p₁ ∘ pair (g₁ ∘ p₁) (g₂ ∘ p₂))) (f₂ ∘ (p₂ ∘ pair (g₁ ∘ p₁) (g₂ ∘ p₂)))
-    ≈⟨ isEquiv .sym (pair-cong (assoc _ _ _) (assoc _ _ _)) ⟩
+    ≈⟨ ≈-sym (pair-cong (assoc _ _ _) (assoc _ _ _)) ⟩
       pair ((f₁ ∘ p₁) ∘ pair (g₁ ∘ p₁) (g₂ ∘ p₂)) ((f₂ ∘ p₂) ∘ pair (g₁ ∘ p₁) (g₂ ∘ p₂))
-    ≈⟨ isEquiv .sym (pair-natural _ _ _) ⟩
+    ≈⟨ ≈-sym (pair-natural _ _ _) ⟩
       pair (f₁ ∘ p₁) (f₂ ∘ p₂) ∘ pair (g₁ ∘ p₁) (g₂ ∘ p₂)
     ∎
     where open ≈-Reasoning isEquiv
@@ -130,7 +137,7 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
 
   pair-ext0 : ∀ {x y} → pair p₁ p₂ ≈ id (prod x y)
   pair-ext0 = begin pair p₁ p₂
-                      ≈⟨ isEquiv .sym (pair-cong id-right id-right) ⟩
+                      ≈⟨ ≈-sym (pair-cong id-right id-right) ⟩
                     pair (p₁ ∘ id _) (p₂ ∘ id _)
                       ≈⟨ pair-ext (id _) ⟩
                     id _ ∎
@@ -221,4 +228,45 @@ record StrongMonad {o m e} (𝒞 : Category o m e) (P : HasProducts 𝒞) : Set 
     M      : obj → obj
     unit   : ∀ {x} → x ⇒ M x
     extend : ∀ {x y z} → prod x y ⇒ M z → prod x (M y) ⇒ M z
+  -- FIXME: equations
+
+record HasBooleans {o m e} (𝒞 : Category o m e) (T : HasTerminal 𝒞) (P : HasProducts 𝒞) : Set (o ⊔ m ⊔ e) where
+  open Category 𝒞
+  open HasTerminal T renaming (witness to terminal)
+  open HasProducts P
+  field
+    Bool : obj
+    True False : terminal ⇒ Bool
+    cond : ∀ {x y} → x ⇒ y → x ⇒ y → prod x Bool ⇒ y
+  -- FIXME: equations
+
+-- strong coproducts to booleans
+module _ {o m e} {𝒞 : Category o m e} (T : HasTerminal 𝒞) {P : HasProducts 𝒞} (C : HasStrongCoproducts 𝒞 P) where
+
+  open Category 𝒞
+  open HasTerminal T renaming (witness to terminal)
+  open HasProducts P
+  open HasStrongCoproducts C
+  open HasBooleans
+
+  coproducts→booleans : HasBooleans 𝒞 T P
+  coproducts→booleans .Bool = coprod terminal terminal
+  coproducts→booleans .True = in₁
+  coproducts→booleans .False = in₂
+  coproducts→booleans .cond f g = copair (f ∘ p₁) (g ∘ p₁)
+
+------------------------------------------------------------------------------
+-- For every object, there is a list object
+record HasLists {o m e} (𝒞 : Category o m e) (T : HasTerminal 𝒞) (P : HasProducts 𝒞) : Set (o ⊔ m ⊔ e) where
+  open Category 𝒞
+  open HasTerminal T renaming (witness to terminal)
+  open HasProducts P
+  field
+    list : obj → obj
+    nil  : ∀ {x} → terminal ⇒ list x
+    cons : ∀ {x} → prod x (list x) ⇒ list x
+    fold : ∀ {x y z} →
+           x ⇒ z →
+           prod (prod x y) z ⇒ z →
+           prod x (list y) ⇒ z
   -- FIXME: equations

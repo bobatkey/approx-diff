@@ -13,7 +13,6 @@ open import categories
 ------------------------------------------------------------------------------
 -- Commutative Monoid structure on setoids
 --
--- FIXME: make this work for any algebraic theory
 record CommutativeMonoid (A : Setoid o o) : Set o where
   open Setoid A
   field

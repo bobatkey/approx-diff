@@ -37,12 +37,14 @@ module _ {o m} (𝒞 : Category o m m) (A𝒞 : AdditiveCat 𝒞) (P : HasProduc
   open IsEquivalence
   module P = HasProducts P
 
+  -- Use the universal property of products to show that the pairing
+  -- operation preserves addition.
   pair-+ : ∀ {x y z} (f₁ f₂ : x ⇒ y) (g₁ g₂ : x ⇒ z) →
      (P.pair f₁ g₁ +m P.pair f₂ g₂) ≈ P.pair (f₁ +m f₂) (g₁ +m g₂)
   pair-+ f₁ f₂ g₁ g₂ =
     begin
       P.pair f₁ g₁ +m P.pair f₂ g₂
-    ≈⟨ isEquiv .sym (P.pair-ext _) ⟩
+    ≈⟨ ≈-sym (P.pair-ext _) ⟩
       P.pair (P.p₁ ∘ (P.pair f₁ g₁ +m P.pair f₂ g₂)) (P.p₂ ∘ (P.pair f₁ g₁ +m P.pair f₂ g₂))
     ≈⟨ P.pair-cong (comp-bilinear₂ _ _ _) (comp-bilinear₂ _ _ _) ⟩
       P.pair ((P.p₁ ∘ P.pair f₁ g₁) +m (P.p₁ ∘ P.pair f₂ g₂)) ((P.p₂ ∘ P.pair f₁ g₁) +m (P.p₂ ∘ P.pair f₂ g₂))
@@ -60,6 +62,9 @@ module _ {o m} (𝒞 : Category o m m) (A𝒞 : AdditiveCat 𝒞) (P : HasProduc
 
   copair : ∀ {x y z} → x ⇒ z → y ⇒ z → (x ⊕ y) ⇒ z
   copair f g = (f ∘ P.p₁) +m (g ∘ P.p₂)
+
+  copair-cong : ∀ {x y z} {f₁ f₂ : x ⇒ z} {g₁ g₂ : y ⇒ z} → f₁ ≈ f₂ → g₁ ≈ g₂ → copair f₁ g₁ ≈ copair f₂ g₂
+  copair-cong f₁≈f₂ g₁≈g₂ = homCM _ _ .+-cong (∘-cong f₁≈f₂ ≈-refl) (∘-cong g₁≈g₂ ≈-refl)
 
   copair-in₁ : ∀ {x y z} (f : x ⇒ z) (g : y ⇒ z) → (copair f g ∘ in₁) ≈ f
   copair-in₁ f g =
@@ -108,7 +113,7 @@ module _ {o m} (𝒞 : Category o m m) (A𝒞 : AdditiveCat 𝒞) (P : HasProduc
     ≈⟨ homCM _ _ .+-cong (∘-cong ≈-refl (P.pair-cong id-left (comp-bilinear-ε₁ _)))
                          (∘-cong ≈-refl (P.pair-cong (comp-bilinear-ε₁ _) id-left)) ⟩
       (f ∘ P.pair P.p₁ εm) +m (f ∘ P.pair εm P.p₂)
-    ≈⟨ isEquiv .sym (comp-bilinear₂ _ _ _) ⟩
+    ≈⟨ ≈-sym (comp-bilinear₂ _ _ _) ⟩
       f ∘ (P.pair P.p₁ εm +m P.pair εm P.p₂)
     ≈⟨ ∘-cong ≈-refl (pair-+ _ _ _ _) ⟩
       f ∘ P.pair (P.p₁ +m εm) (εm +m P.p₂)
@@ -119,3 +124,13 @@ module _ {o m} (𝒞 : Category o m m) (A𝒞 : AdditiveCat 𝒞) (P : HasProduc
     ≈⟨ id-right ⟩
       f
     ∎ where open ≈-Reasoning isEquiv
+
+  coproducts : HasCoproducts 𝒞
+  coproducts .HasCoproducts.coprod = P.prod
+  coproducts .HasCoproducts.in₁ = in₁
+  coproducts .HasCoproducts.in₂ = in₂
+  coproducts .HasCoproducts.copair = copair
+  coproducts .HasCoproducts.copair-cong = copair-cong
+  coproducts .HasCoproducts.copair-in₁ = copair-in₁
+  coproducts .HasCoproducts.copair-in₂ = copair-in₂
+  coproducts .HasCoproducts.copair-ext = copair-ext
