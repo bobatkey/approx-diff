@@ -48,11 +48,32 @@ record Category o m e : Set (suc (o ⊔ m ⊔ e)) where
   hom-setoid x y ._≃_ = _≈_
   hom-setoid x y .isEquivalence = isEquiv
 
-  comp : ∀ {x y z} → ⊗-setoid (hom-setoid y z) (hom-setoid x y) ⇒s hom-setoid x z
-  comp ._⇒s_.func (f , g) = f ∘ g
-  comp ._⇒s_.func-resp-≈ (f₁≈f₂ , g₁≈g₂) = ∘-cong f₁≈f₂ g₁≈g₂
+  hom-setoid-l : ∀ {ℓ} → obj → obj → Setoid (ℓ ⊔ m) (ℓ ⊔ e)
+  hom-setoid-l {ℓ} x y .Carrier = Lift ℓ (x ⇒ y)
+  hom-setoid-l {ℓ} x y ._≃_ (lift f) (lift g) = LiftP ℓ (f ≈ g)
+  hom-setoid-l x y .isEquivalence .refl = lift (isEquiv .refl)
+  hom-setoid-l x y .isEquivalence .sym (lift e) = lift (isEquiv .sym e)
+  hom-setoid-l x y .isEquivalence .trans (lift p) (lift q) = lift (isEquiv .trans p q)
 
+  -- comp : ∀ {x y z} → ⊗-setoid (hom-setoid y z) (hom-setoid x y) ⇒s hom-setoid x z
+  -- comp ._⇒s_.func (f , g) = f ∘ g
+  -- comp ._⇒s_.func-resp-≈ (f₁≈f₂ , g₁≈g₂) = ∘-cong f₁≈f₂ g₁≈g₂
 
+module _ {o m e} (𝒞 : Category o m e) where
+
+  open Category 𝒞
+
+  opposite : Category o m e
+  opposite .Category.obj = obj
+  opposite .Category._⇒_ x y = y ⇒ x
+  opposite .Category._≈_ = _≈_
+  opposite .Category.isEquiv = isEquiv
+  opposite .Category.id = id
+  opposite .Category._∘_ f g = g ∘ f
+  opposite .Category.∘-cong e₁ e₂ = ∘-cong e₂ e₁
+  opposite .Category.id-left = id-right
+  opposite .Category.id-right = id-left
+  opposite .Category.assoc f g h = ≈-sym (assoc h g f)
 
 ------------------------------------------------------------------------------
 setoid→category : ∀ {o e} → Setoid o e → Category o e e
@@ -199,7 +220,11 @@ record HasBiproducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     in₁    : ∀ {x y} → x ⇒ prod x y
     in₂    : ∀ {x y} → y ⇒ prod x y
     copair : ∀ {x y z} → x ⇒ z → y ⇒ z → prod x y ⇒ z
-    -- FIXME: equations
+
+    copair-cong : ∀ {x y z} {f₁ f₂ : x ⇒ z} {g₁ g₂ : y ⇒ z} → f₁ ≈ f₂ → g₁ ≈ g₂ → copair f₁ g₁ ≈ copair f₂ g₂
+    copair-in₁ : ∀ {x y z} (f : x ⇒ z) (g : y ⇒ z) → (copair f g ∘ in₁) ≈ f
+    copair-in₂ : ∀ {x y z} (f : x ⇒ z) (g : y ⇒ z) → (copair f g ∘ in₂) ≈ g
+    copair-ext : ∀ {x y z} (f : prod x y ⇒ z) → copair (f ∘ in₁) (f ∘ in₂) ≈ f
 
   hasProducts : HasProducts 𝒞
   hasProducts .HasProducts.prod = prod
@@ -211,7 +236,43 @@ record HasBiproducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   hasProducts .HasProducts.pair-p₂ = pair-p₂
   hasProducts .HasProducts.pair-ext = pair-ext
 
-  open HasProducts hasProducts public
+  open HasProducts hasProducts hiding (prod; p₁; p₂; pair; pair-cong; pair-p₁; pair-p₂; pair-ext) public
+
+  -- X -> X⊕Y -> X == id
+
+{-
+
+  zero-map-1 : ∀ {x y z} (f : x ⇒ y) → ((p₂ ∘ in₁) ∘ f) ≈ (p₂ {x} {z} ∘ in₁)
+  zero-map-1 f = {!!}
+    p₂ ∘ in₁ ∘ f
+  = p₂ ∘ copair (in₁ ∘ f) (in₂ ∘ id) ∘ in₁
+  =
+
+  in₁-natural : ∀ {x₁ x₂ y₁ y₂} (f₁ : x₁ ⇒ y₁) (f₂ : x₂ ⇒ y₂) →
+                (prod-m f₁ f₂ ∘ in₁) ≈ (in₁ ∘ f₁)
+  in₁-natural f₁ f₂ =
+    begin
+      pair (f₁ ∘ p₁) (f₂ ∘ p₂) ∘ in₁
+    ≈⟨ {!!} ⟩
+      pair (p₁ ∘ (in₁ ∘ f₁)) (p₂ ∘ (in₁ ∘ f₁))
+    ≈⟨ {!!} ⟩
+      in₁ ∘ f₁
+    ∎
+    where open ≈-Reasoning isEquiv
+
+  copair-prod-m : ∀ {x₁ x₂ y₁ y₂ z} →
+    (f₁ : y₁ ⇒ z) (f₂ : y₂ ⇒ z) (g₁ : x₁ ⇒ y₁) (g₂ : x₂ ⇒ y₂) →
+    (copair f₁ f₂ ∘ prod-m g₁ g₂) ≈ copair (f₁ ∘ g₁) (f₂ ∘ g₂)
+  copair-prod-m f₁ f₂ g₁ g₂ =
+    begin
+      copair f₁ f₂ ∘ prod-m g₁ g₂
+    ≈⟨ ≈-sym (copair-ext _) ⟩
+      copair ((copair f₁ f₂ ∘ prod-m g₁ g₂) ∘ in₁) ((copair f₁ f₂ ∘ prod-m g₁ g₂) ∘ in₂)
+    ≈⟨ {!!} ⟩
+      copair (f₁ ∘ g₁) (f₂ ∘ g₂)
+    ∎
+    where open ≈-Reasoning isEquiv
+-}
 
 record HasExponentials {o m e} (𝒞 : Category o m e) (P : HasProducts 𝒞) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞

@@ -11,7 +11,7 @@ open import prop-setoid
   using (IsEquivalence; Setoid; 𝟙; +-setoid; ⊗-setoid; idS; _∘S_; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_; ≃m-isEquivalence to ≈s-isEquivalence)
 open import categories
-open import setoid-cat
+open import setoid-cat hiding (Π)
 open import fam
 
 -- Categories of Families, a special case of the Grothendieck
@@ -718,6 +718,7 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
       SP .lambdaΠ
         (X .fam .fm x)
         (Z .fam [ lambda⟶ {X} {Y} {Z} f .idxf .func x .idxf ])
+        -- FIXME: would be better to have an abstract implementation here
         (record { transf = λ y → f .famf .transf (x , y) ∘ P .in₁
                 ; natural = λ {y₁} {y₂} y₁≈y₂ → {!!} -- FIXME: need naturality of in₁
                 })

@@ -118,7 +118,7 @@ module _ {o m e} {os es} {𝒞 : Category o m e} {A : Setoid os es} where
 
 ------------------------------------------------------------------------------
 -- Change of indexed category (post composition)
-open import functor
+open import functor hiding (id; _∘_; constF)
 
 module _ {o m e o' m' e' os es}
          {𝒞 : Category o m e}
@@ -254,8 +254,6 @@ module _ {o m e os es} {𝒞 : Category o m e} where
       ≃f reindex-≈ {P = P [ f ]} g₁ g₂ e
   reindex-≈-comp-2 P f g₁ g₂ e .transf-eq = isEquiv .refl
 
--- FIXME: if we loosen this to any category instead of a setoid, then
--- this is a definition of limits
 record HasSetoidProducts {o m e} os es (𝒞 : Category o m e) : Set (o ⊔ suc m ⊔ suc e ⊔ suc os ⊔ suc es) where
   open Category 𝒞
   field

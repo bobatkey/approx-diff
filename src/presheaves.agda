@@ -20,6 +20,14 @@ record PreSheaf : Set (suc o ⊔ suc m ⊔ suc e ⊔ suc os ⊔ suc es) where
     fmap-id   : ∀ x → fmap (id x) ≈s idS (fobj x)
     fmap-∘    : ∀ {x y z} (f : y ⇒ z) (g : x ⇒ y) → fmap (f ∘ g) ≈s (fmap g ∘S fmap f)
 
+    -- glueing for finite sums:
+    --
+    -- sum         : ∀ {x y} → ⊗-setoid (fobj x) (fobj y) ⇒s fobj (coprod x y)
+    -- sum-natural : ...
+    -- sum-glue    : pair (fmap in₁) (fmap in₂) ∘ sum ≈ id
+
+    -- zero : 𝟙 ⇒s fobj 𝟘
+
 record _⇒p_ (F G : PreSheaf) : Set (o ⊔ m ⊔ e ⊔ os ⊔ es) where
   open Category 𝒞
   private
