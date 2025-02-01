@@ -1,13 +1,14 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
 open import prop-setoid using (module ≈-Reasoning)
-open import categories
-open import functor
+open import categories using (Category; HasTerminal; HasProducts)
+open import functor using (Functor; NatTrans; ≃-NatTrans; [_⇒_])
 
 module functor-cat-products
          {o₁ m₁ e₁ o₂ m₂ e₂}
          (𝒞 : Category o₁ m₁ e₁)
          (𝒟 : Category o₂ m₂ e₂)
+         (T  : HasTerminal 𝒟)
          (P  : HasProducts 𝒟)
   where
 
@@ -19,6 +20,17 @@ private
   module 𝒞 = Category 𝒞
   module 𝒟 = Category 𝒟
   module P = HasProducts P
+  module T = HasTerminal T
+
+terminal : HasTerminal [ 𝒞 ⇒ 𝒟 ]
+terminal .HasTerminal.witness .fobj x = T.witness
+terminal .HasTerminal.witness .fmor f = 𝒟.id _
+terminal .HasTerminal.witness .fmor-cong x = 𝒟.≈-refl
+terminal .HasTerminal.witness .fmor-id = 𝒟.≈-refl
+terminal .HasTerminal.witness .fmor-comp f g = 𝒟.≈-sym 𝒟.id-left
+terminal .HasTerminal.terminal-mor F .transf x = T.terminal-mor _
+terminal .HasTerminal.terminal-mor F .natural f = T.terminal-unique _ _ _
+terminal .HasTerminal.terminal-unique F α β .transf-eq x = T.terminal-unique _ _ _
 
 _×_ : Functor 𝒞 𝒟 → Functor 𝒞 𝒟 → Functor 𝒞 𝒟
 (F × G) .fobj x = P.prod (F .fobj x) (G .fobj x)
