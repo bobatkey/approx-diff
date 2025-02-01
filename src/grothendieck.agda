@@ -23,6 +23,7 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
   open Fam
 
   record Obj : Set (o ⊔ suc m ⊔ suc e ⊔ suc os ⊔ suc es) where
+    no-eta-equality
     field
       idx : Setoid (m ⊔ e ⊔ os ⊔ es) (m ⊔ e ⊔ os ⊔ es)
       fam : Fam idx 𝒞
@@ -377,6 +378,11 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
       ≈⟨ P .pair-ext _ ⟩
         f .famf .transf x
       ∎ where open ≈-Reasoning isEquiv
+
+    simple-monoidal : ∀ {X Y x y} → Mor (simple[ X , x ] ⊗ simple[ Y , y ]) simple[ ⊗-setoid X Y , P .prod x y ]
+    simple-monoidal .idxf = idS _
+    simple-monoidal .famf .transf _ = id _
+    simple-monoidal .famf .natural (_ , _) = ∘-cong ≈-refl (prod-m-id P)
 
     open HasStrongCoproducts
 

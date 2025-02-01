@@ -62,9 +62,9 @@ module ex where
 
 import galois
 import categories
-open import grothendieck
+import grothendieck
 
-module D = CategoryOfFamilies {os = 0ℓ} {es = 0ℓ} galois.cat
+module D = grothendieck.CategoryOfFamilies {os = 0ℓ} {es = 0ℓ} galois.cat
 module DP = D.products galois.products
 
 DB = categories.coproducts→booleans
@@ -84,21 +84,16 @@ module _ where
   open import categories
   open import Data.Product using (_,_)
   open import prop
-  open prop-setoid using (⊗-setoid; +-setoid; 𝟙)
+  open prop-setoid using (⊗-setoid; +-setoid; 𝟙; module ≈-Reasoning)
     renaming (_⇒_ to _⇒s_)
 
   -- FIXME: use Strings for labels
 
-  binary : ∀ X G → D.Mor (D.simple[ X , G ] DP.⊗ (D.simple[ X , G ] DP.⊗ D.simple[ prop-setoid.𝟙 {0ℓ} {0ℓ} , galois.𝟙 ])) D.simple[ prop-setoid.⊗-setoid X X , G galois.⊗ G ]
-  binary X G .idxf .prop-setoid._⇒_.func (x , y , _) = x , y
-  binary X G .idxf .prop-setoid._⇒_.func-resp-≈ (e₁ , e₂ , _) = e₁ , e₂
-  binary X G .famf ._⇒f_.transf x = pair p₁ (p₁ ∘ p₂)
-    where open HasProducts galois.products
-          open Category galois.cat
-  binary X G .famf ._⇒f_.natural (e₁ , e₂ , _) =
-    {!!}
-    where open HasProducts galois.products
-          open Category galois.cat
+  binary : ∀ {X G} →
+            D.Mor (D.simple[ X , G ] DP.⊗ (D.simple[ X , G ] DP.⊗ D.simple[ prop-setoid.𝟙 {0ℓ} {0ℓ} , galois.𝟙 ]))
+                  D.simple[ prop-setoid.⊗-setoid X X , G galois.⊗ G ]
+  binary = D.Mor-∘ DP.simple-monoidal (pair p₁ (D.Mor-∘ p₁ p₂))
+    where open HasProducts DP.products
 
   module _ where
     open galois hiding (𝟙)
@@ -116,8 +111,7 @@ module _ where
     halp-natural {G} {inj₂ y} {inj₂ y₁} e = galois.terminal .HasTerminal.terminal-unique _ _ _
 
     predicate : ∀ {X G} → (X ⇒s +-setoid (𝟙 {0ℓ} {0ℓ}) (𝟙 {0ℓ} {0ℓ})) →
-                D.Mor D.simple[ X , G ]
-                      (DB .HasBooleans.Bool)
+                D.Mor D.simple[ X , G ] (DB .HasBooleans.Bool)
     predicate f .idxf = f
     predicate f .famf ._⇒f_.transf x = halp (f ._⇒s_.func x)
     predicate f .famf ._⇒f_.natural {x₁} {x₂} e =
@@ -128,9 +122,9 @@ module _ where
   BaseInterp .SignatureInterp.⟦sort⟧ number = D.simple[ nat.ℕₛ , galois.Presence ]
   BaseInterp .SignatureInterp.⟦sort⟧ label = D.simple[ label.Label , galois.Presence ]
   BaseInterp .SignatureInterp.⟦op⟧ zero = D.simplef[ nat.zero-m , galois.present ]
-  BaseInterp .SignatureInterp.⟦op⟧ add = D.Mor-∘ D.simplef[ nat.add , galois.combinePresence ] (binary _ _)
+  BaseInterp .SignatureInterp.⟦op⟧ add = D.Mor-∘ D.simplef[ nat.add , galois.combinePresence ] binary
   BaseInterp .SignatureInterp.⟦op⟧ (lbl l) = D.simplef[ prop-setoid.const label.Label l , galois.present ]
-  BaseInterp .SignatureInterp.⟦rel⟧ equal-label = D.Mor-∘ (predicate label.equal-label) (binary label.Label galois.Presence)
+  BaseInterp .SignatureInterp.⟦rel⟧ equal-label = D.Mor-∘ (predicate label.equal-label) binary
 
 open interp Sig BaseInterp
 
