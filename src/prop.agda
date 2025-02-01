@@ -42,6 +42,20 @@ record Prf {ℓ} (P : Prop ℓ) : Set ℓ where
     prf : P
 open Prf
 
+module _ where
+  infix 4 _⇔_
+
+  _⇔_ : Prop → Prop → Prop
+  P ⇔ Q = (P → Q) ∧ (Q → P)
+
+  refl-⇔ : ∀ {P} → P ⇔ P
+  refl-⇔ .proj₁ x = x
+  refl-⇔ .proj₂ x = x
+
+  trans-⇔ : ∀ {P Q R} → P ⇔ Q → Q ⇔ R → P ⇔ R
+  trans-⇔ e₁ e₂ .proj₁ p = e₂ .proj₁ (e₁ .proj₁ p)
+  trans-⇔ e₁ e₂ .proj₂ r = e₁ .proj₂ (e₂ .proj₂ r)
+
 ------------------------------------------------------------------------------
 -- Relations
 

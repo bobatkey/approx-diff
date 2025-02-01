@@ -2,24 +2,9 @@
 
 module basics where
 
-open import Level
+open import Level using (_⊔_; suc)
 open import prop renaming (⊥ to ⊥p)
-open import prop-setoid hiding (assoc)
-open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ)
-
-module _ where
-  infix 4 _⇔_
-
-  _⇔_ : Prop → Prop → Prop
-  P ⇔ Q = (P → Q) ∧ (Q → P)
-
-  refl-⇔ : ∀ {P} → P ⇔ P
-  refl-⇔ .proj₁ x = x
-  refl-⇔ .proj₂ x = x
-
-  trans-⇔ : ∀ {P Q R} → P ⇔ Q → Q ⇔ R → P ⇔ R
-  trans-⇔ e₁ e₂ .proj₁ p = e₂ .proj₁ (e₁ .proj₁ p)
-  trans-⇔ e₁ e₂ .proj₂ r = e₁ .proj₂ (e₂ .proj₂ r)
+open import prop-setoid using (IsEquivalence; Setoid; module ≈-Reasoning)
 
 module _ {a} {A : Set a} where
 
@@ -44,12 +29,6 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
 
   module _ where
     open IsPreorder ≤-isPreorder
-
-    -- isEquivalenceOf : IsEquivalence (SymmetricCore _≤_)
-    -- isEquivalenceOf .IsEquivalence.refl = refl , refl
-    -- isEquivalenceOf .IsEquivalence.sym (x≤y , y≤x) = y≤x , x≤y
-    -- isEquivalenceOf .IsEquivalence.trans (x≤y , y≤x) (y≤z , z≤y) =
-    --   (trans x≤y y≤z) , (trans z≤y y≤x)
 
     setoidOf : Setoid a b
     setoidOf .Setoid.Carrier = A
@@ -159,11 +138,6 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
     assoc .proj₁ = [ [ inl , trans inl inr ] , trans inr inr ]
     assoc .proj₂ = [ trans inl inl , [ trans inr inl , inr ] ]
 
-    -- subsumed by sym; remove
---    comm : ∀ {x y} → x ∨ y ≃ y ∨ x
---    comm .proj₁ = [ inr , inl ]
---    comm .proj₂ = [ inr , inl ]
-
     idem : ∀ {x} → x ∨ x ≃ x
     idem .proj₁ = [ refl , refl ]
     idem .proj₂ = inl
@@ -208,7 +182,7 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
     ∙-∨-distrib : ∀ {x y z} → (x ∙ (y ∨ z)) ≤ ((x ∙ y) ∨ (x ∙ z))
     ∙-∨-distrib =
       trans ∙-sym (lambda⁻¹ [ lambda (trans ∙-sym inl) , lambda (trans ∙-sym inr) ])
-{-
+
   ------------------------------------------------------------------------------
   -- *-autonomous categories and all their structure
   record IsStarAuto {_⊗_ : A → A → A} {ε : A}
@@ -248,7 +222,7 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
         ¬ (¬ x ⊗ (¬ y ⊗ ¬ z))   ≈⟨ ¬-cong (cong (refl , refl) involution) ⟩
         ¬ (¬ x ⊗ ¬ (y ⅋ z))     ≡⟨⟩
         x ⅋ (y ⅋ z)            ∎
-      where open import Relation.Binary.Reasoning.Setoid setoidOf
+      where open ≈-Reasoning isEquivalence
     ⅋-isMonoid .IsMonoid.lunit {x} =
       begin
         ⊥ ⅋ x             ≡⟨⟩
@@ -256,7 +230,7 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
         ¬ (ε ⊗ ¬ x)        ≈⟨ ¬-cong lunit ⟩
         ¬ (¬ x)            ≈˘⟨ involution ⟩
         x                  ∎
-      where open import Relation.Binary.Reasoning.Setoid setoidOf
+      where open ≈-Reasoning isEquivalence
     ⅋-isMonoid .IsMonoid.runit {x} =
       begin
         x ⅋ ⊥             ≡⟨⟩
@@ -264,7 +238,7 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
         ¬ (¬ x ⊗ ε)        ≈⟨ ¬-cong runit ⟩
         ¬ (¬ x)            ≈˘⟨ involution ⟩
         x                  ∎
-      where open import Relation.Binary.Reasoning.Setoid setoidOf
+      where open ≈-Reasoning isEquivalence
 
     open IsMonoid ⅋-isMonoid
       renaming (mono to ⅋-mono;
@@ -317,4 +291,3 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
       mu       : (ι ⊗ ι) ≤ ι
       -- (Δ : ε ≤ (ε ▷ ε)) -- what is this needed for?
       -- (u : ε ≤ ι) -- what is this needed for?
--}
