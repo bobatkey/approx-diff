@@ -188,7 +188,7 @@ module _ {o e} where
 ------------------------------------------------------------------------------
 -- Limits, inherited from Setoids
 module _ {o m e} os (𝒟 : Category o m e) where
-   open import functor renaming (id to NTid; ≃-isEquivalence to ≃NT-isEquivalence)
+   open import functor renaming (id to NTid; ≃-isEquivalence to ≃NT-isEquivalence; _∘_ to _∘V_)
    open import setoid-cat
 
    private
@@ -232,7 +232,8 @@ module _ {o m e} os (𝒟 : Category o m e) where
    lambdaΠCM : ∀ X (F : Functor 𝒟 (cat (os ⊔ o ⊔ m ⊔ e) (os ⊔ o ⊔ m ⊔ e))) →
                NatTrans (constF 𝒟 X) F → (X ⇒ ΠCM F)
    lambdaΠCM X F α .function =
-     Setoid-Limit os 𝒟 .HasLimits.lambdaΠ (X .carrier) (toSetoid ∘F F) (NTid toSetoid ∘V α)
+     -- FIXME: do this without defining a custom transformation here
+     Setoid-Limit os 𝒟 .HasLimits.lambdaΠ (X .carrier) (toSetoid ∘F F) ((NTid toSetoid ∘H α) ∘V record { transf = λ x → idS _ ; natural = λ f → ≃s-isEquivalence .refl })
    lambdaΠCM X F α .cmFunc .preserve-ε x = α .transf x .preserve-ε
    lambdaΠCM X F α .cmFunc .preserve-+ x = α .transf x .preserve-+
 
@@ -242,7 +243,7 @@ module _ {o m e} os (𝒟 : Category o m e) where
    limits .HasLimits.evalΠ = evalΠCM
    limits .HasLimits.lambda-cong {x} {F} {α} {β} α≃β =
      Setoid-Limit os 𝒟 .HasLimits.lambda-cong
-       (∘V-cong (≃NT-isEquivalence .refl {NTid toSetoid}) α≃β)
+       (∘NT-cong (∘H-cong (≃NT-isEquivalence .refl) α≃β) (≃NT-isEquivalence .refl))
    limits .HasLimits.lambda-eval α .transf-eq x ._≃s_.func-eq = α .transf x .func-resp-≈
    limits .HasLimits.lambda-ext f ._≃s_.func-eq = f .func-resp-≈
 

@@ -45,14 +45,14 @@ evalAt .fmor-comp f g .transf-eq F = F .fmor-comp f g
 
 Π : Functor 𝒮 [ 𝒞 ⇒ 𝒟 ] → Functor 𝒞 𝒟
 Π F .fobj x = DL.Π (evalAt .fobj x ∘F F)
-Π F .fmor f = DL.Π-map (evalAt .fmor f ∘V id F)
+Π F .fmor f = DL.Π-map (evalAt .fmor f ∘H id F)
 Π F .fmor-cong f₁≈f₂ =
-  DL.Π-map-cong (∘V-cong (evalAt .fmor-cong f₁≈f₂) (≃-isEquivalence .refl {id F}))
+  DL.Π-map-cong (∘H-cong (evalAt .fmor-cong f₁≈f₂) (≃-isEquivalence .refl {id F}))
 Π F .fmor-id {x} =
   begin
-    DL.Π-map (evalAt .fmor (𝒞 .Category.id x) ∘V id F)
-  ≈⟨ DL.Π-map-cong (∘V-cong (evalAt .fmor-id) (≃-isEquivalence .refl {id F})) ⟩
-    DL.Π-map (id (evalAt .fobj x) ∘V id F)
+    DL.Π-map (evalAt .fmor (𝒞 .Category.id x) ∘H id F)
+  ≈⟨ DL.Π-map-cong (∘H-cong (evalAt .fmor-id) (≃-isEquivalence .refl {id F})) ⟩
+    DL.Π-map (id (evalAt .fobj x) ∘H id F)
   ≈⟨ DL.Π-map-cong (record { transf-eq = λ _ → 𝒟.id-left }) ⟩ -- FIXME: work out id-left for vertical composition
     DL.Π-map (id _)
   ≈⟨ DL.Π-map-id ⟩
@@ -61,13 +61,13 @@ evalAt .fmor-comp f g .transf-eq F = F .fmor-comp f g
   where open ≈-Reasoning 𝒟.isEquiv
 Π F .fmor-comp {x} {y} {z} f g =
   begin
-    DL.Π-map (evalAt .fmor (f 𝒞.∘ g) ∘V id F)
-  ≈⟨ DL.Π-map-cong (∘V-cong (evalAt .fmor-comp f g) (≃-isEquivalence .sym NT-id-left)) ⟩
-    DL.Π-map ((evalAt .fmor f ∘ evalAt .fmor g) ∘V (id F ∘ id F))
-  ≈⟨ DL.Π-map-cong {!!} ⟩ -- FIXME: interchange law
-    DL.Π-map ((evalAt .fmor f ∘V id F) ∘ (evalAt .fmor g ∘V id F))
+    DL.Π-map (evalAt .fmor (f 𝒞.∘ g) ∘H id F)
+  ≈⟨ DL.Π-map-cong (∘H-cong (evalAt .fmor-comp f g) (≃-isEquivalence .sym NT-id-left)) ⟩
+    DL.Π-map ((evalAt .fmor f ∘ evalAt .fmor g) ∘H (id F ∘ id F))
+  ≈⟨ DL.Π-map-cong (interchange _ _ _ _) ⟩
+    DL.Π-map ((evalAt .fmor f ∘H id F) ∘ (evalAt .fmor g ∘H id F))
   ≈⟨ DL.Π-map-comp _ _ ⟩
-    DL.Π-map (evalAt .fmor f ∘V id F) 𝒟.∘ DL.Π-map (evalAt .fmor g ∘V id F)
+    DL.Π-map (evalAt .fmor f ∘H id F) 𝒟.∘ DL.Π-map (evalAt .fmor g ∘H id F)
   ∎
   where open ≈-Reasoning 𝒟.isEquiv
 
@@ -80,20 +80,20 @@ lambdaΠ : ∀ (X : Functor 𝒞 𝒟) (F : Functor 𝒮 [ 𝒞 ⇒ 𝒟 ]) →
             NatTrans (constF 𝒮 {[ 𝒞 ⇒ 𝒟 ]} X) F →
             NatTrans X (Π F)
 lambdaΠ X F α .transf x =
-  DL.lambdaΠ (X .fobj x) (evalAt .fobj x ∘F F) ((id _ ∘V α) ∘ evalAt-const X x)
+  DL.lambdaΠ (X .fobj x) (evalAt .fobj x ∘F F) ((id _ ∘H α) ∘ evalAt-const X x)
 lambdaΠ X F α .natural {x} {y} f =
   begin
-    DL.Π-map (evalAt .fmor f ∘V id F) 𝒟.∘ DL.lambdaΠ (X .fobj x) (evalAt .fobj x ∘F F) ((id _ ∘V α) ∘ evalAt-const X x)
+    DL.Π-map (evalAt .fmor f ∘H id F) 𝒟.∘ DL.lambdaΠ (X .fobj x) (evalAt .fobj x ∘F F) ((id _ ∘H α) ∘ evalAt-const X x)
   ≈⟨ DL.lambdaΠ-natural _ _ ⟩
-    DL.lambdaΠ _ _ (((evalAt .fmor f ∘V id F) ∘ DL.evalΠ _) ∘ constFmor (DL.lambdaΠ (X .fobj x) (evalAt .fobj x ∘F F) ((id _ ∘V α) ∘ evalAt-const X x)))
-  ≈⟨ DL.lambda-cong (𝒮𝒟.assoc (evalAt .fmor f ∘V id F) (DL.evalΠ _) (constFmor (DL.lambdaΠ (X .fobj x) (evalAt .fobj x ∘F F) ((id _ ∘V α) ∘ evalAt-const X x)))) ⟩
-    DL.lambdaΠ _ _ ((evalAt .fmor f ∘V id F) ∘ (DL.evalΠ _ ∘ constFmor (DL.lambdaΠ (X .fobj x) (evalAt .fobj x ∘F F) ((id _ ∘V α) ∘ evalAt-const X x))))
-  ≈⟨ DL.lambda-cong (𝒮𝒟.∘-cong (𝒮𝒟.≈-refl {f = evalAt .fmor f ∘V id F}) (DL.lambda-eval ((id _ ∘V α) ∘ evalAt-const X x))) ⟩
-    DL.lambdaΠ _ _ ((evalAt .fmor f ∘V id F) ∘ ((id _ ∘V α) ∘ evalAt-const X x))
+    DL.lambdaΠ _ _ (((evalAt .fmor f ∘H id F) ∘ DL.evalΠ _) ∘ constFmor (DL.lambdaΠ (X .fobj x) (evalAt .fobj x ∘F F) ((id _ ∘H α) ∘ evalAt-const X x)))
+  ≈⟨ DL.lambda-cong (𝒮𝒟.assoc (evalAt .fmor f ∘H id F) (DL.evalΠ _) (constFmor (DL.lambdaΠ (X .fobj x) (evalAt .fobj x ∘F F) ((id _ ∘H α) ∘ evalAt-const X x)))) ⟩
+    DL.lambdaΠ _ _ ((evalAt .fmor f ∘H id F) ∘ (DL.evalΠ _ ∘ constFmor (DL.lambdaΠ (X .fobj x) (evalAt .fobj x ∘F F) ((id _ ∘H α) ∘ evalAt-const X x))))
+  ≈⟨ DL.lambda-cong (𝒮𝒟.∘-cong (𝒮𝒟.≈-refl {f = evalAt .fmor f ∘H id F}) (DL.lambda-eval ((id _ ∘H α) ∘ evalAt-const X x))) ⟩
+    DL.lambdaΠ _ _ ((evalAt .fmor f ∘H id F) ∘ ((id _ ∘H α) ∘ evalAt-const X x))
   ≈⟨ DL.lambda-cong {!!} ⟩ -- FIXME: vertical / horizontal interchange and naturality of evalAt-const
-    DL.lambdaΠ _ _ ((((id _ ∘V α) ∘ evalAt-const X y)) ∘ constFmor (X .fmor f))
+    DL.lambdaΠ _ _ ((((id _ ∘H α) ∘ evalAt-const X y)) ∘ constFmor (X .fmor f))
   ≈⟨ 𝒟.≈-sym (DL.lambdaΠ-natural _ _) ⟩
-    DL.lambdaΠ _ _ ((id _ ∘V α) ∘ evalAt-const X y) 𝒟.∘ X .fmor f
+    DL.lambdaΠ _ _ ((id _ ∘H α) ∘ evalAt-const X y) 𝒟.∘ X .fmor f
   ∎ where open ≈-Reasoning 𝒟.isEquiv
           module 𝒮𝒟 = Category [ 𝒮 ⇒ 𝒟 ]
 
@@ -104,8 +104,8 @@ evalΠ F .transf s .natural {x} {y} f =
     F .fobj s .fmor f 𝒟.∘ DL.evalΠ (evalAt .fobj x ∘F F) .transf s
   ≈⟨ 𝒟.∘-cong (𝒟.≈-sym 𝒟.id-right) 𝒟.≈-refl ⟩
     (F .fobj s .fmor f 𝒟.∘ 𝒟.id _) 𝒟.∘ DL.evalΠ (evalAt .fobj x ∘F F) .transf s
-  ≈⟨ 𝒟.≈-sym (DL.lambda-eval ((evalAt .fmor f ∘V id F) ∘ DL.evalΠ _) .transf-eq s) ⟩
-    DL.evalΠ (evalAt .fobj y ∘F F) .transf s 𝒟.∘ DL.Π-map (evalAt .fmor f ∘V id F)
+  ≈⟨ 𝒟.≈-sym (DL.lambda-eval ((evalAt .fmor f ∘H id F) ∘ DL.evalΠ _) .transf-eq s) ⟩
+    DL.evalΠ (evalAt .fobj y ∘F F) .transf s 𝒟.∘ DL.Π-map (evalAt .fmor f ∘H id F)
   ∎
   where open ≈-Reasoning 𝒟.isEquiv
 evalΠ F .natural f .transf-eq x = DL.evalΠ _ .natural f
@@ -115,7 +115,7 @@ limits .HasLimits.Π = Π
 limits .HasLimits.lambdaΠ = lambdaΠ
 limits .HasLimits.evalΠ = evalΠ
 limits .HasLimits.lambda-cong α≃β .transf-eq x =
-  DL.lambda-cong (∘NT-cong (∘V-cong (≃-isEquivalence .refl) α≃β) (≃-isEquivalence .refl))
+  DL.lambda-cong (∘NT-cong (∘H-cong (≃-isEquivalence .refl) α≃β) (≃-isEquivalence .refl))
 limits .HasLimits.lambda-eval {X} {F} α .transf-eq s .transf-eq x =
   𝒟.isEquiv .trans
      (DL.lambda-eval _ .transf-eq s)

@@ -7,6 +7,7 @@ open import categories
 open import prop-setoid using (module ≈-Reasoning; IsEquivalence)
 open import commutative-monoid using (CommutativeMonoid)
 
+-- FIXME: without (bi)products, this is really PreAdditive
 record AdditiveCat {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞
   open CommutativeMonoid
@@ -145,6 +146,7 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂}
   open CommutativeMonoid
   open AdditiveCat
   open NatTrans
+  open ≃-NatTrans
   open Functor
   open IsEquivalence
 
@@ -153,31 +155,29 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂}
     module A = AdditiveCat A
 
   homCM-F : ∀ F G → CommutativeMonoid (Category.hom-setoid [ 𝒞 ⇒ 𝒟 ] F G)
-  homCM-F F G .ε .transf x = A.homCM _ _ .ε
+  homCM-F F G .ε .transf x = A.εm
   homCM-F F G .ε .natural f =
     𝒟.isEquiv .trans (A.comp-bilinear-ε₂ _) (𝒟.≈-sym (A.comp-bilinear-ε₁ _))
   homCM-F F G ._+_ f₁ f₂ .transf x = A.homCM _ _ ._+_ (f₁ .transf x) (f₂ .transf x)
   homCM-F F G ._+_ f₁ f₂ .natural {x} {y} f =
     begin
-      G .fmor f 𝒟.∘ (f₁ .transf x 𝒟+ f₂ .transf x)
+      G .fmor f 𝒟.∘ (f₁ .transf x A.+m f₂ .transf x)
     ≈⟨ A.comp-bilinear₂ _ _ _ ⟩
-      (G .fmor f 𝒟.∘ f₁ .transf x) 𝒟+ (G .fmor f 𝒟.∘ f₂ .transf x)
+      (G .fmor f 𝒟.∘ f₁ .transf x) A.+m (G .fmor f 𝒟.∘ f₂ .transf x)
     ≈⟨ A.homCM _ _ .+-cong (f₁ .natural f) (f₂ .natural f) ⟩
-      (f₁ .transf y 𝒟.∘ F .fmor f) 𝒟+ (f₂ .transf y 𝒟.∘ F .fmor f )
+      (f₁ .transf y 𝒟.∘ F .fmor f) A.+m (f₂ .transf y 𝒟.∘ F .fmor f )
     ≈⟨ 𝒟.≈-sym (A.comp-bilinear₁ _ _ _) ⟩
-      (f₁ .transf y 𝒟+ f₂ .transf y) 𝒟.∘ F .fmor f
+      (f₁ .transf y A.+m f₂ .transf y) 𝒟.∘ F .fmor f
     ∎
     where open ≈-Reasoning 𝒟.isEquiv
-          _𝒟+_ : ∀ {x y} → x 𝒟.⇒ y → x 𝒟.⇒ y → x 𝒟.⇒ y
-          _𝒟+_ {x} {y} = A.homCM x y ._+_
-  homCM-F F G .+-cong f₁≈f₂ g₁≈g₂ x = A.homCM _ _ .+-cong (f₁≈f₂ x) (g₁≈g₂ x)
-  homCM-F F G .+-lunit x = A.homCM _ _ .+-lunit
-  homCM-F F G .+-assoc x = A.homCM _ _ .+-assoc
-  homCM-F F G .+-comm x = A.homCM _ _ .+-comm
+  homCM-F F G .+-cong f₁≈f₂ g₁≈g₂ .transf-eq x = A.homCM _ _ .+-cong (f₁≈f₂ .transf-eq x) (g₁≈g₂ .transf-eq x)
+  homCM-F F G .+-lunit .transf-eq x = A.homCM _ _ .+-lunit
+  homCM-F F G .+-assoc .transf-eq x = A.homCM _ _ .+-assoc
+  homCM-F F G .+-comm .transf-eq x = A.homCM _ _ .+-comm
 
   FunctorCat-additive : AdditiveCat [ 𝒞 ⇒ 𝒟 ]
   FunctorCat-additive .homCM = homCM-F
-  FunctorCat-additive .comp-bilinear₁ f₁ f₂ g x = A.comp-bilinear₁ _ _ _
-  FunctorCat-additive .comp-bilinear₂ f g₁ g₂ x = A.comp-bilinear₂ _ _ _
-  FunctorCat-additive .comp-bilinear-ε₁ f x = A.comp-bilinear-ε₁ _
-  FunctorCat-additive .comp-bilinear-ε₂ f x = A.comp-bilinear-ε₂ _
+  FunctorCat-additive .comp-bilinear₁ f₁ f₂ g .transf-eq x = A.comp-bilinear₁ _ _ _
+  FunctorCat-additive .comp-bilinear₂ f g₁ g₂ .transf-eq x = A.comp-bilinear₂ _ _ _
+  FunctorCat-additive .comp-bilinear-ε₁ f .transf-eq x = A.comp-bilinear-ε₁ _
+  FunctorCat-additive .comp-bilinear-ε₂ f .transf-eq x = A.comp-bilinear-ε₂ _

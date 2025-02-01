@@ -119,7 +119,7 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒞 : Category o₁ m₁ e₁} {𝒟 
   constFmor f .transf _ = f
   constFmor f .natural _ = 𝒟.id-swap
 
-  -- Vertical composition of natural transformations
+  -- Horizontal composition of natural transformations
 module _ {o₁ m₁ e₁ o₂ m₂ e₂ o₃ m₃ e₃}
          {𝒞 : Category o₁ m₁ e₁}
          {𝒟 : Category o₂ m₂ e₂}
@@ -136,9 +136,9 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂ o₃ m₃ e₃}
     module 𝒟 = Category 𝒟
     module ℰ = Category ℰ
 
-  _∘V_ : NatTrans F₁ G₁ → NatTrans F₂ G₂ → NatTrans (F₁ ∘F F₂) (G₁ ∘F G₂)
-  (α ∘V β) .transf x = α .transf _ ℰ.∘ F₁ .fmor (β .transf x)
-  (α ∘V β) .natural f =
+  _∘H_ : NatTrans F₁ G₁ → NatTrans F₂ G₂ → NatTrans (F₁ ∘F F₂) (G₁ ∘F G₂)
+  (α ∘H β) .transf x = α .transf _ ℰ.∘ F₁ .fmor (β .transf x)
+  (α ∘H β) .natural f =
     begin
       G₁ .fmor (G₂ .fmor f) ℰ.∘ (α .transf _ ℰ.∘ F₁ .fmor (β .transf _))
     ≈⟨ ℰ.≈-sym (ℰ.assoc _ _ _) ⟩
@@ -157,17 +157,15 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂ o₃ m₃ e₃}
       (α .transf _ ℰ.∘ F₁ .fmor (β .transf _)) ℰ.∘ F₁ .fmor (F₂ .fmor f)
     ∎ where open ≈-Reasoning ℰ.isEquiv
 
-  ∘V-cong : ∀ {α₁ α₂ : NatTrans F₁ G₁} {β₁ β₂ : NatTrans F₂ G₂}
+  ∘H-cong : ∀ {α₁ α₂ : NatTrans F₁ G₁} {β₁ β₂ : NatTrans F₂ G₂}
               (α₁≈α₂ : ≃-NatTrans α₁ α₂) (β₁≈β₂ : ≃-NatTrans β₁ β₂) →
-              ≃-NatTrans (α₁ ∘V β₁) (α₂ ∘V β₂)
-  ∘V-cong α₁≈α₂ β₁≈β₂ .transf-eq x = ℰ.∘-cong (α₁≈α₂ .transf-eq _) (F₁ .fmor-cong (β₁≈β₂ .transf-eq x))
+              ≃-NatTrans (α₁ ∘H β₁) (α₂ ∘H β₂)
+  ∘H-cong α₁≈α₂ β₁≈β₂ .transf-eq x = ℰ.∘-cong (α₁≈α₂ .transf-eq _) (F₁ .fmor-cong (β₁≈β₂ .transf-eq x))
 
 module _ {o₁ m₁ e₁ o₂ m₂ e₂ o₃ m₃ e₃}
          {𝒞 : Category o₁ m₁ e₁}
          {𝒟 : Category o₂ m₂ e₂}
          {ℰ : Category o₃ m₃ e₃}
-         {F  : Functor 𝒞 𝒟} {F₂ : Functor 𝒞 𝒟}
-                              {G₂ : Functor 𝒞 𝒟}
          where
 
   open Functor
@@ -177,6 +175,30 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂ o₃ m₃ e₃}
   private
     module 𝒟 = Category 𝒟
     module ℰ = Category ℰ
+
+  interchange : ∀ {F₁ G₁ H₁ : Functor 𝒟 ℰ}
+                  {F₂ G₂ H₂ : Functor 𝒞 𝒟}
+                (α₁ : NatTrans G₁ H₁) (β₁ : NatTrans F₁ G₁)
+                (α₂ : NatTrans G₂ H₂) (β₂ : NatTrans F₂ G₂) →
+         ≃-NatTrans ((α₁ ∘ β₁) ∘H (α₂ ∘ β₂)) ((α₁ ∘H α₂) ∘ (β₁ ∘H β₂))
+  interchange {F₁}{G₁}{H₁}{F₂}{G₂}{H₂} α₁ α₂ β₁ β₂ .transf-eq x =
+    begin
+      (α₁ .transf _ ℰ.∘ α₂ .transf _) ℰ.∘ F₁ .fmor (β₁ .transf x 𝒟.∘ β₂ .transf x)
+    ≈⟨ ℰ.∘-cong ℰ.≈-refl (F₁ .fmor-comp _ _) ⟩
+      (α₁ .transf _ ℰ.∘ α₂ .transf _) ℰ.∘ (F₁ .fmor (β₁ .transf x) ℰ.∘ F₁ .fmor (β₂ .transf x))
+    ≈⟨ ℰ.assoc _ _ _ ⟩
+      α₁ .transf _ ℰ.∘ (α₂ .transf _ ℰ.∘ (F₁ .fmor (β₁ .transf x) ℰ.∘ F₁ .fmor (β₂ .transf x)))
+    ≈⟨ ℰ.≈-sym (ℰ.∘-cong ℰ.≈-refl (ℰ.assoc _ _ _)) ⟩
+      α₁ .transf _ ℰ.∘ ((α₂ .transf _ ℰ.∘ F₁ .fmor (β₁ .transf x)) ℰ.∘ F₁ .fmor (β₂ .transf x))
+    ≈⟨ ℰ.∘-cong ℰ.≈-refl (ℰ.∘-cong (ℰ.≈-sym (α₂ .natural _)) ℰ.≈-refl) ⟩
+      α₁ .transf _ ℰ.∘ ((G₁ .fmor (β₁ .transf x) ℰ.∘ α₂ .transf _) ℰ.∘ F₁ .fmor (β₂ .transf x))
+    ≈⟨ ℰ.∘-cong ℰ.≈-refl (ℰ.assoc _ _ _) ⟩
+      α₁ .transf _ ℰ.∘ (G₁ .fmor (β₁ .transf x) ℰ.∘ (α₂ .transf _ ℰ.∘ F₁ .fmor (β₂ .transf x)))
+    ≈⟨ ℰ.≈-sym (ℰ.assoc _ _ _) ⟩
+      (α₁ .transf _ ℰ.∘ G₁ .fmor (β₁ .transf x)) ℰ.∘ (α₂ .transf _ ℰ.∘ F₁ .fmor (β₂ .transf x))
+    ∎
+    where open ≈-Reasoning ℰ.isEquiv
+
 
   -- FIXME: draw a diagram!
 
