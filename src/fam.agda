@@ -371,3 +371,18 @@ record HasSetoidProducts {o m e} os es (𝒞 : Category o m e) : Set (o ⊔ suc 
       lambdaΠ (Π A Q) R (f ∘f evalΠf Q) ∘ lambdaΠ (Π A P) Q (g ∘f evalΠf P)
     ∎
     where open ≈-Reasoning isEquiv
+
+  lambda-compose : ∀ {A} {Q R : Fam A 𝒞} {x}
+    (f : Q ⇒f R) (g : constantFam A 𝒞 x ⇒f Q) →
+    lambdaΠ _ _ (f ∘f g) ≈ (Π-map f ∘ lambdaΠ _ _ g)
+  lambda-compose {A} {Q} {R} {x} f g =
+    begin
+      lambdaΠ x R (f ∘f g)
+    ≈˘⟨ lambdaΠ-cong (∘f-cong (≃f-isEquivalence .refl) (lambda-evalf _)) ⟩
+      lambdaΠ _ _ (f ∘f (evalΠf _ ∘f constF (lambdaΠ _ _ g)))
+    ≈˘⟨ lambdaΠ-cong (≃f-assoc _ _ _) ⟩
+      lambdaΠ _ _ ((f ∘f evalΠf _) ∘f constF (lambdaΠ _ _ g))
+    ≈˘⟨ lambdaΠ-natural _ _ ⟩
+      lambdaΠ _ _ (f ∘f evalΠf _) ∘ lambdaΠ _ _ g
+    ∎
+    where open ≈-Reasoning isEquiv

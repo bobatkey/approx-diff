@@ -113,6 +113,19 @@ record HasCoproducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     copair-in₂ : ∀ {x y z} (f : x ⇒ z) (g : y ⇒ z) → (copair f g ∘ in₂) ≈ g
     copair-ext : ∀ {x y z} (f : coprod x y ⇒ z) → copair (f ∘ in₁) (f ∘ in₂) ≈ f
 
+  copair-natural : ∀ {w x y z} (h : z ⇒ w) (f : x ⇒ z) (g : y ⇒ z) → (h ∘ copair f g) ≈ copair (h ∘ f) (h ∘ g)
+  copair-natural h f g =
+    begin
+      h ∘ copair f g
+    ≈˘⟨ copair-ext _ ⟩
+      copair ((h ∘ copair f g) ∘ in₁) ((h ∘ copair f g) ∘ in₂)
+    ≈⟨ copair-cong (assoc _ _ _) (assoc _ _ _) ⟩
+      copair (h ∘ (copair f g ∘ in₁)) (h ∘ (copair f g ∘ in₂))
+    ≈⟨ copair-cong (∘-cong ≈-refl (copair-in₁ f g)) (∘-cong ≈-refl (copair-in₂ f g)) ⟩
+      copair (h ∘ f) (h ∘ g)
+    ∎
+    where open ≈-Reasoning isEquiv
+
 record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞
   field
@@ -204,76 +217,6 @@ record HasStrongCoproducts {o m e} (𝒞 : Category o m e) (P : HasProducts 𝒞
     in₂    : ∀ {x y} → y ⇒ coprod x y
     copair : ∀ {w x y z} → prod w x ⇒ z → prod w y ⇒ z → prod w (coprod x y) ⇒ z
     -- FIXME: equations
-
-record HasBiproducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
-  open Category 𝒞
-  field
-    prod   : obj → obj → obj
-    p₁   : ∀ {x y} → prod x y ⇒ x
-    p₂   : ∀ {x y} → prod x y ⇒ y
-    pair : ∀ {x y z} → x ⇒ y → x ⇒ z → x ⇒ prod y z
-
-    pair-cong : ∀ {x y z} {f₁ f₂ : x ⇒ y} {g₁ g₂ : x ⇒ z} → f₁ ≈ f₂ → g₁ ≈ g₂ → pair f₁ g₁ ≈ pair f₂ g₂
-    pair-p₁ : ∀ {x y z} (f : x ⇒ y) (g : x ⇒ z) → (p₁ ∘ pair f g) ≈ f
-    pair-p₂ : ∀ {x y z} (f : x ⇒ y) (g : x ⇒ z) → (p₂ ∘ pair f g) ≈ g
-    pair-ext : ∀ {x y z} (f : x ⇒ prod y z) → pair (p₁ ∘ f) (p₂ ∘ f) ≈ f
-
-    in₁    : ∀ {x y} → x ⇒ prod x y
-    in₂    : ∀ {x y} → y ⇒ prod x y
-    copair : ∀ {x y z} → x ⇒ z → y ⇒ z → prod x y ⇒ z
-
-    copair-cong : ∀ {x y z} {f₁ f₂ : x ⇒ z} {g₁ g₂ : y ⇒ z} → f₁ ≈ f₂ → g₁ ≈ g₂ → copair f₁ g₁ ≈ copair f₂ g₂
-    copair-in₁ : ∀ {x y z} (f : x ⇒ z) (g : y ⇒ z) → (copair f g ∘ in₁) ≈ f
-    copair-in₂ : ∀ {x y z} (f : x ⇒ z) (g : y ⇒ z) → (copair f g ∘ in₂) ≈ g
-    copair-ext : ∀ {x y z} (f : prod x y ⇒ z) → copair (f ∘ in₁) (f ∘ in₂) ≈ f
-
-  hasProducts : HasProducts 𝒞
-  hasProducts .HasProducts.prod = prod
-  hasProducts .HasProducts.p₁ = p₁
-  hasProducts .HasProducts.p₂ = p₂
-  hasProducts .HasProducts.pair = pair
-  hasProducts .HasProducts.pair-cong = pair-cong
-  hasProducts .HasProducts.pair-p₁ = pair-p₁
-  hasProducts .HasProducts.pair-p₂ = pair-p₂
-  hasProducts .HasProducts.pair-ext = pair-ext
-
-  open HasProducts hasProducts hiding (prod; p₁; p₂; pair; pair-cong; pair-p₁; pair-p₂; pair-ext) public
-
-  -- X -> X⊕Y -> X == id
-
-{-
-
-  zero-map-1 : ∀ {x y z} (f : x ⇒ y) → ((p₂ ∘ in₁) ∘ f) ≈ (p₂ {x} {z} ∘ in₁)
-  zero-map-1 f = {!!}
-    p₂ ∘ in₁ ∘ f
-  = p₂ ∘ copair (in₁ ∘ f) (in₂ ∘ id) ∘ in₁
-  =
-
-  in₁-natural : ∀ {x₁ x₂ y₁ y₂} (f₁ : x₁ ⇒ y₁) (f₂ : x₂ ⇒ y₂) →
-                (prod-m f₁ f₂ ∘ in₁) ≈ (in₁ ∘ f₁)
-  in₁-natural f₁ f₂ =
-    begin
-      pair (f₁ ∘ p₁) (f₂ ∘ p₂) ∘ in₁
-    ≈⟨ {!!} ⟩
-      pair (p₁ ∘ (in₁ ∘ f₁)) (p₂ ∘ (in₁ ∘ f₁))
-    ≈⟨ {!!} ⟩
-      in₁ ∘ f₁
-    ∎
-    where open ≈-Reasoning isEquiv
-
-  copair-prod-m : ∀ {x₁ x₂ y₁ y₂ z} →
-    (f₁ : y₁ ⇒ z) (f₂ : y₂ ⇒ z) (g₁ : x₁ ⇒ y₁) (g₂ : x₂ ⇒ y₂) →
-    (copair f₁ f₂ ∘ prod-m g₁ g₂) ≈ copair (f₁ ∘ g₁) (f₂ ∘ g₂)
-  copair-prod-m f₁ f₂ g₁ g₂ =
-    begin
-      copair f₁ f₂ ∘ prod-m g₁ g₂
-    ≈⟨ ≈-sym (copair-ext _) ⟩
-      copair ((copair f₁ f₂ ∘ prod-m g₁ g₂) ∘ in₁) ((copair f₁ f₂ ∘ prod-m g₁ g₂) ∘ in₂)
-    ≈⟨ {!!} ⟩
-      copair (f₁ ∘ g₁) (f₂ ∘ g₂)
-    ∎
-    where open ≈-Reasoning isEquiv
--}
 
 record HasExponentials {o m e} (𝒞 : Category o m e) (P : HasProducts 𝒞) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞
