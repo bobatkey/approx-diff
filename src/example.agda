@@ -64,7 +64,7 @@ import galois
 import categories
 import grothendieck
 
-module D = grothendieck.CategoryOfFamilies 0ℓ 0ℓ galois.cat
+module D = grothendieck.CategoryOfFamilies 0ℓ galois.cat
 module DP = D.products galois.products
 
 DB = categories.coproducts→booleans
