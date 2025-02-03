@@ -9,6 +9,7 @@ open import prop-setoid
   renaming (_⇒_ to _⇒s_; _≃m_ to _≃s_; ≃m-isEquivalence to ≃s-isEquivalence)
 open import categories
 open import commutative-monoid
+open import cmon-enriched
 
 ------------------------------------------------------------------------------
 -- The category of commutative monoids.
@@ -113,13 +114,13 @@ module _ {o e} {X Y : Obj {o} {e}} where
   εm .cmFunc .preserve-+ = Y.sym Y.+-lunit
 
   _+m_ : X ⇒ Y → X ⇒ Y → X ⇒ Y
-  _+m_ f g .function .func x = f .function .func x Y.+ g .function .func x
-  _+m_ f g .function .func-resp-≈ x₁≈x₂ = Y.+-cong (f .function .func-resp-≈ x₁≈x₂) (g .function .func-resp-≈ x₁≈x₂)
-  _+m_ f g .cmFunc .preserve-ε = Y.trans (Y.+-cong (f .cmFunc .preserve-ε) (g .cmFunc .preserve-ε)) Y.+-lunit
+  _+m_ f g .function .func x = f .func x Y.+ g .func x
+  _+m_ f g .function .func-resp-≈ x₁≈x₂ = Y.+-cong (f .func-resp-≈ x₁≈x₂) (g .func-resp-≈ x₁≈x₂)
+  _+m_ f g .cmFunc .preserve-ε = Y.trans (Y.+-cong (f .preserve-ε) (g .preserve-ε)) Y.+-lunit
   (f +m g) .cmFunc .preserve-+ {x₁} {x₂} =
     begin
       f' (x₁ X.+ x₂) Y.+ g' (x₁ X.+ x₂)
-    ≈⟨ Y.+-cong (f .cmFunc .preserve-+) (g .cmFunc .preserve-+) ⟩
+    ≈⟨ Y.+-cong (f .preserve-+) (g .preserve-+) ⟩
       (f' x₁ Y.+ f' x₂) Y.+ (g' x₁ Y.+ g' x₂)
     ≈⟨ Y.+-assoc ⟩
       f' x₁ Y.+ (f' x₂ Y.+ (g' x₁ Y.+ g' x₂))
@@ -133,8 +134,8 @@ module _ {o e} {X Y : Obj {o} {e}} where
       (f' x₁ Y.+ g' x₁) Y.+ (f' x₂ Y.+ g' x₂)
     ∎
     where open ≈-Reasoning Y.isEquivalence
-          f' = f .function .func
-          g' = g. function .func
+          f' = f .func
+          g' = g .func
 
 module _ {o e} (X Y : Obj {o} {e}) where
   open _⇒_
@@ -151,15 +152,13 @@ module _ {o e} (X Y : Obj {o} {e}) where
   homCM .CommutativeMonoid.+-cong f₁≈f₂ g₁≈g₂ .func-eq x₁≈x₂ =
     Y.+-cong (f₁≈f₂ .func-eq x₁≈x₂) (g₁≈g₂ .func-eq x₁≈x₂)
   homCM .CommutativeMonoid.+-lunit {f} .func-eq x₁≈x₂ =
-    Y.trans Y.+-lunit (f .function .func-resp-≈ x₁≈x₂)
+    Y.trans Y.+-lunit (f .func-resp-≈ x₁≈x₂)
   homCM .CommutativeMonoid.+-assoc {f} {g} {h} .func-eq x₁≈x₂ =
     Y.trans Y.+-assoc
-      (Y.+-cong (f .function .func-resp-≈ x₁≈x₂)
-                (Y.+-cong (g .function .func-resp-≈ x₁≈x₂)
-                          (h .function .func-resp-≈ x₁≈x₂)))
+      (Y.+-cong (f .func-resp-≈ x₁≈x₂)
+                (Y.+-cong (g .func-resp-≈ x₁≈x₂) (h .func-resp-≈ x₁≈x₂)))
   homCM .CommutativeMonoid.+-comm {f} {g} .func-eq x₁≈x₂ =
-    Y.trans Y.+-comm (Y.+-cong (g. function .func-resp-≈ x₁≈x₂)
-                               (f .function .func-resp-≈ x₁≈x₂))
+    Y.trans Y.+-comm (Y.+-cong (g .func-resp-≈ x₁≈x₂) (f .func-resp-≈ x₁≈x₂))
 
 module _ {o e} where
 
@@ -172,18 +171,23 @@ module _ {o e} where
   comp-bilinear₁ : ∀ {X Y Z : Obj {o} {e}} (f₁ f₂ : Y ⇒ Z) (g : X ⇒ Y) →
                    ((f₁ +m f₂) ∘ g) ≃ ((f₁ ∘ g) +m (f₂ ∘ g))
   comp-bilinear₁ {Z = Z} f₁ f₂ g .func-eq x₁≈x₂ =
-    Z .+-cong (f₁ .function .func-resp-≈ (g .function .func-resp-≈ x₁≈x₂))
-              (f₂ .function .func-resp-≈ (g .function .func-resp-≈ x₁≈x₂))
+    Z .+-cong (f₁ .func-resp-≈ (g .func-resp-≈ x₁≈x₂))
+              (f₂ .func-resp-≈ (g .func-resp-≈ x₁≈x₂))
 
   comp-bilinear₂ : ∀ {X Y Z : Obj {o} {e}} (f : Y ⇒ Z) (g₁ g₂ : X ⇒ Y) →
                    (f ∘ (g₁ +m g₂)) ≃ ((f ∘ g₁) +m (f ∘ g₂))
   comp-bilinear₂ {Z = Z} f g₁ g₂ .func-eq x₁≈x₂ =
     Z .trans
-       (f .cmFunc .preserve-+)
-       (Z .+-cong (f .function .func-resp-≈ (g₁ .function .func-resp-≈ x₁≈x₂))
-                  (f .function .func-resp-≈ (g₂ .function .func-resp-≈ x₁≈x₂)))
+       (f .preserve-+)
+       (Z .+-cong (f .func-resp-≈ (g₁ .func-resp-≈ x₁≈x₂))
+                  (f .func-resp-≈ (g₂ .func-resp-≈ x₁≈x₂)))
 
--- FIXME: state that this is an additive category
+  cmon-enriched : CMonEnriched (cat o e)
+  cmon-enriched .CMonEnriched.homCM = homCM
+  cmon-enriched .CMonEnriched.comp-bilinear₁ = comp-bilinear₁
+  cmon-enriched .CMonEnriched.comp-bilinear₂ = comp-bilinear₂
+  cmon-enriched .CMonEnriched.comp-bilinear-ε₁ {Z = Z} f .func-eq _ = Z .refl
+  cmon-enriched .CMonEnriched.comp-bilinear-ε₂ f .func-eq _ = f .preserve-ε
 
 ------------------------------------------------------------------------------
 -- Limits, inherited from Setoids
@@ -232,8 +236,7 @@ module _ {o m e} os (𝒟 : Category o m e) where
    lambdaΠCM : ∀ X (F : Functor 𝒟 (cat (os ⊔ o ⊔ m ⊔ e) (os ⊔ o ⊔ m ⊔ e))) →
                NatTrans (constF 𝒟 X) F → (X ⇒ ΠCM F)
    lambdaΠCM X F α .function =
-     -- FIXME: do this without defining a custom transformation here
-     Setoid-Limit os 𝒟 .HasLimits.lambdaΠ (X .carrier) (toSetoid ∘F F) ((NTid toSetoid ∘H α) ∘V record { transf = λ x → idS _ ; natural = λ f → ≃s-isEquivalence .refl })
+     Setoid-Limit os 𝒟 .HasLimits.lambdaΠ (X .carrier) (toSetoid ∘F F) ((NTid toSetoid ∘H α) ∘V constF-F toSetoid X)
    lambdaΠCM X F α .cmFunc .preserve-ε x = α .transf x .preserve-ε
    lambdaΠCM X F α .cmFunc .preserve-+ x = α .transf x .preserve-+
 
@@ -248,68 +251,10 @@ module _ {o m e} os (𝒟 : Category o m e) where
    limits .HasLimits.lambda-ext f ._≃s_.func-eq = f .func-resp-≈
 
 ------------------------------------------------------------------------------
--- Big Products
-{-
-module _ where
-
-  open import fam
-  open import setoid-cat hiding (Π)
-
-  open Obj
-  open Fam
-  open CommutativeMonoid
-  open ΠS-Carrier
-  open HasSetoidProducts
-
-  ΠCM : (A : Setoid (o ⊔ e) (o ⊔ e)) → Fam A cat → Obj
-  ΠCM A F .carrier = ΠS A (changeCat A toSetoid F)
-  ΠCM A F .commMonoid .ε .Π-func a = F .fm a .commMonoid .ε
-  ΠCM A F .commMonoid .ε .Π-eq e = F .subst e .cmFunc .preserve-ε
-  ΠCM A F .commMonoid ._+_ f₁ f₂ .Π-func a = F .fm a .commMonoid ._+_ (f₁ .Π-func a) (f₂ .Π-func a)
-  ΠCM A F .commMonoid ._+_ f₁ f₂ .Π-eq {a₁} {a₂} a₁≈a₂ =
-    begin
-      F .subst a₁≈a₂ .function ._⇒s_.func (F .fm a₁ .commMonoid ._+_ (f₁ .Π-func a₁) (f₂ .Π-func a₁))
-    ≈⟨ F .subst a₁≈a₂ .cmFunc .preserve-+ ⟩
-      F .fm a₂ .commMonoid ._+_ (F .subst a₁≈a₂ .function ._⇒s_.func (f₁ .Π-func a₁)) (F .subst a₁≈a₂ .function ._⇒s_.func (f₂ .Π-func a₁))
-    ≈⟨ F .fm a₂ .commMonoid .+-cong (f₁ .Π-eq a₁≈a₂) (f₂ .Π-eq a₁≈a₂) ⟩
-      F .fm a₂ .commMonoid ._+_ (f₁ .Π-func a₂) (f₂ .Π-func a₂)
-    ∎ where open ≈-Reasoning (F .fm a₂ .carrier .Setoid.isEquivalence)
-  ΠCM A F .commMonoid .+-cong f₁≈f₂ g₁≈g₂ a =
-    F .fm a .commMonoid .+-cong (f₁≈f₂ a) (g₁≈g₂ a)
-  ΠCM A F .commMonoid .+-lunit a = F .fm a .commMonoid .+-lunit
-  ΠCM A F .commMonoid .+-assoc a = F .fm a .commMonoid .+-assoc
-  ΠCM A F .commMonoid .+-comm a = F .fm a .commMonoid .+-comm
-
-  evalΠCM : ∀ {A} P (a : A .Setoid.Carrier) → ΠCM A P ⇒ P .fm a
-  evalΠCM P a .function = Setoid-BigProducts .evalΠ (changeCat _ toSetoid P) a
-  evalΠCM P a .cmFunc .preserve-ε = P .fm a .carrier .Setoid.refl
-  evalΠCM P a .cmFunc .preserve-+ = P .fm a .carrier .Setoid.refl
-
-  lambdaΠCM : ∀ {A} (X : Obj) (P : Fam A cat) →
-              (constantFam A cat X ⇒f P) → (X ⇒ ΠCM A P)
-  lambdaΠCM {A} X P f .function =
-    Setoid-BigProducts .lambdaΠ (X .carrier) (changeCat _ toSetoid P)
-      (changeCatF A toSetoid f ∘f preserveConst⁻¹ A toSetoid X)
-  lambdaΠCM X P f .cmFunc .preserve-ε a = f ._⇒f_.transf a .cmFunc .preserve-ε
-  lambdaΠCM X P f .cmFunc .preserve-+ a = f ._⇒f_.transf a .cmFunc .preserve-+
-
-  bigProd : HasSetoidProducts o o cat
-  bigProd .Π = ΠCM
-  bigProd .lambdaΠ = lambdaΠCM
-  bigProd .lambdaΠ-cong f₁≈f₂ =
-    Setoid-BigProducts .lambdaΠ-cong (∘f-cong (changeCatF-cong _ toSetoid f₁≈f₂) (≃f-isEquivalence .refl))
-  bigProd .evalΠ = evalΠCM
-  bigProd .evalΠ-cong a₁≈a₂ = Setoid-BigProducts .evalΠ-cong a₁≈a₂
-  bigProd .lambda-eval {A} {P} {x} {f} a ._≃s_.func-eq =
-    f ._⇒f_.transf a .function ._⇒s_.func-resp-≈
-  bigProd .lambda-ext {f = f} ._≃s_.func-eq =
-    f .function ._⇒s_.func-resp-≈
--}
-------------------------------------------------------------------------------
 -- Tensor products and symmetric monoidal closed structure (FIXME)
 
 ------------------------------------------------------------------------------
--- Biproducts
+-- Products
 module _ {o e} where
   open Obj
   open _⇒_
@@ -349,3 +294,5 @@ module _ {o e} where
     Setoid-products _ _ .HasProducts.pair-p₂ (f .function) (g .function)
   products .HasProducts.pair-ext f =
     Setoid-products _ _ .HasProducts.pair-ext (f .function)
+
+  -- FIXME: and so we have all biproducts too
