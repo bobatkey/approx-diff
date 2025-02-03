@@ -98,12 +98,13 @@ module _ {o e} where
   Setoid-BigProducts .HasSetoidProducts.lambda-eval {f = f} a .func-eq = f .transf a .func-resp-≈
   Setoid-BigProducts .HasSetoidProducts.lambda-ext {f = f} .func-eq = f .func-resp-≈
 
--- FIXME: Setoid-BigSums
-
 open import functor using (HasLimits; Functor; NatTrans; ≃-NatTrans)
 
 -- Setoid categories have all "smaller" limits
 module _ {o m e} os (𝒟 : Category o m e) where
+
+  ℓ : Level
+  ℓ = os ⊔ o ⊔ m ⊔ e
 
   private
     module 𝒟 = Category 𝒟
@@ -113,20 +114,20 @@ module _ {o m e} os (𝒟 : Category o m e) where
   open Setoid
   open IsEquivalence
 
-  record Π-Carrier (F : Functor 𝒟 (SetoidCat (os ⊔ o ⊔ m ⊔ e) (os ⊔ o ⊔ m ⊔ e))) : Set (os ⊔ o ⊔ m ⊔ e) where
+  record Π-Carrier (F : Functor 𝒟 (SetoidCat ℓ ℓ)) : Set ℓ where
     field
       Π-func : (x : 𝒟.obj) → F .fobj x .Carrier
       Π-eq   : ∀ {x₁ x₂} (f : x₁ 𝒟.⇒ x₂) → F .fobj x₂ ._≈_ (F .fmor f .func (Π-func x₁)) (Π-func x₂)
   open Π-Carrier
 
-  Π : Functor 𝒟 (SetoidCat (os ⊔ o ⊔ m ⊔ e) (os ⊔ o ⊔ m ⊔ e)) → Setoid (os ⊔ o ⊔ m ⊔ e) (os ⊔ o ⊔ m ⊔ e)
+  Π : Functor 𝒟 (SetoidCat ℓ ℓ) → Setoid ℓ ℓ
   Π F .Carrier = Π-Carrier F
   Π F ._≈_ f₁ f₂ = ∀ x → F .fobj x ._≈_ (f₁ .Π-func x) (f₂ .Π-func x)
   Π F .isEquivalence .refl {f} a = F .fobj a .refl
   Π F .isEquivalence .sym {f₁} {f₂} f₁≈f₂ a = F .fobj a .sym (f₁≈f₂ a)
   Π F .isEquivalence .trans f₁≈f₂ f₂≈f₃ a = F .fobj a .trans (f₁≈f₂ a) (f₂≈f₃ a)
 
-  Setoid-Limit : HasLimits 𝒟 (SetoidCat (os ⊔ o ⊔ m ⊔ e) (os ⊔ o ⊔ m ⊔ e))
+  Setoid-Limit : HasLimits 𝒟 (SetoidCat ℓ ℓ)
   Setoid-Limit .HasLimits.Π = Π
   Setoid-Limit .HasLimits.lambdaΠ A F α .func a .Π-func x = α .transf x .func a
   Setoid-Limit .HasLimits.lambdaΠ A F α .func a .Π-eq {x₁} {x₂} f =
