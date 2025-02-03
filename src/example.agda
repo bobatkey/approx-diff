@@ -64,7 +64,7 @@ import galois
 import categories
 import grothendieck
 
-module D = grothendieck.CategoryOfFamilies {os = 0ℓ} {es = 0ℓ} galois.cat
+module D = grothendieck.CategoryOfFamilies 0ℓ 0ℓ galois.cat
 module DP = D.products galois.products
 
 DB = categories.coproducts→booleans
@@ -90,8 +90,8 @@ module _ where
   -- FIXME: use Strings for labels
 
   binary : ∀ {X G} →
-            D.Mor (D.simple[ X , G ] DP.⊗ (D.simple[ X , G ] DP.⊗ D.simple[ prop-setoid.𝟙 {0ℓ} {0ℓ} , galois.𝟙 ]))
-                  D.simple[ prop-setoid.⊗-setoid X X , G galois.⊗ G ]
+            D.Mor (D.simple[ X , G ] DP.⊗ (D.simple[ X , G ] DP.⊗ D.simple[ 𝟙 {0ℓ} {0ℓ} , galois.𝟙 ]))
+                  D.simple[ ⊗-setoid X X , G galois.⊗ G ]
   binary = D.Mor-∘ DP.simple-monoidal (pair p₁ (D.Mor-∘ p₁ p₂))
     where open HasProducts DP.products
 

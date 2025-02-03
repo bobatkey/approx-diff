@@ -14,6 +14,7 @@ open IsEquivalence
 -- have.
 
 record Category o m e : Set (suc (o ⊔ m ⊔ e)) where
+  no-eta-equality
   field
     obj  : Set o
     _⇒_ : obj → obj → Set m

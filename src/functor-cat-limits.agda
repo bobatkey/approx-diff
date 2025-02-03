@@ -4,6 +4,8 @@ open import prop-setoid using (IsEquivalence; module ≈-Reasoning)
 open import categories
 open import functor
 
+-- If 𝒟 has all limits of shape 𝒮, then so does [ 𝒞 ⇒ 𝒟 ].
+
 module functor-cat-limits
          {o₁ m₁ e₁ o₂ m₂ e₂ o₃ m₃ e₃}
          (𝒞 : Category o₁ m₁ e₁)
@@ -74,16 +76,15 @@ evalAt .fmor-comp f g .transf-eq F = F .fmor-comp f g
   ∎
   where open ≈-Reasoning 𝒟.isEquiv
 
+-- FIXME: replace uses of evalAt-const with its definition below
 evalAt-const : ∀ (X : Functor 𝒞 𝒟) x →
                NatTrans (constF 𝒮 (X .fobj x)) (evalAt .fobj x ∘F constF 𝒮 X)
-evalAt-const X x .transf s = 𝒟.id _
-evalAt-const X x .natural f = 𝒟.≈-refl
+evalAt-const X x = constF-F (evalAt .fobj x) X
 
 lambdaΠ : ∀ (X : Functor 𝒞 𝒟) (F : Functor 𝒮 [ 𝒞 ⇒ 𝒟 ]) →
             NatTrans (constF 𝒮 {[ 𝒞 ⇒ 𝒟 ]} X) F →
             NatTrans X (Π F)
-lambdaΠ X F α .transf x =
-  DL.lambdaΠ (X .fobj x) (evalAt .fobj x ∘F F) ((id _ ∘H α) ∘ evalAt-const X x)
+lambdaΠ X F α .transf x = DL.lambdaΠ _ _ ((id _ ∘H α) ∘ evalAt-const X x)
 lambdaΠ X F α .natural {x} {y} f =
   begin
     DL.Π-map (evalAt .fmor f ∘H id F) 𝒟.∘ DL.lambdaΠ (X .fobj x) (evalAt .fobj x ∘F F) ((id _ ∘H α) ∘ evalAt-const X x)

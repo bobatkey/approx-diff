@@ -44,7 +44,10 @@ module ≈-Reasoning {o e} {A : Set o} {_≈_ : A → A → Prop e} (equiv : IsE
     → x ≈ y
   begin x≈y  =  x≈y
 
-  _≡⟨⟩_ : ∀ (x : A) {y : A} → x ≈ y → x ≈ y
+  _≡⟨⟩_ : ∀ (x : A) {y : A}
+    → x ≈ y
+      -----
+    → x ≈ y
   x ≡⟨⟩ x≈y = x≈y
 
   _≈⟨_⟩_ : ∀ (x : A) {y z : A}

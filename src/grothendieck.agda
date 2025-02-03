@@ -14,11 +14,16 @@ open import categories
 open import setoid-cat hiding (Π)
 open import fam
 
+open IsEquivalence
+
 -- Categories of Families, a special case of the Grothendieck
 -- construction
 --
--- FIXME: could probably drop 'es' here.
-module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
+-- FIXME: re-do this in terms of displayed categories
+--
+-- FIXME: try to re-do as much as possible in terms of reindexing, so
+-- it can be used for any indexed category
+module CategoryOfFamilies {o m e} os es (𝒞 : Category o m e) where
 
   open Fam
 
@@ -30,114 +35,104 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
   open Obj
 
   record Mor (X Y : Obj) : Set (os ⊔ es ⊔ m ⊔ e) where
+    no-eta-equality
     field
       idxf : X .idx ⇒s Y .idx
       famf : X .fam ⇒f (Y .fam [ idxf ])
   open Mor
 
   record _≃_ {X Y : Obj} (f g : Mor X Y) : Prop (os ⊔ es ⊔ m ⊔ e) where
+    no-eta-equality
     field
       idxf-eq : f .idxf ≈s g .idxf
-      famf-eq : (reindex-≈ {P = Y .fam} (f .idxf) (g .idxf) idxf-eq ∘f f .famf) ≃f g .famf
+      famf-eq : (reindex-≈ _ _ idxf-eq ∘f f .famf) ≃f g .famf
   open _≃_
 
-  module _ where
-    open IsEquivalence
-
-    ≃-isEquivalence : ∀ {X Y} → IsEquivalence (_≃_ {X} {Y})
-    ≃-isEquivalence .refl .idxf-eq = ≈s-isEquivalence .refl
-    ≃-isEquivalence {X} {Y} .refl {f} .famf-eq =
-      begin
-        reindex-≈ {P = Y .fam} (f .idxf) (f .idxf) (≈s-isEquivalence .refl) ∘f f .famf
-      ≈⟨ ∘f-cong (reindex-≈-refl {P = Y .fam} (f .idxf)) (≃f-isEquivalence .refl {f .famf}) ⟩
-        idf (Y .fam [ f .idxf ]) ∘f f .famf
-      ≈⟨ ≃f-id-left ⟩
-        f .famf
-      ∎ where open ≈-Reasoning ≃f-isEquivalence
-    ≃-isEquivalence .sym f≈g .idxf-eq = ≈s-isEquivalence .sym (f≈g .idxf-eq)
-    ≃-isEquivalence {X} {Y} .sym {f}{g} f≈g .famf-eq =
-      begin
-        reindex-≈ {P = Y .fam} (g .idxf) (f .idxf) (≈s-isEquivalence .sym (f≈g .idxf-eq)) ∘f g .famf
-      ≈⟨ ∘f-cong (≃f-isEquivalence .refl {reindex-≈ {P = Y .fam} (g .idxf) (f .idxf) (≈s-isEquivalence .sym (f≈g .idxf-eq))}) (≃f-isEquivalence .sym (f≈g .famf-eq)) ⟩
-        reindex-≈ {P = Y .fam} (g .idxf) (f .idxf) (≈s-isEquivalence .sym (f≈g .idxf-eq)) ∘f (reindex-≈ {P = Y .fam} (f .idxf) (g .idxf) (f≈g .idxf-eq) ∘f f .famf)
-      ≈⟨ ≃f-isEquivalence .sym (≃f-assoc _ _ _) ⟩
-        (reindex-≈ {P = Y .fam} (g .idxf) (f .idxf) (≈s-isEquivalence .sym (f≈g .idxf-eq)) ∘f reindex-≈ {P = Y .fam} (f .idxf) (g .idxf) (f≈g .idxf-eq)) ∘f f .famf
-      ≈⟨ ∘f-cong (≃f-isEquivalence .sym (reindex-≈-trans _ _)) (≃f-isEquivalence .refl) ⟩
-        reindex-≈ {P = Y .fam} (f .idxf) _ (≈s-isEquivalence .refl {f .idxf}) ∘f f .famf
-      ≈⟨ ∘f-cong (reindex-≈-refl {P = Y .fam} (f .idxf)) (≃f-isEquivalence .refl {f .famf}) ⟩
-        idf (Y .fam [ f .idxf ]) ∘f f .famf
-      ≈⟨ ≃f-id-left ⟩
-        f .famf
-      ∎ where open ≈-Reasoning ≃f-isEquivalence
-    ≃-isEquivalence .trans f≈g g≈h .idxf-eq = ≈s-isEquivalence .trans (f≈g .idxf-eq) (g≈h .idxf-eq)
-    ≃-isEquivalence {X} {Y} .trans {f}{g}{h} f≈g g≈h .famf-eq =
-      begin
-        reindex-≈ {P = Y .fam} (f .idxf) (h .idxf) _ ∘f f .famf
-      ≈⟨ ∘f-cong (reindex-≈-trans (f≈g .idxf-eq) (g≈h .idxf-eq)) (≃f-isEquivalence .refl) ⟩
-        (reindex-≈ {P = Y .fam} _ _ (g≈h .idxf-eq) ∘f reindex-≈ {P = Y .fam} (f .idxf) (g .idxf) (f≈g .idxf-eq)) ∘f f .famf
-      ≈⟨ ≃f-assoc _ _ _ ⟩
-        reindex-≈ {P = Y .fam} _ _ (g≈h .idxf-eq) ∘f (reindex-≈ {P = Y .fam} _ _ (f≈g .idxf-eq) ∘f f .famf)
-      ≈⟨ ∘f-cong (≃f-isEquivalence .refl) (f≈g .famf-eq) ⟩
-        reindex-≈ {P = Y .fam} _ _ (g≈h .idxf-eq) ∘f g .famf
-      ≈⟨ g≈h .famf-eq ⟩
-        h .famf
-      ∎ where open ≈-Reasoning ≃f-isEquivalence
+  ≃-isEquivalence : ∀ {X Y} → IsEquivalence (_≃_ {X} {Y})
+  ≃-isEquivalence .refl .idxf-eq = ≈s-isEquivalence .refl
+  ≃-isEquivalence {X} {Y} .refl {f} .famf-eq =
+    begin
+      reindex-≈ (f .idxf) (f .idxf) (≈s-isEquivalence .refl) ∘f f .famf
+    ≈⟨ ∘f-cong (reindex-≈-refl (f .idxf)) (≃f-isEquivalence .refl) ⟩
+      idf (Y .fam [ f .idxf ]) ∘f f .famf
+    ≈⟨ ≃f-id-left ⟩
+      f .famf
+    ∎ where open ≈-Reasoning ≃f-isEquivalence
+  ≃-isEquivalence .sym f≈g .idxf-eq = ≈s-isEquivalence .sym (f≈g .idxf-eq)
+  ≃-isEquivalence {X} {Y} .sym {f}{g} f≈g .famf-eq =
+    begin
+      reindex-≈ (g .idxf) (f .idxf) (≈s-isEquivalence .sym (f≈g .idxf-eq)) ∘f g .famf
+    ≈⟨ ∘f-cong (≃f-isEquivalence .refl {reindex-≈ (g .idxf) (f .idxf) (≈s-isEquivalence .sym (f≈g .idxf-eq))}) (≃f-isEquivalence .sym (f≈g .famf-eq)) ⟩
+      reindex-≈ (g .idxf) (f .idxf) (≈s-isEquivalence .sym (f≈g .idxf-eq)) ∘f (reindex-≈ (f .idxf) (g .idxf) (f≈g .idxf-eq) ∘f f .famf)
+    ≈⟨ ≃f-isEquivalence .sym (≃f-assoc _ _ _) ⟩
+      (reindex-≈ (g .idxf) (f .idxf) (≈s-isEquivalence .sym (f≈g .idxf-eq)) ∘f reindex-≈ (f .idxf) (g .idxf) (f≈g .idxf-eq)) ∘f f .famf
+    ≈⟨ ∘f-cong (≃f-isEquivalence .sym (reindex-≈-trans _ _)) (≃f-isEquivalence .refl) ⟩
+      reindex-≈ (f .idxf) _ (≈s-isEquivalence .refl) ∘f f .famf
+    ≈⟨ ∘f-cong (reindex-≈-refl (f .idxf)) (≃f-isEquivalence .refl) ⟩
+      idf (Y .fam [ f .idxf ]) ∘f f .famf
+    ≈⟨ ≃f-id-left ⟩
+      f .famf
+    ∎ where open ≈-Reasoning ≃f-isEquivalence
+  ≃-isEquivalence .trans f≈g g≈h .idxf-eq = ≈s-isEquivalence .trans (f≈g .idxf-eq) (g≈h .idxf-eq)
+  ≃-isEquivalence {X} {Y} .trans {f}{g}{h} f≈g g≈h .famf-eq =
+    begin
+      reindex-≈ (f .idxf) (h .idxf) _ ∘f f .famf
+    ≈⟨ ∘f-cong (reindex-≈-trans (f≈g .idxf-eq) (g≈h .idxf-eq)) (≃f-isEquivalence .refl) ⟩
+      (reindex-≈ _ _ (g≈h .idxf-eq) ∘f reindex-≈ _ _ (f≈g .idxf-eq)) ∘f f .famf
+    ≈⟨ ≃f-assoc _ _ _ ⟩
+      reindex-≈ _ _ (g≈h .idxf-eq) ∘f (reindex-≈ _ _ (f≈g .idxf-eq) ∘f f .famf)
+    ≈⟨ ∘f-cong (≃f-isEquivalence .refl) (f≈g .famf-eq) ⟩
+      reindex-≈ _ _ (g≈h .idxf-eq) ∘f g .famf
+    ≈⟨ g≈h .famf-eq ⟩
+      h .famf
+    ∎ where open ≈-Reasoning ≃f-isEquivalence
 
   module _ where
 
     open Category 𝒞
-    open IsEquivalence
 
     Mor-id : ∀ X → Mor X X
     Mor-id X .idxf = idS _
-    Mor-id X .famf = idf _
-     -- FIXME: to generalise to all indexed categories, this ought to
-     -- be an explicit witness of X -> X[id]. Likewise for
-     -- composition. The definition of reindexing currently satisfies
-     -- reindexing by identity and composition laws definitionally.
+    Mor-id X .famf = reindex-id
 
     Mor-∘ : ∀ {X Y Z} → Mor Y Z → Mor X Y → Mor X Z
     Mor-∘ f g .idxf = f .idxf ∘S g .idxf
-    Mor-∘ f g .famf = reindex-f (g .idxf) (f .famf) ∘f (g .famf)
+    Mor-∘ f g .famf = reindex-comp ∘f (reindex-f (g .idxf) (f .famf) ∘f (g .famf))
 
     open _≃_
 
     Mor-∘-cong : ∀ {X Y Z}{f₁ f₂ : Mor Y Z}{g₁ g₂ : Mor X Y} → f₁ ≃ f₂ → g₁ ≃ g₂ → Mor-∘ f₁ g₁ ≃ Mor-∘ f₂ g₂
     Mor-∘-cong f₁≃f₂ g₁≃g₂ .idxf-eq = prop-setoid.∘S-cong (f₁≃f₂ .idxf-eq) (g₁≃g₂ .idxf-eq)
     Mor-∘-cong {X}{Y}{Z} {f₁}{f₂}{g₁}{g₂} f₁≃f₂ g₁≃g₂ .famf-eq =
+      -- Need:
       begin
-        reindex-≈ {P = Z .fam} (f₁ .idxf ∘S g₁ .idxf) (f₂ .idxf ∘S g₂ .idxf) eq₁ ∘f (reindex-f (g₁ .idxf) (f₁ .famf) ∘f g₁ .famf)
-      ≈⟨ ≃f-isEquivalence .sym (≃f-assoc _ _ _) ⟩
-        (reindex-≈ {P = Z .fam} _ _ eq₁ ∘f reindex-f (g₁ .idxf) (f₁ .famf)) ∘f g₁ .famf
-      ≈⟨ ∘f-cong (∘f-cong (reindex-≈-trans eq₂ eq₃) (≃f-isEquivalence .refl)) (≃f-isEquivalence .refl) ⟩
-        ((reindex-≈ {P = Z .fam} _ _ eq₃ ∘f reindex-≈ {P = Z .fam} _ _ eq₂) ∘f reindex-f (g₁ .idxf) (f₁ .famf)) ∘f g₁ .famf
-      ≈⟨ ∘f-cong
-          (∘f-cong (∘f-cong (reindex-≈-comp-1 (Z .fam) _ _ (g₂ .idxf) (f₁≃f₂ .idxf-eq))
-                           (reindex-≈-comp-2 (Z .fam) (f₁ .idxf) _ _ (g₁≃g₂ .idxf-eq)))
-                   (≃f-isEquivalence .refl))
-          (≃f-isEquivalence .refl) ⟩
-        ((reindex-f (g₂ .idxf) (reindex-≈ {P = Z .fam} _ _ (f₁≃f₂ .idxf-eq)) ∘f reindex-≈ {P = Z .fam [ f₁ .idxf ]} _ _ (g₁≃g₂ .idxf-eq)) ∘f reindex-f (g₁ .idxf) (f₁ .famf)) ∘f g₁ .famf
-      ≈⟨ ∘f-cong (≃f-assoc _ _ _) (≃f-isEquivalence .refl) ⟩
-        (reindex-f (g₂ .idxf) (reindex-≈ {P = Z .fam} _ _ (f₁≃f₂ .idxf-eq)) ∘f (reindex-≈ {P = Z .fam [ f₁ .idxf ]} _ _ (g₁≃g₂ .idxf-eq) ∘f reindex-f (g₁ .idxf) (f₁ .famf))) ∘f g₁ .famf
-      ≈⟨ ∘f-cong (∘f-cong (≃f-isEquivalence .refl) square) (≃f-isEquivalence .refl) ⟩
-        (reindex-f (g₂ .idxf) (reindex-≈ {P = Z .fam} _ _ (f₁≃f₂ .idxf-eq)) ∘f (reindex-f (g₂ .idxf) (f₁ .famf) ∘f reindex-≈ {P = Y .fam} _ _ (g₁≃g₂ .idxf-eq))) ∘f g₁ .famf
-      ≈⟨ ∘f-cong (≃f-isEquivalence .sym (≃f-assoc _ _ _)) (≃f-isEquivalence .refl) ⟩
-        ((reindex-f (g₂ .idxf) (reindex-≈ {P = Z .fam} _ _ (f₁≃f₂ .idxf-eq)) ∘f reindex-f (g₂ .idxf) (f₁ .famf)) ∘f reindex-≈ {P = Y .fam} _ _ (g₁≃g₂ .idxf-eq)) ∘f g₁ .famf
+        reindex-≈ _ _ _ ∘f (reindex-comp ∘f (reindex-f (g₁ .idxf) (f₁ .famf) ∘f g₁ .famf))
+      ≈˘⟨ ≃f-assoc _ _ _ ⟩
+        (reindex-≈ _ _ _ ∘f reindex-comp) ∘f (reindex-f (g₁ .idxf) (f₁ .famf) ∘f g₁ .famf)
+      ≈⟨ ∘f-cong (reindex-comp-≈ (Z .fam) (f₁≃f₂ .idxf-eq) (g₁≃g₂ .idxf-eq)) ≃f-refl ⟩
+        (reindex-comp ∘f (reindex-≈ _ _ _ ∘f reindex-f _ (reindex-≈ _ _ _))) ∘f (reindex-f (g₁ .idxf) (f₁ .famf) ∘f g₁ .famf)
       ≈⟨ ≃f-assoc _ _ _ ⟩
-        (reindex-f (g₂ .idxf) (reindex-≈ {P = Z .fam} _ _ (f₁≃f₂ .idxf-eq)) ∘f reindex-f (g₂ .idxf) (f₁ .famf)) ∘f (reindex-≈ {P = Y .fam} _ _ (g₁≃g₂ .idxf-eq) ∘f g₁ .famf)
-      ≈⟨ ∘f-cong (reindex-f-comp (reindex-≈ {P = Z .fam} _ _ (f₁≃f₂ .idxf-eq)) (f₁ .famf)) (≃f-isEquivalence .refl) ⟩
-        reindex-f (g₂ .idxf) (reindex-≈ {P = Z .fam} _ _ (f₁≃f₂ .idxf-eq) ∘f f₁ .famf) ∘f (reindex-≈ {P = Y .fam} _ _ (g₁≃g₂ .idxf-eq) ∘f g₁ .famf)
-      ≈⟨ ∘f-cong (reindex-f-cong (f₁≃f₂ .famf-eq)) (g₁≃g₂ .famf-eq) ⟩
-        reindex-f (g₂ .idxf) (f₂ .famf) ∘f g₂ .famf
+        reindex-comp ∘f ((reindex-≈ _ _ (g₁≃g₂ .idxf-eq) ∘f reindex-f _ (reindex-≈ _ _ (f₁≃f₂ .idxf-eq))) ∘f (reindex-f (g₁ .idxf) (f₁ .famf) ∘f g₁ .famf))
+      ≈⟨ ∘f-cong ≃f-refl (≃f-assoc _ _ _) ⟩
+        reindex-comp ∘f (reindex-≈ _ _ (g₁≃g₂ .idxf-eq) ∘f (reindex-f _ (reindex-≈ _ _ (f₁≃f₂ .idxf-eq)) ∘f (reindex-f (g₁ .idxf) (f₁ .famf) ∘f g₁ .famf)))
+      ≈˘⟨ ∘f-cong ≃f-refl (∘f-cong ≃f-refl (≃f-assoc _ _ _)) ⟩
+        reindex-comp ∘f (reindex-≈ _ _ (g₁≃g₂ .idxf-eq) ∘f ((reindex-f _ (reindex-≈ _ _ (f₁≃f₂ .idxf-eq)) ∘f reindex-f (g₁ .idxf) (f₁ .famf)) ∘f g₁ .famf))
+      ≈⟨ ∘f-cong ≃f-refl (∘f-cong ≃f-refl (∘f-cong (reindex-f-comp _ _) ≃f-refl)) ⟩
+        reindex-comp ∘f (reindex-≈ _ _ (g₁≃g₂ .idxf-eq) ∘f (reindex-f _ (reindex-≈ _ _ (f₁≃f₂ .idxf-eq) ∘f f₁ .famf) ∘f g₁ .famf))
+      ≈⟨ ∘f-cong ≃f-refl (∘f-cong ≃f-refl (∘f-cong (reindex-f-cong (f₁≃f₂ .famf-eq)) ≃f-refl)) ⟩
+        reindex-comp ∘f (reindex-≈ _ _ (g₁≃g₂ .idxf-eq) ∘f (reindex-f _ (f₂ .famf) ∘f g₁ .famf))
+      ≈˘⟨ ∘f-cong ≃f-refl (≃f-assoc _ _ _) ⟩
+        reindex-comp ∘f ((reindex-≈ _ _ (g₁≃g₂ .idxf-eq) ∘f reindex-f _ (f₂ .famf)) ∘f g₁ .famf)
+      ≈˘⟨ ∘f-cong ≃f-refl (∘f-cong (reindex-sq _ _) ≃f-refl) ⟩
+        reindex-comp ∘f ((reindex-f _ (f₂ .famf) ∘f reindex-≈ _ _ (g₁≃g₂ .idxf-eq)) ∘f g₁ .famf)
+      ≈⟨ ∘f-cong ≃f-refl (≃f-assoc _ _ _) ⟩
+        reindex-comp ∘f (reindex-f _ (f₂ .famf) ∘f (reindex-≈ _ _ (g₁≃g₂ .idxf-eq) ∘f g₁ .famf))
+      ≈⟨ ∘f-cong ≃f-refl (∘f-cong ≃f-refl (g₁≃g₂ .famf-eq)) ⟩
+        reindex-comp ∘f (reindex-f (g₂ .idxf) (f₂ .famf) ∘f g₂ .famf)
       ∎
       where open ≈-Reasoning ≃f-isEquivalence
-            eq₁ = prop-setoid.∘S-cong (f₁≃f₂ .idxf-eq) (g₁≃g₂ .idxf-eq)
-            eq₂ = prop-setoid.∘S-cong (≈s-isEquivalence .refl {f₁ .idxf}) (g₁≃g₂ .idxf-eq)
-            eq₃ = prop-setoid.∘S-cong (f₁≃f₂ .idxf-eq) (≈s-isEquivalence .refl {g₂ .idxf})
-
-            square : (reindex-≈ {P = Z .fam [ f₁ .idxf ]} _ _ (g₁≃g₂ .idxf-eq) ∘f reindex-f (g₁ .idxf) (f₁ .famf))
-                     ≃f (reindex-f (g₂ .idxf) (f₁ .famf) ∘f reindex-≈ {P = Y .fam} _ _ (g₁≃g₂ .idxf-eq))
-            square = ≃f-isEquivalence .sym (reindex-sq (f₁ .famf) (g₁≃g₂ .idxf-eq))
+            ≃f-refl : ∀ {A} {x y : Fam A 𝒞} {f : x ⇒f y} → f ≃f f
+            ≃f-refl = ≃f-isEquivalence .refl
 
   module _ where
     open Category
@@ -155,6 +150,8 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     cat .id-left .idxf-eq = prop-setoid.id-left
     cat .id-left {X} {Y} {f} .famf-eq ._≃f_.transf-eq {x} =
       begin
+        Y .fam .subst _ 𝒞.∘ (𝒞.id _ 𝒞.∘ (𝒞.id _ 𝒞.∘ f .famf ._⇒f_.transf x))
+      ≈⟨ 𝒞.∘-cong 𝒞.≈-refl 𝒞.id-left ⟩
         Y .fam .subst _ 𝒞.∘ (𝒞.id _ 𝒞.∘ f .famf ._⇒f_.transf x)
       ≈⟨ 𝒞.∘-cong (Y .fam .refl*) 𝒞.id-left ⟩
         𝒞.id _ 𝒞.∘ f .famf ._⇒f_.transf x
@@ -164,6 +161,8 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     cat .id-right .idxf-eq = prop-setoid.id-right
     cat .id-right {X}{Y}{f} .famf-eq ._≃f_.transf-eq {x} =
       begin
+        Y .fam .subst _ 𝒞.∘ (𝒞.id _ 𝒞.∘ (f .famf ._⇒f_.transf x 𝒞.∘ 𝒞.id _))
+      ≈⟨ 𝒞.∘-cong 𝒞.≈-refl 𝒞.id-left ⟩
         Y .fam .subst _ 𝒞.∘ (f .famf ._⇒f_.transf x 𝒞.∘ 𝒞.id _)
       ≈⟨ 𝒞.∘-cong (Y .fam .refl*) 𝒞.id-right ⟩
         𝒞.id _ 𝒞.∘ f .famf ._⇒f_.transf x
@@ -173,11 +172,19 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     cat .assoc f g h .idxf-eq = prop-setoid.assoc (f .idxf) (g .idxf) (h .idxf)
     cat .assoc {W}{X}{Y}{Z} f g h .famf-eq ._≃f_.transf-eq {x} =
       begin
+        Z .fam .subst _ 𝒞.∘ (𝒞.id _ 𝒞.∘ ((𝒞.id _ 𝒞.∘ (f .famf .transf (g .idxf .func (h .idxf .func x)) 𝒞.∘ g .famf .transf (h .idxf .func x))) 𝒞.∘ h .famf .transf x))
+      ≈⟨ 𝒞.∘-cong 𝒞.≈-refl 𝒞.id-left ⟩
+        Z .fam .subst _ 𝒞.∘ ((𝒞.id _ 𝒞.∘ (f .famf .transf (g .idxf .func (h .idxf .func x)) 𝒞.∘ g .famf .transf (h .idxf .func x))) 𝒞.∘ h .famf .transf x)
+      ≈⟨ 𝒞.∘-cong 𝒞.≈-refl (𝒞.∘-cong 𝒞.id-left 𝒞.≈-refl) ⟩
         Z .fam .subst _ 𝒞.∘ ((f .famf .transf (g .idxf .func (h .idxf .func x)) 𝒞.∘ g .famf .transf (h .idxf .func x)) 𝒞.∘ h .famf .transf x)
       ≈⟨ 𝒞.∘-cong (Z .fam .refl*) (𝒞.assoc _ _ _) ⟩
         𝒞.id _ 𝒞.∘ (f .famf .transf (g .idxf .func (h .idxf .func x)) 𝒞.∘ (g .famf .transf (h .idxf .func x) 𝒞.∘ h .famf .transf x))
       ≈⟨ 𝒞.id-left ⟩
         f .famf .transf (g .idxf .func (h .idxf .func x)) 𝒞.∘ (g .famf .transf (h .idxf .func x) 𝒞.∘ h .famf .transf x)
+      ≈˘⟨ 𝒞.∘-cong 𝒞.≈-refl 𝒞.id-left ⟩
+        f .famf .transf (g .idxf .func (h .idxf .func x)) 𝒞.∘ (𝒞.id _ 𝒞.∘ (g .famf .transf (h .idxf .func x) 𝒞.∘ h .famf .transf x))
+      ≈˘⟨ 𝒞.id-left ⟩
+        𝒞.id _ 𝒞.∘ (f .famf .transf (g .idxf .func (h .idxf .func x)) 𝒞.∘ (𝒞.id _ 𝒞.∘ (g .famf .transf (h .idxf .func x) 𝒞.∘ h .famf .transf x)))
       ∎ where open ≈-Reasoning 𝒞.isEquiv
               open _⇒f_
               open _⇒s_
@@ -192,7 +199,8 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
 
     simplef[_,_] : ∀ {A B x y} → A ⇒s B → x ⇒ y → Mor simple[ A , x ] simple[ B , y ]
     simplef[ f , g ] .idxf = f
-    simplef[ f , g ] .famf = constF g
+    simplef[ f , g ] .famf ._⇒f_.transf x = g
+    simplef[ f , g ] .famf ._⇒f_.natural _ = ≈-sym id-swap
 
     -- FIXME: simple is a functor and preserves products
 
@@ -249,32 +257,36 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     coproducts .copair-in₁ f g .idxf-eq = prop-setoid.copair-in₁ (f .idxf) (g .idxf)
     coproducts .copair-in₁ {X} {Y} {Z} f g .famf-eq .transf-eq {x} =
       begin
+        Z .fam .subst _ ∘ (id _ ∘ (f .famf .transf x ∘ id _))
+      ≈⟨ ∘-cong ≈-refl id-left ⟩
         Z .fam .subst _ ∘ (f .famf .transf x ∘ id _)
       ≈⟨ ∘-cong (Z .fam .refl*) id-right ⟩
         id _ ∘ f .famf .transf x
       ≈⟨ id-left ⟩
         f .famf .transf x
-      ∎
-      where open ≈-Reasoning isEquiv
+      ∎ where open ≈-Reasoning isEquiv
     coproducts .copair-in₂ f g .idxf-eq = prop-setoid.copair-in₂ (f .idxf) (g .idxf)
     coproducts .copair-in₂ {X} {Y} {Z} f g .famf-eq .transf-eq {x} =
       begin
+        Z .fam .subst _ ∘ (id _ ∘ (g .famf .transf x ∘ id _))
+      ≈⟨ ∘-cong ≈-refl id-left ⟩
         Z .fam .subst _ ∘ (g .famf .transf x ∘ id _)
       ≈⟨ ∘-cong (Z .fam .refl*) id-right ⟩
         id _ ∘ g .famf .transf x
       ≈⟨ id-left ⟩
         g .famf .transf x
-      ∎
-      where open ≈-Reasoning isEquiv
+      ∎ where open ≈-Reasoning isEquiv
     coproducts .copair-ext f .idxf-eq = prop-setoid.copair-ext (f .idxf)
     coproducts .copair-ext {X} {Y} {Z} f .famf-eq .transf-eq {inj₁ x} =
-      isEquiv .trans (∘-cong (Z .fam .refl*) id-right) id-left
+      isEquiv .trans (∘-cong (Z .fam .refl*) id-left) (isEquiv .trans id-left id-right)
     coproducts .copair-ext {X} {Y} {Z} f .famf-eq .transf-eq {inj₂ y} =
-      isEquiv .trans (∘-cong (Z .fam .refl*) id-right) id-left
+      isEquiv .trans (∘-cong (Z .fam .refl*) id-left) (isEquiv .trans id-left id-right)
 
   -- If 𝒞 has products, then so does the category of families. FIXME:
   -- redo the core of this to just get monoidal products from monoidal
   -- products.
+  --
+  -- FIXME: could this be generalised to all limits?
   module products (P : HasProducts 𝒞) where
 
     open Category 𝒞
@@ -350,6 +362,8 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     products .pair-p₁ {X} {Y} {Z} f g .idxf-eq = Setoid-products _ _ .pair-p₁ _ _
     products .pair-p₁ {X} {Y} {Z} f g .famf-eq ._≃f_.transf-eq {x} =
       begin
+        Y .fam .subst _ ∘ (id _ ∘ (P .p₁ ∘ P .pair (f .famf .transf x) (g .famf .transf x)))
+      ≈⟨ ∘-cong ≈-refl id-left ⟩
         Y .fam .subst _ ∘ (P .p₁ ∘ P .pair (f .famf .transf x) (g .famf .transf x))
       ≈⟨ ∘-cong (Y .fam .refl*) (P .pair-p₁ _ _) ⟩
         id _ ∘ f .famf .transf x
@@ -359,6 +373,8 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     products .pair-p₂ {X} {Y} {Z} f g .idxf-eq = Setoid-products _ _ .pair-p₂ _ _
     products .pair-p₂ {X} {Y} {Z} f g .famf-eq ._≃f_.transf-eq {x} =
       begin
+        Z .fam .subst _ ∘ (id _ ∘ (P .p₂ ∘ P .pair (f .famf .transf x) (g .famf .transf x)))
+      ≈⟨ ∘-cong ≈-refl id-left ⟩
         Z .fam .subst _ ∘ (P .p₂ ∘ P .pair (f .famf .transf x) (g .famf .transf x))
       ≈⟨ ∘-cong (Z .fam .refl*) (P .pair-p₂ _ _) ⟩
         id _ ∘ g .famf .transf x
@@ -368,6 +384,8 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     products .pair-ext f .idxf-eq = Setoid-products _ _ .pair-ext _
     products .pair-ext {X}{Y}{Z} f .famf-eq ._≃f_.transf-eq {x} =
       begin
+        P .pair (Y .fam .subst _ ∘ P .p₁) (Z .fam .subst _ ∘ P .p₂) ∘ P .pair (id _ ∘ (P .p₁ ∘ f .famf .transf x)) (id _ ∘ (P .p₂ ∘ f .famf .transf x))
+      ≈⟨ ∘-cong ≈-refl (pair-cong P id-left id-left) ⟩
         P .pair (Y .fam .subst _ ∘ P .p₁) (Z .fam .subst _ ∘ P .p₂) ∘ P .pair (P .p₁ ∘ f .famf .transf x) (P .p₂ ∘ f .famf .transf x)
       ≈⟨ pair-compose P _ _ _ _ ⟩
         P .pair (Y .fam .subst _ ∘ (P .p₁ ∘ f .famf .transf x)) (Z .fam .subst _ ∘ (P .p₂ ∘ f .famf .transf x))
@@ -398,6 +416,10 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
     strongCoproducts .copair f g .famf .natural {w₁ , inj₂ y} {w₂ , inj₂ y₁} (w₁≈w₂ , e) =
       g .famf .natural (w₁≈w₂ , e)
 
+-- FIXME: every functor 𝒞 ⇒ 𝒟 gives a functor Fam(𝒞) ⇒ Fam(𝒟), and
+-- this carries over to natural transformations. So we have functors:
+--    F : Functor [ 𝒞 ⇒ 𝒟 ] [ Fam 𝒞 ⇒ Fam 𝒟 ]
+{-
   module monad (Mon : Monad 𝒞) where
 
     open Category 𝒞
@@ -498,7 +520,7 @@ module CategoryOfFamilies {o m e} {os es} (𝒞 : Category o m e) where
         Mon .map (f .famf .transf x) ∘ Mon .join
       ∎
       where open ≈-Reasoning isEquiv
-
+-}
   module _ (T : HasTerminal 𝒞) (P : HasProducts 𝒞) where
 
     open import Data.List using ([]; _∷_)
