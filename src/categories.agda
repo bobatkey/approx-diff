@@ -223,7 +223,7 @@ record HasExponentials {o m e} (𝒞 : Category o m e) (P : HasProducts 𝒞) : 
   open HasProducts P
   field
     exp    : obj → obj → obj
-    eval   : ∀ {x y} → prod x (exp x y) ⇒ y
+    eval   : ∀ {x y} → prod (exp x y) x ⇒ y
     lambda : ∀ {x y z} → prod x y ⇒ z → x ⇒ exp y z
   -- FIXME: equations
 
