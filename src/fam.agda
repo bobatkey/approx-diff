@@ -121,6 +121,7 @@ module _ {o m e} {os es} {𝒞 : Category o m e} {A : Setoid os es} where
 
 ------------------------------------------------------------------------------
 -- Change of indexed category (post composition)
+{-
 open import functor hiding (id; _∘_; constF)
 
 module _ {o m e o' m' e' os es}
@@ -186,7 +187,7 @@ module _ {o m e o' m' e'} os es
          {F G : Functor 𝒞 𝒟}
          (α : NatTrans F G)
   where
-
+-}
 ------------------------------------------------------------------------------
 -- reindexing of families (so that Fam is an indexed category)
 -- FIXME: Codify what an indexed category is
@@ -217,13 +218,6 @@ module _ {o m e os es} {𝒞 : Category o m e} where
                  ((P [ f ]) [ g ]) ⇒f (P [ f ∘S g ])
   reindex-comp .transf x = id _
   reindex-comp .natural _ = id-swap
-
-  --   P [ f ] --> P [ id ] [ f ] -> P [ id ∘ f ]
-  -- = P [ f ] --> P [ id ∘ f ]
-
-  -- P ∘ [ f ] --> (P ∘ [ id ]) ∘ [ f ] --> P ∘ ([ id ] ∘ [ f ]) -->
-
-  -- [ f ] ∘ [ g ]
 
   reindex-f : ∀ {X Y} {P Q : Fam X 𝒞} (f : Y ⇒s X) → P ⇒f Q → (P [ f ]) ⇒f (Q [ f ])
   reindex-f f g .transf y = g .transf _
@@ -276,20 +270,6 @@ module _ {o m e os es} {𝒞 : Category o m e} where
       id _ ∘ (P .subst _ ∘ P .subst _) ∎
     where open ≈-Reasoning isEquiv
 
-{-
-  reindex-≈-comp-1 : ∀ {X Y Z} (P : Fam Z 𝒞)
-    (f₁ f₂ : Y ⇒s Z) (g : X ⇒s Y) (e : f₁ ≈s f₂) →
-    reindex-≈ {P = P} (f₁ ∘S g) (f₂ ∘S g) (prop-setoid.∘S-cong e (≈s-isEquivalence .refl))
-      ≃f reindex-f g (reindex-≈ {P = P} f₁ f₂ e)
-  reindex-≈-comp-1 P f₁ f₂ g e .transf-eq = isEquiv .refl
--}
-{-
-  reindex-≈-comp-2 : ∀ {X Y Z} (P : Fam Z 𝒞)
-    (f : Y ⇒s Z) (g₁ g₂ : X ⇒s Y) (e : g₁ ≈s g₂) →
-    reindex-≈ {P = P} (f ∘S g₁) (f ∘S g₂) (prop-setoid.∘S-cong (≈s-isEquivalence .refl {f}) e)
-      ≃f reindex-≈ {P = P [ f ]} g₁ g₂ e
-  reindex-≈-comp-2 P f g₁ g₂ e .transf-eq = isEquiv .refl
--}
 -- FIXME: this is a special case of limits, defined in functor.agda
 record HasSetoidProducts {o m e} os es (𝒞 : Category o m e) : Set (o ⊔ suc m ⊔ suc e ⊔ suc os ⊔ suc es) where
   open Category 𝒞
