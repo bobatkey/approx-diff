@@ -233,11 +233,11 @@ module _ where
        lift (isEquiv .trans (assoc _ _ _)
                             (∘-cong (isEquiv .refl) (∘-cong (isEquiv .refl) e))))
 
-  eval : ∀ {F G} → (F ⊗ (F ⟶ G)) ⇒p G
-  eval .transf x .func (a , g) = g .transf x .func (a , lift (id x))
-  eval .transf x .func-resp-≈ (a₁≈a₂ , e) =
+  eval : ∀ {F G} → ((F ⟶ G) ⊗ F) ⇒p G
+  eval .transf x .func (g , a) = g .transf x .func (a , lift (id x))
+  eval .transf x .func-resp-≈ (e , a₁≈a₂) =
     e .transf-eq x .func-eq (a₁≈a₂ , lift (isEquiv .refl))
-  eval {F}{G} .natural {x} f .func-eq {a₁ , h₁} {a₂ , h₂} (a₁≈a₂ , e) =
+  eval {F}{G} .natural {x} f .func-eq {h₁ , a₁} {h₂ , a₂} (e , a₁≈a₂) =
     G .fobj x .Setoid.trans
       (h₁ .natural f .func-eq (a₁≈a₂ , (lift (isEquiv .refl))))
       (e .transf-eq x .func-eq ( F .fobj x .Setoid.refl
