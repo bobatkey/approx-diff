@@ -26,11 +26,11 @@ open NatTrans
 open ≃-NatTrans
 
 よ₀ : 𝒞.obj → PSh .Category.obj
-よ₀ x .Functor.fobj y .Carrier = Lift os (y 𝒞.⇒ x)
-よ₀ x .Functor.fobj y ._≈_ (lift h₁) (lift h₂) = LiftP es (h₁ 𝒞.≈ h₂)
-よ₀ x .Functor.fobj y .isEquivalence .refl = lift (𝒞.isEquiv .refl)
-よ₀ x .Functor.fobj y .isEquivalence .sym (lift e) = lift (𝒞.isEquiv .sym e)
-よ₀ x .Functor.fobj y .isEquivalence .trans (lift e₁) (lift e₂) = lift (𝒞.isEquiv .trans e₁ e₂)
+よ₀ x .fobj y .Carrier = Lift os (y 𝒞.⇒ x)
+よ₀ x .fobj y ._≈_ (lift h₁) (lift h₂) = LiftP es (h₁ 𝒞.≈ h₂)
+よ₀ x .fobj y .isEquivalence .refl = lift (𝒞.isEquiv .refl)
+よ₀ x .fobj y .isEquivalence .sym (lift e) = lift (𝒞.isEquiv .sym e)
+よ₀ x .fobj y .isEquivalence .trans (lift e₁) (lift e₂) = lift (𝒞.isEquiv .trans e₁ e₂)
 よ₀ x .fmor f .func (lift g) = lift (g 𝒞.∘ f)
 よ₀ x .fmor f .func-resp-≈ (lift g₁≈g₂) = lift (𝒞.∘-cong g₁≈g₂ 𝒞.≈-refl)
 よ₀ x .fmor-cong {y} {z} {f₁} {f₂} f₁≈f₂ .func-eq {lift g₁} {lift g₂} (lift g₁≈g₂) = lift (𝒞.∘-cong g₁≈g₂ f₁≈f₂)
@@ -74,3 +74,5 @@ lemma₂ F x .func α = α .transf x .func (lift (𝒞.id _))
 lemma₂ F x .func-resp-≈ {α₁}{α₂} α₁≈α₂ = α₁≈α₂ .transf-eq x .func-eq (lift 𝒞.≈-refl)
 
 -- TODO: lemma₁ ∘ lemma₂ = id and lemma₂ ∘ lemma₁ = id and both are natural.
+
+-- TODO: よ preserves limits
