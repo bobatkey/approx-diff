@@ -126,6 +126,39 @@ record HasCoproducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     ∎
     where open ≈-Reasoning isEquiv
 
+module _ {o m e} {𝒞 : Category o m e} where
+
+  open Category 𝒞
+
+  record IsProduct (x : obj) (y : obj) (p : obj) (p₁ : p ⇒ x) (p₂ : p ⇒ y) : Set (o ⊔ m ⊔ e) where
+    field
+      pair : ∀ {z} → z ⇒ x → z ⇒ y → z ⇒ p
+      pair-cong : ∀ {z} {f₁ f₂ : z ⇒ x} {g₁ g₂ : z ⇒ y} → f₁ ≈ f₂ → g₁ ≈ g₂ → pair f₁ g₁ ≈ pair f₂ g₂
+      pair-p₁ : ∀ {z} (f : z ⇒ x) (g : z ⇒ y) → (p₁ ∘ pair f g) ≈ f
+      pair-p₂ : ∀ {z} (f : z ⇒ x) (g : z ⇒ y) → (p₂ ∘ pair f g) ≈ g
+      pair-ext : ∀ {z} (f : z ⇒ p) → pair (p₁ ∘ f) (p₂ ∘ f) ≈ f
+    pair-natural : ∀ {w z} (h : w ⇒ z) (f : z ⇒ x) (g : z ⇒ y) → (pair f g ∘ h) ≈ pair (f ∘ h) (g ∘ h)
+    pair-natural h f g =
+      begin
+        pair f g ∘ h
+      ≈⟨ ≈-sym (pair-ext _) ⟩
+        pair (p₁ ∘ (pair f g ∘ h)) (p₂ ∘ (pair f g ∘ h))
+      ≈⟨ ≈-sym (pair-cong (assoc _ _ _) (assoc _ _ _)) ⟩
+        pair ((p₁ ∘ pair f g) ∘ h) ((p₂ ∘ pair f g) ∘ h)
+      ≈⟨ pair-cong (∘-cong (pair-p₁ _ _) ≈-refl) (∘-cong (pair-p₂ _ _) ≈-refl) ⟩
+        pair (f ∘ h) (g ∘ h)
+      ∎
+      where open ≈-Reasoning isEquiv
+
+  record Product (x : obj) (y : obj) : Set (o ⊔ m ⊔ e) where
+    field
+      prod : obj
+      p₁   : prod ⇒ x
+      p₂   : prod ⇒ y
+      isProduct : IsProduct x y prod p₁ p₂
+
+   -- HasProducts = ∀ x y → Product x y
+
 record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞
   field

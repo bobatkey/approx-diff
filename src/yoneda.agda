@@ -73,6 +73,49 @@ lemma₂ : ∀ F x → Category.hom-setoid PSh (よ₀ x) F ⇒s F .fobj x
 lemma₂ F x .func α = α .transf x .func (lift (𝒞.id _))
 lemma₂ F x .func-resp-≈ {α₁}{α₂} α₁≈α₂ = α₁≈α₂ .transf-eq x .func-eq (lift 𝒞.≈-refl)
 
--- TODO: lemma₁ ∘ lemma₂ = id and lemma₂ ∘ lemma₁ = id and both are natural.
+-- FIXME: lemma₁ ∘ lemma₂ = id and lemma₂ ∘ lemma₁ = id and both are natural.
 
--- TODO: よ preserves limits
+open IsProduct
+
+-- よ preserves products. FIXME: extend this to all limits
+preserve-products : ∀ (x y p : 𝒞.obj) (p₁ : p 𝒞.⇒ x) (p₂ : p 𝒞.⇒ y) →
+                    IsProduct {𝒞 = 𝒞} x y p p₁ p₂ →
+                    IsProduct {𝒞 = PSh} (よ₀ x) (よ₀ y) (よ₀ p) (よ .fmor p₁) (よ .fmor p₂)
+preserve-products x y p p₁ p₂ p-isproduct .pair {Z} f g .transf z .func Zz .lower =
+  p-isproduct .pair (f .transf z .func Zz .lower) (g .transf z .func Zz .lower)
+preserve-products x y p p₁ p₂ p-isproduct .pair {Z} f g .transf z .func-resp-≈ {Zz₁} {Zz₂} Zz₁≈Zz₂ .lower =
+  p-isproduct .pair-cong (f .transf z .func-resp-≈ Zz₁≈Zz₂ .lower) (g .transf z .func-resp-≈ Zz₁≈Zz₂ .lower)
+preserve-products x y p p₁ p₂ p-isproduct .pair {Z} f g .natural {x₁} {y₁} h .func-eq {Zz₁} {Zz₂} e .lower =
+  begin
+    p-isproduct .pair (f .transf x₁ .func Zz₁ .lower) (g .transf x₁ .func Zz₁ .lower) 𝒞.∘ h
+  ≈⟨ pair-natural p-isproduct _ _ _ ⟩
+    p-isproduct .pair (f .transf x₁ .func Zz₁ .lower 𝒞.∘ h) (g .transf x₁ .func Zz₁ .lower 𝒞.∘ h)
+  ≈⟨ p-isproduct .pair-cong (f .natural h .func-eq e .lower) (g .natural h .func-eq e .lower) ⟩
+    p-isproduct .pair (f .transf y₁ .func (Z .fmor h .func Zz₂) .lower) (g .transf y₁ .func (Z .fmor h .func Zz₂) .lower)
+  ∎ where open ≈-Reasoning 𝒞.isEquiv
+preserve-products x y p p₁ p₂ p-isproduct .pair-cong {Z} f₁≈f₂ g₁≈g₂ .transf-eq w .func-eq e .lower =
+  p-isproduct .pair-cong (f₁≈f₂ .transf-eq w .func-eq e .lower) (g₁≈g₂ .transf-eq w .func-eq e .lower)
+preserve-products x y p p₁ p₂ p-isproduct .pair-p₁ {Z} f g .transf-eq w .func-eq {Zw₁} {Zw₂} e .lower =
+  begin
+    p₁ 𝒞.∘ p-isproduct .pair (f .transf w .func Zw₁ .lower) (g .transf w .func Zw₁ .lower)
+  ≈⟨ p-isproduct .pair-p₁ _ _ ⟩
+    f .transf w .func Zw₁ .lower
+  ≈⟨ f .transf w .func-resp-≈ e .lower ⟩
+    f .transf w .func Zw₂ .lower
+  ∎ where open ≈-Reasoning 𝒞.isEquiv
+preserve-products x y p p₁ p₂ p-isproduct .pair-p₂ {Z} f g .transf-eq w .func-eq {Zw₁} {Zw₂} e .lower =
+  begin
+    p₂ 𝒞.∘ p-isproduct .pair (f .transf w .func Zw₁ .lower) (g .transf w .func Zw₁ .lower)
+  ≈⟨ p-isproduct .pair-p₂ _ _ ⟩
+    g .transf w .func Zw₁ .lower
+  ≈⟨ g .transf w .func-resp-≈ e .lower ⟩
+    g .transf w .func Zw₂ .lower
+  ∎ where open ≈-Reasoning 𝒞.isEquiv
+preserve-products x y p p₁ p₂ p-isproduct .pair-ext {Z} f .transf-eq w .func-eq {Zw₁} {Zw₂} e .lower =
+  begin
+    p-isproduct .pair (p₁ 𝒞.∘ f .transf w .func Zw₁ .lower) (p₂ 𝒞.∘ f .transf w .func Zw₁ .lower)
+  ≈⟨ p-isproduct .pair-ext _ ⟩
+    f .transf w .func Zw₁ .lower
+  ≈⟨ f .transf w .func-resp-≈ e .lower ⟩
+    f .transf w .func Zw₂ .lower
+  ∎ where open ≈-Reasoning 𝒞.isEquiv
