@@ -49,12 +49,12 @@ record Category o m e : Set (suc (o ⊔ m ⊔ e)) where
   hom-setoid x y ._≃_ = _≈_
   hom-setoid x y .isEquivalence = isEquiv
 
-  hom-setoid-l : ∀ {ℓ} → obj → obj → Setoid (ℓ ⊔ m) (ℓ ⊔ e)
-  hom-setoid-l {ℓ} x y .Carrier = Lift ℓ (x ⇒ y)
-  hom-setoid-l {ℓ} x y ._≃_ (lift f) (lift g) = LiftP ℓ (f ≈ g)
-  hom-setoid-l x y .isEquivalence .refl = lift (isEquiv .refl)
-  hom-setoid-l x y .isEquivalence .sym (lift e) = lift (isEquiv .sym e)
-  hom-setoid-l x y .isEquivalence .trans (lift p) (lift q) = lift (isEquiv .trans p q)
+  hom-setoid-l : ∀ ℓ₁ ℓ₂ → obj → obj → Setoid (ℓ₁ ⊔ m) (ℓ₂ ⊔ e)
+  hom-setoid-l ℓ₁ _ x y .Carrier = Lift ℓ₁ (x ⇒ y)
+  hom-setoid-l _ ℓ₂ x y ._≃_ (lift f) (lift g) = LiftP ℓ₂ (f ≈ g)
+  hom-setoid-l _ _ x y .isEquivalence .refl = lift (isEquiv .refl)
+  hom-setoid-l _ _ x y .isEquivalence .sym (lift e) = lift (isEquiv .sym e)
+  hom-setoid-l _ _ x y .isEquivalence .trans (lift p) (lift q) = lift (isEquiv .trans p q)
 
   -- comp : ∀ {x y z} → ⊗-setoid (hom-setoid y z) (hom-setoid x y) ⇒s hom-setoid x z
   -- comp ._⇒s_.func (f , g) = f ∘ g
@@ -137,6 +137,7 @@ module _ {o m e} {𝒞 : Category o m e} where
       pair-p₁ : ∀ {z} (f : z ⇒ x) (g : z ⇒ y) → (p₁ ∘ pair f g) ≈ f
       pair-p₂ : ∀ {z} (f : z ⇒ x) (g : z ⇒ y) → (p₂ ∘ pair f g) ≈ g
       pair-ext : ∀ {z} (f : z ⇒ p) → pair (p₁ ∘ f) (p₂ ∘ f) ≈ f
+
     pair-natural : ∀ {w z} (h : w ⇒ z) (f : z ⇒ x) (g : z ⇒ y) → (pair f g ∘ h) ≈ pair (f ∘ h) (g ∘ h)
     pair-natural h f g =
       begin

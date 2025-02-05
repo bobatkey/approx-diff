@@ -26,11 +26,7 @@ open NatTrans
 open ≃-NatTrans
 
 よ₀ : 𝒞.obj → PSh .Category.obj
-よ₀ x .fobj y .Carrier = Lift os (y 𝒞.⇒ x)
-よ₀ x .fobj y ._≈_ (lift h₁) (lift h₂) = LiftP es (h₁ 𝒞.≈ h₂)
-よ₀ x .fobj y .isEquivalence .refl = lift (𝒞.isEquiv .refl)
-よ₀ x .fobj y .isEquivalence .sym (lift e) = lift (𝒞.isEquiv .sym e)
-よ₀ x .fobj y .isEquivalence .trans (lift e₁) (lift e₂) = lift (𝒞.isEquiv .trans e₁ e₂)
+よ₀ x .fobj y = Category.hom-setoid-l 𝒞 os es y x
 よ₀ x .fmor f .func (lift g) = lift (g 𝒞.∘ f)
 よ₀ x .fmor f .func-resp-≈ (lift g₁≈g₂) = lift (𝒞.∘-cong g₁≈g₂ 𝒞.≈-refl)
 よ₀ x .fmor-cong {y} {z} {f₁} {f₂} f₁≈f₂ .func-eq {lift g₁} {lift g₂} (lift g₁≈g₂) = lift (𝒞.∘-cong g₁≈g₂ f₁≈f₂)
