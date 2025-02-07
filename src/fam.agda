@@ -4,7 +4,7 @@ module fam where
 
 open import Level
 open import prop-setoid
-  using (IsEquivalence; Setoid; 𝟙; +-setoid; ⊗-setoid; idS; _∘S_; module ≈-Reasoning)
+  using (IsEquivalence; Setoid; 𝟙; +-setoid; ⊗-setoid; idS; _∘S_; ∘S-cong; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_; ≃m-isEquivalence to ≈s-isEquivalence)
 open import categories
 
@@ -121,13 +121,12 @@ module _ {o m e} {os es} {𝒞 : Category o m e} {A : Setoid os es} where
 
 ------------------------------------------------------------------------------
 -- Change of indexed category (post composition)
-{-
 open import functor hiding (id; _∘_; constF)
 
 module _ {o m e o' m' e' os es}
          {𝒞 : Category o m e}
          {𝒟 : Category o' m' e'}
-         (A : Setoid os es)
+         {A : Setoid os es}
          (F : Functor 𝒞 𝒟) where
 
   open Fam
@@ -187,7 +186,7 @@ module _ {o m e o' m' e'} os es
          {F G : Functor 𝒞 𝒟}
          (α : NatTrans F G)
   where
--}
+
 ------------------------------------------------------------------------------
 -- reindexing of families (so that Fam is an indexed category)
 -- FIXME: Codify what an indexed category is
@@ -258,7 +257,7 @@ module _ {o m e os es} {𝒞 : Category o m e} where
   reindex-comp-≈ : ∀ {X Y Z} (P : Fam Z 𝒞)
     {f₁ f₂ : Y ⇒s Z} {g₁ g₂ : X ⇒s Y}
     (f₁≈f₂ : f₁ ≈s f₂) (g₁≈g₂ : g₁ ≈s g₂) →
-       (reindex-≈ (f₁ ∘S g₁) (f₂ ∘S g₂) (prop-setoid.∘S-cong f₁≈f₂ g₁≈g₂) ∘f reindex-comp {P = P})
+       (reindex-≈ (f₁ ∘S g₁) (f₂ ∘S g₂) (∘S-cong f₁≈f₂ g₁≈g₂) ∘f reindex-comp {P = P})
     ≃f (reindex-comp ∘f (reindex-≈ g₁ g₂ g₁≈g₂ ∘f reindex-f g₁ (reindex-≈ f₁ f₂ f₁≈f₂)))
     -- FIXME: better as horizontal composition? then we are using the
     -- interchange law.
