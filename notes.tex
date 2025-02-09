@@ -16,16 +16,22 @@ Some notes on the key constructions:
 \item Categories of families, special case of Grothendieck construction
 \end{itemize}
 
-$\Set$ will often be $\Setoid$ in the Agda code but we'll ignore that here for now.
+\noindent $\Set$ will often be $\Setoid$ in the Agda code but I'm glossing that here.
 
 \section{Definitions}
 
 \subsection{Indexed families of objects}
 
-For $I$ a set and $C$ a category, write $\Fam(I,C)$ for the set of $I$-indexed families of objects of $C$.
+For any set $I$ and category $C$ write $\Fam(I,C)$ for the category where:
+\begin{itemize}
+\item the objects are the $I$-indexed families of objects of $C$;
+\item a morphism from $X$ to $Y$ is a family of morphisms $f_i: X_i \to Y_i$ in $C$ for any $i \in I$.
+\end{itemize}
 
-Suppose $C$ a category and $I, J$ sets and $x$ an $I$-indexed family of objects of $C$ and $y$ a $J$-indexed
-family of objects of $C$. Define $y_f$ for any $f: I \to J$ to be the $I$-indexed family of objects of $C$.
+\noindent Equivalently, $\Fam(I,C)$ is the functor category $\Functors{I}{C}$.
+
+\noindent Suppose $x \in \Fam(I,C)$ and $y \in \Fam(J,C)$. Define $y_f$ for any $f: I \to J$ to be the
+$I$-indexed family of objects of $C$.
 
 \subsection{Category of families}
 
