@@ -30,7 +30,11 @@ For any set $I$ and category $C$ write $\Fam(I,C)$ for the category where:
 
 \noindent Equivalently, $\Fam(I,C)$ is the functor category $\Functors{I}{C}$.
 
-\noindent Suppose $X \in \Fam(I,C)$ and $Y \in \Fam(J,C)$. For any $f: I \to J$ define $Y[f] \in \Fam(I,C)$ where $Y[f]_i = Y_{fi}$.
+\begin{definition}[Reindexing functor]
+For any $X \in \Fam(J,C)$ and $f: I \to J$ define $X[f] \in \Fam(I,C)$ where $X[f]_i = X_{fi}$.
+\end{definition}
+
+[$\Fam(-,C)$ is a fibred category over $\Set$?]
 
 \subsection{Category of families}
 
@@ -46,8 +50,9 @@ categories.)
 
 In our code we give a slightly different construction. For a category $C$, define the category where:
 \begin{itemize}
-\item objects are pairs $(I, x)$ with $I$ a set and $x$ an $I$-indexed family of objects of $C$
-\item morphisms from $(I, x)$ to $(J, y)$ are functions $f: I \to J$ paired with morphisms
+\item objects are pairs $(I, X)$ of a set $I$ and indexed family $X$ in $\Fam(I,C)$
+\item morphisms from $(I, X)$ to $(J, Y)$ are functions $f: I \to J$ paired with morphisms $X \to Y[f]$ in
+$\Fam(I,C)$.
 \end{itemize}
 
 \end{document}
