@@ -20,7 +20,14 @@ Some notes on the key constructions:
 
 \subsection{Category of families}
 
-This is the Grothendieck construction for a functor $F: C \to \Cat$, in the special case where $F: C \to
-\Set$. (Where we read a $\Set$-valued functor as a $\Cat$-valued functor restricted to discrete categories.)
+For a functor $F: C \to Set$, we have the category where:
+\begin{itemize}
+\item objects are pairs $(A, x)$ where $x \in FA$
+\item morphisms from $(A, x)$ to $(B, y)$ are morphisms $f: A \to B$ in $C$ where $(Ff)(x) = y$
+\end{itemize}
+
+\noindent This is the Grothendieck construction for a functor $F: C \to \Cat$, in the special case where $F: C
+\to \Set$. (Where we read a $\Set$-valued functor as a $\Cat$-valued functor restricted to discrete
+categories.
 
 \end{document}
