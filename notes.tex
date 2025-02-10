@@ -13,7 +13,8 @@
 
 Some notes on the key constructions:
 \begin{itemize}
-\item Categories of families, special case of Grothendieck construction
+\item Category of families $\Fam$
+\item Category of bounded lattices and Galois connections
 \end{itemize}
 
 \noindent $\Set$ will often be $\Setoid$ in the Agda code but I'm glossing that here.
@@ -53,6 +54,19 @@ In our code we give a slightly different construction, namely the fibred categor
 $\Fam(I,C)$.
 \end{itemize}
 
-\todo{Properties: has terminal object if $C$ does; has all coproducts; others]
+\noindent \todo{Some properties of $\Fam(C)$.}
+
+\subsection{Category of bounded lattices and Galois connections}
+
+Define the category $\LatGal$ where:
+\begin{itemize}
+\item objects $L$ are bounded lattices;
+\item morphisms $(f, g)$ from $L$ to $L'$ are meet-semilattice homomorphisms $f: L \to L'$ paired with
+join-semilattice homomorphisms $g: L' \to L$ satisfying $y \leq fx \iff gy \leq x$.
+\end{itemize}
+
+\noindent \note{The Agda defines an object of $\LatGal$ as a set equipped with meet- and join-semilattice
+structures but there is no requirement that they satisfy the absorption laws or induce the same partial
+order.}
 
 \end{document}
