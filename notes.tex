@@ -1,7 +1,5 @@
 \documentclass[acmsmall,nonacm]{acmart}
 
-%\geometry{paperwidth=8.3in, paperheight=11.7in}
-
 \input{macros}
 
 \settopmatter{printacmref=false}
@@ -35,7 +33,7 @@ For any set $I$ and category $C$ write $\Fam(I,C)$ for the category where:
 discrete category.
 
 \begin{definition}[Reindexing functor]
-For any $X \in \Fam(J,C)$ and $f: I \to J$ define $X[f] \in \Fam(I,C)$ where $X[f]_i = X_{fi}$.
+For any $X \in \Fam(J,C)$ and $f: I \to J$ define $X[f] \in \Fam(I,C)$ where $X[f]_i = X_{f(i)}$.
 \end{definition}
 
 \subsection{Category of families}
@@ -65,7 +63,7 @@ Define the category $\LatGal$ where:
 \begin{itemize}
 \item objects $L$ are the bounded lattices;
 \item morphisms $f \vdash g: L \to L'$ are meet-semilattice homomorphisms $f: L \to L'$ paired with
-join-semilattice homomorphisms $g: L' \to L$ satisfying $y \leq fx \iff gy \leq x$ for any $x \in L$ and any
+join-semilattice homomorphisms $g: L' \to L$ satisfying $y \leq f(x) \iff g(y) \leq x$ for any $x \in L$ and any
 $y \in L'$.
 \end{itemize}
 
