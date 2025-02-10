@@ -9,12 +9,12 @@ For any set $I$ and category $C$ write $\Fam(I,C)$ for the category where:
 \end{itemize}
 
 \noindent Equivalently $\Fam(I,C)$ is the functor category $\Func{I}{C}$ where we interpret $I$ as a discrete
-category.
+category. $\Fam(-,C): \Set^{\op} \to \Cat$ is a functor which sends any set $I$ to the category $\Fam(I,C)$
+and any function $f: I \to J$ to the \emph{reindexing functor} $\reindex{-}{f}: \Fam(J,C) \to \Fam(I,C)$.
 
 \begin{definition}[Reindexing]
-For any $f: I \to J$ define the following contravariant \emph{reindexing} functor $\reindex{-}{f}: \Fam(J,C)
-\to \Fam(I,C)$ that sends any $X \in \Fam(J,C)$ to the $I$-indexed family $X[f]$ which has $X[f]_i = X_{f(i)}$
-for any $i \in I$.
+For any $f: I \to J$ the \emph{reindexing} functor sends any $J$-indexed family $X$ to the $I$-indexed family
+$X[f]$ where $X[f]_i = X_{f(i)}$ for any $i \in I$.
 \end{definition}
 
 \subsection{Category of families}
