@@ -30,8 +30,8 @@ For any set $I$ and category $C$ write $\Fam(I,C)$ for the category where:
 \item a morphism from $X$ to $Y$ is a family of morphisms $f_i: X_i \to Y_i$ in $C$ for any $i \in I$.
 \end{itemize}
 
-\noindent Equivalently $\Fam(I,C)$ is the functor category $\FunCat{I}{C}$ where we interpret $I$ as a
-discrete category.
+\noindent Equivalently $\Fam(I,C)$ is the functor category $\Func{I}{C}$ where we interpret $I$ as a discrete
+category.
 
 \begin{definition}[Reindexing functor]
 For any $X \in \Fam(J,C)$ and $f: I \to J$ define $X[f] \in \Fam(I,C)$ where $X[f]_i = X_{f(i)}$.
@@ -45,16 +45,20 @@ For a functor $F: C \to \Set$, we have the category where:
 \item morphisms from $(I, X)$ to $(J, Y)$ are morphisms $f: I \to J$ in $C$ where $(Ff)(X) = Y$.
 \end{itemize}
 
-\noindent This is the Grothendieck construction for a functor $F: C \to \Cat$, in the special case where $F: C
+\noindent This is the Grothendieck construction for a functor $F: C \to \Cat$ for the special case where $F: C
 \to \Set$ (where we read a $\Set$-valued functor as a $\Cat$-valued functor restricted to discrete
 categories).
 
-In our code we give a slightly different construction, namely the fibred category $\Fam(C)$ over $\Set$ where:
+Define the fibred category $\Fam(C)$ over $\Set$ where:
 \begin{itemize}
 \item objects are pairs $(I, X)$ of a set $I$ and indexed family $X$ in $\Fam(I,C)$;
 \item morphisms from $(I, X)$ to $(J, Y)$ are functions $f: I \to J$ paired with morphisms $X \to Y[f]$ in
 $\Fam(I,C)$.
 \end{itemize}
+
+\noindent This is the Grothendieck construction for the functor $\Set^{\op} \to \Cat$ which sends any set $I$
+to the category $\Fam(I,C)$ and any function $f: I \to J$ to the reindexing functor $-[f]: \Fam(J,C) \to
+\Fam(I,C)$.
 
 \noindent \todo{Some properties of $\Fam(C)$.}
 
