@@ -1,4 +1,4 @@
-\documentclass{acmart}
+\documentclass[nonacm]{acmart}
 
 \input{macros}
 
@@ -36,9 +36,9 @@ For any $X \in \Fam(J,C)$ and $f: I \to J$ define $X[f] \in \Fam(I,C)$ where $X[
 
 \subsection{Category of families}
 
-For a functor $F: C \to Set$, we have the category where:
+For a functor $F: C \to \Set$, we have the category where:
 \begin{itemize}
-\item objects are pairs $(I, X)$ with $I$ an object of $C$ and $X \in FI$ an $I$-indexed family;
+\item objects are pairs $(I, X)$ of an object $I$ of $C$ and an $I$-indexed family $X \in FI$;
 \item morphisms from $(I, X)$ to $(J, Y)$ are morphisms $f: I \to J$ in $C$ where $(Ff)(X) = Y$.
 \end{itemize}
 
