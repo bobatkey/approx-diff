@@ -1,4 +1,6 @@
-\documentclass[nonacm]{acmart}
+\documentclass[acmsmall,nonacm]{acmart}
+
+%\geometry{paperwidth=8.3in, paperheight=11.7in}
 
 \input{macros}
 
@@ -11,13 +13,13 @@
 
 \section{Overview}
 
-Some notes on the key constructions:
+Some of the key constructions:
 \begin{itemize}
 \item Category of families $\Fam$
-\item Category of bounded lattices and Galois connections
+\item Category of $\LatGal$ of bounded lattices and Galois connections
 \end{itemize}
 
-\noindent $\Set$ will often be $\Setoid$ in the Agda code but I'm glossing that here.
+\noindent $\Set$ will often be $\Setoid$ in the Agda implementation but will gloss that here.
 
 \section{Definitions}
 
@@ -29,7 +31,8 @@ For any set $I$ and category $C$ write $\Fam(I,C)$ for the category where:
 \item a morphism from $X$ to $Y$ is a family of morphisms $f_i: X_i \to Y_i$ in $C$ for any $i \in I$.
 \end{itemize}
 
-\noindent Equivalently, $\Fam(I,C)$ is the functor category $\FunCat{I}{C}$.
+\noindent Equivalently $\Fam(I,C)$ is the functor category $\FunCat{I}{C}$ where we interpret $I$ as a
+discrete category.
 
 \begin{definition}[Reindexing functor]
 For any $X \in \Fam(J,C)$ and $f: I \to J$ define $X[f] \in \Fam(I,C)$ where $X[f]_i = X_{fi}$.
