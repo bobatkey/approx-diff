@@ -33,8 +33,10 @@ For any set $I$ and category $C$ write $\Fam(I,C)$ for the category where:
 \noindent Equivalently $\Fam(I,C)$ is the functor category $\Func{I}{C}$ where we interpret $I$ as a discrete
 category.
 
-\begin{definition}[Reindexing functor]
-For any $X \in \Fam(J,C)$ and $f: I \to J$ define $X[f] \in \Fam(I,C)$ where $X[f]_i = X_{f(i)}$.
+\begin{definition}[Reindexing]
+For any $f: I \to J$ define the following contravariant \emph{reindexing} functor $\reindex{-}{f}: \Fam(J,C)
+\to \Fam(I,C)$ that sends any $X \in \Fam(J,C)$ to the $I$-indexed family $X[f]$ which has $X[f]_i = X_{f(i)}$
+for any $i \in I$.
 \end{definition}
 
 \subsection{Category of families}
