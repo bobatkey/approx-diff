@@ -60,9 +60,20 @@ $\Fam(I,C)$.
 
 Define the category $\LatGal$ where:
 \begin{itemize}
-\item objects $L$ are bounded lattices;
-\item morphisms $(f, g)$ from $L$ to $L'$ are meet-semilattice homomorphisms $f: L \to L'$ paired with
-join-semilattice homomorphisms $g: L' \to L$ satisfying $y \leq fx \iff gy \leq x$.
+\item objects $L$ are the bounded lattices;
+\item morphisms $f \vdash g: L \to L'$ are meet-semilattice homomorphisms $f: L \to L'$ paired with
+join-semilattice homomorphisms $g: L' \to L$ satisfying $y \leq fx \iff gy \leq x$ for any $x \in L$ and any
+$y \in L'$.
 \end{itemize}
+
+\noindent $\LatGal$ has finite biproducts. \todo{Tie this to pre-additive structure.}
+
+\subsection{Semantic domain}
+
+We interpret our language into any category with:
+\begin{itemize}
+\item finite products (binary products and a terminal object)
+\end{itemize}
+\note{Ignoring lists for now.}
 
 \end{document}
