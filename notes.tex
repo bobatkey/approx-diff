@@ -68,12 +68,24 @@ $y \in L'$.
 
 \noindent $\LatGal$ has finite biproducts. \todo{Tie this to pre-additive structure.}
 
+\section{Language}
+
+\subsection{Syntax}
+
+We parameterise our language over a signature $\Sigma = (S, \phi, R)$ consisting of:
+\begin{itemize}
+\item a set $S$ of sorts
+\item a set of operations $\phi$ with signature $\Sigma(\phi) \in S^* \times S$
+\item a set of relations $R$ with signature $\Sigma(R) \in S^*$
+\end{itemize}
+
 \subsection{Semantic domain}
 
 We interpret our language into any category with:
 \begin{itemize}
 \item finite products (binary products and a terminal object)
+\item Booleans
 \end{itemize}
-\note{Ignoring lists for now.}
+\note{Ignoring lists for now; Booleans can be derived from coproducts.}
 
 \end{document}
