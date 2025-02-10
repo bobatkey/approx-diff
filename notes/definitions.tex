@@ -9,24 +9,24 @@ For any set $I$ and category $C$ write $\Fam(I,C)$ for the category where:
 \end{itemize}
 
 \noindent Equivalently $\Fam(I,C)$ is the functor category $\Func{I}{C}$ where we interpret $I$ as a discrete
-category. $\Fam(-,C): \Set^{\op} \to \Cat$ is a functor which sends any set $I$ to the category $\Fam(I,C)$
-and any function $f: I \to J$ to the \emph{reindexing functor} $\reindex{-}{f}: \Fam(J,C) \to \Fam(I,C)$.
+category. $\Fam(-,C): \Set^{\op} \to \Cat$ is a functor which sends any set $I$ to $\Fam(I,C)$ and any
+function $f: I \to J$ to the \emph{reindexing functor} $\reindex{-}{f}: \Fam(J,C) \to \Fam(I,C)$.
 
 \begin{definition}[Reindexing]
 For any $f: I \to J$ the \emph{reindexing} functor sends any $J$-indexed family $X$ to the $I$-indexed family
-$X[f]$ where $X[f]_i = X_{f(i)}$ for any $i \in I$.
+$X[f]$ where $X[f]_i = X_{f(i)}$ for any $i \in I$ and similarly for morphisms.
 \end{definition}
 
 \subsection{Category of families}
 
-For a functor $F: D \to \Cat$, we have the Grothendieck construction for $F$ which is the category where:
+For a functor $F: D \to \Cat$, the Grothendieck construction for $F$ is the category where:
 \begin{itemize}
-\item objects are pairs $(I, X)$ of an object $I$ of $D$ and an $I$-indexed family $X \in FI$;
-\item morphisms from $(I, X)$ to $(J, Y)$ are morphisms $f: I \to J$ in $D$ where $(Ff)(X) = Y$.
+\item objects are pairs $(I, X)$ of an object $I$ of $D$ and an object of $FI$;
+\item morphisms from $(I, X)$ to $(J, Y)$ are morphisms $f: I \to J$ in $D$ paired with a morphism $(Ff)(X) \to Y$.
 \end{itemize}
 
 \noindent The fibred category $\Fam(C)$ over $\Set$ is the Grothendieck construction for the functor
-$\Fam(-,C)$:
+$\Fam(-,C): \Set^{\op} \to \Cat$:
 \begin{itemize}
 \item objects are pairs $(I, X)$ of a set $I$ and indexed family $X$ in $\Fam(I,C)$;
 \item morphisms from $(I, X)$ to $(J, Y)$ are functions $f: I \to J$ paired with morphisms $X \to Y[f]$ in
