@@ -28,7 +28,7 @@ For any set $I$ and category $C$ write $\Fam(I,C)$ for the category where:
 \item a morphism from $X$ to $Y$ is a family of morphisms $f_i: X_i \to Y_i$ in $C$ for any $i \in I$.
 \end{itemize}
 
-\noindent Equivalently, $\Fam(I,C)$ is the functor category $\Functors{I}{C}$.
+\noindent Equivalently, $\Fam(I,C)$ is the functor category $\FunCat{I}{C}$.
 
 \begin{definition}[Reindexing functor]
 For any $X \in \Fam(J,C)$ and $f: I \to J$ define $X[f] \in \Fam(I,C)$ where $X[f]_i = X_{fi}$.
@@ -52,5 +52,7 @@ In our code we give a slightly different construction, namely the fibred categor
 \item morphisms from $(I, X)$ to $(J, Y)$ are functions $f: I \to J$ paired with morphisms $X \to Y[f]$ in
 $\Fam(I,C)$.
 \end{itemize}
+
+\todo{Properties: has terminal object if $C$ does; has all coproducts; others]
 
 \end{document}
