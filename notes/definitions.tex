@@ -19,22 +19,19 @@ $X[f]$ where $X[f]_i = X_{f(i)}$ for any $i \in I$.
 
 \subsection{Category of families}
 
-For a functor $F: C \to \Cat$, we have the category where:
+For a functor $F: D \to \Cat$, we have the Grothendieck construction for $F$ which is the category where:
 \begin{itemize}
-\item objects are pairs $(I, X)$ of an object $I$ of $C$ and an $I$-indexed family $X \in FI$;
-\item morphisms from $(I, X)$ to $(J, Y)$ are morphisms $f: I \to J$ in $C$ where $(Ff)(X) = Y$.
+\item objects are pairs $(I, X)$ of an object $I$ of $D$ and an $I$-indexed family $X \in FI$;
+\item morphisms from $(I, X)$ to $(J, Y)$ are morphisms $f: I \to J$ in $D$ where $(Ff)(X) = Y$.
 \end{itemize}
 
-\noindent This is the Grothendieck construction for a functor $F: C \to \Cat$.
-
-Define the fibred category $\Fam(C)$ over $\Set$ where:
+\noindent The fibred category $\Fam(C)$ over $\Set$ is the Grothendieck construction for the functor
+$\Fam(-,C)$:
 \begin{itemize}
 \item objects are pairs $(I, X)$ of a set $I$ and indexed family $X$ in $\Fam(I,C)$;
 \item morphisms from $(I, X)$ to $(J, Y)$ are functions $f: I \to J$ paired with morphisms $X \to Y[f]$ in
 $\Fam(I,C)$.
 \end{itemize}
-
-\noindent This is the Grothendieck construction for the functor $\Fam(-,C)$.
 
 \todo{Some properties of $\Fam(C)$.}
 
