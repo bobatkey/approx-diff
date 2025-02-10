@@ -1,6 +1,6 @@
-default: notes
+default: main
 
-notes:
-	pdflatex notes.tex
-	pdflatex notes.tex
+main:
+	pdflatex notes
+	pdflatex notes
 	rm notes.aux notes.log notes.out

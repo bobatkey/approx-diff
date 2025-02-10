@@ -1,0 +1,55 @@
+\section{Definitions}
+
+\subsection{Indexed families of objects}
+
+For any set $I$ and category $C$ write $\Fam(I,C)$ for the category where:
+\begin{itemize}
+\item the objects are the $I$-indexed families of objects of $C$;
+\item a morphism from $X$ to $Y$ is a family of morphisms $f_i: X_i \to Y_i$ in $C$ for any $i \in I$.
+\end{itemize}
+
+\noindent Equivalently $\Fam(I,C)$ is the functor category $\Func{I}{C}$ where we interpret $I$ as a discrete
+category.
+
+\begin{definition}[Reindexing]
+For any $f: I \to J$ define the following contravariant \emph{reindexing} functor $\reindex{-}{f}: \Fam(J,C)
+\to \Fam(I,C)$ that sends any $X \in \Fam(J,C)$ to the $I$-indexed family $X[f]$ which has $X[f]_i = X_{f(i)}$
+for any $i \in I$.
+\end{definition}
+
+\subsection{Category of families}
+
+For a functor $F: C \to \Set$, we have the category where:
+\begin{itemize}
+\item objects are pairs $(I, X)$ of an object $I$ of $C$ and an $I$-indexed family $X \in FI$;
+\item morphisms from $(I, X)$ to $(J, Y)$ are morphisms $f: I \to J$ in $C$ where $(Ff)(X) = Y$.
+\end{itemize}
+
+\noindent This is the Grothendieck construction for a functor $F: C \to \Cat$ for the special case where $F: C
+\to \Set$ (where we read a $\Set$-valued functor as a $\Cat$-valued functor restricted to discrete
+categories).
+
+Define the fibred category $\Fam(C)$ over $\Set$ where:
+\begin{itemize}
+\item objects are pairs $(I, X)$ of a set $I$ and indexed family $X$ in $\Fam(I,C)$;
+\item morphisms from $(I, X)$ to $(J, Y)$ are functions $f: I \to J$ paired with morphisms $X \to Y[f]$ in
+$\Fam(I,C)$.
+\end{itemize}
+
+\noindent This is the Grothendieck construction for the functor $\Set^{\op} \to \Cat$ which sends any set $I$
+to the category $\Fam(I,C)$ and any function $f: I \to J$ to the reindexing functor $-[f]: \Fam(J,C) \to
+\Fam(I,C)$.
+
+\todo{Some properties of $\Fam(C)$.}
+
+\subsection{Category of bounded lattices and Galois connections}
+
+Define the category $\LatGal$ where:
+\begin{itemize}
+\item objects $L$ are the bounded lattices;
+\item morphisms $f \vdash g: L \to L'$ are meet-semilattice homomorphisms $f: L \to L'$ paired with
+join-semilattice homomorphisms $g: L' \to L$ satisfying $y \leq f(x) \iff g(y) \leq x$ for any $x \in L$ and any
+$y \in L'$.
+\end{itemize}
+
+\noindent $\LatGal$ has finite biproducts. \todo{Tie this to pre-additive structure.}
