@@ -254,14 +254,22 @@ module _ {o m e} os (𝒟 : Category o m e) where
 -- Tensor products and symmetric monoidal closed structure (FIXME)
 
 ------------------------------------------------------------------------------
--- FIXME: Initial/terminal object
-
-------------------------------------------------------------------------------
 -- Products. Special case of limits, but this is likely more efficient.
 module _ {o e} where
   open Obj
   open _⇒_
   open _=[_]>_
+
+  𝟙 : Obj {o} {e}
+  𝟙 .carrier = prop-setoid.𝟙 {o} {e}
+  𝟙 .commMonoid = 𝟙cm
+
+  terminal : HasTerminal (cat o e)
+  terminal .HasTerminal.witness = 𝟙
+  terminal .HasTerminal.terminal-mor x .function = prop-setoid.to-𝟙
+  terminal .HasTerminal.terminal-mor x .cmFunc .preserve-ε = tt
+  terminal .HasTerminal.terminal-mor x .cmFunc .preserve-+ = tt
+  terminal .HasTerminal.terminal-unique x f g ._≃s_.func-eq _ = tt
 
   _⊕_ : Obj {o} {e} → Obj → Obj
   (X ⊕ Y) .carrier = ⊗-setoid (X .carrier) (Y .carrier)

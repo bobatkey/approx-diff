@@ -3,10 +3,11 @@
 module commutative-monoid where
 
 open import Level
+open import Data.Unit using (tt)
 open import Data.Product using (_,_; proj₁; proj₂)
 open import prop
 open import prop-setoid
-  using (Setoid; IsEquivalence; idS; _∘S_; ⊗-setoid; module ≈-Reasoning)
+  using (Setoid; IsEquivalence; idS; _∘S_; ⊗-setoid; 𝟙; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≃s_; ≃m-isEquivalence to ≃s-isEquivalence)
 
 ------------------------------------------------------------------------------
@@ -36,6 +37,14 @@ open _=[_]>_
 module _ where
 
   open CommutativeMonoid
+
+  𝟙cm : ∀ {o e} → CommutativeMonoid (𝟙 {o} {e})
+  𝟙cm .ε = lift tt
+  𝟙cm ._+_ _ _ = lift tt
+  𝟙cm .+-cong _ _ = tt
+  𝟙cm .+-lunit = tt
+  𝟙cm .+-assoc = tt
+  𝟙cm .+-comm = tt
 
   _⊗_ : ∀ {o e}{A B : Setoid o e} →
         CommutativeMonoid A →

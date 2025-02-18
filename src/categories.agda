@@ -254,6 +254,16 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     ∎
     where open ≈-Reasoning isEquiv
 
+  getProduct : ∀ (x y : obj) → Product {𝒞 = 𝒞} x y
+  getProduct x y .Product.prod = prod x y
+  getProduct x y .Product.p₁ = p₁
+  getProduct x y .Product.p₂ = p₂
+  getProduct x y .Product.isProduct .IsProduct.pair = pair
+  getProduct x y .Product.isProduct .IsProduct.pair-cong = pair-cong
+  getProduct x y .Product.isProduct .IsProduct.pair-p₁ = pair-p₁
+  getProduct x y .Product.isProduct .IsProduct.pair-p₂ = pair-p₂
+  getProduct x y .Product.isProduct .IsProduct.pair-ext = pair-ext
+
 record HasStrongCoproducts {o m e} (𝒞 : Category o m e) (P : HasProducts 𝒞) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞
   open HasProducts P
