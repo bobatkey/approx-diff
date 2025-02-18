@@ -244,18 +244,28 @@ module _ {o m e} {𝒞 : Category o m e} (CM : CMonEnriched 𝒞) where
       ∎ where open ≈-Reasoning isEquiv
 
 -- Construct biproducts from products on a cmon-category
-module cmon+products→biproducts {o m e} (𝒞 : Category o m e) (CM𝒞 : CMonEnriched 𝒞) (P : HasProducts 𝒞) where
+module cmon+products→biproducts {o m e}
+         {𝒞 : Category o m e} (CM𝒞 : CMonEnriched 𝒞)
+         {x y : 𝒞 .Category.obj} (P : Product {𝒞 = 𝒞} x y) where
 
   open Category 𝒞
   open CMonEnriched CM𝒞
   open CommutativeMonoid
   open IsEquivalence
 
-  open HasProducts P
+  open Product P
 
   -- Use the universal property of products to show that the pairing
-  -- operation preserves addition.
-  pair-+ : ∀ {x y z} (f₁ f₂ : x ⇒ y) (g₁ g₂ : x ⇒ z) →
+  -- operation preserves zero and addition.
+  pair-ε : ∀ {z} → pair εm εm ≈ εm {z} {prod}
+  pair-ε =
+    begin
+      pair εm εm              ≈˘⟨ pair-cong (comp-bilinear-ε₂ p₁) (comp-bilinear-ε₂ p₂) ⟩
+      pair (p₁ ∘ εm) (p₂ ∘ εm) ≈⟨ pair-ext εm ⟩
+      εm                      ∎
+    where open ≈-Reasoning isEquiv
+
+  pair-+ : ∀ {z} (f₁ f₂ : z ⇒ x) (g₁ g₂ : z ⇒ y) →
      (pair f₁ g₁ +m pair f₂ g₂) ≈ pair (f₁ +m f₂) (g₁ +m g₂)
   pair-+ f₁ f₂ g₁ g₂ =
     begin
@@ -268,25 +278,23 @@ module cmon+products→biproducts {o m e} (𝒞 : Category o m e) (CM𝒞 : CMon
       pair (f₁ +m f₂) (g₁ +m g₂)
     ∎ where open ≈-Reasoning isEquiv
 
-  _⊕_ = prod
-
-  in₁ : ∀ {x y} → x ⇒ (x ⊕ y)
+  in₁ : x ⇒ prod
   in₁ = pair (id _) εm
 
-  in₂ : ∀ {x y} → y ⇒ (x ⊕ y)
+  in₂ : y ⇒ prod
   in₂ = pair εm (id _)
 
-  biproducts : ∀ x y → Biproduct CM𝒞 x y
-  biproducts x y .Biproduct.prod = prod x y
-  biproducts x y .Biproduct.p₁ = p₁
-  biproducts x y .Biproduct.p₂ = p₂
-  biproducts x y .Biproduct.in₁ = in₁
-  biproducts x y .Biproduct.in₂ = in₂
-  biproducts x y .Biproduct.id-1 = pair-p₁ _ _
-  biproducts x y .Biproduct.id-2 = pair-p₂ _ _
-  biproducts x y .Biproduct.zero-1 = pair-p₁ _ _
-  biproducts x y .Biproduct.zero-2 = pair-p₂ _ _
-  biproducts x y .Biproduct.id-+ =
+  biproducts : Biproduct CM𝒞 x y
+  biproducts .Biproduct.prod = prod
+  biproducts .Biproduct.p₁ = p₁
+  biproducts .Biproduct.p₂ = p₂
+  biproducts .Biproduct.in₁ = in₁
+  biproducts .Biproduct.in₂ = in₂
+  biproducts .Biproduct.id-1 = pair-p₁ _ _
+  biproducts .Biproduct.id-2 = pair-p₂ _ _
+  biproducts .Biproduct.zero-1 = pair-p₁ _ _
+  biproducts .Biproduct.zero-2 = pair-p₂ _ _
+  biproducts .Biproduct.id-+ =
     begin
       (in₁ ∘ p₁) +m (in₂ ∘ p₂) ≡⟨⟩
       (pair (id _) εm ∘ p₁) +m (pair εm (id _) ∘ p₂) ≈⟨ homCM _ _ .+-cong (pair-natural _ _ _) (pair-natural _ _ _) ⟩
@@ -302,7 +310,7 @@ module cmon+products→biproducts {o m e} (𝒞 : Category o m e) (CM𝒞 : CMon
 
 
 ------------------------------------------------------------------------------
--- Additivity is inherited by functor categories
+-- CMon-enrichment is inherited by functor categories
 module _ {o₁ m₁ e₁ o₂ m₂ e₂}
          (𝒞 : Category o₁ m₁ e₁)
          (𝒟 : Category o₂ m₂ e₂)

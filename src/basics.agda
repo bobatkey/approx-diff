@@ -17,26 +17,65 @@ module _ {a} {A : Set a} where
       trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
     _≃_ = SymmetricCore _≤_
 
-    isEquivalence : IsEquivalence _≃_
-    isEquivalence .IsEquivalence.refl = refl , refl
-    isEquivalence .IsEquivalence.sym (x≤y , y≤x) = y≤x , x≤y
-    isEquivalence .IsEquivalence.trans (x≤y , y≤x) (y≤z , z≤y) =
+    ≃-refl : ∀ {x} → x ≃ x
+    ≃-refl = refl , refl
+
+    ≃-sym : ∀ {x y} → x ≃ y → y ≃ x
+    ≃-sym (x≤y , y≤x) = y≤x , x≤y
+
+    ≃-trans : ∀ {x y z} → x ≃ y → y ≃ z → x ≃ z
+    ≃-trans (x≤y , y≤x) (y≤z , z≤y) =
       (trans x≤y y≤z) , (trans z≤y y≤x)
+
+    isEquivalence : IsEquivalence _≃_
+    isEquivalence .IsEquivalence.refl = ≃-refl
+    isEquivalence .IsEquivalence.sym = ≃-sym
+    isEquivalence .IsEquivalence.trans = ≃-trans
 
     infix 4 _≃_
 
+module ≤-Reasoning {o i} {A : Set o} {_≤_ : A → A → Prop i} (isPreorder : IsPreorder _≤_) where
+  open IsPreorder
+
+  infix  1 begin_
+  infixr 2 _≤⟨_⟩_ _≡⟨⟩_
+  infix  4 _∎
+
+  begin_ : ∀ {x y : A}
+    → x ≤ y
+      -----
+    → x ≤ y
+  begin x≤y  =  x≤y
+
+  _≡⟨⟩_ : ∀ (x : A) {y : A}
+    → x ≤ y
+      -----
+    → x ≤ y
+  x ≡⟨⟩ x≤y = x≤y
+
+  _≤⟨_⟩_ : ∀ (x : A) {y z : A}
+    → x ≤ y
+    → y ≤ z
+      -----
+    → x ≤ z
+  x ≤⟨ x≤y ⟩ y≤z  =  isPreorder .trans x≤y y≤z
+
+  _∎ : ∀ (x : A)
+      -----
+    → x ≤ x
+  x ∎  =  isPreorder .refl
+
+
 module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreorder _≤_) where
 
-  module _ where
-    open IsPreorder ≤-isPreorder
+  open IsPreorder ≤-isPreorder
 
-    setoidOf : Setoid a b
-    setoidOf .Setoid.Carrier = A
-    setoidOf .Setoid._≈_ = SymmetricCore _≤_
-    setoidOf .Setoid.isEquivalence = isEquivalence
+  setoidOf : Setoid a b
+  setoidOf .Setoid.Carrier = A
+  setoidOf .Setoid._≈_ = SymmetricCore _≤_
+  setoidOf .Setoid.isEquivalence = isEquivalence
 
   record IsMonoid (_∙_ : A → A → A) (ε : A) : Set (a ⊔ b) where
-    open IsPreorder ≤-isPreorder
     field
       mono  : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ∙ y₁) ≤ (x₂ ∙ y₂)
       assoc : ∀ {x y z} → (x ∙ y) ∙ z ≃ x ∙ (y ∙ z)
@@ -49,22 +88,29 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
       mono (eq₁ .proj₂) (eq₂ .proj₂)
 
     interchange : (∀ {x y} → (x ∙ y) ≤ (y ∙ x)) →
-                  ∀ {w x y z} → ((w ∙ x) ∙ (y ∙ z)) ≤ ((w ∙ y) ∙ (x ∙ z))
-    interchange ∙-sym {w} {x} {y} {z} =
-       trans (assoc .proj₁)
-      (trans (mono refl (assoc .proj₂))
-      (trans (mono refl (mono ∙-sym refl))
-      (trans (mono refl (assoc .proj₁))
-             (assoc .proj₂))))
+                  ∀ {w x y z} → ((w ∙ x) ∙ (y ∙ z)) ≃ ((w ∙ y) ∙ (x ∙ z))
+    interchange sym {w} {x} {y} {z} =
+      begin
+        (w ∙ x) ∙ (y ∙ z)
+      ≈⟨ assoc ⟩
+        w ∙ (x ∙ (y ∙ z))
+      ≈˘⟨ cong ≃-refl assoc ⟩
+        w ∙ ((x ∙ y) ∙ z)
+      ≈⟨ cong ≃-refl (cong (sym , sym) ≃-refl) ⟩
+        w ∙ ((y ∙ x) ∙ z)
+      ≈⟨ cong ≃-refl assoc ⟩
+        w ∙ (y ∙ (x ∙ z))
+      ≈˘⟨ assoc ⟩
+        (w ∙ y) ∙ (x ∙ z)
+      ∎ where open ≈-Reasoning isEquivalence
 
-  record IsClosure {_∙_ : A → A → A} {ε : A}
-                   (∙-isMonoid : IsMonoid _∙_ ε)
-                   (_-∙_ : A → A → A) : Set (a ⊔ b) where
+  record IsResidual {_∙_ : A → A → A} {ε : A}
+                    (∙-isMonoid : IsMonoid _∙_ ε)
+                    (_-∙_ : A → A → A) : Set (a ⊔ b) where
     field
       lambda : ∀ {x y z} → (x ∙ y) ≤ z → x ≤ (y -∙ z)
       eval   : ∀ {x y} → ((x -∙ y) ∙ x) ≤ y
 
-    open IsPreorder ≤-isPreorder
     open IsMonoid ∙-isMonoid
 
     -∙-mono : ∀ {x₁ y₁ x₂ y₂} → x₂ ≤ x₁ → y₁ ≤ y₂ → (x₁ -∙ y₁) ≤ (x₂ -∙ y₂)
@@ -78,8 +124,6 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
       π₁ : ∀ {x y} → (x ∧ y) ≤ x
       π₂ : ∀ {x y} → (x ∧ y) ≤ y
       ⟨_,_⟩ : ∀ {x y z} → x ≤ y → x ≤ z → x ≤ (y ∧ z)
-
-    open IsPreorder ≤-isPreorder
 
     mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ∧ y₁) ≤ (x₂ ∧ y₂)
     mono x₁≤x₂ y₁≤y₂ = ⟨ trans π₁ x₁≤x₂ , trans π₂ y₁≤y₂ ⟩
@@ -95,8 +139,8 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
     idem .proj₁ = π₁
     idem .proj₂ = ⟨ refl , refl ⟩
 
-    sym : ∀ {x y} → (x ∧ y) ≤ (y ∧ x)
-    sym = ⟨ π₂ , π₁ ⟩
+    comm : ∀ {x y} → (x ∧ y) ≤ (y ∧ x)
+    comm = ⟨ π₂ , π₁ ⟩
 
   record IsTop (⊤ : A) : Set (a ⊔ b) where
     field
@@ -108,7 +152,6 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
       greatest : (I : Set iℓ) (x : I → A) (z : A) → (∀ i → z ≤ x i) → z ≤ ⋀ I x
 
   module _ {_∧_ : A → A → A} {⊤ : A} (isMeet : IsMeet _∧_) (isTop : IsTop ⊤) where
-    open IsPreorder ≤-isPreorder
     open IsMeet isMeet
     open IsTop isTop
 
@@ -126,8 +169,6 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
       inr : ∀ {x y} → y ≤ (x ∨ y)
       [_,_] : ∀ {x y z} → x ≤ z → y ≤ z → (x ∨ y) ≤ z
 
-    open IsPreorder ≤-isPreorder
-
     mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ∨ y₁) ≤ (x₂ ∨ y₂)
     mono x₁≤x₂ y₁≤y₂ = [ trans x₁≤x₂ inl , trans y₁≤y₂ inr ]
 
@@ -142,8 +183,8 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
     idem .proj₁ = [ refl , refl ]
     idem .proj₂ = inl
 
-    sym : ∀ {x y} → (x ∨ y) ≤ (y ∨ x)
-    sym = [ inr , inl ]
+    comm : ∀ {x y} → (x ∨ y) ≤ (y ∨ x)
+    comm = [ inr , inl ]
 
   record IsBigJoin iℓ (⋁ : (I : Set iℓ) → (I → A) → A) : Set (a ⊔ b ⊔ suc iℓ) where
     field
@@ -155,7 +196,6 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
       ≤-bottom : ∀ {x} → ⊥ ≤ x
 
   module _ {_∨_ : A → A → A} {⊥ : A} (isJoin : IsJoin _∨_) (isBottom : IsBottom ⊥) where
-    open IsPreorder ≤-isPreorder
     open IsJoin isJoin
     open IsBottom isBottom
 
@@ -168,15 +208,14 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
     monoidOfJoin .IsMonoid.runit .proj₂ = inl
 
   ------------------------------------------------------------------------------
-  -- closure implies distributivity of joins and the monoid
+  -- residual implies distributivity of joins and the monoid
   -- FIXME: don't assume symmetry and do the left and right ones separately
   module _ {_∙_ ε _-∙_ _∨_}
            (isMonoid : IsMonoid _∙_ ε)
            (∙-sym : ∀ {x y} → (x ∙ y) ≤ (y ∙ x))
-           (isClosure : IsClosure isMonoid _-∙_)
+           (isResidual : IsResidual isMonoid _-∙_)
            (isJoin : IsJoin _∨_) where
-    open IsPreorder ≤-isPreorder
-    open IsClosure isClosure
+    open IsResidual isResidual
     open IsJoin isJoin
 
     ∙-∨-distrib : ∀ {x y z} → (x ∙ (y ∨ z)) ≤ ((x ∙ y) ∨ (x ∙ z))
@@ -189,7 +228,6 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
                     (⊗-isMonoid : IsMonoid _⊗_ ε)
                     (⊗-sym : ∀ {x y} → (x ⊗ y) ≤ (y ⊗ x))
                     (¬ : A → A) : Set (a ⊔ b) where
-    open IsPreorder ≤-isPreorder
     field
       ¬-mono     : ∀ {x y} → x ≤ y → ¬ y ≤ ¬ x
       involution : ∀ {x} → x ≃ ¬ (¬ x)
@@ -253,25 +291,34 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
     _⊸_ : A → A → A
     x ⊸ y = ¬ x ⅋ y
 
-    ⊸-isClosure : IsClosure ⊗-isMonoid _⊸_
-    ⊸-isClosure .IsClosure.lambda m =
+    ⊸-isResidual : IsResidual ⊗-isMonoid _⊸_
+    ⊸-isResidual .IsResidual.lambda m =
       *-aut (trans (mono refl (involution .proj₂)) (trans m (involution .proj₁)))
-    ⊸-isClosure .IsClosure.eval =
+    ⊸-isResidual .IsResidual.eval =
       trans (*-aut⁻¹ (¬-mono (mono (involution .proj₁) refl))) (involution .proj₂)
 
     coev : ∀ {x} → ε ≤ (x ⅋ ¬ x)
-    coev = trans (⊸-isClosure .IsClosure.lambda (lunit .proj₁)) ⅋-sym
+    coev = trans (⊸-isResidual .IsResidual.lambda (lunit .proj₁)) ⅋-sym
 
     linear-distrib : ∀ {x y z} → (x ⊗ (y ⅋ z)) ≤ ((x ⊗ y) ⅋ z)
-    linear-distrib =
-      trans (*-aut (trans (assoc .proj₁)
-                   (trans (mono refl (trans (mono (trans (⅋-mono refl (involution .proj₁)) ⅋-sym) refl) (⊸-isClosure .IsClosure.eval)))
-                          (involution .proj₁))))
-            ⅋-sym
+    linear-distrib {x} {y} {z} =
+      begin
+        x ⊗ (y ⅋ z)
+      ≤⟨ *-aut (begin
+                 (x ⊗ (y ⅋ z)) ⊗ ¬ z        ≤⟨ assoc .proj₁ ⟩
+                 x ⊗ ((y ⅋ z) ⊗ ¬ z)        ≤⟨ mono refl (mono (⅋-mono refl (involution .proj₁)) refl) ⟩
+                 x ⊗ ((y ⅋ ¬ (¬ z)) ⊗ ¬ z)  ≤⟨ mono refl (mono ⅋-sym refl) ⟩
+                 x ⊗ ((¬ (¬ z) ⅋ y) ⊗ ¬ z)  ≤⟨ mono refl (⊸-isResidual .IsResidual.eval) ⟩
+                 x ⊗ y                       ≤⟨ involution .proj₁ ⟩
+                 ¬ (¬ (x ⊗ y))              ∎) ⟩
+        z ⅋ (x ⊗ y)
+      ≤⟨ ⅋-sym ⟩
+        (x ⊗ y) ⅋ z
+      ∎
+      where open ≤-Reasoning ≤-isPreorder
 
   ------------------------------------------------------------------------------
   record IsClosureOp (C : A → A) : Set (a ⊔ b) where
-    open IsPreorder ≤-isPreorder
 
     field
       mono   : ∀ {x y} → x ≤ y → C x ≤ C y
@@ -283,11 +330,23 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
     idem .proj₂ = mono unit
 
   ------------------------------------------------------------------------------
-  record IsDuoidal {_⊗_ : A → A → A} {ε : A} {_⍮_ : A → A → A} {ι : A}
-                   (⊗-isMonoid : IsMonoid _⊗_ ε)
-                   (⍮-isMonoid : IsMonoid _⍮_ ι) : Set (a ⊔ b) where
+  record IsDuoidal (_⊗_ : A → A → A) (ε : A) (_⍮_ : A → A → A) (ι : A) : Set (a ⊔ b) where
     field
       exchange : ∀ {w x y z} → ((w ⍮ x) ⊗ (y ⍮ z)) ≤ ((w ⊗ y) ⍮ (x ⊗ z))
       mu       : (ι ⊗ ι) ≤ ι
-      -- (Δ : ε ≤ (ε ▷ ε)) -- what is this needed for?
-      -- (u : ε ≤ ι) -- what is this needed for?
+      nu       : ε ≤ (ε ⍮ ε)
+      gu       : ε ≤ ι
+
+  -- If a monoid is commutative, then it is duoidal over itself
+  module _ {_∙_ : A → A → A} {ε : A} (∙-isMonoid : IsMonoid _∙_ ε)
+           (∙-comm : ∀ {x y} → (x ∙ y) ≤ (y ∙ x)) where
+
+    open IsMonoid ∙-isMonoid
+
+    selfDuoidal : IsDuoidal _∙_ ε _∙_ ε
+    selfDuoidal .IsDuoidal.exchange = interchange ∙-comm .proj₁
+    selfDuoidal .IsDuoidal.mu = lunit .proj₁
+    selfDuoidal .IsDuoidal.nu = lunit .proj₂
+    selfDuoidal .IsDuoidal.gu = refl
+
+  -- FIXME: duoidal is automatic over/under meets/joins

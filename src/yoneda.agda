@@ -33,9 +33,9 @@ open ≃-NatTrans
 よ₀ x .fmor-id {y} .func-eq {lift g₁} {lift g₂} (lift g₁≈g₂) = lift (𝒞.isEquiv .trans 𝒞.id-right g₁≈g₂)
 よ₀ x .fmor-comp {y} {z} {w} f g .func-eq {lift h₁} {lift h₂} (lift h₁≈h₂) .lower =
   begin
-    h₁ 𝒞.∘ (g 𝒞.∘ f)    ≈⟨ 𝒞.∘-cong h₁≈h₂ 𝒞.≈-refl ⟩
-    h₂ 𝒞.∘ (g 𝒞.∘ f)    ≈˘⟨ 𝒞.assoc _ _ _ ⟩
-    ((h₂ 𝒞.∘ g) 𝒞.∘ f)  ∎
+    h₁ 𝒞.∘ (g 𝒞.∘ f)  ≈⟨ 𝒞.∘-cong h₁≈h₂ 𝒞.≈-refl ⟩
+    h₂ 𝒞.∘ (g 𝒞.∘ f)  ≈˘⟨ 𝒞.assoc _ _ _ ⟩
+    (h₂ 𝒞.∘ g) 𝒞.∘ f  ∎
   where open ≈-Reasoning 𝒞.isEquiv
 
 よ : Functor 𝒞 PSh
@@ -51,6 +51,9 @@ open ≃-NatTrans
 よ .fmor-id .transf-eq x .func-eq {lift g₁} {lift g₂} (lift g₁≈g₂) .lower = 𝒞.isEquiv .trans 𝒞.id-left g₁≈g₂
 よ .fmor-comp f g .transf-eq x .func-eq {lift h₁} {lift h₂} (lift h₁≈h₂) .lower =
   𝒞.isEquiv .trans (𝒞.∘-cong 𝒞.≈-refl h₁≈h₂) (𝒞.assoc _ _ _)
+
+------------------------------------------------------------------------------
+-- Yoneda lemma
 
 lemma₁ : ∀ F x → F .fobj x ⇒s Category.hom-setoid PSh (よ₀ x) F
 lemma₁ F x .func Fx .transf y .func (lift f) = F .fmor f .func Fx
@@ -71,9 +74,14 @@ lemma₂ F x .func-resp-≈ {α₁}{α₂} α₁≈α₂ = α₁≈α₂ .transf
 
 -- FIXME: lemma₁ ∘ lemma₂ = id and lemma₂ ∘ lemma₁ = id and both are natural.
 
+------------------------------------------------------------------------------
+-- FIXME: exponentials
+
+------------------------------------------------------------------------------
+-- よ preserves products. FIXME: extend this to all limits
+
 open IsProduct
 
--- よ preserves products. FIXME: extend this to all limits
 preserve-products : ∀ (x y p : 𝒞.obj) (p₁ : p 𝒞.⇒ x) (p₂ : p 𝒞.⇒ y) →
                     IsProduct {𝒞 = 𝒞} x y p p₁ p₂ →
                     IsProduct {𝒞 = PSh} (よ₀ x) (よ₀ y) (よ₀ p) (よ .fmor p₁) (よ .fmor p₂)

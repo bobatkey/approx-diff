@@ -6,7 +6,7 @@ open import Data.Product using (proj₁; proj₂; _,_)
 open import Data.Unit using (tt) renaming (⊤ to Unit)
 open import Level
 open import basics
-open import prop renaming (⊥ to ⊥p)
+open import prop renaming (⊥ to ⊥p; _∨_ to _∨p_)
 open import preorder using (Preorder; _×_)
 open import prop-setoid using (IsEquivalence; module ≈-Reasoning)
 
@@ -19,6 +19,17 @@ record JoinSemilattice (A : Preorder) : Set (suc 0ℓ) where
     ⊥            : A .Carrier
     ∨-isJoin     : IsJoin (A .≤-isPreorder) _∨_
     ⊥-isBottom   : IsBottom (A .≤-isPreorder) ⊥
+
+  open IsJoin ∨-isJoin
+    renaming (assoc to ∨-assoc; [_,_] to [_∨_]; mono to ∨-mono; comm to ∨-comm; cong to ∨-cong) public
+
+  open IsBottom ⊥-isBottom public
+
+  open IsMonoid (monoidOfJoin _ ∨-isJoin ⊥-isBottom)
+    using (interchange)
+    renaming (lunit to ∨-lunit; runit to ∨-runit)
+    public
+
 
 module _ {A B : Preorder} where
   open Preorder
@@ -111,6 +122,40 @@ module _ where
             ((f ∘ g) ∘ h) ≃m (f ∘ (g ∘ h))
   assoc {D = D} f g h .eqfunc x = D .≃-refl
 
+  module _ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} where
+    private
+      module B = Preorder B
+      module Y = JoinSemilattice Y
+
+    εm : X => Y
+    εm .func x = Y.⊥
+    εm .monotone _ = B.≤-refl
+    εm .∨-preserving = Y.∨-lunit .proj₂
+    εm .⊥-preserving = B.≤-refl
+
+    _+m_ : X => Y → X => Y → X => Y
+    (f +m g) .func x = f .func x Y.∨ g .func x
+    (f +m g) .monotone x₁≤x₂ = Y.∨-mono (f .monotone x₁≤x₂) (g .monotone x₁≤x₂)
+    (f +m g) .∨-preserving =
+      B.≤-trans (Y.∨-mono (f .∨-preserving) (g .∨-preserving))
+                (Y.interchange Y.∨-comm .proj₁)
+    (f +m g) .⊥-preserving =
+      B.≤-trans (Y.∨-mono (f .⊥-preserving) (g .⊥-preserving)) (Y.∨-lunit .proj₁)
+
+    +m-cong : ∀ {f₁ f₂ g₁ g₂ : X => Y} → f₁ ≃m f₂ → g₁ ≃m g₂ → (f₁ +m g₁) ≃m (f₂ +m g₂)
+    +m-cong f₁≃f₂ g₁≃g₂ .eqfunc x = Y.∨-cong (f₁≃f₂ .eqfunc x) (g₁≃g₂ .eqfunc x)
+
+    +m-comm : ∀ {f g} → (f +m g) ≃m (g +m f)
+    +m-comm .eqfunc x .proj₁ = Y.∨-comm
+    +m-comm .eqfunc x .proj₂ = Y.∨-comm
+
+    +m-assoc : ∀ {f g h} → ((f +m g) +m h) ≃m (f +m (g +m h))
+    +m-assoc .eqfunc x = Y.∨-assoc
+
+    +m-lunit : ∀ {f} → (εm +m f) ≃m f
+    +m-lunit .eqfunc x = Y.∨-lunit
+
+
 ------------------------------------------------------------------------------
 -- One element semilattice, for use when there are no approximations
 module _ where
@@ -192,8 +237,8 @@ module _ (I : Set) {A : I -> Preorder} (X : (i : I) → JoinSemilattice (A i)) w
   inj-⨁ i .⊥-preserving = liftS (≤f-el-bot i)
 
   module _ {B} (Z : JoinSemilattice B) (X=>Z : ∀ i → X i => Z) where
-    open IsJoin (Z .∨-isJoin)
-    open IsBottom (Z .⊥-isBottom)
+    private
+      module Z = JoinSemilattice Z
 
     elim-⨁-func : ⨁-preorder .Carrier → B .Carrier
     elim-⨁-func bot = Z .⊥
@@ -206,11 +251,11 @@ module _ (I : Set) {A : I -> Preorder} (X : (i : I) → JoinSemilattice (A i)) w
     elim-⨁-func-monotone (≤f-el-mono i x₁≤x₂) = X=>Z i .monotone x₁≤x₂
     elim-⨁-func-monotone (≤f-el-bot i) = X=>Z i .⊥-preserving
     elim-⨁-func-monotone (≤f-el-join i) = X=>Z i .∨-preserving
-    elim-⨁-func-monotone ≤f-bot = ≤-bottom
-    elim-⨁-func-monotone ≤f-inl = inl
-    elim-⨁-func-monotone ≤f-inr = inr
+    elim-⨁-func-monotone ≤f-bot = Z.≤-bottom
+    elim-⨁-func-monotone ≤f-inl = Z.inl
+    elim-⨁-func-monotone ≤f-inr = Z.inr
     elim-⨁-func-monotone (≤f-case j₁≤j₃ j₂≤j₃) =
-      [ elim-⨁-func-monotone j₁≤j₃ , elim-⨁-func-monotone j₂≤j₃ ]
+      Z.[ elim-⨁-func-monotone j₁≤j₃ ∨ elim-⨁-func-monotone j₂≤j₃ ]
 
     elim-⨁ : ⨁ => Z
     elim-⨁ .func = elim-⨁-func
@@ -262,6 +307,8 @@ module _ where
   ⟨⟩-cong f₁≈f₂ g₁≈g₂ .eqfunc x .proj₂ .proj₁ = f₁≈f₂ .eqfunc x .proj₂
   ⟨⟩-cong f₁≈f₂ g₁≈g₂ .eqfunc x .proj₂ .proj₂ = g₁≈g₂ .eqfunc x .proj₂
 
+  -- FIXME: deduce biproducts from cmon-enrichment
+
   -- Coproduct bits:
   inject₁ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → X => (X ⊕ Y)
   inject₁ {Y = Y} .func x = x , Y .⊥
@@ -281,9 +328,9 @@ module _ where
   [_,_] {Z = Z} f g .monotone (x₁≤x₁' , x₂≤x₂') =
     IsJoin.mono (Z .∨-isJoin) (f .monotone x₁≤x₁') (g .monotone x₂≤x₂')
   [_,_] {C = C}{Z = Z} f g .∨-preserving {(x₁ , y₁)}{(x₂ , y₂)} =
-    C .≤-trans (IsJoin.mono (Z .∨-isJoin) (f .∨-preserving) (g .∨-preserving))
-               (interchange (IsJoin.sym (Z .∨-isJoin)))
-    where open IsMonoid (monoidOfJoin (C .≤-isPreorder) (Z .∨-isJoin) (Z .⊥-isBottom))
+    C .≤-trans (Z.∨-mono (f .∨-preserving) (g .∨-preserving))
+               (Z.interchange Z.∨-comm .proj₁)
+      where module Z = JoinSemilattice Z
   [_,_] {Z = Z} f g .⊥-preserving = Z[ f .⊥-preserving , g .⊥-preserving ]
     where open IsJoin (Z .∨-isJoin) renaming ([_,_] to Z[_,_])
 
@@ -291,8 +338,8 @@ module _ where
             {f₁ f₂ : X => Z} {g₁ g₂ : Y => Z} →
             f₁ ≃m f₂ → g₁ ≃m g₂ →
             [ f₁ , g₁ ] ≃m [ f₂ , g₂ ]
-  []-cong {Z = Z} f₁≈f₂ g₁≈g₂ .eqfunc (x , y) = cong (f₁≈f₂ .eqfunc x) (g₁≈g₂ .eqfunc y)
-    where open IsJoin (Z .∨-isJoin)
+  []-cong {Z = Z} f₁≈f₂ g₁≈g₂ .eqfunc (x , y) = Z.∨-cong (f₁≈f₂ .eqfunc x) (g₁≈g₂ .eqfunc y)
+    where module Z = JoinSemilattice Z
 
   inj₁-copair : ∀ {A B C}
                   {X : JoinSemilattice A}{Y : JoinSemilattice B}{Z : JoinSemilattice C}

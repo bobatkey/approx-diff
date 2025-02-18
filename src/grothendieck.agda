@@ -27,7 +27,7 @@ module CategoryOfFamilies {o m e} os es (𝒞 : Category o m e) where
 
   open Fam
 
-  record Obj : Set (o ⊔ suc m ⊔ suc e ⊔ suc es ⊔ suc os) where
+  record Obj : Set (o ⊔ m ⊔ e ⊔ suc es ⊔ suc os) where
     no-eta-equality
     field
       idx : Setoid os es
@@ -139,7 +139,7 @@ module CategoryOfFamilies {o m e} os es (𝒞 : Category o m e) where
     open IsEquivalence
     private module 𝒞 = Category 𝒞
 
-    cat : Category (o ⊔ suc m ⊔ suc e ⊔ suc es ⊔ suc os) (os ⊔ es ⊔ m ⊔ e) (e ⊔ es ⊔ m ⊔ os)
+    cat : Category (o ⊔ m ⊔ e ⊔ suc es ⊔ suc os) (os ⊔ es ⊔ m ⊔ e) (e ⊔ es ⊔ m ⊔ os)
     cat .obj = Obj
     cat ._⇒_ = Mor
     cat ._≈_ = _≃_
@@ -222,6 +222,8 @@ module CategoryOfFamilies {o m e} os es (𝒞 : Category o m e) where
 
   -- This category always has coproducts, because it is the free
   -- co-product completion.
+  --
+  -- FIXME: extend this to infinite coproducts.
   module _ where
 
     open Category 𝒞
@@ -284,7 +286,9 @@ module CategoryOfFamilies {o m e} os es (𝒞 : Category o m e) where
 
   -- If 𝒞 has products, then so does the category of families. FIXME:
   -- redo the core of this to just get monoidal products from monoidal
-  -- products.
+  -- products. Even better, if we have monoidal products in each fibre
+  -- and reindexing preserves them, then we get monoidal products in
+  -- the total category.
   --
   -- FIXME: could this be generalised to all limits?
   module products (P : HasProducts 𝒞) where

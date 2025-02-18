@@ -54,7 +54,7 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒞 : Category o₁ m₁ e₁} {𝒟 
     module 𝒟 = Category 𝒟
   open Functor
 
-  record NatTrans (F G : Functor 𝒞 𝒟) : Set (o₁ ⊔ o₂ ⊔ m₁ ⊔ m₂ ⊔ e₁ ⊔ e₂) where
+  record NatTrans (F G : Functor 𝒞 𝒟) : Set (o₁ ⊔ m₁ ⊔ m₂ ⊔ e₂) where
     no-eta-equality
     field
       transf : ∀ x → F .fobj x 𝒟.⇒ G .fobj x
@@ -116,7 +116,7 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒞 : Category o₁ m₁ e₁} {𝒟 
 [_⇒_] : ∀ {o₁ m₁ e₁ o₂ m₂ e₂} →
          Category o₁ m₁ e₁ →
          Category o₂ m₂ e₂ →
-         Category (o₁ ⊔ m₁ ⊔ e₁ ⊔ o₂ ⊔ m₂ ⊔ e₂) (o₁ ⊔ m₁ ⊔ e₁ ⊔ o₂ ⊔ m₂ ⊔ e₂) (o₁ ⊔ e₂)
+         Category (o₁ ⊔ m₁ ⊔ e₁ ⊔ o₂ ⊔ m₂ ⊔ e₂) (o₁ ⊔ m₁ ⊔ m₂ ⊔ e₂) (o₁ ⊔ e₂)
 [ 𝒞 ⇒ 𝒟 ] .Category.obj = Functor 𝒞 𝒟
 [ 𝒞 ⇒ 𝒟 ] .Category._⇒_ = NatTrans
 [ 𝒞 ⇒ 𝒟 ] .Category._≈_ = ≃-NatTrans
@@ -129,6 +129,21 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒞 : Category o₁ m₁ e₁} {𝒟 
 [ 𝒞 ⇒ 𝒟 ] .Category.assoc = NT-assoc
 
 ------------------------------------------------------------------------------
+module _ {o₁ m₁ e₁}
+         {𝒞 : Category o₁ m₁ e₁}
+    where
+
+  private
+    module 𝒞 = Category 𝒞
+
+  open Functor
+
+  Id : Functor 𝒞 𝒞
+  Id .fobj x = x
+  Id .fmor f = f
+  Id .fmor-cong eq = eq
+  Id .fmor-id = 𝒞.≈-refl
+  Id .fmor-comp f g = 𝒞.≈-refl
 
 module _ {o₁ m₁ e₁ o₂ m₂ e₂ o₃ m₃ e₃}
          {𝒞 : Category o₁ m₁ e₁}
@@ -156,10 +171,56 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂ o₃ m₃ e₃}
   constF-F F x .transf _ = ℰ.id _
   constF-F F x .natural f = ℰ.∘-cong (F .fmor-id) ℰ.≈-refl
 
--- FIXME: identity functors, and various natural transformations about
--- them.
+-- FIXME: associativity and unit for functor composition
+module _ {o₁ m₁ e₁ o₂ m₂ e₂ o₃ m₃ e₃ o₄ m₄ e₄}
+         {𝒞 : Category o₁ m₁ e₁}
+         {𝒟 : Category o₂ m₂ e₂}
+         {ℰ : Category o₃ m₃ e₃}
+         {ℱ : Category o₄ m₄ e₄}
+         where
 
-  -- Horizontal composition of natural transformations
+  open Functor
+  open NatTrans
+
+  private
+    module ℱ = Category ℱ
+
+  F-assoc : ∀ (F : Functor ℰ ℱ) (G : Functor 𝒟 ℰ) (H : Functor 𝒞 𝒟) →
+            NatTrans ((F ∘F G) ∘F H) (F ∘F (G ∘F H))
+  F-assoc F G H .transf x = ℱ.id _
+  F-assoc F G H .natural f = ℱ.id-swap'
+
+  -- and back again... and it is natural, and some coherence bits
+
+-- Unitors
+module _ {o₁ m₁ e₁ o₂ m₂ e₂}
+         {𝒞 : Category o₁ m₁ e₁}
+         {𝒟 : Category o₂ m₂ e₂}
+  where
+
+  open Functor
+  open NatTrans
+
+  private
+    module 𝒟 = Category 𝒟
+
+  right-unit⁻¹ : ∀ (F : Functor 𝒞 𝒟) → NatTrans F (F ∘F Id)
+  right-unit⁻¹ F .transf x = 𝒟.id _
+  right-unit⁻¹ F .natural f = 𝒟.id-swap'
+
+  right-unit : ∀ (F : Functor 𝒞 𝒟) → NatTrans (F ∘F Id) F
+  right-unit F .transf x = 𝒟.id _
+  right-unit F .natural f = 𝒟.id-swap'
+
+  left-unit⁻¹ : ∀ (F : Functor 𝒞 𝒟) → NatTrans F (Id ∘F F)
+  left-unit⁻¹ F .transf x = 𝒟.id _
+  left-unit⁻¹ F .natural f = 𝒟.id-swap'
+
+  left-unit : ∀ (F : Functor 𝒞 𝒟) → NatTrans (Id ∘F F) F
+  left-unit F .transf x = 𝒟.id _
+  left-unit F .natural f = 𝒟.id-swap'
+
+-- Horizontal composition of natural transformations
 module _ {o₁ m₁ e₁ o₂ m₂ e₂ o₃ m₃ e₃}
          {𝒞 : Category o₁ m₁ e₁}
          {𝒟 : Category o₂ m₂ e₂}
@@ -238,12 +299,6 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂ o₃ m₃ e₃}
       (α₁ .transf _ ℰ.∘ G₁ .fmor (β₁ .transf x)) ℰ.∘ (α₂ .transf _ ℰ.∘ F₁ .fmor (β₂ .transf x))
     ∎
     where open ≈-Reasoning ℰ.isEquiv
-
-
-  -- FIXME: draw a diagram!
-
-  -- V-id-left : (α : NatTrans F₂ G₂) → ≃-NatTrans (id F ∘V α) ?
-  -- V-id-left α = ?
 
 open ≃-NatTrans
 

@@ -3,6 +3,7 @@
 module fam where
 
 open import Level
+open import prop
 open import prop-setoid
   using (IsEquivalence; Setoid; 𝟙; +-setoid; ⊗-setoid; idS; _∘S_; ∘S-cong; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_; ≃m-isEquivalence to ≈s-isEquivalence)
@@ -20,7 +21,7 @@ module _ {o m e os es} (A : Setoid os es) (𝒞 : Category o m e) where
 
   -- A family of elements indexed over a setoid (really a functor from
   -- the setoid-as-category)
-  record Fam : Set (o ⊔ suc m ⊔ suc e ⊔ suc os ⊔ suc es) where
+  record Fam : Set (o ⊔ m ⊔ e ⊔ suc os ⊔ suc es) where
     no-eta-equality
     field
       fm     : Carrier → obj
@@ -106,6 +107,8 @@ module _ {o m e} {os es} {𝒞 : Category o m e} {A : Setoid os es} where
       ((f ∘f g) ∘f h) ≃f (f ∘f (g ∘f h))
   ≃f-assoc f g h .transf-eq = assoc _ _ _
 
+-- FIXME: families over a fixed setoid form a category
+
   constF : ∀ {x y} → x ⇒ y → constantFam A 𝒞 x ⇒f constantFam A 𝒞 y
   constF f .transf _ = f
   constF f .natural _ = isEquiv .trans id-right (≈-sym id-left)
@@ -116,8 +119,6 @@ module _ {o m e} {os es} {𝒞 : Category o m e} {A : Setoid os es} where
   constF-comp : ∀ {x y z} (f : y ⇒ z) (g : x ⇒ y) →
                 constF (f ∘ g) ≃f (constF f ∘f constF g)
   constF-comp f g .transf-eq = ≈-refl
-
--- FIXME: families over a fixed setoid form a category
 
 ------------------------------------------------------------------------------
 -- Change of indexed category (post composition)
@@ -269,6 +270,8 @@ module _ {o m e os es} {𝒞 : Category o m e} where
       id _ ∘ (P .subst _ ∘ P .subst _) ∎
     where open ≈-Reasoning isEquiv
 
+------------------------------------------------------------------------------
+
 -- FIXME: this is a special case of limits, defined in functor.agda
 record HasSetoidProducts {o m e} os es (𝒞 : Category o m e) : Set (o ⊔ suc m ⊔ suc e ⊔ suc os ⊔ suc es) where
   open Category 𝒞
@@ -365,3 +368,49 @@ record HasSetoidProducts {o m e} os es (𝒞 : Category o m e) : Set (o ⊔ suc 
       lambdaΠ _ _ (f ∘f evalΠf _) ∘ lambdaΠ _ _ g
     ∎
     where open ≈-Reasoning isEquiv
+
+open import functor
+
+-- If a category has all discrete limits, then it has all setoid
+-- products (almost by definition).
+module _ {o m e} os es (𝒞 : Category o m e)
+         (hasDiscreteLimits : ∀ (A : Setoid os es) → HasLimits (setoid→category A) 𝒞)
+  where
+
+  private
+    module 𝒞 = Category 𝒞
+
+  open HasSetoidProducts
+  open HasLimits
+  open Functor
+  open NatTrans
+  open ≃-NatTrans
+  open Fam
+
+  open IsEquivalence
+
+  fam→functor : ∀ {A : Setoid os es} → Fam A 𝒞 → Functor (setoid→category A) 𝒞
+  fam→functor F .fobj = F .fm
+  fam→functor F .fmor ⟪ eq ⟫ = F .subst eq
+  fam→functor F .fmor-cong _ = 𝒞.≈-refl
+  fam→functor F .fmor-id = F .refl*
+  fam→functor F .fmor-comp f g = F .trans* _ _
+
+  -- FIXME: this is a bit messy
+
+  hasSetoidProducts : HasSetoidProducts os es 𝒞
+  hasSetoidProducts .Π A F = hasDiscreteLimits A .Π (fam→functor F)
+  hasSetoidProducts .lambdaΠ {A} x F f =
+    hasDiscreteLimits A .lambdaΠ x _
+      (record { transf = f ._⇒f_.transf
+              ; natural = λ { ⟪ e ⟫ → 𝒞.≈-sym (f ._⇒f_.natural e) }  })
+  hasSetoidProducts .lambdaΠ-cong {A} f₁≃f₂ =
+    hasDiscreteLimits A .lambda-cong (record { transf-eq = λ _ → f₁≃f₂ ._≃f_.transf-eq })
+  hasSetoidProducts .evalΠ {A} P a = hasDiscreteLimits A .evalΠ _ .transf a
+  hasSetoidProducts .evalΠ-cong {A} a₁≈a₂ =
+     𝒞.isEquiv .trans (hasDiscreteLimits A .evalΠ _ .natural ⟪ a₁≈a₂ ⟫) 𝒞.id-right
+  hasSetoidProducts .lambda-eval {A} a = hasDiscreteLimits A .lambda-eval _ .transf-eq a
+  hasSetoidProducts .lambda-ext {A} =
+    𝒞.isEquiv .trans
+      (hasDiscreteLimits A .lambda-cong (record { transf-eq = λ x → 𝒞.≈-refl }))
+      (hasDiscreteLimits A .lambda-ext _)

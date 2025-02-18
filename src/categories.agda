@@ -42,6 +42,9 @@ record Category o m e : Set (suc (o ⊔ m ⊔ e)) where
   id-swap : ∀ {x y}{f : x ⇒ y} → (id y ∘ f) ≈ (f ∘ id x)
   id-swap = isEquiv .trans id-left (≈-sym id-right)
 
+  id-swap' : ∀ {x y}{f : x ⇒ y} → (f ∘ id x) ≈ (id y ∘ f)
+  id-swap' = isEquiv .trans id-right (≈-sym id-left)
+
   open Setoid renaming (_≈_ to _≃_)
 
   hom-setoid : obj → obj → Setoid m e
@@ -141,7 +144,7 @@ module _ {o m e} {𝒞 : Category o m e} where
     pair-natural : ∀ {w z} (h : w ⇒ z) (f : z ⇒ x) (g : z ⇒ y) → (pair f g ∘ h) ≈ pair (f ∘ h) (g ∘ h)
     pair-natural h f g =
       begin
-        pair f g ∘ h
+       pair f g ∘ h
       ≈⟨ ≈-sym (pair-ext _) ⟩
         pair (p₁ ∘ (pair f g ∘ h)) (p₂ ∘ (pair f g ∘ h))
       ≈⟨ ≈-sym (pair-cong (assoc _ _ _) (assoc _ _ _)) ⟩
@@ -151,12 +154,21 @@ module _ {o m e} {𝒞 : Category o m e} where
       ∎
       where open ≈-Reasoning isEquiv
 
+    pair-ext0 : pair p₁ p₂ ≈ id p
+    pair-ext0 = begin pair p₁ p₂
+                        ≈⟨ ≈-sym (pair-cong id-right id-right) ⟩
+                      pair (p₁ ∘ id _) (p₂ ∘ id _)
+                        ≈⟨ pair-ext (id _) ⟩
+                      id _ ∎
+      where open ≈-Reasoning isEquiv
+
   record Product (x : obj) (y : obj) : Set (o ⊔ m ⊔ e) where
     field
       prod : obj
       p₁   : prod ⇒ x
       p₂   : prod ⇒ y
       isProduct : IsProduct x y prod p₁ p₂
+    open IsProduct isProduct public
 
    -- HasProducts = ∀ x y → Product x y
 
