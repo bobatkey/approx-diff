@@ -21,6 +21,16 @@ record MeetSemilattice (A : Preorder) : Set (suc 0ℓ) where
     ∧-isMeet  : IsMeet (A .≤-isPreorder) _∧_
     ⊤-isTop   : IsTop (A. ≤-isPreorder) ⊤
 
+  open IsMeet ∧-isMeet
+    renaming (assoc to ∧-assoc; ⟨_,_⟩ to ⟨_∧_⟩; mono to ∧-mono; comm to ∧-comm; cong to ∧-cong) public
+
+  open IsTop ⊤-isTop public
+
+  open IsMonoid (monoidOfMeet _ ∧-isMeet ⊤-isTop)
+    using (interchange)
+    renaming (lunit to ∧-lunit; runit to ∧-runit)
+    public
+
 module _ {A B : Preorder} where
   open Preorder
   private
@@ -96,6 +106,44 @@ module _ where
             (f : Y => Z) (g : X => Y) (h : W => X) →
             ((f ∘ g) ∘ h) ≃m (f ∘ (g ∘ h))
   assoc {D = D} f g h .eqfunc x = D .≃-refl
+
+  -- Additive structure
+  --
+  -- FIXME: this is true of any monoids: generalise!
+  module _ {A B}{X : MeetSemilattice A}{Y : MeetSemilattice B} where
+    private
+      module B = Preorder B
+      module Y = MeetSemilattice Y
+
+    εm : X => Y
+    εm .func x = Y.⊤
+    εm .monotone _ = B.≤-refl
+    εm .∧-preserving = Y.∧-lunit .proj₁
+    εm .⊤-preserving = B.≤-refl
+
+    _+m_ : X => Y → X => Y → X => Y
+    (f +m g) .func x = f .func x Y.∧ g .func x
+    (f +m g) .monotone x₁≤x₂ = Y.∧-mono (f .monotone x₁≤x₂) (g .monotone x₁≤x₂)
+    (f +m g) .∧-preserving =
+      B.≤-trans (Y.interchange Y.∧-comm .proj₁)
+                (Y.∧-mono (f .∧-preserving) (g .∧-preserving))
+    (f +m g) .⊤-preserving =
+      B.≤-trans (Y.∧-lunit .proj₂) (Y.∧-mono (f .⊤-preserving) (g .⊤-preserving))
+
+    +m-cong : ∀ {f₁ f₂ g₁ g₂ : X => Y} → f₁ ≃m f₂ → g₁ ≃m g₂ → (f₁ +m g₁) ≃m (f₂ +m g₂)
+    +m-cong f₁≃f₂ g₁≃g₂ .eqfunc x = Y.∧-cong (f₁≃f₂ .eqfunc x) (g₁≃g₂ .eqfunc x)
+
+    +m-comm : ∀ {f g} → (f +m g) ≃m (g +m f)
+    +m-comm .eqfunc x .proj₁ = Y.∧-comm
+    +m-comm .eqfunc x .proj₂ = Y.∧-comm
+
+    +m-assoc : ∀ {f g h} → ((f +m g) +m h) ≃m (f +m (g +m h))
+    +m-assoc .eqfunc x = Y.∧-assoc
+
+    +m-lunit : ∀ {f} → (εm +m f) ≃m f
+    +m-lunit .eqfunc x = Y.∧-lunit
+
+
 
 ------------------------------------------------------------------------------
 -- Big Products
@@ -231,10 +279,9 @@ module _ where
     mono (f .monotone x₁≤x₂) (g .monotone y₁≤y₂)
     where open IsMeet (Z .∧-isMeet)
   [_,_] {C = C}{Z = Z} f g .∧-preserving {x , y} {x' , y'} =
-    C .≤-trans (interchange sym)
-               (∧-mono (f .∧-preserving) (g .∧-preserving))
-    where open IsMeet (Z .∧-isMeet) renaming (mono to ∧-mono)
-          open IsMonoid (monoidOfMeet (C .≤-isPreorder) (Z .∧-isMeet) (Z .⊤-isTop))
+    C .≤-trans (Z.interchange Z.∧-comm .proj₁)
+               (Z.∧-mono (f .∧-preserving) (g .∧-preserving))
+      where module Z = MeetSemilattice Z
   [_,_] {Z = Z} f g .⊤-preserving = ⟨ (f .⊤-preserving) , (g .⊤-preserving) ⟩Z
     where open IsMeet (Z .∧-isMeet) renaming (⟨_,_⟩ to ⟨_,_⟩Z)
 

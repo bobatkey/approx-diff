@@ -208,7 +208,7 @@ module _ {o m e} os (𝒟 : Category o m e) where
    open CommutativeMonoid
    open IsEquivalence
 
-   ΠCM : Functor 𝒟 (cat (os ⊔ o ⊔ m ⊔ e) (os ⊔ o ⊔ m ⊔ e)) → Obj {os ⊔ o ⊔ m ⊔ e} {os ⊔ o ⊔ m ⊔ e}
+   ΠCM : Functor 𝒟 (cat (os ⊔ o ⊔ m) (os ⊔ o ⊔ m)) → Obj {os ⊔ o ⊔ m} {os ⊔ o ⊔ m}
    ΠCM F .carrier = Π os 𝒟 (toSetoid ∘F F)
    ΠCM F .commMonoid .ε .Π-func x = F .fobj x .ε
    ΠCM F .commMonoid .ε .Π-eq f = F .fmor f .preserve-ε
@@ -233,14 +233,14 @@ module _ {o m e} os (𝒟 : Category o m e) where
    evalΠCM F .transf x .cmFunc .preserve-+ = F .fobj x .refl
    evalΠCM F .natural = Setoid-Limit os 𝒟 .HasLimits.evalΠ (toSetoid ∘F F) .natural
 
-   lambdaΠCM : ∀ X (F : Functor 𝒟 (cat (os ⊔ o ⊔ m ⊔ e) (os ⊔ o ⊔ m ⊔ e))) →
+   lambdaΠCM : ∀ X (F : Functor 𝒟 (cat (os ⊔ o ⊔ m) (os ⊔ o ⊔ m))) →
                NatTrans (constF 𝒟 X) F → (X ⇒ ΠCM F)
    lambdaΠCM X F α .function =
      Setoid-Limit os 𝒟 .HasLimits.lambdaΠ (X .carrier) (toSetoid ∘F F) ((NTid toSetoid ∘H α) ∘V constF-F toSetoid X)
    lambdaΠCM X F α .cmFunc .preserve-ε x = α .transf x .preserve-ε
    lambdaΠCM X F α .cmFunc .preserve-+ x = α .transf x .preserve-+
 
-   limits : HasLimits 𝒟 (cat (os ⊔ o ⊔ m ⊔ e) (os ⊔ o ⊔ m ⊔ e))
+   limits : HasLimits 𝒟 (cat (os ⊔ o ⊔ m) (os ⊔ o ⊔ m))
    limits .HasLimits.Π = ΠCM
    limits .HasLimits.lambdaΠ = lambdaΠCM
    limits .HasLimits.evalΠ = evalΠCM
@@ -254,11 +254,22 @@ module _ {o m e} os (𝒟 : Category o m e) where
 -- Tensor products and symmetric monoidal closed structure (FIXME)
 
 ------------------------------------------------------------------------------
--- Products
+-- Products. Special case of limits, but this is likely more efficient.
 module _ {o e} where
   open Obj
   open _⇒_
   open _=[_]>_
+
+  𝟙 : Obj {o} {e}
+  𝟙 .carrier = prop-setoid.𝟙 {o} {e}
+  𝟙 .commMonoid = 𝟙cm
+
+  terminal : HasTerminal (cat o e)
+  terminal .HasTerminal.witness = 𝟙
+  terminal .HasTerminal.terminal-mor x .function = prop-setoid.to-𝟙
+  terminal .HasTerminal.terminal-mor x .cmFunc .preserve-ε = tt
+  terminal .HasTerminal.terminal-mor x .cmFunc .preserve-+ = tt
+  terminal .HasTerminal.terminal-unique x f g ._≃s_.func-eq _ = tt
 
   _⊕_ : Obj {o} {e} → Obj → Obj
   (X ⊕ Y) .carrier = ⊗-setoid (X .carrier) (Y .carrier)

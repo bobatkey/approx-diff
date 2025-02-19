@@ -58,7 +58,7 @@ evalAt .fmor-comp f g .transf-eq F = F .fmor-comp f g
     DL.Π-map (evalAt .fmor (𝒞 .Category.id x) ∘H id F)
   ≈⟨ DL.Π-map-cong (∘H-cong (evalAt .fmor-id) (≃-isEquivalence .refl {id F})) ⟩
     DL.Π-map (id (evalAt .fobj x) ∘H id F)
-  ≈⟨ DL.Π-map-cong (record { transf-eq = λ _ → 𝒟.id-left }) ⟩ -- FIXME: work out id-left for horizontal composition
+  ≈⟨ DL.Π-map-cong (record { transf-eq = λ _ → 𝒟.id-left }) ⟩
     DL.Π-map (id _)
   ≈⟨ DL.Π-map-id ⟩
     𝒟.id (DL.Π (evalAt .fobj x ∘F F))

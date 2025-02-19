@@ -17,7 +17,8 @@ record Preorder : Set (suc 0ℓ) where
     ≤-isPreorder : IsPreorder _≤_
 
   open IsPreorder ≤-isPreorder
-    renaming (refl to ≤-refl; trans to ≤-trans) public
+    renaming (refl to ≤-refl; trans to ≤-trans)
+    using (isEquivalence; _≃_) public
   open IsEquivalence isEquivalence
     renaming (refl to ≃-refl; sym to ≃-sym; trans to ≃-trans) public
 

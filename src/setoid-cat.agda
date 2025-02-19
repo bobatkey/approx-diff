@@ -64,47 +64,14 @@ module _ o e where
 
 -- FIXME: Setoid-exponentials
 
-module _ {o e} where
-  open Setoid
-  open IsEquivalence
-  open Fam
-  open _⇒f_
-  open _≃f_
-
-  record ΠS-Carrier (A : Setoid o e) (F : Fam A (SetoidCat (o ⊔ e) (o ⊔ e))) : Set (o ⊔ e) where
-    field
-      Π-func : (a : A .Carrier) → F .fm a .Carrier
-      Π-eq   : ∀ {a₁ a₂} (e : A ._≈_ a₁ a₂) → F .fm a₂ ._≈_ (F .subst e .func (Π-func a₁)) (Π-func a₂)
-  open ΠS-Carrier
-
-  ΠS : (A : Setoid o e) (F : Fam A (SetoidCat (o ⊔ e) (o ⊔ e))) → Setoid (o ⊔ e) (o ⊔ e)
-  ΠS A F .Carrier = ΠS-Carrier A F
-  ΠS A F ._≈_ f₁ f₂ = ∀ a → F .fm a ._≈_ (f₁ .Π-func a) (f₂ .Π-func a)
-  ΠS A F .isEquivalence .refl {f} a = F .fm a .refl
-  ΠS A F .isEquivalence .sym {f₁} {f₂} f₁≈f₂ a = F .fm a .sym (f₁≈f₂ a)
-  ΠS A F .isEquivalence .trans f₁≈f₂ f₂≈f₃ a = F .fm a .trans (f₁≈f₂ a) (f₂≈f₃ a)
-
-  Setoid-BigProducts : HasSetoidProducts o e (SetoidCat (o ⊔ e) (o ⊔ e))
-  Setoid-BigProducts .HasSetoidProducts.Π = ΠS
-  Setoid-BigProducts .HasSetoidProducts.lambdaΠ {A} Γ F f .func γ .Π-func a = f .transf a .func γ
-  Setoid-BigProducts .HasSetoidProducts.lambdaΠ {A} Γ F f .func γ .Π-eq {a₁} {a₂} a₁≈a₂ =
-    F .fm a₂ .sym (f .natural a₁≈a₂ .func-eq (Γ .refl))
-  Setoid-BigProducts .HasSetoidProducts.lambdaΠ {A} Γ F f .func-resp-≈ γ₁≈γ₂ a = f .transf a .func-resp-≈ γ₁≈γ₂
-  Setoid-BigProducts .HasSetoidProducts.lambdaΠ-cong f₁≈f₂ .func-eq x₁≈x₂ a = f₁≈f₂ .transf-eq .func-eq x₁≈x₂
-  Setoid-BigProducts .HasSetoidProducts.evalΠ P a .func f = f .Π-func a
-  Setoid-BigProducts .HasSetoidProducts.evalΠ P a .func-resp-≈ f₁≈f₂ = f₁≈f₂ a
-  Setoid-BigProducts .HasSetoidProducts.evalΠ-cong {A} {P} {a₁} {a₂} a₁≈a₂ .func-eq {f₁} {f₂} f₁≈f₂ =
-    P .fm a₂ .trans (f₁ .Π-eq a₁≈a₂) (f₁≈f₂ a₂)
-  Setoid-BigProducts .HasSetoidProducts.lambda-eval {f = f} a .func-eq = f .transf a .func-resp-≈
-  Setoid-BigProducts .HasSetoidProducts.lambda-ext {f = f} .func-eq = f .func-resp-≈
-
 open import functor using (HasLimits; Functor; NatTrans; ≃-NatTrans)
 
 -- Setoid categories have all "smaller" limits
 module _ {o m e} os (𝒟 : Category o m e) where
 
-  ℓ : Level
-  ℓ = os ⊔ o ⊔ m ⊔ e
+  private
+    ℓ : Level
+    ℓ = o ⊔ m ⊔ os
 
   private
     module 𝒟 = Category 𝒟
