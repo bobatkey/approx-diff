@@ -9,7 +9,7 @@ For any set $I$ and any category $C$ write $\Fam(I,C)$ for the category where:
 \end{itemize}
 
 \noindent Equivalently $\Fam(I,C)$ is the functor category $\Func{I}{C}$ where we interpret $I$ as a discrete
-category. $\Fam(-,C): \Set^{\op} \to \Cat$ is the functor which sends any set $I$ to $\Fam(I,C)$ and any
+category. $\Fam(-,C): \Set^{\op} \to \Cat$ is then the functor which sends any set $I$ to $\Fam(I,C)$ and any
 function $f: I \to J$ to the following \emph{reindexing functor}.
 
 \begin{definition}[Reindexing]
@@ -20,14 +20,16 @@ similarly for morphisms.
 
 \subsection{Category of families}
 
-The Grothendieck construction for a functor $F: D \to \Cat$ is the category where:
+The \emph{Grothendieck construction} $\Grothendieck{D}F$ for a functor $F: D \to \Cat$ is the category where:
 \begin{itemize}
-\item objects are pairs $(I, X)$ of an object $I$ of $D$ and an object of $FI$;
-\item morphisms from $(I, X)$ to $(J, Y)$ are morphisms $f: I \to J$ in $D$ paired with a morphism $(Ff)(X) \to Y$ in $FJ$.
+\item objects are pairs $(I, X)$ of an object $I$ of $D$ and an object $X$ of $FI$;
+\item morphisms from $(I, X)$ to $(J, Y)$ are morphisms $f: I \to J$ in $D$ paired with a morphism $(Ff)X
+\to Y$ in $FJ$.
 \end{itemize}
 
-\noindent The fibred category $\Fam(C)$ over $\Set$ is the Grothendieck construction for the functor
-$\Fam(-,C): \Set^{\op} \to \Cat$:
+\noindent When $F$ is contravariant, a morphism from $(I, X)$ to $(J, Y)$ is a morphism $f: I \to J$ in $D$
+paired with a morphism $X \to (Ff)Y$ in $FI$. Writing $\Fam(C)$ for the Grothendieck construction
+$\Grothendieck{\Set^{\op}}\Fam(-,C)$ we then have that in $\Fam(C)$:
 \begin{itemize}
 \item objects are pairs $(I, X)$ of a set $I$ and indexed family $X$ in $\Fam(I,C)$;
 \item morphisms from $(I, X)$ to $(J, Y)$ are functions $f: I \to J$ paired with a morphism $X \to Y[f]$ in
