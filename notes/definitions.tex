@@ -64,15 +64,13 @@ commutative monoid homomorphisms. $\CMon$ is symmetric closed monoidal, with the
 $\One$ as terminal object and monoidal product $A \tensor B$ given by the direct product of $A$ and $B$.
 $\CMon$ is complete and cocomplete, inheriting all limits and colimits from $\Set$.
 
-Although $\CMon$ is not Cartesian closed, every hom-object $\CMon(A,B)$ is a commutative monoid, with unit
-given by the constant homomorphism that sends every element of $A$ to $\varepsilon_B$, and binary operation
-given by $(f + g)(a) = f(a) + f(b)$.
-
 \subsection{$\CMon$-enriched category}
 
-A category $C$ is \emph{$\CMon$-enriched} if every hom-object $\Hom{C}{A}{B}$ is a commutative monoid with a
-\emph{zero} morphism $\zero_{A,B}$ and addition of morphisms $+_{A,B}$ as the commutative monoid operations,
-and composition is a family of morphisms $\Hom{C}{B}{C} \tensor \Hom{C}{A}{B} \to \Hom{C}{A}{C}$ in $\CMon$,
+A category $C$ is \emph{$\CMon$-enriched} if:
+\begin{enumerate}
+\item every hom-object $\Hom{C}{A}{B}$ is a commutative monoid with a
+\emph{zero} morphism $\zero_{A,B}$ as unit and addition of morphisms $+_{A,B}$ as the monoid operation;
+\item composition is a family of morphisms $\Hom{C}{B}{C} \tensor \Hom{C}{A}{B} \to \Hom{C}{A}{C}$ in $\CMon$,
 i.e.~satisfies
 
 \begin{salign*}
@@ -82,6 +80,14 @@ f \comp \zero = f = \zero \comp f
 (f + g) \comp h &= (f \comp h) + (g \comp h) \\
 h \comp (f + g) &= (h \comp f) + (h \comp g)
 \end{salign*}
+\end{enumerate}
+
+$\CMon$ is closed monoidal, and so enriched over itself. Every hom-object $\CMon(A,B)$ is a commutative
+monoid, with:
+\begin{enumerate}
+\item unit given by the constant homomorphism that sends every element of $A$ to $\varepsilon_B$;
+\item binary operation given pointwise so that $(f + g)(a) = f(a) + f(b)$.
+\end{enumerate}
 
 \begin{proposition}
 Suppose $C$ a $\CMon$-enriched monoidal category.
