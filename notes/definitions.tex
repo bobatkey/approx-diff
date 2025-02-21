@@ -65,8 +65,8 @@ $\Func{\LatGal^\op}{\CMon}$ is the category of presheaves of commutative monoids
 
 \subsection{Biproducts}
 
-For any objects $A, B$ of a category $C$, the \emph{biproduct} of $A$ and $B$ is an object $A \oplus B$ of $C$
-together with morphisms
+Suppose $C$ a $\CMon$-enriched category. For any objects $A, B$, the \emph{biproduct} of $A$ and $B$ is an
+object $A \oplus B$ of $C$ together with morphisms
 
 \begin{center}
 \begin{tikzcd}
@@ -75,3 +75,10 @@ together with morphisms
    B \arrow[l, "i_B"', shift right]
 \end{tikzcd}
 \end{center}
+
+\noindent satisfying
+\begin{align}
+   p_A \after i_A &= \id_A \\
+   p_B \after i_A &= 0 \\
+   p_B \after i_B &= \id_B
+\end{align}
