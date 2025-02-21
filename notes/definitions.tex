@@ -61,9 +61,12 @@ $\CMon$ is complete and cocomplete, inheriting all limits and colimits from $\Se
 
 A category $C$ is \emph{$\CMon$-enriched} if every hom-object $\Hom{C}{A}{B}$ is a commutative monoid with a
 \emph{zero} morphism $\zero_{A,B}$ and addition of morphisms $+_{A,B}$ as the commutative monoid operations,
-and composition is a morphism $\Hom{C}{B}{C} \tensor \Hom{C}{A}{B} \to \Hom{C}{A}{C}$ in $\CMon$,
+and composition is a family of morphisms $\Hom{C}{B}{C} \tensor \Hom{C}{A}{B} \to \Hom{C}{A}{C}$ in $\CMon$,
 i.e.~satisfies
 
+\begin{salign*}
+f \comp \zero = f = \zero \comp f
+\end{salign*}
 \begin{salign*}
 (f + g) \comp h &= (f \comp h) + (g \comp h) \\
 h \comp (f + g) &= (h \comp f) + (h \comp g)
