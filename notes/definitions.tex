@@ -50,12 +50,22 @@ $y \in L'$.
 
 \noindent $\LatGal$ has finite biproducts. \todo{Tie this to pre-additive structure.}
 
+\subsection{Commutative monoids}
+
+A \emph{commutative monoid} $A = (A, \varepsilon, +)$ is a set equipped with distinguished element
+$\varepsilon \in A$ called the \emph{unit} and associative binary operation $+$ satisfying $\varepsilon + x =
+x$ and $x + \varepsilon = x$ for any $x \in A$.
+
 \subsection{Category of commutative monoids}
 
-$\CMon$ is the category whose objects are the commutative monoids $M$ and morphisms $M \to M'$ are the
+$\CMon$ is the category whose objects are the commutative monoids $A$ and morphisms $A \to B$ are the
 commutative monoid homomorphisms. $\CMon$ is symmetric closed monoidal, with the trivial one-element monoid
-$\One$ as terminal object and monoidal product $M \tensor M'$ given by the direct product of $M$ and $M'$.
+$\One$ as terminal object and monoidal product $A \tensor B$ given by the direct product of $A$ and $B$.
 $\CMon$ is complete and cocomplete, inheriting all limits and colimits from $\Set$.
+
+Although $\CMon$ is not Cartesian closed, every hom-object $\CMon(A,B)$ is a commutative monoid, with the
+constant homomorphism that sends every element of the carrier of $A$ to $1_A$ as the unit, and pointwise
+multiplication as the binary operation.
 
 \subsection{$\CMon$-enriched category}
 
