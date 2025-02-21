@@ -49,3 +49,15 @@ $y \in L'$.
 \end{itemize}
 
 \noindent $\LatGal$ has finite biproducts. \todo{Tie this to pre-additive structure.}
+
+\subsection{Category of commutative monoids}
+
+$\CMon$ is the category whose objects are the commutative monoids $M$ and morphisms $M \to M'$ are the
+commutative monoid homomorphisms, with the trivial one-element monoid $\One$ as terminal object and binary
+products $M \tensor M'$ given by the direct product of monoids.
+
+\subsection{Category $\Func{\LatGal^\op}{\CMon}$}
+
+A presheaf $F: \LatGal^\op \to \CMon$ assigns to every
+bounded lattice $L$ a commutative monoid $FL$ and to every Galois connection $f: L \to L'$ .
+$\Func{\LatGal^\op}{\CMon}$ is the category of presheaves of commutative monoids on $\LatGal$.
