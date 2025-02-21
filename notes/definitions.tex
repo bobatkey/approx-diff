@@ -77,13 +77,26 @@ object $A \oplus B$ of $C$ together with morphisms
 \end{center}
 
 \noindent satisfying
+
+\begin{minipage}[t]{0.45\textwidth}
+\begin{center}
 \begin{salign*}
-\small
    p_A \after i_A &= \id_A \\
-   p_B \after i_A &= \zero_{A,B} \\
+   p_B \after i_A &= \zero_{A,B}
 \end{salign*}
+\end{center}
+\end{minipage}%
+\begin{minipage}[t]{0.45\textwidth}
+\begin{center}
 \begin{salign*}
-\small
    p_B \after i_B &= \id_B \\
    p_A \after i_B &= \zero_{B,A}
+\end{salign*}
+\end{center}
+\end{minipage}
+
+\noindent and
+
+\begin{salign*}
+i_A \after p_A + i_B \after p_B &= \id_{A \oplus B}
 \end{salign*}
