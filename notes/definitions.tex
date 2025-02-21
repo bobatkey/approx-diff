@@ -60,7 +60,18 @@ fact $\CMon$ is complete and cocomplete, inheriting all limits and colimits from
 \subsection{$\CMon$-enriched category}
 
 A category is $\CMon$-enriched if every $\Hom{A}{B}$ is a commutative monoid with the \emph{zero} morphism
-$\zero_{A,B}$ as the unit and addition of morphisms $+_{A,B}$ as the commutative monoid operation.
+$\zero_{A,B}$ and addition of morphisms $+_{A,B}$ as the commutative monoid operations, and composition
+is a commutative monoid homomorphism.
+
+\begin{proposition}
+Suppose $C$ a $\CMon$-enriched monoidal category.
+\begin{itemize}
+\item If $C$ has products (or coproducts), then they are biproducts and thus $C$ is semi-additive.
+\item If $C$ has a terminal (or initial) object then it is a zero object.
+\end{itemize}
+\end{proposition}
+
+If $C$ is $\CMon$-enriched then any functor category $\Func{D}{C}$ is $\CMon$-enriched.
 
 \subsection{Biproducts}
 
