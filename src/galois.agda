@@ -300,11 +300,11 @@ module _ where
   TWO .meets .MeetSemilattice._∧_ = _⊓_
   TWO .meets .MeetSemilattice.⊤ = I
   TWO .meets .MeetSemilattice.∧-isMeet = ⊓-isMeet
-  TWO .meets .MeetSemilattice.⊤-isTop .IsTop.≤-top = I-top
+  TWO .meets .MeetSemilattice.⊤-isTop .IsTop.≤-top = {!   !} -- I-top
   TWO .joins .JoinSemilattice._∨_ = two._⊔_
   TWO .joins .JoinSemilattice.⊥ = O
-  TWO .joins .JoinSemilattice.∨-isJoin = ⊔-isJoin
-  TWO .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom {x} = O-bot {x}
+  TWO .joins .JoinSemilattice.∨-isJoin = {!   !} -- ⊔-isJoin
+  TWO .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom {x} = {!   !} --O-bot {x}
 
   -- FIXME: this is a monoid because every object in this category is
   -- a monoid by cmon-enrichment.
