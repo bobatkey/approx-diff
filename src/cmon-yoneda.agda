@@ -1,13 +1,13 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
-open import Level
-open import prop
+open import Level using (_⊔_; lift; lower)
+open import prop using (lift; lower)
 open import prop-setoid using (IsEquivalence; idS; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_)
-open import categories
-open import functor
-open import commutative-monoid
-open import cmon-enriched
+open import categories using (Category; opposite; IsProduct)
+open import functor using ([_⇒_]; Functor; NatTrans; ≃-NatTrans)
+open import commutative-monoid using (CommutativeMonoid; _=[_]>_)
+open import cmon-enriched using (CMonEnriched; module cmon+products→biproducts)
 open import commutative-monoid-cat using (_⇒_; toSetoid)
   renaming (cat to CMon; Obj to CMonObj)
 

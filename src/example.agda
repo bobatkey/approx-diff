@@ -5,6 +5,7 @@ module example where
 open import Level using (0ℓ)
 open import Data.List using (List; []; _∷_)
 open import Data.Sum using (inj₁; inj₂)
+open import signature
 open import language-syntax
 import nat
 import label
@@ -71,11 +72,6 @@ DB = categories.coproducts→booleans
        (D.terminal galois.terminal)
        (D.products.strongCoproducts galois.products)
 
-open import language-interpretation D.cat
-              (D.terminal galois.terminal)
-              (DP.products)
-              (DB)
-              (D.lists galois.terminal galois.products)
 
 module _ where
 
@@ -96,9 +92,9 @@ module _ where
     where open HasProducts DP.products
 
   module _ where
-    open galois hiding (𝟙)
+    open galois using (_⇒g_; to-𝟙; _≃g_; _∘g_; ≃g-isEquivalence; cat)
     open prop-setoid using (IsEquivalence)
-    open IsEquivalence
+    open IsEquivalence using (trans)
 
     halp : ∀ {G} x → G ⇒g DB .HasBooleans.Bool .D.Obj.fam .Fam.fm x
     halp (inj₁ _) = to-𝟙 _
@@ -118,16 +114,23 @@ module _ where
       ≃g-isEquivalence .trans (cat .Category.id-right)
                               (halp-natural {x₁ = f ._⇒s_.func x₁} {x₂ = f ._⇒s_.func x₂} (f ._⇒s_.func-resp-≈ e))
 
-  BaseInterp : SignatureInterp Sig
-  BaseInterp .SignatureInterp.⟦sort⟧ number = D.simple[ nat.ℕₛ , galois.Presence ]
-  BaseInterp .SignatureInterp.⟦sort⟧ label = D.simple[ label.Label , galois.Presence ]
-  BaseInterp .SignatureInterp.⟦op⟧ zero = D.simplef[ nat.zero-m , galois.present ]
-  BaseInterp .SignatureInterp.⟦op⟧ add = D.Mor-∘ D.simplef[ nat.add , galois.combinePresence ] binary
-  BaseInterp .SignatureInterp.⟦op⟧ (lbl l) = D.simplef[ prop-setoid.const label.Label l , galois.present ]
-  BaseInterp .SignatureInterp.⟦rel⟧ equal-label = D.Mor-∘ (predicate label.equal-label) binary
+    BaseInterp : Model PFPC[ D.cat , D.terminal galois.terminal , DP.products , HasBooleans.Bool DB ] Sig
+    BaseInterp .Model.⟦sort⟧ number = D.simple[ nat.ℕₛ , galois.TWO ]
+    BaseInterp .Model.⟦sort⟧ label = D.simple[ label.Label , galois.TWO ]
+    BaseInterp .Model.⟦op⟧ zero = D.simplef[ nat.zero-m , galois.unit ]
+    BaseInterp .Model.⟦op⟧ add = D.Mor-∘ D.simplef[ nat.add , galois.conjunct ] binary
+    BaseInterp .Model.⟦op⟧ (lbl l) = D.simplef[ prop-setoid.const label.Label l , galois.unit ]
+    BaseInterp .Model.⟦rel⟧ equal-label = D.Mor-∘ (predicate label.equal-label) binary
 
-open interp Sig BaseInterp
+open import language-interpretation Sig
+              D.cat
+              (D.terminal galois.terminal)
+              (DP.products)
+              (DB)
+              BaseInterp
+              (D.lists galois.terminal galois.products)
 
+open import two using (I; O)
 open galois
 open import fam
 open _⇒f_
@@ -143,14 +146,14 @@ input = (label.a , nat.zero) ∷
         []
 
 back-slice : label.label → _
-back-slice l = ⟦ ex.query l ⟧tm .famf .transf (_ , input) ._⇒g_.bwd  ._=>_.func pr .proj₂
+back-slice l = ⟦ ex.query l ⟧tm .famf .transf (_ , input) ._⇒g_.bwd  ._=>_.func I .proj₂
 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
 -- Querying for the 'a' label uses the 1st and 3rd numbers
-test1 : back-slice label.a ≡ ((ab , pr) , (ab , ab) , (ab , pr) , tt)
+test1 : back-slice label.a ≡ ((O , I) , (O , O) , (O , I) , tt)
 test1 = refl
 
 -- Querying for the 'b' label uses the 2nd number
-test2 : back-slice label.b ≡ ((ab , ab) , (ab , pr) , (ab , ab) , tt)
+test2 : back-slice label.b ≡ ((O , O) , (O , I) , (O , O) , tt)
 test2 = refl

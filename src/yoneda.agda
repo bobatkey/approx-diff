@@ -12,7 +12,7 @@ open import setoid-cat
 -- extra 'os' level is to raise the level of the codomain if needed
 module yoneda {o m e} os es (𝒞 : Category o m e) where
 
-PSh : Category (o ⊔ suc m ⊔ suc e ⊔ suc os ⊔ suc es) (o ⊔ suc m ⊔ suc os ⊔ suc e ⊔ suc es) (o ⊔ m ⊔ os ⊔ e ⊔ es)
+PSh : Category (o ⊔ suc m ⊔ suc e ⊔ suc os ⊔ suc es) (o ⊔ m ⊔ e ⊔ os ⊔ es) (o ⊔ m ⊔ os ⊔ e ⊔ es)
 PSh = [ opposite 𝒞 ⇒ SetoidCat (m ⊔ os) (e ⊔ es) ]
 
 private

@@ -196,6 +196,7 @@ module _ where
 
   open HasProducts
 
+  -- FIXME: this is misnamed: should be _⊕_
   _⊗_ : Obj → Obj → Obj
   (X ⊗ Y) .carrier = X .carrier × Y .carrier
   (X ⊗ Y) .meets = X .meets ⊕M Y .meets
@@ -235,6 +236,7 @@ module _ where
   products .pair-ext f .fwd-eq = meet-semilattice.pair-ext (f .fwd)
   products .pair-ext f .bwd-eq = join-semilattice.copair-ext (f .bwd)
 
+{-
 -- This category has a lifting monad
 module _ where
 
@@ -285,130 +287,33 @@ module _ where
   𝕃-strength {X} {Y} .bwd⊣fwd {x , bottom} {bottom} .proj₂ e = tt
   𝕃-strength {X} {Y} .bwd⊣fwd {x , < x₁ >} {bottom} .proj₂ e = tt
   𝕃-strength {X} {Y} .bwd⊣fwd {x , < x₁ >} {< x₂ >} .proj₂ e = e
+-}
 
 module _ where
 
-  open import two
-
-  two-preorder : Preorder
-  two-preorder .Preorder.Carrier = Two
-  two-preorder .Preorder._≤_ = two._≤_
-  two-preorder .Preorder.≤-isPreorder = two.≤-isPreorder
+  open import two using (Two; I; O)
 
   TWO : Obj
-  TWO .carrier = two-preorder
-  TWO .meets .MeetSemilattice._∧_ = _⊓_
+  TWO .carrier .Preorder.Carrier = Two
+  TWO .carrier .Preorder._≤_ = two._≤_
+  TWO .carrier .Preorder.≤-isPreorder = two.≤-isPreorder
+  TWO .meets .MeetSemilattice._∧_ = two._⊓_
   TWO .meets .MeetSemilattice.⊤ = I
-  TWO .meets .MeetSemilattice.∧-isMeet = ⊓-isMeet
-  TWO .meets .MeetSemilattice.⊤-isTop .IsTop.≤-top = I-top
+  TWO .meets .MeetSemilattice.∧-isMeet = two.⊓-isMeet
+  TWO .meets .MeetSemilattice.⊤-isTop .IsTop.≤-top = two.I-top
   TWO .joins .JoinSemilattice._∨_ = two._⊔_
   TWO .joins .JoinSemilattice.⊥ = O
-  TWO .joins .JoinSemilattice.∨-isJoin = ⊔-isJoin
-  TWO .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom {x} = O-bot {x}
+  TWO .joins .JoinSemilattice.∨-isJoin = two.⊔-isJoin
+  TWO .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom {x} = two.O-bot {x}
 
-  -- FIXME: this is a monoid because every object in this category is
-  -- a monoid by cmon-enrichment.
+  open HasProducts products
 
-module _ where
+  -- This is a monoid because every object in this category is a
+  -- monoid by cmon-enrichment. FIXME: actually prove this gives a
+  -- monoid.
 
-  -- FIXME: split these bits out into other modules, and consider
-  -- reusing booleans.
+  conjunct : (TWO ⊗ TWO) ⇒g TWO
+  conjunct = p₁ +m p₂
 
-  data presence : Set where
-    pr ab : presence
-
-  presence-≤ : presence → presence → Prop
-  presence-≤ pr pr = ⊤
-  presence-≤ pr ab = ⊥
-  presence-≤ ab _ = ⊤
-
-  presence-∧ : presence → presence → presence
-  presence-∧ pr y = y
-  presence-∧ ab y = ab
-
-  presence-∨ : presence → presence → presence
-  presence-∨ pr y = pr
-  presence-∨ ab y = y
-
-  open Preorder
-
-  Presence-preorder : Preorder
-  Presence-preorder .Carrier = presence
-  Presence-preorder ._≤_ = presence-≤
-  Presence-preorder .≤-isPreorder .IsPreorder.refl {pr} = tt
-  Presence-preorder .≤-isPreorder .IsPreorder.refl {ab} = tt
-  Presence-preorder .≤-isPreorder .IsPreorder.trans {pr} {pr} {pr} p q = tt
-  Presence-preorder .≤-isPreorder .IsPreorder.trans {ab} {pr} {pr} p q = tt
-  Presence-preorder .≤-isPreorder .IsPreorder.trans {ab} {ab} {pr} p q = tt
-  Presence-preorder .≤-isPreorder .IsPreorder.trans {ab} {ab} {ab} p q = tt
-
-  Presence : Obj
-  Presence .carrier = Presence-preorder
-  Presence .meets .MeetSemilattice._∧_ = presence-∧
-  Presence .meets .MeetSemilattice.⊤ = pr
-  Presence .meets .MeetSemilattice.∧-isMeet .IsMeet.π₁ {pr} {pr} = tt
-  Presence .meets .MeetSemilattice.∧-isMeet .IsMeet.π₁ {pr} {ab} = tt
-  Presence .meets .MeetSemilattice.∧-isMeet .IsMeet.π₁ {ab} {y} = tt
-  Presence .meets .MeetSemilattice.∧-isMeet .IsMeet.π₂ {pr} {pr} = tt
-  Presence .meets .MeetSemilattice.∧-isMeet .IsMeet.π₂ {pr} {ab} = tt
-  Presence .meets .MeetSemilattice.∧-isMeet .IsMeet.π₂ {ab} {pr} = tt
-  Presence .meets .MeetSemilattice.∧-isMeet .IsMeet.π₂ {ab} {ab} = tt
-  IsMeet.⟨_,_⟩ (Presence .meets .MeetSemilattice.∧-isMeet) {pr} {pr} {pr} p q = tt
-  IsMeet.⟨_,_⟩ (Presence .meets .MeetSemilattice.∧-isMeet) {ab} {pr} {pr} p q = tt
-  IsMeet.⟨_,_⟩ (Presence .meets .MeetSemilattice.∧-isMeet) {ab} {pr} {ab} p q = tt
-  IsMeet.⟨_,_⟩ (Presence .meets .MeetSemilattice.∧-isMeet) {ab} {ab} {z} p q = tt
-  Presence .meets .MeetSemilattice.⊤-isTop .IsTop.≤-top {pr} = tt
-  Presence .meets .MeetSemilattice.⊤-isTop .IsTop.≤-top {ab} = tt
-  Presence .joins .JoinSemilattice._∨_ = presence-∨
-  Presence .joins .JoinSemilattice.⊥ = ab
-  Presence .joins .JoinSemilattice.∨-isJoin .IsJoin.inl {pr} {y} = tt
-  Presence .joins .JoinSemilattice.∨-isJoin .IsJoin.inl {ab} {pr} = tt
-  Presence .joins .JoinSemilattice.∨-isJoin .IsJoin.inl {ab} {ab} = tt
-  Presence .joins .JoinSemilattice.∨-isJoin .IsJoin.inr {pr} {pr} = tt
-  Presence .joins .JoinSemilattice.∨-isJoin .IsJoin.inr {pr} {ab} = tt
-  Presence .joins .JoinSemilattice.∨-isJoin .IsJoin.inr {ab} {pr} = tt
-  Presence .joins .JoinSemilattice.∨-isJoin .IsJoin.inr {ab} {ab} = tt
-  IsJoin.[_,_] (Presence .joins .JoinSemilattice.∨-isJoin) {pr} {pr} {pr} p q = tt
-  IsJoin.[_,_] (Presence .joins .JoinSemilattice.∨-isJoin) {pr} {ab} {pr} p q = tt
-  IsJoin.[_,_] (Presence .joins .JoinSemilattice.∨-isJoin) {ab} {pr} {pr} p q = tt
-  IsJoin.[_,_] (Presence .joins .JoinSemilattice.∨-isJoin) {ab} {ab} {pr} p q = tt
-  IsJoin.[_,_] (Presence .joins .JoinSemilattice.∨-isJoin) {ab} {ab} {ab} p q = tt
-  Presence .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom {pr} = tt
-  Presence .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom {ab} = tt
-
-  -- FIXME: this ought to work for any object, since we can always use
-  -- the meets.
-  combinePresence : (Presence ⊗ Presence) ⇒g Presence
-  combinePresence .fwd ._=>M_.func (x , y) = presence-∧ x y
-  combinePresence .fwd ._=>M_.monotone {pr , pr} {pr , pr} (p , q) = tt
-  combinePresence .fwd ._=>M_.monotone {pr , ab} {x₂ , y₂} (p , q) = tt
-  combinePresence .fwd ._=>M_.monotone {ab , y₁} {x₂ , y₂} (p , q) = tt
-  combinePresence .fwd ._=>M_.∧-preserving {pr , pr} {x₂ , y₂} = Presence-preorder .≤-isPreorder .IsPreorder.refl
-  combinePresence .fwd ._=>M_.∧-preserving {pr , ab} {x₂ , y₂} = tt
-  combinePresence .fwd ._=>M_.∧-preserving {ab , y₁} {x₂ , y₂} = tt
-  combinePresence .fwd ._=>M_.⊤-preserving = tt
-  combinePresence .bwd ._=>J_.func x = x , x
-  combinePresence .bwd ._=>J_.monotone x₁≤x₂ = x₁≤x₂ , x₁≤x₂
-  combinePresence .bwd ._=>J_.∨-preserving {pr} {pr} = tt , tt
-  combinePresence .bwd ._=>J_.∨-preserving {pr} {ab} = tt , tt
-  combinePresence .bwd ._=>J_.∨-preserving {ab} {pr} = tt , tt
-  combinePresence .bwd ._=>J_.∨-preserving {ab} {ab} = tt , tt
-  combinePresence .bwd ._=>J_.⊥-preserving = tt , tt
-  combinePresence .bwd⊣fwd {pr , pr} {y} .proj₁ p = p , p
-  combinePresence .bwd⊣fwd {pr , ab} {ab} .proj₁ p = tt , tt
-  combinePresence .bwd⊣fwd {ab , pr} {ab} .proj₁ p = tt , tt
-  combinePresence .bwd⊣fwd {ab , ab} {ab} .proj₁ p = tt , tt
-  combinePresence .bwd⊣fwd {pr , pr} {pr} .proj₂ p = tt
-  combinePresence .bwd⊣fwd {pr , pr} {ab} .proj₂ p = tt
-  combinePresence .bwd⊣fwd {pr , ab} {ab} .proj₂ p = tt
-  combinePresence .bwd⊣fwd {ab , pr} {ab} .proj₂ p = tt
-  combinePresence .bwd⊣fwd {ab , ab} {ab} .proj₂ p = tt
-
-  present : 𝟙 ⇒g Presence
-  present .fwd ._=>M_.func _ = pr
-  present .fwd ._=>M_.monotone _ = tt
-  present .fwd ._=>M_.∧-preserving = tt
-  present .fwd ._=>M_.⊤-preserving = tt
-  present .bwd = join-semilattice.terminal
-  present .bwd⊣fwd {_} {pr} = refl-⇔
-  present .bwd⊣fwd {_} {ab} = refl-⇔
+  unit : 𝟙 ⇒g TWO
+  unit = εm

@@ -4,16 +4,11 @@ module language-syntax where
 
 open import Level using (0ℓ; suc; _⊔_)
 open import Data.List using (List; []; _∷_)
+open import signature
 
 data Every {ℓ₁ ℓ₂} {A : Set ℓ₁} (P : A → Set ℓ₂) : List A → Set (ℓ₁ ⊔ ℓ₂) where
   []  : Every P []
   _∷_ : ∀ {x xs} → P x → Every P xs → Every P (x ∷ xs)
-
-record Signature ℓ : Set (suc ℓ) where
-  field
-    sort : Set ℓ
-    op   : List sort → sort → Set ℓ
-    rel  : List sort → Set ℓ
 
 module language {ℓ} (Sig : Signature ℓ) where
 
