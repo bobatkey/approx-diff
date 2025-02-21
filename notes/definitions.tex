@@ -57,6 +57,11 @@ commutative monoid homomorphisms. $\CMon$ is symmetric closed monoidal, with the
 $\One$ as terminal object and tensor product $M \tensor M'$ given by the direct product of $M$ and $M'$. In
 fact $\CMon$ is complete and cocomplete, inheriting all limits and colimits from $\Set$.
 
+\subsection{$\CMon$-enriched category}
+
+A category is $\CMon$-enriched if $\Hom{A}{B}$ is closed under the \emph{zero} morphism $\zero_{A,B}$ and
+addition of morphisms $+_{A,B}$ satisfying the commutative monoid laws.
+
 \subsection{Category $\Func{\LatGal^\op}{\CMon}$}
 
 A presheaf $F: \LatGal^\op \to \CMon$ assigns to every
@@ -100,5 +105,3 @@ object $A \oplus B$ of $C$ together with morphisms
 \begin{salign*}
 i_A \after p_A + i_B \after p_B &= \id_{A \oplus B}
 \end{salign*}
-
-\noindent where $\zero_{A,B}$ is the \emph{zero} morphism $A \to B$
