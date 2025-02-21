@@ -62,12 +62,6 @@ fact $\CMon$ is complete and cocomplete, inheriting all limits and colimits from
 A category is $\CMon$-enriched if every $\Hom{A}{B}$ is a commutative monoid with the \emph{zero} morphism
 $\zero_{A,B}$ as the unit and addition of morphisms $+_{A,B}$ as the commutative monoid operation.
 
-\subsection{Category $\Func{\LatGal^\op}{\CMon}$}
-
-A presheaf $F: \LatGal^\op \to \CMon$ assigns to every
-bounded lattice $L$ a commutative monoid $FL$ and to every Galois connection $f: L \to L'$ .
-$\Func{\LatGal^\op}{\CMon}$ is the category of presheaves of commutative monoids on $\LatGal$.
-
 \subsection{Biproducts}
 
 Suppose $C$ a $\CMon$-enriched category. For any objects $A, B$, the \emph{biproduct} of $A$ and $B$ is an
@@ -105,3 +99,12 @@ object $A \oplus B$ of $C$ together with morphisms
 \begin{salign*}
 i_A \after p_A + i_B \after p_B &= \id_{A \oplus B}
 \end{salign*}
+
+Any category with biproducts has products given by $(A \oplus B, p_A, p_B)$ and coproducts given by $(A \oplus
+B, i_A, i_B)$.
+
+\subsection{Category $\Func{\LatGal^\op}{\CMon}$}
+
+A presheaf $F: \LatGal^\op \to \CMon$ assigns to every
+bounded lattice $L$ a commutative monoid $FL$ and to every Galois connection $f: L \to L'$ .
+$\Func{\LatGal^\op}{\CMon}$ is the category of presheaves of commutative monoids on $\LatGal$.
