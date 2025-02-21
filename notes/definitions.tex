@@ -54,7 +54,8 @@ $y \in L'$.
 
 A \emph{commutative monoid} $A = (A, \varepsilon, +)$ is a set equipped with distinguished element
 $\varepsilon \in A$ called the \emph{unit} and associative binary operation $+$ satisfying $\varepsilon + x =
-x$ and $x + \varepsilon = x$ for any $x \in A$.
+x$ and $x + \varepsilon = x$ for any $x \in A$. A commutative monoid homomorphism from $A$ to $B$ is any
+function $f: A \to B$ which preserves $\varepsilon$ and $+$.
 
 \subsection{Category of commutative monoids}
 
@@ -63,9 +64,9 @@ commutative monoid homomorphisms. $\CMon$ is symmetric closed monoidal, with the
 $\One$ as terminal object and monoidal product $A \tensor B$ given by the direct product of $A$ and $B$.
 $\CMon$ is complete and cocomplete, inheriting all limits and colimits from $\Set$.
 
-Although $\CMon$ is not Cartesian closed, every hom-object $\CMon(A,B)$ is a commutative monoid, with the
-constant homomorphism that sends every element of the carrier of $A$ to $1_A$ as the unit, and pointwise
-multiplication as the binary operation.
+Although $\CMon$ is not Cartesian closed, every hom-object $\CMon(A,B)$ is a commutative monoid, with unit
+given by the constant homomorphism that sends every element of $A$ to $\varepsilon_B$, and binary operation
+given by $(f + g)(a) = f(a) + f(b)$.
 
 \subsection{$\CMon$-enriched category}
 
