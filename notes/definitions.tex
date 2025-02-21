@@ -62,3 +62,16 @@ fact $\CMon$ is complete and cocomplete, inheriting all limits and colimits from
 A presheaf $F: \LatGal^\op \to \CMon$ assigns to every
 bounded lattice $L$ a commutative monoid $FL$ and to every Galois connection $f: L \to L'$ .
 $\Func{\LatGal^\op}{\CMon}$ is the category of presheaves of commutative monoids on $\LatGal$.
+
+\subsection{Biproducts}
+
+For any objects $A, B$ of a category $C$, the \emph{biproduct} of $A$ and $B$ is an object $A \oplus B$ of $C$
+together with morphisms
+
+\begin{center}
+\begin{tikzcd}
+   A \arrow[r, "i_A", shift left] &
+   A \oplus B \arrow[l, "p_A", shift left] \arrow[r, "p_B"', shift right] &
+   B \arrow[l, "i_B"', shift right]
+\end{tikzcd}
+\end{center}
