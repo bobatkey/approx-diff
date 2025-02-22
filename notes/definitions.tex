@@ -73,8 +73,8 @@ inheriting all limits and colimits from $\Set$.
 
 We note that if a category $C$ is \emph{$\CMon$-enriched}, we have that:
 \begin{enumerate}
-\item Every hom-object $\Hom{C}{A}{B}$ is a commutative monoid; the unit $\zero_{A,B}$ is a zero morphism and
-the binary operation $+_{A,B}$ is addition of morphisms.
+\item Every hom-object $\Hom{C}{A}{B}$ is a commutative monoid of morphisms; we write $\zero_{A,B}$ (zero
+morphism) for the unit, and $+_{A,B}$ (addition of morphisms) for the binary operation.
 \item Composition is \emph{biadditive}, i.e.~given by a family of morphisms $\Hom{C}{B}{C} \tensor
 \Hom{C}{A}{B} \to \Hom{C}{A}{C}$ in $\CMon$ that preserve the additive structure in $\Hom{C}{B}{C}$ and
 $\Hom{C}{A}{B}$ separately:
@@ -91,8 +91,8 @@ h \comp (f + g) &= (h \comp f) + (h \comp g)
 $\CMon$ is closed monoidal, and so enriched over itself. Thus every hom-object $\CMon(A,B)$ is a commutative
 monoid of commutative monoid homomorphisms where:
 \begin{enumerate}
-\item unit $0$ is the constant homomorphism sending every element of $A$ to $\varepsilon_B$;
-\item addition of morphisms $+$ is defined pointwise so that $+_{A}$ so that $(f + g)(a) = f(a) + g(a)$.
+\item the unit $0$ is the constant homomorphism sending every element of $A$ to $\varepsilon_B$;
+\item addition of morphisms $+$ is defined pointwise so that $(f + g)(a) = f(a) + g(a)$.
 \end{enumerate}
 
 \begin{proposition}
