@@ -50,28 +50,34 @@ $y \in L'$.
 
 \noindent $\LatGal$ has finite biproducts. \todo{Tie this to pre-additive structure.}
 
-\subsection{Commutative monoids}
+\subsection{$\CMon$-enriched categories}
 
-A \emph{commutative monoid} $A = (A, \varepsilon, +)$ is a set equipped with distinguished element
-$\varepsilon \in A$ called the \emph{unit} and associative binary operation $+$ satisfying $\varepsilon + x =
-x$ and $x + \varepsilon = x$ for any $x \in A$. A commutative monoid homomorphism from $A$ to $B$ is any
-function $f: A \to B$ which preserves $\varepsilon$ and $+$.
+\begin{definition}[Commutative monoid]
+A \emph{commutative monoid} $A = (A, \varepsilon, \bullet)$ is a set $A$ equipped with distinguished element
+$\varepsilon \in A$ called the \emph{unit} and associative binary operation $\bullet$ satisfying $\varepsilon
+\bullet x = x$ and $x \bullet \varepsilon = x$ for any $x \in A$.
+\end{definition}
 
-\subsection{Category of commutative monoids}
+A commutative monoid homomorphism from $A$ to $B$ is any function $f: A \to B$ which preserves $\varepsilon$
+and $\bullet$.
 
-$\CMon$ is the category whose objects are the commutative monoids $A$ and morphisms $A \to B$ are the
-commutative monoid homomorphisms. $\CMon$ is symmetric closed monoidal, with the trivial one-element monoid
-$\One$ as terminal object and monoidal product $A \tensor B$ given by the direct product of $A$ and $B$.
-$\CMon$ is complete and cocomplete, inheriting all limits and colimits from $\Set$.
+\begin{definition}[Category of commutative monoids]
+Define $\CMon$ to be the category whose objects are the commutative monoids $A$ and morphisms $A \to B$ are
+the commutative monoid homomorphisms.
+\end{definition}
+
+$\CMon$ is symmetric closed monoidal, with the trivial one-element monoid $\One$ as terminal object and
+monoidal product $A \tensor B$ given by the direct product of $A$ and $B$. $\CMon$ is complete and cocomplete,
+inheriting all limits and colimits from $\Set$.
 
 \subsection{$\CMon$-enriched category}
 
-A category $C$ is \emph{$\CMon$-enriched} if:
+We note that if a category $C$ is \emph{$\CMon$-enriched}, then:
 \begin{enumerate}
-\item every hom-object $\Hom{C}{A}{B}$ is a commutative monoid with a
-\emph{zero} morphism $\zero_{A,B}$ as unit and addition of morphisms $+_{A,B}$ as the monoid operation;
-\item composition is a family of morphisms $\Hom{C}{B}{C} \tensor \Hom{C}{A}{B} \to \Hom{C}{A}{C}$ in $\CMon$,
-i.e.~satisfies
+\item every hom-object $\Hom{C}{A}{B}$ is a commutative monoid (writing $\zero_{A,B}$ for the unit and
+$+_{A,B}$ for the binary operation);
+\item composition is given by a family of morphisms $\Hom{C}{B}{C} \tensor \Hom{C}{A}{B} \to \Hom{C}{A}{C}$ in
+$\CMon$, i.e.~satisfies
 
 \begin{salign*}
 f \comp \zero = f = \zero \comp f
@@ -85,7 +91,7 @@ h \comp (f + g) &= (h \comp f) + (h \comp g)
 $\CMon$ is closed monoidal, and so enriched over itself. Every hom-object $\CMon(A,B)$ is a commutative
 monoid, with:
 \begin{enumerate}
-\item unit given by the constant homomorphism that sends every element of $A$ to $\varepsilon_B$;
+\item unit given by the constant homomorphism sending every element of $A$ to $\varepsilon_B$;
 \item binary operation given pointwise so that $(f + g)(a) = f(a) + f(b)$.
 \end{enumerate}
 
@@ -142,6 +148,6 @@ B, i_A, i_B)$.
 
 \subsection{Category $\Func{\LatGal^\op}{\CMon}$}
 
-A presheaf $F: \LatGal^\op \to \CMon$ assigns to every
-bounded lattice $L$ a commutative monoid $FL$ and to every Galois connection $f: L \to L'$ .
-$\Func{\LatGal^\op}{\CMon}$ is the category of presheaves of commutative monoids on $\LatGal$.
+A presheaf $F: \LatGal^\op \to \CMon$ assigns to every bounded lattice $L$ a commutative monoid $FL$ and to
+every Galois connection $f: L \to L'$ . $\Func{\LatGal^\op}{\CMon}$ is the category of presheaves of
+commutative monoids on $\LatGal$.
