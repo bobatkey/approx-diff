@@ -36,18 +36,6 @@ $\Grothendieck{\Set^{\op}}\Fam(-,C)$ we then have that in $\Fam(C)$:
 $\Fam(I,C)$.
 \end{itemize}
 
-\subsection{Category of bounded lattices and Galois connections}
-
-Define the category $\LatGal$ where:
-\begin{itemize}
-\item objects $L$ are the bounded lattices;
-\item morphisms $f \vdash g: L \to L'$ are meet-semilattice homomorphisms $f: L \to L'$ paired with
-join-semilattice homomorphisms $g: L' \to L$ satisfying $y \leq f(x) \iff g(y) \leq x$ for any $x \in L$ and any
-$y \in L'$.
-\end{itemize}
-
-\noindent $\LatGal$ has finite biproducts.
-
 \subsection{$\CMon$-enriched categories}
 
 \begin{definition}[Commutative monoid]
@@ -146,6 +134,18 @@ i_A \comp p_A + i_B \comp p_B &= \id_{A \oplus B}
 
 Any category with biproducts has products given by $(A \oplus B, p_A, p_B)$ and coproducts given by $(A \oplus
 B, i_A, i_B)$.
+
+\subsection{Category of bounded lattices and Galois connections}
+
+Define the category $\LatGal$ where:
+\begin{itemize}
+\item objects $L$ are the bounded lattices;
+\item morphisms $f \vdash g: L \to L'$ are meet-semilattice homomorphisms $f: L \to L'$ paired with
+join-semilattice homomorphisms $g: L' \to L$ satisfying $y \leq f(x) \iff g(y) \leq x$ for any $x \in L$ and any
+$y \in L'$.
+\end{itemize}
+
+\noindent $\LatGal$ has finite biproducts.
 
 \subsection{Category $\Func{\LatGal^\op}{\CMon}$}
 
