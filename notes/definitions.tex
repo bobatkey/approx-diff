@@ -1,16 +1,17 @@
 \section{Definitions}
 
-\subsection{Indexed families of objects}
+\subsection{Category of families}
 
+\begin{definition}[$\Fam(I,C)$]
 For any set $I$ and any category $C$ write $\Fam(I,C)$ for the category where:
 \begin{itemize}
 \item objects are the $I$-indexed families of objects of $C$;
 \item morphisms from $X$ to $Y$ are families of morphisms $f_i: X_i \to Y_i$ in $C$ for any $i \in I$.
 \end{itemize}
+\end{definition}
 
 \noindent Equivalently $\Fam(I,C)$ is the functor category $\Func{I}{C}$ where we interpret $I$ as a discrete
-category. $\Fam(-,C): \Set^{\op} \to \Cat$ is then the functor which sends any set $I$ to $\Fam(I,C)$ and any
-function $f: I \to J$ to the following \emph{reindexing functor}.
+category.
 
 \begin{definition}[Reindexing]
 For any $f: I \to J$ the \emph{reindexing} functor $\reindex{-}{f}: \Fam(J,C) \to \Fam(I,C)$ sends any
@@ -18,18 +19,30 @@ $J$-indexed family $X$ to the $I$-indexed family $X[f]$ where $X[f]_i = X_{f(i)}
 similarly for morphisms.
 \end{definition}
 
-\subsection{Category of families}
+\begin{definition}[$\Fam(-,C)$ functor]
+$\Fam(-,C): \Set^{\op} \to \Cat$ is then the functor which sends any set $I$ to $\Fam(I,C)$ and any function
+$f: I \to J$ to the functor $\reindex{-}{f}: \Fam(J,C) \to \Fam(I,C)$.
+\end{definition}
 
-The \emph{Grothendieck construction} $\Grothendieck{D}F$ for a functor $F: D \to \Cat$ is the category where:
+\begin{definition}[Grothendieck construction for $F$]
+Suppose a functor $F: D \to \Cat$. The \emph{Grothendieck construction} $\Grothendieck{D}F$ for $F$ is the
+category where:
 \begin{itemize}
-\item objects are pairs $(I, X)$ of an object $I$ of $D$ and an object $X$ of $FI$;
-\item morphisms from $(I, X)$ to $(J, Y)$ are morphisms $f: I \to J$ in $D$ paired with a morphism $(Ff)X
-\to Y$ in $FJ$.
+\item objects are pairs $(I, X)$ of an object $I$ of $D$ and an object $X$ of $F(I)$;
+\item morphisms from $(I, X)$ to $(J, Y)$ are morphisms $f: I \to J$ in $D$ paired with a morphism $F(f)(X)
+\to Y$ in $F(J)$.
 \end{itemize}
+\end{definition}
 
 \noindent When $F$ is contravariant, a morphism from $(I, X)$ to $(J, Y)$ is a morphism $f: I \to J$ in $D$
-paired with a morphism $X \to (Ff)Y$ in $FI$. Writing $\Fam(C)$ for the Grothendieck construction
-$\Grothendieck{\Set^{\op}}\Fam(-,C)$ we then have that in $\Fam(C)$:
+paired with a morphism $X \to F(f)(Y)$ in $F(I)$.
+
+\begin{definition}[Category of families]
+For any category $C$ define $\Fam(C)$ to be the Grothendieck construction
+$\Grothendieck{\Set^{\op}}\Fam(-,C)$.
+\end{definition}
+
+In $\Fam(C)$:
 \begin{itemize}
 \item objects are pairs $(I, X)$ of a set $I$ and an indexed family $X$ in $\Fam(I,C)$;
 \item morphisms from $(I, X)$ to $(J, Y)$ are functions $f: I \to J$ paired with a morphism $X \to Y[f]$ in
@@ -44,8 +57,8 @@ $\varepsilon \in A$ called the \emph{unit} and associative binary operation $\bu
 \bullet x = x$ and $x \bullet \varepsilon = x$ for any $x \in A$.
 \end{definition}
 
-A commutative monoid homomorphism from $A$ to $B$ is any function $f: A \to B$ which preserves $\varepsilon$
-and $\bullet$.
+A commutative monoid homomorphism from $A$ to $B$ is any function $f: A \to B$ preserving $\varepsilon$ and
+$\bullet$.
 
 \begin{definition}[Category of commutative monoids]
 Define $\CMon$ to be the category whose objects are the commutative monoids $A$ and morphisms $A \to B$ are
@@ -58,11 +71,11 @@ inheriting all limits and colimits from $\Set$.
 
 \subsection{$\CMon$-enriched category}
 
-We note that if a category $C$ is \emph{$\CMon$-enriched}, then:
+We note that if a category $C$ is \emph{$\CMon$-enriched}, we have that:
 \begin{enumerate}
-\item every hom-object $\Hom{C}{A}{B}$ is a commutative monoid (writing $\zero_{A,B}$ for the unit and
-$+_{A,B}$ for the binary operation);
-\item composition is \emph{biadditive}, i.e.~given by a family of morphisms $\Hom{C}{B}{C} \tensor
+\item Every hom-object $\Hom{C}{A}{B}$ is a commutative monoid; the unit $\zero_{A,B}$ is a zero morphism and
+the binary operation $+_{A,B}$ is addition of morphisms.
+\item Composition is \emph{biadditive}, i.e.~given by a family of morphisms $\Hom{C}{B}{C} \tensor
 \Hom{C}{A}{B} \to \Hom{C}{A}{C}$ in $\CMon$ that preserve the additive structure in $\Hom{C}{B}{C}$ and
 $\Hom{C}{A}{B}$ separately:
 
@@ -75,11 +88,11 @@ h \comp (f + g) &= (h \comp f) + (h \comp g)
 \end{salign*}
 \end{enumerate}
 
-$\CMon$ is closed monoidal, and so enriched over itself; every hom-object $\CMon(A,B)$ is a commutative
-monoid with:
+$\CMon$ is closed monoidal, and so enriched over itself. Thus every hom-object $\CMon(A,B)$ is a commutative
+monoid where:
 \begin{enumerate}
-\item unit given by the constant homomorphism sending every element of $A$ to $\varepsilon_B$;
-\item binary operation given pointwise so that $(f + g)(a) = f(a) + f(b)$.
+\item unit $0$ is the constant homomorphism sending every element of $A$ to $\varepsilon_B$;
+\item addition of morphisms $+$ is defined pointwise so that $+_{A}$ so that $(f + g)(a) = f(a) + g(a)$.
 \end{enumerate}
 
 \begin{proposition}
@@ -91,7 +104,7 @@ Suppose $C$ a $\CMon$-enriched monoidal category.
 \end{proposition}
 
 \begin{proposition}
-If $C$ is $\CMon$-enriched then any functor category $\Func{D}{C}$ is $\CMon$-enriched.
+If $C$ is $\CMon$-enriched then for any category $D$ the functor category $\Func{D}{C}$ is $\CMon$-enriched.
 \end{proposition}
 
 \subsection{Biproducts}
