@@ -36,8 +36,6 @@ $\Grothendieck{\Set^{\op}}\Fam(-,C)$ we then have that in $\Fam(C)$:
 $\Fam(I,C)$.
 \end{itemize}
 
-\todo{Some properties of $\Fam(C)$.}
-
 \subsection{Category of bounded lattices and Galois connections}
 
 Define the category $\LatGal$ where:
@@ -48,7 +46,7 @@ join-semilattice homomorphisms $g: L' \to L$ satisfying $y \leq f(x) \iff g(y) \
 $y \in L'$.
 \end{itemize}
 
-\noindent $\LatGal$ has finite biproducts. \todo{Tie this to pre-additive structure.}
+\noindent $\LatGal$ has finite biproducts.
 
 \subsection{$\CMon$-enriched categories}
 
@@ -76,8 +74,9 @@ We note that if a category $C$ is \emph{$\CMon$-enriched}, then:
 \begin{enumerate}
 \item every hom-object $\Hom{C}{A}{B}$ is a commutative monoid (writing $\zero_{A,B}$ for the unit and
 $+_{A,B}$ for the binary operation);
-\item composition is given by a family of morphisms $\Hom{C}{B}{C} \tensor \Hom{C}{A}{B} \to \Hom{C}{A}{C}$ in
-$\CMon$, i.e.~satisfies
+\item composition is \emph{biadditive}, i.e.~given by a family of morphisms $\Hom{C}{B}{C} \tensor
+\Hom{C}{A}{B} \to \Hom{C}{A}{C}$ in $\CMon$ that preserve the additive structure in $\Hom{C}{B}{C}$ and
+$\Hom{C}{A}{B}$ separately:
 
 \begin{salign*}
 f \comp \zero = f = \zero \comp f
@@ -88,8 +87,8 @@ h \comp (f + g) &= (h \comp f) + (h \comp g)
 \end{salign*}
 \end{enumerate}
 
-$\CMon$ is closed monoidal, and so enriched over itself. Every hom-object $\CMon(A,B)$ is a commutative
-monoid, with:
+$\CMon$ is closed monoidal, and so enriched over itself; every hom-object $\CMon(A,B)$ is a commutative
+monoid with:
 \begin{enumerate}
 \item unit given by the constant homomorphism sending every element of $A$ to $\varepsilon_B$;
 \item binary operation given pointwise so that $(f + g)(a) = f(a) + f(b)$.
@@ -103,7 +102,9 @@ Suppose $C$ a $\CMon$-enriched monoidal category.
 \end{itemize}
 \end{proposition}
 
+\begin{proposition}
 If $C$ is $\CMon$-enriched then any functor category $\Func{D}{C}$ is $\CMon$-enriched.
+\end{proposition}
 
 \subsection{Biproducts}
 
@@ -148,6 +149,6 @@ B, i_A, i_B)$.
 
 \subsection{Category $\Func{\LatGal^\op}{\CMon}$}
 
-A presheaf $F: \LatGal^\op \to \CMon$ assigns to every bounded lattice $L$ a commutative monoid $FL$ and to
-every Galois connection $f: L \to L'$ . $\Func{\LatGal^\op}{\CMon}$ is the category of presheaves of
-commutative monoids on $\LatGal$.
+A presheaf $F: \LatGal^\op \to \CMon$ assigns to every bounded lattice $L$ a commutative monoid $F(L)$ and to
+every Galois connection $f: L \to L'$ a commutative monoid homomorphism $F(f): F(L) \to F(L')$.
+$\Func{\LatGal^\op}{\CMon}$ is the category of presheaves of commutative monoids on $\LatGal$.
