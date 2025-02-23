@@ -289,3 +289,46 @@ module _ {o e} where
     consCase .func-resp-≈ ((c₁≈c₂ , x₁≈x₂) , foldrP nilCase consCase .func-resp-≈ (c₁≈c₂ , xs₁≈xs₂))
 
   -- FIXME: the equations...
+
+-- Equivalence relations from relations
+module _ {o e} (A : Set o) (R : A → A → Prop e) where
+  data EquivOfS : A → A → Set (o ⊔ e) where
+    c-refl  : ∀ {a} → EquivOfS a a
+    c-sym   : ∀ {a b} → EquivOfS a b → EquivOfS b a
+    c-trans : ∀ {a b c} → EquivOfS a b → EquivOfS b c → EquivOfS a c
+    c-base  : ∀ {a b} → R a b → EquivOfS a b
+
+  EquivOf : A → A → Prop (o ⊔ e)
+  EquivOf a₁ a₂ = LiftS (o ⊔ e) (EquivOfS a₁ a₂)
+
+  EquivOf-isEquivalence : IsEquivalence EquivOf
+  EquivOf-isEquivalence .refl = liftS c-refl
+  EquivOf-isEquivalence .sym (liftS eq) = liftS (c-sym eq)
+  EquivOf-isEquivalence .trans (liftS eq₁) (liftS eq₂) = liftS (c-trans eq₁ eq₂)
+
+  rel→Setoid : Setoid o (o ⊔ e)
+  rel→Setoid .Carrier = A
+  rel→Setoid ._≈_ = EquivOf
+  rel→Setoid .isEquivalence = EquivOf-isEquivalence
+
+module _ {o e} {A : Set o} {R : A → A → Prop e} where
+  EquivOf-intro : ∀ {a₁ a₂} → R a₁ a₂ → EquivOf A R a₁ a₂
+  EquivOf-intro r = liftS (c-base r)
+
+  elim-EquivOfS : ∀ {o' e'}
+                    (X : Setoid o' e') (f : A → X .Carrier) →
+                 (∀ {a₁ a₂} → R a₁ a₂ → X ._≈_ (f a₁) (f a₂)) →
+                 ∀ {a₁} {a₂} → EquivOfS A R a₁ a₂ → X ._≈_ (f a₁) (f a₂)
+  elim-EquivOfS X f base c-refl = X .refl
+  elim-EquivOfS X f base (c-sym eq) = X .sym (elim-EquivOfS X f base eq)
+  elim-EquivOfS X f base (c-trans eq₁ eq₂) =
+    X .trans (elim-EquivOfS X f base eq₁) (elim-EquivOfS X f base eq₂)
+  elim-EquivOfS X f base (c-base r) = base r
+
+  rel-preserving-func : ∀ {o' e'}
+                          (X : Setoid o' e')
+                          (f : A → X .Carrier) →
+                          (∀ {a₁ a₂} → R a₁ a₂ → X ._≈_ (f a₁) (f a₂)) →
+                          rel→Setoid A R ⇒ X
+  rel-preserving-func X f r .func = f
+  rel-preserving-func X f r .func-resp-≈ (liftS eq) = elim-EquivOfS X f r eq

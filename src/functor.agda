@@ -335,8 +335,10 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒮 : Category o₁ m₁ e₁} {𝒞 
       isColimit : IsColimit D apex cocone
 
   -- Has all colimits of shape 𝒮
-  HasColimits : Set (o₁ ⊔ m₁ ⊔ e₁ ⊔ o₂ ⊔ m₂ ⊔ e₂)
-  HasColimits = ∀ D → Colimit D
+HasColimits : ∀ {o₁ m₁ e₁ o₂ m₂ e₂}
+                (𝒮 : Category o₁ m₁ e₁)
+                (𝒞 : Category o₂ m₂ e₂) → Set (o₁ ⊔ m₁ ⊔ e₁ ⊔ o₂ ⊔ m₂ ⊔ e₂)
+HasColimits 𝒮 𝒞 = (D : Functor 𝒮 𝒞) → Colimit D
 
 
 
