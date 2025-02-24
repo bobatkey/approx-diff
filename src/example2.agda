@@ -11,18 +11,25 @@ open import categories
 open import functor using ([_⇒_]; HasLimits)
 open import cmon-enriched using (CMonEnriched; FunctorCat-cmon; Biproduct)
 open import commutative-monoid-cat using ()
-  renaming ( cat to CMon; Obj to CMonObj; limits to CMon-limits
+  renaming ( cat to CMon; Obj to CMonObj
+           ; limits to CMon-limits
            ; cmon-enriched to CMon-enriched
            ; products to CMon-products
            ; terminal to CMon-terminal)
 
-import galois
 import grothendieck
 import functor-cat-products
 
 ------------------------------------------------------------------------------
+-- This is generic over the base category; make it work for any
+-- cmon-category with products. Move it all to cmon-yoneda.
+import galois
+-- import graph-lang
+
+cat = galois.cat -- graph-lang.cat {!!}
+
 PShGalois : Category (suc (suc 0ℓ)) (suc 0ℓ) (suc 0ℓ)
-PShGalois = [ opposite galois.cat ⇒ CMon (suc 0ℓ) (suc 0ℓ) ]
+PShGalois = [ opposite cat ⇒ CMon (suc 0ℓ) (suc 0ℓ) ]
 
 PShGalois-limits : (𝒮 : Category (suc 0ℓ) (suc 0ℓ) (suc 0ℓ)) → HasLimits 𝒮 PShGalois
 PShGalois-limits 𝒮 = limits
@@ -31,10 +38,10 @@ PShGalois-limits 𝒮 = limits
 PShGalois-cmon : CMonEnriched PShGalois
 PShGalois-cmon = FunctorCat-cmon _ _ CMon-enriched
 
-module PShGalois-products =
-  functor-cat-products (opposite galois.cat) (CMon (suc 0ℓ) (suc 0ℓ))
-                       CMon-terminal
-                       CMon-products
+import functor-cat-products (opposite cat) (CMon (suc 0ℓ) (suc 0ℓ))
+                            CMon-terminal
+                            CMon-products
+   as PShGalois-products
 
 PShGalois-biproducts : ∀ x y → Biproduct PShGalois-cmon x y
 PShGalois-biproducts x y = biproducts
@@ -43,7 +50,7 @@ PShGalois-biproducts x y = biproducts
                (HasProducts.getProduct PShGalois-products.products x y)
 
 ------------------------------------------------------------------------------
--- Fam(PSh(Galois)) can now implement the calculus
+-- Fam(PSh(Galois)) can now interpret the calculus
 
 module D = grothendieck.CategoryOfFamilies (suc 0ℓ) (suc 0ℓ) PShGalois
 module DP = D.products (cmon-enriched.biproducts→products _ PShGalois-biproducts)
@@ -63,7 +70,6 @@ D-exponentials = exponentials
 
 D-terminal = D.terminal PShGalois-products.terminal
 
-D-booleans : HasBooleans D.cat D-terminal D-products
 D-booleans = categories.coproducts→booleans D-terminal DP.strongCoproducts
 
 D-lists = D.lists PShGalois-products.terminal PShGalois-products.products

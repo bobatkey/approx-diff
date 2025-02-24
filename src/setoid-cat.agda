@@ -5,7 +5,8 @@ open import Data.Unit using (⊤; tt)
 open import categories
 open import prop
 open import prop-setoid
-  using (IsEquivalence; Setoid; 𝟙; +-setoid; ⊗-setoid; idS; _∘S_; module ≈-Reasoning)
+  using (IsEquivalence; Setoid; 𝟙; +-setoid; ⊗-setoid; idS; _∘S_; module ≈-Reasoning;
+         rel→Setoid; EquivOf-intro; rel-preserving-func)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_)
 open import fam
 
@@ -64,7 +65,7 @@ module _ o e where
 
 -- FIXME: Setoid-exponentials
 
-open import functor using (HasLimits; Functor; NatTrans; ≃-NatTrans)
+open import functor using (HasLimits; Functor; NatTrans; ≃-NatTrans; Colimit; IsColimit)
 
 -- Setoid categories have all "smaller" limits
 module _ {o m e} os (𝒟 : Category o m e) where
@@ -113,4 +114,51 @@ module _ {o m e} os (𝒟 : Category o m e) where
   Setoid-Limit .HasLimits.lambda-eval α .transf-eq x .func-eq = α .transf x .func-resp-≈
   Setoid-Limit .HasLimits.lambda-ext f .func-eq = f .func-resp-≈
 
--- FIXME: Setoid-CoLimits
+-- Colimits
+module _ {o m e} os (𝒮 : Category o m e) where
+
+  private
+    ℓ : Level
+    ℓ = o ⊔ m ⊔ os
+
+  private
+    module 𝒮 = Category 𝒮
+  open Functor
+  open NatTrans
+  open ≃-NatTrans
+  open Setoid
+  open IsEquivalence
+  open import Data.Product using (Σ-syntax; proj₁; proj₂; _,_)
+
+  open Colimit
+  open IsColimit
+
+  ∐ : (D : Functor 𝒮 (SetoidCat ℓ ℓ)) → Setoid ℓ ℓ
+  ∐ D = prop-setoid.rel→Setoid
+          (Σ[ x ∈ 𝒮.obj ] D .fobj x .Carrier)
+          (λ { (x₁ , dx₁) (x₂ , dx₂) →
+             ∃ (x₁ 𝒮.⇒ x₂) λ f → D .fobj x₂ ._≈_ (D .fmor f .func dx₁) dx₂  })
+
+  Setoid-Colimit : (D : Functor 𝒮 (SetoidCat ℓ ℓ)) → Colimit D
+  Setoid-Colimit D .apex = ∐ D
+  Setoid-Colimit D .cocone .transf x .func dx = x , dx
+  Setoid-Colimit D .cocone .transf x .func-resp-≈ dx₁≈dx₂ =
+    EquivOf-intro (𝒮.id x , D .fmor-id .func-eq dx₁≈dx₂)
+  Setoid-Colimit D .cocone .natural f .func-eq dx₁≈dx₂ =
+    EquivOf-intro (f , D .fmor f .func-resp-≈ dx₁≈dx₂)
+  Setoid-Colimit D .isColimit .colambda X α =
+    rel-preserving-func X (λ { (x , dx) → α .transf x .func dx })
+      λ { {x₁ , dx₁} {x₂ , dx₂} (f , eq) →
+          X .trans (α .natural f .func-eq (D .fobj x₁ .refl))
+                   (α .transf x₂ .func-resp-≈ eq) }
+  Setoid-Colimit D .isColimit .colambda-cong {X} {α} {β} α≈β .func-eq {x₁ , dx₁} {x₂ , dx₂} (liftS eq) =
+    X .trans (α≈β .transf-eq x₁ .func-eq (D .fobj x₁ .refl))
+             (prop-setoid.elim-EquivOfS X
+                (λ xdx → β .transf (xdx .proj₁) .func (xdx .proj₂))
+                (λ { {x₁ , dx₁} {x₂ , dx₂} (f , eq) →
+                  X .trans (β .natural f .func-eq (D .fobj x₁ .refl))
+                           (β .transf x₂ .func-resp-≈ eq) })
+                eq)
+  Setoid-Colimit D .isColimit .colambda-coeval X α .transf-eq x .func-eq =
+    α .transf x .func-resp-≈
+  Setoid-Colimit D .isColimit .colambda-ext X f .func-eq = f .func-resp-≈
