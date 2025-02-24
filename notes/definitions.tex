@@ -42,7 +42,7 @@ For any category $C$ define $\Fam(C)$ to be the Grothendieck construction
 $\Grothendieck{\Set^{\op}}\Fam(-,C)$.
 \end{definition}
 
-In $\Fam(C)$:
+In $\Fam(C)$ we then have that:
 \begin{itemize}
 \item objects are pairs $(I, X)$ of a set $I$ and an indexed family $X$ in $\Fam(I,C)$;
 \item morphisms from $(I, X)$ to $(J, Y)$ are functions $f: I \to J$ paired with a morphism $X \to Y[f]$ in
@@ -71,7 +71,7 @@ inheriting all limits and colimits from $\Set$.
 
 \subsection{$\CMon$-enriched category}
 
-We note that if a category $C$ is \emph{$\CMon$-enriched}, we have that:
+We note that if a category $C$ is $\CMon$-enriched, then:
 \begin{enumerate}
 \item Every hom-object $\Hom{C}{A}{B}$ is a commutative monoid of morphisms; we write $\zero_{A,B}$ (zero
 morphism) for the unit, and $+_{A,B}$ (addition of morphisms) for the binary operation.
@@ -94,14 +94,6 @@ monoid of commutative monoid homomorphisms where:
 \item the unit $0$ is the constant homomorphism sending every element of $A$ to $\varepsilon_B$;
 \item addition of morphisms $+$ is defined pointwise so that $(f + g)(a) = f(a) + g(a)$.
 \end{enumerate}
-
-\begin{proposition}
-Suppose $C$ a $\CMon$-enriched monoidal category.
-\begin{itemize}
-\item If $C$ has products (or coproducts), then they are biproducts and thus $C$ is semi-additive.
-\item If $C$ has a terminal (or initial) object then it is a zero object.
-\end{itemize}
-\end{proposition}
 
 \begin{proposition}
 If $C$ is $\CMon$-enriched then for any category $D$ the functor category $\Func{D}{C}$ is $\CMon$-enriched.
@@ -145,8 +137,15 @@ object $A \oplus B$ of $C$ together with morphisms
 i_A \comp p_A + i_B \comp p_B &= \id_{A \oplus B}
 \end{salign*}
 
-Any category with biproducts has products given by $(A \oplus B, p_A, p_B)$ and coproducts given by $(A \oplus
-B, i_A, i_B)$.
+\begin{proposition}
+\item
+\begin{itemize}
+\item If $C$ has biproducts then it has products given by $(A \oplus B, p_A, p_B)$ and coproducts given by $(A
+\oplus B, i_A, i_B)$.
+\item If $C$ has products (or coproducts), then they are biproducts and thus $C$ is semi-additive.
+\item If $C$ has a terminal (or initial) object then it is a zero object.
+\end{itemize}
+\end{proposition}
 
 \subsection{Category of bounded lattices and Galois connections}
 
