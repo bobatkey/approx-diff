@@ -65,9 +65,9 @@ Define $\CMon$ to be the category whose objects are the commutative monoids $A$ 
 the commutative monoid homomorphisms.
 \end{definition}
 
-$\CMon$ is symmetric closed monoidal, with the trivial one-element monoid $\One$ as terminal object and
-monoidal product $A \tensor B$ given by the direct product of $A$ and $B$. $\CMon$ is complete and cocomplete,
-inheriting all limits and colimits from $\Set$.
+$\CMon$ is symmetric closed monoidal, with the trivial one-element monoid $\One$ as terminal object, monoidal
+product $A \tensor B$ given by the direct product of $A$ and $B$, and braiding given by the isomorphism $A
+\times B \iso B \times A$. $\CMon$ is complete and cocomplete, inheriting all limits and colimits from $\Set$.
 
 \subsection{$\CMon$-enriched category}
 
@@ -101,8 +101,15 @@ If $C$ is $\CMon$-enriched then for any category $D$ the functor category $\Func
 
 \subsection{Biproducts}
 
-Suppose $C$ a $\CMon$-enriched category. For any objects $A, B$, the \emph{biproduct} of $A$ and $B$ is an
-object $A \oplus B$ of $C$ together with morphisms
+\begin{definition}[Zero object]
+A \emph{zero} object is an object which is both terminal and initial.
+\end{definition}
+
+Suppose $C$ a $\CMon$-enriched category.
+
+\begin{definition}[Biproduct]
+For any objects $A, B$, the \emph{biproduct} of $A$ and $B$ is an object $A \oplus B$ of $C$ together with
+morphisms
 
 \begin{center}
 \begin{tikzcd}
@@ -136,6 +143,7 @@ object $A \oplus B$ of $C$ together with morphisms
 \begin{salign*}
 i_A \comp p_A + i_B \comp p_B &= \id_{A \oplus B}
 \end{salign*}
+\end{definition}
 
 If $C$ has biproducts then it has products given by $(A \oplus B, p_A, p_B)$ and coproducts given by $(A
 \oplus B, i_A, i_B)$.
@@ -143,10 +151,12 @@ If $C$ has biproducts then it has products given by $(A \oplus B, p_A, p_B)$ and
 \begin{proposition}
 \item
 \begin{itemize}
-\item If $C$ has products (or coproducts), then they are biproducts and thus $C$ is semi-additive.
-\item If $C$ has a terminal (or initial) object then it is both initial and terminal.
+\item If $C$ has products (or coproducts) then they are biproducts.
+\item If $C$ has a terminal (or initial) object then it is a zero object.
 \end{itemize}
 \end{proposition}
+
+\noindent We say that $C$ is \emph{semi-additive} if it has finite biproducts.
 
 \subsection{Category of bounded lattices and Galois connections}
 
