@@ -64,9 +64,12 @@ coproduct as the monoidal product.
 \begin{proof}
 Suppose $X = (I, X)$ and $Y = (I, Y)$ are objects in $\Fam(C)$. Define $[X, Y]$ to be the object $(K,Z)$ in
 $\Fam(C)$ where $K$ is the set of morphisms from $\Fam(I,C)$ to $\Fam(J,C)$ and $Z$ is the $K$-indexed family
-which maps every $f: \Fam(I,C) \to \Fam(J,C)$ in $K$ to $\prod_{i \in I}\reindex{Y}{f}_i$. Define the family
-of morphisms $\lambda_{X,Y,Z}: \Fam(C)(X \times Y, Z) \to \Fam(C)(X, [Y, Z])$.
+which maps every $f: \Fam(I,C) \to \Fam(J,C)$ in $K$ to $\prod_{i \in I}\reindex{Y}{f}_i$. Then define the
+following families of functions:
+
 \begin{enumerate}
+\item $\lambda_{X,Y,Z}$ which sends any morphism $(f: I \times J \to K, g: X \times Y \to \reindex{Z}{f}): X
+\times Y \to Z$ to the morphism $(f': I \to \Fam(C)(Y,Z), g': X \to \reindex{[Y, Z]}{f'}): X \to [Y, Z]$.
 \item $\eval_{X,Y}: [X, Y] \times X \to Y$
 \end{enumerate}
 \end{proof}
