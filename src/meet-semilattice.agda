@@ -45,6 +45,14 @@ module _ {A B : Preorder} where
       ∧-preserving : ∀ {x x'} → B ._≤_ (Y ._∧_ (func x) (func x')) (func (X ._∧_ x x'))
       ⊤-preserving : B ._≤_ (Y .⊤) (func (X .⊤))
 
+    ∧-preserving-≃ : ∀ {x x'} → Y ._∧_ (func x) (func x') B.≃ func (X ._∧_ x x')
+    ∧-preserving-≃ .proj₁ = ∧-preserving
+    ∧-preserving-≃ .proj₂ = Y .⟨_∧_⟩ (monotone (X .π₁)) (monotone (X .π₂))
+
+    ⊤-preserving-≃ : Y .⊤ B.≃ func (X .⊤)
+    ⊤-preserving-≃ .proj₁ = ⊤-preserving
+    ⊤-preserving-≃ .proj₂ = Y .≤-top
+
     resp-≃ : ∀ {x₁ x₂} → x₁ A.≃ x₂ → func x₁ B.≃ func x₂
     resp-≃ x₁≃x₂ .proj₁ = monotone (x₁≃x₂ .proj₁)
     resp-≃ x₁≃x₂ .proj₂ = monotone (x₁≃x₂ .proj₂)
@@ -143,7 +151,23 @@ module _ where
     +m-lunit : ∀ {f} → (εm +m f) ≃m f
     +m-lunit .eqfunc x = Y.∧-lunit
 
+  -- Bilinearity of composition
+  module _ {A B C}
+           {X : MeetSemilattice A}{Y : MeetSemilattice B}{Z : MeetSemilattice C} where
 
+    comp-bilinear₁ : ∀ (f₁ f₂ : Y => Z) (g : X => Y) →
+                       ((f₁ +m f₂) ∘ g) ≃m ((f₁ ∘ g) +m (f₂ ∘ g))
+    comp-bilinear₁ f₁ f₂ g .eqfunc x = C .≃-refl
+
+    comp-bilinear₂ : ∀ (f : Y => Z) (g₁ g₂ : X => Y) →
+                       (f ∘ (g₁ +m g₂)) ≃m ((f ∘ g₁) +m (f ∘ g₂))
+    comp-bilinear₂ f g₁ g₂ .eqfunc x = C .≃-sym (∧-preserving-≃ f)
+
+    comp-bilinear-ε₁ : ∀ (f : X => Y) → (εm ∘ f) ≃m εm {X = X} {Y = Z}
+    comp-bilinear-ε₁ f .eqfunc x = C .≃-refl
+
+    comp-bilinear-ε₂ : ∀ (f : Y => Z) → (f ∘ εm) ≃m εm {X = X} {Y = Z}
+    comp-bilinear-ε₂ f .eqfunc x = C .≃-sym (⊤-preserving-≃ f)
 
 ------------------------------------------------------------------------------
 -- Big Products

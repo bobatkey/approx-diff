@@ -148,7 +148,6 @@ module _ {X Y : Obj} where
   +m-lunit {f} .fwd-eq = meet-semilattice.+m-lunit {f = f .fwd}
   +m-lunit {f} .bwd-eq = join-semilattice.+m-lunit {f = f .bwd}
 
-{-
 module _ where
 
   open import commutative-monoid
@@ -162,11 +161,22 @@ module _ where
   cmon-enriched .CMonEnriched.homCM X Y .+-lunit = +m-lunit
   cmon-enriched .CMonEnriched.homCM X Y .+-assoc = +m-assoc
   cmon-enriched .CMonEnriched.homCM X Y .+-comm = +m-comm
-  cmon-enriched .CMonEnriched.comp-bilinear₁ = {!!}
-  cmon-enriched .CMonEnriched.comp-bilinear₂ = {!!}
-  cmon-enriched .CMonEnriched.comp-bilinear-ε₁ = {!!}
-  cmon-enriched .CMonEnriched.comp-bilinear-ε₂ = {!!}
--}
+  cmon-enriched .CMonEnriched.comp-bilinear₁ f₁ f₂ g .fwd-eq =
+    meet-semilattice.comp-bilinear₁ (f₁ .fwd) (f₂ .fwd) (g .fwd)
+  cmon-enriched .CMonEnriched.comp-bilinear₁ f₁ f₂ g .bwd-eq =
+    join-semilattice.comp-bilinear₂ (g .bwd) (f₁ .bwd) (f₂ .bwd)
+  cmon-enriched .CMonEnriched.comp-bilinear₂ f g₁ g₂ .fwd-eq =
+    meet-semilattice.comp-bilinear₂ (f .fwd) (g₁ .fwd) (g₂ .fwd)
+  cmon-enriched .CMonEnriched.comp-bilinear₂ f g₁ g₂ .bwd-eq =
+    join-semilattice.comp-bilinear₁ (g₁ .bwd) (g₂ .bwd) (f .bwd)
+  cmon-enriched .CMonEnriched.comp-bilinear-ε₁ f .fwd-eq =
+    meet-semilattice.comp-bilinear-ε₁ (f .fwd)
+  cmon-enriched .CMonEnriched.comp-bilinear-ε₁ f .bwd-eq =
+    join-semilattice.comp-bilinear-ε₂ (f .bwd)
+  cmon-enriched .CMonEnriched.comp-bilinear-ε₂ f .fwd-eq =
+    meet-semilattice.comp-bilinear-ε₂ (f .fwd)
+  cmon-enriched .CMonEnriched.comp-bilinear-ε₂ f .bwd-eq =
+    join-semilattice.comp-bilinear-ε₁ (f .bwd)
 
 ------------------------------------------------------------------------------
 -- Terminal (FIXME: and initial)
