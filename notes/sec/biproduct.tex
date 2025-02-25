@@ -7,14 +7,14 @@ A \emph{zero} object is an object which is both terminal and initial.
 Suppose $C$ a $\CMon$-enriched category.
 
 \begin{definition}[Biproduct]
-For any objects $A, B$, the \emph{biproduct} of $A$ and $B$ is an object $A \oplus B$ of $C$ together with
+For any objects $A, B$, the \emph{biproduct} of $A$ and $B$ is an object $A \biprod B$ of $C$ together with
 morphisms
 
 \begin{center}
 \begin{tikzcd}
-   A \arrow[r, "i_A", shift left] &
-   A \oplus B \arrow[l, "p_A", shift left] \arrow[r, "p_B"', shift right] &
-   B \arrow[l, "i_B"', shift right]
+   A \arrow[r, "\inj_A", shift left] &
+   A \biprod B \arrow[l, "\proj_A", shift left] \arrow[r, "\proj_B"', shift right] &
+   B \arrow[l, "\inj_B"', shift right]
 \end{tikzcd}
 \end{center}
 
@@ -23,16 +23,16 @@ morphisms
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
 \begin{salign*}
-   p_A \comp i_A &= \id_A \\
-   p_B \comp i_A &= \zero_{A,B}
+   \proj_A \comp \inj_A &= \id_A \\
+   \proj_B \comp \inj_A &= \zero_{A,B}
 \end{salign*}
 \end{center}
 \end{minipage}%
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
 \begin{salign*}
-   p_B \comp i_B &= \id_B \\
-   p_A \comp i_B &= \zero_{B,A}
+   \proj_B \comp \inj_B &= \id_B \\
+   \proj_A \comp \inj_B &= \zero_{B,A}
 \end{salign*}
 \end{center}
 \end{minipage}
@@ -40,12 +40,12 @@ morphisms
 \noindent and
 
 \begin{salign*}
-i_A \comp p_A + i_B \comp p_B &= \id_{A \oplus B}
+\inj_A \comp \proj_A + \inj_B \comp \proj_B &= \id_{A \proj B}
 \end{salign*}
 \end{definition}
 
-If $C$ has biproducts then it has products given by $(A \oplus B, p_A, p_B)$ and coproducts given by $(A
-\oplus B, i_A, i_B)$.
+If $C$ has biproducts then it has products given by $(A \biprod B, \proj_A, \proj_B)$ and coproducts given by $(A
+\biprod B, \inj_A, \inj_B)$.
 
 \begin{proposition}
 \item
