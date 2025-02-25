@@ -58,7 +58,11 @@ coproduct as the monoidal product.
 \end{proposition}
 
 \begin{proof}
-Define $[(I, X), (J, Y)]$ to be the object $(K,Z)$ in $\Fam(C)$ where $K$ is the set of morphisms from
+Define $[(I, X), (J, Y)]$ to be the hom-object $(K,Z)$ in $\Fam(C)$ where $K$ is the set of morphisms from
 $\Fam(I,C)$ to $\Fam(J,C)$ and $Z$ is the $K$-indexed family in $\Fam(K,C)$ which maps every $f: \Fam(I,C) \to
-\Fam(J,C)$ in $K$ to $\prod_{i \in I}\reindex{Y}{f}_i$.
+\Fam(J,C)$ in $K$ to $\prod_{i \in I}\reindex{Y}{f}_i$. Then the following families of morphisms in $\Fam(C)$:
+\begin{enumerate}
+\item $\lambda_{(I,X),(J,Y),(K,Z)}: \Fam(C)((I,X) \tensor (J,Y), (K,Z)) \to \Fam(C)((I,X), [(J,Y), (K, Z)])$
+\item $\eval_{(I,X),(J,Y)}: [(I, X), (J, Y)] \tensor (I, X) \to (J, Y)$
+\end{enumerate}
 \end{proof}
