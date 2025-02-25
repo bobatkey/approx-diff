@@ -243,10 +243,11 @@ module _ {o m e} {𝒞 : Category o m e} (CM : CMonEnriched 𝒞) where
         copair (f₁ ∘ f₂) (g₁ ∘ g₂)
       ∎ where open ≈-Reasoning isEquiv
 
+------------------------------------------------------------------------------
 -- Construct biproducts from products on a cmon-category
-module cmon+products→biproducts {o m e}
+module cmon+product→biproduct {o m e}
          {𝒞 : Category o m e} (CM𝒞 : CMonEnriched 𝒞)
-         {x y : 𝒞 .Category.obj} (P : Product {𝒞 = 𝒞} x y) where
+         {x y : 𝒞 .Category.obj} (P : Product 𝒞 x y) where
 
   open Category 𝒞
   open CMonEnriched CM𝒞
@@ -284,17 +285,17 @@ module cmon+products→biproducts {o m e}
   in₂ : y ⇒ prod
   in₂ = pair εm (id _)
 
-  biproducts : Biproduct CM𝒞 x y
-  biproducts .Biproduct.prod = prod
-  biproducts .Biproduct.p₁ = p₁
-  biproducts .Biproduct.p₂ = p₂
-  biproducts .Biproduct.in₁ = in₁
-  biproducts .Biproduct.in₂ = in₂
-  biproducts .Biproduct.id-1 = pair-p₁ _ _
-  biproducts .Biproduct.id-2 = pair-p₂ _ _
-  biproducts .Biproduct.zero-1 = pair-p₁ _ _
-  biproducts .Biproduct.zero-2 = pair-p₂ _ _
-  biproducts .Biproduct.id-+ =
+  biproduct : Biproduct CM𝒞 x y
+  biproduct .Biproduct.prod = prod
+  biproduct .Biproduct.p₁ = p₁
+  biproduct .Biproduct.p₂ = p₂
+  biproduct .Biproduct.in₁ = in₁
+  biproduct .Biproduct.in₂ = in₂
+  biproduct .Biproduct.id-1 = pair-p₁ _ _
+  biproduct .Biproduct.id-2 = pair-p₂ _ _
+  biproduct .Biproduct.zero-1 = pair-p₁ _ _
+  biproduct .Biproduct.zero-2 = pair-p₂ _ _
+  biproduct .Biproduct.id-+ =
     begin
       (in₁ ∘ p₁) +m (in₂ ∘ p₂) ≡⟨⟩
       (pair (id _) εm ∘ p₁) +m (pair εm (id _) ∘ p₂) ≈⟨ homCM _ _ .+-cong (pair-natural _ _ _) (pair-natural _ _ _) ⟩
@@ -306,7 +307,11 @@ module cmon+products→biproducts {o m e}
     ∎
     where open ≈-Reasoning isEquiv
 
-
+cmon+products→biproducts : ∀ {o m e}
+  {𝒞 : Category o m e} (CM𝒞 : CMonEnriched 𝒞) (P : HasProducts 𝒞) →
+  ∀ x y → Biproduct CM𝒞 x y
+cmon+products→biproducts CM𝒞 P x y = biproduct
+  where open cmon+product→biproduct CM𝒞 (HasProducts.getProduct P x y)
 
 
 ------------------------------------------------------------------------------

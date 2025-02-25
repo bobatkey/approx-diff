@@ -44,10 +44,7 @@ import functor-cat-products (opposite cat) (CMon (suc 0ℓ) (suc 0ℓ))
    as PShGalois-products
 
 PShGalois-biproducts : ∀ x y → Biproduct PShGalois-cmon x y
-PShGalois-biproducts x y = biproducts
-  where open cmon-enriched.cmon+products→biproducts
-               PShGalois-cmon
-               (HasProducts.getProduct PShGalois-products.products x y)
+PShGalois-biproducts = cmon-enriched.cmon+products→biproducts PShGalois-cmon PShGalois-products.products
 
 ------------------------------------------------------------------------------
 -- Fam(PSh(Galois)) can now interpret the calculus
