@@ -60,7 +60,7 @@ open CMonEnriched CM𝒞
 ------------------------------------------------------------------------------
 -- よ preserves products
 module _ (x y p : 𝒞.obj) (p₁ : p 𝒞.⇒ x) (p₂ : p 𝒞.⇒ y)
-         (p-isproduct : IsProduct x y p p₁ p₂) where
+         (p-isproduct : IsProduct 𝒞 x y p p₁ p₂) where
 
   open _⇒s_
   open _≈s_
@@ -69,7 +69,7 @@ module _ (x y p : 𝒞.obj) (p₁ : p 𝒞.⇒ x) (p₂ : p 𝒞.⇒ y)
   open cmon+products→biproducts CM𝒞 (record { isProduct = p-isproduct })
     using (pair-ε; pair-+)
 
-  preserve-products : IsProduct {𝒞 = PSh} (よ₀ x) (よ₀ y) (よ₀ p) (よ .fmor p₁) (よ .fmor p₂)
+  preserve-products : IsProduct PSh (よ₀ x) (よ₀ y) (よ₀ p) (よ .fmor p₁) (よ .fmor p₂)
   preserve-products .pair {Z} f g .transf z .function .func Zz .lower =
     pair (f .transf z .func Zz .lower) (g .transf z .func Zz .lower)
   preserve-products .pair {Z} f g .transf z .function .func-resp-≈ {Zz₁} {Zz₂} Zz₁≈Zz₂ .lower =

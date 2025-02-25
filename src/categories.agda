@@ -94,7 +94,12 @@ setoid→category A .Category.assoc _ _ _ = tt
 
 
 ------------------------------------------------------------------------------
--- Some definitions of properties of categories
+-- Terminal objects
+record IsTerminal {o m e} (𝒞 : Category o m e) (t : Category.obj 𝒞) : Set (o ⊔ m ⊔ e) where
+  open Category 𝒞
+  field
+    to-terminal     : ∀ {x} → x ⇒ t
+    to-terminal-ext : ∀ {x} (f : x ⇒ t) → to-terminal ≈ f
 
 record HasTerminal {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞
@@ -103,6 +108,8 @@ record HasTerminal {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     terminal-mor    : (x : obj) → x ⇒ witness
     terminal-unique : (x : obj) → (f g : x ⇒ witness) → f ≈ g
 
+------------------------------------------------------------------------------
+-- Coproducts
 record HasCoproducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞
   field
@@ -129,7 +136,7 @@ record HasCoproducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     ∎
     where open ≈-Reasoning isEquiv
 
-module _ {o m e} {𝒞 : Category o m e} where
+module _ {o m e} (𝒞 : Category o m e) where
 
   open Category 𝒞
 
@@ -254,7 +261,7 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     ∎
     where open ≈-Reasoning isEquiv
 
-  getProduct : ∀ (x y : obj) → Product {𝒞 = 𝒞} x y
+  getProduct : ∀ (x y : obj) → Product 𝒞 x y
   getProduct x y .Product.prod = prod x y
   getProduct x y .Product.p₁ = p₁
   getProduct x y .Product.p₂ = p₂
