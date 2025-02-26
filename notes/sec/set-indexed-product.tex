@@ -1,16 +1,17 @@
 \subsection{Set-indexed products}
 
 $C$ \emph{has set-indexed products} if, for any set $I$ and any $I$-indexed family $X$ of objects of $C$,
-there exists an object $\prod_{i \in I}X_i$ in $C$ and family of morphisms $\eval_i$ and $\lambda$ such that
-for any $I$-indexed family $Y$ and any family of morphisms $f_i: Y \to X_i$ in $C$,
+there exists an object $\prod_{i \in I}X_i$ in $C$ and family of morphisms $\eval_i$ such that for any object
+$Y$ of $C$ and any family of morphisms $\{f_i: Y \to X_i\}_{i \in I}$ in $C$, there exists a unique morphism
+$\lambda f$ making the following diagram commute:
 
 \begin{center}
 \begin{tikzcd}
    \prod_{i \in I}X_i \arrow[r, "\eval_i"] &
    X_i
    \\
-   Y \arrow[ru, "f_i"'] \arrow[u, "\lambda"]
+   Y \arrow[ru, "f_i"'] \arrow[u, "\lambda f"]
 \end{tikzcd}
 \end{center}
 
-Note that $f$ is a morphism from the $I$-indexed family that is constantly $Y$ to $X$ in $\Fam(I,C)$.
+Note that $f$ is a morphism in $\Fam(I,C)$ from the constant family $\{Y\}_{i \in I}$ to $X$.
