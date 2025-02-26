@@ -63,14 +63,14 @@ coproduct as the monoidal product.
 
 \begin{proof}
 Suppose $C$ locally small with binary biproducts given by $(\biprod,\inj,\proj)$ and set-indexed products
-given by $(\Pi,\pi)$. For any objects $X = (I, X)$ and $Y = (J, Y)$ in $\Fam(C)$, define $[X, Y]$ to be the
-object $(K,Z)$ in $\Fam(C)$ where $K$ is $\Fam(C)(X,Y)$ and $Z$ is the $K$-indexed family which maps every
-$(f: I \to J, g: X \to \reindex{Y}{f})$ in $K$ to $\prod_{i \in I}\reindex{Y}{f}_i$. Then define the following
-families of functions:
+given by $(\prod,\pi)$. For any objects $X = (I, X), Y = (J, Y)$ and $Z = (K, Z)$ in $\Fam(C)$ define:
 
 \begin{enumerate}
-\item $\lambda_{X,Y,Z}$ which sends any morphism $(f: I \times J \to K, g: X \times Y \to \reindex{Z}{f}): X
-\times Y \to Z$ to the morphism $(f': I \to \Fam(C)(Y,Z), g': X \to \reindex{[Y, Z]}{f'}): X \to [Y, Z]$ where:
+\item $[X, Y]$ to be the object $(\Fam(C)(X,Y),W)$ in $\Fam(C)$ where $W$ is the indexed family which maps
+every $(f: I \to J, g: X \to \reindex{Y}{f})$ in $\Fam(C)(X,Y)$ to $\prod_{i \in I}\reindex{Y}{f}_i$.
+\item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) which sends any morphism $(f: I \times J
+\to K, g: X \times Y \to \reindex{Z}{f}): X \times Y \to Z$ to the morphism $(f': I \to \Fam(C)(Y,Z), g': X
+\to \reindex{[Y, Z]}{f'}): X \to [Y, Z]$ where:
 \begin{itemize}
 \item $f'(i) = (f \comp (i, -): J \to K, \{g_{i,j} \comp \inj_{Y_j}\}_{j \in J}: \Fam(J,C))$
 \item $g'(i) = $.
