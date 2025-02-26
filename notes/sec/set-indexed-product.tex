@@ -2,15 +2,15 @@
 
 $C$ \emph{has set-indexed products} if, for any set $I$ and any $I$-indexed family $X$ of objects of $C$,
 there exists an object $\prod_{i \in I}X_i$ and family of morphisms $\eval_i$ in $C$ such that for any object
-$Y$ of $C$ and any family of morphisms $\{f_i: Y \to X_i\}_{i \in I}$ in $C$, there exists a unique morphism
-$\lambda f$ making the following diagram commute:
+$Y$ and any family of morphisms $\{f_i: Y \to X_i\}_{i \in I}$ in $C$, there exists a unique morphism $\lambda
+f$ making the following diagram commute:
 
 \begin{center}
 \begin{tikzcd}
    \prod_{i \in I}X_i \arrow[r, "\eval_i"] &
    X_i
    \\
-   Y \arrow[ru, "f_i"'] \arrow[u, "\lambda f"]
+   Y \arrow[ru, "f_i"'] \arrow[u, dotted, "\lambda f"]
 \end{tikzcd}
 \end{center}
 
