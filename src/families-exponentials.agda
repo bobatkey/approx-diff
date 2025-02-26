@@ -166,8 +166,8 @@ lambda⟶ {X} {Y} {Z} f .idxf .func-resp-≈ {x₁} {x₂} x₁≈x₂ .famf-eq 
     reindex-comp ∘f (reindex-f (nudge x₂) (f .famf) ∘f nudge-in₂ x₂)
   ∎
   where open ≈-Reasoning ≃f-isEquivalence
-lambda⟶ {X} {Y} {Z} f .famf .transf x =
-  SP .lambdaΠ _ _ (reindex-comp ∘f (reindex-f (nudge x) (f .famf) ∘f nudge-in₁ x))
+lambda⟶ {X} {Y} {Z} f .famf .transf x = {!   !}
+  --SP .lambdaΠ _ _ (reindex-comp ∘f (reindex-f (nudge x) (f .famf) ∘f nudge-in₁ x))
 lambda⟶ {X} {Y} {Z} f .famf .natural {x₁} {x₂} x₁≈x₂ =
   begin
     SP .lambdaΠ _ _ (reindex-comp ∘f (reindex-f (nudge x₂) (f .famf) ∘f nudge-in₁ x₂)) ∘ X .fam .subst x₁≈x₂
