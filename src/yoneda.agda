@@ -3,7 +3,7 @@
 open import Level
 open import prop
 open import prop-setoid
-  using (Setoid; IsEquivalence; module ≈-Reasoning)
+  using (Setoid; IsEquivalence; module ≈-Reasoning; _∘S_; idS)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_)
 open import categories
 open import functor
@@ -12,8 +12,8 @@ open import setoid-cat
 -- extra 'os' level is to raise the level of the codomain if needed
 module yoneda {o m e} os es (𝒞 : Category o m e) where
 
-PSh : Category (o ⊔ suc m ⊔ suc e ⊔ suc os ⊔ suc es) (o ⊔ m ⊔ e ⊔ os ⊔ es) (o ⊔ m ⊔ os ⊔ e ⊔ es)
-PSh = [ opposite 𝒞 ⇒ SetoidCat (m ⊔ os) (e ⊔ es) ]
+PSh : Category (suc o ⊔ suc m ⊔ suc e ⊔ suc os ⊔ suc es) (o ⊔ m ⊔ e ⊔ os ⊔ es) (o ⊔ m ⊔ os ⊔ e ⊔ es)
+PSh = [ opposite 𝒞 ⇒ SetoidCat (o ⊔ m ⊔ e ⊔ es ⊔ os) (o ⊔ m ⊔ e ⊔ os ⊔ es) ]
 
 private
   module 𝒞 = Category 𝒞
@@ -26,7 +26,7 @@ open NatTrans
 open ≃-NatTrans
 
 よ₀ : 𝒞.obj → PSh .Category.obj
-よ₀ x .fobj y = Category.hom-setoid-l 𝒞 os es y x
+よ₀ x .fobj y = Category.hom-setoid-l 𝒞 (o ⊔ e ⊔ es ⊔ os) (o ⊔ m ⊔ os ⊔ es) y x
 よ₀ x .fmor f .func (lift g) = lift (g 𝒞.∘ f)
 よ₀ x .fmor f .func-resp-≈ (lift g₁≈g₂) = lift (𝒞.∘-cong g₁≈g₂ 𝒞.≈-refl)
 よ₀ x .fmor-cong {y} {z} {f₁} {f₂} f₁≈f₂ .func-eq {lift g₁} {lift g₂} (lift g₁≈g₂) = lift (𝒞.∘-cong g₁≈g₂ f₁≈f₂)
@@ -55,10 +55,10 @@ open ≃-NatTrans
 ------------------------------------------------------------------------------
 -- Yoneda lemma
 
-lemma₁ : ∀ F x → F .fobj x ⇒s Category.hom-setoid PSh (よ₀ x) F
-lemma₁ F x .func Fx .transf y .func (lift f) = F .fmor f .func Fx
-lemma₁ F x .func Fx .transf y .func-resp-≈ {lift f₁} {lift f₂} (lift f₁≈f₂) = F .fmor-cong f₁≈f₂ .func-eq (F .fobj x .refl)
-lemma₁ F x .func Fx .natural {y} {z} g .func-eq {lift h₁} {lift h₂} (lift h₁≈h₂) =
+lemma : ∀ F x → F .fobj x ⇒s Category.hom-setoid PSh (よ₀ x) F
+lemma F x .func Fx .transf y .func (lift f) = F .fmor f .func Fx
+lemma F x .func Fx .transf y .func-resp-≈ {lift f₁} {lift f₂} (lift f₁≈f₂) = F .fmor-cong f₁≈f₂ .func-eq (F .fobj x .refl)
+lemma F x .func Fx .natural {y} {z} g .func-eq {lift h₁} {lift h₂} (lift h₁≈h₂) =
   begin
     F .fmor g .func (F .fmor h₁ .func Fx)
   ≈⟨ F .fmor g .func-resp-≈ (F .fmor-cong h₁≈h₂ .func-eq (F .fobj x .refl)) ⟩
@@ -66,13 +66,22 @@ lemma₁ F x .func Fx .natural {y} {z} g .func-eq {lift h₁} {lift h₂} (lift 
   ≈˘⟨ F .fmor-comp _ _ .func-eq (F .fobj x .refl) ⟩
     F .fmor (h₂ 𝒞.∘ g) .func Fx
   ∎ where open ≈-Reasoning (F .fobj z .isEquivalence)
-lemma₁ F x .func-resp-≈ {Fx₁} {Fx₂} Fx₁≈Fx₂ .transf-eq y .func-eq {lift f₁} {lift f₂} (lift f₁≈f₂) = F .fmor-cong f₁≈f₂ .func-eq Fx₁≈Fx₂
+lemma F x .func-resp-≈ {Fx₁} {Fx₂} Fx₁≈Fx₂ .transf-eq y .func-eq {lift f₁} {lift f₂} (lift f₁≈f₂) = F .fmor-cong f₁≈f₂ .func-eq Fx₁≈Fx₂
 
-lemma₂ : ∀ F x → Category.hom-setoid PSh (よ₀ x) F ⇒s F .fobj x
-lemma₂ F x .func α = α .transf x .func (lift (𝒞.id _))
-lemma₂ F x .func-resp-≈ {α₁}{α₂} α₁≈α₂ = α₁≈α₂ .transf-eq x .func-eq (lift 𝒞.≈-refl)
+lemma⁻¹ : ∀ F x → Category.hom-setoid PSh (よ₀ x) F ⇒s F .fobj x
+lemma⁻¹ F x .func α = α .transf x .func (lift (𝒞.id _))
+lemma⁻¹ F x .func-resp-≈ {α₁}{α₂} α₁≈α₂ = α₁≈α₂ .transf-eq x .func-eq (lift 𝒞.≈-refl)
 
--- FIXME: lemma₁ ∘ lemma₂ = id and lemma₂ ∘ lemma₁ = id and both are natural.
+lemma∘lemma⁻¹ : ∀ F x → (lemma F x ∘S lemma⁻¹ F x) ≈s idS (Category.hom-setoid PSh (よ₀ x) F)
+lemma∘lemma⁻¹ F x .func-eq {Fx₁} {Fx₂} Fx₁≈Fx₂ .transf-eq y .func-eq {lift f} {lift g} (lift f≈g) =
+  F .fobj y .trans (Fx₁ .natural f .func-eq (lift 𝒞.≈-refl)) (Fx₁≈Fx₂ .transf-eq y .func-eq (lift (𝒞.≈-trans 𝒞.id-left f≈g)))
+
+lemma⁻¹∘lemma : ∀ F x → (lemma⁻¹ F x ∘S lemma F x) ≈s idS (F .fobj x)
+lemma⁻¹∘lemma F x .func-eq {Fx₁} {Fx₂} Fx₁≈Fx₂ = F .fmor-id .func-eq Fx₁≈Fx₂
+
+-- lemma-natural-x : ∀ {F x y} (f : x 𝒞.⇒ y) →
+--                 (lemma F x ∘S F .fmor f) ≈s ({!!} ∘S lemma F y)
+-- lemma-natural-x f = {!!}
 
 ------------------------------------------------------------------------------
 -- FIXME: exponentials

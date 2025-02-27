@@ -39,6 +39,9 @@ record Category o m e : Set (suc (o ⊔ m ⊔ e)) where
   ≈-sym : ∀ {x y} {f g : x ⇒ y} → f ≈ g → g ≈ f
   ≈-sym = isEquiv .sym
 
+  ≈-trans : ∀ {x y} {f g h : x ⇒ y} → f ≈ g → g ≈ h → f ≈ h
+  ≈-trans = isEquiv .trans
+
   id-swap : ∀ {x y}{f : x ⇒ y} → (id y ∘ f) ≈ (f ∘ id x)
   id-swap = isEquiv .trans id-left (≈-sym id-right)
 

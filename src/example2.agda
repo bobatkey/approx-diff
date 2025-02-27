@@ -82,10 +82,17 @@ D-lists = D.lists PShGalois-products.terminal PShGalois-products.products
 module D-fo = grothendieck.CategoryOfFamilies (suc 0ℓ) (suc 0ℓ) cat
 
 embed : Functor D-fo.cat D.cat
-embed = FamF _ _ (よ _ _ cat galois.cmon-enriched)
+embed = FamF _ _ (よ (suc 0ℓ) (suc 0ℓ) cat galois.cmon-enriched)
 
--- TODO: 'embed' preserves finite products and booleans.  So any
--- signature interpreted in Fam(LatGal) can also be interpreted in
--- Fam(Psh(LatGal)). Then we will be able to interpret the whole
--- higher-order language in the latter category, and then read back
--- the first order LatGal morphism at the end.
+-- TODO: 'embed' preserves finite products and booleans, because よ
+-- preserves finite products.  So any signature interpreted in
+-- Fam(LatGal) can also be interpreted in Fam(Psh(LatGal)). Then we
+-- will be able to interpret the whole higher-order language in the
+-- latter category, and then read back the first order LatGal morphism
+-- at the end.
+
+-- if we have a term x : S ⊢ M : T, where S and T are first order,
+-- then it ought to be the case that embed ⟦S⟧fo ≃ ⟦S⟧ho and similar
+-- for T, by preservation of finite products. Then we can use the
+-- fullness of the Yoneda functor to give a first-order galois
+-- connection.
