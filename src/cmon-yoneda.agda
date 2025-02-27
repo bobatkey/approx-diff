@@ -4,10 +4,10 @@ open import Level using (_⊔_; lift; lower)
 open import prop using (lift; lower)
 open import prop-setoid using (IsEquivalence; idS; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_)
-open import categories using (Category; opposite; IsProduct)
+open import categories using (Category; opposite; IsProduct; IsTerminal)
 open import functor using ([_⇒_]; Functor; NatTrans; ≃-NatTrans)
 open import commutative-monoid using (CommutativeMonoid; _=[_]>_)
-open import cmon-enriched using (CMonEnriched; module cmon+products→biproducts)
+open import cmon-enriched using (CMonEnriched; module cmon+product→biproduct)
 open import commutative-monoid-cat using (_⇒_; toSetoid)
   renaming (cat to CMon; Obj to CMonObj)
 
@@ -58,6 +58,20 @@ open CMonEnriched CM𝒞
 -- TODO: Yoneda lemma
 
 ------------------------------------------------------------------------------
+-- よ preserves terminal objects
+module _ where
+
+  open IsTerminal
+
+  preserve-terminal : (t : 𝒞.obj) (t-terminal : IsTerminal 𝒞 t) → IsTerminal PSh (よ₀ t)
+  preserve-terminal t t-terminal .to-terminal {F} .transf x .function ._⇒s_.func _ = lift (t-terminal .to-terminal)
+  preserve-terminal t t-terminal .to-terminal {F} .transf x .function ._⇒s_.func-resp-≈ _ = lift 𝒞.≈-refl
+  preserve-terminal t t-terminal .to-terminal {F} .transf x .cmFunc .preserve-ε .lower = t-terminal .to-terminal-ext _
+  preserve-terminal t t-terminal .to-terminal {F} .transf x .cmFunc .preserve-+ .lower = t-terminal .to-terminal-ext _
+  preserve-terminal t t-terminal .to-terminal {F} .natural {x} {y} f ._≈s_.func-eq x₁≈x₂ .lower = 𝒞.≈-sym (t-terminal .to-terminal-ext _)
+  preserve-terminal t t-terminal .to-terminal-ext {F} f .transf-eq x ._≈s_.func-eq x₁≈x₂ .lower = t-terminal .to-terminal-ext _
+
+------------------------------------------------------------------------------
 -- よ preserves products
 module _ (x y p : 𝒞.obj) (p₁ : p 𝒞.⇒ x) (p₂ : p 𝒞.⇒ y)
          (p-isproduct : IsProduct 𝒞 x y p p₁ p₂) where
@@ -66,7 +80,7 @@ module _ (x y p : 𝒞.obj) (p₁ : p 𝒞.⇒ x) (p₂ : p 𝒞.⇒ y)
   open _≈s_
 
   open IsProduct p-isproduct
-  open cmon+products→biproducts CM𝒞 (record { isProduct = p-isproduct })
+  open cmon+product→biproduct CM𝒞 (record { isProduct = p-isproduct })
     using (pair-ε; pair-+)
 
   preserve-products : IsProduct PSh (よ₀ x) (よ₀ y) (よ₀ p) (よ .fmor p₁) (よ .fmor p₂)

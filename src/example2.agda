@@ -18,7 +18,10 @@ open import commutative-monoid-cat using ()
            ; terminal to CMon-terminal)
 
 import grothendieck
-import functor-cat-products
+
+open import functor using (Functor)
+open import families-functor using (FamF)
+open import cmon-yoneda using (よ)
 
 ------------------------------------------------------------------------------
 -- This is generic over the base category; make it work for any
@@ -44,7 +47,8 @@ import functor-cat-products (opposite cat) (CMon (suc 0ℓ) (suc 0ℓ))
    as PShGalois-products
 
 PShGalois-biproducts : ∀ x y → Biproduct PShGalois-cmon x y
-PShGalois-biproducts = cmon-enriched.cmon+products→biproducts PShGalois-cmon PShGalois-products.products
+PShGalois-biproducts =
+  cmon-enriched.cmon+products→biproducts PShGalois-cmon PShGalois-products.products
 
 ------------------------------------------------------------------------------
 -- Fam(PSh(Galois)) can now interpret the calculus
@@ -70,3 +74,18 @@ D-terminal = D.terminal PShGalois-products.terminal
 D-booleans = categories.coproducts→booleans D-terminal DP.strongCoproducts
 
 D-lists = D.lists PShGalois-products.terminal PShGalois-products.products
+
+------------------------------------------------------------------------------
+-- First order version where we interpret the basic operations from
+-- the signature.
+
+module D-fo = grothendieck.CategoryOfFamilies (suc 0ℓ) (suc 0ℓ) cat
+
+embed : Functor D-fo.cat D.cat
+embed = FamF _ _ (よ _ _ cat galois.cmon-enriched)
+
+-- TODO: 'embed' preserves finite products and booleans.  So any
+-- signature interpreted in Fam(LatGal) can also be interpreted in
+-- Fam(Psh(LatGal)). Then we will be able to interpret the whole
+-- higher-order language in the latter category, and then read back
+-- the first order LatGal morphism at the end.
