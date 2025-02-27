@@ -58,7 +58,7 @@ $\Fam(I,C)$.
 \begin{proposition}
 Suppose $C$ locally small. If $C$ has binary biproducts and set-indexed products, then $\Fam(C)$ is Cartesian
 closed. \todo{Establish first that if $C$ has binary coproducts and set-indexed products, then $\Fam(C)$ is
-symmetric monoidal, with the coproduct as the monoidal product.}
+symmetric monoidal, with the coproduct as monoidal product.}
 \end{proposition}
 
 \begin{proof}
@@ -87,9 +87,17 @@ ${\eval_{\prod}}_i: \prod_I\reindex{Y}{f} \to Y_{f(i)}$
 \end{itemize}
 using $[-,-]$ to denote coproduct of morphisms.
 \end{enumerate}
-Then for any $f: X \times Y \to Z$ in $\Fam(C)$:
+Then for any $f: X \times Y \to Z$ in $\Fam(C)$ the following diagrams commute:
 \begin{enumerate}
 \item $\eval_{Y,Z} \comp (\lambda_{X,Y,Z}(f) \times \id_{Y}) = f$
+
+\begin{center}
+\begin{tikzcd}
+   {{[Y, Z]}} \tensor Y \arrow[dr, "\eval_{Y,Z}"] \\
+   X \tensor Y \arrow[u, "\lambda_{X,Y,Z}(f) \tensor \id_Y"] \arrow[r, "f"'] & Z
+\end{tikzcd}
+\end{center}
+
 \item $\lambda^{-1}_{X,Y,Z}(\lambda_{X,Y,Z}(f)) = f$
 \end{enumerate}
 \todo{Prove this bit}
