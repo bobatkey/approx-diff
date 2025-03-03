@@ -68,7 +68,7 @@ $\Fam(C)$ define:
 
 \begin{enumerate}
 \item $[X, Y]$ to be the object $(\Fam(C)(X,Y),[X, Y])$ in $\Fam(C)$ where we also write $[X,Y]$ for the
-indexed family which maps every $(f: I \to J, g: X \to \reindex{Y}{f})$ in $\Fam(C)(X,Y)$ to
+indexed family which maps every $(f: I \to J, g: X \to \reindex{Y}{f}): X \to Y$ in $\Fam(C)$ to
 $\prod_{I}\reindex{Y}{f}$.
 \item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) which sends any morphism $(f: I \times J
 \to K, g: X \times Y \to \reindex{Z}{f}): X \times Y \to Z$ to the morphism $(f': I \to \Fam(C)(Y,Z), g': X
@@ -76,8 +76,8 @@ $\prod_{I}\reindex{Y}{f}$.
 \begin{itemize}
 \item $f'(i) = (j \mapsto f(i, j): J \to K, j \mapsto g_{i,j} \comp \inj_{Y_j}: Y \to \reindex{Z}{j \mapsto
 f(i, j)})$ where $\inj_{Y_j}: Y_j \to X_i \biprod Y_j$
-\item $g' = \lambda_{\prod}(i \mapsto g_{i, j} \comp \inj_{X_i})$ where $\inj_{X_i}: X_i \to X_i \biprod
-Y_j$ \todo{whence $j$?}
+\item $g'(i) = \lambda_{\prod_{J}}(j \mapsto g_{i, j} \comp \inj_{X_i})$ where $\inj_{X_i}: X_i \to X_i \biprod
+Y_j$ for every $j \in J$
 \end{itemize}
 \item The family of morphisms $\eval_{X,Y} = (f', g'): [X, Y] \times X \to Y$ in $\Fam(C)$ with
 \begin{itemize}
