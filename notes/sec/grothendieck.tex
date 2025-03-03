@@ -72,7 +72,7 @@ $\lambda_{X,Y,Z}(f): X \to [Y, Z]$ with:
 \item $\idx{\lambda}_{X,Y,Z}(f)(i) = g$ where $\idx{g}(j) = \idx{f}(i, j): \idx{Y} \to \idx{Z}$ and
 $\faml{g}(j) = \faml{f}_{i,j} \comp \inj_{\faml{Y}_j}: \faml{Y}_i \to \faml{Z}_{\idx{f}(i, j)}$ where
 $\inj_{\faml{Y}_j}: \faml{Y}_j \to \faml{X}_i \biprod \faml{Y}_j$
-\item $\faml{\lambda}_{X,Y,Z}(f)(i) = \lambda_{\prod_{\faml{J}}}(j \mapsto \faml{f}_{i, j} \comp
+\item $\faml{\lambda}_{X,Y,Z}(f)(i) = \lambda_{\prod_{\idx{Y}}}(j \mapsto \faml{f}_{i, j} \comp
 \inj_{\faml{X}_i}: \faml{X}_i \to \faml{Z}_{f(i,j)}$ where $\inj_{\faml{X}_i}: \faml{X}_i \to \faml{X}_i
 \biprod \faml{Y}_j$)
 \end{itemize}
@@ -97,7 +97,8 @@ right in $C$ commutes for every $(x, y) \in \idx{X} \times \idx{Y}$:
 \hspace{1cm}
 \begin{tikzcd}
    {{[Y, Z]}} \biprod Y_y \arrow[dr, "\eval_{Y,Z}"] \\
-   X_x \biprod Y_y \arrow[u, "\lambda_{X,Y,Z}(f) \biprod \id_{Y_y}"] \arrow[r, "f"'] & Z_{f(x,y)}
+   X_x \biprod Y_y \arrow[u, "\lambda_{\prod_{\idx{Y}}}(\faml{f}) \biprod \id_{Y_y}"] \arrow[r,
+   "\faml{f}_{x,y}"'] & Z_{\idx{f}(x,y)}
 \end{tikzcd}
 \end{center}
 
