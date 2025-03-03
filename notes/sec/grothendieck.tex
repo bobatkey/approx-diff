@@ -86,12 +86,18 @@ using $\coprodM{-}{-}$ to denote coproduct of morphisms.
 \end{enumerate}
 Then for any $f: X \times Y \to Z$ in $\Fam(C)$ we have \todo{(prove these)}:
 \begin{enumerate}
-\item The following diagram commutes:
+\item To show that the diagram on the left in $\Fam(C)$ commutes, it suffices to show that the diagram on the
+right in $C$ commutes for every $(x, y) \in \idx{X} \times \idx{Y}$:
 
 \begin{center}
 \begin{tikzcd}
    {{[Y, Z]}} \tensor Y \arrow[dr, "\eval_{Y,Z}"] \\
    X \tensor Y \arrow[u, "\lambda_{X,Y,Z}(f) \tensor \id_Y"] \arrow[r, "f"'] & Z
+\end{tikzcd}
+\hspace{1cm}
+\begin{tikzcd}
+   {{[Y, Z]}} \biprod Y_y \arrow[dr, "\eval_{Y,Z}"] \\
+   X_x \biprod Y_y \arrow[u, "\lambda_{X,Y,Z}(f) \biprod \id_{Y_y}"] \arrow[r, "f"'] & Z_{f(x,y)}
 \end{tikzcd}
 \end{center}
 
