@@ -32,7 +32,7 @@ $\faml{f}: F(f)(\faml{X}) \to \faml{Y}$ in $F(\idx{Y})$.
 \end{itemize}
 \end{definition}
 
-\noindent When $F$ is contravariant, a morphism $f: X \to Y$ is a morphism $\idx{f}: \idx{X} \to \idx{J}$ in
+\noindent When $F$ is contravariant, a morphism $f: X \to Y$ is a morphism $\idx{f}: \idx{X} \to \idx{Y}$ in
 $D$ paired with morphisms $\faml{f}: \faml{X} \to F(f)(\faml{Y})$ in $F(\idx{X})$.
 
 \begin{definition}[Category of families]
@@ -65,13 +65,14 @@ given by $(\prod,\eval_{\prod},\lambda_{\prod})$. For any objects $X, Y, Z$ in $
 \begin{enumerate}
 \item $[X, Y]$ to be the object $(\Fam(C)(X,Y),[\idx{X}, \idx{Y}])$ in $\Fam(C)$ where $[\idx{X}, \idx{Y}]$
 denotes the indexed family mapping every $f: X \to Y$ in $\Fam(C)$ to $\prod_{I}\reindex{Y}{\idx{f}}$.
-\item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) sending any morphism $f: X \times Y \to Z$
-to $g: X \to [Y, Z]$ with:
+\item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) sending any $f: X \times Y \to Z$ to
+$\lambda_{X,Y,Z}(f): X \to [Y, Z]$ with:
 \begin{itemize}
-\item $\idx{g}(i) = g'$ where $\idx{g}'(j) = \idx{f}(i, j): J \to K$ and $\faml{g}'(j) = \faml{f}_{i,j} \comp
-\inj_{Y_j}: Y_i \to Z_{\idx{f}(i, j)}$ where $\inj_{Y_j}: Y_j \to X_i \biprod Y_j$
-\item $\faml{g}(i) = \lambda_{\prod_{J}}(j \mapsto \faml{f}_{i, j} \comp \inj_{X_i}: X_i \to Z_{f(i,j)}$ where
-$\inj_{X_i}: X_i \to X_i \biprod Y_j$)
+\item $\idx{\lambda}_{X,Y,Z}(f)(i) = g$ where $\idx{g}(j) = \idx{f}(i, j): \idx{Y} \to \idx{Z}$ and
+$\faml{g}(j) = \faml{f}_{i,j} \comp \inj_{\faml{Y}_j}: \faml{Y}_i \to \faml{Z}_{\idx{f}(i, j)}$ where
+$\inj_{\faml{Y}_j}: \faml{Y}_j \to \faml{X}_i \biprod \faml{Y}_j$
+\item $\faml{\lambda}_{X,Y,Z}(f)(i) = \lambda_{\prod_{\faml{J}}}(j \mapsto \faml{f}_{i, j} \comp
+\inj_{\faml{X}_i}: X_i \to \faml{Z}_{f(i,j)}$ where $\inj_{\faml{X}_i}: \faml{X}_i \to \faml{X}_i \biprod \faml{Y}_j$)
 \end{itemize}
 \item The family of morphisms $\eval_{X,Y}: [X, Y] \times X \to Y$ in $\Fam(C)$ with
 \begin{itemize}
