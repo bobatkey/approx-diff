@@ -40,7 +40,7 @@ For any category $C$ define $\Fam(C)$ to be the Grothendieck construction
 $\Grothendieck{\Set^{\op}}\Fam(-,C)$.
 \end{definition}
 
-\noindent In $\Fam(C)$ the objects $X$ are thus pairs of a set $\idx{X}$ and indexed family $\faml{X}$ in
+\noindent In $\Fam(C)$ the objects $X$ are thus sets $\idx{X}$ paired with indexed families $\faml{X}$ in
 $\Fam(\idx{X},C)$ and morphisms $f: X \to Y$ are functions $\idx{f}: \idx{X} \to \idx{Y}$ paired with
 morphisms $\faml{f}: \faml{X} \to \reindex{\faml{Y}}{f}$ in $\Fam(\idx{X},C)$.
 
@@ -68,8 +68,8 @@ denotes the indexed family mapping every $f: X \to Y$ in $\Fam(C)$ to $\prod_{I}
 \item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) sending any morphism $f: X \times Y \to Z$
 to $g: X \to [Y, Z]$ with:
 \begin{itemize}
-\item $\idx{g}(i) = (j \mapsto \idx{f}(i, j): J \to K, j \mapsto \faml{f}_{i,j} \comp \inj_{Y_j}: Y \to
-\reindex{Z}{j \mapsto \idx{f}(i, j)})$ where $\inj_{Y_j}: Y_j \to X_i \biprod Y_j$
+\item $\idx{g}(i) = g'$ where $\idx{g}'(j) = \idx{f}(i, j): J \to K$ and $\faml{g}'(j) = \faml{f}_{i,j} \comp
+\inj_{Y_j}: Y \to \reindex{Z}{j \mapsto \idx{f}(i, j)}$ where $\inj_{Y_j}: Y_j \to X_i \biprod Y_j$
 \item $\faml{g}(i) = \lambda_{\prod_{J}}(j \mapsto \faml{f}_{i, j} \comp \inj_{X_i})$ where $\inj_{X_i}: X_i
 \to X_i \biprod Y_j$ for every $j \in J$
 \end{itemize}
