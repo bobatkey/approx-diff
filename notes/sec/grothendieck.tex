@@ -63,9 +63,8 @@ Suppose $C$ is locally small, with binary biproducts given by $(\biprod,\inj,\pr
 given by $(\prod,\eval_{\prod},\lambda_{\prod})$. For any objects $X, Y, Z$ in $\Fam(C)$ define:
 
 \begin{enumerate}
-\item $[X, Y]$ to be the object $(\Fam(C)(X,Y),[\idx{X}, \idx{Y}])$ in $\Fam(C)$ where $[\idx{X}, \idx{Y}]$
-denotes the indexed family mapping every $f: X \to Y$ in $\Fam(C)$ to
-$\prod_{\idx{X}}\reindex{\faml{Y}}{\idx{f}}$.
+\item $[X, Y]$ to be the object in $\Fam(C)$ with $\idx{[X,Y]} = \Fam(C)(X,Y)$ and $\faml{[X, Y]}(f) =
+\prod_{\idx{X}}\reindex{\faml{Y}}{\idx{f}}$ for every $f: X \to Y$.
 \item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) sending any $f: X \times Y \to Z$ to
 $\lambda_{X,Y,Z}(f): X \to [Y, Z]$ with:
 \begin{itemize}
@@ -96,7 +95,7 @@ right in $C$ commutes for every $(x, y) \in \idx{X} \times \idx{Y}$:
 \end{tikzcd}
 \hspace{1cm}
 \begin{tikzcd}
-   \prod_{\idx{Y}}\reindex{Z}{y \mapsto} \biprod \faml{Y}_y \arrow[dr, "\coprodM{\eval_{\prod_{\idx{Y}}}}{\faml{f}_i}"] \\
+   \prod_{y \in \idx{Y}}\reindex{Z}{y \mapsto} \biprod \faml{Y}_y \arrow[dr, "\coprodM{\eval_{\prod_{\idx{Y}}}}{\faml{f}_i}"] \\
    \faml{X}_x \biprod \faml{Y}_y \arrow[u, "\lambda_{\prod_{\idx{Y}}}(y\;\mapsto\;\faml{f}_{x, y}\;\comp\;
 \inj_{\faml{X}_x}) \biprod \id_{\faml{Y}_y}"] \arrow[r,
    "\faml{f}_{x,y}"'] & \faml{Z}_{\idx{f}(x,y)}
