@@ -67,11 +67,11 @@ given by $(\prod,\eval_{\prod},\lambda_{\prod})$. For any objects $X = (I, X), Y
 $\Fam(C)$ define:
 
 \begin{enumerate}
-\item $[X, Y]$ to be the object $(\Fam(C)(X,Y),[X, Y])$ in $\Fam(C)$ where we also write $[X,Y]$ for the
-indexed family which maps every $(f: I \to J, g: X \to \reindex{Y}{f}): X \to Y$ in $\Fam(C)$ to
-$\prod_{I}\reindex{Y}{f}$.
-\item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) which sends any morphism $f: X \times Y
-\to Z$ to the morphism $g: X \to [Y, Z]$ with:
+\item $[X, Y]$ to be the object $(\Fam(C)(X,Y),[\idxf{X}, \idxf{Y}])$ in $\Fam(C)$ where $[\idxf{X},
+\idxf{Y}]$ denotes the indexed family which maps every $f: X \to Y$ in $\Fam(C)$ to
+$\prod_{I}\reindex{Y}{\idxf{f}}$.
+\item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) sending any morphism $f: X \times Y \to Z$
+to $g: X \to [Y, Z]$ with:
 \begin{itemize}
 \item $\idxf{g}(i) = (j \mapsto \idxf{f}(i, j): J \to K, j \mapsto \famf{f}_{i,j} \comp \inj_{Y_j}: Y \to
 \reindex{Z}{j \mapsto \idxf{f}(i, j)})$ where $\inj_{Y_j}: Y_j \to X_i \biprod Y_j$
