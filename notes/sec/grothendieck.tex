@@ -42,7 +42,7 @@ $\Grothendieck{\Set^{\op}}\Fam(-,C)$.
 
 \noindent In $\Fam(C)$ the objects $X$ are thus sets $\idx{X}$ paired with indexed families $\faml{X}$ in
 $\Fam(\idx{X},C)$ and morphisms $f: X \to Y$ are functions $\idx{f}: \idx{X} \to \idx{Y}$ paired with
-morphisms $\faml{f}: \faml{X} \to \reindex{\faml{Y}}{f}$ in $\Fam(\idx{X},C)$.
+morphisms $\faml{f}: \faml{X} \to \reindex{\faml{Y}}{\idx{f}}$ in $\Fam(\idx{X},C)$.
 
 \begin{proposition}
 \item
@@ -64,7 +64,8 @@ given by $(\prod,\eval_{\prod},\lambda_{\prod})$. For any objects $X, Y, Z$ in $
 
 \begin{enumerate}
 \item $[X, Y]$ to be the object $(\Fam(C)(X,Y),[\idx{X}, \idx{Y}])$ in $\Fam(C)$ where $[\idx{X}, \idx{Y}]$
-denotes the indexed family mapping every $f: X \to Y$ in $\Fam(C)$ to $\prod_{I}\reindex{Y}{\idx{f}}$.
+denotes the indexed family mapping every $f: X \to Y$ in $\Fam(C)$ to
+$\prod_{\idx{X}}\reindex{\faml{Y}}{\idx{f}}$.
 \item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) sending any $f: X \times Y \to Z$ to
 $\lambda_{X,Y,Z}(f): X \to [Y, Z]$ with:
 \begin{itemize}
