@@ -70,16 +70,15 @@ $\Fam(C)$ define:
 \item $[X, Y]$ to be the object $(\Fam(C)(X,Y),[X, Y])$ in $\Fam(C)$ where we also write $[X,Y]$ for the
 indexed family which maps every $(f: I \to J, g: X \to \reindex{Y}{f}): X \to Y$ in $\Fam(C)$ to
 $\prod_{I}\reindex{Y}{f}$.
-\item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) which sends any morphism $(f: I \times J
-\to K, g: X \times Y \to \reindex{Z}{f}): X \times Y \to Z$ to the morphism $(f': I \to \Fam(C)(Y,Z), g': X
-\to \reindex{[Y, Z]}{f'}): X \to [Y, Z]$ with:
+\item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) which sends any morphism $f: X \times Y
+\to Z$ to the morphism $g: X \to [Y, Z]$ with:
 \begin{itemize}
-\item $f'(i) = (j \mapsto f(i, j): J \to K, j \mapsto g_{i,j} \comp \inj_{Y_j}: Y \to \reindex{Z}{j \mapsto
-f(i, j)})$ where $\inj_{Y_j}: Y_j \to X_i \biprod Y_j$
-\item $g'(i) = \lambda_{\prod_{J}}(j \mapsto g_{i, j} \comp \inj_{X_i})$ where $\inj_{X_i}: X_i \to X_i \biprod
-Y_j$ for every $j \in J$
+\item $\idxf{g}(i) = (j \mapsto \idxf{f}(i, j): J \to K, j \mapsto \famf{f}_{i,j} \comp \inj_{Y_j}: Y \to
+\reindex{Z}{j \mapsto \idxf{f}(i, j)})$ where $\inj_{Y_j}: Y_j \to X_i \biprod Y_j$
+\item $\famf{g}(i) = \lambda_{\prod_{J}}(j \mapsto \famf{f}_{i, j} \comp \inj_{X_i})$ where $\inj_{X_i}: X_i
+\to X_i \biprod Y_j$ for every $j \in J$
 \end{itemize}
-\item The family of morphisms $\eval_{X,Y} = (f', g'): [X, Y] \times X \to Y$ in $\Fam(C)$ with
+\item The family of morphisms $\eval_{X,Y}: [X, Y] \times X \to Y$ in $\Fam(C)$ with
 \begin{itemize}
 \item $\idxf{\eval}_{X,Y}((f, g), i) = f(i)$
 \item $\famf{\eval}_{X,Y}((f, g), i) = \coprodM{{\eval_{\prod}}_i}{g_i}: \prod_{I}\reindex{Y}{f} \biprod X_i \to Y_{f(i)}$
