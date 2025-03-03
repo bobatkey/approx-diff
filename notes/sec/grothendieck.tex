@@ -77,7 +77,7 @@ $\prod\reindex{Y}{f}$.
 \item $f'(i) = (j \mapsto f(i, j): J \to K, j \mapsto g_{i,j} \comp \inj_{Y_j}: Y \to \reindex{Z}{j \mapsto
 f(i, j)})$ where $\inj_{Y_j}: Y_j \to X_i \biprod Y_j$
 \item $g' = \lambda_{\prod}(i \mapsto g_{i, j} \comp \inj_{X_i})$ where $\inj_{X_i}: X_i \to X_i \biprod
-Y_j$
+Y_j$ \todo{whence $j$?}
 \end{itemize}
 \item The family of morphisms $\eval_{X,Y} = (f', g'): [X, Y] \times X \to Y$ in $\Fam(C)$ with
 \begin{itemize}
@@ -87,9 +87,9 @@ ${\eval_{\prod}}_i: \prod_I\reindex{Y}{f} \to Y_{f(i)}$
 \end{itemize}
 using $[-,-]$ to denote coproduct of morphisms.
 \end{enumerate}
-Then for any $f: X \times Y \to Z$ in $\Fam(C)$ the following diagrams commute:
+Then for any $f: X \times Y \to Z$ in $\Fam(C)$ we have \todo{(prove these)}:
 \begin{enumerate}
-\item $\eval_{Y,Z} \comp (\lambda_{X,Y,Z}(f) \times \id_{Y}) = f$
+\item The following diagram commutes:
 
 \begin{center}
 \begin{tikzcd}
@@ -100,5 +100,4 @@ Then for any $f: X \times Y \to Z$ in $\Fam(C)$ the following diagrams commute:
 
 \item $\lambda^{-1}_{X,Y,Z}(\lambda_{X,Y,Z}(f)) = f$
 \end{enumerate}
-\todo{Prove this bit}
 \end{proof}

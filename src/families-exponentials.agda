@@ -73,7 +73,7 @@ eval⟶ : ∀ {X Y : Obj} → Mor ((X ⟶ Y) ⊗ X) Y
 eval⟶ .idxf .func (f , x) = f .idxf .func x
 eval⟶ .idxf .func-resp-≈ (f₁≈f₂ , x₁≈x₂) = f₁≈f₂ .idxf-eq .func-eq x₁≈x₂
 eval⟶ .famf .transf (f , x) =
-  CP .copair {!   !} {!   !} {-(SP .evalΠ _ x) (f .famf .transf x)-}
+  CP .copair (SP .evalΠ _ x) (f .famf .transf x)
 eval⟶ {X} {Y} .famf .natural {f₁ , x₁} {f₂ , x₂} (f₁≈f₂ , x₁≈x₂) =
   begin
     CP .copair (SP .evalΠ (Y .fam [ f₂ .idxf ]) x₂) (f₂ .famf .transf x₂) ∘ prod-m P ((X ⟶ Y) .fam .subst f₁≈f₂) (X .fam .subst x₁≈x₂)
@@ -167,7 +167,7 @@ lambda⟶ {X} {Y} {Z} f .idxf .func-resp-≈ {x₁} {x₂} x₁≈x₂ .famf-eq 
   ∎
   where open ≈-Reasoning ≃f-isEquivalence
 lambda⟶ {X} {Y} {Z} f .famf .transf x =
-  SP .lambdaΠ _ _ {!   !} --(reindex-comp ∘f (reindex-f (nudge x) (f .famf) ∘f nudge-in₁ x))
+  SP .lambdaΠ _ _ (reindex-comp ∘f (reindex-f (nudge x) (f .famf) ∘f nudge-in₁ x))
 lambda⟶ {X} {Y} {Z} f .famf .natural {x₁} {x₂} x₁≈x₂ =
   begin
     SP .lambdaΠ _ _ (reindex-comp ∘f (reindex-f (nudge x₂) (f .famf) ∘f nudge-in₁ x₂)) ∘ X .fam .subst x₁≈x₂
