@@ -82,10 +82,10 @@ Y_j$ for every $j \in J$
 \item The family of morphisms $\eval_{X,Y} = (f', g'): [X, Y] \times X \to Y$ in $\Fam(C)$ with
 \begin{itemize}
 \item $f'((f, g), i) = f(i)$
-\item $g': [X, Y] \times X \to \reindex{Y}{f} = ((f, g), i) \mapsto [{\eval_{\prod}}_i, g_i]$ where
+\item $g'((f, g), i) = \coprodM{{\eval_{\prod}}_i}{g_i}$ where
 ${\eval_{\prod}}_i: \prod_I\reindex{Y}{f} \to Y_{f(i)}$
 \end{itemize}
-using $[-,-]$ to denote coproduct of morphisms.
+using $\coprodM{-}{-}$ to denote coproduct of morphisms.
 \end{enumerate}
 Then for any $f: X \times Y \to Z$ in $\Fam(C)$ we have \todo{(prove these)}:
 \begin{enumerate}
