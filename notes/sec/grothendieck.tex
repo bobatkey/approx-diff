@@ -26,26 +26,23 @@ $f: I \to J$ to the functor $\reindex{-}{f}: \Fam(J,C) \to \Fam(I,C)$.
 Suppose a functor $F: D \to \Cat$. The \emph{Grothendieck construction} $\Grothendieck{D}F$ for $F$ is the
 category where:
 \begin{itemize}
-\item objects are pairs $(I, X)$ of an object $I$ of $D$ and an object $X$ of $F(I)$;
-\item morphisms from $(I, X)$ to $(J, Y)$ are morphisms $f: I \to J$ in $D$ paired with a morphism $F(f)(X)
-\to Y$ in $F(J)$.
+\item objects $X$ are pairs of an object $\idx{X}$ of $D$ and an object $\faml{X}$ of $F(\idx{X})$;
+\item morphisms $f: X \to Y$ are morphisms $\idx{f}: \idx{X} \to \idx{Y}$ in $D$ paired with morphisms
+$\faml{f}: F(f)(\faml{X}) \to \faml{Y}$ in $F(\idx{Y})$.
 \end{itemize}
 \end{definition}
 
-\noindent When $F$ is contravariant, a morphism from $(I, X)$ to $(J, Y)$ is a morphism $f: I \to J$ in $D$
-paired with a morphism $X \to F(f)(Y)$ in $F(I)$.
+\noindent When $F$ is contravariant, a morphism $f: X \to Y$ is a morphism $\idx{f}: \idx{X} \to \idx{J}$ in
+$D$ paired with morphisms $\faml{f}: \faml{X} \to F(f)(\faml{Y})$ in $F(\idx{X})$.
 
 \begin{definition}[Category of families]
 For any category $C$ define $\Fam(C)$ to be the Grothendieck construction
 $\Grothendieck{\Set^{\op}}\Fam(-,C)$.
 \end{definition}
 
-In $\Fam(C)$ we then have that:
-\begin{itemize}
-\item objects are pairs $(I, X)$ of a set $I$ and an indexed family $X$ in $\Fam(I,C)$;
-\item morphisms from $(I, X)$ to $(J, Y)$ are functions $f: I \to J$ paired with a morphism $X \to Y[f]$ in
-$\Fam(I,C)$.
-\end{itemize}
+\noindent In $\Fam(C)$ the objects $X$ are thus pairs of a set $\idx{X}$ and indexed family $\faml{X}$ in
+$\Fam(\idx{X},C)$ and morphisms $f: X \to Y$ are functions $\idx{f}: \idx{X} \to \idx{Y}$ paired with a
+morphism $\faml{f}: X \to \reindex{Y}{f}$ in $\Fam(\idx{X},C)$.
 
 \begin{proposition}
 \item
@@ -67,21 +64,21 @@ given by $(\prod,\eval_{\prod},\lambda_{\prod})$. For any objects $X = (I, X), Y
 $\Fam(C)$ define:
 
 \begin{enumerate}
-\item $[X, Y]$ to be the object $(\Fam(C)(X,Y),[\idxf{X}, \idxf{Y}])$ in $\Fam(C)$ where $[\idxf{X},
-\idxf{Y}]$ denotes the indexed family which maps every $f: X \to Y$ in $\Fam(C)$ to
-$\prod_{I}\reindex{Y}{\idxf{f}}$.
+\item $[X, Y]$ to be the object $(\Fam(C)(X,Y),[\idx{X}, \idx{Y}])$ in $\Fam(C)$ where $[\idx{X},
+\idx{Y}]$ denotes the indexed family which maps every $f: X \to Y$ in $\Fam(C)$ to
+$\prod_{I}\reindex{Y}{\idx{f}}$.
 \item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) sending any morphism $f: X \times Y \to Z$
 to $g: X \to [Y, Z]$ with:
 \begin{itemize}
-\item $\idxf{g}(i) = (j \mapsto \idxf{f}(i, j): J \to K, j \mapsto \famf{f}_{i,j} \comp \inj_{Y_j}: Y \to
-\reindex{Z}{j \mapsto \idxf{f}(i, j)})$ where $\inj_{Y_j}: Y_j \to X_i \biprod Y_j$
-\item $\famf{g}(i) = \lambda_{\prod_{J}}(j \mapsto \famf{f}_{i, j} \comp \inj_{X_i})$ where $\inj_{X_i}: X_i
+\item $\idx{g}(i) = (j \mapsto \idx{f}(i, j): J \to K, j \mapsto \faml{f}_{i,j} \comp \inj_{Y_j}: Y \to
+\reindex{Z}{j \mapsto \idx{f}(i, j)})$ where $\inj_{Y_j}: Y_j \to X_i \biprod Y_j$
+\item $\faml{g}(i) = \lambda_{\prod_{J}}(j \mapsto \faml{f}_{i, j} \comp \inj_{X_i})$ where $\inj_{X_i}: X_i
 \to X_i \biprod Y_j$ for every $j \in J$
 \end{itemize}
 \item The family of morphisms $\eval_{X,Y}: [X, Y] \times X \to Y$ in $\Fam(C)$ with
 \begin{itemize}
-\item $\idxf{\eval}_{X,Y}((f, g), i) = f(i)$
-\item $\famf{\eval}_{X,Y}((f, g), i) = \coprodM{{\eval_{\prod}}_i}{g_i}: \prod_{I}\reindex{Y}{f} \biprod X_i \to Y_{f(i)}$
+\item $\idx{\eval}_{X,Y}((f, g), i) = f(i)$
+\item $\faml{\eval}_{X,Y}((f, g), i) = \coprodM{{\eval_{\prod}}_i}{g_i}: \prod_{I}\reindex{Y}{f} \biprod X_i \to Y_{f(i)}$
 \end{itemize}
 using $\coprodM{-}{-}$ to denote coproduct of morphisms.
 \end{enumerate}
