@@ -4,21 +4,28 @@ open import Level using (_⊔_; lift; lower)
 open import prop using (lift; lower)
 open import prop-setoid using (IsEquivalence; idS; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_)
-open import categories using (Category; opposite; IsProduct; IsTerminal)
-open import functor using ([_⇒_]; Functor; NatTrans; ≃-NatTrans)
+open import categories using (Category; IsProduct; IsTerminal)
+open import functor using ([_⇒_]; Functor; NatTrans; ≃-NatTrans; HasLimits)
 open import commutative-monoid using (CommutativeMonoid; _=[_]>_)
 open import cmon-enriched using (CMonEnriched; module cmon+product→biproduct)
 open import commutative-monoid-cat using (_⇒_; toSetoid)
-  renaming (cat to CMon; Obj to CMonObj)
+  renaming (cat to CMon; Obj to CMonObj
+           ; limits to CMon-limits
+           ; cmon-enriched to CMon-enriched
+           ; products to CMon-products
+           ; terminal to CMon-terminal)
+
 
 module cmon-yoneda {o m e} os es (𝒞 : Category o m e) (CM𝒞 : CMonEnriched 𝒞) where
 
 import yoneda os es 𝒞 as yoneda
 
-PSh = [ opposite 𝒞 ⇒ CMon (m ⊔ os) (e ⊔ es) ]
-
 private
   module 𝒞 = Category 𝒞
+
+-- FIXME: is this going to have to be all *cmon*-functors?
+PSh = [ 𝒞.opposite ⇒ CMon (o ⊔ m ⊔ e ⊔ es ⊔ os) (o ⊔ m ⊔ e ⊔ es ⊔ os) ]
+
 open _⇒_
 open _=[_]>_
 open CommutativeMonoid
@@ -55,7 +62,44 @@ open CMonEnriched CM𝒞
 よ .fmor-comp f g .transf-eq = yoneda.よ .fmor-comp _ _ .transf-eq
 
 ------------------------------------------------------------------------------
+-- PSh is cmon-enriched
+
+cmon-enriched : CMonEnriched PSh
+cmon-enriched = cmon-enriched.FunctorCat-cmon _ _ CMon-enriched
+
+------------------------------------------------------------------------------
+-- This category is complete
+
+psh-limits : (𝒮 : Category o m e) → HasLimits 𝒮 PSh
+psh-limits 𝒮 = limits
+  where open import functor-cat-limits _ _ 𝒮 (CMon-limits (o ⊔ e ⊔ m ⊔ os ⊔ es) 𝒮)
+
+-- FIXME: and cocomplete
+
+------------------------------------------------------------------------------
+-- There is a (more efficient) implementation of products
+
+------------------------------------------------------------------------------
 -- TODO: Yoneda lemma
+
+-- FIXME: need hom-cmon of an cmon-enriched category
+
+-- FIXME: I think the category might need to be restricted to only
+-- commutative monoid preserving functors.
+
+open prop-setoid.Setoid
+open _⇒s_
+
+{-
+lemma : ∀ F x → F .fobj x ⇒ record { carrier = Category.hom-setoid PSh (よ₀ x) F ; commMonoid = CMonEnriched.homCM cmon-enriched _ _ }
+lemma F x .function .func Fx .transf y .function .func (lift f) = F .fmor f .func Fx
+lemma F x .function .func Fx .transf y .function .func-resp-≈ = {!!}
+lemma F x .function .func Fx .transf y .cmFunc .preserve-ε = {!!} -- F needs to preserve ε!
+lemma F x .function .func Fx .transf y .cmFunc .preserve-+ = {!!}
+lemma F x .function .func Fx .natural = {!!}
+lemma F x .function .func-resp-≈ = {!!}
+lemma F x .cmFunc = {!!}
+-}
 
 ------------------------------------------------------------------------------
 -- よ preserves terminal objects

@@ -224,6 +224,10 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
 
   ------------------------------------------------------------------------------
   -- *-autonomous categories and all their structure
+  --
+  -- Barr, Michael. *-Autonomous Categories. Vol. 752. Lecture Notes
+  -- in Mathematics. Berlin, Heidelberg: Springer,
+  -- 1979. https://doi.org/10.1007/BFb0064579.
   record IsStarAuto {_⊗_ : A → A → A} {ε : A}
                     (⊗-isMonoid : IsMonoid _⊗_ ε)
                     (⊗-sym : ∀ {x y} → (x ⊗ y) ≤ (y ⊗ x))

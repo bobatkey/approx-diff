@@ -2,9 +2,9 @@
 
 module functor where
 
-open import Level
-open import prop
-open import categories
+open import Level using (_⊔_)
+open import prop using (tt; ⟪_⟫) -- only needed for setoid-functor
+open import categories using (Category; setoid→category)
 open import prop-setoid using (Setoid; IsEquivalence; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_)
 
@@ -312,6 +312,8 @@ const .Functor.fmor-cong eq .transf-eq x = eq
 const {𝒟 = 𝒟} .Functor.fmor-id .transf-eq x = Category.≈-refl 𝒟
 const {𝒟 = 𝒟} .Functor.fmor-comp f g .transf-eq x = Category.≈-refl 𝒟
 
+------------------------------------------------------------------------------
+-- Definition of colimits
 module _ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒮 : Category o₁ m₁ e₁} {𝒞 : Category o₂ m₂ e₂} where
 
   private
@@ -322,7 +324,7 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒮 : Category o₁ m₁ e₁} {𝒞 
            : Set (o₁ ⊔ m₁ ⊔ e₁ ⊔ o₂ ⊔ m₂ ⊔ e₂) where
     no-eta-equality
     field
-      colambda : ∀ x → NatTrans D (constF _ x) → apex 𝒞.⇒ x
+      colambda        : ∀ x → NatTrans D (constF _ x) → apex 𝒞.⇒ x
       colambda-cong   : ∀ {x α β} → ≃-NatTrans α β → colambda x α 𝒞.≈ colambda x β
       colambda-coeval : ∀ x α → ≃-NatTrans (constFmor (colambda x α) ∘ cocone) α
       colambda-ext    : ∀ x f → colambda x (constFmor f ∘ cocone) 𝒞.≈ f
@@ -341,7 +343,8 @@ HasColimits : ∀ {o₁ m₁ e₁ o₂ m₂ e₂}
 HasColimits 𝒮 𝒞 = (D : Functor 𝒮 𝒞) → Colimit D
 
 
-
+------------------------------------------------------------------------------
+-- Definition of Limits
 record HasLimits {o₁ m₁ e₁ o₂ m₂ e₂} (𝒮 : Category o₁ m₁ e₁) (𝒞 : Category o₂ m₂ e₂)
              : Set (o₁ ⊔ e₁ ⊔ e₂ ⊔ m₁ ⊔ m₂ ⊔ o₂) where
   private

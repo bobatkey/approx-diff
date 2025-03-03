@@ -25,11 +25,11 @@ record PointedFPCat o m e : Set (suc (o ⊔ m ⊔ e)) where
 
   open Category cat public
   open HasTerminal terminal renaming (witness to 𝟙) public
-  open HasProducts products renaming (pair to ⟨_,_⟩) public
+  open HasProducts products renaming (pair to ⟨_,_⟩; prod to _×_) public
 
   list→product : ∀ {ℓ} {A : Set ℓ} → (A → obj) → List A → obj
-  list→product i [] = 𝟙
-  list→product i (x ∷ xs) = prod (i x) (list→product i xs)
+  list→product i []       = 𝟙
+  list→product i (x ∷ xs) = i x × list→product i xs
 
 record Model {ℓ o m e} (𝒞 : PointedFPCat o m e) (Sig : Signature ℓ) : Set (ℓ ⊔ o ⊔ m) where
   open PointedFPCat 𝒞

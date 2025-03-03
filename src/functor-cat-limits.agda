@@ -1,8 +1,12 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
 open import prop-setoid using (IsEquivalence; module ≈-Reasoning)
-open import categories
+open import categories using (Category)
 open import functor
+  using (Functor; HasLimits; NatTrans; ≃-NatTrans; [_⇒_];
+         _∘F_; _∘H_; id; ∘H-cong; interchange;
+         ≃-isEquivalence; NT-id-left; NT-assoc; _∘_; ∘NT-cong;
+         constF; constF-F; constFmor)
 
 -- If 𝒟 has all limits of shape 𝒮, then so does [ 𝒞 ⇒ 𝒟 ].
 

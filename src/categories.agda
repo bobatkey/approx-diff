@@ -2,12 +2,13 @@
 
 module categories where
 
-open import Level
+open import Level using (suc; _⊔_; Lift; lift)
 open import Data.Product using (_,_)
-open import prop
+open import prop using (LiftP; Prf; ⊤; ⟪_⟫; tt; lift)
 open import prop-setoid
   using (IsEquivalence; Setoid; module ≈-Reasoning; ⊗-setoid)
   renaming (_⇒_ to _⇒s_)
+
 open IsEquivalence
 
 -- Definition of category, and some basic structure one might want to
@@ -62,14 +63,6 @@ record Category o m e : Set (suc (o ⊔ m ⊔ e)) where
   hom-setoid-l _ _ x y .isEquivalence .sym (lift e) = lift (isEquiv .sym e)
   hom-setoid-l _ _ x y .isEquivalence .trans (lift p) (lift q) = lift (isEquiv .trans p q)
 
-  -- comp : ∀ {x y z} → ⊗-setoid (hom-setoid y z) (hom-setoid x y) ⇒s hom-setoid x z
-  -- comp ._⇒s_.func (f , g) = f ∘ g
-  -- comp ._⇒s_.func-resp-≈ (f₁≈f₂ , g₁≈g₂) = ∘-cong f₁≈f₂ g₁≈g₂
-
-module _ {o m e} (𝒞 : Category o m e) where
-
-  open Category 𝒞
-
   record Iso (x y : obj) : Set (m ⊔ e) where
     field
       fwd : x ⇒ y
@@ -78,16 +71,16 @@ module _ {o m e} (𝒞 : Category o m e) where
       bwd∘fwd≈id : (bwd ∘ fwd) ≈ id x
 
   opposite : Category o m e
-  opposite .Category.obj = obj
-  opposite .Category._⇒_ x y = y ⇒ x
-  opposite .Category._≈_ = _≈_
-  opposite .Category.isEquiv = isEquiv
-  opposite .Category.id = id
-  opposite .Category._∘_ f g = g ∘ f
-  opposite .Category.∘-cong e₁ e₂ = ∘-cong e₂ e₁
-  opposite .Category.id-left = id-right
-  opposite .Category.id-right = id-left
-  opposite .Category.assoc f g h = ≈-sym (assoc h g f)
+  opposite .obj = obj
+  opposite ._⇒_ x y = y ⇒ x
+  opposite ._≈_ = _≈_
+  opposite .isEquiv = isEquiv
+  opposite .id = id
+  opposite ._∘_ f g = g ∘ f
+  opposite .∘-cong e₁ e₂ = ∘-cong e₂ e₁
+  opposite .id-left = id-right
+  opposite .id-right = id-left
+  opposite .assoc f g h = ≈-sym (assoc h g f)
 
 ------------------------------------------------------------------------------
 setoid→category : ∀ {o e} → Setoid o e → Category o e e
@@ -192,7 +185,7 @@ module _ {o m e} (𝒞 : Category o m e) where
     open IsProduct isProduct public
 
   -- FIXME: extend this to all limits and colimits, and include the (co)cones.
-  product-iso : ∀ {x y} (P₁ P₂ : Product x y) → Iso 𝒞 (Product.prod P₁) (Product.prod P₂)
+  product-iso : ∀ {x y} (P₁ P₂ : Product x y) → Iso (Product.prod P₁) (Product.prod P₂)
   product-iso P₁ P₂ .Iso.fwd = Product.pair P₂ (Product.p₁ P₁) (Product.p₂ P₁)
   product-iso P₁ P₂ .Iso.bwd = Product.pair P₁ (Product.p₁ P₂) (Product.p₂ P₂)
   product-iso P₁ P₂ .Iso.fwd∘bwd≈id =

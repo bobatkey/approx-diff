@@ -5,7 +5,7 @@ module example2 where
 open import Level using (suc; 0ℓ)
 
 open import categories
-  using (Category; opposite;
+  using (Category;
          HasProducts; HasExponentials; HasBooleans;
          setoid→category)
 open import functor using ([_⇒_]; HasLimits)
@@ -32,7 +32,7 @@ import galois
 cat = galois.cat -- graph-lang.cat {!!}
 
 PShGalois : Category (suc (suc 0ℓ)) (suc 0ℓ) (suc 0ℓ)
-PShGalois = [ opposite cat ⇒ CMon (suc 0ℓ) (suc 0ℓ) ]
+PShGalois = [ Category.opposite cat ⇒ CMon (suc 0ℓ) (suc 0ℓ) ]
 
 PShGalois-limits : (𝒮 : Category (suc 0ℓ) (suc 0ℓ) (suc 0ℓ)) → HasLimits 𝒮 PShGalois
 PShGalois-limits 𝒮 = limits
@@ -41,7 +41,7 @@ PShGalois-limits 𝒮 = limits
 PShGalois-cmon : CMonEnriched PShGalois
 PShGalois-cmon = FunctorCat-cmon _ _ CMon-enriched
 
-import functor-cat-products (opposite cat) (CMon (suc 0ℓ) (suc 0ℓ))
+import functor-cat-products (Category.opposite cat) (CMon (suc 0ℓ) (suc 0ℓ))
                             CMon-terminal
                             CMon-products
    as PShGalois-products
