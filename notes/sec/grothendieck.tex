@@ -41,8 +41,8 @@ $\Grothendieck{\Set^{\op}}\Fam(-,C)$.
 \end{definition}
 
 \noindent In $\Fam(C)$ the objects $X$ are thus pairs of a set $\idx{X}$ and indexed family $\faml{X}$ in
-$\Fam(\idx{X},C)$ and morphisms $f: X \to Y$ are functions $\idx{f}: \idx{X} \to \idx{Y}$ paired with a
-morphism $\faml{f}: X \to \reindex{Y}{f}$ in $\Fam(\idx{X},C)$.
+$\Fam(\idx{X},C)$ and morphisms $f: X \to Y$ are functions $\idx{f}: \idx{X} \to \idx{Y}$ paired with
+morphisms $\faml{f}: \faml{X} \to \reindex{\faml{Y}}{f}$ in $\Fam(\idx{X},C)$.
 
 \begin{proposition}
 \item
@@ -60,13 +60,11 @@ symmetric monoidal, with the coproduct as monoidal product.}
 
 \begin{proof}
 Suppose $C$ is locally small, with binary biproducts given by $(\biprod,\inj,\proj)$ and set-indexed products
-given by $(\prod,\eval_{\prod},\lambda_{\prod})$. For any objects $X = (I, X), Y = (J, Y)$ and $Z = (K, Z)$ in
-$\Fam(C)$ define:
+given by $(\prod,\eval_{\prod},\lambda_{\prod})$. For any objects $X, Y, Z$ in $\Fam(C)$ define:
 
 \begin{enumerate}
-\item $[X, Y]$ to be the object $(\Fam(C)(X,Y),[\idx{X}, \idx{Y}])$ in $\Fam(C)$ where $[\idx{X},
-\idx{Y}]$ denotes the indexed family which maps every $f: X \to Y$ in $\Fam(C)$ to
-$\prod_{I}\reindex{Y}{\idx{f}}$.
+\item $[X, Y]$ to be the object $(\Fam(C)(X,Y),[\idx{X}, \idx{Y}])$ in $\Fam(C)$ where $[\idx{X}, \idx{Y}]$
+denotes the indexed family mapping every $f: X \to Y$ in $\Fam(C)$ to $\prod_{I}\reindex{Y}{\idx{f}}$.
 \item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) sending any morphism $f: X \times Y \to Z$
 to $g: X \to [Y, Z]$ with:
 \begin{itemize}
