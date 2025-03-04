@@ -1,27 +1,5 @@
 \subsection{Category of families}
 
-\begin{definition}[Category of $I$-indexed families of objects]
-For any set $I$ and any category $C$ write $\Fam(I,C)$ for the category where:
-\begin{itemize}
-\item objects are the $I$-indexed families of objects of $C$;
-\item morphisms from $X$ to $Y$ are families of morphisms $f_i: X_i \to Y_i$ in $C$ for any $i \in I$.
-\end{itemize}
-\end{definition}
-
-\noindent Equivalently $\Fam(I,C)$ is the functor category $\Func{I}{C}$, interpreting $I$ as a discrete
-category.
-
-\begin{definition}[Reindexing]
-For any $f: I \to J$ the \emph{reindexing} functor $\reindex{-}{f}: \Fam(J,C) \to \Fam(I,C)$ sends any
-$J$-indexed family $X$ to the $I$-indexed family $X[f]$ where $X[f]_i = X_{f(i)}$ for any $i \in I$, and
-similarly for morphisms.
-\end{definition}
-
-\begin{definition}[$\Fam(-,C)$ functor]
-$\Fam(-,C): \Set^{\op} \to \Cat$ is then the functor which sends any set $I$ to $\Fam(I,C)$ and any function
-$f: I \to J$ to the functor $\reindex{-}{f}: \Fam(J,C) \to \Fam(I,C)$.
-\end{definition}
-
 \begin{definition}[Grothendieck construction for $F$]
 Suppose a functor $F: D \to \Cat$. The \emph{Grothendieck construction} $\Grothendieck{D}F$ for $F$ is the
 category where:
@@ -95,9 +73,9 @@ right in $C$ commutes for every $(x, y) \in \idx{X} \times \idx{Y}$:
 \end{tikzcd}
 \hspace{1cm}
 \begin{tikzcd}
-   \prod_{y \in \idx{Y}}\reindex{\idx{Z}}{y \mapsto} \biprod \faml{Y}_y \arrow[dr,
-   "\coprodM{\eval_{\prod_{\idx{Y}}}}{\faml{f}_i}"] \\
-   \faml{X}_x \biprod \faml{Y}_y \arrow[u, "\lambda_{\prod_{\idx{Y}}}(y\;\mapsto\;\faml{f}_{x, y}\;\comp\;
+   \prod_{\idx{Y}}\reindex{\faml{Z}}{y' \mapsto \idx{f}(x,y')} \biprod \faml{Y}_y \arrow[dr,
+   "\coprodM{\eval_{\prod_{\idx{Y}}}}{\faml{f}_x}"] \\
+   \faml{X}_x \biprod \faml{Y}_y \arrow[u, "\lambda_{\prod_{\idx{Y}}}(y'\;\mapsto\;\faml{f}_{x, y'}\;\comp\;
 \inj_{\faml{X}_x}) \biprod \id_{\faml{Y}_y}"] \arrow[r,
    "\faml{f}_{x,y}"'] & \faml{Z}_{\idx{f}(x,y)}
 \end{tikzcd}
