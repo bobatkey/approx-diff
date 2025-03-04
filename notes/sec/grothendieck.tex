@@ -57,7 +57,7 @@ $\faml{g} = \faml{f} \comp (x,-) \comp \inj_{\faml{Y}}: \faml{Y} \to \reindex{\f
 \begin{itemize}
 \item $\idx{\eval}_{X,Y}(f, x) = \idx{f}(x)$
 \item $\faml{\eval}_{X,Y}(f, x) = \coprodM{{\eval_{\prod}}_x}{\faml{f}_x}:
-\prod_{\idx{X}}\reindex{\faml{Y}}{f} \biprod \faml{X}_x \to \faml{Y}_{\idx{f}(x)}$
+\prod_{\idx{X}}\reindex{\faml{Y}}{\idx{f}} \biprod \faml{X}_x \to \faml{Y}_{\idx{f}(x)}$
 \end{itemize}
 using $\coprodM{-}{-}$ to denote coproduct of morphisms.
 \end{enumerate}
@@ -73,8 +73,8 @@ commutes for every $(x, y) \in \idx{X} \times \idx{Y}$:
 \end{tikzcd}
 \hspace{1cm}
 \begin{tikzcd}
-   \prod_{\idx{Y}}\reindex{\faml{Z}}{y' \mapsto \idx{f}(x,y')} \biprod \faml{Y}_y \arrow[dr,
-   "\coprodM{\eval_{\prod_{\idx{Y}}}}{\faml{f}_x}"] \\
+   \prod_{\idx{Y}}\reindex{\faml{Z}}{\idx{f} \comp (x,-)} \biprod \faml{Y}_y \arrow[dr,
+   "\coprodM{(\eval_{\prod_{\idx{Y}}})_y}{\faml{f}_x}"] \\
    \faml{X}_x \biprod \faml{Y}_y \arrow[u, "\lambda_{\prod_{\idx{Y}}}(y'\;\mapsto\;\faml{f}_{x, y'}\;\comp\;
 \inj_{\faml{X}_x}) \biprod \id_{\faml{Y}_y}"] \arrow[r,
    "\faml{f}_{x,y}"'] & \faml{Z}_{\idx{f}(x,y)}
