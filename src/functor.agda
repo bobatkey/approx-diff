@@ -313,7 +313,7 @@ const {𝒟 = 𝒟} .Functor.fmor-id .transf-eq x = Category.≈-refl 𝒟
 const {𝒟 = 𝒟} .Functor.fmor-comp f g .transf-eq x = Category.≈-refl 𝒟
 
 ------------------------------------------------------------------------------
--- Definition of colimits
+-- Definition of Colimits and Limits
 module _ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒮 : Category o₁ m₁ e₁} {𝒞 : Category o₂ m₂ e₂} where
 
   private
@@ -336,7 +336,41 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒮 : Category o₁ m₁ e₁} {𝒞 
       cocone    : NatTrans D (constF 𝒮 apex)
       isColimit : IsColimit D apex cocone
 
-  -- Has all colimits of shape 𝒮
+  record IsLimit (D : Functor 𝒮 𝒞)
+                 (apex : 𝒞.obj) (cone : NatTrans (constF 𝒮 apex) D)
+           : Set (o₁ ⊔ m₁ ⊔ e₁ ⊔ o₂ ⊔ m₂ ⊔ e₂) where
+    no-eta-equality
+    field
+      lambda      : ∀ (x : 𝒞.obj) → NatTrans (constF _ x) D → x 𝒞.⇒ apex
+      lambda-cong : ∀ {x α β} → ≃-NatTrans α β → lambda x α 𝒞.≈ lambda x β
+      lambda-eval : ∀ {x} α → ≃-NatTrans (cone ∘ constFmor (lambda x α)) α
+      lambda-ext  : ∀ {x} f → lambda x (cone ∘ constFmor f) 𝒞.≈ f
+
+    lambda-natural : ∀ {x y} →
+                       (α : NatTrans (constF 𝒮 {𝒞} y) D) →
+                       (h : x 𝒞.⇒ y) →
+                       (lambda y α 𝒞.∘ h) 𝒞.≈ lambda x (α ∘ constFmor h)
+    lambda-natural {x} {y} α h =
+      begin
+        lambda y α 𝒞.∘ h
+      ≈⟨ 𝒞.≈-sym (lambda-ext _) ⟩
+        lambda x (cone ∘ constFmor (lambda y α 𝒞.∘ h))
+      ≈⟨ lambda-cong (∘NT-cong (≃-isEquivalence .refl {cone}) (const .Functor.fmor-comp _ _)) ⟩
+        lambda x (cone ∘ (constFmor (lambda y α) ∘ constFmor h))
+      ≈⟨ 𝒞.≈-sym (lambda-cong ([ 𝒮 ⇒ 𝒞 ] .Category.assoc cone (constFmor (lambda y α)) (constFmor h))) ⟩
+        lambda x ((cone ∘ constFmor (lambda y α)) ∘ constFmor h)
+      ≈⟨ lambda-cong (∘NT-cong (lambda-eval α) (≃-isEquivalence .refl {constFmor h})) ⟩
+        lambda x (α ∘ constFmor h)
+      ∎ where open ≈-Reasoning 𝒞.isEquiv
+
+  record Limit (D : Functor 𝒮 𝒞) : Set (o₁ ⊔ m₁ ⊔ e₁ ⊔ o₂ ⊔ m₂ ⊔ e₂) where
+    no-eta-equality
+    field
+      apex    : 𝒞.obj
+      cone    : NatTrans (constF 𝒮 apex) D
+      isLimit : IsLimit D apex cone
+
+-- Has all colimits of shape 𝒮
 HasColimits : ∀ {o₁ m₁ e₁ o₂ m₂ e₂}
                 (𝒮 : Category o₁ m₁ e₁)
                 (𝒞 : Category o₂ m₂ e₂) → Set (o₁ ⊔ m₁ ⊔ e₁ ⊔ o₂ ⊔ m₂ ⊔ e₂)
