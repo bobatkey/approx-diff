@@ -46,18 +46,18 @@ given by $(\prod,\eval_{\prod},\lambda_{\prod})$. For any objects $X, Y, Z$ in $
 \item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) sending any $f: X \times Y \to Z$ to
 $\lambda_{X,Y,Z}(f): X \to [Y, Z]$ with:
 \begin{itemize}
-\item $\idx{\lambda}_{X,Y,Z}(f)(i) = g$ where $\idx{g}(j) = \idx{f}(i, j): \idx{Y} \to \idx{Z}$ and
-$\faml{g}(j) = \faml{f}_{i,j} \comp \inj_{\faml{Y}_j}: \faml{Y}_i \to \faml{Z}_{\idx{f}(i, j)}$ where
-$\inj_{\faml{Y}_j}: \faml{Y}_j \to \faml{X}_i \biprod \faml{Y}_j$
-\item $\faml{\lambda}_{X,Y,Z}(f)(i) = \lambda_{\prod_{\idx{Y}}}(j \mapsto \faml{f}_{i, j} \comp
-\inj_{\faml{X}_i}: \faml{X}_i \to \faml{Z}_{f(i,j)}$ where $\inj_{\faml{X}_i}: \faml{X}_i \to \faml{X}_i
-\biprod \faml{Y}_j$)
+\item $\idx{\lambda}_{X,Y,Z}(f)(x) = g$ where $\idx{g}(y) = \idx{f}(x, y): \idx{Y} \to \idx{Z}$ and
+$\faml{g}(y) = \faml{f}_{x,y} \comp \inj_{\faml{Y}_y}: \faml{Y}_y \to \faml{Z}_{\idx{f}(x, y)}$ where
+$\inj_{\faml{Y}_y}: \faml{Y}_y \to \faml{X}_x \biprod \faml{Y}_y$
+\item $\faml{\lambda}_{X,Y,Z}(f)(x) = \lambda_{\prod_{\idx{Y}}}(y \mapsto \faml{f}_{x, y} \comp
+\inj_{\faml{X}_x}: \faml{X}_x \to \faml{Z}_{f(x,y)}$ where $\inj_{\faml{X}_x}: \faml{X}_x \to \faml{X}_x
+\biprod \faml{Y}_y$)
 \end{itemize}
 \item The family of morphisms $\eval_{X,Y}: [X, Y] \times X \to Y$ in $\Fam(C)$ with
 \begin{itemize}
-\item $\idx{\eval}_{X,Y}(f, i) = \idx{f}(i)$
-\item $\faml{\eval}_{X,Y}(f, i) = \coprodM{{\eval_{\prod}}_i}{\faml{f}_i}:
-\prod_{\idx{X}}\reindex{\faml{Y}}{f} \biprod \faml{X}_i \to \faml{Y}_{\idx{f}(i)}$
+\item $\idx{\eval}_{X,Y}(f, x) = \idx{f}(x)$
+\item $\faml{\eval}_{X,Y}(f, x) = \coprodM{{\eval_{\prod}}_x}{\faml{f}_x}:
+\prod_{\idx{X}}\reindex{\faml{Y}}{f} \biprod \faml{X}_x \to \faml{Y}_{\idx{f}(x)}$
 \end{itemize}
 using $\coprodM{-}{-}$ to denote coproduct of morphisms.
 \end{enumerate}
