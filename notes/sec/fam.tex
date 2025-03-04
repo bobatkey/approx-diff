@@ -1,0 +1,31 @@
+\subsection{Category of $I$-indexed families}
+
+\begin{definition}[Category of $I$-indexed families of objects]
+For any set $I$ and any category $C$ write $\Fam(I,C)$ for the category where:
+\begin{itemize}
+\item objects are the $I$-indexed families of objects of $C$;
+\item morphisms from $X$ to $Y$ are families of morphisms $f_i: X_i \to Y_i$ in $C$ for any $i \in I$.
+\end{itemize}
+\end{definition}
+
+\noindent Equivalently $\Fam(I,C)$ is the functor category $\Func{I}{C}$, interpreting $I$ as a discrete
+category.
+
+\begin{definition}[Constant family]
+For any object $X$ of $C$ write $\const_I(X)$ for the constant family $\{X\}_{i \in I}$.
+\end{definition}
+
+\begin{definition}[Reindexing]
+For any $f: I \to J$ the \emph{reindexing} functor $\reindex{-}{f}: \Fam(J,C) \to \Fam(I,C)$ sends any
+$J$-indexed family $X$ to the $I$-indexed family $X[f]$ where $X[f]_i = X_{f(i)}$ for any $i \in I$, and
+similarly for morphisms.
+\end{definition}
+
+\begin{definition}[$\Fam(-,C)$ functor]
+$\Fam(-,C): \Set^{\op} \to \Cat$ is then the functor which sends any set $I$ to $\Fam(I,C)$ and any function
+$f: I \to J$ to the functor $\reindex{-}{f}: \Fam(J,C) \to \Fam(I,C)$.
+\end{definition}
+
+\begin{proposition}
+If $C$ has limits (resp.~colimits) then $\Fam(I,C)$ has limits (resp.~colimits) computed pointwise.
+\end{proposition}
