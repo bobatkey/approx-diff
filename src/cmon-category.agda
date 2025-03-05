@@ -3,12 +3,12 @@
 module cmon-category where
 
 open import Level
-open import prop using (lift)
-open import prop-setoid using (module ≈-Reasoning; _∘S_; idS; IsEquivalence)
+open import prop using (lift; lower)
+open import prop-setoid using (module ≈-Reasoning; _∘S_; idS; IsEquivalence; Setoid)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_)
 open import categories using (Category)
-open import functor using (Functor; NatTrans; ≃-NatTrans; ≃-isEquivalence; id; _∘_; ∘NT-cong; NT-id-left; NT-id-right; NT-assoc; [_⇒_]; HasLimits; _∘F_; _∘H_; ∘H-cong; constF; constF-F; interchange; constFmor)
-open import cmon-enriched using (CMonEnriched)
+open import functor using (Functor; NatTrans; ≃-NatTrans; ≃-isEquivalence; id; _∘_; ∘NT-cong; NT-id-left; NT-id-right; NT-assoc; [_⇒_]; HasLimits'; _∘F_; _∘H_; ∘H-cong; constF; constF-F; interchange; constFmor; IsLimit; preserve-limits-of-shape)
+open import cmon-enriched using (CMonEnriched; lambda-ε; lambda-+)
 open import commutative-monoid using (CommutativeMonoid)
 import commutative-monoid-cat
 
@@ -122,6 +122,8 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} (𝒞 : CMonCategory o₁ m₁ e₁) (�
 
 {-
   -- This doesn't exist! unless zero maps are the identities in 𝒟
+  --
+  -- Note: There is a const : CMonFunctor 𝒟 [ 𝒞 ⇒ 𝒟 ], because then we don't have to make a CmonFunctor!
   const : CMonFunctor 𝒟 CMon[_⇒_]
   const .functor .Functor.fobj x .functor .Functor.fobj _ = x
   const .functor .Functor.fobj x .functor .Functor.fmor _ = 𝒟.id x
@@ -171,11 +173,11 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} (𝒞 : CMonCategory o₁ m₁ e₁) (�
 --   and Natural transformations + horizontal composition is a CMon-category
 
   -- If 𝒟 has ordinary limits of shape 𝒮, then so does CMon[ 𝒞 ⇒ 𝒟 ]₀.
-  module _ {o₃ m₃ e₃} (𝒮 : Category o₃ m₃ e₃) (𝒟-limits : HasLimits 𝒮 𝒟.cat) where
+  module _ {o₃ m₃ e₃} (𝒮 : Category o₃ m₃ e₃) (𝒟-limits : HasLimits' 𝒮 𝒟.cat) where
 
     private
       module 𝒮 = Category 𝒮
-      module DL = HasLimits 𝒟-limits
+      module DL = HasLimits' 𝒟-limits
 
     open IsEquivalence
 
@@ -256,17 +258,17 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} (𝒞 : CMonCategory o₁ m₁ e₁) (�
       where open ≈-Reasoning 𝒟.isEquiv
     evalΠ F .natural f .transf-eq x = DL.evalΠ _ .natural f
 
-    limits : HasLimits 𝒮 CMon[ 𝒞 ⇒ 𝒟 ]₀
-    limits .HasLimits.Π = Π
-    limits .HasLimits.lambdaΠ = lambdaΠ
-    limits .HasLimits.evalΠ = evalΠ
-    limits .HasLimits.lambda-cong α≃β .transf-eq x =
+    limits : HasLimits' 𝒮 CMon[ 𝒞 ⇒ 𝒟 ]₀
+    limits .HasLimits'.Π = Π
+    limits .HasLimits'.lambdaΠ = lambdaΠ
+    limits .HasLimits'.evalΠ = evalΠ
+    limits .HasLimits'.lambda-cong α≃β .transf-eq x =
       DL.lambda-cong (∘NT-cong (∘H-cong (≃-isEquivalence .refl) α≃β) (≃-isEquivalence .refl))
-    limits .HasLimits.lambda-eval {X} {F} α .transf-eq s .transf-eq x =
+    limits .HasLimits'.lambda-eval {X} {F} α .transf-eq s .transf-eq x =
       𝒟.isEquiv .trans
          (DL.lambda-eval _ .transf-eq s)
          (𝒟.isEquiv .trans (𝒟.∘-cong 𝒟.id-left 𝒟.≈-refl) 𝒟.id-right)
-    limits .HasLimits.lambda-ext {X} {F} α .transf-eq x =
+    limits .HasLimits'.lambda-ext {X} {F} α .transf-eq x =
       𝒟.isEquiv .trans
         (DL.lambda-cong (record { transf-eq = λ s → 𝒟.isEquiv .trans 𝒟.id-right 𝒟.id-left }))
         (DL.lambda-ext (α .transf x))
@@ -320,7 +322,10 @@ module presheaves {o m e} os (𝒞 : CMonCategory o m e) where
   よ .fmor-ε .transf-eq x .func-eq (lift g₁≈g₂)  = lift (𝒞.comp-bilinear-ε₁ _)
   よ .fmor-+ f g .transf-eq x .func-eq (lift h₁≈h₂) = lift (𝒞.≈-trans (𝒞.∘-cong 𝒞.≈-refl h₁≈h₂) (𝒞.comp-bilinear₁ _ _ _))
 
-  lemma : ∀ F x → F .fobj x .carrier ⇒s Category.hom-setoid PSh₀ (よ .fobj x) F
+  PSh₀[_,_] : Category.obj PSh₀ → Category.obj PSh₀ → Setoid _ _
+  PSh₀[_,_] F G = Category.hom-setoid PSh₀ F G
+
+  lemma : ∀ F x → F .fobj x .carrier ⇒s PSh₀[ よ .fobj x , F ]
   lemma F x .func xF .transf y .function .func (lift f)  = F .fmor f .func xF
   lemma F x .func xF .transf y .function .func-resp-≈ (lift f₁≈f₂) = F .fmor-cong f₁≈f₂ .func-eq (F .fobj x .refl)
   lemma F x .func xF .transf y .cmFunc .preserve-ε = F .fmor-ε .func-eq (F .fobj x .refl)
@@ -337,11 +342,11 @@ module presheaves {o m e} os (𝒞 : CMonCategory o m e) where
   lemma F x .func-resp-≈ x₁≈x₂ .transf-eq y .func-eq (lift f₁≈f₂) =
     F .fmor-cong f₁≈f₂ .func-eq x₁≈x₂
 
-  lemma⁻¹ : ∀ F x →  Category.hom-setoid PSh₀ (よ .fobj x) F ⇒s F .fobj x .carrier
+  lemma⁻¹ : ∀ F x →  PSh₀[ よ .fobj x , F ] ⇒s F .fobj x .carrier
   lemma⁻¹ F x .func α = α .transf x .func (lift (𝒞.id _))
   lemma⁻¹ F x .func-resp-≈ α₁≈α₂ = α₁≈α₂ .transf-eq x .func-eq (lift 𝒞.≈-refl)
 
-  lemma∘lemma⁻¹ : ∀ F x → (lemma F x ∘S lemma⁻¹ F x) ≈s idS (Category.hom-setoid PSh₀ (よ .fobj x) F)
+  lemma∘lemma⁻¹ : ∀ F x → (lemma F x ∘S lemma⁻¹ F x) ≈s idS PSh₀[ よ .fobj x , F ]
   lemma∘lemma⁻¹ F x .func-eq {Fx₁} {Fx₂} Fx₁≈Fx₂ .transf-eq y .func-eq {lift f} {lift g} (lift f≈g) =
     F .fobj y .trans (Fx₁ .natural f .func-eq (lift 𝒞.≈-refl)) (Fx₁≈Fx₂ .transf-eq y .func-eq (lift (𝒞.≈-trans 𝒞.id-left f≈g)))
 
@@ -350,7 +355,69 @@ module presheaves {o m e} os (𝒞 : CMonCategory o m e) where
 
   -- FIXME: naturality
 
-  fullness : ∀ {x y} → Category._⇒_ PSh₀ (よ .fobj x) (よ .fobj y) → x 𝒞.⇒ y
-  fullness {x} {y} f = lemma⁻¹ (よ .fobj y) x .func f .lower
+  よ⁻¹ : ∀ {x y} → Category._⇒_ PSh₀ (よ .fobj x) (よ .fobj y) → x 𝒞.⇒ y
+  よ⁻¹ {x} {y} f = lemma⁻¹ (よ .fobj y) x .func f .lower
 
-  -- FIXME: よ preserves limits
+  preserve-limits : ∀ {o₁ m₁ e₁} (𝒮 : Category o₁ m₁ e₁) → preserve-limits-of-shape 𝒮 (よ .functor)
+  preserve-limits 𝒮 D apex cone isLimit = lim
+    where
+    open IsLimit
+    module 𝒮Psh = CMonEnriched (cmon-enriched.FunctorCat-cmon 𝒮 PSh₀ (cmon-enriched _ _))
+    module 𝒮𝒞 = CMonEnriched (cmon-enriched.FunctorCat-cmon 𝒮 𝒞.cat 𝒞.cmon-enriched)
+
+    conv-transf : ∀ {X x} → NatTrans (constF 𝒮 X) (よ .functor ∘F D) → X .fobj x .Carrier → NatTrans (constF 𝒮 x) D
+    conv-transf {X} {x} α Xx .transf s = α .transf s .transf x .func Xx .lower
+    conv-transf {X} {x} α Xx .natural f = 𝒞.≈-trans (α .natural f .transf-eq x .func-eq (X .fobj x .refl) .lower) (𝒞.≈-sym 𝒞.id-right)
+
+    conv-transf-≈ : ∀ {X x α₁ α₂ Xx₁ Xx₂} →
+                      ≃-NatTrans α₁ α₂ →
+                      X .fobj x ._≈_ Xx₁ Xx₂ →
+                      ≃-NatTrans (conv-transf {X} {x} α₁ Xx₁) (conv-transf {X} {x} α₂ Xx₂)
+    conv-transf-≈ {X} {x} α₁≈α₂ Xx₁≈Xx₂ .transf-eq s = α₁≈α₂ .transf-eq s .transf-eq x .func-eq Xx₁≈Xx₂ .lower
+
+    conv-transf-ε : ∀ {X x} (α : NatTrans (constF 𝒮 X) (よ .functor ∘F D)) →
+                    ≃-NatTrans (conv-transf α (X .fobj x .ε)) 𝒮𝒞.εm
+    conv-transf-ε {X} {x} α .transf-eq s = α .transf s .transf x .preserve-ε .lower
+
+    conv-transf-+ : ∀ {X x} (α : NatTrans (constF 𝒮 X) (よ .functor ∘F D))
+                      {x₁ x₂ : X .fobj x .Carrier} →
+                    ≃-NatTrans
+                      (conv-transf α (X .fobj x .commMonoid ._+_ x₁ x₂))
+                      (conv-transf α x₁ 𝒮𝒞.+m conv-transf α x₂)
+    conv-transf-+ {X} {x} α .transf-eq s = α .transf s .transf x .preserve-+ .lower
+
+    lim : IsLimit (よ .functor ∘F D) (よ .fobj apex) ((id _ ∘H cone) ∘ constF-F (よ .functor) apex)
+    lim .lambda X α .transf x .function .func Xx .lower = isLimit .lambda x (conv-transf α Xx)
+    lim .lambda X α .transf x .function .func-resp-≈ Xx₁≈Xx₂ .lower = isLimit .lambda-cong (conv-transf-≈ (≃-isEquivalence .IsEquivalence.refl) Xx₁≈Xx₂)
+    lim .lambda X α .transf x .cmFunc .preserve-ε .lower = begin
+        isLimit .lambda x (conv-transf α (X .fobj x .commMonoid .ε))
+      ≈⟨ isLimit .lambda-cong (conv-transf-ε α) ⟩
+        isLimit .lambda x 𝒮𝒞.εm
+      ≈⟨ lambda-ε 𝒞.cmon-enriched D (record { isLimit = isLimit }) ⟩
+        𝒞.homCM x apex .ε
+      ∎
+      where open ≈-Reasoning 𝒞.isEquiv
+    lim .lambda X α .transf x .cmFunc .preserve-+ {x₁}{x₂} .lower =
+      begin
+        isLimit .lambda x (conv-transf α (X .fobj x .commMonoid ._+_ x₁ x₂))
+      ≈⟨ isLimit .lambda-cong (conv-transf-+ α) ⟩
+        isLimit .lambda x (conv-transf α x₁ 𝒮𝒞.+m conv-transf α x₂)
+      ≈˘⟨ lambda-+ 𝒞.cmon-enriched D (record { isLimit = isLimit }) _ _ ⟩
+        isLimit .lambda x (conv-transf α x₁) 𝒞.+m isLimit .lambda x (conv-transf α x₂)
+      ∎
+      where open ≈-Reasoning 𝒞.isEquiv
+    lim .lambda X α .natural {x} {y} f .func-eq {Xx₁} {Xx₂} Xx₁≈Xx₂ .lower =
+      begin
+        isLimit .lambda x (conv-transf α Xx₁) 𝒞.∘ f
+      ≈⟨ lambda-natural isLimit (conv-transf α Xx₁) f ⟩
+        isLimit .lambda y (conv-transf α Xx₁ ∘ constFmor f)
+      ≈⟨ isLimit .lambda-cong (record { transf-eq = λ s → α .transf s .natural f .func-eq Xx₁≈Xx₂ .lower }) ⟩
+        isLimit .lambda y (conv-transf α (X .functor .fmor f .function .func Xx₂))
+      ∎
+      where open ≈-Reasoning 𝒞.isEquiv
+    lim .lambda-cong α≈β .transf-eq x .func-eq Xx₁≈Xx₂ .lower = isLimit .lambda-cong (conv-transf-≈ α≈β Xx₁≈Xx₂)
+    lim .lambda-eval {X} α .transf-eq s .transf-eq x .func-eq {Xx₁} {Xx₂} Xx₁≈Xx₂ .lower =
+      𝒞.≈-trans (isLimit .lambda-eval (conv-transf α Xx₁) .transf-eq s)
+                 (α .transf s .transf x .func-resp-≈ Xx₁≈Xx₂ .lower)
+    lim .lambda-ext {X} f .transf-eq x .func-eq {Xx₁} {Xx₂} Xx₁≈Xx₂ .lower =
+      {!!}

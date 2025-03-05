@@ -1,5 +1,9 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
+-- FIXME: this is mostly redundant now. In order to get the Yoneda
+-- embedding to actually work, we need to restrict to functors that
+-- preserve commutative monoid structure. This is in cmon-category.
+
 open import Level using (_⊔_; lift; lower)
 open import prop using (lift; lower)
 open import prop-setoid using (IsEquivalence; idS; module ≈-Reasoning)
@@ -70,9 +74,11 @@ cmon-enriched = cmon-enriched.FunctorCat-cmon _ _ CMon-enriched
 ------------------------------------------------------------------------------
 -- This category is complete
 
+{-
 psh-limits : (𝒮 : Category o m e) → HasLimits 𝒮 PSh
 psh-limits 𝒮 = limits
   where open import functor-cat-limits _ _ 𝒮 (CMon-limits (o ⊔ e ⊔ m ⊔ os ⊔ es) 𝒮)
+-}
 
 -- FIXME: and cocomplete
 

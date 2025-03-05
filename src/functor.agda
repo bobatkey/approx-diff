@@ -185,10 +185,16 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂ o₃ m₃ e₃ o₄ m₄ e₄}
   private
     module ℱ = Category ℱ
 
-  F-assoc : ∀ (F : Functor ℰ ℱ) (G : Functor 𝒟 ℰ) (H : Functor 𝒞 𝒟) →
+  F-assoc : ∀ {F : Functor ℰ ℱ} {G : Functor 𝒟 ℰ} {H : Functor 𝒞 𝒟} →
             NatTrans ((F ∘F G) ∘F H) (F ∘F (G ∘F H))
-  F-assoc F G H .transf x = ℱ.id _
-  F-assoc F G H .natural f = ℱ.id-swap'
+  F-assoc .transf x = ℱ.id _
+  F-assoc .natural f = ℱ.id-swap'
+
+  F-assoc⁻¹ : ∀ {F : Functor ℰ ℱ} {G : Functor 𝒟 ℰ} {H : Functor 𝒞 𝒟} →
+              NatTrans (F ∘F (G ∘F H)) ((F ∘F G) ∘F H)
+  F-assoc⁻¹ .transf x = ℱ.id _
+  F-assoc⁻¹ .natural f = ℱ.id-swap'
+
 
   -- and back again... and it is natural, and some coherence bits
 
@@ -369,17 +375,111 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒮 : Category o₁ m₁ e₁} {𝒞 
       apex    : 𝒞.obj
       cone    : NatTrans (constF 𝒮 apex) D
       isLimit : IsLimit D apex cone
+    open IsLimit isLimit public
 
 -- Has all colimits of shape 𝒮
-HasColimits : ∀ {o₁ m₁ e₁ o₂ m₂ e₂}
-                (𝒮 : Category o₁ m₁ e₁)
-                (𝒞 : Category o₂ m₂ e₂) → Set (o₁ ⊔ m₁ ⊔ e₁ ⊔ o₂ ⊔ m₂ ⊔ e₂)
+HasColimits : ∀ {o₁ m₁ e₁ o₂ m₂ e₂} (𝒮 : Category o₁ m₁ e₁) (𝒞 : Category o₂ m₂ e₂) → Set (o₁ ⊔ m₁ ⊔ e₁ ⊔ o₂ ⊔ m₂ ⊔ e₂)
 HasColimits 𝒮 𝒞 = (D : Functor 𝒮 𝒞) → Colimit D
 
+-- Has all limits of shape 𝒮
+HasLimits : ∀ {o₁ m₁ e₁ o₂ m₂ e₂} (𝒮 : Category o₁ m₁ e₁) (𝒞 : Category o₂ m₂ e₂) → Set (o₁ ⊔ m₁ ⊔ e₁ ⊔ o₂ ⊔ m₂ ⊔ e₂)
+HasLimits 𝒮 𝒞 = (D : Functor 𝒮 𝒞) → Limit D
 
 ------------------------------------------------------------------------------
--- Definition of Limits
-record HasLimits {o₁ m₁ e₁ o₂ m₂ e₂} (𝒮 : Category o₁ m₁ e₁) (𝒞 : Category o₂ m₂ e₂)
+-- If a category has all limits of shape 𝒮, then these can be
+-- organised into a functor
+
+module LimitFunctor {o₁ m₁ e₁ o₂ m₂ e₂}
+                    {𝒮 : Category o₁ m₁ e₁}
+                    {𝒞 : Category o₂ m₂ e₂}
+                    (limits : HasLimits 𝒮 𝒞)
+                    where
+
+  private
+    module 𝒞 = Category 𝒞
+
+  open Functor
+  open Limit
+  open IsLimit
+
+  Π : Functor [ 𝒮 ⇒ 𝒞 ] 𝒞
+  Π .fobj D = limits D .apex
+  Π .fmor {D} {E} α = EL.lambda DL.apex (α ∘ DL.cone)
+    where module EL = Limit (limits E)
+          module DL = Limit (limits D)
+  Π .fmor-cong {D} {E} {α₁} {α₂} α₁≈α₂ =
+    EL.lambda-cong (∘NT-cong α₁≈α₂ (≃-isEquivalence .refl))
+    where module EL = Limit (limits E)
+          module DL = Limit (limits D)
+  Π .fmor-id {D} =
+    begin
+      DL.lambda DL.apex (id D ∘ DL.cone)
+    ≈⟨ DL.lambda-cong (𝒮𝒞.id-swap {f = DL.cone}) ⟩
+      DL.lambda DL.apex (DL.cone ∘ id _)
+    ≈⟨ DL.lambda-cong (∘NT-cong (𝒮𝒞.≈-refl {f = DL.cone})
+                               (≃-isEquivalence .sym (const .Functor.fmor-id))) ⟩
+      DL.lambda DL.apex (DL.cone ∘ constFmor (𝒞.id _))
+    ≈⟨ DL.lambda-ext _ ⟩
+      𝒞.id DL.apex
+    ∎
+    where open ≈-Reasoning 𝒞.isEquiv
+          module 𝒮𝒞 = Category [ 𝒮 ⇒ 𝒞 ]
+          module DL = Limit (limits D)
+  Π .fmor-comp {D} {E} {F} α β =
+    begin
+      FL.lambda DL.apex ((α ∘ β) ∘ DL.cone)
+    ≈⟨ FL.lambda-cong (NT-assoc _ _ _) ⟩
+      FL.lambda DL.apex (α ∘ (β ∘ DL.cone))
+    ≈˘⟨ FL.lambda-cong (∘NT-cong (≃-isEquivalence .refl) (EL.lambda-eval _)) ⟩
+      FL.lambda DL.apex (α ∘ (EL.cone ∘ constFmor (EL.lambda _ (β ∘ DL.cone))))
+    ≈˘⟨ FL.lambda-cong (NT-assoc _ _ _) ⟩
+      FL.lambda DL.apex ((α ∘ EL.cone) ∘ constFmor (EL.lambda _ (β ∘ DL.cone)))
+    ≈˘⟨ FL.lambda-natural _ _ ⟩
+      FL.lambda _ (α ∘ EL.cone) 𝒞.∘ EL.lambda _ (β ∘ DL.cone)
+    ∎
+    where open ≈-Reasoning 𝒞.isEquiv
+          module DL = Limit (limits D)
+          module EL = Limit (limits E)
+          module FL = Limit (limits F)
+
+  -- This functor forms an adjunction with const
+
+  open NatTrans
+
+  unitΠ : NatTrans Id (Π ∘F const)
+  unitΠ .transf x = limits (constF 𝒮 x) .isLimit .lambda x (id _)
+  unitΠ .natural {x} {y} f =
+    begin
+      Ly.lambda _ (constFmor f ∘ Lx.cone) 𝒞.∘ Lx.lambda _ (id _)
+    ≈⟨ Ly.lambda-natural _ _ ⟩
+      Ly.lambda _ ((constFmor f ∘ Lx.cone) ∘ constFmor (Lx.lambda _ (id _)))
+    ≈⟨ Ly.lambda-cong (NT-assoc _ _ _) ⟩
+      Ly.lambda _ (constFmor f ∘ (Lx.cone ∘ constFmor (Lx.lambda _ (id _))))
+    ≈⟨ Ly.lambda-cong (∘NT-cong (≃-isEquivalence .refl) (Lx.lambda-eval (id _))) ⟩
+      Ly.lambda _ (constFmor f ∘ id _)
+    ≈⟨ Ly.lambda-cong 𝒮𝒞.id-swap' ⟩
+      Ly.lambda _ (id _ ∘ constFmor f)
+    ≈˘⟨ Ly.lambda-natural (id _) f ⟩
+      Ly.lambda _ (id _) 𝒞.∘ f
+    ∎
+    where module Ly = Limit (limits (constF 𝒮 y))
+          module Lx = Limit (limits (constF 𝒮 x))
+          module 𝒮𝒞 = Category [ 𝒮 ⇒ 𝒞 ]
+          open ≈-Reasoning 𝒞.isEquiv
+
+  counitΠ : NatTrans (const ∘F Π) Id
+  counitΠ .transf D = limits D .cone
+  counitΠ .natural {D} {E} α .transf-eq s =
+    𝒞.≈-sym (limits E .lambda-eval (α ∘ limits D .cone) .transf-eq s)
+{-
+  triangle1 : ≃-NatTrans
+                (left-unit _ ∘ ((counitΠ ∘H id const) ∘ (F-assoc⁻¹ ∘ ((id const ∘H unitΠ) ∘ right-unit⁻¹ _))))
+                (id const)
+  triangle1 .transf-eq x .transf-eq s = {!!}
+-}
+--   triangle2 : ≃-NatTrans
+
+record HasLimits' {o₁ m₁ e₁ o₂ m₂ e₂} (𝒮 : Category o₁ m₁ e₁) (𝒞 : Category o₂ m₂ e₂)
              : Set (o₁ ⊔ e₁ ⊔ e₂ ⊔ m₁ ⊔ m₂ ⊔ o₂) where
   private
     module 𝒞 = Category 𝒞
@@ -452,3 +552,33 @@ record HasLimits {o₁ m₁ e₁ o₂ m₂ e₂} (𝒮 : Category o₁ m₁ e₁
       lambdaΠ _ _ (α ∘ evalΠ Q) 𝒞.∘ lambdaΠ _ _ (β ∘ evalΠ P)
     ∎
     where open ≈-Reasoning 𝒞.isEquiv
+
+limits→limits' : ∀ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒮 : Category o₁ m₁ e₁} {𝒞 : Category o₂ m₂ e₂} →
+                   HasLimits 𝒮 𝒞 →
+                   HasLimits' 𝒮 𝒞
+limits→limits' hasLimits .HasLimits'.Π D = hasLimits D .Limit.apex
+limits→limits' hasLimits .HasLimits'.lambdaΠ x D α = hasLimits D .Limit.isLimit .IsLimit.lambda x α
+limits→limits' hasLimits .HasLimits'.evalΠ D = hasLimits D .Limit.cone
+limits→limits' hasLimits .HasLimits'.lambda-cong {x} {D} = hasLimits D .Limit.isLimit .IsLimit.lambda-cong
+limits→limits' hasLimits .HasLimits'.lambda-eval {x} {D} = hasLimits D .Limit.isLimit .IsLimit.lambda-eval
+limits→limits' hasLimits .HasLimits'.lambda-ext {x} {D} = hasLimits D .Limit.isLimit .IsLimit.lambda-ext
+
+------------------------------------------------------------------------------
+module _ {o₁ m₁ e₁ o₂ m₂ e₂ o₃ m₃ e₃}
+         {𝒞 : Category o₁ m₁ e₁}
+         {𝒟 : Category o₂ m₂ e₂}
+  where
+
+  private
+    module 𝒞 = Category 𝒞
+  open Functor
+
+  preserve-limits-of-shape : (𝒮 : Category o₃ m₃ e₃) →
+                             Functor 𝒞 𝒟 →
+                             Set (o₁ ⊔ m₁ ⊔ e₁ ⊔ o₂ ⊔ m₂ ⊔ e₂ ⊔ o₃ ⊔ m₃ ⊔ e₃)
+  preserve-limits-of-shape 𝒮 F =
+    ∀ (D : Functor 𝒮 𝒞)
+      (apex : 𝒞.obj)
+      (cone : NatTrans (constF 𝒮 apex) D) →
+    IsLimit D apex cone →
+    IsLimit (F ∘F D) (F .fobj apex) ((id F ∘H cone) ∘ (constF-F F apex))

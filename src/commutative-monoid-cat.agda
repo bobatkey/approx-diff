@@ -207,6 +207,8 @@ module _ {o m e} os (𝒟 : Category o m e) where
    open Π-Carrier
    open CommutativeMonoid
    open IsEquivalence
+   open Limit
+   open IsLimit
 
    ΠCM : Functor 𝒟 (cat (os ⊔ o ⊔ m) (os ⊔ o ⊔ m)) → Obj {os ⊔ o ⊔ m} {os ⊔ o ⊔ m}
    ΠCM F .carrier = Π os 𝒟 (toSetoid ∘F F)
@@ -228,27 +230,27 @@ module _ {o m e} os (𝒟 : Category o m e) where
 
    evalΠCM : ∀ F → NatTrans (constF 𝒟 (ΠCM F)) F
    evalΠCM F .transf x .function =
-     Setoid-Limit os 𝒟 .HasLimits.evalΠ (toSetoid ∘F F) .transf x
+     Setoid-Limit os 𝒟 (toSetoid ∘F F) .cone .transf x
    evalΠCM F .transf x .cmFunc .preserve-ε = F .fobj x .refl
    evalΠCM F .transf x .cmFunc .preserve-+ = F .fobj x .refl
-   evalΠCM F .natural = Setoid-Limit os 𝒟 .HasLimits.evalΠ (toSetoid ∘F F) .natural
+   evalΠCM F .natural = Setoid-Limit os 𝒟 (toSetoid ∘F F) .cone .natural
 
    lambdaΠCM : ∀ X (F : Functor 𝒟 (cat (os ⊔ o ⊔ m) (os ⊔ o ⊔ m))) →
                NatTrans (constF 𝒟 X) F → (X ⇒ ΠCM F)
    lambdaΠCM X F α .function =
-     Setoid-Limit os 𝒟 .HasLimits.lambdaΠ (X .carrier) (toSetoid ∘F F) ((NTid toSetoid ∘H α) ∘V constF-F toSetoid X)
+     Setoid-Limit os 𝒟 (toSetoid ∘F F) .isLimit .lambda (X .carrier) ((NTid toSetoid ∘H α) ∘V constF-F toSetoid X)
    lambdaΠCM X F α .cmFunc .preserve-ε x = α .transf x .preserve-ε
    lambdaΠCM X F α .cmFunc .preserve-+ x = α .transf x .preserve-+
 
-   limits : HasLimits 𝒟 (cat (os ⊔ o ⊔ m) (os ⊔ o ⊔ m))
-   limits .HasLimits.Π = ΠCM
-   limits .HasLimits.lambdaΠ = lambdaΠCM
-   limits .HasLimits.evalΠ = evalΠCM
-   limits .HasLimits.lambda-cong {x} {F} {α} {β} α≃β =
-     Setoid-Limit os 𝒟 .HasLimits.lambda-cong
+   limits : (D : Functor 𝒟 (cat (os ⊔ o ⊔ m) (os ⊔ o ⊔ m))) → Limit D
+   limits D .apex = ΠCM D
+   limits D .cone = evalΠCM D
+   limits D .isLimit .lambda X = lambdaΠCM X D
+   limits D .isLimit .lambda-cong {x} {α} {β} α≃β =
+     Setoid-Limit os 𝒟 (toSetoid ∘F D) .isLimit .lambda-cong
        (∘NT-cong (∘H-cong (≃NT-isEquivalence .refl) α≃β) (≃NT-isEquivalence .refl))
-   limits .HasLimits.lambda-eval α .transf-eq x ._≃s_.func-eq = α .transf x .func-resp-≈
-   limits .HasLimits.lambda-ext f ._≃s_.func-eq = f .func-resp-≈
+   limits D .isLimit .lambda-eval α .transf-eq x ._≃s_.func-eq = α .transf x .func-resp-≈
+   limits D .isLimit .lambda-ext f ._≃s_.func-eq = f .func-resp-≈
 
 ------------------------------------------------------------------------------
 -- Tensor products and symmetric monoidal closed structure (FIXME)
