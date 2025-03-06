@@ -2,17 +2,20 @@
 
 module grothendieck where
 
-open import Level
+open import Level using (_⊔_; suc; lift)
 open import Data.Unit using (⊤; tt)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; proj₁; proj₂; _,_)
-open import prop
+open import prop using (_,_; tt)
 open import prop-setoid
   using (IsEquivalence; Setoid; 𝟙; +-setoid; ⊗-setoid; idS; _∘S_; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_; ≃m-isEquivalence to ≈s-isEquivalence)
-open import categories
-open import setoid-cat hiding (Π)
+open import categories using (Category; HasTerminal; HasCoproducts; HasProducts; HasStrongCoproducts; HasLists)
+open import setoid-cat using (Setoid-products)
 open import fam
+  using (Fam; _⇒f_; idf; _∘f_; ∘f-cong; _≃f_; ≃f-isEquivalence; ≃f-id-left; ≃f-assoc;
+         _[_]; reindex-≈; reindex-≈-refl; reindex-≈-trans; reindex-id; reindex-comp; reindex-f; reindex-comp-≈; reindex-f-comp; reindex-f-cong; reindex-sq;
+         constantFam)
 
 open IsEquivalence
 
