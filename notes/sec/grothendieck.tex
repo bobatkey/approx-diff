@@ -80,6 +80,27 @@ commutes for every $(x, y) \in \idx{X} \times \idx{Y}$:
 \end{tikzcd}
 \end{center}
 
+We have:
+\begin{align*}
+&&
+\coprodM{\eval_{\prod_{y}}}{\faml{f}_{(x,y)}\,\comp\,\inj_{\faml{Y}_y}}
+\comp
+(\lambda_{\prod_{\idx{Y}}}(\reindex{\faml{f}}{{(x,-)}}\,\comp\,\inj_{\faml{X}_x}){,}\,\id_{\faml{Y}_y})
+\\
+&=&
+\coprodM
+   {\eval_{\prod_{y}} \comp \lambda_{\prod_{\idx{Y}}}(\reindex{\faml{f}}{{(x,-)}}\,\comp\,\inj_{\faml{X}_x})}
+   {\faml{f}_{(x,y)}\,\comp\,\inj_{\faml{Y}_y} \comp \id_{\faml{Y}_y}}
+\\
+&=&
+\coprodM
+   {\faml{f}_{(x,y)}\,\comp\,\inj_{\faml{X}_x}}
+   {\faml{f}_{(x,y)}\,\comp\,\inj_{\faml{Y}_y}}
+\\
+&=&
+\faml{f}_{(x,y)}
+\end{align*}
+
 \item \todo{(exhibit $\lambda^{-1}$ and then show) $\lambda^{-1}_{X,Y,Z}(\lambda_{X,Y,Z}(f)) = f$}
 \end{enumerate}
 \end{proof}
