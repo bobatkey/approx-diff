@@ -218,7 +218,7 @@ private module PP = HasProducts products
     id _ ∘ (id _ ∘ (CP .copair (SP .evalΠ _ y) (f .famf .transf (x , y) ∘ CP .in₂) ∘ P .pair (lambda⟶ f .famf .transf x ∘ P .p₁) (id _ ∘ P .p₂)))
   ≈⟨ id-left ⟩
     id _ ∘ (CP .copair (SP .evalΠ _ y) (f .famf .transf (x , y) ∘ CP .in₂) ∘ P .pair (lambda⟶ f .famf .transf x ∘ P .p₁) (id _ ∘ P .p₂))
-  ≈⟨ id-left ⟩
+  ≈⟨ {!   !} ⟩
     CP .copair (SP .evalΠ _ y) (f .famf .transf (x , y) ∘ CP .in₂) ∘ P .pair (lambda⟶ f .famf .transf x ∘ P .p₁) (id _ ∘ P .p₂)
   ≈⟨ copair-prod _ BP ⟩
     CP .copair (SP .evalΠ _ y ∘ lambda⟶ f .famf .transf x) ((f .famf .transf (x , y) ∘ CP .in₂) ∘ id _)
