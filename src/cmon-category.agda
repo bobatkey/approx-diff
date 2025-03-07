@@ -7,7 +7,10 @@ open import prop using (lift; lower)
 open import prop-setoid using (module ≈-Reasoning; _∘S_; idS; IsEquivalence; Setoid)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_)
 open import categories using (Category)
-open import functor using (Functor; NatTrans; ≃-NatTrans; ≃-isEquivalence; id; _∘_; ∘NT-cong; NT-id-left; NT-id-right; NT-assoc; [_⇒_]; HasLimits'; _∘F_; _∘H_; ∘H-cong; constF; constF-F; interchange; constFmor; IsLimit; preserve-limits-of-shape)
+open import functor
+  using (Functor; NatTrans; ≃-NatTrans; ≃-isEquivalence; id; _∘_; ∘NT-cong; NT-id-left; NT-id-right; NT-assoc;
+         [_⇒_]; HasLimits'; _∘F_; _∘H_; ∘H-cong; constF; constF-F; interchange; constFmor; IsLimit; preserve-limits-of-shape;
+         HasLimits; limits→limits')
 open import cmon-enriched using (CMonEnriched; lambda-ε; lambda-+; FunctorCat-cmon)
 open import commutative-monoid using (CommutativeMonoid)
 import commutative-monoid-cat
@@ -64,6 +67,43 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒞 : CMonCategory o₁ m₁ e₁} {�
   CMonNatTrans : (F G : CMonFunctor 𝒞 𝒟) → Set (o₁ ⊔ m₁ ⊔ m₂ ⊔ e₂)
   CMonNatTrans F G = NatTrans (F .functor) (G .functor)
 
+------------------------------------------------------------------------------
+module _ {o₁ m₁ e₁ o₂ m₂ e₂} (𝒞 : Category o₁ m₁ e₁) (𝒟 : CMonCategory o₂ m₂ e₂) where
+
+  private
+    module 𝒟 = CMonCategory 𝒟
+
+  cmon[_⇒_] : CMonCategory (o₁ ⊔ m₁ ⊔ e₁ ⊔ o₂ ⊔ m₂ ⊔ e₂) (o₁ ⊔ m₁ ⊔ m₂ ⊔ e₂) (o₁ ⊔ e₂)
+  cmon[_⇒_] .CMonCategory.cat = [ 𝒞 ⇒ 𝒟.cat ]
+  cmon[_⇒_] .CMonCategory.cmon-enriched = FunctorCat-cmon 𝒞 𝒟.cat 𝒟.cmon-enriched
+
+module LimitFunctor {o₁ m₁ e₁ o₂ m₂ e₂}
+                    (𝒮 : Category o₁ m₁ e₁)
+                    (𝒞 : CMonCategory o₂ m₂ e₂)
+                    (limits : HasLimits 𝒮 (CMonCategory.cat 𝒞))
+                    where
+
+  open functor.LimitFunctor limits using () renaming (Π to Π₀)
+
+  private
+    module 𝒞 = CMonCategory 𝒞
+    module CM𝒞 = CMonEnriched (FunctorCat-cmon 𝒮 𝒞.cat 𝒞.cmon-enriched)
+
+  open Functor
+  open ≃-NatTrans
+  open functor.Limit
+  open functor.IsLimit
+
+  Π : CMonFunctor cmon[ 𝒮 ⇒ 𝒞 ] 𝒞
+  Π .CMonFunctor.functor = Π₀
+  Π .CMonFunctor.fmor-ε {F} {G} =
+    𝒞.≈-trans (limits G .lambda-cong (CM𝒞.comp-bilinear-ε₁ _))
+               (lambda-ε 𝒞.cmon-enriched G (limits G))
+  Π .CMonFunctor.fmor-+ {F} {G} f g =
+    𝒞.≈-trans (limits G .lambda-cong (CM𝒞.comp-bilinear₁ _ _ _))
+               (𝒞.≈-sym (lambda-+ 𝒞.cmon-enriched G (limits G) _ _) )
+
+------------------------------------------------------------------------------
 -- (CMon)Categories of CMonFunctors.
 --
 -- Compare to CMonCategories of Functors, when the codomain is a CMonCategory.
@@ -176,61 +216,63 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} (𝒞 : CMonCategory o₁ m₁ e₁) (�
 --   and Natural transformations + horizontal composition is a CMon-category
 
   -- If 𝒟 has ordinary limits of shape 𝒮, then so does CMon[ 𝒞 ⇒ 𝒟 ]₀.
-  module _ {o₃ m₃ e₃} (𝒮 : Category o₃ m₃ e₃) (𝒟-limits : HasLimits' 𝒮 𝒟.cat) where
+  module _ {o₃ m₃ e₃} (𝒮 : Category o₃ m₃ e₃) (𝒟-limits : HasLimits 𝒮 𝒟.cat) where
 
     private
       module 𝒮 = Category 𝒮
-      module DL = HasLimits' 𝒟-limits
+      module DL = HasLimits' (limits→limits' 𝒟-limits)
 
     open IsEquivalence
 
+    open LimitFunctor 𝒮 𝒟 𝒟-limits using () renaming (Π to DLΠ)
+
     Π : Functor 𝒮 CMon[ 𝒞 ⇒ 𝒟 ]₀ → CMonFunctor 𝒞 𝒟
-    Π F .functor .fobj x = DL.Π (evalAt .fobj x .functor ∘F F)
-    Π F .functor .fmor f = DL.Π-map (evalAt .fmor f ∘H id F)
+    Π F .functor .fobj x = DLΠ .fobj (evalAt .fobj x .functor ∘F F)
+    Π F .functor .fmor f = DLΠ .fmor (evalAt .fmor f ∘H id F)
     Π F .functor .fmor-cong f₁≈f₂ =
-      DL.Π-map-cong (∘H-cong (evalAt .fmor-cong f₁≈f₂) (≃-isEquivalence .refl {id F}))
+      DLΠ .fmor-cong (∘H-cong (evalAt .fmor-cong f₁≈f₂) (≃-isEquivalence .refl {id F}))
     Π F .functor .fmor-id {x} =
       begin
-        DL.Π-map (evalAt .fmor (𝒞.id x) ∘H id F)
-      ≈⟨ DL.Π-map-cong (∘H-cong (evalAt .fmor-id) (≃-isEquivalence .refl {id F})) ⟩
-        DL.Π-map (id (evalAt .fobj x .functor) ∘H id F)
-      ≈⟨ DL.Π-map-cong (record { transf-eq = λ _ → 𝒟.id-left }) ⟩
-        DL.Π-map (id _)
-      ≈⟨ DL.Π-map-id ⟩
-        𝒟.id (DL.Π (evalAt .fobj x .functor ∘F F))
+        DLΠ .fmor (evalAt .fmor (𝒞.id x) ∘H id F)
+      ≈⟨ DLΠ .fmor-cong (∘H-cong (evalAt .fmor-id) (≃-isEquivalence .refl {id F})) ⟩
+        DLΠ .fmor (id (evalAt .fobj x .functor) ∘H id F)
+      ≈⟨ DLΠ .fmor-cong (record { transf-eq = λ _ → 𝒟.id-left }) ⟩
+        DLΠ .fmor (id _)
+      ≈⟨ DLΠ .fmor-id ⟩
+        𝒟.id (DLΠ .fobj (evalAt .fobj x .functor ∘F F))
       ∎
       where open ≈-Reasoning 𝒟.isEquiv
     Π F .functor .fmor-comp {x} {y} {z} f g =
       begin
-        DL.Π-map (evalAt .fmor (f 𝒞.∘ g) ∘H id F)
-      ≈⟨ DL.Π-map-cong (∘H-cong (evalAt .fmor-comp f g) (≃-isEquivalence .sym NT-id-left)) ⟩
-        DL.Π-map ((evalAt .fmor f ∘ evalAt .fmor g) ∘H (id F ∘ id F))
-      ≈⟨ DL.Π-map-cong (interchange _ _ _ _) ⟩
-        DL.Π-map ((evalAt .fmor f ∘H id F) ∘ (evalAt .fmor g ∘H id F))
-      ≈⟨ DL.Π-map-comp _ _ ⟩
-        DL.Π-map (evalAt .fmor f ∘H id F) 𝒟.∘ DL.Π-map (evalAt .fmor g ∘H id F)
+        DLΠ .fmor (evalAt .fmor (f 𝒞.∘ g) ∘H id F)
+      ≈⟨ DLΠ .fmor-cong (∘H-cong (evalAt .fmor-comp f g) (≃-isEquivalence .sym NT-id-left)) ⟩
+        DLΠ .fmor ((evalAt .fmor f ∘ evalAt .fmor g) ∘H (id F ∘ id F))
+      ≈⟨ DLΠ .fmor-cong (interchange _ _ _ _) ⟩
+        DLΠ .fmor ((evalAt .fmor f ∘H id F) ∘ (evalAt .fmor g ∘H id F))
+      ≈⟨ DLΠ .fmor-comp _ _ ⟩
+        DLΠ .fmor (evalAt .fmor f ∘H id F) 𝒟.∘ DLΠ .fmor (evalAt .fmor g ∘H id F)
       ∎
       where open ≈-Reasoning 𝒟.isEquiv
     Π F .fmor-ε {x} {y} = begin
-        DL.Π-map (evalAt .fmor 𝒞.εm ∘H id F)
-      ≈⟨ DL.Π-map-cong (∘H-cong (evalAt .fmor-ε) (≃-isEquivalence .refl)) ⟩
-        DL.Π-map (FC.εm {evalAt .fobj x} {evalAt .fobj y} ∘H id F)
-      ≈⟨ DL.Π-map-cong (record { transf-eq = λ s → 𝒟.id-right }) ⟩
-        DL.Π-map SFC.εm
-      ≈⟨ {!!} ⟩
+        DLΠ .fmor (evalAt .fmor 𝒞.εm ∘H id F)
+      ≈⟨ DLΠ .fmor-cong (∘H-cong (evalAt .fmor-ε) (≃-isEquivalence .refl)) ⟩
+        DLΠ .fmor (FC.εm {evalAt .fobj x} {evalAt .fobj y} ∘H id F)
+      ≈⟨ DLΠ .fmor-cong (record { transf-eq = λ s → 𝒟.id-right }) ⟩
+        DLΠ .fmor SFC.εm
+      ≈⟨ DLΠ .fmor-ε ⟩
         𝒟.εm
       ∎
       where open ≈-Reasoning 𝒟.isEquiv
             module FC = CMonCategory CMon[ CMon[ 𝒞 ⇒ 𝒟 ] ⇒ 𝒟 ]
             module SFC = CMonEnriched (FunctorCat-cmon 𝒮 𝒟.cat 𝒟.cmon-enriched)
     Π F .fmor-+ {x} {y} f g = begin
-        DL.Π-map (evalAt .fmor (f 𝒞.+m g) ∘H id F)
-      ≈⟨ DL.Π-map-cong (∘H-cong (evalAt .fmor-+ f g) (≃-isEquivalence .refl)) ⟩
-        DL.Π-map ((FC._+m_ {evalAt .fobj x} {evalAt .fobj y} (evalAt .fmor f) (evalAt .fmor g)) ∘H id F)
-      ≈⟨ DL.Π-map-cong (record { transf-eq = λ s → 𝒟.comp-bilinear₁ _ _ _ }) ⟩
-        DL.Π-map ((evalAt .fmor f ∘H id F) SFC.+m (evalAt .fmor g ∘H id F))
-      ≈⟨ {!!} ⟩
-        DL.Π-map (evalAt .fmor f ∘H id F) 𝒟.+m DL.Π-map (evalAt .fmor g ∘H id F)
+        DLΠ .fmor (evalAt .fmor (f 𝒞.+m g) ∘H id F)
+      ≈⟨ DLΠ .fmor-cong (∘H-cong (evalAt .fmor-+ f g) (≃-isEquivalence .refl)) ⟩
+        DLΠ .fmor ((FC._+m_ {evalAt .fobj x} {evalAt .fobj y} (evalAt .fmor f) (evalAt .fmor g)) ∘H id F)
+      ≈⟨ DLΠ .fmor-cong (record { transf-eq = λ s → 𝒟.comp-bilinear₁ _ _ _ }) ⟩
+        DLΠ .fmor ((evalAt .fmor f ∘H id F) SFC.+m (evalAt .fmor g ∘H id F))
+      ≈⟨ DLΠ .fmor-+ _ _ ⟩
+        DLΠ .fmor (evalAt .fmor f ∘H id F) 𝒟.+m DLΠ .fmor (evalAt .fmor g ∘H id F)
       ∎
       where open ≈-Reasoning 𝒟.isEquiv
             module FC = CMonCategory CMon[ CMon[ 𝒞 ⇒ 𝒟 ] ⇒ 𝒟 ]
@@ -242,7 +284,7 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} (𝒞 : CMonCategory o₁ m₁ e₁) (�
     lambdaΠ X F α .transf x = DL.lambdaΠ _ _ ((id _ ∘H α) ∘ constF-F (evalAt .fobj x .functor) X)
     lambdaΠ X F α .natural {x} {y} f =
       begin
-        DL.Π-map (evalAt .fmor f ∘H id F) 𝒟.∘ DL.lambdaΠ (X .fobj x) (evalAt .fobj x .functor ∘F F) ((id _ ∘H α) ∘ constF-F (evalAt .fobj x .functor) X)
+        DLΠ .fmor (evalAt .fmor f ∘H id F) 𝒟.∘ DL.lambdaΠ (X .fobj x) (evalAt .fobj x .functor ∘F F) ((id _ ∘H α) ∘ constF-F (evalAt .fobj x .functor) X)
       ≈⟨ DL.lambdaΠ-natural _ _ ⟩
         DL.lambdaΠ _ _ (((evalAt .fmor f ∘H id F) ∘ DL.evalΠ _) ∘ constFmor (DL.lambdaΠ (X .fobj x) (evalAt .fobj x .functor ∘F F) ((id _ ∘H α) ∘ constF-F (evalAt .fobj x .functor) X)))
       ≈⟨ DL.lambda-cong (𝒮𝒟.assoc (evalAt .fmor f ∘H id F) (DL.evalΠ _) (constFmor (DL.lambdaΠ (X .fobj x) (evalAt .fobj x .functor ∘F F) ((id _ ∘H α) ∘ constF-F (evalAt .fobj x .functor) X)))) ⟩
@@ -278,7 +320,7 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} (𝒞 : CMonCategory o₁ m₁ e₁) (�
       ≈⟨ 𝒟.∘-cong (𝒟.≈-sym 𝒟.id-right) 𝒟.≈-refl ⟩
         (F .fobj s .fmor f 𝒟.∘ 𝒟.id _) 𝒟.∘ DL.evalΠ (evalAt .fobj x .functor ∘F F) .transf s
       ≈⟨ 𝒟.≈-sym (DL.lambda-eval ((evalAt .fmor f ∘H id F) ∘ DL.evalΠ _) .transf-eq s) ⟩
-        DL.evalΠ (evalAt .fobj y .functor ∘F F) .transf s 𝒟.∘ DL.Π-map (evalAt .fmor f ∘H id F)
+        DL.evalΠ (evalAt .fobj y .functor ∘F F) .transf s 𝒟.∘ DLΠ .fmor (evalAt .fmor f ∘H id F)
       ∎
       where open ≈-Reasoning 𝒟.isEquiv
     evalΠ F .natural f .transf-eq x = DL.evalΠ _ .natural f
