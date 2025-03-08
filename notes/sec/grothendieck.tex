@@ -61,45 +61,43 @@ $\faml{g} = \reindex{\faml{f}}{(x,-)} \comp \inj_{\faml{Y}}: \faml{Y} \to \reind
 \end{itemize}
 using $\coprodM{-}{-}$ to denote coproduct of morphisms.
 \end{enumerate}
-Then for any $f: X \times Y \to Z$ in $\Fam(C)$ we have the following.
+Then for any $f: X \times Y \to Z$ in $\Fam(C)$:
 \begin{enumerate}
-\item The diagram on the left in $\Fam(C)$ commutes; it suffices to show that the diagram on the right in $C$
-commutes for every $(x, y) \in \idx{X} \times \idx{Y}$:
+\item Suppose $(x, y) \in \idx{X} \times \idx{Y}$. The diagram on the left below commutes by the universal property
+of the set-indexed product; the commutativity of the diagram on the right is trivial.
 
 \begin{center}
+\begin{tikzcd}
+   \prod_{\idx{Y}}\reindex{\faml{Z}}{\idx{f} \comp (x,-)} \arrow[dr, "\eval_{\prod_{y}}"] \\
+   \faml{X}_x \arrow[u, "\lambda_{\prod_{\idx{Y}}}(\reindex{\faml{f}}{{(x,-)}}\,\comp\,
+\inj_{\faml{X}_x})"] \arrow[r, "\faml{f}_{x,y}\,\comp\,\inj_{\faml{X}_x}"'] & \faml{Z}_{\idx{f}(x,y)}
+\end{tikzcd}
+\hspace{1cm}
+\begin{tikzcd}[column sep=5em]
+   \faml{Y}_y \arrow[dr,
+   "\faml{f}_{(x,y)}\,\comp\,\inj_{\faml{Y}_y}"] \\
+   \faml{Y}_y \arrow[u, -, double, "\id_{\faml{Y}_y}"] \arrow[r, "\faml{f}_{x,y}\,\comp\,\inj_{\faml{Y}_y}"'] & \faml{Z}_{\idx{f}(x,y)}
+\end{tikzcd}
+\end{center}
+
+The diagram on the left below then commutes by Proposition~\ref{prop:biproduct:prod-coprod}, with
+$\coprodM{\faml{f}_{x,y}\,\comp\,\inj_{\faml{X}_x}}{\faml{f}_{x,y}\,\comp\,\inj_{\faml{Y}_y}} =
+\faml{f}_{(x,y)}$ by the uniqueness of the coproduct of morphisms. Then the diagram on the right in $\Fam(C)$
+commutes by the definitions of $\lambda_{X,Y,Z}, \eval_{Y,Z}$ and $[Y,Z]$.
+
+\begin{center}
+\begin{tikzcd}[column sep=5.5em]
+   \prod_{\idx{Y}}\reindex{\faml{Z}}{\idx{f} \comp (x,-)} \biprod \faml{Y}_y \arrow[dr,
+   "\coprodM{\eval_{\prod_{y}}}{\faml{f}_{(x,y)}\,\comp\,\inj_{\faml{Y}_y}}"] \\
+   \faml{X}_x \biprod \faml{Y}_y \arrow[u, "(\lambda_{\prod_{\idx{Y}}}(\reindex{\faml{f}}{{(x,-)}}\,\comp\,
+\inj_{\faml{X}_x}){,}\,\id_{\faml{Y}_y})"] \arrow[r, "\coprodM{\faml{f}_{x,y}\,\comp\,\inj_{\faml{X}_x}}{\faml{f}_{x,y}\,\comp\,\inj_{\faml{Y}_y}}"'] & \faml{Z}_{\idx{f}(x,y)}
+\end{tikzcd}
+\hspace{1cm}
 \begin{tikzcd}
    {{[Y, Z]}} \tensor Y \arrow[dr, "\eval_{Y,Z}"] \\
    X \tensor Y \arrow[u, "\lambda_{X,Y,Z}(f) \tensor \id_Y"] \arrow[r, "f"'] & Z
 \end{tikzcd}
-\hspace{1cm}
-\begin{tikzcd}
-   \prod_{\idx{Y}}\reindex{\faml{Z}}{\idx{f} \comp (x,-)} \biprod \faml{Y}_y \arrow[dr,
-   "\coprodM{\eval_{\prod_{y}}}{\faml{f}_{(x,y)}\,\comp\,\inj_{\faml{Y}_y}}"] \\
-   \faml{X}_x \biprod \faml{Y}_y \arrow[u, "(\lambda_{\prod_{\idx{Y}}}(\reindex{\faml{f}}{{(x,-)}}\,\comp\,
-\inj_{\faml{X}_x}){,}\,\id_{\faml{Y}_y})"] \arrow[r, "\faml{f}_{x,y}"'] & \faml{Z}_{\idx{f}(x,y)}
-\end{tikzcd}
 \end{center}
-
-We have:
-\begin{align*}
-&&
-\coprodM{\eval_{\prod_{y}}}{\faml{f}_{(x,y)}\,\comp\,\inj_{\faml{Y}_y}}
-\comp
-(\lambda_{\prod_{\idx{Y}}}(\reindex{\faml{f}}{{(x,-)}}\,\comp\,\inj_{\faml{X}_x}){,}\,\id_{\faml{Y}_y})
-\\
-&=&
-\coprodM
-   {\eval_{\prod_{y}} \comp \lambda_{\prod_{\idx{Y}}}(\reindex{\faml{f}}{{(x,-)}}\,\comp\,\inj_{\faml{X}_x})}
-   {\faml{f}_{(x,y)}\,\comp\,\inj_{\faml{Y}_y} \comp \id_{\faml{Y}_y}}
-\\
-&=&
-\coprodM
-   {\faml{f}_{(x,y)}\,\comp\,\inj_{\faml{X}_x}}
-   {\faml{f}_{(x,y)}\,\comp\,\inj_{\faml{Y}_y}}
-\\
-&=&
-\faml{f}_{(x,y)}
-\end{align*}
 
 \item \todo{(exhibit $\lambda^{-1}$ and then show) $\lambda^{-1}_{X,Y,Z}(\lambda_{X,Y,Z}(f)) = f$}
 \end{enumerate}
