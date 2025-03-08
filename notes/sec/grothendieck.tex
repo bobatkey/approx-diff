@@ -61,10 +61,13 @@ $\faml{g} = \reindex{\faml{f}}{(x,-)} \comp \inj_{\faml{Y}}: \faml{Y} \to \reind
 \end{itemize}
 using $\coprodM{-}{-}$ to denote coproduct of morphisms.
 \end{enumerate}
-Then for any $f: X \times Y \to Z$ in $\Fam(C)$:
+
+Then:
+
 \begin{enumerate}
-\item Suppose $(x, y) \in \idx{X} \times \idx{Y}$. The diagram on the left below commutes by the universal property
-of the set-indexed product; the commutativity of the diagram on the right is trivial.
+\item Suppose $f: X \times Y \to Z$ in $\Fam(C)$ and $(x, y) \in \idx{X} \times \idx{Y}$. The diagram on the
+left below commutes by the universal property of the set-indexed product; the commutativity of the diagram on
+the right is trivial.
 
 \begin{center}
 \begin{tikzcd}
@@ -99,6 +102,7 @@ commutes by the definitions of $\lambda_{X,Y,Z}, \eval_{Y,Z}$ and $[Y,Z]$.
 \end{tikzcd}
 \end{center}
 
-\item \todo{(exhibit $\lambda^{-1}$ and then show) $\lambda^{-1}_{X,Y,Z}(\lambda_{X,Y,Z}(f)) = f$}
+\item \todo{(exhibit $\lambda^{-1}$ and then show $\lambda^{-1}_{X,Y,Z}(\lambda_{X,Y,Z}(f)) = f$ and
+$\lambda_{X,Y,Z}(\lambda^{-1}_{X,Y,Z}(f)) = f$)}.
 \end{enumerate}
 \end{proof}
