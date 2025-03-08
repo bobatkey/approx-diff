@@ -40,16 +40,15 @@ morphisms
 \noindent and
 
 \begin{salign*}
-\inj_A \comp \proj_A + \inj_B \comp \proj_B &= \id_{A \proj B}
+\inj_A \comp \proj_A + \inj_B \comp \proj_B &= \id_{A \biprod B}
 \end{salign*}
 \end{definition}
-
-If $C$ has biproducts then it has products given by $(A \biprod B, \proj_A, \proj_B)$ and coproducts given by $(A
-\biprod B, \inj_A, \inj_B)$.
 
 \begin{proposition}
 \item
 \begin{itemize}
+\item If $C$ has biproducts then it has products given by $(A \biprod B, \proj_A, \proj_B)$ and coproducts
+given by $(A \biprod B, \inj_A, \inj_B)$.
 \item If $C$ has products (or coproducts) then they are biproducts.
 \item If $C$ has a terminal (or initial) object then it is a zero object.
 \end{itemize}
@@ -58,6 +57,17 @@ If $C$ has biproducts then it has products given by $(A \biprod B, \proj_A, \pro
 \noindent We say that $C$ is \emph{semi-additive} if it has finite biproducts.
 
 \begin{proposition}
-In a category with biproducts we have $\coprodM{f_1}{g_1} \comp (f_2,g_2) = \coprodM{f_1 \comp f_2}{g_1 \comp
-g_2}$.
+\label{prop:biproduct:prod-coprod}
+Suppose $C$ a category with biproducts. Then the following diagram in $C$ commutes for any $f_1, g_1, f_2,
+g_2$:
+
+\begin{center}
+\begin{tikzcd}[row sep=3em]
+   & A' \\
+   A \arrow[ur, "f_1"] \arrow[r, "\inj_A", shift left] &
+   A \biprod B \arrow[l, "\proj_A", shift left] \arrow[r, "\proj_B"', shift right] \arrow[u, pos=0.3, "\coprodM{f_1}{g_1}"'] &
+   B \arrow[l, "\inj_B"', shift right] \arrow[ul, "g_1"'] \\
+   & B' \arrow[ul, "f_2"] \arrow[u, pos=0.6, "\prodM{f_2}{g_2}"'] \arrow[ur, "g_2"']
+\end{tikzcd}
+\end{center}
 \end{proposition}
