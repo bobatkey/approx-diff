@@ -206,7 +206,8 @@ lambda⟶ {X} {Y} {Z} f .famf .natural {x₁} {x₂} x₁≈x₂ =
   ∎
   where open ≈-Reasoning isEquiv
 
-private module PP = HasProducts products
+private
+  module PP = HasProducts products
 
 β-rule : ∀ {X Y Z} (f : Mor (X ⊗ Y) Z) →
          Mor-∘ eval⟶ (PP.pair (Mor-∘ (lambda⟶ f) PP.p₁) (PP.p₂)) ≃ f
@@ -235,3 +236,6 @@ exponentials : HasExponentials cat products
 exponentials .exp = _⟶_
 exponentials .eval = eval⟶
 exponentials .lambda = lambda⟶
+exponentials .lambda-cong = {!!}
+exponentials .eval-lambda f = {!β-rule f!}
+exponentials .lambda-ext f = {!!}

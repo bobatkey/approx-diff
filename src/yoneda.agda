@@ -2,13 +2,16 @@
 
 open import Level using (suc; _⊔_; Level; lift; lower)
 open import Data.Product using (_,_)
-open import prop
+open import prop using (lift; lower; _,_)
 open import prop-setoid
   using (Setoid; IsEquivalence; module ≈-Reasoning; _∘S_; idS)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_)
 open import categories using (Category; HasProducts; IsProduct; HasExponentials)
-open import functor using ([_⇒_]; Functor; NatTrans; ≃-NatTrans)
-open import setoid-cat using (SetoidCat; Setoid-terminal; Setoid-products)
+open import functor using ([_⇒_]; Functor; NatTrans; ≃-NatTrans;
+  HasLimits';
+  preserve-limits-of-shape; IsLimit; constF; constF-F; constFmor;
+  _∘F_; id; _∘H_; _∘_; ≃-isEquivalence)
+open import setoid-cat using (SetoidCat; Setoid-terminal; Setoid-products; Setoid-Limit')
 
 -- extra 'os' level is to raise the level of the codomain if needed
 module yoneda {o m e} os (𝒞 : Category o m e) where
@@ -89,6 +92,16 @@ lemma⁻¹∘lemma F x .func-eq {Fx₁} {Fx₂} Fx₁≈Fx₂ = F .fmor-id .func
 -- lemma-natural-x f = {!!}
 
 ------------------------------------------------------------------------------
+-- Completeness
+
+limits : (𝒮 : Category o m e) → HasLimits' 𝒮 PSh
+limits 𝒮 = lim
+  where
+    open import functor-cat-limits 𝒞.opposite (SetoidCat ℓ ℓ) 𝒮 (Setoid-Limit' ℓ 𝒮)
+           renaming (limits to lim)
+
+------------------------------------------------------------------------------
+-- Exponentials
 module _ where
 
   open import functor-cat-products
@@ -128,31 +141,38 @@ module _ where
       (h₁ .natural f .func-eq (a₁≈a₂ , lift 𝒞.≈-refl))
       (h₁≈h₂ .transf-eq y .func-eq (F .fobj y .refl , lift 𝒞.id-swap))
 
-  lambda : ∀ {F G H} → NatTrans (F × G) H → NatTrans F (G ⟶ H)
-  lambda {F} f .transf x .func Fx .transf y .func (Gy , lift g) =
+  lambda⟶ : ∀ {F G H} → NatTrans (F × G) H → NatTrans F (G ⟶ H)
+  lambda⟶ {F} f .transf x .func Fx .transf y .func (Gy , lift g) =
     f .transf y .func (F .fmor g .func Fx , Gy)
-  lambda {F} f .transf x .func Fx .transf y .func-resp-≈ {Gy₁ , lift g₁} {Gy₂ , lift g₂} (Gy₁≈Gy₂ , lift g₁≈g₂) =
+  lambda⟶ {F} f .transf x .func Fx .transf y .func-resp-≈ {Gy₁ , lift g₁} {Gy₂ , lift g₂} (Gy₁≈Gy₂ , lift g₁≈g₂) =
     f .transf y .func-resp-≈ (F .fmor-cong g₁≈g₂ .func-eq (F .fobj x .refl) , Gy₁≈Gy₂)
-  lambda {F}{G}{H} f .transf x .func Fx .natural {y} {z} g .func-eq {Gy₁ , lift h₁} {Gy₂ , lift h₂} (Gy₁≈Gy₂ , lift h₁≈h₂) =
+  lambda⟶ {F}{G}{H} f .transf x .func Fx .natural {y} {z} g .func-eq {Gy₁ , lift h₁} {Gy₂ , lift h₂} (Gy₁≈Gy₂ , lift h₁≈h₂) =
     H .fobj z .trans
       (f .natural g .func-eq (F .fmor-cong h₁≈h₂ .func-eq (F .fobj x .refl) , Gy₁≈Gy₂))
       (f .transf z .func-resp-≈ ((F .fobj z .sym (F .fmor-comp _ _ .func-eq (F .fobj x .refl))) , G .fobj z .refl))
-  lambda {F} f .transf x .func-resp-≈ {Fx₁} {Fx₂} Fx₁≈Fx₂ .transf-eq y .func-eq {Gy₁ , lift h₁} {Gy₂ , lift h₂} (Gy₁≈Gy₂ , lift h₁≈h₂) =
+  lambda⟶ {F} f .transf x .func-resp-≈ {Fx₁} {Fx₂} Fx₁≈Fx₂ .transf-eq y .func-eq {Gy₁ , lift h₁} {Gy₂ , lift h₂} (Gy₁≈Gy₂ , lift h₁≈h₂) =
     f .transf y .func-resp-≈ (F .fmor-cong h₁≈h₂ .func-eq Fx₁≈Fx₂ , Gy₁≈Gy₂)
-  lambda {F} f .natural {x} {y} g .func-eq {Fx₁} {Fx₂} Fx₁≈Fx₂ .transf-eq z .func-eq {Gz₁ , lift h₁} {Gz₂ , lift h₂} (Gz₁≈Gz₂ , lift h₁≈h₂) =
+  lambda⟶ {F} f .natural {x} {y} g .func-eq {Fx₁} {Fx₂} Fx₁≈Fx₂ .transf-eq z .func-eq {Gz₁ , lift h₁} {Gz₂ , lift h₂} (Gz₁≈Gz₂ , lift h₁≈h₂) =
     f .transf z .func-resp-≈
       (F .fobj z .trans (F .fmor-comp h₁ g .func-eq Fx₁≈Fx₂)
                         (F .fmor-cong h₁≈h₂ .func-eq (F .fobj y .refl)) ,
        Gz₁≈Gz₂)
 
-  -- FIXME: equations for eval and lambda
-
   exponentials : HasExponentials PSh products
   exponentials .HasExponentials.exp = _⟶_
   exponentials .HasExponentials.eval = eval
-  exponentials .HasExponentials.lambda = lambda
+  exponentials .HasExponentials.lambda = lambda⟶
+  exponentials .HasExponentials.lambda-cong {F} {G} {H} f₁≈f₂ .transf-eq x .func-eq Fx₁≈Fx₂ .transf-eq y .func-eq (Gy₁≈Gy₂ , lift h₁≈h₂) =
+    f₁≈f₂ .transf-eq y .func-eq (F .fmor-cong h₁≈h₂ .func-eq Fx₁≈Fx₂ , Gy₁≈Gy₂)
+  exponentials .HasExponentials.eval-lambda {F} {G} {H} f .transf-eq x .func-eq (Fx₁≈Fx₂ , Gx₁≈Gx₂) =
+    f .transf x .func-resp-≈ (F .fmor-id .func-eq Fx₁≈Fx₂ , Gx₁≈Gx₂)
+  exponentials .HasExponentials.lambda-ext {F} {G} {H} f .transf-eq x .func-eq Fx₁≈Fx₂ .transf-eq y .func-eq {Gy₁ , lift h₁} {Gy₂ , lift h₂} (Gy₁≈Gy₂ , lift h₁≈h₂) =
+    H .fobj y .trans
+      (H .fobj y .sym (f .natural h₁ .func-eq (F .fobj x .sym Fx₁≈Fx₂) .transf-eq y .func-eq (G .fobj y .refl , lift 𝒞.≈-refl)))
+      (f .transf x .func _ .transf y .func-resp-≈ (Gy₁≈Gy₂ , lift (𝒞.≈-trans 𝒞.id-right h₁≈h₂)))
 
 ------------------------------------------------------------------------------
+{-
 -- よ preserves products. FIXME: extend this to all limits by copying
 -- the proofs from cmon-category.
 
@@ -199,3 +219,50 @@ preserve-products x y p p₁ p₂ p-isproduct .pair-ext {Z} f .transf-eq w .func
   ≈⟨ f .transf w .func-resp-≈ e .lower ⟩
     f .transf w .func Zw₂ .lower
   ∎ where open ≈-Reasoning 𝒞.isEquiv
+-}
+
+------------------------------------------------------------------------------
+-- Yoneda embedding preserves all limits
+preserve-limits : ∀ {o₁ m₁ e₁} (𝒮 : Category o₁ m₁ e₁) → preserve-limits-of-shape 𝒮 よ
+preserve-limits 𝒮 D apex cone isLimit = lim
+  where
+  open IsLimit
+
+  conv-transf : ∀ {X x} → NatTrans (constF 𝒮 X) (よ ∘F D) → X .fobj x .Carrier → NatTrans (constF 𝒮 x) D
+  conv-transf {X} {x} α Xx .transf s = α .transf s .transf x .func Xx .lower
+  conv-transf {X} {x} α Xx .natural f = 𝒞.≈-trans (α .natural f .transf-eq x .func-eq (X .fobj x .refl) .lower) (𝒞.≈-sym 𝒞.id-right)
+
+  conv-transf-≈ : ∀ {X x α₁ α₂ Xx₁ Xx₂} →
+                    ≃-NatTrans α₁ α₂ →
+                    X .fobj x ._≈_ Xx₁ Xx₂ →
+                    ≃-NatTrans (conv-transf {X} {x} α₁ Xx₁) (conv-transf {X} {x} α₂ Xx₂)
+  conv-transf-≈ {X} {x} α₁≈α₂ Xx₁≈Xx₂ .transf-eq s = α₁≈α₂ .transf-eq s .transf-eq x .func-eq Xx₁≈Xx₂ .lower
+
+  lim : IsLimit (よ ∘F D) (よ .fobj apex) ((id _ ∘H cone) ∘ constF-F よ apex)
+  lim .lambda X α .transf x .func Xx .lower =
+    isLimit .lambda x (conv-transf α Xx)
+  lim .lambda X α .transf x .func-resp-≈ Xx₁≈Xx₂ .lower =
+    isLimit .lambda-cong (conv-transf-≈ (≃-isEquivalence .IsEquivalence.refl) Xx₁≈Xx₂)
+  lim .lambda X α .natural {x} {y} f .func-eq {Xx₁} {Xx₂} Xx₁≈Xx₂ .lower =
+    begin
+      isLimit .lambda x (conv-transf α Xx₁) 𝒞.∘ f
+    ≈⟨ lambda-natural isLimit (conv-transf α Xx₁) f ⟩
+      isLimit .lambda y (conv-transf α Xx₁ ∘ constFmor f)
+    ≈⟨ isLimit .lambda-cong (record { transf-eq = λ s → α .transf s .natural f .func-eq Xx₁≈Xx₂ .lower }) ⟩
+      isLimit .lambda y (conv-transf α (X .fmor f .func Xx₂))
+    ∎
+    where open ≈-Reasoning 𝒞.isEquiv
+  lim .lambda-cong α≈β .transf-eq x .func-eq Xx₁≈Xx₂ .lower = isLimit .lambda-cong (conv-transf-≈ α≈β Xx₁≈Xx₂)
+  lim .lambda-eval {X} α .transf-eq s .transf-eq x .func-eq {Xx₁} {Xx₂} Xx₁≈Xx₂ .lower =
+    𝒞.≈-trans (isLimit .lambda-eval (conv-transf α Xx₁) .transf-eq s)
+               (α .transf s .transf x .func-resp-≈ Xx₁≈Xx₂ .lower)
+  lim .lambda-ext {X} f .transf-eq x .func-eq {Xx₁} {Xx₂} Xx₁≈Xx₂ .lower = begin
+      isLimit .lambda x (conv-transf (((id よ ∘H cone) ∘ constF-F よ apex) ∘ constFmor f) Xx₁)
+    ≈⟨ isLimit .lambda-cong (record { transf-eq = λ s → 𝒞.≈-refl }) ⟩
+      isLimit .lambda x (cone ∘ constFmor (f .transf x .func Xx₁ .lower))
+    ≈⟨ isLimit .lambda-ext _ ⟩
+      f .transf x .func Xx₁ .lower
+    ≈⟨ f .transf x .func-resp-≈ Xx₁≈Xx₂ .lower ⟩
+      f .transf x .func Xx₂ .lower
+    ∎
+    where open ≈-Reasoning 𝒞.isEquiv

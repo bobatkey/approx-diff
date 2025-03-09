@@ -67,16 +67,23 @@ module _ o e where
 
 module _ o where
 
+  open HasExponentials
+
   Setoid-exponentials : HasExponentials (SetoidCat o o) (Setoid-products o o)
-  Setoid-exponentials .HasExponentials.exp X Y = Category.hom-setoid (SetoidCat o o) X Y
-  Setoid-exponentials .HasExponentials.eval .func (f , x) = f .func x
-  Setoid-exponentials .HasExponentials.eval .func-resp-≈ (f₁≈f₂ , x₁≈x₂) =
+  Setoid-exponentials .exp X Y = Category.hom-setoid (SetoidCat o o) X Y
+  Setoid-exponentials .eval .func (f , x) = f .func x
+  Setoid-exponentials .eval .func-resp-≈ (f₁≈f₂ , x₁≈x₂) =
     f₁≈f₂ .func-eq x₁≈x₂
-  Setoid-exponentials .HasExponentials.lambda f .func x .func y = f .func (x , y)
-  Setoid-exponentials .HasExponentials.lambda {X} {Y} {Z} f .func x .func-resp-≈ y₁≈y₂ =
+  Setoid-exponentials .lambda f .func x .func y = f .func (x , y)
+  Setoid-exponentials .lambda {X} {Y} {Z} f .func x .func-resp-≈ y₁≈y₂ =
     f .func-resp-≈ (X .refl , y₁≈y₂)
-  Setoid-exponentials .HasExponentials.lambda f .func-resp-≈ x₁≈x₂ .func-eq y₁≈y₂ =
+  Setoid-exponentials .lambda f .func-resp-≈ x₁≈x₂ .func-eq y₁≈y₂ =
     f .func-resp-≈ (x₁≈x₂ , y₁≈y₂)
+  Setoid-exponentials .lambda-cong f₁≈f₂ .func-eq x₁≈x₂ .func-eq y₁≈y₂ =
+    f₁≈f₂ .func-eq (x₁≈x₂ , y₁≈y₂)
+  Setoid-exponentials .eval-lambda f .func-eq x₁≈x₂ = f .func-resp-≈ x₁≈x₂
+  Setoid-exponentials .lambda-ext f .func-eq x₁≈x₂ .func-eq y₁≈y₂ =
+    f .func-resp-≈ x₁≈x₂ .func-eq y₁≈y₂
 
 open import functor using (Functor; NatTrans; ≃-NatTrans; Colimit; IsColimit; Limit; IsLimit; HasLimits'; limits→limits')
 

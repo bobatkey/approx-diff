@@ -320,7 +320,81 @@ record HasExponentials {o m e} (𝒞 : Category o m e) (P : HasProducts 𝒞) : 
     exp    : obj → obj → obj
     eval   : ∀ {x y} → prod (exp x y) x ⇒ y
     lambda : ∀ {x y z} → prod x y ⇒ z → x ⇒ exp y z
-  -- FIXME: equations
+
+    lambda-cong : ∀ {x y z} {f₁ f₂ : prod x y ⇒ z} → f₁ ≈ f₂ → lambda f₁ ≈ lambda f₂
+    eval-lambda : ∀ {x y z} (f : prod x y ⇒ z) →
+                  (eval ∘ prod-m (lambda f) (id _)) ≈ f
+    lambda-ext  : ∀ {x y z} (f : x ⇒ exp y z) →
+                  lambda (eval ∘ prod-m f (id _)) ≈ f
+
+  lambda-natural : ∀ {x₁ x₂ y z} (f : x₁ ⇒ x₂) (g : prod x₂ y ⇒ z) →
+                   (lambda g ∘ f) ≈ lambda (g ∘ prod-m f (id _))
+  lambda-natural f g = begin
+      lambda g ∘ f
+    ≈˘⟨ lambda-ext _ ⟩
+      lambda (eval ∘ prod-m (lambda g ∘ f) (id _))
+    ≈˘⟨ lambda-cong (∘-cong ≈-refl (prod-m-cong ≈-refl id-left)) ⟩
+      lambda (eval ∘ prod-m (lambda g ∘ f) (id _ ∘ id _))
+    ≈⟨ lambda-cong (∘-cong ≈-refl (pair-functorial (lambda g) (id _) f (id _))) ⟩
+      lambda (eval ∘ (prod-m (lambda g) (id _) ∘ prod-m f (id _)))
+    ≈˘⟨ lambda-cong (assoc _ _ _) ⟩
+      lambda ((eval ∘ prod-m (lambda g) (id _)) ∘ prod-m f (id _))
+    ≈⟨ lambda-cong (∘-cong (eval-lambda g) ≈-refl) ⟩
+      lambda (g ∘ prod-m f (id _))
+    ∎
+    where open ≈-Reasoning isEquiv
+
+  exp-fmor : ∀ {x₁ x₂ y₁ y₂} → x₂ ⇒ x₁ → y₁ ⇒ y₂ → exp x₁ y₁ ⇒ exp x₂ y₂
+  exp-fmor f g = lambda (g ∘ (eval ∘ (prod-m (id _) f)))
+
+  exp-cong : ∀ {x₁ x₂ y₁ y₂} {f₁ f₂ : x₂ ⇒ x₁} {g₁ g₂ : y₁ ⇒ y₂} →
+             f₁ ≈ f₂ → g₁ ≈ g₂ → exp-fmor f₁ g₁ ≈ exp-fmor f₂ g₂
+  exp-cong f₁≈f₂ g₁≈g₂ = lambda-cong (∘-cong g₁≈g₂ (∘-cong ≈-refl (prod-m-cong ≈-refl f₁≈f₂)))
+
+  exp-id : ∀ {x y} → exp-fmor (id x) (id y) ≈ id (exp x y)
+  exp-id = begin
+      lambda (id _ ∘ (eval ∘ prod-m (id _) (id _)))
+    ≈⟨ lambda-cong id-left ⟩
+      lambda (eval ∘ prod-m (id _) (id _))
+    ≈⟨ lambda-ext (id _) ⟩
+      id _
+    ∎
+    where open ≈-Reasoning isEquiv
+
+  exp-comp : ∀ {x₁ x₂ x₃ y₁ y₂ y₃}
+             (f₁ : x₂ ⇒ x₁) (f₂ : x₃ ⇒ x₂)
+             (g₁ : y₂ ⇒ y₃) (g₂ : y₁ ⇒ y₂) →
+             exp-fmor (f₁ ∘ f₂) (g₁ ∘ g₂) ≈ (exp-fmor f₂ g₁ ∘ exp-fmor f₁ g₂)
+  exp-comp f₁ f₂ g₁ g₂ = begin
+      lambda ((g₁ ∘ g₂) ∘ (eval ∘ (prod-m (id _) (f₁ ∘ f₂))))
+    ≈˘⟨ lambda-cong (∘-cong ≈-refl (∘-cong ≈-refl (prod-m-cong id-left ≈-refl))) ⟩
+      lambda ((g₁ ∘ g₂) ∘ (eval ∘ (prod-m (id _ ∘ id _) (f₁ ∘ f₂))))
+    ≈⟨ lambda-cong (∘-cong ≈-refl (∘-cong ≈-refl (pair-functorial _ _ _ _))) ⟩
+      lambda ((g₁ ∘ g₂) ∘ (eval ∘ (prod-m (id _) f₁ ∘ prod-m (id _) f₂)))
+    ≈⟨ lambda-cong (assoc _ _ _) ⟩
+      lambda (g₁ ∘ (g₂ ∘ (eval ∘ (prod-m (id _) f₁ ∘ prod-m (id _) f₂))))
+    ≈˘⟨ lambda-cong (∘-cong ≈-refl (∘-cong ≈-refl (assoc _ _ _))) ⟩
+      lambda (g₁ ∘ (g₂ ∘ ((eval ∘ prod-m (id _) f₁) ∘ prod-m (id _) f₂)))
+    ≈˘⟨ lambda-cong (∘-cong ≈-refl (assoc _ _ _)) ⟩
+      lambda (g₁ ∘ ((g₂ ∘ (eval ∘ prod-m (id _) f₁)) ∘ prod-m (id _) f₂))
+    ≈˘⟨ lambda-cong (∘-cong ≈-refl (∘-cong (eval-lambda _) ≈-refl)) ⟩
+      lambda (g₁ ∘ ((eval ∘ prod-m (lambda (g₂ ∘ (eval ∘ prod-m (id _) f₁))) (id _)) ∘ prod-m (id _) f₂))
+    ≈⟨ lambda-cong (∘-cong ≈-refl (assoc _ _ _)) ⟩
+      lambda (g₁ ∘ (eval ∘ (prod-m (lambda (g₂ ∘ (eval ∘ prod-m (id _) f₁))) (id _) ∘ prod-m (id _) f₂)))
+    ≈˘⟨ lambda-cong (∘-cong ≈-refl (∘-cong ≈-refl (pair-functorial _ _ _ _))) ⟩
+      lambda (g₁ ∘ (eval ∘ (prod-m (lambda (g₂ ∘ (eval ∘ prod-m (id _) f₁)) ∘ id _) (id _ ∘ f₂))))
+    ≈⟨ lambda-cong (∘-cong ≈-refl (∘-cong ≈-refl (prod-m-cong id-swap' id-swap))) ⟩
+      lambda (g₁ ∘ (eval ∘ (prod-m (id _ ∘ lambda (g₂ ∘ (eval ∘ prod-m (id _) f₁))) (f₂ ∘ id _))))
+    ≈⟨ lambda-cong (∘-cong ≈-refl (∘-cong ≈-refl (pair-functorial _ _ _ _))) ⟩
+      lambda (g₁ ∘ (eval ∘ (prod-m (id _) f₂ ∘ prod-m (lambda (g₂ ∘ (eval ∘ prod-m (id _) f₁))) (id _))))
+    ≈˘⟨ lambda-cong (∘-cong ≈-refl (assoc _ _ _)) ⟩
+      lambda (g₁ ∘ ((eval ∘ prod-m (id _) f₂) ∘ prod-m (lambda (g₂ ∘ (eval ∘ prod-m (id _) f₁))) (id _)))
+    ≈˘⟨ lambda-cong (assoc _ _ _) ⟩
+      lambda ((g₁ ∘ (eval ∘ prod-m (id _) f₂)) ∘ prod-m (lambda (g₂ ∘ (eval ∘ prod-m (id _) f₁))) (id _))
+    ≈˘⟨ lambda-natural _ _ ⟩
+      lambda (g₁ ∘ (eval ∘ prod-m (id _) f₂)) ∘ lambda (g₂ ∘ (eval ∘ prod-m (id _) f₁))
+    ∎
+    where open ≈-Reasoning isEquiv
 
 -- FIXME: separate out 'endofunctor' and 'natural transformation'
 record Monad {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
