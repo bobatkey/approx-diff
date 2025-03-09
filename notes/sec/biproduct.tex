@@ -62,12 +62,10 @@ Suppose $C$ a category with biproducts. Then the following commutes for any morp
 g_2$ in $C$:
 
 \begin{center}
-\begin{tikzcd}[row sep=3em]
-   & A' \\
-   A \arrow[ur, "f_1"] \arrow[r, "\inj_A", shift left] &
-   A \biprod B \arrow[l, "\proj_A", shift left] \arrow[r, "\proj_B"', shift right] \arrow[u, pos=0.3, "\coprodM{f_1}{g_1}"'] &
-   B \arrow[l, "\inj_B"', shift right] \arrow[ul, "g_1"'] \\
-   & B' \arrow[ul, "f_2"] \arrow[u, pos=0.6, "\prodM{f_2}{g_2}"'] \arrow[ur, "g_2"']
+\begin{tikzcd}[row sep=3em, column sep=3em]
+   & A \arrow[d, "\inj_A", shift left] \arrow[dr, "f_2"] \\
+   A' \arrow[r, "\prodM{f_1}{g_1}"] \arrow[dr, "g_1"'] \arrow[ur, "f_1"] & A \biprod B \arrow[u, "\proj_A", shift left] \arrow[d, "\proj_B"', shift right] \arrow[r, pos=0.35, "\coprodM{f_2}{g_2}"] & B' \\
+   & B \arrow[u, "\inj_B"', shift right] \arrow[ur, "g_2"']
 \end{tikzcd}
 \end{center}
 \end{proposition}
