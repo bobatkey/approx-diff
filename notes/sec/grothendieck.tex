@@ -65,6 +65,17 @@ using $\coprodM{-}{-}$ to denote coproduct of morphisms.
 Then:
 
 \begin{enumerate}
+\item $\idx{\lambda}_{X,Y,Z}$ is an isomorphism by the ismorphism of $\idx{X} \times \idx{Y} \to \idx{Z}$ and
+$\idx{X} \to \idx{Y} \to \idx{Z}$. For $\faml{\lambda}_{X,Y,Z}$, define the family of functions
+$\lambda^{-1}_{X,Y,Z}$ sending any $f: X \to [Y,Z]$ to $\lambda^{-1}_{X,Y,Z}(f): X \times Y \to Z$ with:
+\begin{itemize}
+\item $\idx{\lambda^{-1}}_{X,Y,Z}(f)(x,y) = \idx{g}(y)$ where $\idx{f}(x) = g$
+\item $\faml{\lambda^{-1}}_{X,Y,Z}(f)(x,y) =$
+\end{itemize}
+
+\todo{Show $\lambda^{-1}_{X,Y,Z}(\lambda_{X,Y,Z}(f)) = f$ and $\lambda_{X,Y,Z}(\lambda^{-1}_{X,Y,Z}(f)) =
+f$}.
+
 \item Suppose $f: X \times Y \to Z$ in $\Fam(C)$ and $(x, y) \in \idx{X} \times \idx{Y}$. The diagram on the
 left below commutes by the universal property of the set-indexed product; the commutativity of the diagram on
 the right is trivial.
@@ -103,15 +114,5 @@ commutes by the definitions of $\lambda_{X,Y,Z}, \eval_{Y,Z}$ and $[Y,Z]$.
    X \tensor Y \arrow[u, "\lambda_{X,Y,Z}(f) \tensor \id_Y"] \arrow[r, "f"'] & Z
 \end{tikzcd}
 \end{center}
-
-\item Define the family of functions $\lambda^{-1}_{X,Y,Z}$ sending any $f: X \to [Y,Z]$ to
-$\lambda^{-1}_{X,Y,Z}(f): X \times Y \to Z$ with:
-\begin{itemize}
-\item $\idx{\lambda^{-1}}_{X,Y,Z}(f)(x,y) = \idx{g}(y)$ where $\idx{f}(x) = g$
-\item $\faml{\lambda^{-1}}_{X,Y,Z}(f)(x,y) =$
-\end{itemize}
-
-\todo{Show $\lambda^{-1}_{X,Y,Z}(\lambda_{X,Y,Z}(f)) = f$ and $\lambda_{X,Y,Z}(\lambda^{-1}_{X,Y,Z}(f)) =
-f$}.
 \end{enumerate}
 \end{proof}
