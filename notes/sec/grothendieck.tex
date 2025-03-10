@@ -46,9 +46,8 @@ given by $(\prod,\eval_{\prod},\lambda_{\prod})$. For any objects $X, Y, Z$ in $
 \item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) sending any $f: X \times Y \to Z$ to
 $\lambda_{X,Y,Z}(f): X \to [Y, Z]$ with:
 \begin{itemize}
-\item $\idx{\lambda}_{X,Y,Z}(f)(x) = g$ where $\idx{g} = \idx{f} \comp (x, -): \idx{Y} \to \idx{Z}$ and
-$\faml{g} = \reindex{\faml{f}}{(x,-)} \comp \inj_{\faml{Y}}: \faml{Y} \to \reindex{\faml{Z}}{\idx{g}}$ where $\inj_{\faml{Y}}:
-\faml{Y} \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
+\item $\idx{\lambda}_{X,Y,Z}(f)(x) = (\idx{f} \comp (x, -), \reindex{\faml{f}}{(x,-)} \comp \inj_{\faml{Y}}):
+Y \to Z$ where $\inj_{\faml{Y}}: \faml{Y} \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
 \item $\faml{\lambda}_{X,Y,Z}(f)(x) = \lambda_{\prod_{\idx{Y}}}(\reindex{\faml{f}}{(x,-)} \comp \inj_{\faml{X}_x}:
 \const_{\idx{Y}}(\faml{X}_x) \to \reindex{\faml{Z}}{\idx{f}})$ where $\inj_{\faml{X}_x}: \const_{\idx{Y}}(\faml{X}_x)
 \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
@@ -65,12 +64,11 @@ using $\coprodM{-}{-}$ to denote coproduct of morphisms.
 Then:
 
 \begin{enumerate}
-\item $\idx{\lambda}_{X,Y,Z}$ is an isomorphism by the isomorphism of $\idx{X} \times \idx{Y} \to \idx{Z}$ and
-$\idx{X} \to \idx{Y} \to \idx{Z}$. For $\faml{\lambda}_{X,Y,Z}$, define the family of functions
-$\lambda^{-1}_{X,Y,Z}$ sending any $f: X \to [Y,Z]$ to $\lambda^{-1}_{X,Y,Z}(f): X \times Y \to Z$ with:
+\item $\idx{\lambda}_{X,Y,Z}$ is an isomorphism because $\idx{X} \times \idx{Y} \to \idx{Z} \iso \idx{X} \to
+\idx{Y} \to \idx{Z}$. For $\faml{\lambda}_{X,Y,Z}$, define the following family of functions sending any $f: X
+\to [Y,Z]$ to $\lambda^{-1}_{X,Y,Z}(f): X \times Y \to Z$ with:
 \begin{itemize}
-\item $\idx{\lambda^{-1}}_{X,Y,Z}(f)(x,y) = \idx{g}(y)$ where $\idx{f}(x) = g$
-\item $\faml{\lambda^{-1}}_{X,Y,Z}(f)(x,y) =$
+\item $\faml{\lambda^{-1}}_{X,Y,Z}(f)(x,y) = \faml{g}_y$ where $\idx{f}(x) = g$
 \end{itemize}
 
 \todo{Show $\lambda^{-1}_{X,Y,Z}(\lambda_{X,Y,Z}(f)) = f$ and $\lambda_{X,Y,Z}(\lambda^{-1}_{X,Y,Z}(f)) =
