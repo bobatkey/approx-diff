@@ -224,12 +224,18 @@ private module PP = HasProducts products
     CP .copair (SP .evalΠ _ y ∘ lambda⟶ f .famf .transf x) ((f .famf .transf (x , y) ∘ CP .in₂) ∘ id _)
   ≈⟨ CP .copair-cong (SP .lambda-eval y) id-right ⟩
     CP .copair (id _ ∘ (f .famf .transf (x , y) ∘ CP .in₁)) (f .famf .transf (x , y) ∘ CP .in₂)
-  ≈⟨ {!   !} ⟩
+  ≈⟨ CP .copair-cong id-left ≈-refl ⟩
     CP .copair (f .famf .transf (x , y) ∘ CP .in₁) (f .famf .transf (x , y) ∘ CP .in₂)
   ≈⟨ CP .copair-ext _ ⟩
     f .famf .transf (x , y)
   ∎
   where open ≈-Reasoning isEquiv
+
+lambda-inv⟶ : ∀ {X Y Z} → Mor X (Y ⟶ Z) → Mor (X ⊗ Y) Z
+lambda-inv⟶ f .idxf .func (x , y) = f .idxf .func x .idxf .func y
+lambda-inv⟶ f .idxf .func-resp-≈ (x₁≈x₂ , y₁≈y₂) = f .idxf .func-resp-≈ x₁≈x₂ .idxf-eq .func-eq y₁≈y₂
+lambda-inv⟶ f .famf .transf (x , y) = let q = f .famf .transf x in {!   !}
+lambda-inv⟶ f .famf .natural = {!   !}
 
 exponentials : HasExponentials cat products
 exponentials .exp = _⟶_
