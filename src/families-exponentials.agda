@@ -235,7 +235,7 @@ lambda-inv⟶ : ∀ {X Y Z} → Mor X (Y ⟶ Z) → Mor (X ⊗ Y) Z
 lambda-inv⟶ f .idxf .func (x , y) = f .idxf .func x .idxf .func y
 lambda-inv⟶ f .idxf .func-resp-≈ (x₁≈x₂ , y₁≈y₂) = f .idxf .func-resp-≈ x₁≈x₂ .idxf-eq .func-eq y₁≈y₂
 lambda-inv⟶ {Y = Y} f .famf .transf (x , y) = P .p₂ ∘ prod-m P (id _) (f .idxf .func x .famf .transf y)
-lambda-inv⟶ f .famf .natural = {!   !}
+lambda-inv⟶ f .famf .natural x₁≈x₂ = {!   !}
 
 -- FIXME: isomorphism laws for lambda/lambda-inv
 
