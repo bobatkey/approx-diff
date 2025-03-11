@@ -41,7 +41,7 @@ open Fam
 open Mor
 open _≃_
 
-open Category 𝒞
+open Category 𝒞 renaming (_≈_ to _≈C_)
 open IsEquivalence
 open HasExponentials
 open HasSetoidProducts
@@ -234,9 +234,19 @@ private module PP = HasProducts products
 lambda-inv⟶ : ∀ {X Y Z} → Mor X (Y ⟶ Z) → Mor (X ⊗ Y) Z
 lambda-inv⟶ f .idxf .func (x , y) = f .idxf .func x .idxf .func y
 lambda-inv⟶ f .idxf .func-resp-≈ (x₁≈x₂ , y₁≈y₂) = f .idxf .func-resp-≈ x₁≈x₂ .idxf-eq .func-eq y₁≈y₂
-lambda-inv⟶ {Y = Y} f .famf .transf (x , y) = P .p₂ ∘ prod-m P (id _) (f .idxf .func x .famf .transf y)
-lambda-inv⟶ f .famf .natural x₁≈x₂ = {!   !}
-
+lambda-inv⟶ f .famf .transf (x , y) = f .idxf .func x .famf .transf y ∘ P .p₂
+lambda-inv⟶ {X}{Y}{Z} f .famf .natural {x₁ , y₁} {x₂ , y₂} (x₁≈x₂ , y₁≈y₂) = {!   !}
+{-
+lambda-inv⟶ {X}{Y}{Z} f .famf .natural {x₁ , y₁} {x₂ , y₂} (x₁≈x₂ , y₁≈y₂) =
+  let q : (famf (idxf f .func x₁) .transf y₂ ∘ fam Y .subst _) ≈C (fam Z .subst _ ∘ famf (idxf f .func x₁) .transf y₁)
+      q = idxf f .func x₁ .famf .natural y₁≈y₂ in
+  begin
+    (P .p₂ ∘ prod-m P (id _) (famf (idxf f .func x₂) .transf y₂)) ∘ fam (X ⊗ Y) .subst _
+  ≈⟨ {!   !} ⟩
+    fam Z .subst _ ∘ (P .p₂ ∘ prod-m P (id _) (famf (idxf f .func x₁) .transf y₁))
+  ∎
+  where open ≈-Reasoning isEquiv
+-}
 -- FIXME: isomorphism laws for lambda/lambda-inv
 
 exponentials : HasExponentials cat products
