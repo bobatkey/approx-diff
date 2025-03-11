@@ -234,8 +234,10 @@ private module PP = HasProducts products
 lambda-inv⟶ : ∀ {X Y Z} → Mor X (Y ⟶ Z) → Mor (X ⊗ Y) Z
 lambda-inv⟶ f .idxf .func (x , y) = f .idxf .func x .idxf .func y
 lambda-inv⟶ f .idxf .func-resp-≈ (x₁≈x₂ , y₁≈y₂) = f .idxf .func-resp-≈ x₁≈x₂ .idxf-eq .func-eq y₁≈y₂
-lambda-inv⟶ f .famf .transf (x , y) = let q = f .famf .transf x in {!   !}
+lambda-inv⟶ {Y = Y} f .famf .transf (x , y) = P .p₂ ∘ prod-m P (id _) (f .idxf .func x .famf .transf y)
 lambda-inv⟶ f .famf .natural = {!   !}
+
+-- FIXME: isomorphism laws for lambda/lambda-inv
 
 exponentials : HasExponentials cat products
 exponentials .exp = _⟶_
