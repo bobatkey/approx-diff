@@ -237,22 +237,13 @@ lambda-inv⟶ f .idxf .func-resp-≈ (x₁≈x₂ , y₁≈y₂) = f .idxf .func
 lambda-inv⟶ {Y = Y} f .famf .transf (x , y) =
   CP .copair (SP .evalΠ _ y ∘ f .famf .transf x) (f .idxf .func x .famf .transf y)
 lambda-inv⟶ {X}{Y}{Z} f .famf .natural {x₁ , y₁} {x₂ , y₂} (x₁≈x₂ , y₁≈y₂) =
-  let q =
-        begin
-  --      (f .idxf .func x₂ .famf .transf y₂ ∘ P .p₂) ∘ (X ⊗ Y) .fam .subst _
-  --    ≈⟨ {!   !} ⟩
-          f .idxf .func x₁ .famf .transf y₂ ∘ (P .p₂ ∘ (X ⊗ Y) .fam .subst (x₁≈x₂ , y₁≈y₂))
-        ≈˘⟨ ∘-cong ≈-refl {!    !} ⟩
-          f .idxf .func x₁ .famf .transf y₂ ∘ (Y .fam .subst y₁≈y₂ ∘ P .p₂)
-        ≈˘⟨ assoc _ _ _ ⟩
-          (f .idxf .func x₁ .famf .transf y₂ ∘ Y .fam .subst _) ∘ P .p₂
-        ≈⟨ ∘-cong (f .idxf .func x₁ .famf .natural y₁≈y₂) ≈-refl ⟩
-          (Z .fam .subst _ ∘ f .idxf .func x₁ .famf .transf y₁) ∘ P .p₂
-        ≈⟨ assoc _ _ _ ⟩
-          Z .fam .subst _ ∘ (f .idxf .func x₁ .famf .transf y₁ ∘ P .p₂)
-        ∎
-  in
-  {!   !}
+  begin
+    CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₂ .idxf ]) y₂ ∘ f .famf .transf x₂)
+                (f .idxf .func x₂ .famf .transf y₂) ∘ (X ⊗ Y) .fam .subst _
+  ≈⟨ {!   !} ⟩
+    Z .fam .subst _ ∘ CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y₁ ∘ f .famf .transf x₁)
+                                  (f .idxf .func x₁ .famf .transf y₁)
+  ∎
   where open ≈-Reasoning isEquiv
 -- FIXME: isomorphism laws for lambda/lambda-inv
 
