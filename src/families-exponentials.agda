@@ -241,7 +241,7 @@ lambda-inv⟶ {X}{Y}{Z} f .famf .natural {x₁ , y₁} {x₂ , y₂} (x₁≈x�
   --      (f .idxf .func x₂ .famf .transf y₂ ∘ P .p₂) ∘ (X ⊗ Y) .fam .subst _
   --    ≈⟨ {!   !} ⟩
           f .idxf .func x₁ .famf .transf y₂ ∘ (P .p₂ ∘ (X ⊗ Y) .fam .subst (x₁≈x₂ , y₁≈y₂))
-        ≈˘⟨ ∘-cong ≈-refl {!   !} ⟩
+        ≈˘⟨ ∘-cong ≈-refl {!    !} ⟩
           f .idxf .func x₁ .famf .transf y₂ ∘ (Y .fam .subst y₁≈y₂ ∘ P .p₂)
         ≈˘⟨ assoc _ _ _ ⟩
           (f .idxf .func x₁ .famf .transf y₂ ∘ Y .fam .subst _) ∘ P .p₂
