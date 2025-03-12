@@ -234,7 +234,8 @@ private module PP = HasProducts products
 lambda-inv⟶ : ∀ {X Y Z} → Mor X (Y ⟶ Z) → Mor (X ⊗ Y) Z
 lambda-inv⟶ f .idxf .func (x , y) = f .idxf .func x .idxf .func y
 lambda-inv⟶ f .idxf .func-resp-≈ (x₁≈x₂ , y₁≈y₂) = f .idxf .func-resp-≈ x₁≈x₂ .idxf-eq .func-eq y₁≈y₂
-lambda-inv⟶ f .famf .transf (x , y) = f .idxf .func x .famf .transf y ∘ P .p₂
+lambda-inv⟶ {Y = Y} f .famf .transf (x , y) =
+  CP .copair (SP .evalΠ _ y ∘ f .famf .transf x) (f .idxf .func x .famf .transf y)
 lambda-inv⟶ {X}{Y}{Z} f .famf .natural {x₁ , y₁} {x₂ , y₂} (x₁≈x₂ , y₁≈y₂) =
   let q =
         begin
