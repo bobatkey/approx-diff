@@ -235,18 +235,20 @@ lambda-inv⟶ : ∀ {X Y Z} → Mor X (Y ⟶ Z) → Mor (X ⊗ Y) Z
 lambda-inv⟶ f .idxf .func (x , y) = f .idxf .func x .idxf .func y
 lambda-inv⟶ f .idxf .func-resp-≈ (x₁≈x₂ , y₁≈y₂) = f .idxf .func-resp-≈ x₁≈x₂ .idxf-eq .func-eq y₁≈y₂
 lambda-inv⟶ f .famf .transf (x , y) = f .idxf .func x .famf .transf y ∘ P .p₂
-lambda-inv⟶ {X}{Y}{Z} f .famf .natural {x₁ , y₁} {x₂ , y₂} (x₁≈x₂ , y₁≈y₂) = {!   !}
-{-
 lambda-inv⟶ {X}{Y}{Z} f .famf .natural {x₁ , y₁} {x₂ , y₂} (x₁≈x₂ , y₁≈y₂) =
-  let q : (famf (idxf f .func x₁) .transf y₂ ∘ fam Y .subst _) ≈C (fam Z .subst _ ∘ famf (idxf f .func x₁) .transf y₁)
-      q = idxf f .func x₁ .famf .natural y₁≈y₂ in
-  begin
-    (P .p₂ ∘ prod-m P (id _) (famf (idxf f .func x₂) .transf y₂)) ∘ fam (X ⊗ Y) .subst _
-  ≈⟨ {!   !} ⟩
-    fam Z .subst _ ∘ (P .p₂ ∘ prod-m P (id _) (famf (idxf f .func x₁) .transf y₁))
-  ∎
+  let q =
+        begin
+  --      (f .idxf .func x₂ .famf .transf y₂ ∘ P .p₂) ∘ (X ⊗ Y) .fam .subst _
+  --    ≈⟨ {!   !} ⟩
+          (f .idxf .func x₁ .famf .transf y₂ ∘ Y .fam .subst _) ∘ P .p₂
+        ≈⟨ ∘-cong (f .idxf .func x₁ .famf .natural y₁≈y₂) ≈-refl ⟩
+          (Z .fam .subst _ ∘ f .idxf .func x₁ .famf .transf y₁) ∘ P .p₂
+        ≈⟨ assoc _ _ _ ⟩
+          Z .fam .subst _ ∘ (f .idxf .func x₁ .famf .transf y₁ ∘ P .p₂)
+        ∎
+  in
+  {!   !}
   where open ≈-Reasoning isEquiv
--}
 -- FIXME: isomorphism laws for lambda/lambda-inv
 
 exponentials : HasExponentials cat products
