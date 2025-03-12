@@ -240,6 +240,10 @@ lambda-inv⟶ {X}{Y}{Z} f .famf .natural {x₁ , y₁} {x₂ , y₂} (x₁≈x�
         begin
   --      (f .idxf .func x₂ .famf .transf y₂ ∘ P .p₂) ∘ (X ⊗ Y) .fam .subst _
   --    ≈⟨ {!   !} ⟩
+          f .idxf .func x₁ .famf .transf y₂ ∘ (P .p₂ ∘ (X ⊗ Y) .fam .subst (x₁≈x₂ , y₁≈y₂))
+        ≈˘⟨ ∘-cong ≈-refl {!   !} ⟩
+          f .idxf .func x₁ .famf .transf y₂ ∘ (Y .fam .subst y₁≈y₂ ∘ P .p₂)
+        ≈˘⟨ assoc _ _ _ ⟩
           (f .idxf .func x₁ .famf .transf y₂ ∘ Y .fam .subst _) ∘ P .p₂
         ≈⟨ ∘-cong (f .idxf .func x₁ .famf .natural y₁≈y₂) ≈-refl ⟩
           (Z .fam .subst _ ∘ f .idxf .func x₁ .famf .transf y₁) ∘ P .p₂
