@@ -78,7 +78,7 @@ eval⟶ {X} {Y} .famf .natural {f₁ , x₁} {f₂ , x₂} (f₁≈f₂ , x₁�
   begin
     CP .copair (SP .evalΠ (Y .fam [ f₂ .idxf ]) x₂) (f₂ .famf .transf x₂) ∘ prod-m P ((X ⟶ Y) .fam .subst f₁≈f₂) (X .fam .subst x₁≈x₂)
   ≈⟨ copair-prod _ BP ⟩
-    CP .copair  (SP .evalΠ (Y .fam [ f₂ .idxf ]) x₂ ∘ (X ⟶ Y) .fam .subst f₁≈f₂) (f₂ .famf .transf x₂ ∘ X .fam .subst x₁≈x₂)
+    CP .copair (SP .evalΠ (Y .fam [ f₂ .idxf ]) x₂ ∘ (X ⟶ Y) .fam .subst f₁≈f₂) (f₂ .famf .transf x₂ ∘ X .fam .subst x₁≈x₂)
   ≈⟨ CP .copair-cong  (SP .lambda-eval x₂) (f₂ .famf .natural x₁≈x₂) ⟩
     CP .copair (Y .fam .subst _ ∘ SP .evalΠ (Y .fam [ f₁ .idxf ]) x₂) (Y .fam .subst _ ∘ f₂ .famf .transf x₁)
   ≈˘⟨ CP .copair-cong (∘-cong ≈-refl (SP .evalΠ-cong x₁≈x₂)) (∘-cong ≈-refl (f₁≈f₂ .famf-eq .transf-eq)) ⟩
@@ -237,17 +237,27 @@ lambda-inv⟶ f .idxf .func-resp-≈ (x₁≈x₂ , y₁≈y₂) = f .idxf .func
 lambda-inv⟶ f .famf .transf (x , y) =
   CP .copair (SP .evalΠ _ y ∘ f .famf .transf x) (f .idxf .func x .famf .transf y)
 lambda-inv⟶ {X}{Y}{Z} f .famf .natural {x₁ , y₁} {x₂ , y₂} (x₁≈x₂ , y₁≈y₂) =
+  let q =
+        let open ≈-Reasoning isEquiv in
+        begin
+          (SP .evalΠ (Z .fam [ f .idxf .func x₂ .idxf ]) y₂ ∘ f .famf .transf x₂) ∘ fam X .subst _
+        ≈⟨ {!   !} ⟩
+          fam Z .subst _ ∘ (SP .evalΠ (fam Z [ f .idxf .func x₁ .idxf ]) y₁ ∘ f .famf .transf x₁)
+        ∎ in
+  let open ≈-Reasoning isEquiv in
   begin
-    CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₂ .idxf ]) y₂ ∘ f .famf .transf x₂)
-               (f .idxf .func x₂ .famf .transf y₂) ∘ (X ⊗ Y) .fam .subst _
-  ≈⟨ {!  !} ⟩
+    CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₂ .idxf ]) y₂ ∘ f .famf .transf x₂) (f .idxf .func x₂ .famf .transf y₂)
+      ∘ prod-m P (X .fam .subst _) (Y .fam .subst _)
+  ≈⟨ copair-prod _ BP ⟩
+    CP .copair ((SP .evalΠ (Z .fam [ f .idxf .func x₂ .idxf ]) y₂ ∘ f .famf .transf x₂) ∘ X .fam .subst _)
+               (f .idxf .func x₂ .famf .transf y₂ ∘ Y .fam .subst _)
+  ≈⟨ CP .copair-cong q {!   !} ⟩
     CP .copair (Z .fam .subst _ ∘ (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y₁ ∘ f .famf .transf x₁))
                (Z .fam .subst _ ∘ f .idxf .func x₁ .famf .transf y₁)
   ≈˘⟨ copair-natural CP _ _ _ ⟩
     Z .fam .subst _ ∘ CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y₁ ∘ f .famf .transf x₁)
                                  (f .idxf .func x₁ .famf .transf y₁)
   ∎
-  where open ≈-Reasoning isEquiv
 -- FIXME: isomorphism laws for lambda/lambda-inv
 
 exponentials : HasExponentials cat products
