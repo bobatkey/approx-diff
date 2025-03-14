@@ -1,11 +1,11 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
 open import Level using (0ℓ)
-open import prop
+open import prop using (LiftS; liftS)
 open import prop-setoid using (IsEquivalence; module ≈-Reasoning)
-open import categories
-open import commutative-monoid
-open import cmon-enriched
+open import categories using (Category; HasTerminal; HasProducts)
+open import commutative-monoid using (CommutativeMonoid)
+open import cmon-enriched using (CMonEnriched)
 
 module graph-lang (Base : Set) where
 
@@ -196,14 +196,14 @@ comp-bilinear-ε₂ (f₁ + f₂) = ≃-trans (+-cong (comp-bilinear-ε₂ f₁)
                               +-lunit
 comp-bilinear-ε₂ ∅ = ∅≃∅
 
-cmonEnriched : CMonEnriched cat
-cmonEnriched .CMonEnriched.homCM σ τ .CommutativeMonoid.ε = ∅
-cmonEnriched .CMonEnriched.homCM σ τ .CommutativeMonoid._+_ = _+_
-cmonEnriched .CMonEnriched.homCM σ τ .CommutativeMonoid.+-cong (liftS p) (liftS q) = liftS (+-cong p q)
-cmonEnriched .CMonEnriched.homCM σ τ .CommutativeMonoid.+-lunit = liftS +-lunit
-cmonEnriched .CMonEnriched.homCM σ τ .CommutativeMonoid.+-assoc = liftS +-assoc
-cmonEnriched .CMonEnriched.homCM σ τ .CommutativeMonoid.+-comm = liftS +-comm
-cmonEnriched .CMonEnriched.comp-bilinear₁ _ _ _ = liftS ≃-refl
-cmonEnriched .CMonEnriched.comp-bilinear₂ f g₁ g₂ = liftS (comp-bilinear₂ f g₁ g₂)
-cmonEnriched .CMonEnriched.comp-bilinear-ε₁ f = liftS ≃-refl
-cmonEnriched .CMonEnriched.comp-bilinear-ε₂ f = liftS (comp-bilinear-ε₂ f)
+cmon-enriched : CMonEnriched cat
+cmon-enriched .CMonEnriched.homCM σ τ .CommutativeMonoid.ε = ∅
+cmon-enriched .CMonEnriched.homCM σ τ .CommutativeMonoid._+_ = _+_
+cmon-enriched .CMonEnriched.homCM σ τ .CommutativeMonoid.+-cong (liftS p) (liftS q) = liftS (+-cong p q)
+cmon-enriched .CMonEnriched.homCM σ τ .CommutativeMonoid.+-lunit = liftS +-lunit
+cmon-enriched .CMonEnriched.homCM σ τ .CommutativeMonoid.+-assoc = liftS +-assoc
+cmon-enriched .CMonEnriched.homCM σ τ .CommutativeMonoid.+-comm = liftS +-comm
+cmon-enriched .CMonEnriched.comp-bilinear₁ _ _ _ = liftS ≃-refl
+cmon-enriched .CMonEnriched.comp-bilinear₂ f g₁ g₂ = liftS (comp-bilinear₂ f g₁ g₂)
+cmon-enriched .CMonEnriched.comp-bilinear-ε₁ f = liftS ≃-refl
+cmon-enriched .CMonEnriched.comp-bilinear-ε₂ f = liftS (comp-bilinear-ε₂ f)

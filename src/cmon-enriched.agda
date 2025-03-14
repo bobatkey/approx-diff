@@ -243,10 +243,11 @@ module _ {o m e} {𝒞 : Category o m e} (CM : CMonEnriched 𝒞) where
         copair (f₁ ∘ f₂) (g₁ ∘ g₂)
       ∎ where open ≈-Reasoning isEquiv
 
+------------------------------------------------------------------------------
 -- Construct biproducts from products on a cmon-category
-module cmon+products→biproducts {o m e}
+module cmon+product→biproduct {o m e}
          {𝒞 : Category o m e} (CM𝒞 : CMonEnriched 𝒞)
-         {x y : 𝒞 .Category.obj} (P : Product {𝒞 = 𝒞} x y) where
+         {x y : 𝒞 .Category.obj} (P : Product 𝒞 x y) where
 
   open Category 𝒞
   open CMonEnriched CM𝒞
@@ -284,17 +285,17 @@ module cmon+products→biproducts {o m e}
   in₂ : y ⇒ prod
   in₂ = pair εm (id _)
 
-  biproducts : Biproduct CM𝒞 x y
-  biproducts .Biproduct.prod = prod
-  biproducts .Biproduct.p₁ = p₁
-  biproducts .Biproduct.p₂ = p₂
-  biproducts .Biproduct.in₁ = in₁
-  biproducts .Biproduct.in₂ = in₂
-  biproducts .Biproduct.id-1 = pair-p₁ _ _
-  biproducts .Biproduct.id-2 = pair-p₂ _ _
-  biproducts .Biproduct.zero-1 = pair-p₁ _ _
-  biproducts .Biproduct.zero-2 = pair-p₂ _ _
-  biproducts .Biproduct.id-+ =
+  biproduct : Biproduct CM𝒞 x y
+  biproduct .Biproduct.prod = prod
+  biproduct .Biproduct.p₁ = p₁
+  biproduct .Biproduct.p₂ = p₂
+  biproduct .Biproduct.in₁ = in₁
+  biproduct .Biproduct.in₂ = in₂
+  biproduct .Biproduct.id-1 = pair-p₁ _ _
+  biproduct .Biproduct.id-2 = pair-p₂ _ _
+  biproduct .Biproduct.zero-1 = pair-p₁ _ _
+  biproduct .Biproduct.zero-2 = pair-p₂ _ _
+  biproduct .Biproduct.id-+ =
     begin
       (in₁ ∘ p₁) +m (in₂ ∘ p₂) ≡⟨⟩
       (pair (id _) εm ∘ p₁) +m (pair εm (id _) ∘ p₂) ≈⟨ homCM _ _ .+-cong (pair-natural _ _ _) (pair-natural _ _ _) ⟩
@@ -306,7 +307,11 @@ module cmon+products→biproducts {o m e}
     ∎
     where open ≈-Reasoning isEquiv
 
-
+cmon+products→biproducts : ∀ {o m e}
+  {𝒞 : Category o m e} (CM𝒞 : CMonEnriched 𝒞) (P : HasProducts 𝒞) →
+  ∀ x y → Biproduct CM𝒞 x y
+cmon+products→biproducts CM𝒞 P x y = biproduct
+  where open cmon+product→biproduct CM𝒞 (HasProducts.getProduct P x y)
 
 
 ------------------------------------------------------------------------------
@@ -356,3 +361,53 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂}
   FunctorCat-cmon .comp-bilinear₂ f g₁ g₂ .transf-eq x = CM.comp-bilinear₂ _ _ _
   FunctorCat-cmon .comp-bilinear-ε₁ f .transf-eq x = CM.comp-bilinear-ε₁ _
   FunctorCat-cmon .comp-bilinear-ε₂ f .transf-eq x = CM.comp-bilinear-ε₂ _
+
+------------------------------------------------------------------------------
+-- Generalising the above, cones made of zeros, or cones made by
+-- addition, are preserved by going to limit cones.
+open import functor
+
+module _ {o m e o₂ m₂ e₂}
+         {𝒞 : Category o m e} (CM𝒞 : CMonEnriched 𝒞)
+         {𝒮 : Category o₂ m₂ e₂}
+         (D : Functor 𝒮 𝒞)
+         (L : Limit D)
+  where
+
+  open Category 𝒞
+  open CMonEnriched CM𝒞
+  open CommutativeMonoid
+  open IsEquivalence
+  open Limit L
+  private
+    module 𝒮𝒞Cmon = CMonEnriched (FunctorCat-cmon 𝒮 𝒞 CM𝒞)
+
+  -- FIXME: Using the fact that const : 𝒞 ⇒ [ 𝒮 ⇒ 𝒞 ] is a
+  -- Cmon-functor. Make this explicit.
+
+  lambda-ε : ∀ {x} → lambda x 𝒮𝒞Cmon.εm ≈ εm {x} {apex}
+  lambda-ε {x} = begin
+      lambda x 𝒮𝒞Cmon.εm
+    ≈˘⟨ lambda-cong (𝒮𝒞Cmon.comp-bilinear-ε₂ _) ⟩
+      lambda x (cone functor.∘ 𝒮𝒞Cmon.εm)
+    ≈⟨ lambda-cong (∘NT-cong (≃-isEquivalence .refl) (record { transf-eq = λ x → ≈-refl })) ⟩
+      lambda x (cone functor.∘ constFmor εm)
+    ≈⟨ lambda-ext _ ⟩
+      εm
+    ∎
+    where open ≈-Reasoning isEquiv
+
+  lambda-+ : ∀ {x} (α₁ α₂ : NatTrans (constF 𝒮 x) D) →
+             (lambda x α₁ +m lambda x α₂) ≈ lambda x (α₁ 𝒮𝒞Cmon.+m α₂)
+  lambda-+ {x} α₁ α₂ = begin
+      lambda x α₁ +m lambda x α₂
+    ≈˘⟨ lambda-ext _ ⟩
+      lambda x (cone functor.∘ constFmor (lambda x α₁ +m lambda x α₂))
+    ≈⟨ lambda-cong (∘NT-cong (≃-isEquivalence .refl) (record { transf-eq = λ x → ≈-refl })) ⟩
+      lambda x (cone functor.∘ (constFmor (lambda x α₁) 𝒮𝒞Cmon.+m constFmor (lambda x α₂)))
+    ≈⟨ lambda-cong (𝒮𝒞Cmon.comp-bilinear₂ _ _ _) ⟩
+      lambda x ((cone functor.∘ constFmor (lambda x α₁)) 𝒮𝒞Cmon.+m (cone functor.∘ constFmor (lambda x α₂)))
+    ≈⟨ lambda-cong (𝒮𝒞Cmon.homCM _ _ .+-cong (lambda-eval α₁) (lambda-eval α₂)) ⟩
+      lambda x (α₁ 𝒮𝒞Cmon.+m α₂)
+    ∎
+    where open ≈-Reasoning isEquiv

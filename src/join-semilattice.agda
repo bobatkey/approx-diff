@@ -155,6 +155,23 @@ module _ where
     +m-lunit : ∀ {f} → (εm +m f) ≃m f
     +m-lunit .eqfunc x = Y.∨-lunit
 
+  -- Bilinearity of composition
+  module _ {A B C}
+           {X : JoinSemilattice A}{Y : JoinSemilattice B}{Z : JoinSemilattice C} where
+
+    comp-bilinear₁ : ∀ (f₁ f₂ : Y => Z) (g : X => Y) →
+                       ((f₁ +m f₂) ∘ g) ≃m ((f₁ ∘ g) +m (f₂ ∘ g))
+    comp-bilinear₁ f₁ f₂ g .eqfunc x = C .≃-refl
+
+    comp-bilinear₂ : ∀ (f : Y => Z) (g₁ g₂ : X => Y) →
+                       (f ∘ (g₁ +m g₂)) ≃m ((f ∘ g₁) +m (f ∘ g₂))
+    comp-bilinear₂ f g₁ g₂ .eqfunc x = ∨-preserving-≃ f
+
+    comp-bilinear-ε₁ : ∀ (f : X => Y) → (εm ∘ f) ≃m εm {X = X} {Y = Z}
+    comp-bilinear-ε₁ f .eqfunc x = C .≃-refl
+
+    comp-bilinear-ε₂ : ∀ (f : Y => Z) → (f ∘ εm) ≃m εm {X = X} {Y = Z}
+    comp-bilinear-ε₂ f .eqfunc x = ⊥-preserving-≃ f
 
 ------------------------------------------------------------------------------
 -- One element semilattice, for use when there are no approximations

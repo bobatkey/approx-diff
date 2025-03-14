@@ -5,11 +5,11 @@ open import categories using (Category; HasTerminal; HasProducts)
 open import functor using (Functor; NatTrans; ≃-NatTrans; [_⇒_])
 
 module functor-cat-products
-         {o₁ m₁ e₁ o₂ m₂ e₂}
-         (𝒞 : Category o₁ m₁ e₁)
-         (𝒟 : Category o₂ m₂ e₂)
-         (T  : HasTerminal 𝒟)
-         (P  : HasProducts 𝒟)
+    {o₁ m₁ e₁ o₂ m₂ e₂}
+    (𝒞 : Category o₁ m₁ e₁)
+    (𝒟 : Category o₂ m₂ e₂)
+    (T  : HasTerminal 𝒟)
+    (P  : HasProducts 𝒟)
   where
 
 open Functor
@@ -22,15 +22,12 @@ private
   module P = HasProducts P
   module T = HasTerminal T
 
-terminal : HasTerminal [ 𝒞 ⇒ 𝒟 ]
-terminal .HasTerminal.witness .fobj x = T.witness
-terminal .HasTerminal.witness .fmor f = 𝒟.id _
-terminal .HasTerminal.witness .fmor-cong x = 𝒟.≈-refl
-terminal .HasTerminal.witness .fmor-id = 𝒟.≈-refl
-terminal .HasTerminal.witness .fmor-comp f g = 𝒟.≈-sym 𝒟.id-left
-terminal .HasTerminal.terminal-mor F .transf x = T.terminal-mor _
-terminal .HasTerminal.terminal-mor F .natural f = T.terminal-unique _ _ _
-terminal .HasTerminal.terminal-unique F α β .transf-eq x = T.terminal-unique _ _ _
+𝟙 : Functor 𝒞 𝒟
+𝟙 .fobj x = T.witness
+𝟙 .fmor f = 𝒟.id _
+𝟙 .fmor-cong x = 𝒟.≈-refl
+𝟙 .fmor-id = 𝒟.≈-refl
+𝟙 .fmor-comp f g = 𝒟.≈-sym 𝒟.id-left
 
 _×_ : Functor 𝒞 𝒟 → Functor 𝒞 𝒟 → Functor 𝒞 𝒟
 (F × G) .fobj x = P.prod (F .fobj x) (G .fobj x)
@@ -53,6 +50,12 @@ _×_ : Functor 𝒞 𝒟 → Functor 𝒞 𝒟 → Functor 𝒞 𝒟
   ≈⟨ P.pair-functorial _ _ _ _ ⟩
     P.prod-m (F .fmor f) (G .fmor f) 𝒟.∘ P.prod-m (F .fmor g) (G .fmor g)
   ∎ where open ≈-Reasoning 𝒟.isEquiv
+
+terminal : HasTerminal [ 𝒞 ⇒ 𝒟 ]
+terminal .HasTerminal.witness = 𝟙
+terminal .HasTerminal.terminal-mor F .transf x = T.terminal-mor _
+terminal .HasTerminal.terminal-mor F .natural f = T.terminal-unique _ _ _
+terminal .HasTerminal.terminal-unique F α β .transf-eq x = T.terminal-unique _ _ _
 
 products : HasProducts [ 𝒞 ⇒ 𝒟 ]
 products .HasProducts.prod = _×_

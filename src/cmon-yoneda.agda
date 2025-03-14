@@ -1,24 +1,35 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
+-- FIXME: this is mostly redundant now. In order to get the Yoneda
+-- embedding to actually work, we need to restrict to functors that
+-- preserve commutative monoid structure. This is in cmon-category.
+
 open import Level using (_⊔_; lift; lower)
 open import prop using (lift; lower)
 open import prop-setoid using (IsEquivalence; idS; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_)
-open import categories using (Category; opposite; IsProduct)
-open import functor using ([_⇒_]; Functor; NatTrans; ≃-NatTrans)
+open import categories using (Category; IsProduct; IsTerminal)
+open import functor using ([_⇒_]; Functor; NatTrans; ≃-NatTrans; HasLimits)
 open import commutative-monoid using (CommutativeMonoid; _=[_]>_)
-open import cmon-enriched using (CMonEnriched; module cmon+products→biproducts)
+open import cmon-enriched using (CMonEnriched; module cmon+product→biproduct)
 open import commutative-monoid-cat using (_⇒_; toSetoid)
-  renaming (cat to CMon; Obj to CMonObj)
+  renaming (cat to CMon; Obj to CMonObj
+           ; limits to CMon-limits
+           ; cmon-enriched to CMon-enriched
+           ; products to CMon-products
+           ; terminal to CMon-terminal)
+
 
 module cmon-yoneda {o m e} os es (𝒞 : Category o m e) (CM𝒞 : CMonEnriched 𝒞) where
 
 import yoneda os es 𝒞 as yoneda
 
-PSh = [ opposite 𝒞 ⇒ CMon (m ⊔ os) (e ⊔ es) ]
-
 private
   module 𝒞 = Category 𝒞
+
+-- FIXME: is this going to have to be all *cmon*-functors?
+PSh = [ 𝒞.opposite ⇒ CMon (o ⊔ m ⊔ e ⊔ es ⊔ os) (o ⊔ m ⊔ e ⊔ es ⊔ os) ]
+
 open _⇒_
 open _=[_]>_
 open CommutativeMonoid
@@ -55,21 +66,74 @@ open CMonEnriched CM𝒞
 よ .fmor-comp f g .transf-eq = yoneda.よ .fmor-comp _ _ .transf-eq
 
 ------------------------------------------------------------------------------
+-- PSh is cmon-enriched
+
+cmon-enriched : CMonEnriched PSh
+cmon-enriched = cmon-enriched.FunctorCat-cmon _ _ CMon-enriched
+
+------------------------------------------------------------------------------
+-- This category is complete
+
+{-
+psh-limits : (𝒮 : Category o m e) → HasLimits 𝒮 PSh
+psh-limits 𝒮 = limits
+  where open import functor-cat-limits _ _ 𝒮 (CMon-limits (o ⊔ e ⊔ m ⊔ os ⊔ es) 𝒮)
+-}
+
+-- FIXME: and cocomplete
+
+------------------------------------------------------------------------------
+-- There is a (more efficient) implementation of products
+
+------------------------------------------------------------------------------
 -- TODO: Yoneda lemma
+
+-- FIXME: need hom-cmon of an cmon-enriched category
+
+-- FIXME: I think the category might need to be restricted to only
+-- commutative monoid preserving functors.
+
+open prop-setoid.Setoid
+open _⇒s_
+
+{-
+lemma : ∀ F x → F .fobj x ⇒ record { carrier = Category.hom-setoid PSh (よ₀ x) F ; commMonoid = CMonEnriched.homCM cmon-enriched _ _ }
+lemma F x .function .func Fx .transf y .function .func (lift f) = F .fmor f .func Fx
+lemma F x .function .func Fx .transf y .function .func-resp-≈ = {!!}
+lemma F x .function .func Fx .transf y .cmFunc .preserve-ε = {!!} -- F needs to preserve ε!
+lemma F x .function .func Fx .transf y .cmFunc .preserve-+ = {!!}
+lemma F x .function .func Fx .natural = {!!}
+lemma F x .function .func-resp-≈ = {!!}
+lemma F x .cmFunc = {!!}
+-}
+
+------------------------------------------------------------------------------
+-- よ preserves terminal objects
+module _ where
+
+  open IsTerminal
+
+  preserve-terminal : (t : 𝒞.obj) (t-terminal : IsTerminal 𝒞 t) → IsTerminal PSh (よ₀ t)
+  preserve-terminal t t-terminal .to-terminal {F} .transf x .function ._⇒s_.func _ = lift (t-terminal .to-terminal)
+  preserve-terminal t t-terminal .to-terminal {F} .transf x .function ._⇒s_.func-resp-≈ _ = lift 𝒞.≈-refl
+  preserve-terminal t t-terminal .to-terminal {F} .transf x .cmFunc .preserve-ε .lower = t-terminal .to-terminal-ext _
+  preserve-terminal t t-terminal .to-terminal {F} .transf x .cmFunc .preserve-+ .lower = t-terminal .to-terminal-ext _
+  preserve-terminal t t-terminal .to-terminal {F} .natural {x} {y} f ._≈s_.func-eq x₁≈x₂ .lower = 𝒞.≈-sym (t-terminal .to-terminal-ext _)
+  preserve-terminal t t-terminal .to-terminal-ext {F} f .transf-eq x ._≈s_.func-eq x₁≈x₂ .lower = t-terminal .to-terminal-ext _
 
 ------------------------------------------------------------------------------
 -- よ preserves products
 module _ (x y p : 𝒞.obj) (p₁ : p 𝒞.⇒ x) (p₂ : p 𝒞.⇒ y)
-         (p-isproduct : IsProduct x y p p₁ p₂) where
+         (p-isproduct : IsProduct 𝒞 x y p p₁ p₂) where
 
   open _⇒s_
   open _≈s_
 
   open IsProduct p-isproduct
-  open cmon+products→biproducts CM𝒞 (record { isProduct = p-isproduct })
+  open cmon+product→biproduct CM𝒞 (record { isProduct = p-isproduct })
     using (pair-ε; pair-+)
 
-  preserve-products : IsProduct {𝒞 = PSh} (よ₀ x) (よ₀ y) (よ₀ p) (よ .fmor p₁) (よ .fmor p₂)
+  preserve-products : IsProduct PSh (よ₀ x) (よ₀ y) (よ₀ p) (よ .fmor p₁) (よ .fmor p₂)
   preserve-products .pair {Z} f g .transf z .function .func Zz .lower =
     pair (f .transf z .func Zz .lower) (g .transf z .func Zz .lower)
   preserve-products .pair {Z} f g .transf z .function .func-resp-≈ {Zz₁} {Zz₂} Zz₁≈Zz₂ .lower =

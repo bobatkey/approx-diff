@@ -5,7 +5,7 @@ module example2 where
 open import Level using (suc; 0ℓ)
 
 open import categories
-  using (Category; opposite;
+  using (Category;
          HasProducts; HasExponentials; HasBooleans;
          setoid→category)
 open import functor using ([_⇒_]; HasLimits)
@@ -18,7 +18,10 @@ open import commutative-monoid-cat using ()
            ; terminal to CMon-terminal)
 
 import grothendieck
-import functor-cat-products
+
+open import functor using (Functor)
+open import families-functor using (FamF)
+open import cmon-yoneda using (よ)
 
 ------------------------------------------------------------------------------
 -- This is generic over the base category; make it work for any
@@ -29,7 +32,7 @@ import galois
 cat = galois.cat -- graph-lang.cat {!!}
 
 PShGalois : Category (suc (suc 0ℓ)) (suc 0ℓ) (suc 0ℓ)
-PShGalois = [ opposite cat ⇒ CMon (suc 0ℓ) (suc 0ℓ) ]
+PShGalois = [ Category.opposite cat ⇒ CMon (suc 0ℓ) (suc 0ℓ) ]
 
 PShGalois-limits : (𝒮 : Category (suc 0ℓ) (suc 0ℓ) (suc 0ℓ)) → HasLimits 𝒮 PShGalois
 PShGalois-limits 𝒮 = limits
@@ -38,16 +41,14 @@ PShGalois-limits 𝒮 = limits
 PShGalois-cmon : CMonEnriched PShGalois
 PShGalois-cmon = FunctorCat-cmon _ _ CMon-enriched
 
-import functor-cat-products (opposite cat) (CMon (suc 0ℓ) (suc 0ℓ))
+import functor-cat-products (Category.opposite cat) (CMon (suc 0ℓ) (suc 0ℓ))
                             CMon-terminal
                             CMon-products
    as PShGalois-products
 
 PShGalois-biproducts : ∀ x y → Biproduct PShGalois-cmon x y
-PShGalois-biproducts x y = biproducts
-  where open cmon-enriched.cmon+products→biproducts
-               PShGalois-cmon
-               (HasProducts.getProduct PShGalois-products.products x y)
+PShGalois-biproducts =
+  cmon-enriched.cmon+products→biproducts PShGalois-cmon PShGalois-products.products
 
 ------------------------------------------------------------------------------
 -- Fam(PSh(Galois)) can now interpret the calculus
@@ -73,3 +74,25 @@ D-terminal = D.terminal PShGalois-products.terminal
 D-booleans = categories.coproducts→booleans D-terminal DP.strongCoproducts
 
 D-lists = D.lists PShGalois-products.terminal PShGalois-products.products
+
+------------------------------------------------------------------------------
+-- First order version where we interpret the basic operations from
+-- the signature.
+
+module D-fo = grothendieck.CategoryOfFamilies (suc 0ℓ) (suc 0ℓ) cat
+
+embed : Functor D-fo.cat D.cat
+embed = FamF _ _ (よ (suc 0ℓ) (suc 0ℓ) cat galois.cmon-enriched)
+
+-- TODO: 'embed' preserves finite products and booleans, because よ
+-- preserves finite products.  So any signature interpreted in
+-- Fam(LatGal) can also be interpreted in Fam(Psh(LatGal)). Then we
+-- will be able to interpret the whole higher-order language in the
+-- latter category, and then read back the first order LatGal morphism
+-- at the end.
+
+-- if we have a term x : S ⊢ M : T, where S and T are first order,
+-- then it ought to be the case that embed ⟦S⟧fo ≃ ⟦S⟧ho and similar
+-- for T, by preservation of finite products. Then we can use the
+-- fullness of the Yoneda functor to give a first-order galois
+-- connection.

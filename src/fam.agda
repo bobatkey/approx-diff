@@ -374,14 +374,14 @@ open import functor
 -- If a category has all discrete limits, then it has all setoid
 -- products (almost by definition).
 module _ {o m e} os es (𝒞 : Category o m e)
-         (hasDiscreteLimits : ∀ (A : Setoid os es) → HasLimits (setoid→category A) 𝒞)
+         (hasDiscreteLimits : ∀ (A : Setoid os es) → HasLimits' (setoid→category A) 𝒞)
   where
 
   private
     module 𝒞 = Category 𝒞
 
   open HasSetoidProducts
-  open HasLimits
+  open HasLimits'
   open Functor
   open NatTrans
   open ≃-NatTrans
@@ -402,8 +402,7 @@ module _ {o m e} os es (𝒞 : Category o m e)
   hasSetoidProducts .Π A F = hasDiscreteLimits A .Π (fam→functor F)
   hasSetoidProducts .lambdaΠ {A} x F f =
     hasDiscreteLimits A .lambdaΠ x _
-      (record { transf = f ._⇒f_.transf
-              ; natural = λ { ⟪ e ⟫ → 𝒞.≈-sym (f ._⇒f_.natural e) }  })
+      (record { natural = λ { ⟪ e ⟫ → 𝒞.≈-sym (f ._⇒f_.natural e) }  })
   hasSetoidProducts .lambdaΠ-cong {A} f₁≃f₂ =
     hasDiscreteLimits A .lambda-cong (record { transf-eq = λ _ → f₁≃f₂ ._≃f_.transf-eq })
   hasSetoidProducts .evalΠ {A} P a = hasDiscreteLimits A .evalΠ _ .transf a
