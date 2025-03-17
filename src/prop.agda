@@ -26,7 +26,7 @@ record _∧_ {a b} (P : Prop a) (Q : Prop b) : Prop (a ⊔ b) where
     proj₂ : Q
 open _∧_ public
 
-infixr 4 _,_
+infixr 4 _∧_ _,_
 
 data _∨_ {a b} (P : Prop a) (Q : Prop b) : Prop (a ⊔ b) where
   inj₁ : P → P ∨ Q
@@ -41,6 +41,13 @@ open ∃ₚ
 
 data ∃ {a b} (A : Set a)(B : A → Prop b) : Prop (a ⊔ b) where
   _,_ : ∀ a → B a → ∃ A B
+
+record ∃ₛ {a b} (A : Set a)(B : A → Prop b) : Set (a ⊔ b) where
+  constructor _,_
+  field
+    fst : A
+    snd : B fst
+open ∃ₚ
 
 record Prf {ℓ} (P : Prop ℓ) : Set ℓ where
   constructor ⟪_⟫

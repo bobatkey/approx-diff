@@ -8,6 +8,9 @@ open import prop-setoid using (IsEquivalence; Setoid; module ≈-Reasoning)
 
 module _ {a} {A : Set a} where
 
+  Op : ∀ {b} → (A → A → Prop b) → (A → A → Prop b)
+  Op R x y = R y x
+
   SymmetricCore : ∀ {b} → (A → A → Prop b) → (A → A → Prop b)
   SymmetricCore R x y = R x y ∧ R y x
 
@@ -15,6 +18,8 @@ module _ {a} {A : Set a} where
     field
       refl  : ∀ {x} → x ≤ x
       trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
+
+    -- Derived equivalence relation
     _≃_ = SymmetricCore _≤_
 
     ≃-refl : ∀ {x} → x ≃ x
@@ -33,6 +38,11 @@ module _ {a} {A : Set a} where
     isEquivalence .IsEquivalence.trans = ≃-trans
 
     infix 4 _≃_
+
+    -- The opposite order
+    opposite : IsPreorder (Op _≤_)
+    opposite .refl = refl
+    opposite .trans y≤x z≤y = trans z≤y y≤x
 
 module ≤-Reasoning {o i} {A : Set o} {_≤_ : A → A → Prop i} (isPreorder : IsPreorder _≤_) where
   open IsPreorder
@@ -190,6 +200,9 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
     field
       upper : (I : Set iℓ) (x : I → A) (i : I) → x i ≤ ⋁ I x
       least : (I : Set iℓ) (x : I → A) (z : A) → (∀ i → x i ≤ z) → ⋁ I x ≤ z
+
+    mono : {I : Set iℓ} {x y : I → A} → (∀ i → x i ≤ y i) → ⋁ I x ≤ ⋁ I y
+    mono f = least _ _ _ (λ i → trans (f i) (upper _ _ i))
 
   record IsBottom (⊥ : A) : Set (a ⊔ b) where
     field

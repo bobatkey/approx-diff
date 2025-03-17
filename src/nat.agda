@@ -4,15 +4,19 @@ module nat where
 
 open import Level using (0ℓ)
 open import Data.Product using (_,_)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import prop
 open import basics
 open import prop-setoid using (module ≈-Reasoning; Setoid; ⊗-setoid; 𝟙)
   renaming (_⇒_ to _⇒s_)
 
 ------------------------------------------------------------------------------
-data ℕ : Set where
-  zero : ℕ
-  succ : ℕ → ℕ
+-- Reuse the builtin definitions so we get fast implementations
+
+open import Agda.Builtin.Nat
+  renaming (Nat to ℕ; suc to succ)
+  using (_+_; _*_; zero)
+  public
 
 ------------------------------------------------------------------------------
 data _≤_ : ℕ → ℕ → Prop where
@@ -49,6 +53,9 @@ open IsPreorder ≤-isPreorder
   renaming (isEquivalence to ≃-isEquivalence)
   public
 
+------------------------------------------------------------------------------
+-- Equality and setoids
+
 ≃-zero : zero ≃ zero
 ≃-zero .proj₁ = 0≤n
 ≃-zero .proj₂ = 0≤n
@@ -61,6 +68,21 @@ succ-cong p .proj₂ = s≤s (proj₂ p)
 ℕₛ .Setoid.Carrier = ℕ
 ℕₛ .Setoid._≈_ = _≃_
 ℕₛ .Setoid.isEquivalence = ≃-isEquivalence
+
+------------------------------------------------------------------------------
+-- Strictly less than
+
+data _<_ : ℕ → ℕ → Set where
+  n<s : ∀ {x}   → x < succ x
+  <s : ∀ {x y} → x < y → x < succ y
+
+s<s : ∀ {x y} → x < y → succ x < succ y
+s<s n<s      = n<s
+s<s (<s x<y) = <s (s<s x<y)
+
+-- <-trans : ∀ {m n o} → m < n → n < o → m < o
+-- <-trans 0<s       (s<s n<o) = 0<s
+-- <-trans (s<s m<n) (s<s n<o) = s<s (<-trans m<n n<o)
 
 ------------------------------------------------------------------------------
 -- Joins and Meets
@@ -153,9 +175,7 @@ open IsMeet ⊓-isMeet
 ⊔-⊓-distrib (succ x) (succ y) (succ z) = s≤s (⊔-⊓-distrib x y z)
 
 ------------------------------------------------------------------------------
-_+_ : ℕ → ℕ → ℕ
-zero   + y = y
-succ x + y = succ (x + y)
+-- Addition
 
 +-increasing : ∀ {x y} → y ≤ (x + y)
 +-increasing {zero} = ≤-refl
@@ -265,14 +285,7 @@ module _ where
   zero-m .func-resp-≈ x = ≃-refl
 
 ------------------------------------------------------------------------------
--- Multiplication
-
-_*_ : ℕ → ℕ → ℕ
-zero   * y = zero
-succ x * y = y + (x * y)
-
-one : ℕ
-one = succ zero
+-- Multiplication: _*_ is defined in Agda.Builtin.Nat
 
 *-zero : ∀ {x} → (x * zero) ≃ zero
 *-zero {zero}   = ≃-refl
@@ -292,10 +305,10 @@ one = succ zero
 *-mono 0≤n         y₁≤y₂ = 0≤n
 *-mono (s≤s x₁≤x₂) y₁≤y₂ = +-mono y₁≤y₂ (*-mono x₁≤x₂ y₁≤y₂)
 
-*-lunit : ∀ {x} → (one * x) ≃ x
+*-lunit : ∀ {x} → (1 * x) ≃ x
 *-lunit = +-runit
 
-*-runit : ∀ {x} → (x * one) ≃ x
+*-runit : ∀ {x} → (x * 1) ≃ x
 *-runit {zero}   = ≃-zero
 *-runit {succ x} = succ-cong *-runit
 
@@ -330,21 +343,165 @@ one = succ zero
     (y * z) + (x * (y * z)) ∎
   where open ≈-Reasoning ≃-isEquivalence
 
-*-isMonoid : IsMonoid ≤-isPreorder _*_ one
+*-isMonoid : IsMonoid ≤-isPreorder _*_ 1
 *-isMonoid .IsMonoid.mono = *-mono
 *-isMonoid .IsMonoid.assoc {x} {y} {z} = *-assoc {x} {y} {z}
 *-isMonoid .IsMonoid.lunit = *-lunit
 *-isMonoid .IsMonoid.runit = *-runit
 
 -- “feedback with an initial state”
-*-cancelᵣ : ∀ {x y z} → one ≤ x → (y * x) ≤ (z * x) → y ≤ z
+*-cancelᵣ : ∀ {x y z} → 1 ≤ x → (y * x) ≤ (z * x) → y ≤ z
 *-cancelᵣ {succ x} {zero}   {z}      (s≤s p) 0≤n     = 0≤n
 *-cancelᵣ {succ x} {succ y} {succ z} (s≤s p) (s≤s q) = s≤s (*-cancelᵣ (s≤s p) (+-cancelₗ q))
 
-*-cancelₗ : ∀ {x y z} → one ≤ x → (x * y) ≤ (x * z) → y ≤ z
+*-cancelₗ : ∀ {x y z} → 1 ≤ x → (x * y) ≤ (x * z) → y ≤ z
 *-cancelₗ {x} {y} {z} one≤x xy≤xz =
   *-cancelᵣ one≤x (begin y * x ≤⟨ *-comm {y} .proj₁ ⟩
                          x * y ≤⟨ xy≤xz ⟩
                          x * z ≤⟨ *-comm {x} .proj₁ ⟩
                          z * x ∎)
   where open ≤-Reasoning ≤-isPreorder
+
+-- FIXME: _+_ and _*_ form a semiring
+
+------------------------------------------------------------------------------
+-- Even/odd
+
+mutual
+  data Even : ℕ → Set where
+    zero : Even 0
+    succ : ∀ {n} → Odd n → Even (succ n)
+
+  data Odd : ℕ → Set where
+    succ : ∀ {n} → Even n → Odd (succ n)
+
+even⊎odd : ∀ n → Even n ⊎ Odd n
+even⊎odd zero = inj₁ zero
+even⊎odd (succ n) with even⊎odd n
+... | inj₁ x = inj₂ (succ x)
+... | inj₂ y = inj₁ (succ y)
+
+------------------------------------------------------------------------------
+-- Halving
+
+-- Floor of n/2
+⌊_/2⌋ : ℕ → ℕ
+⌊ zero          /2⌋ = 0
+⌊ succ zero     /2⌋ = 0
+⌊ succ (succ n) /2⌋ = succ ⌊ n /2⌋
+
+-- Ceiling of n/2
+⌈_/2⌉ : ℕ → ℕ
+⌈ zero          /2⌉ = 0
+⌈ succ zero     /2⌉ = 1
+⌈ succ (succ n) /2⌉ = succ ⌈ n /2⌉
+
+even-agree : ∀ n → Even n → ⌊ n /2⌋ ≃ ⌈ n /2⌉
+even-agree zero            zero            = ≃-refl
+even-agree (succ (succ n)) (succ (succ e)) = succ-cong (even-agree n e)
+
+odd-off-by-one : ∀ n → Odd n → succ ⌊ n /2⌋ ≃ ⌈ n /2⌉
+odd-off-by-one (succ zero)     (succ zero)     = ≃-refl
+odd-off-by-one (succ (succ n)) (succ (succ o)) = succ-cong (odd-off-by-one n o)
+
+even-⌊/2⌋+⌊/2⌋ : ∀ n → Even n → (⌊ n  /2⌋ + ⌊ n  /2⌋) ≃ n
+even-⌊/2⌋+⌊/2⌋ zero            zero            = ≃-refl
+even-⌊/2⌋+⌊/2⌋ (succ (succ n)) (succ (succ e)) = ≃-trans (succ-cong +-succ) (succ-cong (succ-cong (even-⌊/2⌋+⌊/2⌋ n e)))
+
+even-⌈/2⌉+⌈/2⌉ : ∀ n → Even n → (⌈ n  /2⌉ + ⌈ n  /2⌉) ≃ n
+even-⌈/2⌉+⌈/2⌉ .0 zero = ≃-refl
+even-⌈/2⌉+⌈/2⌉ .(succ (succ _)) (succ (succ x)) = ≃-trans (succ-cong +-succ) (succ-cong (succ-cong (even-⌈/2⌉+⌈/2⌉ _ x)))
+
+odd-⌊/2⌋+⌊/2⌋ : ∀ n → Odd n → succ (⌊ n  /2⌋ + ⌊ n  /2⌋) ≃ n
+odd-⌊/2⌋+⌊/2⌋ 1               (succ zero)     = ≃-refl
+odd-⌊/2⌋+⌊/2⌋ (succ (succ _)) (succ (succ x)) = succ-cong (succ-cong (≃-trans +-succ (odd-⌊/2⌋+⌊/2⌋ _ x)))
+
+odd-⌈/2⌉+⌈/2⌉ : ∀ n → Odd n → (⌈ n /2⌉ + ⌈ n /2⌉) ≃ succ n
+odd-⌈/2⌉+⌈/2⌉ .1               (succ zero)     = ≃-refl
+odd-⌈/2⌉+⌈/2⌉ .(succ (succ _)) (succ (succ x)) = succ-cong (≃-trans +-succ (succ-cong (odd-⌈/2⌉+⌈/2⌉ _ x)))
+
+/2-< : ∀ {n} → ⌊ n /2⌋ < succ n
+/2-< {zero}          = n<s
+/2-< {succ zero}     = <s n<s
+/2-< {succ (succ n)} = <s (s<s /2-<)
+
+/2-<' : ∀ {n} → ⌈ n /2⌉ < succ n
+/2-<' {zero}          = n<s
+/2-<' {succ zero}     = n<s
+/2-<' {succ (succ n)} = <s (s<s /2-<')
+
+------------------------------------------------------------------------------
+-- Exponentiation by 2
+2^ : ℕ → ℕ
+2^ zero     = 1
+2^ (succ n) = 2 * 2^ n
+
+------------------------------------------------------------------------------
+-- Logarithm, using complete induction and repeated halving.
+
+data Acc (n : ℕ) : Set where
+  acc : (∀ {m} → m < n → Acc m) → Acc n
+
+mutual
+  <-acc : ∀ {n} → Acc n
+  <-acc = acc <-acc-helper
+
+  <-acc-helper : ∀ {m n} → m < n → Acc m
+  <-acc-helper {m} {succ m} n<s = <-acc
+  <-acc-helper {m} {succ _} (<s m<n) = <-acc-helper m<n
+
+⌊log2'⌋ : (n : ℕ) → Acc n → ℕ
+⌊log2'⌋ zero            _       = zero
+⌊log2'⌋ (succ zero)     _       = zero
+⌊log2'⌋ (succ (succ n)) (acc r) = succ (⌊log2'⌋ (succ ⌊ n /2⌋) (r (s<s /2-<)))
+
+⌊log2⌋ : ℕ → ℕ
+⌊log2⌋ n = ⌊log2'⌋ n <-acc
+
+-- should have 2^ (⌊log2⌋ n) ≤ n ≤ 2^ (⌈log2⌉ n)
+-- and they are at most one apart
+⌈log2'⌉ : (n : ℕ) → Acc n → ℕ
+⌈log2'⌉ zero            _       = zero
+⌈log2'⌉ (succ zero)     _       = zero
+⌈log2'⌉ (succ (succ n)) (acc r) = succ (⌈log2'⌉ (succ ⌈ n /2⌉) (r (s<s /2-<')))
+
+⌈log2⌉ : ℕ → ℕ
+⌈log2⌉ n = ⌈log2'⌉ n <-acc
+
+neq-0 : ℕ → Prop
+neq-0 zero     = ⊥
+neq-0 (succ _) = ⊤
+
+n+n≃2*n : ∀ n → n + n ≃ 2 * n
+n+n≃2*n n = +-cong {n} ≃-refl (≃-sym +-runit)
+
+-- FIXME: need succ ⌊ n/2⌋ + succ ⌊ n/2⌋ ≤ succ (succ n)
+
+-- FIXME: move this up to the halving section
+ceil-lemma : ∀ n → succ (succ n) ≤ succ ⌈ n /2⌉ + succ ⌈ n /2⌉
+ceil-lemma zero = ≤-refl
+ceil-lemma (succ zero) = s≤s (s≤s (s≤s 0≤n))
+ceil-lemma (succ (succ n)) = s≤s (s≤s (≤-trans (ceil-lemma n) (+-succ .proj₂)))
+
+⌈log2'⌉-upper : (n : ℕ) (r : Acc n) → n ≤ 2^ (⌈log2'⌉ n r)
+⌈log2'⌉-upper zero            r = 0≤n
+⌈log2'⌉-upper (succ zero)     r = ≤-refl
+⌈log2'⌉-upper (succ (succ n)) (acc r) = begin
+    succ (succ n)
+  ≤⟨ ceil-lemma n ⟩
+    succ ⌈ n /2⌉ + succ ⌈ n /2⌉
+  ≤⟨ +-mono p p ⟩
+    2^ (⌈log2'⌉ (succ ⌈ n /2⌉) (r (s<s /2-<'))) + 2^ (⌈log2'⌉ (succ ⌈ n /2⌉) (r (s<s /2-<')))
+  ≤⟨ n+n≃2*n (2^ (⌈log2'⌉ (succ ⌈ n /2⌉) (r (s<s /2-<')))) .proj₁ ⟩
+    2 * 2^ (⌈log2'⌉ (succ ⌈ n /2⌉) (r (s<s /2-<')))
+  ∎
+  where p : succ ⌈ n /2⌉ ≤ 2^ (⌈log2'⌉ (succ ⌈ n /2⌉) (r (s<s /2-<')))
+        p = ⌈log2'⌉-upper (succ ⌈ n /2⌉) (r (s<s /2-<'))
+        open ≤-Reasoning ≤-isPreorder
+
+⌈log2⌉-upper : ∀ n → n ≤ 2^ (⌈log2⌉ n)
+⌈log2⌉-upper n = ⌈log2'⌉-upper n <-acc
+
+
+-- FIXME: ⌊log2'⌋-lower (except for 0), and they are always within 1
+-- of each other
