@@ -65,7 +65,8 @@ open ≃-NatTrans
 
 lemma : ∀ F x → F .fobj x ⇒s Category.hom-setoid PSh (よ₀ x) F
 lemma F x .func Fx .transf y .func (lift f) = F .fmor f .func Fx
-lemma F x .func Fx .transf y .func-resp-≈ {lift f₁} {lift f₂} (lift f₁≈f₂) = F .fmor-cong f₁≈f₂ .func-eq (F .fobj x .refl)
+lemma F x .func Fx .transf y .func-resp-≈ {lift f₁} {lift f₂} (lift f₁≈f₂) =
+  F .fmor-cong f₁≈f₂ .func-eq (F .fobj x .refl)
 lemma F x .func Fx .natural {y} {z} g .func-eq {lift h₁} {lift h₂} (lift h₁≈h₂) =
   begin
     F .fmor g .func (F .fmor h₁ .func Fx)
@@ -74,15 +75,21 @@ lemma F x .func Fx .natural {y} {z} g .func-eq {lift h₁} {lift h₂} (lift h�
   ≈˘⟨ F .fmor-comp _ _ .func-eq (F .fobj x .refl) ⟩
     F .fmor (h₂ 𝒞.∘ g) .func Fx
   ∎ where open ≈-Reasoning (F .fobj z .isEquivalence)
-lemma F x .func-resp-≈ {Fx₁} {Fx₂} Fx₁≈Fx₂ .transf-eq y .func-eq {lift f₁} {lift f₂} (lift f₁≈f₂) = F .fmor-cong f₁≈f₂ .func-eq Fx₁≈Fx₂
+lemma F x .func-resp-≈ {Fx₁} {Fx₂} Fx₁≈Fx₂ .transf-eq y .func-eq {lift f₁} {lift f₂} (lift f₁≈f₂) =
+  F .fmor-cong f₁≈f₂ .func-eq Fx₁≈Fx₂
 
 lemma⁻¹ : ∀ F x → Category.hom-setoid PSh (よ₀ x) F ⇒s F .fobj x
 lemma⁻¹ F x .func α = α .transf x .func (lift (𝒞.id _))
 lemma⁻¹ F x .func-resp-≈ {α₁}{α₂} α₁≈α₂ = α₁≈α₂ .transf-eq x .func-eq (lift 𝒞.≈-refl)
 
+よ⁻¹ : ∀ {x y} → NatTrans (よ₀ x) (よ₀ y) → x 𝒞.⇒ y
+よ⁻¹ {x} {y} α = lemma⁻¹ (よ₀ y) x .func α .lower
+
 lemma∘lemma⁻¹ : ∀ F x → (lemma F x ∘S lemma⁻¹ F x) ≈s idS (Category.hom-setoid PSh (よ₀ x) F)
 lemma∘lemma⁻¹ F x .func-eq {Fx₁} {Fx₂} Fx₁≈Fx₂ .transf-eq y .func-eq {lift f} {lift g} (lift f≈g) =
-  F .fobj y .trans (Fx₁ .natural f .func-eq (lift 𝒞.≈-refl)) (Fx₁≈Fx₂ .transf-eq y .func-eq (lift (𝒞.≈-trans 𝒞.id-left f≈g)))
+  F .fobj y .trans
+      (Fx₁ .natural f .func-eq (lift 𝒞.≈-refl))
+      (Fx₁≈Fx₂ .transf-eq y .func-eq (lift (𝒞.≈-trans 𝒞.id-left f≈g)))
 
 lemma⁻¹∘lemma : ∀ F x → (lemma⁻¹ F x ∘S lemma F x) ≈s idS (F .fobj x)
 lemma⁻¹∘lemma F x .func-eq {Fx₁} {Fx₂} Fx₁≈Fx₂ = F .fmor-id .func-eq Fx₁≈Fx₂
@@ -94,21 +101,24 @@ lemma⁻¹∘lemma F x .func-eq {Fx₁} {Fx₂} Fx₁≈Fx₂ = F .fmor-id .func
 ------------------------------------------------------------------------------
 -- Completeness
 
+import functor-cat-limits
+
 limits : (𝒮 : Category o m e) → HasLimits' 𝒮 PSh
-limits 𝒮 = lim
-  where
-    open import functor-cat-limits 𝒞.opposite (SetoidCat ℓ ℓ) 𝒮 (Setoid-Limit' ℓ 𝒮)
-           renaming (limits to lim)
+limits 𝒮 = functor-cat-limits.limits _ _ _ (Setoid-Limit' ℓ 𝒮)
+
+-- products as a special case, using a nicer intensional representation.
+open import functor-cat-products
+       𝒞.opposite
+       (SetoidCat ℓ ℓ)
+       (Setoid-terminal _ _)
+       (Setoid-products _ _)
+
+------------------------------------------------------------------------------
+-- FIXME: cocompleteness
 
 ------------------------------------------------------------------------------
 -- Exponentials
 module _ where
-
-  open import functor-cat-products
-         𝒞.opposite
-         (SetoidCat ℓ ℓ)
-         (Setoid-terminal _ _)
-         (Setoid-products _ _)
 
   open HasProducts products
 
@@ -252,7 +262,8 @@ preserve-limits 𝒮 D apex cone isLimit = lim
       isLimit .lambda y (conv-transf α (X .fmor f .func Xx₂))
     ∎
     where open ≈-Reasoning 𝒞.isEquiv
-  lim .lambda-cong α≈β .transf-eq x .func-eq Xx₁≈Xx₂ .lower = isLimit .lambda-cong (conv-transf-≈ α≈β Xx₁≈Xx₂)
+  lim .lambda-cong α≈β .transf-eq x .func-eq Xx₁≈Xx₂ .lower =
+    isLimit .lambda-cong (conv-transf-≈ α≈β Xx₁≈Xx₂)
   lim .lambda-eval {X} α .transf-eq s .transf-eq x .func-eq {Xx₁} {Xx₂} Xx₁≈Xx₂ .lower =
     𝒞.≈-trans (isLimit .lambda-eval (conv-transf α Xx₁) .transf-eq s)
                (α .transf s .transf x .func-resp-≈ Xx₁≈Xx₂ .lower)
