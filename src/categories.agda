@@ -63,6 +63,12 @@ record Category o m e : Set (suc (o ⊔ m ⊔ e)) where
   hom-setoid-l _ _ x y .isEquivalence .sym (lift e) = lift (isEquiv .sym e)
   hom-setoid-l _ _ x y .isEquivalence .trans (lift p) (lift q) = lift (isEquiv .trans p q)
 
+  record IsIso {x y} (f : x ⇒ y) : Set (m ⊔ e) where
+    field
+      inverse     : y ⇒ x
+      f∘inverse≈id : (f ∘ inverse) ≈ id y
+      inverse∘f≈id : (inverse ∘ f) ≈ id x
+
   record Iso (x y : obj) : Set (m ⊔ e) where
     field
       fwd : x ⇒ y
@@ -175,6 +181,16 @@ module _ {o m e} (𝒞 : Category o m e) where
                         ≈⟨ pair-ext (id _) ⟩
                       id _ ∎
       where open ≈-Reasoning isEquiv
+
+  IsProduct-cong : ∀ {x y p} {p₁ p₁' : p ⇒ x} {p₂ p₂' : p ⇒ y} →
+                   p₁ ≈ p₁' → p₂ ≈ p₂' →
+                   IsProduct x y p p₁ p₂ → IsProduct x y p p₁' p₂'
+  IsProduct-cong p₁≈p₁' p₂≈p₂' is-product .IsProduct.pair = is-product .IsProduct.pair
+  IsProduct-cong p₁≈p₁' p₂≈p₂' is-product .IsProduct.pair-cong = is-product .IsProduct.pair-cong
+  IsProduct-cong p₁≈p₁' p₂≈p₂' is-product .IsProduct.pair-p₁ f g = ≈-trans (∘-cong (≈-sym p₁≈p₁') ≈-refl) (is-product .IsProduct.pair-p₁ f g)
+  IsProduct-cong p₁≈p₁' p₂≈p₂' is-product .IsProduct.pair-p₂ f g = ≈-trans (∘-cong (≈-sym p₂≈p₂') ≈-refl) (is-product .IsProduct.pair-p₂ f g)
+  IsProduct-cong p₁≈p₁' p₂≈p₂' is-product .IsProduct.pair-ext f =
+    ≈-trans (is-product .IsProduct.pair-cong (∘-cong (≈-sym p₁≈p₁') ≈-refl) (∘-cong (≈-sym p₂≈p₂') ≈-refl)) (is-product .IsProduct.pair-ext f)
 
   record Product (x : obj) (y : obj) : Set (o ⊔ m ⊔ e) where
     field
