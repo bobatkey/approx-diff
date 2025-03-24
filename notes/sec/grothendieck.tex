@@ -66,14 +66,20 @@ Y \to Z$ where $\inj_{\faml{Y}}: \faml{Y} \to \const_{\idx{Y}}(\faml{X}_x) \bipr
 Then:
 
 \begin{enumerate}
-\item Suppose $(f,g): X \to [Y,Z]$ to $(f^\dagger, g^\dagger): X \times Y \to Z$ and define $(f^\dagger,
-g^\dagger): X \times Y \to Z$ with:
+\item Suppose $(f,g): X \to [Y,Z]$ and define $(f^\dagger, g^\dagger): X \times Y \to Z$ with:
 \begin{itemize}
 \item $f^\dagger(x,y) = f'(y)$ where $f(x) = (f',g')$
 \item $g^\dagger_{x,y} = \coprodM{{\eval_{\prod}}_y \comp g_x}{g'_y}$ where $f(x) = (f',g')$
 \end{itemize}
 
-We want to show $\lambda_{X,Y,Z}(f^\dagger, g^\dagger) = (f,g)$.
+Want to show $\lambda_{X,Y,Z}(f^\dagger, g^\dagger) = (f,g)$.
+\begin{enumerate}
+\item Suppose $x \in \idx{X}$ with $f(x) = (f',g')$. For any $y \in \idx{Y}$ we then have:
+\begin{enumerate}
+\item $(f^\dagger \comp (x, -))(y) = f^\dagger(x,y) = f'(y) = f(y)$
+\item $\reindex{g^\dagger}{(x,-)} \comp \inj_{\faml{Y}} = $.
+\end{enumerate}
+\end{enumerate}
 
 \item Suppose $f: X \times Y \to Z$ in $\Fam(C)$ and $(x, y) \in \idx{X} \times \idx{Y}$. The diagram on the
 left below commutes by the universal property of the set-indexed product; the commutativity of the diagram on
