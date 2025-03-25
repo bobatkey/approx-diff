@@ -3,7 +3,7 @@
 module basics where
 
 open import Level using (_⊔_; suc)
-open import prop renaming (⊥ to ⊥p)
+open import prop using (_∧_; _,_; proj₁; proj₂)
 open import prop-setoid using (IsEquivalence; Setoid; module ≈-Reasoning)
 
 module _ {a} {A : Set a} where
@@ -128,6 +128,22 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
 
     lambda⁻¹ : ∀ {x y z} → x ≤ (y -∙ z) → (x ∙ y) ≤ z
     lambda⁻¹ x≤y-z = trans (mono x≤y-z refl) eval
+
+    curry : ∀ {x y z} → ((x ∙ y) -∙ z) ≤ (x -∙ (y -∙ z))
+    curry = lambda (lambda (trans (assoc .proj₁) eval))
+
+    uncurry : ∀ {x y z} → (x -∙ (y -∙ z)) ≤ ((x ∙ y) -∙ z)
+    uncurry = lambda (trans (assoc .proj₂) (trans (mono eval refl) eval))
+
+  record IsExponential {_∙_ ε} (∙-isMonoid : IsMonoid _∙_ ε) (!! : A → A) : Set (a ⊔ b) where
+    field
+      mono          : ∀ {x₁ x₂} → x₁ ≤ x₂ → !! x₁ ≤ !! x₂
+      monoidal-unit : ε ≤ !! ε
+      monoidal-prod : ∀ {x y} → (!! x ∙ !! y) ≤ !! (x ∙ y)
+      discard       : ∀ {x} → !! x ≤ ε
+      duplicate     : ∀ {x} → !! x ≤ (!! x ∙ !! x)
+      derelict      : ∀ {x} → !! x ≤ x
+      dig           : ∀ {x} → !! x ≤ !! (!! x)
 
   record IsMeet (_∧_ : A → A → A) : Set (a ⊔ b) where
     field
@@ -347,6 +363,8 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
     idem .proj₂ = mono unit
 
   ------------------------------------------------------------------------------
+  -- Duoidality
+
   record IsDuoidal (_⊗_ : A → A → A) (ε : A) (_⍮_ : A → A → A) (ι : A) : Set (a ⊔ b) where
     field
       exchange : ∀ {w x y z} → ((w ⍮ x) ⊗ (y ⍮ z)) ≤ ((w ⊗ y) ⍮ (x ⊗ z))
@@ -366,4 +384,30 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
     selfDuoidal .IsDuoidal.nu = lunit .proj₂
     selfDuoidal .IsDuoidal.gu = refl
 
-  -- FIXME: duoidal is automatic over/under meets/joins
+  -- Every monotone operator is duoidal over meets
+  module _ {_∙_ ε} (∙-isMonoid : IsMonoid _∙_ ε)
+           {_∧_ ⊤} (∧-isMeet : IsMeet _∧_) (⊤-isTop : IsTop ⊤) where
+
+    open IsMonoid ∙-isMonoid using (mono)
+    open IsMeet ∧-isMeet using (⟨_,_⟩; π₁; π₂)
+    open IsTop ⊤-isTop using (≤-top)
+
+    meetDuoidal : IsDuoidal _∙_ ε _∧_ ⊤
+    meetDuoidal .IsDuoidal.exchange = ⟨ mono π₁ π₁ , mono π₂ π₂ ⟩
+    meetDuoidal .IsDuoidal.mu = ≤-top
+    meetDuoidal .IsDuoidal.nu = ⟨ refl , refl ⟩
+    meetDuoidal .IsDuoidal.gu = ≤-top
+
+  -- ... and under joins
+  module _ {_∙_ ε} (∙-isMonoid : IsMonoid _∙_ ε)
+           {_∨_ ⊥} (∨-isJoin : IsJoin _∨_) (⊥-isBottom : IsBottom ⊥) where
+
+    open IsMonoid ∙-isMonoid using (mono)
+    open IsJoin ∨-isJoin using ([_,_]; inl; inr)
+    open IsBottom ⊥-isBottom using (≤-bottom)
+
+    joinDuoidal : IsDuoidal _∨_ ⊥ _∙_ ε
+    joinDuoidal .IsDuoidal.exchange = [ mono inl inl , mono inr inr ]
+    joinDuoidal .IsDuoidal.mu = [ refl , refl ]
+    joinDuoidal .IsDuoidal.nu = ≤-bottom
+    joinDuoidal .IsDuoidal.gu = ≤-bottom
