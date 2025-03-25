@@ -89,7 +89,7 @@ Z$, suppose $y \in \idx{Y}$.
 g_x}{\faml{f}_y} \comp {\inj_{\faml{Y}}}_y = g_x$.
 \end{enumerate}
 
-To show $g' = g$, suppose $x \in \idx{X}$. To show $g'_x = g_x$:
+To show $g' = g$, suppose $x \in \idx{X}$.
 \begin{align*}
 \small
 g'_x
@@ -100,8 +100,11 @@ g'_x
 &=
 \lambda_{\prod_{\idx{Y}}}(\{\coprodM{{\eval_{\prod}}_y \comp g_x}{\faml{f(x)}_y} \comp (\inj_{\faml{X}_x})_y\}_{y \in \idx{Y}}) \\
 &=
-\lambda_{\prod_{\idx{Y}}}(\{\coprodM{{\eval_{\prod}}_y \comp g_x}{\faml{f(x)}_y}\}_{y \in \idx{Y}})
+\lambda_{\prod_{\idx{Y}}}(\{{\eval_{\prod}}_y \comp g_x\}_{y \in \idx{Y}}) \\
+&=
+g_x
 \end{align*}
+\qed
 
 \item Suppose $f: X \times Y \to Z$ in $\Fam(C)$ and $(x, y) \in \idx{X} \times \idx{Y}$. The diagram on the
 left below commutes by the universal property of the set-indexed product; the commutativity of the diagram on
