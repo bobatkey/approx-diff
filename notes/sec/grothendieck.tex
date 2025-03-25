@@ -68,18 +68,27 @@ Then:
 \begin{enumerate}
 \item Suppose $(f,g): X \to [Y,Z]$ and define $(f^\dagger, g^\dagger): X \times Y \to Z$ with:
 \begin{itemize}
-\item $f^\dagger(x,y) = f'(y)$ where $f(x) = (f',g')$
-\item $g^\dagger_{x,y} = \coprodM{{\eval_{\prod}}_y \comp g_x}{g'_y}$ where $f(x) = (f',g')$
+\item $f^\dagger(x,y) = \idx{f(x)}(y)$
+\item $g^\dagger_{x,y} = \coprodM{{\eval_{\prod}}_y \comp g_x}{\faml{f}_y}$
 \end{itemize}
 
-Want to show $\lambda_{X,Y,Z}(f^\dagger, g^\dagger) = (f,g)$.
+To show $\lambda_{X,Y,Z}(f^\dagger, g^\dagger) = (f,g)$, suppose $\lambda_{X,Y,Z}(f^\dagger, g^\dagger) = (f',
+g')$ with
+\begin{itemize}
+\item $f'(x) = (f^\dagger \comp (x, -), \reindex{g^\dagger}{(x,-)} \comp \inj_{\faml{Y}}): Y \to Z$ where
+$\inj_{\faml{Y}}: \faml{Y} \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
+\item $g'_x = \lambda_{\prod_{\idx{Y}}}(\reindex{g^\dagger}{(x,-)} \comp \inj_{\faml{X}_x}:
+\const_{\idx{Y}}(\faml{X}_x) \to \reindex{\faml{Z}}{f^\dagger})$ where $\inj_{\faml{X}_x}:
+\const_{\idx{Y}}(\faml{X}_x) \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
+\end{itemize}
+\noindent To show $f' = f : X \to \Fam(C)(Y,Z)$, suppose $x \in \idx{X}$. To show $f'(x) = f(x): Y \to Z$,
+suppose $y \in \idx{Y}$.
 \begin{enumerate}
-\item Suppose $x \in \idx{X}$ with $f(x) = (f',g')$. For any $y \in \idx{Y}$ we then have:
-\begin{enumerate}
-\item $(f^\dagger \comp (x, -))(y) = f^\dagger(x,y) = f'(y) = f(y)$
-\item $\reindex{g^\dagger}{(x,-)} \comp \inj_{\faml{Y}} = $.
+\item $(f^\dagger \comp (x, -))(y) = f^\dagger(x,y) = \idx{f(x)}(y)$.
+\item To show $\reindex{g^\dagger}{(x,-)} \comp \inj_{\faml{Y}} = g_x$, suppose $y \in \idx{Y}$.
 \end{enumerate}
-\end{enumerate}
+
+To show $g' = g$, suppose $x \in \idx{X}$.
 
 \item Suppose $f: X \times Y \to Z$ in $\Fam(C)$ and $(x, y) \in \idx{X} \times \idx{Y}$. The diagram on the
 left below commutes by the universal property of the set-indexed product; the commutativity of the diagram on
