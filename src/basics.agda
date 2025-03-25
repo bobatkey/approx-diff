@@ -3,10 +3,13 @@
 module basics where
 
 open import Level using (_⊔_; suc)
-open import prop renaming (⊥ to ⊥p)
+open import prop using (_∧_; _,_; proj₁; proj₂)
 open import prop-setoid using (IsEquivalence; Setoid; module ≈-Reasoning)
 
 module _ {a} {A : Set a} where
+
+  Op : ∀ {b} → (A → A → Prop b) → (A → A → Prop b)
+  Op R x y = R y x
 
   SymmetricCore : ∀ {b} → (A → A → Prop b) → (A → A → Prop b)
   SymmetricCore R x y = R x y ∧ R y x
@@ -15,6 +18,8 @@ module _ {a} {A : Set a} where
     field
       refl  : ∀ {x} → x ≤ x
       trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
+
+    -- Derived equivalence relation
     _≃_ = SymmetricCore _≤_
 
     ≃-refl : ∀ {x} → x ≃ x
@@ -33,6 +38,11 @@ module _ {a} {A : Set a} where
     isEquivalence .IsEquivalence.trans = ≃-trans
 
     infix 4 _≃_
+
+    -- The opposite order
+    opposite : IsPreorder (Op _≤_)
+    opposite .refl = refl
+    opposite .trans y≤x z≤y = trans z≤y y≤x
 
 module ≤-Reasoning {o i} {A : Set o} {_≤_ : A → A → Prop i} (isPreorder : IsPreorder _≤_) where
   open IsPreorder
@@ -119,6 +129,22 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
     lambda⁻¹ : ∀ {x y z} → x ≤ (y -∙ z) → (x ∙ y) ≤ z
     lambda⁻¹ x≤y-z = trans (mono x≤y-z refl) eval
 
+    curry : ∀ {x y z} → ((x ∙ y) -∙ z) ≤ (x -∙ (y -∙ z))
+    curry = lambda (lambda (trans (assoc .proj₁) eval))
+
+    uncurry : ∀ {x y z} → (x -∙ (y -∙ z)) ≤ ((x ∙ y) -∙ z)
+    uncurry = lambda (trans (assoc .proj₂) (trans (mono eval refl) eval))
+
+  record IsExponential {_∙_ ε} (∙-isMonoid : IsMonoid _∙_ ε) (!! : A → A) : Set (a ⊔ b) where
+    field
+      mono          : ∀ {x₁ x₂} → x₁ ≤ x₂ → !! x₁ ≤ !! x₂
+      monoidal-unit : ε ≤ !! ε
+      monoidal-prod : ∀ {x y} → (!! x ∙ !! y) ≤ !! (x ∙ y)
+      discard       : ∀ {x} → !! x ≤ ε
+      duplicate     : ∀ {x} → !! x ≤ (!! x ∙ !! x)
+      derelict      : ∀ {x} → !! x ≤ x
+      dig           : ∀ {x} → !! x ≤ !! (!! x)
+
   record IsMeet (_∧_ : A → A → A) : Set (a ⊔ b) where
     field
       π₁ : ∀ {x y} → (x ∧ y) ≤ x
@@ -190,6 +216,9 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
     field
       upper : (I : Set iℓ) (x : I → A) (i : I) → x i ≤ ⋁ I x
       least : (I : Set iℓ) (x : I → A) (z : A) → (∀ i → x i ≤ z) → ⋁ I x ≤ z
+
+    mono : {I : Set iℓ} {x y : I → A} → (∀ i → x i ≤ y i) → ⋁ I x ≤ ⋁ I y
+    mono f = least _ _ _ (λ i → trans (f i) (upper _ _ i))
 
   record IsBottom (⊥ : A) : Set (a ⊔ b) where
     field
@@ -334,6 +363,8 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
     idem .proj₂ = mono unit
 
   ------------------------------------------------------------------------------
+  -- Duoidality
+
   record IsDuoidal (_⊗_ : A → A → A) (ε : A) (_⍮_ : A → A → A) (ι : A) : Set (a ⊔ b) where
     field
       exchange : ∀ {w x y z} → ((w ⍮ x) ⊗ (y ⍮ z)) ≤ ((w ⊗ y) ⍮ (x ⊗ z))
@@ -353,4 +384,30 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
     selfDuoidal .IsDuoidal.nu = lunit .proj₂
     selfDuoidal .IsDuoidal.gu = refl
 
-  -- FIXME: duoidal is automatic over/under meets/joins
+  -- Every monotone operator is duoidal over meets
+  module _ {_∙_ ε} (∙-isMonoid : IsMonoid _∙_ ε)
+           {_∧_ ⊤} (∧-isMeet : IsMeet _∧_) (⊤-isTop : IsTop ⊤) where
+
+    open IsMonoid ∙-isMonoid using (mono)
+    open IsMeet ∧-isMeet using (⟨_,_⟩; π₁; π₂)
+    open IsTop ⊤-isTop using (≤-top)
+
+    meetDuoidal : IsDuoidal _∙_ ε _∧_ ⊤
+    meetDuoidal .IsDuoidal.exchange = ⟨ mono π₁ π₁ , mono π₂ π₂ ⟩
+    meetDuoidal .IsDuoidal.mu = ≤-top
+    meetDuoidal .IsDuoidal.nu = ⟨ refl , refl ⟩
+    meetDuoidal .IsDuoidal.gu = ≤-top
+
+  -- ... and under joins
+  module _ {_∙_ ε} (∙-isMonoid : IsMonoid _∙_ ε)
+           {_∨_ ⊥} (∨-isJoin : IsJoin _∨_) (⊥-isBottom : IsBottom ⊥) where
+
+    open IsMonoid ∙-isMonoid using (mono)
+    open IsJoin ∨-isJoin using ([_,_]; inl; inr)
+    open IsBottom ⊥-isBottom using (≤-bottom)
+
+    joinDuoidal : IsDuoidal _∨_ ⊥ _∙_ ε
+    joinDuoidal .IsDuoidal.exchange = [ mono inl inl , mono inr inr ]
+    joinDuoidal .IsDuoidal.mu = [ refl , refl ]
+    joinDuoidal .IsDuoidal.nu = ≤-bottom
+    joinDuoidal .IsDuoidal.gu = ≤-bottom

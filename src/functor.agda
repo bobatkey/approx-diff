@@ -61,9 +61,41 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒞 : Category o₁ m₁ e₁} {𝒟 
       natural : ∀ {x y} (f : x 𝒞.⇒ y) →
         (G .fmor f 𝒟.∘ transf x) 𝒟.≈ (transf y 𝒟.∘ F .fmor f)
 
+  record NatIso (F G : Functor 𝒞 𝒟) : Set (o₁ ⊔ m₁ ⊔ m₂ ⊔ e₂) where
+    no-eta-equality
+    open NatTrans
+    open Category.IsIso
+    field
+      transform  : NatTrans F G
+      transf-iso : ∀ x → Category.IsIso 𝒟 (transform .transf x)
+
+    transform⁻¹ : NatTrans G F
+    transform⁻¹ .transf x = transf-iso x .inverse
+    transform⁻¹ .natural {x} {y} f = begin
+        F .fmor f 𝒟.∘ transf-iso x .inverse
+      ≈˘⟨ 𝒟.∘-cong 𝒟.id-left 𝒟.≈-refl ⟩
+        (𝒟.id _ 𝒟.∘ F .fmor f) 𝒟.∘ transf-iso x .inverse
+      ≈˘⟨ 𝒟.∘-cong (𝒟.∘-cong (transf-iso y .inverse∘f≈id) 𝒟.≈-refl) 𝒟.≈-refl ⟩
+        ((transf-iso y .inverse 𝒟.∘ transform .transf y) 𝒟.∘ F .fmor f) 𝒟.∘ transf-iso x .inverse
+      ≈⟨ 𝒟.∘-cong (𝒟.assoc _ _ _) 𝒟.≈-refl ⟩
+        (transf-iso y .inverse 𝒟.∘ (transform .transf y 𝒟.∘ F .fmor f)) 𝒟.∘ transf-iso x .inverse
+      ≈⟨ 𝒟.assoc _ _ _ ⟩
+        transf-iso y .inverse 𝒟.∘ ((transform .transf y 𝒟.∘ F .fmor f) 𝒟.∘ transf-iso x .inverse)
+      ≈˘⟨ 𝒟.∘-cong 𝒟.≈-refl (𝒟.∘-cong (transform .natural f) 𝒟.≈-refl) ⟩
+        transf-iso y .inverse 𝒟.∘ ((G .fmor f 𝒟.∘ transform .transf x) 𝒟.∘ transf-iso x .inverse)
+      ≈⟨ 𝒟.∘-cong 𝒟.≈-refl (𝒟.assoc _ _ _) ⟩
+        transf-iso y .inverse 𝒟.∘ (G .fmor f 𝒟.∘ (transform .transf x 𝒟.∘ transf-iso x .inverse))
+      ≈⟨ 𝒟.∘-cong 𝒟.≈-refl (𝒟.∘-cong 𝒟.≈-refl (transf-iso x .f∘inverse≈id)) ⟩
+        transf-iso y .inverse 𝒟.∘ (G .fmor f 𝒟.∘ 𝒟.id _)
+      ≈⟨ 𝒟.∘-cong 𝒟.≈-refl 𝒟.id-right ⟩
+        transf-iso y .inverse 𝒟.∘ G .fmor f
+      ∎
+      where open ≈-Reasoning 𝒟.isEquiv
+
   open NatTrans
 
   record ≃-NatTrans {F G : Functor 𝒞 𝒟} (α β : NatTrans F G) : Prop (o₁ ⊔ e₂) where
+    no-eta-equality
     field
       transf-eq : ∀ x → α .transf x 𝒟.≈ β .transf x
   open ≃-NatTrans
