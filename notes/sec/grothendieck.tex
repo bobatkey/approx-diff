@@ -55,15 +55,15 @@ Y \to Z$ where $\inj_{\faml{Y}}: \faml{Y} \to \const_{\idx{Y}}(\faml{X}_x) \bipr
 \const_{\idx{Y}}(\faml{X}_x) \to \reindex{\faml{Z}}{f})$ where $\inj_{\faml{X}_x}: \const_{\idx{Y}}(\faml{X}_x)
 \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
 \end{itemize}
-\item The family of morphisms $\eval_{X,Y} = (f',g'): [X, Y] \times X \to Y$ in $\Fam(C)$ with
+\item The family of morphisms $\eval_{X,Y}: [X, Y] \times X \to Y$ in $\Fam(C)$ with
 \begin{itemize}
-\item $f'(f, x) = \idx{f}(x)$
-\item $g'_{f, x} = \coprodM{{\eval_{\prod}}_x}{\faml{f}_x}:
+\item $\idx{\eval_{X,Y}}(f, x) = \idx{f}(x)$
+\item $\faml{\eval_{X,Y}}_{f, x} = \coprodM{{\eval_{\prod}}_x}{\faml{f}_x}:
 \prod_{\idx{X}}\reindex{\faml{Y}}{\idx{f}} \biprod \faml{X}_x \to \faml{Y}_{\idx{f}(x)}$
 \end{itemize}
 \end{enumerate}
 
-Then:
+Then show the following triangle identities:
 \begin{enumerate}
 \item Suppose $(f,g): X \to [Y,Z]$ and define $(f^\dagger, g^\dagger): X \times Y \to Z$ with:
 \begin{itemize}
@@ -80,8 +80,8 @@ $\inj_{\faml{Y}}: \faml{Y} \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
 \const_{\idx{Y}}(\faml{X}_x) \to \reindex{\faml{Z}}{f^\dagger})$ where $\inj_{\faml{X}_x}:
 \const_{\idx{Y}}(\faml{X}_x) \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
 \end{itemize}
-\noindent To show $f' = f : \idx{X} \to \Fam(C)(Y,Z)$, suppose $x \in \idx{X}$. To show $f'(x) = f(x): Y \to
-Z$, suppose $y \in \idx{Y}$.
+\noindent To show $f' = f : \idx{X} \to \Fam(C)(Y,Z)$, suppose $x \in \idx{X}$ and show $f'(x) = f(x): Y \to
+Z$. Suppose $y \in \idx{Y}$.
 \begin{enumerate}
 \item $\idx{f'(x)}(y) = (f^\dagger \comp (x, -))(y) = f^\dagger(x,y) = \idx{f(x)}(y)$.
 \item $\faml{f'(x)}_y = (\reindex{g^\dagger}{(x,-)} \comp \inj_{\faml{Y}})_y = \reindex{g^\dagger}{(x,-)}_y \comp
@@ -106,9 +106,9 @@ g_x
 \end{align*}
 \qed
 
-\item Suppose $f: X \times Y \to Z$ in $\Fam(C)$ and $(x, y) \in \idx{X} \times \idx{Y}$. The diagram on the
-left below commutes by the universal property of the set-indexed product; the commutativity of the diagram on
-the right is trivial.
+\item $\lambda_{X,Y,Z}(\eval_{Y,Z} \comp (f \tensor \id_Y) = f$. Suppose $f: X \times Y \to Z$ in $\Fam(C)$ and
+$(x, y) \in \idx{X} \times \idx{Y}$. The diagram on the left below commutes by the universal property of the
+set-indexed product; the commutativity of the diagram on the right is trivial.
 
 \begin{center}
 \begin{tikzcd}
