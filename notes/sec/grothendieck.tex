@@ -44,8 +44,8 @@ Suppose $C$ is locally small, with binary biproducts given by $(\biprod,\inj,\pr
 given by $(\prod,\eval_{\prod},\lambda_{\prod})$. For any objects $X, Y, Z$ in $\Fam(C)$ define:
 
 \begin{enumerate}
-\item $[X, Y]$ to be the object $(X',Y')$ in $\Fam(C)$ with $X' = \Fam(C)(X,Y)$ and $Y'_{f,g} =
-\prod_{\idx{X}}\reindex{\faml{Y}}{f}$ for every $(f,g): X \to Y$.
+\item $[X, Y]$ to be the object $(X',Y')$ in $\Fam(C)$ with $X' = \Fam(C)(X,Y)$ and $Y'_f =
+\prod_{\idx{X}}\reindex{\faml{Y}}{\idx{f}}$ for every $f: X \to Y$.
 \item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) sending any $(f, g): X \times Y \to Z$ to
 $(f', g'): X \to [Y, Z]$ with:
 \begin{itemize}
@@ -57,9 +57,9 @@ Y \to Z$ where $\inj_{\faml{Y}}: \faml{Y} \to \const_{\idx{Y}}(\faml{X}_x) \bipr
 \end{itemize}
 \item The family of morphisms $\eval_{X,Y} = (f',g'): [X, Y] \times X \to Y$ in $\Fam(C)$ with
 \begin{itemize}
-\item $f'((f, g), x) = f(x)$
-\item $g'_{(f,g), x} = \coprodM{{\eval_{\prod}}_x}{g_x}:
-\prod_{\idx{X}}\reindex{\faml{Y}}{f} \biprod \faml{X}_x \to \faml{Y}_{f(x)}$
+\item $f'(f, x) = \idx{f}(x)$
+\item $g'_{f, x} = \coprodM{{\eval_{\prod}}_x}{\faml{f}_x}:
+\prod_{\idx{X}}\reindex{\faml{Y}}{\idx{f}} \biprod \faml{X}_x \to \faml{Y}_{\idx{f}(x)}$
 \end{itemize}
 \end{enumerate}
 
@@ -80,8 +80,8 @@ $\inj_{\faml{Y}}: \faml{Y} \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
 \const_{\idx{Y}}(\faml{X}_x) \to \reindex{\faml{Z}}{f^\dagger})$ where $\inj_{\faml{X}_x}:
 \const_{\idx{Y}}(\faml{X}_x) \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
 \end{itemize}
-\noindent To show $f' = f : X \to \Fam(C)(Y,Z)$, suppose $x \in \idx{X}$. To show $f'(x) = f(x): Y \to Z$,
-suppose $y \in \idx{Y}$.
+\noindent To show $f' = f : \idx{X} \to \Fam(C)(Y,Z)$, suppose $x \in \idx{X}$. To show $f'(x) = f(x): Y \to
+Z$, suppose $y \in \idx{Y}$.
 \begin{enumerate}
 \item $(f^\dagger \comp (x, -))(y) = f^\dagger(x,y) = \idx{f(x)}(y)$.
 \item $(\reindex{g^\dagger}{(x,-)} \comp \inj_{\faml{Y}})_y = \reindex{g^\dagger}{(x,-)}_y \comp
@@ -89,7 +89,19 @@ suppose $y \in \idx{Y}$.
 g_x}{\faml{f}_y} \comp {\inj_{\faml{Y}}}_y = g_x$.
 \end{enumerate}
 
-To show $g' = g$, suppose $x \in \idx{X}$.
+To show $g' = g$, suppose $x \in \idx{X}$. To show $g'_x = g_x$:
+\begin{align*}
+\small
+g'_x
+&=
+\lambda_{\prod_{\idx{Y}}}(\reindex{g^\dagger}{(x,-)} \comp \inj_{\faml{X}_x}) \\
+&=
+\lambda_{\prod_{\idx{Y}}}(\{g^\dagger_{(x,y)} \comp (\inj_{\faml{X}_x})_y\}_{y \in \idx{Y}}) \\
+&=
+\lambda_{\prod_{\idx{Y}}}(\{\coprodM{{\eval_{\prod}}_y \comp g_x}{\faml{f(x)}_y} \comp (\inj_{\faml{X}_x})_y\}_{y \in \idx{Y}}) \\
+&=
+\lambda_{\prod_{\idx{Y}}}(\{\coprodM{{\eval_{\prod}}_y \comp g_x}{\faml{f(x)}_y}\}_{y \in \idx{Y}})
+\end{align*}
 
 \item Suppose $f: X \times Y \to Z$ in $\Fam(C)$ and $(x, y) \in \idx{X} \times \idx{Y}$. The diagram on the
 left below commutes by the universal property of the set-indexed product; the commutativity of the diagram on
