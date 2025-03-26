@@ -2,17 +2,17 @@
 \label{sec:grothendieck}
 
 \begin{definition}[Grothendieck construction for $F$]
-Suppose a functor $F: D \to \Cat$. The \emph{Grothendieck construction} $\Grothendieck{D}F$ for $F$ is the
+Suppose a functor $F: C \to \Cat$. The \emph{Grothendieck construction} $\Grothendieck{C}F$ for $F$ is the
 category where:
 \begin{itemize}
-\item objects $X$ are pairs of an object $\idx{X}$ of $D$ and an object $\faml{X}$ of $F(\idx{X})$;
-\item morphisms $f: X \to Y$ are morphisms $\idx{f}: \idx{X} \to \idx{Y}$ in $D$ paired with morphisms
+\item objects $X$ are pairs of an object $\idx{X}$ of $C$ and an object $\faml{X}$ of $F(\idx{X})$;
+\item morphisms $f: X \to Y$ are morphisms $\idx{f}: \idx{X} \to \idx{Y}$ in $C$ paired with morphisms
 $\faml{f}: F(f)(\faml{X}) \to \faml{Y}$ in $F(\idx{Y})$.
 \end{itemize}
 \end{definition}
 
 \noindent When $F$ is contravariant, a morphism $f: X \to Y$ is a morphism $\idx{f}: \idx{X} \to \idx{Y}$ in
-$D$ paired with a morphism $\faml{f}: \faml{X} \to F(f)(\faml{Y})$ in $F(\idx{X})$.
+$C$ paired with a morphism $\faml{f}: \faml{X} \to F(f)(\faml{Y})$ in $F(\idx{X})$.
 
 \begin{definition}[Category of families]
 For any category $C$ define $\Fam(C)$ to be the Grothendieck construction
@@ -73,13 +73,13 @@ $(f^\dagger, g^\dagger): X \times Y \to Z$ with:
 \end{itemize}
 
 To show $\lambda_{X,Y,Z}(f^\dagger, g^\dagger) = (f,g)$, suppose $\lambda_{X,Y,Z}(f^\dagger, g^\dagger) = (f',
-g')$ with
+g')$. Then:
 \begin{itemize}
 \item $f'(x) = (f^\dagger \comp (x, -), \reindex{g^\dagger}{(x,-)} \comp \inj_{\faml{Y}}): Y \to Z$ where
 $\inj_{\faml{Y}}: \faml{Y} \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
 \item $g'_x = \lambda_{\prod_{\idx{Y}}}(\reindex{g^\dagger}{(x,-)} \comp \inj_{\faml{X}_x}:
 \const_{\idx{Y}}(\faml{X}_x) \to \reindex{\faml{Z}}{f^\dagger})$ where $\inj_{\faml{X}_x}:
-\const_{\idx{Y}}(\faml{X}_x) \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
+\const_{\idx{Y}}(\faml{X}_x) \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$.
 \end{itemize}
 \noindent To show $f' = f : \idx{X} \to \Fam(C)(Y,Z)$, suppose $x \in \idx{X}$ and show $f'(x) = f(x): Y \to
 Z$. Suppose $y \in \idx{Y}$.
