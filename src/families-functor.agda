@@ -8,6 +8,7 @@ open import categories
 open import setoid-cat
 open import functor
 open import grothendieck
+open import finite-product-functor
 open import fam
 
 module families-functor where
@@ -81,6 +82,31 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂}
     ∎
     where open ≈-Reasoning 𝒟.isEquiv
 
+  open FPFunctor
+  open IsTerminal
+
+{-
+  -- If F preserves finite products, then so does FamF. Seem to need
+  -- to know that there are terminal and product objects in 𝒞 already,
+  -- not just that they get preserved.
+  --
+  -- Would it make sense to just prove monoidality?
+  --
+  -- F(X × Y, \(x,y). XF(x) ⊗ YF(y)) = (X × Y, \(x,y). F(XF(x) ⊗ YF(y)))
+  --
+  --
+  fp : FPFunctor F → FPFunctor FamF
+  fp fp-F .preserve-terminal t t-terminal .to-terminal {X} .idxf = t-terminal .to-terminal {record { idx = X .idx ; fam = {!!} }} .idxf
+  fp fp-F .preserve-terminal t t-terminal .to-terminal {X} .famf .transf x = {!fp-F .preserve-terminal _ !}
+  fp fp-F .preserve-terminal t t-terminal .to-terminal {X} .famf .natural = {!!}
+  fp fp-F .preserve-terminal t t-terminal .to-terminal-ext = {!!}
+  fp fp-F .preserve-products x y xy p₁ p₂ is-product .IsProduct.pair = {!!}
+  fp fp-F .preserve-products x y xy p₁ p₂ is-product .IsProduct.pair-cong = {!!}
+  fp fp-F .preserve-products x y xy p₁ p₂ is-product .IsProduct.pair-p₁ = {!!}
+  fp fp-F .preserve-products x y xy p₁ p₂ is-product .IsProduct.pair-p₂ = {!!}
+  fp fp-F .preserve-products x y xy p₁ p₂ is-product .IsProduct.pair-ext = {!!}
+
+-}
 module _ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒞 : Category o₁ m₁ e₁} {𝒟 : Category o₂ m₂ e₂}
          os es (F G : Functor 𝒞 𝒟)
        where
