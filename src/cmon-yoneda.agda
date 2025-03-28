@@ -20,15 +20,15 @@ open import commutative-monoid-cat using (_⇒_; toSetoid)
            ; terminal to CMon-terminal)
 
 
-module cmon-yoneda {o m e} os es (𝒞 : Category o m e) (CM𝒞 : CMonEnriched 𝒞) where
+module cmon-yoneda {o m e} os (𝒞 : Category o m e) (CM𝒞 : CMonEnriched 𝒞) where
 
-import yoneda os es 𝒞 as yoneda
+import yoneda os 𝒞 as yoneda
 
 private
   module 𝒞 = Category 𝒞
 
 -- FIXME: is this going to have to be all *cmon*-functors?
-PSh = [ 𝒞.opposite ⇒ CMon (o ⊔ m ⊔ e ⊔ es ⊔ os) (o ⊔ m ⊔ e ⊔ es ⊔ os) ]
+PSh = [ 𝒞.opposite ⇒ CMon (o ⊔ m ⊔ e ⊔ os) (o ⊔ m ⊔ e ⊔ os) ]
 
 open _⇒_
 open _=[_]>_
@@ -95,6 +95,8 @@ psh-limits 𝒮 = limits
 
 open prop-setoid.Setoid
 open _⇒s_
+
+-- This might work when F is a cmon functor?
 
 {-
 lemma : ∀ F x → F .fobj x ⇒ record { carrier = Category.hom-setoid PSh (よ₀ x) F ; commMonoid = CMonEnriched.homCM cmon-enriched _ _ }
