@@ -137,3 +137,50 @@ record SymmetricMonoidal {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) w
 --  0. Lots of derived equations for monoidal categories.
 --  1. Monoidal product on 𝒞 gives a monoidal product on 𝒞.opposite.
 --  2. Monoidal Functors.
+
+open import functor using (Functor)
+
+module _ {o₁ m₁ e₁ o₂ m₂ e₂}
+         {𝒞 : Category o₁ m₁ e₁} (𝒞M : MonoidalProduct 𝒞)
+         {𝒟 : Category o₂ m₂ e₂} (𝒟M : MonoidalProduct 𝒟)
+         (F : Functor 𝒞 𝒟)
+  where
+
+  private
+    module 𝒞 = Category 𝒞
+    module 𝒞M = MonoidalProduct 𝒞M
+    module 𝒟 = Category 𝒟
+    module 𝒟M = MonoidalProduct 𝒟M
+    module F = Functor F
+
+  record LaxMonoidalFunctor : Set (o₁ ⊔ m₁ ⊔ m₂ ⊔ e₂) where
+    field
+      mult : ∀ {X Y} → (F.fobj X 𝒟M.⊗ F.fobj Y) 𝒟.⇒ F.fobj (X 𝒞M.⊗ Y)
+      unit : 𝒟M.I⊗ 𝒟.⇒ F.fobj 𝒞M.I⊗
+
+      -- naturality of mult
+      mult-natural : ∀ {x₁ x₂ y₁ y₂} (f : x₁ 𝒞.⇒ x₂) (g : y₁ 𝒞.⇒ y₂) →
+                     (mult 𝒟.∘ (F.fmor f 𝒟M.⊗m F.fmor g)) 𝒟.≈ (F.fmor (f 𝒞M.⊗m g) 𝒟.∘ mult)
+      -- assoc, left-unit, right-unit
+      mult-assoc : ∀ {x y z} →
+        (mult 𝒟.∘ ((𝒟.id _ 𝒟M.⊗m mult) 𝒟.∘ 𝒟M.⊗-assoc {F.fobj x} {F.fobj y} {F.fobj z}))
+        𝒟.≈ (F.fmor 𝒞M.⊗-assoc 𝒟.∘ (mult 𝒟.∘ (mult 𝒟M.⊗m 𝒟.id _)))
+
+      mult-lunit : ∀ {x} →
+              (mult {𝒞M.I⊗}{x} 𝒟.∘ (unit 𝒟M.⊗m 𝒟.id _))
+         𝒟.≈ (F.fmor 𝒞M.⊗-lunit⁻¹ 𝒟.∘ 𝒟M.⊗-lunit)
+
+      mult-runit : ∀ {x} →
+              (mult {𝒞M.I⊗}{x} 𝒟.∘ (unit 𝒟M.⊗m 𝒟.id _))
+         𝒟.≈ (F.fmor 𝒞M.⊗-lunit⁻¹ 𝒟.∘ 𝒟M.⊗-lunit)
+
+  -- a.k.a. strong monoidal
+  record MonoidalFunctor : Set (o₁ ⊔ m₁ ⊔ m₂ ⊔ e₂) where
+    field
+      lax-monoidal : LaxMonoidalFunctor
+    open LaxMonoidalFunctor lax-monoidal public
+    field
+      mult-is-iso : ∀ {X Y} → 𝒟.IsIso (mult {X} {Y})
+      unit-is-iso : 𝒟.IsIso unit
+
+-- FIXME: and symmetric versions
