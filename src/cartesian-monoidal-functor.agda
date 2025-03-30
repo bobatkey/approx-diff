@@ -17,7 +17,9 @@ module cartesian-monoidal-functor
 
 private
   module 𝒟 = Category 𝒟
+  module 𝒟P = HasProducts 𝒟-products
   module 𝒞 = Category 𝒞
+  module 𝒞P = HasProducts 𝒞-products
 
 open import cartesian-monoidal 𝒞 𝒞-terminal 𝒞-products
   using ()
@@ -35,39 +37,39 @@ open FPFunctor
 open Category.IsIso
 
 F-monoidal : MonoidalFunctor 𝒞-monoidal 𝒟-monoidal F
-F-monoidal .lax-monoidal .mult {X} {Y} =
-  pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products)
+F-monoidal .lax-monoidal .mult {X} {Y} = pair 𝒟P.p₁ 𝒟P.p₂
   where module P = Product (HasProducts.getProduct 𝒞-products X Y)
         open IsProduct (FP .preserve-products _ _ P.prod P.p₁ P.p₂ P.isProduct)
 F-monoidal .lax-monoidal .unit = to-terminal
   where open IsTerminal (FP .preserve-terminal _ (HasTerminal.isTerminal 𝒞-terminal))
+
 F-monoidal .lax-monoidal .mult-natural {x₁} {x₂} {y₁} {y₂} f g = begin
-    PFx₂Fy₂.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products) 𝒟.∘ HasProducts.prod-m 𝒟-products (F .fmor f) (F .fmor g)
+    PFx₂Fy₂.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.prod-m (F .fmor f) (F .fmor g)
   ≈⟨ PFx₂Fy₂.pair-natural _ _ _ ⟩
-    PFx₂Fy₂.pair (HasProducts.p₁ 𝒟-products 𝒟.∘ HasProducts.prod-m 𝒟-products (F .fmor f) (F .fmor g)) (HasProducts.p₂ 𝒟-products 𝒟.∘ HasProducts.prod-m 𝒟-products (F .fmor f) (F .fmor g))
-  ≈⟨ PFx₂Fy₂.pair-cong (HasProducts.pair-p₁ 𝒟-products _ _) (HasProducts.pair-p₂ 𝒟-products _ _) ⟩
-    PFx₂Fy₂.pair (F .fmor f 𝒟.∘ HasProducts.p₁ 𝒟-products) (F .fmor g 𝒟.∘ HasProducts.p₂ 𝒟-products)
+    PFx₂Fy₂.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.prod-m (F .fmor f) (F .fmor g)) (𝒟P.p₂ 𝒟.∘ 𝒟P.prod-m (F .fmor f) (F .fmor g))
+  ≈⟨ PFx₂Fy₂.pair-cong (𝒟P.pair-p₁ _ _) (𝒟P.pair-p₂ _ _) ⟩
+    PFx₂Fy₂.pair (F .fmor f 𝒟.∘ 𝒟P.p₁) (F .fmor g 𝒟.∘ 𝒟P.p₂)
   ≈˘⟨ PFx₂Fy₂.pair-cong (𝒟.∘-cong 𝒟.≈-refl (PFx₁Fy₁.pair-p₁ _ _)) (𝒟.∘-cong 𝒟.≈-refl (PFx₁Fy₁.pair-p₂ _ _)) ⟩
-    PFx₂Fy₂.pair (F .fmor f 𝒟.∘ (F .fmor (HasProducts.p₁ 𝒞-products) 𝒟.∘ PFx₁Fy₁.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products)))
-                 (F .fmor g 𝒟.∘ (F .fmor (HasProducts.p₂ 𝒞-products) 𝒟.∘ PFx₁Fy₁.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products)))
+    PFx₂Fy₂.pair (F .fmor f 𝒟.∘ (F .fmor 𝒞P.p₁ 𝒟.∘ PFx₁Fy₁.pair 𝒟P.p₁ 𝒟P.p₂))
+                 (F .fmor g 𝒟.∘ (F .fmor 𝒞P.p₂ 𝒟.∘ PFx₁Fy₁.pair 𝒟P.p₁ 𝒟P.p₂))
   ≈˘⟨ PFx₂Fy₂.pair-cong (𝒟.assoc _ _ _) (𝒟.assoc _ _ _) ⟩
-    PFx₂Fy₂.pair ((F .fmor f 𝒟.∘ F .fmor (HasProducts.p₁ 𝒞-products)) 𝒟.∘ PFx₁Fy₁.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products))
-                 ((F .fmor g 𝒟.∘ F .fmor (HasProducts.p₂ 𝒞-products)) 𝒟.∘ PFx₁Fy₁.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products))
+    PFx₂Fy₂.pair ((F .fmor f 𝒟.∘ F .fmor 𝒞P.p₁) 𝒟.∘ PFx₁Fy₁.pair 𝒟P.p₁ 𝒟P.p₂)
+                 ((F .fmor g 𝒟.∘ F .fmor 𝒞P.p₂) 𝒟.∘ PFx₁Fy₁.pair 𝒟P.p₁ 𝒟P.p₂)
   ≈˘⟨ PFx₂Fy₂.pair-cong (𝒟.∘-cong (F .fmor-comp _ _) 𝒟.≈-refl) (𝒟.∘-cong (F .fmor-comp _ _) 𝒟.≈-refl) ⟩
-    PFx₂Fy₂.pair (F .fmor (f 𝒞.∘ HasProducts.p₁ 𝒞-products) 𝒟.∘ PFx₁Fy₁.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products))
-                 (F .fmor (g 𝒞.∘ HasProducts.p₂ 𝒞-products) 𝒟.∘ PFx₁Fy₁.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products))
-  ≈˘⟨ PFx₂Fy₂.pair-cong (𝒟.∘-cong (F .fmor-cong (HasProducts.pair-p₁ 𝒞-products _ _)) 𝒟.≈-refl)
-                       (𝒟.∘-cong (F .fmor-cong (HasProducts.pair-p₂ 𝒞-products _ _)) 𝒟.≈-refl) ⟩
-    PFx₂Fy₂.pair (F .fmor (HasProducts.p₁ 𝒞-products 𝒞.∘ HasProducts.prod-m 𝒞-products f g) 𝒟.∘ PFx₁Fy₁.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products))
-                 (F .fmor (HasProducts.p₂ 𝒞-products 𝒞.∘ HasProducts.prod-m 𝒞-products f g) 𝒟.∘ PFx₁Fy₁.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products))
+    PFx₂Fy₂.pair (F .fmor (f 𝒞.∘ 𝒞P.p₁) 𝒟.∘ PFx₁Fy₁.pair 𝒟P.p₁ 𝒟P.p₂)
+                 (F .fmor (g 𝒞.∘ 𝒞P.p₂) 𝒟.∘ PFx₁Fy₁.pair 𝒟P.p₁ 𝒟P.p₂)
+  ≈˘⟨ PFx₂Fy₂.pair-cong (𝒟.∘-cong (F .fmor-cong (𝒞P.pair-p₁ _ _)) 𝒟.≈-refl)
+                       (𝒟.∘-cong (F .fmor-cong (𝒞P.pair-p₂ _ _)) 𝒟.≈-refl) ⟩
+    PFx₂Fy₂.pair (F .fmor (𝒞P.p₁ 𝒞.∘ 𝒞P.prod-m f g) 𝒟.∘ PFx₁Fy₁.pair 𝒟P.p₁ 𝒟P.p₂)
+                 (F .fmor (𝒞P.p₂ 𝒞.∘ 𝒞P.prod-m f g) 𝒟.∘ PFx₁Fy₁.pair 𝒟P.p₁ 𝒟P.p₂)
   ≈⟨ PFx₂Fy₂.pair-cong (𝒟.∘-cong (F .fmor-comp _ _) 𝒟.≈-refl) (𝒟.∘-cong (F .fmor-comp _ _) 𝒟.≈-refl) ⟩
-    PFx₂Fy₂.pair ((F .fmor (HasProducts.p₁ 𝒞-products) 𝒟.∘ F .fmor (HasProducts.prod-m 𝒞-products f g)) 𝒟.∘ PFx₁Fy₁.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products))
-                 ((F .fmor (HasProducts.p₂ 𝒞-products) 𝒟.∘ F .fmor (HasProducts.prod-m 𝒞-products f g)) 𝒟.∘ PFx₁Fy₁.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products))
+    PFx₂Fy₂.pair ((F .fmor 𝒞P.p₁ 𝒟.∘ F .fmor (𝒞P.prod-m f g)) 𝒟.∘ PFx₁Fy₁.pair 𝒟P.p₁ 𝒟P.p₂)
+                 ((F .fmor 𝒞P.p₂ 𝒟.∘ F .fmor (𝒞P.prod-m f g)) 𝒟.∘ PFx₁Fy₁.pair 𝒟P.p₁ 𝒟P.p₂)
   ≈⟨ PFx₂Fy₂.pair-cong (𝒟.assoc _ _ _) (𝒟.assoc _ _ _) ⟩
-    PFx₂Fy₂.pair (F .fmor (HasProducts.p₁ 𝒞-products) 𝒟.∘ (F .fmor (HasProducts.prod-m 𝒞-products f g) 𝒟.∘ PFx₁Fy₁.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products)))
-                 (F .fmor (HasProducts.p₂ 𝒞-products) 𝒟.∘ (F .fmor (HasProducts.prod-m 𝒞-products f g) 𝒟.∘ PFx₁Fy₁.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products)))
+    PFx₂Fy₂.pair (F .fmor 𝒞P.p₁ 𝒟.∘ (F .fmor (𝒞P.prod-m f g) 𝒟.∘ PFx₁Fy₁.pair 𝒟P.p₁ 𝒟P.p₂))
+                 (F .fmor 𝒞P.p₂ 𝒟.∘ (F .fmor (𝒞P.prod-m f g) 𝒟.∘ PFx₁Fy₁.pair 𝒟P.p₁ 𝒟P.p₂))
   ≈⟨ PFx₂Fy₂.pair-ext _ ⟩
-    F .fmor (HasProducts.prod-m 𝒞-products f g) 𝒟.∘ PFx₁Fy₁.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products)
+    F .fmor (𝒞P.prod-m f g) 𝒟.∘ PFx₁Fy₁.pair 𝒟P.p₁ 𝒟P.p₂
   ∎
   where open ≈-Reasoning 𝒟.isEquiv
         module Px₁y₁ = Product (HasProducts.getProduct 𝒞-products x₁ y₁)
@@ -79,16 +81,14 @@ F-monoidal .lax-monoidal .mult-lunit = {!!}
 F-monoidal .lax-monoidal .mult-runit = {!!}
 
 F-monoidal .mult-is-iso .inverse =
-  HasProducts.pair 𝒟-products (F .fmor (HasProducts.p₁ 𝒞-products))
-                               (F .fmor (HasProducts.p₂ 𝒞-products))
+  𝒟P.pair (F .fmor 𝒞P.p₁) (F .fmor 𝒞P.p₂)
 F-monoidal .mult-is-iso {x} {y} .f∘inverse≈id = begin
-    PFxFy.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products) 𝒟.∘ HasProducts.pair 𝒟-products (F .fmor (HasProducts.p₁ 𝒞-products)) (F .fmor (HasProducts.p₂ 𝒞-products))
+    PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.pair (F .fmor 𝒞P.p₁) (F .fmor 𝒞P.p₂)
   ≈⟨ PFxFy.pair-natural _ _ _ ⟩
-    PFxFy.pair (HasProducts.p₁ 𝒟-products 𝒟.∘ HasProducts.pair 𝒟-products (F .fmor (HasProducts.p₁ 𝒞-products)) (F .fmor (HasProducts.p₂ 𝒞-products)))
-               (HasProducts.p₂ 𝒟-products 𝒟.∘ HasProducts.pair 𝒟-products (F .fmor (HasProducts.p₁ 𝒞-products)) (F .fmor (HasProducts.p₂ 𝒞-products)))
-  ≈⟨ PFxFy.pair-cong (HasProducts.pair-p₁ 𝒟-products _ _) (HasProducts.pair-p₂ 𝒟-products _ _) ⟩
-    PFxFy.pair (F .fmor (HasProducts.p₁ 𝒞-products))
-               (F .fmor (HasProducts.p₂ 𝒞-products))
+    PFxFy.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.pair (F .fmor 𝒞P.p₁) (F .fmor 𝒞P.p₂))
+               (𝒟P.p₂ 𝒟.∘ 𝒟P.pair (F .fmor 𝒞P.p₁) (F .fmor 𝒞P.p₂))
+  ≈⟨ PFxFy.pair-cong (𝒟P.pair-p₁ _ _) (𝒟P.pair-p₂ _ _) ⟩
+    PFxFy.pair (F .fmor 𝒞P.p₁) (F .fmor 𝒞P.p₂)
   ≈⟨ PFxFy.pair-ext0 ⟩
     𝒟.id _
   ∎
@@ -96,13 +96,13 @@ F-monoidal .mult-is-iso {x} {y} .f∘inverse≈id = begin
         module Pxy = Product (HasProducts.getProduct 𝒞-products x y)
         module PFxFy = IsProduct (FP .preserve-products _ _ Pxy.prod Pxy.p₁ Pxy.p₂ Pxy.isProduct)
 F-monoidal .mult-is-iso {x} {y} .inverse∘f≈id = begin
-    HasProducts.pair 𝒟-products (F .fmor (HasProducts.p₁ 𝒞-products)) (F .fmor (HasProducts.p₂ 𝒞-products)) 𝒟.∘ PFxFy.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products)
-  ≈⟨ HasProducts.pair-natural 𝒟-products _ _ _ ⟩
-    HasProducts.pair 𝒟-products (F .fmor (HasProducts.p₁ 𝒞-products) 𝒟.∘ PFxFy.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products))
-                                 (F .fmor (HasProducts.p₂ 𝒞-products) 𝒟.∘ PFxFy.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products))
-  ≈⟨ HasProducts.pair-cong 𝒟-products (PFxFy.pair-p₁ _ _) (PFxFy.pair-p₂ _ _) ⟩
-    HasProducts.pair 𝒟-products (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products)
-  ≈⟨ HasProducts.pair-ext0 𝒟-products ⟩
+    𝒟P.pair (F .fmor (𝒞P.p₁)) (F .fmor (𝒞P.p₂)) 𝒟.∘ PFxFy.pair (𝒟P.p₁) 𝒟P.p₂
+  ≈⟨ 𝒟P.pair-natural _ _ _ ⟩
+    𝒟P.pair (F .fmor (𝒞P.p₁) 𝒟.∘ PFxFy.pair (𝒟P.p₁) 𝒟P.p₂)
+             (F .fmor (𝒞P.p₂) 𝒟.∘ PFxFy.pair (𝒟P.p₁) 𝒟P.p₂)
+  ≈⟨ 𝒟P.pair-cong (PFxFy.pair-p₁ _ _) (PFxFy.pair-p₂ _ _) ⟩
+    𝒟P.pair 𝒟P.p₁ 𝒟P.p₂
+  ≈⟨ 𝒟P.pair-ext0 ⟩
     𝒟.id _
   ∎
   where open ≈-Reasoning 𝒟.isEquiv
