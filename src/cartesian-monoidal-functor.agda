@@ -77,9 +77,43 @@ F-monoidal .lax-monoidal .mult-natural {x₁} {x₂} {y₁} {y₂} f g = begin
 F-monoidal .lax-monoidal .mult-assoc = {!!}
 F-monoidal .lax-monoidal .mult-lunit = {!!}
 F-monoidal .lax-monoidal .mult-runit = {!!}
+
 F-monoidal .mult-is-iso .inverse =
   HasProducts.pair 𝒟-products (F .fmor (HasProducts.p₁ 𝒞-products))
                                (F .fmor (HasProducts.p₂ 𝒞-products))
-F-monoidal .mult-is-iso .f∘inverse≈id = {!!}
-F-monoidal .mult-is-iso .inverse∘f≈id = {!!}
-F-monoidal .unit-is-iso = {!!}
+F-monoidal .mult-is-iso {x} {y} .f∘inverse≈id = begin
+    PFxFy.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products) 𝒟.∘ HasProducts.pair 𝒟-products (F .fmor (HasProducts.p₁ 𝒞-products)) (F .fmor (HasProducts.p₂ 𝒞-products))
+  ≈⟨ PFxFy.pair-natural _ _ _ ⟩
+    PFxFy.pair (HasProducts.p₁ 𝒟-products 𝒟.∘ HasProducts.pair 𝒟-products (F .fmor (HasProducts.p₁ 𝒞-products)) (F .fmor (HasProducts.p₂ 𝒞-products)))
+               (HasProducts.p₂ 𝒟-products 𝒟.∘ HasProducts.pair 𝒟-products (F .fmor (HasProducts.p₁ 𝒞-products)) (F .fmor (HasProducts.p₂ 𝒞-products)))
+  ≈⟨ PFxFy.pair-cong (HasProducts.pair-p₁ 𝒟-products _ _) (HasProducts.pair-p₂ 𝒟-products _ _) ⟩
+    PFxFy.pair (F .fmor (HasProducts.p₁ 𝒞-products))
+               (F .fmor (HasProducts.p₂ 𝒞-products))
+  ≈⟨ PFxFy.pair-ext0 ⟩
+    𝒟.id _
+  ∎
+  where open ≈-Reasoning 𝒟.isEquiv
+        module Pxy = Product (HasProducts.getProduct 𝒞-products x y)
+        module PFxFy = IsProduct (FP .preserve-products _ _ Pxy.prod Pxy.p₁ Pxy.p₂ Pxy.isProduct)
+F-monoidal .mult-is-iso {x} {y} .inverse∘f≈id = begin
+    HasProducts.pair 𝒟-products (F .fmor (HasProducts.p₁ 𝒞-products)) (F .fmor (HasProducts.p₂ 𝒞-products)) 𝒟.∘ PFxFy.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products)
+  ≈⟨ HasProducts.pair-natural 𝒟-products _ _ _ ⟩
+    HasProducts.pair 𝒟-products (F .fmor (HasProducts.p₁ 𝒞-products) 𝒟.∘ PFxFy.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products))
+                                 (F .fmor (HasProducts.p₂ 𝒞-products) 𝒟.∘ PFxFy.pair (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products))
+  ≈⟨ HasProducts.pair-cong 𝒟-products (PFxFy.pair-p₁ _ _) (PFxFy.pair-p₂ _ _) ⟩
+    HasProducts.pair 𝒟-products (HasProducts.p₁ 𝒟-products) (HasProducts.p₂ 𝒟-products)
+  ≈⟨ HasProducts.pair-ext0 𝒟-products ⟩
+    𝒟.id _
+  ∎
+  where open ≈-Reasoning 𝒟.isEquiv
+        module Pxy = Product (HasProducts.getProduct 𝒞-products x y)
+        module PFxFy = IsProduct (FP .preserve-products _ _ Pxy.prod Pxy.p₁ Pxy.p₂ Pxy.isProduct)
+
+
+F-monoidal .unit-is-iso .inverse = HasTerminal.terminal-mor 𝒟-terminal _
+F-monoidal .unit-is-iso .f∘inverse≈id =
+  𝒟.≈-trans (𝒟.≈-sym (to-terminal-ext _)) (to-terminal-ext _)
+  where open IsTerminal (FP .preserve-terminal _ (HasTerminal.isTerminal 𝒞-terminal))
+F-monoidal .unit-is-iso .inverse∘f≈id =
+  𝒟.≈-trans (𝒟.≈-sym (to-terminal-ext _)) (to-terminal-ext _)
+  where open IsTerminal (HasTerminal.isTerminal 𝒟-terminal)
