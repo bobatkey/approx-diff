@@ -41,11 +41,15 @@ Galois connections defined component-wise; it follows that $\LatGal$ has finite 
 \begin{definition}[Vector space over a field $F$]
 Suppose $F$ a field with addition of elements written $a + b$ and multiplication written $a \mult b$.
 Overloading $+$ and $\mult$, define a \emph{vector space $V = (V, +, \mult)$ over $F$} to be a set $V$
-equipped with vector addition $+: V^2 \to V$ () and scalar multiplication $\mult: F \times V \to V$ where
-$(V,+)$ is an Abelian group and the vector operations are compatible with the field operations in the
-following sense:
+equipped with addition of vectors $+: V^2 \to V$ () and scalar multiplication $\mult: F \times V \to V$ where
+$(V,+)$ is an Abelian group and the vector operations are compatible with the field operations in that the
+following equations hold:
 \begin{itemize}
-\item
+\item $0 + a = a$
+\item $1 \mult a = a$
+\item $(a \mult b) \mult v = a \mult (b \mult v)$
+\item $(a + b) \mult v = (a \mult v) + (b \mult v)$
+\item $a \mult (u + v) = (a \mult u) + (b \mult v)$
 \end{itemize}
 \end{definition}
 
