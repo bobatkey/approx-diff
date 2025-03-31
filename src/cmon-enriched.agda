@@ -248,7 +248,6 @@ module _ {o m e} {𝒞 : Category o m e} (CM : CMonEnriched 𝒞) where
 module cmon+coproduct→biproduct {o m e}
          {𝒞 : Category o m e} (CM𝒞 : CMonEnriched 𝒞)
          (CP : HasCoproducts 𝒞) where
---       {x y : 𝒞 .Category.obj} (P : Coproduct 𝒞 x y) where
 
   open Category 𝒞
   open CMonEnriched CM𝒞
@@ -259,14 +258,24 @@ module cmon+coproduct→biproduct {o m e}
 
   copair-ε : ∀ {x y z} → copair εm εm ≈ εm {coprod x y} {z}
   copair-ε =
+    begin
       copair εm εm                  ≈˘⟨ copair-cong (comp-bilinear-ε₁ in₁) (comp-bilinear-ε₁ in₂) ⟩
       copair (εm ∘ in₁ ) (εm ∘ in₂) ≈⟨ copair-ext εm ⟩
       εm                            ∎
     where open ≈-Reasoning isEquiv
 
   copair-+ : ∀ {x y z} (f₁ f₂ : x ⇒ z) (g₁ g₂ : y ⇒ z) →
-     (copair f₁ g₁ +m copair f₂ g₂) ≈ copair (f₁ +m f₂) (g₁ +m g₂)
-  copair-+ f₁ f₂ g₁ g₂ = {!   !}
+    (copair f₁ g₁ +m copair f₂ g₂) ≈ copair (f₁ +m f₂) (g₁ +m g₂)
+  copair-+ f₁ f₂ g₁ g₂ =
+    begin
+      copair f₁ g₁ +m copair f₂ g₂
+    ≈˘⟨ copair-ext _ ⟩
+      copair ((copair f₁ g₁ +m copair f₂ g₂) ∘ in₁) ((copair f₁ g₁ +m copair f₂ g₂) ∘ in₂)
+    ≈⟨ copair-cong (comp-bilinear₁ _ _ _) (comp-bilinear₁ _ _ _) ⟩
+      copair ((copair f₁ g₁ ∘ in₁) +m (copair f₂ g₂ ∘ in₁)) ((copair f₁ g₁ ∘ in₂) +m (copair f₂ g₂ ∘ in₂))
+    ≈⟨ copair-cong (homCM _ _ .+-cong (copair-in₁ _ _) (copair-in₁ _ _)) (homCM _ _ .+-cong (copair-in₂ _ _) (copair-in₂ _ _)) ⟩
+      copair (f₁ +m f₂) (g₁ +m g₂)
+    ∎ where open ≈-Reasoning isEquiv
 
 ------------------------------------------------------------------------------
 -- Construct biproducts from products on a cmon-category
