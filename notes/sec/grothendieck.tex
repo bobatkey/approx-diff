@@ -39,7 +39,7 @@ closed.
 \end{proposition}
 
 \begin{proof}
-Suppose $C$ is locally small, with binary biproducts given by $(\biprod,\inj,\proj)$ and set-indexed products
+Suppose $C$ is locally small, with binary biproducts given by $(\biprod,\biinj,\biproj)$ and set-indexed products
 given by $(\prod,\eval_{\prod},\lambda_{\prod})$. For any objects $X, Y, Z$ in $\Fam(C)$ define:
 
 \begin{enumerate}
@@ -48,10 +48,10 @@ given by $(\prod,\eval_{\prod},\lambda_{\prod})$. For any objects $X, Y, Z$ in $
 \item The family of isomorphisms $\lambda_{X,Y,Z}$ (natural in $X$) sending any $(f, g): X \times Y \to Z$ to
 $(f', g'): X \to [Y, Z]$ with:
 \begin{itemize}
-\item $f'(x) = (f \comp (x, -), \reindex{g}{(x,-)} \comp \inj_{\faml{Y}}):
-Y \to Z$ where $\inj_{\faml{Y}}: \faml{Y} \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
-\item $g'_x = \lambda_{\prod_{\idx{Y}}}(\reindex{g}{(x,-)} \comp \inj_{\faml{X}_x}:
-\const_{\idx{Y}}(\faml{X}_x) \to \reindex{\faml{Z}}{f})$ where $\inj_{\faml{X}_x}: \const_{\idx{Y}}(\faml{X}_x)
+\item $f'(x) = (f \comp (x, -), \reindex{g}{(x,-)} \comp \biinj_{\faml{Y}}):
+Y \to Z$ where $\biinj_{\faml{Y}}: \faml{Y} \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
+\item $g'_x = \lambda_{\prod_{\idx{Y}}}(\reindex{g}{(x,-)} \comp \biinj_{\faml{X}_x}:
+\const_{\idx{Y}}(\faml{X}_x) \to \reindex{\faml{Z}}{f})$ where $\biinj_{\faml{X}_x}: \const_{\idx{Y}}(\faml{X}_x)
 \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
 \end{itemize}
 \item The family of morphisms $\eval_{X,Y}: [X, Y] \times X \to Y$ in $\Fam(C)$ with
@@ -74,19 +74,19 @@ $(f^\dagger, g^\dagger): X \times Y \to Z$ with:
 To show $\lambda_{X,Y,Z}(f^\dagger, g^\dagger) = (f,g)$, suppose $\lambda_{X,Y,Z}(f^\dagger, g^\dagger) = (f',
 g')$. Then:
 \begin{itemize}
-\item $f'(x) = (f^\dagger \comp (x, -), \reindex{g^\dagger}{(x,-)} \comp \inj_{\faml{Y}}): Y \to Z$ where
-$\inj_{\faml{Y}}: \faml{Y} \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
-\item $g'_x = \lambda_{\prod_{\idx{Y}}}(\reindex{g^\dagger}{(x,-)} \comp \inj_{\faml{X}_x}:
-\const_{\idx{Y}}(\faml{X}_x) \to \reindex{\faml{Z}}{f^\dagger})$ where $\inj_{\faml{X}_x}:
+\item $f'(x) = (f^\dagger \comp (x, -), \reindex{g^\dagger}{(x,-)} \comp \biinj_{\faml{Y}}): Y \to Z$ where
+$\biinj_{\faml{Y}}: \faml{Y} \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$
+\item $g'_x = \lambda_{\prod_{\idx{Y}}}(\reindex{g^\dagger}{(x,-)} \comp \biinj_{\faml{X}_x}:
+\const_{\idx{Y}}(\faml{X}_x) \to \reindex{\faml{Z}}{f^\dagger})$ where $\biinj_{\faml{X}_x}:
 \const_{\idx{Y}}(\faml{X}_x) \to \const_{\idx{Y}}(\faml{X}_x) \biprod \faml{Y}$.
 \end{itemize}
 \noindent To show $f' = f : \idx{X} \to \Fam(C)(Y,Z)$, suppose $x \in \idx{X}$ and show $f'(x) = f(x): Y \to
 Z$. Suppose $y \in \idx{Y}$.
 \begin{enumerate}
 \item $\idx{f'(x)}(y) = (f^\dagger \comp (x, -))(y) = f^\dagger(x,y) = \idx{f(x)}(y)$.
-\item $\faml{f'(x)}_y = (\reindex{g^\dagger}{(x,-)} \comp \inj_{\faml{Y}})_y = \reindex{g^\dagger}{(x,-)}_y \comp
-{\inj_{\faml{Y}}}_y = g^\dagger_{x,y} \comp {\inj_{\faml{Y}}}_y = \coprodM{{\eval_{\prod}}_y \comp
-g_x}{\faml{f(x)}_y} \comp {\inj_{\faml{Y}}}_y = \faml{f(x)}_y$.
+\item $\faml{f'(x)}_y = (\reindex{g^\dagger}{(x,-)} \comp \biinj_{\faml{Y}})_y = \reindex{g^\dagger}{(x,-)}_y \comp
+{\biinj_{\faml{Y}}}_y = g^\dagger_{x,y} \comp {\biinj_{\faml{Y}}}_y = \coprodM{{\eval_{\prod}}_y \comp
+g_x}{\faml{f(x)}_y} \comp {\biinj_{\faml{Y}}}_y = \faml{f(x)}_y$.
 \end{enumerate}
 
 To show $g' = g$, suppose $x \in \idx{X}$.
@@ -94,11 +94,11 @@ To show $g' = g$, suppose $x \in \idx{X}$.
 \small
 g'_x
 &=
-\lambda_{\prod_{\idx{Y}}}(\reindex{g^\dagger}{(x,-)} \comp \inj_{\faml{X}_x}) \\
+\lambda_{\prod_{\idx{Y}}}(\reindex{g^\dagger}{(x,-)} \comp \biinj_{\faml{X}_x}) \\
 &=
-\lambda_{\prod_{\idx{Y}}}(\{g^\dagger_{(x,y)} \comp (\inj_{\faml{X}_x})_y\}_{y \in \idx{Y}}) \\
+\lambda_{\prod_{\idx{Y}}}(\{g^\dagger_{(x,y)} \comp (\biinj_{\faml{X}_x})_y\}_{y \in \idx{Y}}) \\
 &=
-\lambda_{\prod_{\idx{Y}}}(\{\coprodM{{\eval_{\prod}}_y \comp g_x}{\faml{f(x)}_y} \comp (\inj_{\faml{X}_x})_y\}_{y \in \idx{Y}}) \\
+\lambda_{\prod_{\idx{Y}}}(\{\coprodM{{\eval_{\prod}}_y \comp g_x}{\faml{f(x)}_y} \comp (\biinj_{\faml{X}_x})_y\}_{y \in \idx{Y}}) \\
 &=
 \lambda_{\prod_{\idx{Y}}}(\{{\eval_{\prod}}_y \comp g_x\}_{y \in \idx{Y}}) \\
 &=
@@ -114,28 +114,28 @@ the set-indexed product; the commutativity of the diagram on the right is trivia
 \begin{tikzcd}
    \prod_{\idx{Y}}\reindex{\faml{Z}}{\idx{f} \comp (x,-)} \arrow[dr, "\eval_{\prod_{y}}"] \\
    \faml{X}_x \arrow[u, "\lambda_{\prod_{\idx{Y}}}(\reindex{\faml{f}}{{(x,-)}}\,\comp\,
-\inj_{\faml{X}_x})"] \arrow[r, "\faml{f}_{x,y}\,\comp\,\inj_{\faml{X}_x}"'] & \faml{Z}_{\idx{f}(x,y)}
+\biinj_{\faml{X}_x})"] \arrow[r, "\faml{f}_{x,y}\,\comp\,\biinj_{\faml{X}_x}"'] & \faml{Z}_{\idx{f}(x,y)}
 \end{tikzcd}
 \hspace{1cm}
 \begin{tikzcd}[column sep=5em]
    \faml{Y}_y \arrow[dr,
-   "\faml{f}_{(x,y)}\,\comp\,\inj_{\faml{Y}_y}"] \\
-   \faml{Y}_y \arrow[u, -, double, "\id_{\faml{Y}_y}"] \arrow[r, "\faml{f}_{x,y}\,\comp\,\inj_{\faml{Y}_y}"'] & \faml{Z}_{\idx{f}(x,y)}
+   "\faml{f}_{(x,y)}\,\comp\,\biinj_{\faml{Y}_y}"] \\
+   \faml{Y}_y \arrow[u, -, double, "\id_{\faml{Y}_y}"] \arrow[r, "\faml{f}_{x,y}\,\comp\,\biinj_{\faml{Y}_y}"'] & \faml{Z}_{\idx{f}(x,y)}
 \end{tikzcd}
 \end{center}
 
 The diagram on the left below then commutes by Proposition~\ref{prop:biproduct:prod-coprod}, with
-$\coprodM{\faml{f}_{x,y}\,\comp\,\inj_{\faml{X}_x}}{\faml{f}_{x,y}\,\comp\,\inj_{\faml{Y}_y}} =
+$\coprodM{\faml{f}_{x,y}\,\comp\,\biinj_{\faml{X}_x}}{\faml{f}_{x,y}\,\comp\,\biinj_{\faml{Y}_y}} =
 \faml{f}_{(x,y)}$ by the uniqueness of the coproduct of morphisms. Then the diagram on the right in $\Fam(C)$
 commutes by the definitions of $\lambda_{X,Y,Z}, \eval_{Y,Z}$ and $[Y,Z]$.
 
 \begin{center}
 \begin{tikzcd}[column sep=5.5em]
    \prod_{\idx{Y}}\reindex{\faml{Z}}{\idx{f} \comp (x,-)} \biprod \faml{Y}_y \arrow[dr,
-   "\coprodM{\eval_{\prod_{y}}}{\faml{f}_{(x,y)}\,\comp\,\inj_{\faml{Y}_y}}"] \\
+   "\coprodM{\eval_{\prod_{y}}}{\faml{f}_{(x,y)}\,\comp\,\biinj_{\faml{Y}_y}}"] \\
    \faml{X}_x \biprod \faml{Y}_y \arrow[u, "(\lambda_{\prod_{\idx{Y}}}(\reindex{\faml{f}}{{(x,-)}}\,\comp\,
-\inj_{\faml{X}_x}){,}\,\id_{\faml{Y}_y})"] \arrow[r,
-"\coprodM{\faml{f}_{x,y}\,\comp\,\inj_{\faml{X}_x}}{\faml{f}_{x,y}\,\comp\,\inj_{\faml{Y}_y}}"'] &
+\biinj_{\faml{X}_x}){,}\,\id_{\faml{Y}_y})"] \arrow[r,
+"\coprodM{\faml{f}_{x,y}\,\comp\,\biinj_{\faml{X}_x}}{\faml{f}_{x,y}\,\comp\,\biinj_{\faml{Y}_y}}"'] &
 \faml{Z}_{\idx{f}(x,y)}
 \end{tikzcd}
 \hspace{1cm}

@@ -13,9 +13,9 @@ morphisms
 
 \begin{center}
 \begin{tikzcd}
-   A \arrow[r, "\inj_A", shift left] &
-   A \biprod B \arrow[l, "\proj_A", shift left] \arrow[r, "\proj_B"', shift right] &
-   B \arrow[l, "\inj_B"', shift right]
+   A \arrow[r, "\biinj_A", shift left] &
+   A \biprod B \arrow[l, "\biproj_A", shift left] \arrow[r, "\biproj_B"', shift right] &
+   B \arrow[l, "\biinj_B"', shift right]
 \end{tikzcd}
 \end{center}
 
@@ -24,16 +24,16 @@ morphisms
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
 \begin{salign*}
-   \proj_A \comp \inj_A &= \id_A \\
-   \proj_B \comp \inj_A &= \zero_{A,B}
+   \biproj_A \comp \biinj_A &= \id_A \\
+   \biproj_B \comp \biinj_A &= \zero_{A,B}
 \end{salign*}
 \end{center}
 \end{minipage}%
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
 \begin{salign*}
-   \proj_B \comp \inj_B &= \id_B \\
-   \proj_A \comp \inj_B &= \zero_{B,A}
+   \biproj_B \comp \biinj_B &= \id_B \\
+   \biproj_A \comp \biinj_B &= \zero_{B,A}
 \end{salign*}
 \end{center}
 \end{minipage}
@@ -41,21 +41,42 @@ morphisms
 \noindent and
 
 \begin{salign*}
-\inj_A \comp \proj_A + \inj_B \comp \proj_B &= \id_{A \biprod B}
+\biinj_A \comp \biproj_A + \biinj_B \comp \biproj_B &= \id_{A \biprod B}
 \end{salign*}
 \end{definition}
 
 \begin{proposition}
 \item
 \begin{itemize}
-\item If $C$ has biproducts then it has products given by $(A \biprod B, \proj_A, \proj_B)$ and coproducts
-given by $(A \biprod B, \inj_A, \inj_B)$.
+\item If $C$ has biproducts then it has products given by $(A \biprod B, \biproj_A, \biproj_B)$ and coproducts
+given by $(A \biprod B, \biinj_A, \biinj_B)$.
 \item If $C$ has products (or coproducts) then they are biproducts.
 \item If $C$ has a terminal (or initial) object then it is a zero object.
 \end{itemize}
 \end{proposition}
 
-\noindent We say that $C$ is \emph{semi-additive} if it has finite biproducts.
+\noindent We say that $C$ is \emph{semi-additive} if it has finite biproducts. Having products or coproducts
+is sufficient for semi-additivity:
+
+\begin{proposition}
+Suppose $C$ is $\CMon$-enriched.
+\begin{itemize}
+\item If $C$ has products given by $(A \times B, \proj_1, \proj_2)$ then:
+\begin{enumerate}
+\item $\prodM{0_{A,B}}{0_{A,C}} = 0_{A,B \times C}$
+\item $\prodM{f_1 + g_1}{f_2 + g_2} = \prodM{f_1 + f_2}{g_1 + g_2}$
+\item $(A \times B, \biinj_A, \biinj_B, \proj_1, \proj_2)$ is a
+biproduct with $\biinj_A: A \to A \times B = \prodM{\id_A}{0_{A,B}}$ and $\biinj_B: B \to A \times B =
+\prodM{0_{A,B}}{\id_B}$.
+\end{enumerate}
+\item If $C$ has coproducts given by $(A + B, \inj_1, \inj_2)$ then
+\begin{enumerate}
+\item $(A + B, \inj_1, \inj_2, \biproj_A, \biproj_B)$ is a
+biproduct with $\biproj_A: A + B \to A = \coprodM{\id_A}{0_{B,A}}$ and $\biproj_B: A + B \to B =
+\coprodM{0_{A,B}}{\id_B}$.
+\end{enumerate}
+\end{itemize}
+\end{proposition}
 
 \begin{proposition}
 \label{prop:biproduct:prod-coprod}
@@ -64,9 +85,9 @@ g_2$ in $C$:
 
 \begin{center}
 \begin{tikzcd}[row sep=3em, column sep=3em]
-   & A \arrow[d, "\inj_A", shift left] \arrow[dr, "f_2"] \\
-   A' \arrow[r, "\prodM{f_1}{g_1}"] \arrow[dr, "g_1"'] \arrow[ur, "f_1"] & A \biprod B \arrow[u, "\proj_A", shift left] \arrow[d, "\proj_B"', shift right] \arrow[r, pos=0.35, "\coprodM{f_2}{g_2}"] & B' \\
-   & B \arrow[u, "\inj_B"', shift right] \arrow[ur, "g_2"']
+   & A \arrow[d, "\biinj_A", shift left] \arrow[dr, "f_2"] \\
+   A' \arrow[r, "\prodM{f_1}{g_1}"] \arrow[dr, "g_1"'] \arrow[ur, "f_1"] & A \biprod B \arrow[u, "\biproj_A", shift left] \arrow[d, "\biproj_B"', shift right] \arrow[r, pos=0.35, "\coprodM{f_2}{g_2}"] & B' \\
+   & B \arrow[u, "\biinj_B"', shift right] \arrow[ur, "g_2"']
 \end{tikzcd}
 \end{center}
 \end{proposition}
