@@ -16,7 +16,7 @@ $f + g: X \to Y$ given by pointwise application of $\meet$. The dual constructio
 \bot)$. Now define the category $\LatGal$ where:
 \begin{itemize}
 \item objects $X, Y$ are the bounded lattices;
-\item morphisms $f \vdash g: X \to Y$ are meet-semilattice homomorphisms $f: X \to Y$ paired with
+\item morphisms $f \dashv g: X \to Y$ are meet-semilattice homomorphisms $f: X \to Y$ paired with
 join-semilattice homomorphisms $g: Y \to X$ satisfying $y \leq f(x) \iff g(y) \leq x$ for any $x \in X$ and any
 $y \in Y$.
 \end{itemize}
@@ -26,12 +26,13 @@ $y \in Y$.
 $\LatGal$ is itself $\CMon$-enriched. For any $X, Y$ we have that $\LatGal(X,Y)$ is a commutative monoid,
 where:
 \begin{itemize}
-\item $0_{X,Y}$ is the Galois connection $0_{X,Y} \vdash 0_{Y,X}: X \to Y$
-\item $(f \vdash g) + (f' \vdash g') = (f + f') \vdash (g + g'): X \to Y$.
+\item $0_{X,Y}$ is the Galois connection $0_{X,Y} \dashv 0_{Y,X}: X \to Y$
+\item $(f \dashv g) + (f' \dashv g') = (f + f') \dashv (g + g'): X \to Y$.
 \end{itemize}
 
-\noindent and biadditivity of composition arising component-wise. Moreover $\LatGal$ has binary products, with
-the product of Galois connections defined component-wise; it follows that $\LatGal$ has biproducts:
+\noindent and biadditivity of composition arises component-wise. Moreover $\LatGal$ has binary products, with
+the product of Galois connections defined component-wise; it follows that $\LatGal$ has biproducts
+(\propref{biproduct:from-product-or-coproduct}).
 
 \subsubsection{Category of finite-dimensional vector spaces}
 \label{sec:categories-with-biproducts:fdvect}

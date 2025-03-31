@@ -277,6 +277,33 @@ module cmon+coproduct→biproduct {o m e}
       copair (f₁ +m f₂) (g₁ +m g₂)
     ∎ where open ≈-Reasoning isEquiv
 
+  biproduct : ∀ {x y} → Biproduct CM𝒞 x y
+  biproduct {x} {y} .Biproduct.prod = coprod x y
+  biproduct .Biproduct.p₁ = copair (id _) εm
+  biproduct .Biproduct.p₂ = copair εm (id _)
+  biproduct .Biproduct.in₁ = in₁
+  biproduct .Biproduct.in₂ = in₂
+  biproduct .Biproduct.id-1 = copair-in₁ _ _
+  biproduct .Biproduct.id-2 = copair-in₂ _ _
+  biproduct .Biproduct.zero-1 = copair-in₂ _ _
+  biproduct .Biproduct.zero-2 = copair-in₁ _ _
+  biproduct {x} {y} .Biproduct.id-+ =
+    begin
+      (in₁ ∘ copair (id x) εm) +m (in₂ ∘ copair εm (id y))
+    ≈⟨ homCM _ _ .+-cong (copair-natural _ _ _) (copair-natural _ _ _) ⟩
+      copair (in₁ ∘ id x) (in₁ ∘ εm) +m copair (in₂ ∘ εm) (in₂ ∘ id y)
+    ≈⟨ homCM _ _ .+-cong (copair-cong id-right (comp-bilinear-ε₂ _)) (copair-cong (comp-bilinear-ε₂ _) id-right) ⟩
+      copair in₁ εm +m copair εm in₂
+    ≈⟨ copair-+ _ _ _ _ ⟩
+      copair (in₁ +m εm) (εm +m in₂)
+    ≈⟨ copair-cong +m-runit (homCM _ _ .+-lunit) ⟩
+      copair in₁ in₂
+    ≈⟨ copair-cong (≈-sym id-left) (≈-sym id-left) ⟩
+      copair (id _ ∘ in₁) (id _ ∘ in₂)
+    ≈⟨ copair-ext _ ⟩
+      id _
+    ∎ where open ≈-Reasoning isEquiv
+
 ------------------------------------------------------------------------------
 -- Construct biproducts from products on a cmon-category
 module cmon+product→biproduct {o m e}
