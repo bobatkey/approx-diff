@@ -244,6 +244,31 @@ module _ {o m e} {𝒞 : Category o m e} (CM : CMonEnriched 𝒞) where
       ∎ where open ≈-Reasoning isEquiv
 
 ------------------------------------------------------------------------------
+-- Construct biproducts from coproducts on a cmon-category
+module cmon+coproduct→biproduct {o m e}
+         {𝒞 : Category o m e} (CM𝒞 : CMonEnriched 𝒞)
+         (CP : HasCoproducts 𝒞) where
+--       {x y : 𝒞 .Category.obj} (P : Coproduct 𝒞 x y) where
+
+  open Category 𝒞
+  open CMonEnriched CM𝒞
+  open CommutativeMonoid
+  open IsEquivalence
+
+  open HasCoproducts CP
+
+  copair-ε : ∀ {x y z} → copair εm εm ≈ εm {coprod x y} {z}
+  copair-ε =
+      copair εm εm                  ≈˘⟨ copair-cong (comp-bilinear-ε₁ in₁) (comp-bilinear-ε₁ in₂) ⟩
+      copair (εm ∘ in₁ ) (εm ∘ in₂) ≈⟨ copair-ext εm ⟩
+      εm                            ∎
+    where open ≈-Reasoning isEquiv
+
+  copair-+ : ∀ {x y z} (f₁ f₂ : x ⇒ z) (g₁ g₂ : y ⇒ z) →
+     (copair f₁ g₁ +m copair f₂ g₂) ≈ copair (f₁ +m f₂) (g₁ +m g₂)
+  copair-+ f₁ f₂ g₁ g₂ = {!   !}
+
+------------------------------------------------------------------------------
 -- Construct biproducts from products on a cmon-category
 module cmon+product→biproduct {o m e}
          {𝒞 : Category o m e} (CM𝒞 : CMonEnriched 𝒞)
