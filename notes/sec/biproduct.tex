@@ -45,24 +45,16 @@ morphisms
 \end{salign*}
 \end{definition}
 
-\begin{proposition}
-\item
-\begin{itemize}
-\item If $C$ has biproducts then it has products given by $(A \biprod B, \biproj_A, \biproj_B)$ and coproducts
-given by $(A \biprod B, \biinj_A, \biinj_B)$.
-\item If $C$ has products (or coproducts) then they are biproducts.
-\item If $C$ has a terminal (or initial) object then it is a zero object.
-\end{itemize}
-\end{proposition}
-
 \noindent We say that $C$ is \emph{semi-additive} if it has finite biproducts. Having products or coproducts
-is sufficient for semi-additivity:
+is sufficient for semi-additivity.
 
 \begin{proposition}
 \label{prop:biproduct:from-product-or-coproduct}
 Suppose $C$ is $\CMon$-enriched.
 \begin{itemize}
-\item If $C$ has products given by $(A \times B, \proj_1, \proj_2)$ then:
+\item If $C$ has biproducts given by $(A \biprod B, \biinj_A, \biinj_B, \biproj_A, \biproj_B)$ then $(A
+\biprod B, \biproj_A, \biproj_B)$ is a product and $(A \biprod B, \biinj_A, \biinj_B)$ is a coproduct.
+\item If $C$ has binary products given by $(A \times B, \proj_1, \proj_2)$ then:
 \begin{enumerate}
 \item $\prodM{0_{A,B}}{0_{A,C}} = 0_{A,B \times C}$
 \item $\prodM{f_1 + g_1}{f_2 + g_2} = \prodM{f_1 + f_2}{g_1 + g_2}$
@@ -70,13 +62,15 @@ Suppose $C$ is $\CMon$-enriched.
 biproduct with $\biinj_A: A \to A \times B = \prodM{\id_A}{0_{A,B}}$ and $\biinj_B: B \to A \times B =
 \prodM{0_{A,B}}{\id_B}$.
 \end{enumerate}
-\item If $C$ has coproducts given by $(A + B, \inj_1, \inj_2)$ then
+\item If $C$ has binary coproducts given by $(A + B, \inj_1, \inj_2)$ then
 \begin{enumerate}
-\item $\coprodM{0_{A,B}}{0_{A,C}} = 0_{A,B + C}$
+\item $\coprodM{0_{A,C}}{0_{B,C}} = 0_{A + B,C}$
+\item $\coprodM{f_1 + g_1}{f_2 + g_2} = \coprodM{f_1 + f_2}{g_1 + g_2}$
 \item $(A + B, \inj_1, \inj_2, \biproj_A, \biproj_B)$ is a
 biproduct with $\biproj_A: A + B \to A = \coprodM{\id_A}{0_{B,A}}$ and $\biproj_B: A + B \to B =
 \coprodM{0_{A,B}}{\id_B}$.
 \end{enumerate}
+\item If $C$ has a terminal (or initial) object then it is a zero object.
 \end{itemize}
 \end{proposition}
 
