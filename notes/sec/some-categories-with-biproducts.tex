@@ -4,7 +4,16 @@
 \subsubsection{Category of bounded lattices and Galois connections}
 \label{sec:categories-with-biproducts:latgal}
 
-Define the category $\LatGal$ where:
+\begin{definition}[Bounded lattice]
+A \emph{bounded lattice} $X = (X, \meet, \top, \join, \bot)$ is a partial order $X$ equipped with binary
+operations $\meet$ and $\join$ and distinguished elements $\top$ and $\bot$ such that $(X, \meet, \top)$ is a
+bounded meet-semilattice and $(X, \join, \bot)$ is a bounded join-semilattice.
+\end{definition}
+
+\noindent Since $(X, \meet, \top)$ is a commutative monoid, and thus a $\CMon$-enriched poset category, for
+any $X, Y$ there is a zero meet-semilattice homomorphism $0_{X,Y}: X \to \top_Y$ and addition of homomorphisms
+$X \to Y$ given by pointwise application of $\meet$. The dual construction applies to $(X, \join, \bot)$. Now
+define the category $\LatGal$ where:
 \begin{itemize}
 \item objects $X, Y$ are the bounded lattices;
 \item morphisms $f \vdash g: X \to Y$ are meet-semilattice homomorphisms $f: X \to Y$ paired with
@@ -12,7 +21,13 @@ join-semilattice homomorphisms $g: Y \to X$ satisfying $y \leq f(x) \iff g(y) \l
 $y \in Y$.
 \end{itemize}
 
-\noindent $\LatGal$ has finite biproducts.
+\noindent $\LatGal$ is itself $\CMon$-enriched; for any $X, Y$ we have that $\LatGal(X,Y)$ is a commutative
+monoid, with:
+\begin{itemize}
+\item $0_{X,Y}$ is the Galois connection $0_{X,Y} \vdash 0_{Y,X}: X \to Y$
+\end{itemize}
+
+\noindent And moreover has finite biproducts:
 
 \subsubsection{Category of finite-dimensional vector spaces}
 \label{sec:categories-with-biproducts:fdvect}
