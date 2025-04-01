@@ -53,7 +53,7 @@ If $C$ is $\CMon$-enriched then for any category $D$ the functor category $\Func
 \subsubsection{$\CMon$-enriched presheaf}
 
 For any monoidal category $V$ and $V$-enriched categories $C$ and $D$, the action of a \emph{$V$-enriched}
-functor $F: C \to D$ on morphisms takes the form of a morphism $C(X,Y) \to D(F(X),F(Y))$ between hom-objects
+functor $F: C \to D$ on morphisms takes the form of a morphism $C(X,Y) \to D(F(X),F(Y))$ between hom-monoids
 in $V$. In the specific setting of a $\CMon$-enriched presheaf $F: C^\op \to \CMon$, this means that $F$
 preserves the additive structure of morphisms:
 \begin{itemize}
@@ -67,3 +67,16 @@ It then follows automatically that $F$ also preserves bilinear composition, i.e.
 \item $F(h) \comp F(f + g) = F(f \comp h) + F(g \comp h)$
 \end{itemize}
 in addition to the usual functorial properties.
+
+\subsubsection{$\CMon$-enriched Yoneda embedding}
+
+Suppose $C$ a small category. The standard \emph{Yoneda embedding} for $C$ is the functor $\Yoneda: C \to
+\Func{C^\op}{\Set}$ sending:
+\begin{itemize}
+\item any object $X$ in $C$ to the contravariant hom-functor $C(-,X)$ which sends:
+\begin{itemize}
+\item any object $Y$ in $C$ to the hom-set $C(Y,X)$
+\item any morphism $f: Y \to Z$ in $C$ to the pre-composition function $(- \comp f): C(Z,X) \to C(Y,X)$
+\end{itemize}
+\item any morphism $f: X \to Y$ in $C$ to the natural transformation
+\end{itemize}

@@ -74,5 +74,5 @@ W = (V \times W, +, \mult)$, with $+$ and $\mult$ defined componenent-wise, is a
 \subsubsection{Category of presheaves on a semi-additive category}
 
 \begin{proposition}
-If $C$ is semi-additive then the presheaf category $\Func{C^\op}{Set}$ is semi-additive.
+If $C$ is semi-additive then the presheaf category $\Func{C^\op}{\Set}$ is semi-additive.
 \end{proposition}
