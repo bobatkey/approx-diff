@@ -19,7 +19,7 @@ $\CMon$ is symmetric closed monoidal, with the trivial one-element monoid $\One$
 product $A \tensor B$ given by the Cartesian product of $A$ and $B$, and braiding given by the isomorphism $A
 \times B \iso B \times A$. $\CMon$ is complete and cocomplete, inheriting all limits and colimits from $\Set$.
 
-\subsubsection{$\CMon$-enriched categories}
+\subsubsection{$\CMon$-enriched category}
 
 We note that if a category $C$ is $\CMon$-enriched, then:
 \begin{enumerate}
@@ -49,3 +49,14 @@ commutative monoid of commutative monoid homomorphisms where:
 \begin{proposition}
 If $C$ is $\CMon$-enriched then for any category $D$ the functor category $\Func{D}{C}$ is $\CMon$-enriched.
 \end{proposition}
+
+\subsubsection{$\CMon$-enriched presheaf}
+
+For any monoidal category $V$ and $V$-enriched categories $C$ and $D$, the action of a \emph{$V$-enriched}
+functor $F: C \to D$ on morphisms takes the form of a morphism $C(X,Y) \to D(F(X),F(Y))$ between hom-objects
+in $V$. In the specific setting of a $\CMon$-enriched presheaf $F: C^\op \to \CMon$, we have that $F$
+satisfies:
+\begin{itemize}
+\item $F(0_{X,Y}) = 0_{FY,FX}$
+\item $F(f + g) = Ff + Fg$
+\end{itemize}

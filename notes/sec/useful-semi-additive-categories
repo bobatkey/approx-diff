@@ -76,9 +76,3 @@ W = (V \times W, +, \mult)$, with $+$ and $\mult$ defined componenent-wise, is a
 \begin{proposition}
 If $C$ is semi-additive then the presheaf category $\Func{C^\op}{Set}$ is semi-additive.
 \end{proposition}
-
-% \subsubsection{$\CMon$-valued presheaves over $\LatGal$}
-%
-% A presheaf $F: \LatGal^\op \to \CMon$ assigns to every bounded lattice $L$ a commutative monoid $F(L)$ and to
-% every Galois connection $f: L \to L'$ a commutative monoid homomorphism $F(f): F(L) \to F(L')$.
-% $\Func{\LatGal^\op}{\CMon}$ is the category of presheaves of commutative monoids on $\LatGal$.
