@@ -54,8 +54,9 @@ If $C$ is $\CMon$-enriched then for any category $D$ the functor category $\Func
 
 For any monoidal category $V$ and $V$-enriched categories $C$ and $D$, the action of a \emph{$V$-enriched}
 functor $F: C \to D$ on morphisms takes the form of a morphism $\Hom{C}{X}{Y} \to \Hom{D}{F(X)}{F(Y)}$ between
-hom-monoids in $V$. In the specific setting of a $\CMon$-enriched presheaf $F: C^\op \to \CMon$, this means
-that $F$ preserves the additive structure of morphisms:
+hom-objects in $V$. Write $\Func{C}{D}_V$ for the category of $V$-enriched functors from $C$ to $D$. In the
+specific setting of a $\CMon$-enriched presheaf $F: C^\op \to \CMon$, this means that $F$ preserves the
+additive structure of morphisms:
 \begin{itemize}
 \item $F(0_{X,Y}) = 0_{F(Y),F(X)}$
 \item $F(f + g) = F(f) + F(g)$
@@ -82,3 +83,6 @@ Suppose $C$ a small category. The standard \emph{Yoneda embedding} for $C$ is th
 \item any morphism $f: X \to Y$ in $C$ to the natural transformation $\Yoneda(f)$ where $\Yoneda(f)_Z = (f
 \comp -): \Hom{C}{Z}{X} \to \Hom{C}{Z}{Y}$.
 \end{itemize}
+
+If $C$ is $\CMon$-enriched then there is an enriched version of its Yoneda embedding, namely the
+$\CMon$-enriched functor $\Yoneda_{\CMon}: \Func{C^\op}{\CMon}$
