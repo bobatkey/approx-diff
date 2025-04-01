@@ -1,5 +1,5 @@
-\subsection{Useful categories with biproducts}
-\label{sec:categories-with-biproducts}
+\subsection{Useful semi-additive categories}
+\label{sec:useful-semi-additive-categories}
 
 \subsubsection{Category of bounded lattices and Galois connections}
 \label{sec:categories-with-biproducts:latgal}
@@ -66,7 +66,13 @@ is an abelian group, where:
 \item $(f + g)(v) = f(v) + g(v)$
 \item $(-f)(v) = -f(v)$
 \end{enumerate}
-\noindent with composition bilinear by (2) and the fact that addition of morphisms acts component-wise.
+\noindent with composition bilinear by (2) and the fact that addition of morphisms is component-wise.
+
+\subsubsection{Presheaf categories}
+
+\begin{proposition}
+If $C$ is semi-additive then the category $\Func{C^\op}{Set}$ is semi-additive.
+\end{proposition}
 
 % \subsubsection{$\CMon$-valued presheaves over $\LatGal$}
 %
