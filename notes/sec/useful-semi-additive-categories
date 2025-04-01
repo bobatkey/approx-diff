@@ -53,9 +53,9 @@ operations are compatible with the field operations in that the following equati
 \end{definition}
 
 Up to isomorphism a finite-dimensional vector space over $F$ of dimension $n \in \Nat$ is $(F^n, +, \mult)$
-with $+$ and $\mult$ defined component-wise. Define $\FinVect_F$ to be the category where
+with $+$ and $\mult$ defined component-wise. Define $\FinVect_F$ to be the category where:
 \begin{itemize}
-\item objects $V, W$ are natural numbers $n$ paired with an $n$-dimensional vector space $F^n$
+\item objects $V, W$ are natural numbers $n$ paired with an $n$-dimensional vector space $(F^n, +, \mult)$
 \item morphisms $f: V \to W$ are functions $f$ satisfying $f(u + v) = f(u) + f(v)$ and $f(a \mult v) = a \mult f(v)$.
 \end{itemize}
 
@@ -66,7 +66,10 @@ is an abelian group, where:
 \item $(f + g)(v) = f(v) + g(v)$
 \item $(-f)(v) = -f(v)$
 \end{enumerate}
-\noindent with composition bilinear by (2) and the fact that addition of morphisms is component-wise.
+\noindent with composition bilinear by (2) and component-wise addition of morphisms. The direct sum $V \biprod
+W = (V \times W, +, \mult)$, with $+$ and $\mult$ defined componenent-wise, is a biproduct $(V \biprod W,
+\biinj_V, \biinj_W, \pi_1, \pi_2)$ with $\biinj_V = \prodM{\id_V}{0_{V,W}}$ and $\biinj_W =
+\prodM{0_{V,W}}{\id_W}$.
 
 \subsubsection{Presheaf categories}
 
