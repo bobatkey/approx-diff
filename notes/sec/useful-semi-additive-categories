@@ -71,10 +71,10 @@ W = (V \times W, +, \mult)$, with $+$ and $\mult$ defined componenent-wise, is a
 \biinj_V, \biinj_W, \pi_1, \pi_2)$ with $\biinj_V = \prodM{\id_V}{0_{V,W}}$ and $\biinj_W =
 \prodM{0_{V,W}}{\id_W}$.
 
-\subsubsection{Presheaf categories}
+\subsubsection{Category of presheaves on a semi-additive category}
 
 \begin{proposition}
-If $C$ is semi-additive then the category $\Func{C^\op}{Set}$ is semi-additive.
+If $C$ is semi-additive then the presheaf category $\Func{C^\op}{Set}$ is semi-additive.
 \end{proposition}
 
 % \subsubsection{$\CMon$-valued presheaves over $\LatGal$}
