@@ -39,19 +39,24 @@ Galois connections defined component-wise; it follows that $\LatGal$ has finite 
 \label{sec:categories-with-biproducts:fdvect}
 
 \begin{definition}[Vector space over a field $F$]
-Suppose $F$ a field with addition of elements written $a + b$ and multiplication written $a \mult b$.
-Overloading $+$ and $\mult$, define a \emph{vector space $V = (V, +, \mult)$ over $F$} to be a set $V$
-equipped with addition of vectors $+: V^2 \to V$ () and scalar multiplication $\mult: F \times V \to V$ where
-$(V,+)$ is an Abelian group and the vector operations are compatible with the field operations in that the
-following equations hold:
+Suppose $F$ a field with addition of elements written $a + b$ and multiplication written $a \mult b$. Then a
+\emph{vector space $V = (V, +, \mult)$ over $F$} (overloading $+$ and $\mult$) is a set $V$ equipped with
+addition of vectors $+: V^2 \to V$ and scalar multiplication $\mult: F \times V \to V$ where $(V,+)$ is an
+abelian group (with identity element $0_V$ and additive inverse $-v$ for any $v \in V$) and the vector
+operations are compatible with the field operations in that the following equations hold:
 \begin{itemize}
-\item $0 + a = a$
-\item $1 \mult a = a$
+\item $1 \mult v = v$
 \item $(a \mult b) \mult v = a \mult (b \mult v)$
 \item $(a + b) \mult v = (a \mult v) + (b \mult v)$
 \item $a \mult (u + v) = (a \mult u) + (b \mult v)$
 \end{itemize}
 \end{definition}
+
+Up to isomorphism a finite-dimensional vector space over $F$ of dimension $n \in \Nat$ is $(F^n, +, \mult)$
+with $+$ and $\mult$ defined component-wise. Define $\FdVect_F$ to be the category where
+\begin{itemize}
+\item the objects are natural numbers $n$ paired with an $n$-dimensional vector space $F^n$
+\end{itemize}
 
 % \subsubsection{$\CMon$-valued presheaves over $\LatGal$}
 %
