@@ -38,7 +38,7 @@ Galois connections defined component-wise; it follows that $\LatGal$ has finite 
 \subsubsection{Category of finite-dimensional vector spaces}
 \label{sec:categories-with-biproducts:fdvect}
 
-\begin{definition}[Vector space over a field $F$]
+\begin{definition}[Vector space over a field]
 Suppose $F$ a field with addition of elements written $a + b$ and multiplication written $a \mult b$. Then a
 \emph{vector space $V = (V, +, \mult)$ over $F$} (overloading $+$ and $\mult$) is a set $V$ equipped with
 addition of vectors $+: V^2 \to V$ and scalar multiplication $\mult: F \times V \to V$ where $(V,+)$ is an
@@ -53,10 +53,20 @@ operations are compatible with the field operations in that the following equati
 \end{definition}
 
 Up to isomorphism a finite-dimensional vector space over $F$ of dimension $n \in \Nat$ is $(F^n, +, \mult)$
-with $+$ and $\mult$ defined component-wise. Define $\FdVect_F$ to be the category where
+with $+$ and $\mult$ defined component-wise. Define $\FinVect_F$ to be the category where
 \begin{itemize}
-\item the objects are natural numbers $n$ paired with an $n$-dimensional vector space $F^n$
+\item objects $V, W$ are natural numbers $n$ paired with an $n$-dimensional vector space $F^n$
+\item morphisms $f: V \to W$ are functions $f$ satisfying $f(u + v) = f(u) + f(v)$ and $f(a \mult v) = a \mult f(v)$.
 \end{itemize}
+
+$\FinVect_F$ is $\Ab$-enriched (and therefore $\CMon$-enriched). For any $V, W$ we have that $\FinVect_F(V,W)$
+is an abelian group, where:
+\begin{enumerate}
+\item $0_{V,W}(v) = 0_W$
+\item $(f + g)(v) = f(v) + g(v)$
+\item $(-f)(v) = -f(v)$
+\end{enumerate}
+\noindent with composition bilinear by (2) and the fact that addition of morphisms acts component-wise.
 
 % \subsubsection{$\CMon$-valued presheaves over $\LatGal$}
 %
