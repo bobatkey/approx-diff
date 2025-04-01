@@ -54,9 +54,15 @@ If $C$ is $\CMon$-enriched then for any category $D$ the functor category $\Func
 
 For any monoidal category $V$ and $V$-enriched categories $C$ and $D$, the action of a \emph{$V$-enriched}
 functor $F: C \to D$ on morphisms takes the form of a morphism $C(X,Y) \to D(F(X),F(Y))$ between hom-objects
-in $V$. In the specific setting of a $\CMon$-enriched presheaf $F: C^\op \to \CMon$, we have that $F$
-satisfies:
+in $V$. In the specific setting of a $\CMon$-enriched presheaf $F: C^\op \to \CMon$, this means that $F$
+preserves the additive structure of morphisms:
 \begin{itemize}
 \item $F(0_{X,Y}) = 0_{F(Y),F(X)}$
-\item $F(f + g) = F(f) + F(g)$.
+\item $F(f + g) = F(f) + F(g)$
 \end{itemize}
+and also preserves bilinear composition, i.e.:
+\begin{itemize}
+\item $F(f + g) \comp F(h) = F(h \comp f) + F(h \comp g)$
+\item $F(h) \comp F(f + g) = F(f \comp h) + F(g \comp h)$
+\end{itemize}
+in addition to the usual functorial properties.
