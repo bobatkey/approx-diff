@@ -38,7 +38,7 @@ h \comp (f + g) &= (h \comp f) + (h \comp g)
 \end{salign*}
 \end{enumerate}
 
-Because $\CMon$ is closed monoidal, it is enriched over itself; every hom-object $\Hom{CMon}{A}{B}$ is a
+Because $\CMon$ is closed monoidal, it is enriched over itself; every hom-object $\Hom{\CMon}{A}{B}$ is a
 commutative monoid where:
 
 \begin{enumerate}
@@ -53,7 +53,7 @@ If $C$ is $\CMon$-enriched then any functor category $\Func{D}{C}$ is $\CMon$-en
 \subsubsection{$\CMon$-enriched presheaves}
 
 \begin{definition}[$\mathscr{V}$-enriched functor]
-For any monoidal category $(\mathscr{V}, \tensor, I)$ and $V$-enriched categories $C$ and $D$, a
+For any monoidal category $(\mathscr{V}, \tensor, I)$ and $\mathscr{V}$-enriched categories $C$ and $D$, a
 \emph{$\mathscr{V}$-enriched} functor $F: C \to D$ on morphisms is a family of morphisms $F_{X,Y}:
 \Hom{C}{X}{Y} \to \Hom{D}{F(X)}{F(Y)}$ between hom-objects in $\mathscr{V}$ that makes the following diagrams
 in $\mathscr{V}$ commute:
@@ -73,8 +73,8 @@ I \arrow[r, "\id_{F(X)}"'] & \Hom{D}{F(X)}{F(X)}
 
 Write $\Func{C}{D}_{\mathscr{V}}$ for the category of $\mathscr{V}$-enriched functors from $C$ to $D$.
 
-In the specific setting of a $\CMon$-enriched presheaf $F: C^\op \to \CMon$, this means that $F$ preserves the
-additive structure of morphisms:
+In the specific setting of a $\CMon$-enriched presheaf $F: C^\op \to \CMon$, enrichment means that $F$
+preserves the additive structure of morphisms:
 \begin{itemize}
 \item $F(0_{X,Y}) = 0_{F(Y),F(X)}$
 \item $F(f + g) = F(f) + F(g)$
@@ -85,15 +85,15 @@ It then follows automatically that $F$ also preserves bilinear composition, i.e.
 \item $F(f + g) \comp F(h) = F(h \comp f) + F(h \comp g)$
 \item $F(h) \comp F(f + g) = F(f \comp h) + F(g \comp h)$
 \end{itemize}
-in addition to the usual functorial properties.
+in addition to the usual enriched functor properties.
 
 \subsubsection{$\CMon$-enriched Yoneda embedding}
 
 Suppose $C$ a small category. The usual \emph{Yoneda embedding} for $C$ is the functor $\Yoneda: C \to
 \Func{C^\op}{\Set}$ sending:
 \begin{itemize}
-\item any object $X$ in $C$ to the contravariant hom-functor $\Yoneda(X) = \Hom{C}{-}{X}: C \to \Set$ which
-sends:
+\item any object $X$ in $C$ to the contravariant hom-functor $\Yoneda(X) = \Hom{C}{-}{X}: C^\op \to \Set$
+which sends:
    \begin{itemize}
    \item any object $Y$ in $C$ to the hom-set $\Hom{C}{Y}{X}$;
    \item any morphism $f: Y \to Z$ in $C$ to the function $\Hom{C}{f}{X} = (- \comp f): \Hom{C}{Z}{X} \to
@@ -103,10 +103,20 @@ sends:
 \comp -): \Hom{C}{Z}{X} \to \Hom{C}{Z}{Y}$.
 \end{itemize}
 
-\noindent For a $\mathscr{V}$-enriched category $C$, the hom-functor $\Hom{C}{-}{X}: C \to \mathscr{V}$ is
-$\mathscr{V}$-enriched.
+\noindent Now suppose $C$ is $\mathscr{V}$-enriched with $\mathscr{V}$ closed monoidal. Then the hom-functor
+$\Hom{C}{-}{X}: C^\op \to \mathscr{V}$ is $\mathscr{V}$-enriched; the following diagram commutes by the
+associativity of composition:
 
-\noindent For $\CMon$-enriched $C$, there is an enriched version of the Yoneda embedding, namely the
-$\CMon$-enriched functor $\Yoneda_{\CMon}: C \to \Func{C^\op}{\CMon}_{\CMon}$. First we note that the
-hom-functor $\Hom{C}{-}{X}: C \to \CMon$ is $\CMon$-enriched because composition is bilinear and so $(- \comp
-f)$ preserves the additive structure of morphisms.
+\begin{center}
+\begin{tikzcd}[column sep=2.7cm]
+   \Hom{C}{Y}{Z} \tensor \Hom{C}{X}{Y} \arrow[r, "\comp_{X,Y,Z}"] \arrow[d, "\Hom{C}{-}{W}_{Y,Z}\,\tensor\,\Hom{C}{-}{W}_{X,Y}"'] & \Hom{C}{X}{Z} \arrow[d, "\Hom{C}{-}{W}_{X,Z}"] \\
+   \Hom{\mathscr{V}}{\Hom{C}{Z}{W}}{\Hom{C}{Y}{W}} \tensor \Hom{\mathscr{V}}{\Hom{C}{Y}{W}}{\Hom{C}{X}{W}} \arrow[r, "\comp_{\Hom{C}{X}{W},\Hom{C}{Y}{W},\Hom{C}{Z}{W}}"'] & \Hom{\mathscr{V}}{\Hom{C}{Z}{W}}{\Hom{C}{X}{W}}
+\end{tikzcd}
+\end{center}
+
+\noindent \todo{Then there is an enriched version of the Yoneda embedding, namely a functor
+$\Yoneda_{\mathscr{V}}: C \to \Func{C^\op}{\mathscr{V}}_{\mathscr{V}}$ analogous to the above which is itself
+$\mathscr{V}$-enriched.}
+
+% First we note that the hom-functor $\Hom{C}{-}{X}: C \to \CMon$ is $\CMon$-enriched because composition is
+% bilinear and so $(- \comp f)$ preserves the additive structure of morphisms.
