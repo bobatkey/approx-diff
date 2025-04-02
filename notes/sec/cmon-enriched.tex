@@ -21,7 +21,7 @@ limits and colimits from $\Set$.
 
 \subsubsection{$\CMon$-enriched category}
 
-We note that if a category $C$ is $\CMon$-enriched, then:
+Recall that if a category $C$ is $\CMon$-enriched, then:
 \begin{enumerate}
 \item Every hom-object $\Hom{C}{A}{B}$ is a commutative monoid of morphisms; we write $\zero_{A,B}$ (zero
 morphism) for the unit, and $+_{A,B}$ (addition of morphisms) for the binary operation.
@@ -38,16 +38,16 @@ h \comp (f + g) &= (h \comp f) + (h \comp g)
 \end{salign*}
 \end{enumerate}
 
-$\CMon$ is closed monoidal, and so enriched over itself. More specifically every hom-object $\Hom{CMon}{A}{B}$
-is a commutative monoid of commutative monoid homomorphisms where:
+Because $\CMon$ is closed monoidal, it is enriched over itself; every hom-object $\Hom{CMon}{A}{B}$ is a
+commutative monoid where:
 
 \begin{enumerate}
 \item the unit $0$ is the constant homomorphism sending every element of $A$ to $\varepsilon_B$;
-\item addition of morphisms $+$ is defined pointwise so that $(f + g)(a) = f(a) + g(a)$.
+\item the binary operation $+$ is pointwise addition of homomorphisms $(f + g)(a) = f(a) + g(a)$.
 \end{enumerate}
 
 \begin{proposition}
-If $C$ is $\CMon$-enriched then for any category $D$ the functor category $\Func{D}{C}$ is $\CMon$-enriched.
+If $C$ is $\CMon$-enriched then any functor category $\Func{D}{C}$ is $\CMon$-enriched.
 \end{proposition}
 
 \subsubsection{$\CMon$-enriched presheaves}
