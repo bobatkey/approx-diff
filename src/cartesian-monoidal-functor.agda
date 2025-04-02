@@ -20,6 +20,7 @@ private
   module 𝒟P = HasProducts 𝒟-products
   module 𝒞 = Category 𝒞
   module 𝒞P = HasProducts 𝒞-products
+  module 𝒞T = HasTerminal 𝒞-terminal
 
 open import cartesian-monoidal 𝒞 𝒞-terminal 𝒞-products
   using ()
@@ -77,7 +78,19 @@ F-monoidal .lax-monoidal .mult-natural {x₁} {x₂} {y₁} {y₂} f g = begin
         module Px₂y₂ = Product (HasProducts.getProduct 𝒞-products x₂ y₂)
         module PFx₂Fy₂ = IsProduct (FP .preserve-products _ _ Px₂y₂.prod Px₂y₂.p₁ Px₂y₂.p₂ Px₂y₂.isProduct)
 F-monoidal .lax-monoidal .mult-assoc = {!!}
-F-monoidal .lax-monoidal .mult-lunit = {!!}
+F-monoidal .lax-monoidal .mult-lunit {x} = begin
+    PFIFx.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.prod-m to-terminal (𝒟.id _)
+  ≈⟨ PFIFx.pair-natural _ _ _ ⟩
+    PFIFx.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.prod-m to-terminal (𝒟.id _)) (𝒟P.p₂ 𝒟.∘ 𝒟P.prod-m to-terminal (𝒟.id _))
+  ≈⟨ PFIFx.pair-cong (𝒟P.pair-p₁ _ _) (𝒟P.pair-p₂ _ _) ⟩
+    PFIFx.pair (to-terminal 𝒟.∘ 𝒟P.p₁) (𝒟.id _ 𝒟.∘ 𝒟P.p₂)
+  ≈⟨ {!!} ⟩
+    F .fmor (𝒞P.pair (𝒞T.terminal-mor x) (𝒞.id _)) 𝒟.∘ 𝒟P.p₂
+  ∎
+  where open ≈-Reasoning 𝒟.isEquiv
+        module PIx = Product (𝒞P.getProduct (𝒞-monoidal .I⊗) x)
+        module PFIFx = IsProduct (FP .preserve-products _ _ PIx.prod PIx.p₁ PIx.p₂ PIx.isProduct)
+        open IsTerminal (FP .preserve-terminal _ (HasTerminal.isTerminal 𝒞-terminal))
 F-monoidal .lax-monoidal .mult-runit = {!!}
 
 F-monoidal .mult-is-iso .inverse =
