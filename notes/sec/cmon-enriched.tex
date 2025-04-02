@@ -118,13 +118,13 @@ I \arrow[r, "\id_{\Hom{C}{X}{W}}"'] & \Hom{\mathscr{V}}{\Hom{C}{X}{W}}{\Hom{C}{X
 
 \begin{center}
 \begin{tikzcd}[column sep=2.7cm]
-   \Hom{C}{Y}{Z} \tensor \Hom{C}{X}{Y} \arrow[r, "\comp_{X,Y,Z}"] \arrow[d, "\Hom{C}{-}{W}_{Y,Z}\,\tensor\,\Hom{C}{-}{W}_{X,Y}"'] & \Hom{C}{X}{Z} \arrow[d, "\Hom{C}{-}{W}_{X,Z}"] \\
-   \Hom{\mathscr{V}}{\Hom{C}{Z}{W}}{\Hom{C}{Y}{W}} \tensor \Hom{\mathscr{V}}{\Hom{C}{Y}{W}}{\Hom{C}{X}{W}} \arrow[r, "\comp_{\Hom{C}{X}{W},\Hom{C}{Y}{W},\Hom{C}{Z}{W}}"'] & \Hom{\mathscr{V}}{\Hom{C}{Z}{W}}{\Hom{C}{X}{W}}
+   \Hom{C}{Z}{Y} \tensor \Hom{C}{Y}{X} \arrow[r, "\comp_{X,Y,Z}"] \arrow[d, "\Hom{C}{-}{W}_{Y,Z}\,\tensor\,\Hom{C}{-}{W}_{X,Y}"'] & \Hom{C}{Z}{X} \arrow[d, "\Hom{C}{-}{W}_{X,Z}"] \\
+   \Hom{\mathscr{V}}{\Hom{C}{Y}{W}}{\Hom{C}{Z}{W}} \tensor \Hom{\mathscr{V}}{\Hom{C}{X}{W}}{\Hom{C}{Y}{W}} \arrow[r, "\comp_{\Hom{C}{X}{W},\Hom{C}{Y}{W},\Hom{C}{Z}{W}}"'] & \Hom{\mathscr{V}}{\Hom{C}{X}{W}}{\Hom{C}{Z}{W}}
 \end{tikzcd}
 \end{center}
 
 \noindent \todo{Then there is an enriched version of the Yoneda embedding, namely a functor
-$\Yoneda_{\mathscr{V}}: C \to \Func{C^\op}{\mathscr{V}}_{\mathscr{V}}$ analogous to the above which is itself
+$\Yoneda_{\mathscr{V}}: C \to \Func{C^\op}{\mathscr{V}}_{\mathscr{V}}$ analogous to $\Yoneda$ which is itself
 $\mathscr{V}$-enriched.}
 
 % First we note that the hom-functor $\Hom{C}{-}{X}: C \to \CMon$ is $\CMon$-enriched because composition is
