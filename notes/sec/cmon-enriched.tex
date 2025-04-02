@@ -103,9 +103,18 @@ which sends:
 \comp -): \Hom{C}{Z}{X} \to \Hom{C}{Z}{Y}$.
 \end{itemize}
 
-\noindent Now suppose $C$ is $\mathscr{V}$-enriched with $\mathscr{V}$ closed monoidal. Then the hom-functor
-$\Hom{C}{-}{X}: C^\op \to \mathscr{V}$ is $\mathscr{V}$-enriched; the following diagram commutes by the
-associativity of composition:
+\noindent Now suppose $C$ is $\mathscr{V}$-enriched with $\mathscr{V}$ closed monoidal; then the hom-functor
+$\Hom{C}{-}{X}: C^\op \to \mathscr{V}$ is $\mathscr{V}$-enriched. The following diagram commutes because
+precomposition with the identity is the identity on morphisms:
+
+\begin{center}
+\begin{tikzcd}[column sep=1.8cm]
+I \arrow[d, equals] \arrow[r, "\id_X"] & \Hom{C}{X}{X} \arrow[d, "\Hom{C}{-}{W}_{X,X}"] \\
+I \arrow[r, "\id_{\Hom{C}{X}{W}}"'] & \Hom{\mathscr{V}}{\Hom{C}{X}{W}}{\Hom{C}{X}{W}}
+\end{tikzcd}
+\end{center}
+
+\noindent and the following by the associativity of composition:
 
 \begin{center}
 \begin{tikzcd}[column sep=2.7cm]
