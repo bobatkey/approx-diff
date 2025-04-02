@@ -270,6 +270,57 @@ module _ {o m e os es} {𝒞 : Category o m e} where
       id _ ∘ (P .subst _ ∘ P .subst _) ∎
     where open ≈-Reasoning isEquiv
 
+  reindex-id-left : ∀ {X Y} {P : Fam Y 𝒞} (f : X ⇒s Y) →
+        ((reindex-≈ (idS _ ∘S f) f prop-setoid.id-left ∘f reindex-comp) ∘f reindex-f f reindex-id)
+        ≃f idf (P [ f ])
+  reindex-id-left {X} {Y} {P} f .transf-eq {x} = begin
+      (P .subst _ ∘ id _) ∘ id _
+    ≈⟨ id-right ⟩
+      P .subst _ ∘ id _
+    ≈⟨ id-right ⟩
+      P .subst _
+    ≈⟨ P .refl* ⟩
+      id _
+    ∎
+    where open ≈-Reasoning isEquiv
+
+  reindex-id-right : ∀ {X Y} {P : Fam Y 𝒞} (f : X ⇒s Y) →
+        ((reindex-≈ (f ∘S idS _) f prop-setoid.id-right ∘f reindex-comp) ∘f reindex-id)
+        ≃f idf (P [ f ])
+  reindex-id-right {X} {Y} {P} f .transf-eq {x} = begin
+      (P .subst _ ∘ id _) ∘ id _
+    ≈⟨ id-right ⟩
+      P .subst _ ∘ id _
+    ≈⟨ id-right ⟩
+      P .subst _
+    ≈⟨ P .refl* ⟩
+      id _
+    ∎
+    where open ≈-Reasoning isEquiv
+
+  reindex-id-natural : ∀ {X} {P Q : Fam X 𝒞} (f : P ⇒f Q) →
+      (reindex-f (idS X) f ∘f reindex-id) ≃f (reindex-id ∘f f)
+  reindex-id-natural {X} {P} {Q} f .transf-eq {x} = id-swap'
+
+  reindex-comp-natural : ∀ {X Y Z} {P Q : Fam Z 𝒞}
+   (g : Y ⇒s Z) (h : X ⇒s Y) (f : P ⇒f Q) →
+     (reindex-comp ∘f reindex-f h (reindex-f g f))
+    ≃f (reindex-f (g ∘S h) f ∘f reindex-comp)
+  reindex-comp-natural {X} {Y} {Z} {P} g h f .transf-eq {x} = id-swap
+
+  reindex-assoc : ∀ {W X Y Z} {P : Fam Z 𝒞} (f : Y ⇒s Z) (g : X ⇒s Y) (h : W ⇒s X) →
+    ((reindex-≈ {P = P} ((f ∘S g) ∘S h) (f ∘S (g ∘S h)) (prop-setoid.assoc f g h) ∘f reindex-comp) ∘f reindex-f h reindex-comp)
+    ≃f
+    (reindex-comp ∘f reindex-comp)
+  reindex-assoc {W} {X} {Y} {Z} {P} f g h .transf-eq {w} = begin
+      (P .subst _ ∘ id _) ∘ id _
+    ≈⟨ id-right ⟩
+      (P .subst _ ∘ id _)
+    ≈⟨ ∘-cong (P .refl*) ≈-refl ⟩
+      id _ ∘ id _
+    ∎
+    where open ≈-Reasoning isEquiv
+
 ------------------------------------------------------------------------------
 
 -- FIXME: this is a special case of limits, defined in functor.agda
