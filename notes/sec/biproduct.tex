@@ -5,12 +5,9 @@
 A \emph{zero} object is an object which is both terminal and initial.
 \end{definition}
 
-Suppose $C$ a $\CMon$-enriched category. \todo{I think we can also define ``biproduct'' just using zero
-morphisms, and then derive rather than assume $\CMon$-enrichment.}
-
 \begin{definition}[Biproduct]
-For any objects $A, B$, the \emph{biproduct} of $A$ and $B$ is an object $A \biprod B$ of $C$ together with
-morphisms
+Suppose $C$ a $\CMon$-enriched category. For any objects $A, B$, the \emph{biproduct} of $A$ and $B$ is an
+object $A \biprod B$ of $C$ together with morphisms
 
 \begin{center}
 \begin{tikzcd}
@@ -46,8 +43,11 @@ morphisms
 \end{salign*}
 \end{definition}
 
-\noindent We say that $C$ is \emph{semi-additive} if it has finite biproducts. Having products or coproducts
-is sufficient for semi-additivity.
+\noindent \todo{I think we can also define ``biproduct'' just using zero morphisms, and then derive rather
+than assume $\CMon$-enrichment.}
+
+We say a $\CMon$-enriched $C$ is \emph{semi-additive} if it also has finite biproducts; having products or
+coproducts is sufficient.
 
 \begin{proposition}
 \label{prop:biproduct:from-product-or-coproduct}
