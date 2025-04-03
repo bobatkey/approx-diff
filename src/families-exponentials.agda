@@ -343,9 +343,26 @@ lambda-inv⟶ {X}{Y}{Z} f .famf .natural {x₁ , y₁} {x₂ , y₂} (x₁≈x�
 
 lambda-ext' : ∀ {X Y Z} (f : Mor X (Y ⟶ Z)) →
              lambda⟶ (Mor-∘ eval⟶ (PP.prod-m f (Mor-id _))) ≃ f
-lambda-ext' {X}{Y}{Z} f .idxf-eq .func-eq {x₁} {x₂} x₁≈x₂ .idxf-eq .func-eq {y₁} {y₂} y₁≈y₂ =
+lambda-ext' f .idxf-eq .func-eq x₁≈x₂ .idxf-eq .func-eq y₁≈y₂ =
   f .idxf .func-resp-≈ x₁≈x₂ .idxf-eq .func-eq y₁≈y₂
-lambda-ext' f .idxf-eq .func-eq x₁≈x₂ .famf-eq = {!   !}
+lambda-ext' {X}{Y}{Z} f .idxf-eq .func-eq {x₁} {x₂} x₁≈x₂ .famf-eq .transf-eq {y} =
+  begin
+    fam Z .subst _ ∘
+    (id (fam Z .fm (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf .func (x₁ , y))) ∘
+     (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .famf .transf (x₁ , y) ∘ CP .in₂))
+  ≈⟨ {!   !} ⟩
+    f .idxf .func x₂ .famf .transf y
+  ∎
+  where open ≈-Reasoning isEquiv
+{-
+  begin
+    reindex-≈ (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf ∘S nudge x₁) (f .idxf .func x₂ .idxf) _ ∘f
+    (reindex-comp ∘f (reindex-f (nudge x₁) (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .famf) ∘f nudge-in₂ x₁))
+  ≈⟨ {!   !} ⟩
+    f .idxf .func x₂ .famf
+  ∎
+  where open ≈-Reasoning ≃f-isEquivalence
+-}
 lambda-ext' f .famf-eq = {!   !}
 
 exponentials : HasExponentials cat products
