@@ -317,7 +317,7 @@ lambda-ext' {X} {Y} {Z} f .idxf-eq .func-eq {x₁} {x₂} x₁≈x₂ .famf-eq .
 lambda-ext' {X} {Y} {Z} f .famf-eq =
   begin
     reindex-≈ (lambda⟶ (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y))) .idxf) (f. idxf) _ ∘f (lambda⟶ (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)))) .famf
-  ≈⟨{!   !}⟩
+  ≈⟨{!   !}⟩ -- TODO
     f .famf
   ∎
   where open ≈-Reasoning ≃f-isEquivalence
@@ -327,5 +327,5 @@ exponentials .exp = _⟶_
 exponentials .eval = eval⟶
 exponentials .lambda = lambda⟶
 exponentials .lambda-cong = lambda⟶-cong
-exponentials .eval-lambda f = β-rule f
-exponentials .lambda-ext f = lambda-ext' f
+exponentials .eval-lambda = β-rule
+exponentials .lambda-ext = lambda-ext'
