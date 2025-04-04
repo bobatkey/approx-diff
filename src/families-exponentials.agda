@@ -292,8 +292,6 @@ lambda-ext' : ∀ {X Y Z} (f : Mor X (Y ⟶ Z)) →
 lambda-ext' f .idxf-eq .func-eq x₁≈x₂ .idxf-eq .func-eq y₁≈y₂ =
   f .idxf .func-resp-≈ x₁≈x₂ .idxf-eq .func-eq y₁≈y₂
 lambda-ext' {X} {Y} {Z} f .idxf-eq .func-eq {x₁} {x₂} x₁≈x₂ .famf-eq .transf-eq {y} =
-  let q : f .idxf .func x₁ ≃ f .idxf .func x₂
-      q = {!   !} in
   begin
     Z .fam .subst _ ∘ (id (Z .fam .fm (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf .func (x₁ , y))) ∘
                        (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .famf .transf (x₁ , y) ∘ CP .in₂))
@@ -312,7 +310,7 @@ lambda-ext' {X} {Y} {Z} f .idxf-eq .func-eq {x₁} {x₂} x₁≈x₂ .famf-eq .
     Z .fam .subst _ ∘ (f .idxf .func x₁ .famf .transf y ∘ id (Y .fam .fm y))
   ≈⟨ ∘-cong ≈-refl id-right ⟩
     Z .fam .subst _ ∘ f .idxf .func x₁ .famf .transf y
-  ≈⟨ q .famf-eq .transf-eq ⟩
+  ≈⟨ f .idxf .func-resp-≈ x₁≈x₂ .famf-eq .transf-eq ⟩
     f .idxf .func x₂ .famf .transf y
   ∎ where open ≈-Reasoning isEquiv
 lambda-ext' f .famf-eq = {!   !}
