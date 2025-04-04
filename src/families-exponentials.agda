@@ -285,62 +285,6 @@ lambda⟶-cong {X}{Y}{Z}{f₁}{f₂} f₁≃f₂ .famf-eq .transf-eq {x} = begin
   ∎
   where open ≈-Reasoning isEquiv
 
-{-
-lambda-inv⟶ : ∀ {X Y Z} → Mor X (Y ⟶ Z) → Mor (X ⊗ Y) Z
-lambda-inv⟶ f .idxf .func (x , y) = f .idxf .func x .idxf .func y
-lambda-inv⟶ f .idxf .func-resp-≈ (x₁≈x₂ , y₁≈y₂) = f .idxf .func-resp-≈ x₁≈x₂ .idxf-eq .func-eq y₁≈y₂
-lambda-inv⟶ f .famf .transf (x , y) =
-  CP .copair (SP .evalΠ _ y ∘ f .famf .transf x) (f .idxf .func x .famf .transf y)
-lambda-inv⟶ {X}{Y}{Z} f .famf .natural {x₁ , y₁} {x₂ , y₂} (x₁≈x₂ , y₁≈y₂) =
-  let q =
-        let open ≈-Reasoning isEquiv in
-        begin
-          (SP .evalΠ (Z .fam [ f .idxf .func x₂ .idxf ]) y₂ ∘ f .famf .transf x₂) ∘ X .fam .subst _
-        ≈⟨ assoc _ _ _ ⟩
-          SP .evalΠ (Z .fam [ f .idxf .func x₂ .idxf ]) y₂ ∘ (f .famf .transf x₂ ∘ X .fam .subst _)
-        ≈⟨ ∘-cong ≈-refl (f .famf .natural x₁≈x₂) ⟩
-          SP .evalΠ (Z .fam [ f .idxf .func x₂ .idxf ]) y₂ ∘ ((Y ⟶ Z) .fam .subst {!   !} ∘ f .famf .transf x₁)
-        ≈⟨ {!   !} ⟩
-          Z .fam .subst _ ∘ (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y₁ ∘ f .famf .transf x₁)
-        ∎ in
-  let r =
-        let open ≈-Reasoning isEquiv in
-        let z : Y .fam .fm y₁ ⇒ Z .fam .fm (f .idxf .func x₂ .idxf .func y₁)
-            z = f .idxf .func x₂ .famf .transf y₁ in
-        let g : (idx (Y ⟶ Z) ≈ f .idxf .func x₂) (f .idxf .func x₁)
-            g = f .idxf .func-resp-≈ (X .idx .isEquivalence .IsEquivalence.sym x₁≈x₂) in
-        let h = g .idxf-eq .func-eq in
-        let w : Z .fam .fm (f .idxf .func x₂ .idxf .func y₁) ⇒ Z .fam .fm (f .idxf .func x₁ .idxf .func y₁)
-            w = Z .fam .subst (h (Y .idx .isEquivalence .IsEquivalence.refl)) in
-        let w' : Y .fam .fm y₁ ⇒ Z .fam .fm (f .idxf .func x₁ .idxf .func y₁)
-            w' = w ∘ z in
-        let z' : Y .fam .fm y₁ ⇒ Z .fam .fm (f .idxf .func x₁ .idxf .func y₁)
-            z' = f .idxf .func x₁ .famf .transf y₁ in
-        begin
-          f .idxf .func x₂ .famf .transf y₂ ∘ Y .fam .subst y₁≈y₂
-        ≈⟨ f .idxf .func x₂ .famf .natural y₁≈y₂ ⟩
-          Z .fam .subst _ ∘ z
-        ≈⟨ {!  !} ⟩
-          Z .fam .subst {!   !} ∘ (w ∘ z)
-        ≈⟨ ∘-cong ≈-refl {!   !} ⟩
-          Z .fam .subst {!   !} ∘ z'
-        ∎ in
-  let open ≈-Reasoning isEquiv in
-  begin
-    CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₂ .idxf ]) y₂ ∘ f .famf .transf x₂) (f .idxf .func x₂ .famf .transf y₂)
-      ∘ prod-m P (X .fam .subst _) (Y .fam .subst _)
-  ≈⟨ copair-prod _ BP ⟩
-    CP .copair ((SP .evalΠ (Z .fam [ f .idxf .func x₂ .idxf ]) y₂ ∘ f .famf .transf x₂) ∘ X .fam .subst _)
-               (f .idxf .func x₂ .famf .transf y₂ ∘ Y .fam .subst _)
-  ≈⟨ CP .copair-cong q r ⟩
-    CP .copair (Z .fam .subst _ ∘ (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y₁ ∘ f .famf .transf x₁))
-               (Z .fam .subst _ ∘ f .idxf .func x₁ .famf .transf y₁)
-  ≈˘⟨ copair-natural CP _ _ _ ⟩
-    Z .fam .subst _ ∘ CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y₁ ∘ f .famf .transf x₁)
-                                 (f .idxf .func x₁ .famf .transf y₁)
-  ∎
--}
-
 open import Data.Product using (proj₁; proj₂)
 
 lambda-ext' : ∀ {X Y Z} (f : Mor X (Y ⟶ Z)) →
@@ -355,9 +299,15 @@ lambda-ext' {X}{Y}{Z} f .idxf-eq .func-eq {x₁} {x₂} x₁≈x₂ .famf-eq .tr
   ≈⟨ ∘-cong ≈-refl id-left ⟩
     (Z .fam .subst _ ∘ (g† .transf (x₁ , y) ∘ CP .in₂))
   ≈⟨ ∘-cong ≈-refl (∘-cong id-left ≈-refl) ⟩
-    (Z .fam .subst _ ∘ ((CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y) (f .idxf .func x₁ .famf .transf y) ∘ (PP.prod-m f (Mor-id Y)) .famf .transf ((x₁ , y))) ∘ CP .in₂))
+    (Z .fam .subst _ ∘ ((CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y) (f .idxf .func x₁ .famf .transf y) ∘
+                         (PP.prod-m f (Mor-id Y)) .famf .transf (x₁ , y)) ∘ CP .in₂))
   ≈⟨ ∘-cong ≈-refl {!  !} ⟩
-    (Z .fam .subst _ ∘ (CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y ∘ f .famf .transf x₁) (f .idxf .func x₁ .famf .transf y) ∘ CP .in₂))
+    (Z .fam .subst _ ∘ (CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y ∘ f .famf .transf x₁)
+                                   (f .idxf .func x₁ .famf .transf y ∘ Mor-id Y .famf .transf y) ∘
+                        CP .in₂))
+  ≈⟨ ∘-cong ≈-refl {!  !} ⟩
+    (Z .fam .subst _ ∘ (CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y ∘ f .famf .transf x₁)
+                                   (f .idxf .func x₁ .famf .transf y) ∘ CP .in₂))
   ≈⟨ {!   !} ⟩
     f .idxf .func x₂ .famf .transf y
   ∎ where open ≈-Reasoning isEquiv
