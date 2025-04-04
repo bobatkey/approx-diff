@@ -39,7 +39,7 @@ module CategoryOfFamilies {o m e} os es (𝒞 : Category o m e) where
   open Obj
 
   record Mor (X Y : Obj) : Set (os ⊔ es ⊔ m ⊔ e) where
-    no-eta-equality
+--    no-eta-equality
     field
       idxf : X .idx ⇒s Y .idx
       famf : X .fam ⇒f (Y .fam [ idxf ])
