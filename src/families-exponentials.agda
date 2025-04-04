@@ -354,6 +354,8 @@ lambda-ext' {X}{Y}{Z} f .idxf-eq .func-eq {x₁} {x₂} x₁≈x₂ .famf-eq .tr
     (Z .fam .subst _ ∘ (id (Z .fam .fm (f† .func (x₁ , y))) ∘ (g† .transf (x₁ , y) ∘ CP .in₂)))
   ≈⟨ ∘-cong ≈-refl id-left ⟩
     (Z .fam .subst _ ∘ (g† .transf (x₁ , y) ∘ CP .in₂))
+  ≈⟨ ∘-cong ≈-refl (∘-cong id-left ≈-refl) ⟩
+    (Z .fam .subst _ ∘ ((eval⟶ .famf .transf (f .idxf .func x₁ , y) ∘ (PP.prod-m f (Mor-id Y)) .famf .transf ((x₁ , y))) ∘ CP .in₂))
   ≈⟨ ∘-cong ≈-refl {!  !} ⟩
     (Z .fam .subst _ ∘ (CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y ∘ f .famf .transf x₁) (f .idxf .func x₁ .famf .transf y) ∘ CP .in₂))
   ≈⟨ {!   !} ⟩
