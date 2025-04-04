@@ -81,7 +81,7 @@ eval⟶ {X} {Y} .famf .natural {f₁ , x₁} {f₂ , x₂} (f₁≈f₂ , x₁�
     CP .copair (SP .evalΠ (Y .fam [ f₂ .idxf ]) x₂) (f₂ .famf .transf x₂) ∘ prod-m P ((X ⟶ Y) .fam .subst f₁≈f₂) (X .fam .subst x₁≈x₂)
   ≈⟨ copair-prod _ BP ⟩
     CP .copair (SP .evalΠ (Y .fam [ f₂ .idxf ]) x₂ ∘ (X ⟶ Y) .fam .subst f₁≈f₂) (f₂ .famf .transf x₂ ∘ X .fam .subst x₁≈x₂)
-  ≈⟨ CP .copair-cong  (SP .lambda-eval x₂) (f₂ .famf .natural x₁≈x₂) ⟩
+  ≈⟨ CP .copair-cong (SP .lambda-eval x₂) (f₂ .famf .natural x₁≈x₂) ⟩
     CP .copair (Y .fam .subst _ ∘ SP .evalΠ (Y .fam [ f₁ .idxf ]) x₂) (Y .fam .subst _ ∘ f₂ .famf .transf x₁)
   ≈˘⟨ CP .copair-cong (∘-cong ≈-refl (SP .evalΠ-cong x₁≈x₂)) (∘-cong ≈-refl (f₁≈f₂ .famf-eq .transf-eq)) ⟩
     CP .copair (Y .fam .subst _ ∘ (Y .fam .subst _ ∘ SP .evalΠ (Y .fam [ f₁ .idxf ]) x₁)) (Y .fam .subst _ ∘ (Y .fam .subst _ ∘ f₁ .famf .transf x₁))
@@ -292,19 +292,17 @@ lambda-ext' : ∀ {X Y Z} (f : Mor X (Y ⟶ Z)) →
 lambda-ext' f .idxf-eq .func-eq x₁≈x₂ .idxf-eq .func-eq y₁≈y₂ =
   f .idxf .func-resp-≈ x₁≈x₂ .idxf-eq .func-eq y₁≈y₂
 lambda-ext' {X}{Y}{Z} f .idxf-eq .func-eq {x₁} {x₂} x₁≈x₂ .famf-eq .transf-eq {y} =
-  let f† = Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf in
-  let g† = Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .famf in
   begin
-    (Z .fam .subst _ ∘ (id (Z .fam .fm (f† .func (x₁ , y))) ∘ (g† .transf (x₁ , y) ∘ CP .in₂)))
+    (Z .fam .subst _ ∘ (id (Z .fam .fm (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf .func (x₁ , y))) ∘
+                        (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .famf .transf (x₁ , y) ∘ CP .in₂)))
   ≈⟨ ∘-cong ≈-refl id-left ⟩
-    (Z .fam .subst _ ∘ (g† .transf (x₁ , y) ∘ CP .in₂))
+    (Z .fam .subst _ ∘ (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .famf .transf (x₁ , y) ∘ CP .in₂))
   ≈⟨ ∘-cong ≈-refl (∘-cong id-left ≈-refl) ⟩
     (Z .fam .subst _ ∘ ((CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y) (f .idxf .func x₁ .famf .transf y) ∘
-                         (PP.prod-m f (Mor-id Y)) .famf .transf (x₁ , y)) ∘ CP .in₂))
-  ≈⟨ ∘-cong ≈-refl {!  !} ⟩
-    (Z .fam .subst _ ∘ (CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y ∘ f .famf .transf x₁)
-                                   (f .idxf .func x₁ .famf .transf y ∘ Mor-id Y .famf .transf y) ∘
-                        CP .in₂))
+                         PP.prod-m f (Mor-id Y) .famf .transf (x₁ , y)) ∘ CP .in₂))
+  ≈⟨ ∘-cong ≈-refl (∘-cong (∘-cong ≈-refl {!  !}) ≈-refl) ⟩
+    (Z .fam .subst _ ∘ ((CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y) (f .idxf .func x₁ .famf .transf y) ∘
+                         prod-m P (f .famf .transf x₁) (Mor-id Y .famf .transf y)) ∘ CP .in₂))
   ≈⟨ ∘-cong ≈-refl {!  !} ⟩
     (Z .fam .subst _ ∘ (CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y ∘ f .famf .transf x₁)
                                    (f .idxf .func x₁ .famf .transf y) ∘ CP .in₂))
