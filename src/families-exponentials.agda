@@ -312,8 +312,15 @@ lambda-ext' {X} {Y} {Z} f .idxf-eq .func-eq {x₁} {x₂} x₁≈x₂ .famf-eq .
     Z .fam .subst _ ∘ f .idxf .func x₁ .famf .transf y
   ≈⟨ f .idxf .func-resp-≈ x₁≈x₂ .famf-eq .transf-eq ⟩
     f .idxf .func x₂ .famf .transf y
-  ∎ where open ≈-Reasoning isEquiv
-lambda-ext' f .famf-eq = {!   !}
+  ∎
+  where open ≈-Reasoning isEquiv
+lambda-ext' {X} {Y} {Z} f .famf-eq =
+  begin
+    reindex-≈ (lambda⟶ (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y))) .idxf) (f. idxf) _ ∘f (lambda⟶ (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)))) .famf
+  ≈⟨{!   !}⟩
+    f .famf
+  ∎
+  where open ≈-Reasoning ≃f-isEquivalence
 
 exponentials : HasExponentials cat products
 exponentials .exp = _⟶_
