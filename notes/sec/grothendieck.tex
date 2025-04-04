@@ -65,10 +65,10 @@ Y \to Z$ where $\biinj_{\faml{Y}}: \faml{Y} \to \const_{\idx{Y}}(\faml{X}_x) \bi
 
 Then the following triangle identities hold:
 \begin{enumerate}
-\item $\lambda_{X,Y,Z}(\eval_{Y,Z} \comp (f \tensor \id_Y) = f$. Suppose $(f,g): X \to [Y,Z]$ and define
-$(f^\dagger, g^\dagger): X \times Y \to Z$ with:
+\item $\lambda_{X,Y,Z}(\eval_{Y,Z} \comp (f, \id_Y)) = f$. Suppose $(f,g): X \to [Y,Z]$ and define
+$(f^\dagger, g^\dagger) = \eval_{Y,Z} \comp ((f,g), \id_Y): X \times Y \to Z$. We then have:
 \begin{itemize}
-\item $f^\dagger(x,y) = \idx{f(x)}(y)$
+\item $f^\dagger(x,y) = \eval_{Y,Z} \comp ((f,g), \id_{\idx{Y}}) = \idx{f(x)}(y)$
 \item $g^\dagger_{x,y} = \coprodM{{\eval_{\prod}}_y \comp g_x}{\faml{f(x)}_y}$
 \end{itemize}
 
@@ -107,7 +107,7 @@ g_x
 \end{align*}
 \qed
 
-\item $\eval_{Y,Z} \comp (\lambda_{X,Y,Z}(f) \tensor \id_{Y}) = f$. Suppose $f: X \times Y \to Z$ in $\Fam(C)$
+\item $\eval_{Y,Z} \comp (\lambda_{X,Y,Z}(f), \id_{Y}) = f$. Suppose $f: X \times Y \to Z$ in $\Fam(C)$
 and $(x, y) \in \idx{X} \times \idx{Y}$. The diagram on the left below commutes by the universal property of
 the set-indexed product; the commutativity of the diagram on the right is trivial.
 
