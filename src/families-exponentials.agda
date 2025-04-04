@@ -350,34 +350,25 @@ lambda-ext' f .idxf-eq .func-eq x₁≈x₂ .idxf-eq .func-eq y₁≈y₂ =
 lambda-ext' {X}{Y}{Z} f .idxf-eq .func-eq {x₁} {x₂} x₁≈x₂ .famf-eq .transf-eq {y} =
   let g = PP.prod-m f (Mor-id Y) in
   let q = prod-m (products.products P) f (Mor-id Y) in
+  let q' = q .idxf .func (x₁ , y) in
   begin
     fam Z .subst _ ∘ (id (fam Z .fm (Mor-∘ eval⟶ g .idxf .func (x₁ , y))) ∘ (Mor-∘ eval⟶ g .famf .transf (x₁ , y) ∘ CP .in₂))
   ≈⟨ ∘-cong ≈-refl id-left ⟩
-    fam Z .subst _ ∘ ((reindex-comp ∘f (reindex-f (g .idxf) (eval⟶ .famf) ∘f (g .famf))) .transf (x₁ , y) ∘ CP .in₂)
-  ≈⟨ {!   !} ⟩
+--    fam Z .subst _ ∘ ((reindex-comp ∘f (reindex-f (g .idxf) (eval⟶ .famf) ∘f (g .famf))) .transf (x₁ , y) ∘ CP .in₂)
+--  ≈⟨ {!   !} ⟩
     (fam Z .subst _ ∘
-       ((id
-         (fam Z .fm
-          ((q .idxf .func (x₁ , y) .proj₁) .idxf .func (q .idxf .func (x₁ , y) .proj₂)))
+       ((id _
          ∘
-         (CP .copair
-          (SP .evalΠ
-           (fam Z [ q .idxf .func (x₁ , y) .proj₁ .idxf ]) (q .idxf .func (x₁ , y) .proj₂))
-          (famf
-           (q .idxf
-            .func (x₁ , y) .proj₁)
-           .transf
-           (q .idxf
-            .func (x₁ , y) .proj₂))
-          ∘
-          q .famf
-          .transf (x₁ , y)))
-        ∘ CP .in₂))
+         (CP .copair (SP .evalΠ (fam Z [ q' .proj₁ .idxf ]) (q' .proj₂)) (q' .proj₁ .famf .transf (q' .proj₂)) ∘ q .famf .transf (x₁ , y))) ∘ CP .in₂))
+  ≈⟨ ∘-cong ≈-refl (∘-cong id-left ≈-refl) ⟩
+    (fam Z .subst _ ∘
+       ((CP .copair (SP .evalΠ (fam Z [ q' .proj₁ .idxf ]) (q' .proj₂)) (q' .proj₁ .famf .transf (q' .proj₂)) ∘ q .famf .transf (x₁ , y)) ∘ CP .in₂))
   ≈⟨ {!   !} ⟩
     f .idxf .func x₂ .famf .transf y
   ∎
   where
   open ≈-Reasoning isEquiv
+
 lambda-ext' f .famf-eq = {!   !}
 
 exponentials : HasExponentials cat products
