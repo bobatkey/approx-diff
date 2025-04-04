@@ -300,9 +300,9 @@ lambda-ext' {X}{Y}{Z} f .idxf-eq .func-eq {x₁} {x₂} x₁≈x₂ .famf-eq .tr
   ≈⟨ ∘-cong ≈-refl (∘-cong id-left ≈-refl) ⟩
     (Z .fam .subst _ ∘ ((CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y) (f .idxf .func x₁ .famf .transf y) ∘
                          PP.prod-m f (Mor-id Y) .famf .transf (x₁ , y)) ∘ CP .in₂))
-  ≈⟨ ∘-cong ≈-refl (∘-cong (∘-cong ≈-refl {!  !}) ≈-refl) ⟩
+  ≈⟨ ∘-cong ≈-refl (∘-cong (∘-cong ≈-refl (P .pair-cong id-left id-left)) ≈-refl) ⟩
     (Z .fam .subst _ ∘ ((CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y) (f .idxf .func x₁ .famf .transf y) ∘
-                         prod-m P (f .famf .transf x₁) (Mor-id Y .famf .transf y)) ∘ CP .in₂))
+                         prod-m P (f .famf .transf x₁) (id (Y .fam .fm y))) ∘ CP .in₂))
   ≈⟨ ∘-cong ≈-refl {!  !} ⟩
     (Z .fam .subst _ ∘ (CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x₁ .idxf ]) y ∘ f .famf .transf x₁)
                                    (f .idxf .func x₁ .famf .transf y) ∘ CP .in₂))
