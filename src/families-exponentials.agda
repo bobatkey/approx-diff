@@ -324,6 +324,10 @@ lambda-ext' {X} {Y} {Z} f .famf-eq .transf-eq {x} =
   ≈⟨{!   !}⟩
     SP .lambdaΠ (X .fam .fm x)
                 (Z .fam [ f .idxf .func x .idxf ])
+                r
+  ≈⟨ SP .lambdaΠ-cong (record { transf-eq = CP .copair-in₁ _ _ }) ⟩
+    SP .lambdaΠ (X .fam .fm x)
+                (Z .fam [ f .idxf .func x .idxf ])
                 (evalΠf SP (Z .fam [ f .idxf .func x .idxf ]) ∘f constF (f .famf .transf x))
   ≈⟨ SP .lambda-ext ⟩
     f .famf .transf x
@@ -331,8 +335,12 @@ lambda-ext' {X} {Y} {Z} f .famf-eq .transf-eq {x} =
   where
   open ≈-Reasoning isEquiv
   r : constantFam _ _ (X .fam .fm x) ⇒f (Z .fam [ f .idxf .func x .idxf ])
-  r .transf y = SP .evalΠ (Z .fam [ f .idxf .func x .idxf ]) y ∘ f .famf .transf x
+  r .transf y = CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x .idxf ]) y ∘ f .famf .transf x) (f .idxf .func x .famf .transf y) ∘ CP .in₁
   r .natural = {!   !}
+
+  r' : constantFam _ _ (X .fam .fm x) ⇒f (Z .fam [ f .idxf .func x .idxf ])
+  r' .transf y = SP .evalΠ (Z .fam [ f .idxf .func x .idxf ]) y ∘ f .famf .transf x
+  r' .natural = {!   !}
 
 exponentials : HasExponentials cat products
 exponentials .exp = _⟶_
