@@ -102,7 +102,7 @@ nudge-≈ : ∀ {X Y : Setoid (m ⊔ e ⊔ os ⊔ es) (m ⊔ e ⊔ os ⊔ es)} {
 nudge-≈ x₁≈x₂ .func-eq y₁≈y₂ = x₁≈x₂ , y₁≈y₂
 
 nudge-in₁ : ∀ {X Y : Obj} (x : X .idx .Carrier) →
-           constantFam _ _ (X .fam .fm x) ⇒f ((X ⊗ Y) .fam [ nudge x ])
+            constantFam _ _ (X .fam .fm x) ⇒f ((X ⊗ Y) .fam [ nudge x ])
 nudge-in₁ {X} {Y} x .transf y = CP .in₁
 nudge-in₁ {X} {Y} x .natural e =
   begin
@@ -315,15 +315,24 @@ lambda-ext' {X} {Y} {Z} f .idxf-eq .func-eq {x₁} {x₂} x₁≈x₂ .famf-eq .
   ∎
   where open ≈-Reasoning isEquiv
 lambda-ext' {X} {Y} {Z} f .famf-eq .transf-eq {x} =
+  let q = reindex-comp ∘f (reindex-f (nudge x) (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .famf) ∘f nudge-in₁ x) in
   begin
     Π-map SP (reindex-≈ (idxf (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y))) ∘S nudge x) (f .idxf .func x .idxf) _) ∘
     SP .lambdaΠ (X .fam .fm x)
                 (Z .fam [ Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf ∘S nudge x ])
                 (reindex-comp ∘f (reindex-f (nudge x) (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .famf) ∘f nudge-in₁ x))
   ≈⟨{!   !}⟩
+    SP .lambdaΠ (X .fam .fm x)
+                (Z .fam [ f .idxf .func x .idxf ])
+                (evalΠf SP (Z .fam [ f .idxf .func x .idxf ]) ∘f constF (f .famf .transf x))
+  ≈⟨ SP .lambda-ext ⟩
     f .famf .transf x
   ∎
-  where open ≈-Reasoning isEquiv
+  where
+  open ≈-Reasoning isEquiv
+  r : constantFam _ _ (X .fam .fm x) ⇒f (Z .fam [ f .idxf .func x .idxf ])
+  r .transf y = SP .evalΠ (Z .fam [ f .idxf .func x .idxf ]) y ∘ f .famf .transf x
+  r .natural = {!   !}
 
 exponentials : HasExponentials cat products
 exponentials .exp = _⟶_
