@@ -338,10 +338,6 @@ lambda-ext' {X} {Y} {Z} f .famf-eq .transf-eq {x} =
   r .transf y = CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x .idxf ]) y ∘ f .famf .transf x) (f .idxf .func x .famf .transf y) ∘ CP .in₁
   r .natural = {!   !}
 
-  r' : constantFam _ _ (X .fam .fm x) ⇒f (Z .fam [ f .idxf .func x .idxf ])
-  r' .transf y = SP .evalΠ (Z .fam [ f .idxf .func x .idxf ]) y ∘ f .famf .transf x
-  r' .natural = {!   !}
-
 exponentials : HasExponentials cat products
 exponentials .exp = _⟶_
 exponentials .eval = eval⟶
