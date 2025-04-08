@@ -344,7 +344,17 @@ lambda-ext' {X} {Y} {Z} f .famf-eq .transf-eq {x} =
     begin
       Z .fam .subst _ ∘ (id (Z .fam .fm (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf .func (x , y))) ∘ (q .transf (x , y) ∘ CP .in₁))
     ≈⟨ ∘-cong ≈-refl id-left ⟩
-      Z .fam .subst _ ∘ ((reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) .transf (x , y) ∘ CP .in₁)
+      Z .fam .subst (Z .idx .refl) ∘
+      ((reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) .transf (x , y) ∘ CP .in₁)
+    ≈⟨ ∘-cong (refl* (Z .fam)) ≈-refl ⟩
+      id _ ∘
+      ((reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) .transf (x , y) ∘ CP .in₁)
+    ≈˘⟨ assoc _ _ _ ⟩
+      (id _ ∘ ((reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) .transf (x , y))) ∘
+      CP .in₁
+    ≈⟨ {!   !} ⟩
+      ((reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) .transf (x , y)) ∘
+      CP .in₁
     ≈⟨ {!   !} ⟩
       (eval⟶ .famf .transf (f .idxf .func x , y) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y)) ∘ CP .in₁
     ≈⟨ ∘-cong (∘-cong ≈-refl (P .pair-cong id-left id-left)) ≈-refl ⟩
