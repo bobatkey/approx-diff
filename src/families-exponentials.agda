@@ -346,16 +346,15 @@ lambda-ext' {X} {Y} {Z} f .famf-eq .transf-eq {x} =
     ≈⟨ ∘-cong ≈-refl id-left ⟩
       Z .fam .subst _ ∘ ((reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) .transf (x , y) ∘ CP .in₁)
     ≈⟨ {!   !} ⟩
-      ((CP .copair (SP .evalΠ _ y) ((f .idxf .func x) .famf .transf y)) ∘ PP.prod-m f (Mor-id Y) .famf .transf ((x , y))) ∘ CP .in₁
-    ≈˘⟨ ∘-cong {!   !} ≈-refl ⟩
+      (eval⟶ .famf .transf (f .idxf .func x , y) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y)) ∘ CP .in₁
+    ≈⟨ ∘-cong (∘-cong ≈-refl (≈-trans (P .pair-cong ≈-refl ≈-refl) (P .pair-cong id-left id-left))) ≈-refl ⟩
+      (eval⟶ .famf .transf (f .idxf .func x , y) ∘ prod-m P (f .famf .transf x) (Mor-id Y .famf .transf y)) ∘ CP .in₁
+    ≈⟨ ∘-cong (copair-prod _ BP) ≈-refl ⟩
       CP .copair (SP .evalΠ _ y ∘ f .famf .transf x) ((f .idxf .func x) .famf .transf y ∘ Mor-id Y .famf .transf y) ∘ CP .in₁
     ≈⟨ ∘-cong (CP .copair-cong ≈-refl id-right) ≈-refl ⟩
       CP .copair (SP .evalΠ _ y ∘ f .famf .transf x) ((f .idxf .func x) .famf .transf y) ∘ CP .in₁
     ∎
     where open ≈-Reasoning isEquiv
-
--- eval⟶ .famf .transf (f , y) =
---   CP .copair (SP .evalΠ _ y) (f .famf .transf y)
 
 exponentials : HasExponentials cat products
 exponentials .exp = _⟶_
