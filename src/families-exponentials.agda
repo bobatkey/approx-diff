@@ -347,7 +347,7 @@ lambda-ext' {X} {Y} {Z} f .famf-eq .transf-eq {x} =
       Z .fam .subst _ ∘ ((reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) .transf (x , y) ∘ CP .in₁)
     ≈⟨ {!   !} ⟩
       (eval⟶ .famf .transf (f .idxf .func x , y) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y)) ∘ CP .in₁
-    ≈⟨ ∘-cong (∘-cong ≈-refl (≈-trans (P .pair-cong ≈-refl ≈-refl) (P .pair-cong id-left id-left))) ≈-refl ⟩
+    ≈⟨ ∘-cong (∘-cong ≈-refl (P .pair-cong id-left id-left)) ≈-refl ⟩
       (eval⟶ .famf .transf (f .idxf .func x , y) ∘ prod-m P (f .famf .transf x) (Mor-id Y .famf .transf y)) ∘ CP .in₁
     ≈⟨ ∘-cong (copair-prod _ BP) ≈-refl ⟩
       CP .copair (SP .evalΠ _ y ∘ f .famf .transf x) ((f .idxf .func x) .famf .transf y ∘ Mor-id Y .famf .transf y) ∘ CP .in₁
