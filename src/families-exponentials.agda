@@ -318,21 +318,17 @@ lambda-ext' {X} {Y} {Z} f .famf-eq .transf-eq {x} =
   let open ≈-Reasoning isEquiv in
   begin
     Π-map SP (reindex-≈ (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf ∘S nudge x) (f .idxf .func x .idxf) _) ∘
-    SP .lambdaΠ (X .fam .fm x)
-                (Z .fam [ Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf ∘S nudge x ])
+    SP .lambdaΠ (X .fam .fm x) (Z .fam [ Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf ∘S nudge x ])
                 (reindex-comp ∘f (reindex-f (nudge x) q ∘f nudge-in₁ x))
   ≈˘⟨ lambda-compose SP _ _ ⟩
-    SP .lambdaΠ (X .fam .fm x)
-                (Z .fam [ f .idxf .func x .idxf ])
+    SP .lambdaΠ (X .fam .fm x) (Z .fam [ f .idxf .func x .idxf ])
                 (reindex-≈ (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf ∘S nudge x) (f .idxf .func x .idxf) _ ∘f
                  (reindex-comp ∘f (reindex-f (nudge x) q ∘f nudge-in₁ x)))
-  ≈⟨ SP .lambdaΠ-cong {!   !} ⟩
-    SP .lambdaΠ (X .fam .fm x)
-                (Z .fam [ f .idxf .func x .idxf ])
+  ≈⟨ SP .lambdaΠ-cong q' ⟩
+    SP .lambdaΠ (X .fam .fm x) (Z .fam [ f .idxf .func x .idxf ])
                 r
   ≈⟨ SP .lambdaΠ-cong (record { transf-eq = CP .copair-in₁ _ _ }) ⟩
-    SP .lambdaΠ (X .fam .fm x)
-                (Z .fam [ f .idxf .func x .idxf ])
+    SP .lambdaΠ (X .fam .fm x) (Z .fam [ f .idxf .func x .idxf ])
                 (evalΠf SP (Z .fam [ f .idxf .func x .idxf ]) ∘f constF (f .famf .transf x))
   ≈⟨ SP .lambda-ext ⟩
     f .famf .transf x
@@ -347,10 +343,19 @@ lambda-ext' {X} {Y} {Z} f .famf-eq .transf-eq {x} =
   q' .transf-eq {y} =
     begin
       Z .fam .subst _ ∘ (id (Z .fam .fm (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf .func (x , y))) ∘ (q .transf (x , y) ∘ CP .in₁))
+    ≈⟨ ∘-cong ≈-refl id-left ⟩
+      Z .fam .subst _ ∘ ((reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) .transf (x , y) ∘ CP .in₁)
     ≈⟨ {!   !} ⟩
-      CP .copair (SP .evalΠ (Z .fam [ f .idxf .func x .idxf ]) y ∘ f .famf .transf x) ((f .idxf .func x) .famf .transf y) ∘ CP .in₁
+      ((CP .copair (SP .evalΠ _ y) ((f .idxf .func x) .famf .transf y)) ∘ PP.prod-m f (Mor-id Y) .famf .transf ((x , y))) ∘ CP .in₁
+    ≈˘⟨ ∘-cong {!   !} ≈-refl ⟩
+      CP .copair (SP .evalΠ _ y ∘ f .famf .transf x) ((f .idxf .func x) .famf .transf y ∘ Mor-id Y .famf .transf y) ∘ CP .in₁
+    ≈⟨ ∘-cong (CP .copair-cong ≈-refl id-right) ≈-refl ⟩
+      CP .copair (SP .evalΠ _ y ∘ f .famf .transf x) ((f .idxf .func x) .famf .transf y) ∘ CP .in₁
     ∎
     where open ≈-Reasoning isEquiv
+
+-- eval⟶ .famf .transf (f , y) =
+--   CP .copair (SP .evalΠ _ y) (f .famf .transf y)
 
 exponentials : HasExponentials cat products
 exponentials .exp = _⟶_
