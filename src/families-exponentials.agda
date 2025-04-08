@@ -349,12 +349,8 @@ lambda-ext' {X} {Y} {Z} f .famf-eq .transf-eq {x} =
     ≈⟨ ∘-cong (refl* (Z .fam)) ≈-refl ⟩
       id _ ∘
       ((reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) .transf (x , y) ∘ CP .in₁)
-    ≈˘⟨ assoc _ _ _ ⟩
-      (id _ ∘ ((reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) .transf (x , y))) ∘
-      CP .in₁
-    ≈⟨ {!   !} ⟩
-      ((reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) .transf (x , y)) ∘
-      CP .in₁
+    ≈⟨ id-left ⟩
+      (reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) .transf (x , y) ∘ CP .in₁
     ≈⟨ {!   !} ⟩
       (eval⟶ .famf .transf (f .idxf .func x , y) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y)) ∘ CP .in₁
     ≈⟨ ∘-cong (∘-cong ≈-refl (P .pair-cong id-left id-left)) ≈-refl ⟩
