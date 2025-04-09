@@ -358,6 +358,8 @@ module product {_∙_ : Ω → Ω → Ω} {ι : Ω}
     symmetric-monoidal .SymmetricMonoidal.⊗-symmetry-hexagon {X} {Y} {Z} .f≈f ((x , y) , z) =
       (Y ⊗ (Z ⊗ X)) .refl
 
+------------------------------------------------------------------------------
+-- The product arising from the underlying monoid on the logical values
 open product •-isMonoid (selfDuoidal ≤-isPreorder •-isMonoid •-comm)
   renaming (symmetric-monoidal to symmetic-monoidal';
             symmetry to symmetry')
@@ -653,48 +655,44 @@ module Completion {Ω₀ : Set a₀}
   ------------------------------------------------------------------------------
   -- Complete Spaces have limits of regular functions.
   --
-  -- FIXME: make this work for Cauchy sequences with a given modulus
-  -- of continuity.
-  module _ where
+  -- A cauchy approximation is something that takes approximation
+  -- bounds to elements satisfying a conditional equality.
+  Approximation : ∀ X → (Ω₀ → X .Carrier) → Prop (a₀ ⊔ b)
+  Approximation X x = ∀ m n → (η m • η n) ≤ X .equal (x m) (x n)
 
-    -- A cauchy approximation is something that takes approximation
-    -- bounds to elements satisfying a conditional equality.
-    Approximation : ∀ X → (Ω₀ → X .Carrier) → Prop (a₀ ⊔ b)
-    Approximation X x = ∀ m n → (η m • η n) ≤ X .equal (x m) (x n)
+  IsLimit : ∀ X → (Ω₀ → X .Carrier) → X .Carrier → Prop (a₀ ⊔ b)
+  IsLimit X x l = ∀ m → η m ≤ X .equal (x m) l
 
-    IsLimit : ∀ X → (Ω₀ → X .Carrier) → X .Carrier → Prop (a₀ ⊔ b)
-    IsLimit X x l = ∀ m → η m ≤ X .equal (x m) l
+  IsLimit-natural : ∀ X Y x l (f : X ⇒ Y) →
+                    IsLimit X x l → IsLimit Y (λ m → f .fun (x m)) (f .fun l)
+  IsLimit-natural X Y x l f is-limit m =
+    ≤-trans (is-limit m) (f .preserve-eq)
 
-    IsLimit-natural : ∀ X Y x l (f : X ⇒ Y) →
-                      IsLimit X x l → IsLimit Y (λ m → f .fun (x m)) (f .fun l)
-    IsLimit-natural X Y x l f is-limit m =
-      ≤-trans (is-limit m) (f .preserve-eq)
+  IsLimit-≈ : ∀ {X x x' l} → (∀ m → _≃_ X (x m) (x' m)) → IsLimit X x' l → IsLimit X x l
+  IsLimit-≈ {X} {x} {x'} {l} x≈x' is-limit m =
+    ≤-trans (is-limit m) (≤-trans (•-lunit .proj₂) (≤-trans (•-mono (x≈x' m) ≤-refl) (X .trans)))
 
-    IsLimit-≈ : ∀ {X x x' l} → (∀ m → _≃_ X (x m) (x' m)) → IsLimit X x' l → IsLimit X x l
-    IsLimit-≈ {X} {x} {x'} {l} x≈x' is-limit m =
-      ≤-trans (is-limit m) (≤-trans (•-lunit .proj₂) (≤-trans (•-mono (x≈x' m) ≤-refl) (X .trans)))
+  lim : ∀ X x → Approximation X x → 𝐂 X .Carrier
+  lim X x approx .rfun = x
+  lim X x approx .regular {m} {n} = approx m n
 
-    lim : ∀ X x → Approximation X x → 𝐂 X .Carrier
-    lim X x approx .rfun = x
-    lim X x approx .regular {m} {n} = approx m n
+  is-limit : ∀ X x (approx : Approximation X x) →
+             IsLimit (𝐂 X) (λ m → 𝐂-unit .fun (x m)) (lim X x approx)
+  is-limit X x approx m' = ⋀-greatest _ _ _ λ { (lift (m , n)) →
+    Ω-lambda (≤-trans (•-mono ≤-refl •-π₂) (approx m' n)) }
 
-    is-limit : ∀ X x (approx : Approximation X x) →
-               IsLimit (𝐂 X) (λ m → 𝐂-unit .fun (x m)) (lim X x approx)
-    is-limit X x approx m' = ⋀-greatest _ _ _ λ { (lift (m , n)) →
-      Ω-lambda (≤-trans (•-mono ≤-refl •-π₂) (approx m' n)) }
+  -- If a space has a 𝐂-algebra structure (which in the case of an
+  -- idempotent monad means just the h-unit law), then it has limits
+  -- of all approximations.
+  module _ (X : Spc) (h : 𝐂 X ⇒ X) (h-unit : (h ∘ 𝐂-unit) ≈ id _) where
 
-    -- If the space 'X' has a 𝐂-algebra structure (which in the case
-    -- of an idempotent monad means just the h-unit law), then it has
-    -- limits of all Regular Functions.
-    module _ (X : Spc) (h : 𝐂 X ⇒ X) (h-unit : (h ∘ 𝐂-unit) ≈ id _) where
+    lim' : ∀ x → Approximation X x → X .Carrier
+    lim' x approx = h .fun (lim X x approx)
 
-      lim' : ∀ x → Approximation X x → X .Carrier
-      lim' x approx = h .fun (lim X x approx)
-
-      is-limit' : ∀ x (approx : Approximation X x) → IsLimit X x (lim' x approx)
-      is-limit' x approx =
-        IsLimit-≈ {X} (λ m → ≃-sym X (h-unit .f≈f (x m)))
-          (IsLimit-natural (𝐂 X) X (λ m → 𝐂-unit .fun (x m)) (lim X x approx) h (is-limit X x approx))
+    is-limit' : ∀ x (approx : Approximation X x) → IsLimit X x (lim' x approx)
+    is-limit' x approx =
+      IsLimit-≈ {X} (λ m → ≃-sym X (h-unit .f≈f (x m)))
+        (IsLimit-natural (𝐂 X) X (λ m → 𝐂-unit .fun (x m)) (lim X x approx) h (is-limit X x approx))
 
   ------------------------------------------------------------------------------
   -- When are we guaranteed to get a Banach fixpoint combinator?

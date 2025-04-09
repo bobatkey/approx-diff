@@ -316,6 +316,13 @@ module _ where
 *-comm {zero}   {y} = ≃-sym (*-zero {y})
 *-comm {succ x} {y} = ≃-trans (+-cong ≃-refl (*-comm {x} {y})) (≃-sym (*-succ {x} {y}))
 
+0-*-distribₗ : ∀ {x} → x * 0 ≃ 0
+0-*-distribₗ {zero} = ≃-refl
+0-*-distribₗ {succ x} = 0-*-distribₗ {x}
+
+0-*-distribᵣ : ∀ {x} → 0 * x ≃ 0
+0-*-distribᵣ {x} = ≃-refl
+
 +-*-distribₗ : ∀ {x y z} → (x * (y + z)) ≃ ((x * y) + (x * z))
 +-*-distribₗ {zero} = ≃-refl
 +-*-distribₗ {succ x} {y} {z} =

@@ -190,7 +190,11 @@ module _ {o m e o' m' e'} os es
 
 ------------------------------------------------------------------------------
 -- reindexing of families (so that Fam is an indexed category)
+--
 -- FIXME: Codify what an indexed category is
+--
+-- Probably https://ncatlab.org/nlab/show/pseudofunctor specialised to
+-- the case when the codomain is Cat
 module _ {o m e os es} {𝒞 : Category o m e} where
 
   open _⇒s_

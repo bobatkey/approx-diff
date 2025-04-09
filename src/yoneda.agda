@@ -277,3 +277,7 @@ preserve-limits 𝒮 D apex cone isLimit = lim
       f .transf x .func Xx₂ .lower
     ∎
     where open ≈-Reasoning 𝒞.isEquiv
+
+-- FIXME: Yoneda embedding also preserves exponentials. Slick proof given here:
+--
+--   https://math.stackexchange.com/questions/3511252/show-that-the-yoneda-embedding-preserves-exponential-objects?rq=1
