@@ -360,7 +360,14 @@ lambda-ext' {X} {Y} {Z} f .famf-eq .transf-eq {x} =
 -}
   q' : (reindex-≈ (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf ∘S nudge x) (f .idxf .func x .idxf) (record { func-eq = f .idxf .func x .idxf .func-resp-≈ }) ∘f
                   (reindex-comp ∘f (reindex-f (nudge x) (reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) ∘f nudge-in₁ x))) ≃f _
-  q' .transf-eq {y} = {!   !}
+  q' .transf-eq {y} =
+    begin
+      fam Z .subst _ ∘ (id _ ∘ ((id _ ∘ (CP .copair (SP .evalΠ _ (idxf (PP.prod-m f (Mor-id Y)) .func (x , y) .proj₂)) (famf (idxf (PP.prod-m f (Mor-id Y)) .func (x , y) .proj₁) .transf (idxf (PP.prod-m f (Mor-id Y)) .func (x , y) .proj₂)) ∘ famf (PP.prod-m f (Mor-id Y)) .transf (x , y))) ∘ CP .in₁))
+    ≈⟨ {!   !} ⟩
+      SP .evalΠ (fam Z [ idxf (idxf f .func x) ]) y ∘ f .famf .transf x
+    ∎
+    where open ≈-Reasoning isEquiv
+
 {-
     begin
       Z .fam .subst _ ∘ (id (Z .fam .fm (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf .func (x , y))) ∘ ((reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) .transf (x , y) ∘ CP .in₁))
