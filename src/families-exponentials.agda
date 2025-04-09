@@ -325,8 +325,6 @@ lambda-ext' {X} {Y} {Z} f .famf-eq .transf-eq {x} =
                 (reindex-≈ (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf ∘S nudge x) (f .idxf .func x .idxf) _ ∘f
                  (reindex-comp ∘f (reindex-f (nudge x) (reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) ∘f nudge-in₁ x)))
   ≈⟨ SP .lambdaΠ-cong q' ⟩
-    SP .lambdaΠ (X .fam .fm x) (Z .fam [ f .idxf .func x .idxf ]) r
-  ≈⟨ SP .lambdaΠ-cong (record { transf-eq = {!   !} }) ⟩
     SP .lambdaΠ (X .fam .fm x) (Z .fam [ f .idxf .func x .idxf ])
                 (evalΠf SP (Z .fam [ f .idxf .func x .idxf ]) ∘f constF (f .famf .transf x))
   ≈⟨ SP .lambda-ext ⟩
