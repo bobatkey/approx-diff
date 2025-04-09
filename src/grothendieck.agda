@@ -5,7 +5,7 @@ module grothendieck where
 open import Level using (_⊔_; suc; lift)
 open import Data.Unit using (⊤; tt)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Data.Product using (_×_; proj₁; proj₂; _,_; Σ-syntax)
+open import Data.Product using (_×_; _,_; Σ-syntax)
 open import prop using (_,_; tt; ∃ₚ; ⟪_⟫)
 open import prop-setoid
   using (IsEquivalence; Setoid; 𝟙; +-setoid; ⊗-setoid; idS; _∘S_; module ≈-Reasoning)

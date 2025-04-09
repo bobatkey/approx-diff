@@ -325,9 +325,9 @@ lambda-ext' {X} {Y} {Z} f .famf-eq .transf-eq {x} =
   lambda-ext-pointwise : (reindex-≈ (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y)) .idxf ∘S nudge x) (f .idxf .func x .idxf) (record { func-eq = f .idxf .func x .idxf .func-resp-≈ }) ∘f (reindex-comp ∘f (reindex-f (nudge x) (reindex-comp ∘f (reindex-f (PP.prod-m f (Mor-id Y) .idxf) (eval⟶ .famf) ∘f (PP.prod-m f (Mor-id Y) .famf))) ∘f nudge-in₁ x))) ≃f (evalΠf SP (Z .fam [ f .idxf .func x .idxf ]) ∘f constF (f .famf .transf x))
   lambda-ext-pointwise .transf-eq {y} =
     begin
-      fam Z .subst _ ∘ (id _ ∘ ((id _ ∘ (CP .copair (SP .evalΠ _ _) (PP.prod-m f (Mor-id Y) .idxf .func (x , y) .proj₁ .famf .transf (PP.prod-m f (Mor-id Y) .idxf .func (x , y) .proj₂)) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y))) ∘ CP .in₁))
+      fam Z .subst _ ∘ (id _ ∘ ((id _ ∘ (CP .copair (SP .evalΠ _ _) (f .idxf .func x .famf .transf (Mor-id Y .idxf .func y)) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y))) ∘ CP .in₁))
     ≈⟨ ∘-cong (refl* (Z .fam)) id-left ⟩
-      id _ ∘ ((id _ ∘ (CP .copair (SP .evalΠ _ _) (PP.prod-m f (Mor-id Y) .idxf .func (x , y) .proj₁ .famf .transf (PP.prod-m f (Mor-id Y) .idxf .func (x , y) .proj₂)) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y))) ∘ CP .in₁)
+      id _ ∘ ((id _ ∘ (CP .copair (SP .evalΠ _ _) (f .idxf .func x .famf .transf (Mor-id Y .idxf .func y)) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y))) ∘ CP .in₁)
     ≈⟨ id-left ⟩
       (id _ ∘ (CP .copair (SP .evalΠ _ _) (PP.prod-m f (Mor-id Y) .idxf .func (x , y) .proj₁ .famf .transf (PP.prod-m f (Mor-id Y) .idxf .func (x , y) .proj₂)) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y))) ∘ CP .in₁
     ≈⟨ ∘-cong id-left ≈-refl ⟩
