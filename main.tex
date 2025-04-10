@@ -5,6 +5,7 @@
 
 \geometry{paperwidth=8.3in, paperheight=11.7in} % force to A4 for now
 \settopmatter{printacmref=false}
+\raggedbottom
 
 \input{macros}
 
@@ -35,17 +36,17 @@
 }
 
 \begin{abstract}
-[Abstract]
+% TODO
 \end{abstract}
 \maketitle
 
 \input{main/introduction}
 
+\bibliographystyle{plainnat}
+\bibliography{bib}
+
 \pagebreak
 \appendix
 \input{appendix/notes}
-
-\bibliographystyle{plainnat}
-\bibliography{bib}
 
 \end{document}
