@@ -1,4 +1,4 @@
-default: main
+.PHONY default: main
 
 main:
 	pdflatex main
