@@ -286,7 +286,7 @@ lambda⟶-cong {X}{Y}{Z}{f₁}{f₂} f₁≃f₂ .famf-eq .transf-eq {x} = begin
   where open ≈-Reasoning isEquiv
 
 η-rule : ∀ {X Y Z} (f : Mor X (Y ⟶ Z)) →
-         lambda⟶ (Mor-∘ eval⟶ (PP.prod-m f (Mor-id _))) ≃ f
+         lambda⟶ (Mor-∘ eval⟶ (PP.prod-m f (Mor-id Y))) ≃ f
 η-rule f .idxf-eq .func-eq x₁≈x₂ .idxf-eq .func-eq y₁≈y₂ =
   f .idxf .func-resp-≈ x₁≈x₂ .idxf-eq .func-eq y₁≈y₂
 η-rule {X} {Y} {Z} f .idxf-eq .func-eq {x₁} {x₂} x₁≈x₂ .famf-eq .transf-eq {y} =
