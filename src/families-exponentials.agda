@@ -324,19 +324,19 @@ lambda⟶-cong {X}{Y}{Z}{f₁}{f₂} f₁≃f₂ .famf-eq .transf-eq {x} = begin
                      ≃f (evalΠf SP (Z .fam [ f .idxf .func x .idxf ]) ∘f constF (f .famf .transf x))
   η-rule-pointwise .transf-eq {y} =
     begin
-      fam Z .subst _ ∘ (id _ ∘ ((id _ ∘ (CP .copair (SP .evalΠ _ _) (f .idxf .func x .famf .transf (Mor-id Y .idxf .func y)) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y))) ∘ CP .in₁))
+      fam Z .subst _ ∘ (id _ ∘ ((id _ ∘ (CP .copair (SP .evalΠ _ y) (f .idxf .func x .famf .transf y) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y))) ∘ CP .in₁))
     ≈⟨ ∘-cong (refl* (Z .fam)) id-left ⟩
-      id _ ∘ ((id _ ∘ (CP .copair (SP .evalΠ _ _) (f .idxf .func x .famf .transf (Mor-id Y .idxf .func y)) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y))) ∘ CP .in₁)
+      id _ ∘ ((id _ ∘ (CP .copair (SP .evalΠ _ y) (f .idxf .func x .famf .transf y) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y))) ∘ CP .in₁)
     ≈⟨ id-left ⟩
-      (id _ ∘ (CP .copair (SP .evalΠ _ _) (f .idxf .func x .famf .transf (Mor-id Y .idxf .func y)) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y))) ∘ CP .in₁
+      (id _ ∘ (CP .copair (SP .evalΠ _ y) (f .idxf .func x .famf .transf y) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y))) ∘ CP .in₁
     ≈⟨ ∘-cong id-left ≈-refl ⟩
-      (CP .copair (SP .evalΠ _ _) (f .idxf .func x .famf .transf (Mor-id Y .idxf .func y)) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y)) ∘ CP .in₁
+      (CP .copair (SP .evalΠ _ y) (f .idxf .func x .famf .transf y) ∘ PP.prod-m f (Mor-id Y) .famf .transf (x , y)) ∘ CP .in₁
     ≈⟨ ∘-cong (∘-cong ≈-refl (P .pair-cong id-left id-left)) ≈-refl ⟩
-      (CP .copair (SP .evalΠ _ _) (f .idxf .func x .famf .transf (Mor-id Y .idxf .func y)) ∘ prod-m P (f .famf .transf x) (Mor-id Y .famf .transf y)) ∘ CP .in₁
+      (CP .copair (SP .evalΠ _ _) (f .idxf .func x .famf .transf y) ∘ prod-m P (f .famf .transf x) (Mor-id Y .famf .transf y)) ∘ CP .in₁
     ≈⟨ ∘-cong (copair-prod _ BP) ≈-refl ⟩
-      (CP .copair (SP .evalΠ _ _ ∘ f .famf .transf x) (f .idxf .func x .famf .transf (Mor-id Y .idxf .func y) ∘ Mor-id Y .famf .transf y)) ∘ CP .in₁
+      (CP .copair (SP .evalΠ _ y ∘ f .famf .transf x) (f .idxf .func x .famf .transf y ∘ Mor-id Y .famf .transf y)) ∘ CP .in₁
     ≈⟨ CP .copair-in₁ _ _ ⟩
-      SP .evalΠ (fam Z [ idxf (idxf f .func x) ]) y ∘ f .famf .transf x
+      SP .evalΠ _ y ∘ f .famf .transf x
     ∎
     where open ≈-Reasoning isEquiv
 
