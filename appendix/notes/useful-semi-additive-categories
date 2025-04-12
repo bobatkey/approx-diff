@@ -7,11 +7,12 @@
 \begin{definition}[Bounded lattice]
 A \emph{bounded lattice} $X = (X, \top, \meet, \bot, \join)$ is a set $X$ equipped with binary operations
 $\meet$ and $\join$ and distinguished elements $\top$ and $\bot$ such that $(X, \top, \meet)$ is a bounded
-meet-semilattice and $(X, \bot, \join)$ is a bounded join-semilattice, and the two semilattices share a
-partial order, i.e.~$x \le_{\meet} y \iff x \le_{\join} y$.
+meet-semilattice and $(X, \bot, \join)$ is a bounded join-semilattice
+(\defref{cmon-enriched:bounded-semilattice}), and the two semilattices induce the same partial order on $X$,
+i.e.~$x \le_{\meet} y \iff x \le_{\join} y$.
 \end{definition}
 
-\noindent Equivalently, $(X, \top, \meet, \bot, \join)$ is a bounded lattice if $(X, \top, \meet)$ and $(X,
+\noindent Equivalently, $(X, \top, \meet, \bot, \join)$ is a bounded lattice iff $(X, \top, \meet)$ and $(X,
 \bot, \join)$ are commutative monoids satisfying \emph{absorption} laws:
 
 \begin{itemize}
