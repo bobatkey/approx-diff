@@ -41,15 +41,15 @@ Define the category $\LatGal$ where:
 \end{itemize}
 \end{definition}
 
-\noindent Because right adjoints preserves limits and left adjoints preserves colimits, for any $f \adj g: X
-\to Y$ in $\LatGal$, $f$ is a meet-semilattice homomorphism and $g$ is a join-semilattice homomorphism.
-Moreover since $(X, \top, \meet)$ is a commutative monoid, and thus a $\CMon$-enriched poset category, for any
-$X, Y$ there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y}: X \to Y = \const(\top_Y)$ and also
-addition of homomorphisms $f +_{\meet} g: X \to Y$ given by pointwise application of $\meet$, with the dual
-construction applying to $(X, \bot, \join)$. Thus $\LatGal$ is itself $\CMon$-enriched, with the hom object
-$\LatGal(X,Y)$ forming a commutative monoid where:
+\noindent Right adjoints preserves limits and left adjoints preserves colimits, so for any $f \adj g: X \to Y$
+in $\LatGal$, $f$ is a meet-semilattice homomorphism and $g$ is a join-semilattice homomorphism. Moreover
+since $(X, \top, \meet)$ is a commutative monoid, and thus a $\CMon$-enriched poset category, for any $X, Y$
+there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y}: X \to Y = \const(\top_Y)$ and also addition of
+homomorphisms $f +_{\meet} g: X \to Y$ given by pointwise application of $\meet$, with the dual construction
+applying to $(X, \bot, \join)$. Thus $\LatGal$ is itself $\CMon$-enriched, with the hom object $\LatGal(X,Y)$
+forming a commutative monoid where:
 \begin{itemize}
-\item $0_{X,Y}$ is the Galois connection $0^{\meet}_{X,Y} \adj 0^{\join}_{Y,X}: X \to Y$
+\item $0_{X,Y} = \const(\top_Y) \adj \const(\bot_X): X \to Y$
 \item $(f \adj g) + (f' \adj g') = (f +_{\meet} f') \adj (g +_{\join} g'): X \to Y$.
 \end{itemize}
 
@@ -60,18 +60,18 @@ the trivial 1-point lattice as zero object and binary biproducts $(X \biprod Y, 
 \vspace{-3mm}
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
-\begin{salign*}
-   \biproj_X: X \biprod Y \to X = \proj_1 \adj \pairM{\id_X}{\const(\bot_Y)} \\
-   \biproj_Y: X \biprod Y \to Y = \proj_2 \adj \pairM{\const(\bot_X)}{\id_Y}
-\end{salign*}
+\begin{align*}
+   \biproj_X: X \biprod Y \to X = \proj_1 \adj \prodM{\id_X}{\const(\bot_Y)} \\
+   \biproj_Y: X \biprod Y \to Y = \proj_2 \adj \prodM{\const(\bot_X)}{\id_Y}
+\end{align*}
 \end{center}
 \end{minipage}%
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
-\begin{salign*}
-   \biinj_X: X \to X \biprod Y = (\id_X, \const(\top_Y)) \adj \pi_1 \\
-   \biinj_Y: Y \to X \biprod Y = (\const(\top_X), \id_Y) \adj \pi_2
-\end{salign*}
+\begin{align*}
+   \biinj_X: X \to X \biprod Y = \prodM{\id_X}{\const(\top_Y)} \adj \pi_1 \\
+   \biinj_Y: Y \to X \biprod Y = \prodM{\const(\top_X)}{\id_Y} \adj \pi_2
+\end{align*}
 \end{center}
 \end{minipage}
 \vspace{2mm}
