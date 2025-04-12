@@ -5,10 +5,22 @@
 \label{sec:categories-with-biproducts:latgal}
 
 \begin{definition}[Bounded lattice]
-A \emph{bounded lattice} $X = (X, \meet, \top, \join, \bot)$ is a partial order $X$ equipped with binary
-operations $\meet$ and $\join$ and distinguished elements $\top$ and $\bot$ such that $(X, \meet, \top)$ is a
-bounded meet-semilattice and $(X, \join, \bot)$ is a bounded join-semilattice.
+A \emph{bounded lattice} $X = (X, \top, \meet, \bot, \join)$ is a set $X$ equipped with binary operations
+$\meet$ and $\join$ and distinguished elements $\top$ and $\bot$ such that $(X, \top, \meet)$ is a bounded
+meet-semilattice and $(X, \bot, \join)$ is a bounded join-semilattice, and the two semilattices share a
+partial order, i.e.~$x \le_{\meet} y \iff x \le_{\join} y$.
 \end{definition}
+
+\noindent Equivalently, $(X, \top, \meet, \bot, \join)$ is a bounded lattice if $(X, \top, \meet)$ and $(X,
+\bot, \join)$ are commutative monoids satisfying \emph{absorption} laws:
+
+\begin{itemize}
+\item $x \join (x \meet y) = x$
+\item $x \meet (x \join y) = x$
+\end{itemize}
+
+\noindent from which the idempotence of $\meet$ and $\join$ and equivalence of $\le_{\meet}$ and $\le_{\join}$
+then follow.
 
 \begin{definition}[Galois connection]
 Suppose $X$ and $Y$ are posets. A \emph{Galois connection} $f \dashv g: X$ to $Y$ is a monotone function $f: X
