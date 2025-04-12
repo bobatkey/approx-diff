@@ -44,10 +44,10 @@ Define the category $\LatGal$ where:
 \noindent Because right adjoints preserves limits and left adjoints preserves colimits, for any $f \adj g: X
 \to Y$ in $\LatGal$, $f$ is a meet-semilattice homomorphism and $g$ is a join-semilattice homomorphism.
 Moreover since $(X, \top, \meet)$ is a commutative monoid, and thus a $\CMon$-enriched poset category, for any
-$X, Y$ there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y}: X \to \top_Y$ and also addition of
-homomorphisms $f +_{\meet} g: X \to Y$ given by pointwise application of $\meet$, with the dual construction
-applying to $(X, \bot, \join)$. Thus $\LatGal$ is itself $\CMon$-enriched, with the hom object $\LatGal(X,Y)$
-forming a commutative monoid where:
+$X, Y$ there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y}: X \to Y = \const(\top_Y)$ and also
+addition of homomorphisms $f +_{\meet} g: X \to Y$ given by pointwise application of $\meet$, with the dual
+construction applying to $(X, \bot, \join)$. Thus $\LatGal$ is itself $\CMon$-enriched, with the hom object
+$\LatGal(X,Y)$ forming a commutative monoid where:
 \begin{itemize}
 \item $0_{X,Y}$ is the Galois connection $0^{\meet}_{X,Y} \adj 0^{\join}_{Y,X}: X \to Y$
 \item $(f \adj g) + (f' \adj g') = (f +_{\meet} f') \adj (g +_{\join} g'): X \to Y$.
