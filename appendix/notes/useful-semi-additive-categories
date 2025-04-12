@@ -24,48 +24,69 @@ i.e.~$x \le_{\meet} y \iff x \le_{\join} y$.
 then follow.
 
 \begin{definition}[Galois connection]
-Suppose $X$ and $Y$ are posets. A \emph{Galois connection} $f \dashv g: X$ to $Y$ is a pair of monotone
+Suppose $X$ and $Y$ are posets. A \emph{Galois connection} $f \adj g: X$ to $Y$ is a pair of monotone
 functions $f: X \to Y$ and $g: Y \to X$ satisfying $y \leq f(x) \iff g(y) \leq x$ for any $x \in X$ and $y \in
 Y$.
 \end{definition}
 
 \noindent The notation is justified because (interpreting $f$ and $g$ as functors between poset categories) a
-Galois connection $f \dashv g: X \to Y$ is an adjunction. Galois connections compose component-wise, with
-$\id_X \dashv \id_X: X \to X$ as the unit for composition; thus we can define the following category.
+Galois connection $f \adj g: X \to Y$ is an adjunction. Galois connections compose component-wise, with
+$\id_X \adj \id_X: X \to X$ as the unit for composition; thus we can define the following category.
 
 \begin{definition}[Category $\LatGal$]
 Define the category $\LatGal$ where:
 \begin{itemize}
 \item the objects $X, Y$ are the bounded lattices;
-\item the morphisms from $X$ to $Y$ are the Galois connections $f \dashv g: X \to Y$.
+\item the morphisms from $X$ to $Y$ are the Galois connections $f \adj g: X \to Y$.
 \end{itemize}
 \end{definition}
 
-\noindent Because right adjoints preserves limits and left adjoints preserves colimits, for any $f \dashv g: X
-\to Y$ in $\LatGal$, $f$ is a meet-semilattice homomorphism and $g$ is a join semi-lattice homomorphism.
+\noindent Because right adjoints preserves limits and left adjoints preserves colimits, for any $f \adj g: X
+\to Y$ in $\LatGal$, $f$ is a meet-semilattice homomorphism and $g$ is a join-semilattice homomorphism.
 Moreover since $(X, \top, \meet)$ is a commutative monoid, and thus a $\CMon$-enriched poset category, for any
 $X, Y$ there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y}: X \to \top_Y$ and also addition of
 homomorphisms $f +_{\meet} g: X \to Y$ given by pointwise application of $\meet$, with the dual construction
 applying to $(X, \bot, \join)$. Thus $\LatGal$ is itself $\CMon$-enriched, with the hom object $\LatGal(X,Y)$
 forming a commutative monoid where:
 \begin{itemize}
-\item $0_{X,Y}$ is the Galois connection $0^{\meet}_{X,Y} \dashv 0^{\join}_{Y,X}: X \to Y$
-\item $(f \dashv g) + (f' \dashv g') = (f +_{\meet} f') \dashv (g +_{\join} g'): X \to Y$.
+\item $0_{X,Y}$ is the Galois connection $0^{\meet}_{X,Y} \adj 0^{\join}_{Y,X}: X \to Y$
+\item $(f \adj g) + (f' \adj g') = (f +_{\meet} f') \adj (g +_{\join} g'): X \to Y$.
 \end{itemize}
 
 \noindent and biadditivity of composition is component-wise. Moreover $\LatGal$ has finite biproducts, with
-the trivial 1-point lattice as zero object, product lattice $X \biprod Y$ as binary biproduct, and product and
-coproduct of Galois connections computed component-wise.
+the trivial 1-point lattice as zero object and binary biproducts $(X \biprod Y, \biinj_X, \biinj_Y, \biproj_X,
+\biproj_Y)$, where $X \biprod Y$ is the product lattice $X \times Y$ and:
+
+\vspace{-3mm}
+\begin{minipage}[t]{0.45\textwidth}
+\begin{center}
+\begin{salign*}
+   \biproj_X: X \biprod Y \to X = \proj_1 \adj \pairM{\id_X}{\const(\bot_Y)} \\
+   \biproj_Y: X \biprod Y \to Y = \proj_2 \adj \pairM{\const(\bot_X)}{\id_Y}
+\end{salign*}
+\end{center}
+\end{minipage}%
+\begin{minipage}[t]{0.45\textwidth}
+\begin{center}
+\begin{salign*}
+   \biinj_X: X \to X \biprod Y = (\id_X, \const(\top_Y)) \adj \pi_1 \\
+   \biinj_Y: Y \to X \biprod Y = (\const(\top_X), \id_Y) \adj \pi_2
+\end{salign*}
+\end{center}
+\end{minipage}
+\vspace{2mm}
+
+\noindent with product and coproduct of Galois connections computed component-wise.
 
 \subsubsection{Category of finite-dimensional vector spaces}
 \label{sec:categories-with-biproducts:fdvect}
 
 \begin{definition}[Vector space over a field]
-Suppose $F$ a field with addition of elements $a, b$ written $a + b$ and multiplication written $a \mult b$.
-Then a \emph{vector space $V = (V, +, \mult)$ over $F$} (overloading $+$ and $\mult$) is a set $V$ equipped
-with addition of vectors $+: V^2 \to V$ and scalar multiplication $\mult: F \times V \to V$ where $(V,+)$ is
-an abelian group (with identity element $0_V$ and additive inverse $-v$ for any $v \in V$) and the vector
-operations are compatible with the field operations in that the following equations hold:
+Suppose $F = (F, +, \mult)$ a field with addition of elements $a, b$ written $a + b$ and multiplication
+written $a \mult b$. Then a \emph{vector space $V = (V, +, \mult)$ over $F$} (overloading $+$ and $\mult$) is
+a set $V$ equipped with addition of vectors $+: V^2 \to V$ and scalar multiplication $\mult: F \times V \to V$
+where $(V,+)$ is an abelian group (with identity element $0_V$ and additive inverse $-v$ for any $v \in V$)
+and the vector operations are compatible with the field operations in that the following equations hold:
 \begin{itemize}
 \item $1 \mult v = v$
 \item $(a \mult b) \mult v = a \mult (b \mult v)$
@@ -74,8 +95,8 @@ operations are compatible with the field operations in that the following equati
 \end{itemize}
 \end{definition}
 
-Up to isomorphism a finite-dimensional vector space over $F$ of dimension $n \in \Nat$ is $(F^n, +, \mult)$
-with $+$ and $\mult$ defined component-wise.
+Up to isomorphism a finite-dimensional vector space over $F$ of dimension $n \in \Nat$ is the vector space
+$(F^n, +, \mult)$ where $+$ and $\mult$ are defined component-wise.
 
 \begin{definition}[Category $\FinVect_F$]
 Define $\FinVect_F$ to be the category where:
