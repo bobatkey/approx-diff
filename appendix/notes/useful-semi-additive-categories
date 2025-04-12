@@ -18,8 +18,8 @@ and any $y \in Y$.
 
 \noindent Galois connections compose component-wise. The notation is justified because, if we interpret $X$
 and $Y$ as poset categories, then a Galois connection $f \dashv g: X \to Y$ is an adjunction between $X$ and
-$Y$. Because right adjoints preserves limits and left adjoints preserves colimits, $f$ and $g$ preserve meets
-and joins respectively.
+$Y$. Because right adjoints preserves limits and left adjoints preserves colimits, $f$ and $g$ preserve any
+meets in $X$ and any joins in $Y$ respectively.
 
 \begin{definition}[Category $\LatGal$]
 Now define the category $\LatGal$ where:
@@ -48,10 +48,10 @@ Galois connections defined component-wise; it follows that $\LatGal$ has finite 
 \label{sec:categories-with-biproducts:fdvect}
 
 \begin{definition}[Vector space over a field]
-Suppose $F$ a field with addition of elements written $a + b$ and multiplication written $a \mult b$. Then a
-\emph{vector space $V = (V, +, \mult)$ over $F$} (overloading $+$ and $\mult$) is a set $V$ equipped with
-addition of vectors $+: V^2 \to V$ and scalar multiplication $\mult: F \times V \to V$ where $(V,+)$ is an
-abelian group (with identity element $0_V$ and additive inverse $-v$ for any $v \in V$) and the vector
+Suppose $F$ a field with addition of elements $a, b$ written $a + b$ and multiplication written $a \mult b$.
+Then a \emph{vector space $V = (V, +, \mult)$ over $F$} (overloading $+$ and $\mult$) is a set $V$ equipped
+with addition of vectors $+: V^2 \to V$ and scalar multiplication $\mult: F \times V \to V$ where $(V,+)$ is
+an abelian group (with identity element $0_V$ and additive inverse $-v$ for any $v \in V$) and the vector
 operations are compatible with the field operations in that the following equations hold:
 \begin{itemize}
 \item $1 \mult v = v$
