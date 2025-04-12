@@ -24,17 +24,14 @@ i.e.~$x \le_{\meet} y \iff x \le_{\join} y$.
 then follow.
 
 \begin{definition}[Galois connection]
-Suppose $X$ and $Y$ are posets. A \emph{Galois connection} $f \dashv g: X$ to $Y$ is a monotone function $f: X
-\to Y$ paired with monotone function $g: Y \to X$ satisfying $y \leq f(x) \iff g(y) \leq x$ for any $x \in X$
-and $y \in Y$.
+Suppose $X$ and $Y$ are posets. A \emph{Galois connection} $f \dashv g: X$ to $Y$ is a pair of monotone
+functions $f: X \to Y$ and $g: Y \to X$ satisfying $y \leq f(x) \iff g(y) \leq x$ for any $x \in X$ and $y \in
+Y$.
 \end{definition}
 
-\noindent The notation is justified because, interpret $f$ and $g$ as functors between poset categories, a
-Galois connection $f \dashv g: X \to Y$ is an adjunction. Because right adjoints preserves limits and left
-adjoints preserves colimits, $f$ and $g$ preserve any meets in $X$ and any joins in $Y$ respectively.
-
-Galois connections compose component-wise, and $\id_X \dashv \id_X: X \to X$ is the identity Galois connection
-on $X$; thus we can define the following category.
+\noindent The notation is justified because (interpreting $f$ and $g$ as functors between poset categories) a
+Galois connection $f \dashv g: X \to Y$ is an adjunction. Galois connections compose component-wise, with
+$\id_X \dashv \id_X: X \to X$ as the unit for composition; thus we can define the following category.
 
 \begin{definition}[Category $\LatGal$]
 Define the category $\LatGal$ where:
@@ -44,20 +41,21 @@ Define the category $\LatGal$ where:
 \end{itemize}
 \end{definition}
 
-\noindent Since $(X, \meet, \top)$ is a commutative monoid, and thus a $\CMon$-enriched poset category, for
-any $X, Y$ there is a zero meet-semilattice homomorphism $0_{X,Y}: X \to \top_Y$ and addition of homomorphisms
-$f + g: X \to Y$ given by pointwise application of $\meet$. The dual construction applies to $(X, \join,
-\bot)$. Thus $\LatGal$ is itself $\CMon$-enriched, and for any $X, Y$ the hom object $\LatGal(X,Y)$ is a
-commutative monoid, where:
+\noindent Because right adjoints preserves limits and left adjoints preserves colimits, for any $f \dashv g: X
+\to Y$ in $\LatGal$, $f$ is a meet-semilattice homomorphism and $g$ is a join semi-lattice homomorphism.
+Moreover since $(X, \top, \meet)$ is a commutative monoid, and thus a $\CMon$-enriched poset category, for any
+$X, Y$ there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y}: X \to \top_Y$ and also addition of
+homomorphisms $f +_{\meet} g: X \to Y$ given by pointwise application of $\meet$, with the dual construction
+applying to $(X, \bot, \join)$. Thus $\LatGal$ is itself $\CMon$-enriched, with the hom object $\LatGal(X,Y)$
+forming a commutative monoid where:
 \begin{itemize}
-\item $0_{X,Y}$ is the Galois connection $0_{X,Y} \dashv 0_{Y,X}: X \to Y$
-\item $(f \dashv g) + (f' \dashv g') = (f + f') \dashv (g + g'): X \to Y$.
+\item $0_{X,Y}$ is the Galois connection $0^{\meet}_{X,Y} \dashv 0^{\join}_{Y,X}: X \to Y$
+\item $(f \dashv g) + (f' \dashv g') = (f +_{\meet} f') \dashv (g +_{\join} g'): X \to Y$.
 \end{itemize}
 
-\noindent and biadditivity of composition is component-wise. Moreover $\LatGal$ has finite products, with the
-trivial 1-point lattice as terminal object, product lattice $X \times Y$ as binary product, and product of
-Galois connections defined component-wise; it follows that $\LatGal$ has finite biproducts
-(\propref{biproduct:from-product-or-coproduct}).
+\noindent and biadditivity of composition is component-wise. Moreover $\LatGal$ has finite biproducts, with
+the trivial 1-point lattice as zero object, product lattice $X \biprod Y$ as binary biproduct, and product and
+coproduct of Galois connections computed component-wise.
 
 \subsubsection{Category of finite-dimensional vector spaces}
 \label{sec:categories-with-biproducts:fdvect}
@@ -77,11 +75,15 @@ operations are compatible with the field operations in that the following equati
 \end{definition}
 
 Up to isomorphism a finite-dimensional vector space over $F$ of dimension $n \in \Nat$ is $(F^n, +, \mult)$
-with $+$ and $\mult$ defined component-wise. Define $\FinVect_F$ to be the category where:
+with $+$ and $\mult$ defined component-wise.
+
+\begin{definition}[Category $\FinVect_F$]
+Define $\FinVect_F$ to be the category where:
 \begin{itemize}
 \item objects $V, W$ are natural numbers $n$ paired with an $n$-dimensional vector space $(F^n, +, \mult)$
 \item morphisms $f: V \to W$ are functions $f$ satisfying $f(u + v) = f(u) + f(v)$ and $f(a \mult v) = a \mult f(v)$.
 \end{itemize}
+\end{definition}
 
 $\FinVect_F$ is $\Ab$-enriched (and therefore $\CMon$-enriched). For any $V, W$ we have that $\FinVect_F(V,W)$
 is an abelian group, where:
