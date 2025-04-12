@@ -18,22 +18,22 @@ and any $y \in Y$.
 
 \noindent Galois connections compose component-wise. The notation is justified because, if we interpret $X$
 and $Y$ as poset categories, then a Galois connection $f \dashv g: X \to Y$ is an adjunction between $X$ and
-$Y$. Because right adjoints preserves limits and left adjoints preserves colimits, we have that $f$ and $g$
-preserves meets and joins respectively.
+$Y$. Because right adjoints preserves limits and left adjoints preserves colimits, $f$ and $g$ preserve meets
+and joins respectively.
 
-Since $(X, \meet, \top)$ is a commutative monoid, and thus a $\CMon$-enriched poset category, for any $X, Y$
-there is a zero meet-semilattice homomorphism $0_{X,Y}: X \to \top_Y$ and addition of homomorphisms $f + g: X
-\to Y$ given by pointwise application of $\meet$. The dual construction applies to $(X, \join, \bot)$. Now
-define the category $\LatGal$ where:
+\begin{definition}[Category $\LatGal$]
+Now define the category $\LatGal$ where:
 \begin{itemize}
 \item the objects $X, Y$ are the bounded lattices;
 \item the morphisms $f \dashv g: X \to Y$ are the Galois connections from $X$ to $Y$.
 \end{itemize}
+\end{definition}
 
-\noindent
-
-$\LatGal$ is itself $\CMon$-enriched. For any $X, Y$ we have that $\LatGal(X,Y)$ is a commutative monoid,
-where:
+\noindent $\LatGal$ is itself $\CMon$-enriched. Since $(X, \meet, \top)$ is a commutative monoid, and thus a
+$\CMon$-enriched poset category, for any $X, Y$ there is a zero meet-semilattice homomorphism $0_{X,Y}: X \to
+\top_Y$ and addition of homomorphisms $f + g: X \to Y$ given by pointwise application of $\meet$. The dual
+construction applies to $(X, \join, \bot)$. Thus for any $X, Y$ the hom object $\LatGal(X,Y)$ is a commutative
+monoid, where:
 \begin{itemize}
 \item $0_{X,Y}$ is the Galois connection $0_{X,Y} \dashv 0_{Y,X}: X \to Y$
 \item $(f \dashv g) + (f' \dashv g') = (f + f') \dashv (g + g'): X \to Y$.
