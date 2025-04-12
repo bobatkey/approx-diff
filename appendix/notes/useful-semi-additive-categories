@@ -26,12 +26,12 @@ then follow.
 \begin{definition}[Galois connection]
 Suppose $X$ and $Y$ are posets. A \emph{Galois connection} $f \dashv g: X$ to $Y$ is a monotone function $f: X
 \to Y$ paired with monotone function $g: Y \to X$ satisfying $y \leq f(x) \iff g(y) \leq x$ for any $x \in X$
-and any $y \in Y$.
+and $y \in Y$.
 \end{definition}
 
-\noindent The notation is justified because, if we interpret $X$ and $Y$ as poset categories, then a Galois
-connection $f \dashv g: X \to Y$ is an adjunction between $X$ and $Y$. Because right adjoints preserves limits
-and left adjoints preserves colimits, $f$ and $g$ preserve any meets in $X$ and any joins in $Y$ respectively.
+\noindent The notation is justified because, interpret $f$ and $g$ as functors between poset categories, a
+Galois connection $f \dashv g: X \to Y$ is an adjunction. Because right adjoints preserves limits and left
+adjoints preserves colimits, $f$ and $g$ preserve any meets in $X$ and any joins in $Y$ respectively.
 
 Galois connections compose component-wise, and $\id_X \dashv \id_X: X \to X$ is the identity Galois connection
 on $X$; thus we can define the following category.
