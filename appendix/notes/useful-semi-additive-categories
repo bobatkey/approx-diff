@@ -16,9 +16,10 @@ Suppose $X$ and $Y$ are posets. A \emph{Galois connection} $f \dashv g: X$ to $Y
 and any $y \in Y$.
 \end{definition}
 
-\noindent Galois connections compose component-wise. A Galois connection $f \dashv g: X \to Y$ is an adjoint
-functor between $X$ and $Y$ interpreted as poset categories; since the right adjoint preserves limits and the
-left adjoint preserves colimits, we have that $f$ and $g$ are meet- and join-preserving respectively.
+\noindent Galois connections compose component-wise. The notation is justified because, if we interpret $X$
+and $Y$ as poset categories, then a Galois connection $f \dashv g: X \to Y$ is an adjunction between $X$ and
+$Y$. Because right adjoints preserves limits and left adjoints preserves colimits, we have that $f$ and $g$
+preserves meets and joins respectively.
 
 Since $(X, \meet, \top)$ is a commutative monoid, and thus a $\CMon$-enriched poset category, for any $X, Y$
 there is a zero meet-semilattice homomorphism $0_{X,Y}: X \to \top_Y$ and addition of homomorphisms $f + g: X
