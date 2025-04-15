@@ -71,6 +71,7 @@ If $C$ is $\CMon$-enriched then any functor category $\Func{\cat{D}}{\cat{C}}$ i
 \subsubsection{$\CMon$-enriched presheaves}
 
 \begin{definition}[$\mathscr{V}$-enriched functor]
+\label{def:cmon-enriched:enriched-functor}
 For any monoidal category $(\mathscr{V}, \tensor, I)$ and $\mathscr{V}$-enriched categories $\cat{C}$ and
 $\cat{D}$, a \emph{$\mathscr{V}$-enriched} functor $F: \cat{C} \to \cat{D}$ on morphisms is a family of
 morphisms $F_{X,Y}: \Hom{\cat{C}}{X}{Y} \to \Hom{\cat{D}}{F(X)}{F(Y)}$ between hom-objects in $\mathscr{V}$
@@ -78,8 +79,8 @@ that makes the following diagrams in $\mathscr{V}$ commute:
 
 \begin{center}
 \begin{tikzcd}[column sep=1.8cm]
-I \arrow[d, equals] \arrow[r, "\id_X"] & \Hom{C}{X}{X} \arrow[d, "F_{X,X}"] \\
-I \arrow[r, "\id_{F(X)}"'] & \Hom{D}{F(X)}{F(X)}
+I \arrow[d, equals] \arrow[r, "\id_X"] & \Hom{\cat{C}}{X}{X} \arrow[d, "F_{X,X}"] \\
+I \arrow[r, "\id_{F(X)}"'] & \Hom{\cat{D}}{F(X)}{F(X)}
 \end{tikzcd}
 \hspace{5mm}
 \begin{tikzcd}[column sep=2.6cm]
@@ -90,6 +91,9 @@ I \arrow[r, "\id_{F(X)}"'] & \Hom{D}{F(X)}{F(X)}
 \end{tikzcd}
 \end{center}
 \end{definition}
+
+\noindent These generalise the usual functor laws to a setting where the hom-objects are not necessarily sets
+and thus do not support an elementwise formulation.
 
 \begin{definition}[Category of enriched functors]
 Write $\Func{\cat{C}}{\cat{D}}_{\mathscr{V}}$ for the category of $\mathscr{V}$-enriched functors from
@@ -108,28 +112,28 @@ It then follows automatically that $F$ also preserves bilinear composition, i.e.
 \item $F(f + g) \comp F(h) = F(h \comp f) + F(h \comp g)$
 \item $F(h) \comp F(f + g) = F(f \comp h) + F(g \comp h)$
 \end{itemize}
-in addition to the usual enriched functor properties.
+in addition to the usual enriched functor properties in \defref{cmon-enriched:enriched-functor}.
 
 \subsubsection{$\CMon$-enriched Yoneda embedding}
 
 Suppose $\cat{C}$ a small category. The usual \emph{Yoneda embedding} for $\cat{C}$ is the functor $\Yoneda:
-\cat{C} \to \Func{\cat{C}^\op}{\Set}$ sending:
+\cat{C} \to \Func{\cat{C}^\op}{\Set}$ defined as follows:
 \begin{itemize}
-\item any object $X$ in $\cat{C}$ to the contravariant hom-functor $\Yoneda(X) = \Hom{\cat{C}}{-}{X}:
-\cat{C}^\op \to \Set$
-which sends:
+\item on objects: $\Yoneda(X) = \Hom{\cat{C}}{-}{X}: \cat{C}^\op \to \Set$, the contravariant hom-functor
+sending:
    \begin{itemize}
    \item any object $Y$ in $\cat{C}$ to the hom-set $\Hom{\cat{C}}{Y}{X}$;
    \item any morphism $f: Y \to Z$ in $\cat{C}$ to the function $\Hom{\cat{C}}{f}{X} = (- \comp f):
    \Hom{\cat{C}}{Z}{X} \to \Hom{\cat{C}}{Y}{X}$.
    \end{itemize}
-\item any morphism $f: X \to Y$ in $\cat{C}$ to the natural transformation $\Yoneda(f)$ where $\Yoneda(f)_Z =
-(f \comp -): \Hom{\cat{C}}{Z}{X} \to \Hom{\cat{C}}{Z}{Y}$.
+\item on morphisms: for any $f: X \to Y$ in $\cat{C}$, $\Yoneda(f)$ is the natural transformation where
+$\Yoneda(f)_Z = (f \comp -): \Hom{\cat{C}}{Z}{X} \to \Hom{\cat{C}}{Z}{Y}$.
 \end{itemize}
 
 \noindent Now suppose $\cat{C}$ is $\mathscr{V}$-enriched with $\mathscr{V}$ closed monoidal; then the
-hom-functor $\Hom{\cat{C}}{-}{X}: \cat{C}^\op \to \mathscr{V}$ is $\mathscr{V}$-enriched. The following
-diagram commutes because precomposition with the identity is the identity on morphisms:
+hom-functor $\Hom{\cat{C}}{-}{X}: \cat{C}^\op \to \mathscr{V}$ is itself $\mathscr{V}$-enriched. The
+
+The following diagram commutes because precomposition with the identity is the identity on morphisms:
 
 \begin{center}
 \begin{tikzcd}[column sep=1.8cm]
