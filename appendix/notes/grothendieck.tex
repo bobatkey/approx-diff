@@ -2,10 +2,10 @@
 \label{sec:grothendieck}
 
 \begin{definition}[Grothendieck construction for $F$]
-Suppose a functor $F: C \to \Cat$. The \emph{Grothendieck construction} $\Grothendieck{C}F$ for $F$ is the
-category where:
+Suppose a functor $F: \cat{C} \to \Cat$. The \emph{Grothendieck construction} $\Grothendieck{\cat{C}}F$ for
+$F$ is the category where:
 \begin{itemize}
-\item objects $X$ are pairs of an object $\idx{X}$ of $C$ and an object $\faml{X}$ of $F(\idx{X})$;
+\item objects $X$ are pairs of an object $\idx{X}$ of $\cat{C}$ and an object $\faml{X}$ of $F(\idx{X})$;
 \item morphisms $f: X \to Y$ are morphisms $\idx{f}: \idx{X} \to \idx{Y}$ in $C$ paired with morphisms
 $\faml{f}: F(f)(\faml{X}) \to \faml{Y}$ in $F(\idx{Y})$.
 \end{itemize}
