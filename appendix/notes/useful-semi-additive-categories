@@ -29,9 +29,11 @@ functions $f: X \to Y$ and $g: Y \to X$ satisfying $y \leq f(x) \iff g(y) \leq x
 Y$.
 \end{definition}
 
-\noindent The notation is justified because (interpreting $f$ and $g$ as functors between poset categories) a
-Galois connection $f \adj g: X \to Y$ is an adjunction. Galois connections compose component-wise, with
-$\id_X \adj \id_X: X \to X$ as the unit for composition; thus we can define the following category.
+\noindent The notation is justified because a Galois connection $f \adj g: X \to Y$ is an adjunction between
+poset categories, with monotone $f$ and $g$ interpreted as functors; $f$ is usually referred to as the
+\emph{upper} (right) adjoint and $g$ as the \emph{lower} (left) adjoint. Galois connections compose
+component-wise, with $\id_X \adj \id_X: X \to X$ as the unit for composition; thus we can defin e the
+following category.
 
 \begin{definition}[Category $\LatGal$]
 Define the category $\LatGal$ where:
@@ -44,18 +46,21 @@ Define the category $\LatGal$ where:
 \noindent Right adjoints preserves limits and left adjoints preserves colimits, so for any $f \adj g: X \to Y$
 in $\LatGal$, $f$ is a meet-semilattice homomorphism and $g$ is a join-semilattice homomorphism. Moreover
 since $(X, \top, \meet)$ is a commutative monoid, and thus a $\CMon$-enriched poset category, for any $X, Y$
-there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y}: X \to Y = \const(\top_Y)$ and also addition of
-homomorphisms $f +_{\meet} g: X \to Y$ given by pointwise application of $\meet$, with the dual construction
-applying to $(X, \bot, \join)$. Thus $\LatGal$ is itself $\CMon$-enriched, with the hom object $\LatGal(X,Y)$
-forming a commutative monoid where:
+there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y}: X \to Y = \const(\top_Y)$ and also
+(idempotent) addition of homomorphisms $f +_{\meet} g: X \to Y$ given by pointwise application of $\meet$,
+with the dual construction applying to $(X, \bot, \join)$. Thus $\LatGal$ is itself $\CMon$-enriched, with the
+hom object $\LatGal(X,Y)$ forming a semilattice with:
 \begin{itemize}
-\item $0_{X,Y} = \const(\top_Y) \adj \const(\bot_X): X \to Y$
-\item $(f \adj g) + (f' \adj g') = (f +_{\meet} f') \adj (g +_{\join} g'): X \to Y$.
+\item zero morphism $0_{X,Y}$ given by the Galois connection $\const(\top_Y) \adj \const(\bot_X): X \to Y$
+\item component-wise idempotent addition of morphisms $(f \adj g) + (f' \adj g') = (f +_{\meet} f') \adj (g
++_{\join} g'): X \to Y$.
 \end{itemize}
 
-\noindent and biadditivity of composition is component-wise. Moreover $\LatGal$ has finite biproducts, with
-the trivial 1-point lattice as zero object and binary biproducts $(X \biprod Y, \biinj_X, \biinj_Y, \biproj_X,
-\biproj_Y)$, where $X \biprod Y$ is the product lattice $X \times Y$ and:
+\noindent and biadditivity of composition also component-wise. Moreover the projections from the product
+lattice $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y \to Y$ have both upper and lower adjoints; and in
+fact $\LatGal$ has finite biproducts, with the trivial 1-point lattice as zero object and binary biproducts
+$(X \biprod Y, \biinj_X, \biinj_Y, \biproj_X, \biproj_Y)$, where $X \biprod Y$ is the product lattice $X
+\times Y$ and:
 
 \vspace{-3mm}
 \begin{minipage}[t]{0.45\textwidth}
