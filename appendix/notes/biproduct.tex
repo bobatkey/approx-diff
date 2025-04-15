@@ -46,16 +46,16 @@ an object $A \biprod B$ of $C$ together with morphisms
 \noindent \todo{I think we can also define ``biproduct'' just using zero morphisms, and then derive rather
 than assume $\CMon$-enrichment.}
 
-We say a $\CMon$-enriched $C$ is \emph{semi-additive} if it also has finite biproducts; having products or
-coproducts is sufficient.
+We say a $\CMon$-enriched $\cat{C}$ is \emph{semi-additive} if it also has finite biproducts; having products
+or coproducts is sufficient.
 
 \begin{proposition}
 \label{prop:biproduct:from-product-or-coproduct}
-Suppose $C$ is $\CMon$-enriched.
+Suppose $\cat{C}$ is $\CMon$-enriched.
 \begin{itemize}
-\item If $C$ has biproducts $(A \biprod B, \biinj_A, \biinj_B, \biproj_A, \biproj_B)$ then $(A
+\item If $\cat{C}$ has biproducts $(A \biprod B, \biinj_A, \biinj_B, \biproj_A, \biproj_B)$ then $(A
 \biprod B, \biproj_A, \biproj_B)$ is a product and $(A \biprod B, \biinj_A, \biinj_B)$ is a coproduct.
-\item If $C$ has binary products $(A \times B, \proj_1, \proj_2)$ then:
+\item If $\cat{C}$ has binary products $(A \times B, \proj_1, \proj_2)$ then:
 \begin{enumerate}
 \item $\prodM{0_{A,B}}{0_{A,C}} = 0_{A,B \times C}$
 \item $\prodM{f_1 + g_1}{f_2 + g_2} = \prodM{f_1}{f_2} + \prodM{g_1}{g_2}$
@@ -63,7 +63,7 @@ Suppose $C$ is $\CMon$-enriched.
 biproduct with $\biinj_A: A \to A \times B = \prodM{\id_A}{0_{A,B}}$ and $\biinj_B: B \to A \times B =
 \prodM{0_{A,B}}{\id_B}$.
 \end{enumerate}
-\item If $C$ has binary coproducts $(A + B, \inj_1, \inj_2)$ then
+\item If $\cat{C}$ has binary coproducts $(A + B, \inj_1, \inj_2)$ then
 \begin{enumerate}
 \item $\coprodM{0_{A,C}}{0_{B,C}} = 0_{A + B,C}$
 \item $\coprodM{f_1 + g_1}{f_2 + g_2} = \coprodM{f_1}{f_2} + \coprodM{g_1}{g_2}$
@@ -71,13 +71,13 @@ biproduct with $\biinj_A: A \to A \times B = \prodM{\id_A}{0_{A,B}}$ and $\biinj
 biproduct with $\biproj_A: A + B \to A = \coprodM{\id_A}{0_{B,A}}$ and $\biproj_B: A + B \to B =
 \coprodM{0_{A,B}}{\id_B}$.
 \end{enumerate}
-\item If $C$ has a terminal (or initial) object then it is a zero object.
+\item If $\cat{C}$ has a terminal (or initial) object then it is a zero object.
 \end{itemize}
 \end{proposition}
 
 \begin{proposition}
 \label{prop:biproduct:prod-coprod}
-Suppose $C$ a category with biproducts. Then the following diagram in $C$ commutes:
+Suppose $\cat{C}$ a category with biproducts. Then the following diagram in $\cat{C}$ commutes:
 
 \begin{center}
 \begin{tikzcd}[row sep=3em, column sep=3em]

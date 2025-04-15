@@ -1,10 +1,11 @@
 \subsection{Set-indexed products}
 \label{sec:set-indexed-product}
 
-$C$ \emph{has set-indexed products} if, for any set $I$ and any $I$-indexed family $X$ of objects of $C$,
-there exists an object $\prod_{i \in I}X_i$ (also written $\prod_{I} X$) and family of morphisms $\eval_i$ in
-$C$ such that for any object $Y$ and any family of morphisms $\{f_i: Y \to X_i\}_{i \in I}$ in $C$, there
-exists a unique morphism $\lambda(f)$ making the following diagram commute for every $i \in I$:
+$\cat{C}$ \emph{has set-indexed products} if, for any set $I$ and any $I$-indexed family $X$ of objects of
+$\cat{C}$, there exists an object $\prod_{i \in I}X_i$ (also written $\prod_{I} X$) and family of morphisms
+$\eval_i$ in $\cat{C}$ such that for any object $Y$ and any family of morphisms $\{f_i: Y \to X_i\}_{i \in I}$
+in $\cat{C}$, there exists a unique morphism $\lambda(f)$ making the following diagram commute for every $i
+\in I$:
 
 \begin{center}
 \begin{tikzcd}
@@ -13,4 +14,4 @@ exists a unique morphism $\lambda(f)$ making the following diagram commute for e
 \end{tikzcd}
 \end{center}
 
-Note that $f$ is a morphism $\const_{}(Y) \to X$ in $\Fam(I,C)$.
+Note that $f$ is a morphism $\const_{}(Y) \to X$ in $\Fam(I,\cat{C})$.
