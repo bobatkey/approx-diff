@@ -44,23 +44,25 @@ Define the category $\LatGal$ where:
 \end{definition}
 
 \noindent Right adjoints preserves limits and left adjoints preserves colimits, so for any $f \adj g: X \to Y$
-in $\LatGal$, $f$ is a meet-semilattice homomorphism and $g$ is a join-semilattice homomorphism. Moreover
-since $(X, \top, \meet)$ is a commutative monoid, and thus a $\CMon$-enriched poset category, for any $X, Y$
-there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y}: X \to Y = \const(\top_Y)$ and also
-(idempotent) addition of homomorphisms $f +_{\meet} g: X \to Y$ given by pointwise application of $\meet$,
-with the dual construction applying to $(X, \bot, \join)$. Thus $\LatGal$ is itself $\CMon$-enriched, with the
-hom object $\LatGal(X,Y)$ forming a semilattice with:
+in $\LatGal$, $f$ preserves the meet-semilattice structure of $X$ and $g$ preserves the join-semilattice
+structure of $Y$. Moreover since $(X, \top, \meet)$ is a commutative monoid, and thus a $\CMon$-enriched poset
+category, for any $X, Y$ there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y}: X \to Y =
+\const(\top_Y)$ and also (idempotent) addition of homomorphisms $f +_{\meet} g: X \to Y$ given by pointwise
+application of $\meet$. Dually, there is a zero join-semilattice homomorphism $0^{\join}_{X,Y}: X \to Y =
+\const(\bot_Y)$ and idempotent addition of homomorphisms $f +_{\join} g: X \to Y$ again given pointwise by
+$\join$. Thus $\LatGal$ is itself $\CMon$-enriched (in fact $\SemiLat$-enriched), with the hom object
+$\LatGal(X,Y)$ forming a semilattice with:
 \begin{itemize}
 \item zero morphism $0_{X,Y}$ given by the Galois connection $\const(\top_Y) \adj \const(\bot_X): X \to Y$
 \item component-wise idempotent addition of morphisms $(f \adj g) + (f' \adj g') = (f +_{\meet} f') \adj (g
 +_{\join} g'): X \to Y$.
 \end{itemize}
 
-\noindent and biadditivity of composition also component-wise. Moreover the projections from the product
-lattice $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y \to Y$ have both upper and lower adjoints; and in
-fact $\LatGal$ has finite biproducts, with the trivial 1-point lattice as zero object and binary biproducts
-$(X \biprod Y, \biinj_X, \biinj_Y, \biproj_X, \biproj_Y)$, where $X \biprod Y$ is the product lattice $X
-\times Y$ and:
+\noindent and biadditivity of composition also arising component-wise. Moreover the projections from the
+product lattice $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y \to Y$ have both upper and lower adjoints,
+and in fact $\LatGal$ has finite biproducts, with the trivial 1-point lattice as zero object and binary
+biproducts $(X \biprod Y, \biinj_X, \biinj_Y, \biproj_X, \biproj_Y)$, where $X \biprod Y$ is the product
+lattice $X \times Y$ and:
 
 \vspace{-3mm}
 \begin{minipage}[t]{0.45\textwidth}
