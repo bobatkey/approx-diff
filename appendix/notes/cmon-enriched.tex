@@ -33,7 +33,7 @@ Define $\CMon$ to be the category whose objects $A$ are the commutative monoids 
 are the commutative monoid homomorphisms.
 \end{definition}
 
-$\CMon$ is closed monoidal, with the trivial one-element monoid $\One$ as terminal object and monoidal product
+$\CMon$ is monoidal closed, with the trivial one-element monoid $\One$ as terminal object and monoidal product
 $A \tensor B$ given by the Cartesian product $A \times B$. $\CMon$ is complete and cocomplete, inheriting all
 limits and colimits from $\Set$.
 
@@ -56,7 +56,7 @@ h \comp (f + g) &= (h \comp f) + (h \comp g)
 \end{salign*}
 \end{enumerate}
 
-Because $\CMon$ is closed monoidal, it is enriched over itself; every hom-object $\Hom{\CMon}{A}{B}$ is a
+Because $\CMon$ is monoidal closed, it is enriched over itself; every hom-object $\Hom{\CMon}{A}{B}$ is a
 commutative monoid where:
 
 \begin{enumerate}
@@ -130,7 +130,7 @@ sending:
 $\Yoneda(f)_Z = (f \comp -): \Hom{\cat{C}}{Z}{X} \to \Hom{\cat{C}}{Z}{Y}$.
 \end{itemize}
 
-\noindent Now suppose $\cat{C}$ is $\mathscr{V}$-enriched with $\mathscr{V}$ closed monoidal; then the
+\noindent Now suppose $\cat{C}$ is $\mathscr{V}$-enriched with $\mathscr{V}$ monoidal closed; then the
 hom-functor $\Hom{\cat{C}}{-}{X}: \cat{C}^\op \to \mathscr{V}$ is itself $\mathscr{V}$-enriched. The
 
 The following diagram commutes because precomposition with the identity is the identity on morphisms:
@@ -156,9 +156,25 @@ I \arrow[r, "\id_{\Hom{\cat{C}}{X}{W}}"'] & \Hom{\mathscr{V}}{\Hom{\cat{C}}{X}{W
 \end{tikzcd}
 \end{center}
 
-\noindent \todo{Then there is an enriched version of the Yoneda embedding, namely a functor
-$\Yoneda_{\mathscr{V}}: \cat{C} \to \Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}$ analogous to $\Yoneda$
-which is itself $\mathscr{V}$-enriched.}
+\noindent We then have an enriched version of the Yoneda embedding, namely a functor $\Yoneda_{\mathscr{V}}:
+\cat{C} \to \Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}$ which sends:
+
+\begin{itemize}
+\item each object $X$ in $\cat{C}$ to the enriched hom-functor $\Yoneda_{\mathscr{V}}(X) =
+\Hom{\cat{C}}{-}{X}: \cat{C}^\op \to \mathscr{V}$
+\item each morphism $f: X \to Y$ in $\cat{C}$ to the natural transformation $\Yoneda_{\mathscr{V}}(f)$ where
+$\Yoneda_{\mathscr{V}}(f)_Z$ is again $(f \comp -): \Hom{\cat{C}}{Z}{X} \to \Hom{\cat{C}}{Z}{Y}$
+\end{itemize}
+
+\noindent and an enriched Yoneda lemma which says that for any $\mathscr{V}$-enriched presheaf $F$ and any
+object $X \in \cat{C}$ the hom-object of natural transformations between the $\mathscr{V}$-enriched presheaf
+$\Hom{\cat{C}}{-}{X}$ and $F$, which also lives in $\mathscr{V}$, is isomorphic to $F(X)$:
+
+\begin{lemma}
+Suppose $\cat{C}$ is $\mathscr{V}$-enriched with $\mathscr{V}$ monoidal closed. For any $F: \cat{C}^\op \to
+\mathscr{V}$ and any object $X$ in $\cat{C}$:
+\[\Hom{\Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}}{\Hom{\cat{C}}{-}{X}}{F} \iso F(X)\]
+\end{lemma}
 
 % First we note that the hom-functor $\Hom{C}{-}{X}: C \to \CMon$ is $\CMon$-enriched because composition is
 % bilinear and so $(- \comp f)$ preserves the additive structure of morphisms.
