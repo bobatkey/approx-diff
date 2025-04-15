@@ -6,28 +6,28 @@ Suppose a functor $F: \cat{C} \to \Cat$. The \emph{Grothendieck construction} $\
 $F$ is the category where:
 \begin{itemize}
 \item objects $X$ are pairs of an object $\idx{X}$ of $\cat{C}$ and an object $\faml{X}$ of $F(\idx{X})$;
-\item morphisms $f: X \to Y$ are morphisms $\idx{f}: \idx{X} \to \idx{Y}$ in $C$ paired with morphisms
+\item morphisms $f: X \to Y$ are morphisms $\idx{f}: \idx{X} \to \idx{Y}$ in $\cat{C}$ paired with morphisms
 $\faml{f}: F(f)(\faml{X}) \to \faml{Y}$ in $F(\idx{Y})$.
 \end{itemize}
 \end{definition}
 
 \noindent When $F$ is contravariant, a morphism $f: X \to Y$ is a morphism $\idx{f}: \idx{X} \to \idx{Y}$ in
-$C$ paired with a morphism $\faml{f}: \faml{X} \to F(f)(\faml{Y})$ in $F(\idx{X})$.
+$\cat{C}$ paired with a morphism $\faml{f}: \faml{X} \to F(f)(\faml{Y})$ in $F(\idx{X})$.
 
 \begin{definition}[Category of families]
-For any category $C$ define $\Fam(C)$ to be the Grothendieck construction
-$\Grothendieck{\Set^{\op}}\Fam(-,C)$.
+For any category $\cat{C}$ define $\Fam(\cat{C})$ to be the Grothendieck construction
+$\Grothendieck{\Set^{\op}}\Fam(-,\cat{C})$.
 \end{definition}
 
-\noindent In $\Fam(C)$ the objects $X$ are thus sets $\idx{X}$ paired with indexed families $\faml{X}$ in
-$\Fam(\idx{X},C)$ and morphisms $f: X \to Y$ are functions $\idx{f}: \idx{X} \to \idx{Y}$ paired with
-morphisms $\faml{f}: \faml{X} \to \reindex{\faml{Y}}{\idx{f}}$ in $\Fam(\idx{X},C)$.
+\noindent In $\Fam(\cat{C})$ the objects $X$ are thus sets $\idx{X}$ paired with indexed families $\faml{X}$
+in $\Fam(\idx{X},\cat{C})$ and morphisms $f: X \to Y$ are functions $\idx{f}: \idx{X} \to \idx{Y}$ paired with
+morphisms $\faml{f}: \faml{X} \to \reindex{\faml{Y}}{\idx{f}}$ in $\Fam(\idx{X},\cat{C})$.
 
 \begin{proposition}
 \item
 \begin{enumerate}
-\item If $C$ is locally small then so is $\Fam(C)$.
-\item If $C$ has binary products then so does $\Fam(C)$.
+\item If $\cat{C}$ is locally small then so is $\Fam(\cat{C})$.
+\item If $\cat{C}$ has binary products then so does $\Fam(\cat{C})$.
 \end{enumerate}
 \end{proposition}
 
