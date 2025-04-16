@@ -2,19 +2,30 @@
 \label{sec:cmon-enriched}
 
 \begin{definition}[Commutative monoid]
-A \emph{commutative monoid} $A = (A, \varepsilon, \bullet)$ is a set $A$ equipped with distinguished element
-$\varepsilon \in A$ called the \emph{unit} and associative binary operation $\bullet$ satisfying $\varepsilon
-\bullet x = x$ and $x \bullet \varepsilon = x$ for any $x \in A$.
+A \emph{commutative monoid} $X = (X, \bullet, \varepsilon)$ is a set $X$ equipped with distinguished element
+$\varepsilon \in X$ called the \emph{unit} and associative binary operation $\bullet: X^2 \to X$ satisfying
+$\varepsilon \bullet x = x$ and $x \bullet \varepsilon = x$ for any $x \in X$.
 \end{definition}
 
-A commutative monoid homomorphism from $A$ to $B$ is any function $f: A \to B$ preserving $\varepsilon$ and
+A commutative monoid homomorphism from $X$ to $Y$ is any function $f: X \to Y$ preserving $\varepsilon$ and
 $\bullet$.
 
-\subsubsection{Examples of commutative monoids}
+\subsubsection{Category of commutative monoids}
+
+\begin{definition}[Category $\CMon$]
+Define $\CMon$ to be the category which has as objects $X$ all commutative monoids and as morphisms $f: X \to
+Y$ all commutative monoid homomorphisms.
+\end{definition}
+
+$\CMon$ is monoidal closed, with the trivial one-element monoid $\One$ as terminal object and monoidal product
+$A \tensor B$ given by the Cartesian product $A \times B$. $\CMon$ is complete and cocomplete, inheriting all
+limits and colimits from $\Set$.
+
+\subsubsection{Example of commutative monoid}
 
 \begin{definition}[Bounded semilattice]
 \label{def:cmon-enriched:bounded-semilattice}
-A \emph{bounded semilattice} $A = (A, \varepsilon, \bullet)$ is a commutative monoid where $\bullet$ is
+A \emph{bounded semilattice} $X = (X, \bullet, \varepsilon)$ is a commutative monoid where $\bullet$ is
 \emph{idempotent}, i.e.~satisfies $x \bullet x = x$.
 \end{definition}
 
@@ -23,29 +34,24 @@ $\le_\bullet$ on $X$, with $x \le_{\bullet} y \iff x \bullet y = x$. With respec
 \bullet y$ is the greatest lower bound (meet) of $x$ and $y$ and $\varepsilon$ is the top element; with
 respect to the opposite order, $x \bullet y$ is the least upper bound (join) of $x$ and $y$ and $\varepsilon$
 is the bottom element. This therefore provides an algebraic characterisation of the usual (dual)
-order-theoretic notions of bounded meet semilattices $(X, \top, \meet)$ and bounded join semilattices $(X,
-\bot, \join)$.
+order-theoretic notions of bounded meet semilattices $(X, \meet, \top)$ and bounded join semilattices $(X,
+\join, \bot)$.
 
-\subsubsection{Category of commutative monoids}
-
-\begin{definition}[Category $\CMon$]
-Define $\CMon$ to be the category whose objects $A$ are the commutative monoids $A$ and morphisms $f: A \to B$
-are the commutative monoid homomorphisms.
+\begin{definition}[Category $\SemiLat$]
+Define $\SemiLat$ to be the category which has as objects all bounded semilattices and as morphisms all
+bounded semilattice homomorphisms.
 \end{definition}
-
-$\CMon$ is monoidal closed, with the trivial one-element monoid $\One$ as terminal object and monoidal product
-$A \tensor B$ given by the Cartesian product $A \times B$. $\CMon$ is complete and cocomplete, inheriting all
-limits and colimits from $\Set$.
 
 \subsubsection{$\CMon$-enriched category}
 
 Recall that if a category $\cat{C}$ is $\CMon$-enriched, then:
 \begin{enumerate}
-\item Every hom-object $\Hom{\cat{C}}{A}{B}$ is a commutative monoid of morphisms; we write $\zero_{A,B}$
-(zero morphism) for the unit, and $+_{A,B}$ (addition of morphisms) for the binary operation.
-\item Composition is \emph{bilinear}, i.e.~given by a family of morphisms $\Hom{\cat{C}}{B}{C} \tensor
-\Hom{\cat{C}}{A}{B} \to \Hom{\cat{C}}{A}{C}$ in $\CMon$ that preserve the additive structure in
-$\Hom{\cat{C}}{B}{C}$ and $\Hom{\cat{C}}{A}{B}$ separately:
+\item Every hom-object $\Hom{\cat{C}}{X}{Y}$ is a commutative monoid of morphisms; we write $\zero_{X,Y}$
+(zero morphism) for the unit, and $+_{X,Y}$ (addition of morphisms) for the binary operation (omitting the
+indices where implied by the context).
+\item Composition is \emph{bilinear}, i.e.~given by a family of morphisms $\Hom{\cat{C}}{Y}{Z} \tensor
+\Hom{\cat{C}}{X}{Y} \to \Hom{\cat{C}}{X}{Z}$ in $\CMon$ that preserve the additive structure in
+$\Hom{\cat{C}}{Y}{Z}$ and $\Hom{\cat{C}}{X}{Y}$ separately:
 
 \begin{salign*}
 f \comp \zero = f = \zero \comp f
@@ -56,12 +62,13 @@ h \comp (f + g) &= (h \comp f) + (h \comp g)
 \end{salign*}
 \end{enumerate}
 
-Because $\CMon$ is monoidal closed, it is enriched over itself; every hom-object $\Hom{\CMon}{A}{B}$ is a
-commutative monoid where:
+Because $\CMon$ is monoidal closed, it is enriched over itself; every hom-object $\Hom{\CMon}{X}{Y}$ is a
+commutative monoid with:
 
 \begin{enumerate}
-\item the unit $0$ is the constant homomorphism sending every element of $A$ to $\varepsilon_B$;
-\item the binary operation $+$ is pointwise addition of homomorphisms $(f + g)(a) = f(a) + g(a)$.
+\item unit $0_{X,Y} = \const(\varepsilon_Y)$, the constant homomorphism sending every element of $X$ to
+$\varepsilon_Y$;
+\item binary operation $+_{X,Y}$ given by pointwise addition of homomorphisms $(f + g)(x) = f(x) + g(x)$.
 \end{enumerate}
 
 \begin{proposition}
