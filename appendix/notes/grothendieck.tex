@@ -3,16 +3,16 @@
 
 \begin{definition}[Grothendieck construction for $F$]
 Suppose a functor $F: \cat{C} \to \Cat$. The \emph{Grothendieck construction} $\Grothendieck{\cat{C}}F$ for
-$F$ is the category where:
+$F$ is the category which has:
 \begin{itemize}
-\item objects $X$ are pairs of an object $\idx{X}$ of $\cat{C}$ and an object $\faml{X}$ of $F(\idx{X})$;
-\item morphisms $f: X \to Y$ are morphisms $\idx{f}: \idx{X} \to \idx{Y}$ in $\cat{C}$ paired with morphisms
-$\faml{f}: F(f)(\faml{X}) \to \faml{Y}$ in $F(\idx{Y})$.
+\item as objects $X$ all pairs of an object $\idx{X}$ of $\cat{C}$ and an object $\faml{X}$ of $F(\idx{X})$;
+\item as morphisms $f: X \to Y$ all pairs of a morphism $\idx{f}: \idx{X} \to \idx{Y}$ in $\cat{C}$ and a
+morphism $\faml{f}: F(\idx{f})(\faml{X}) \to \faml{Y}$ in $F(\idx{Y})$.
 \end{itemize}
 \end{definition}
 
 \noindent When $F$ is contravariant, a morphism $f: X \to Y$ is a morphism $\idx{f}: \idx{X} \to \idx{Y}$ in
-$\cat{C}$ paired with a morphism $\faml{f}: \faml{X} \to F(f)(\faml{Y})$ in $F(\idx{X})$.
+$\cat{C}$ paired with a morphism $\faml{f}: \faml{X} \to F(\idx{f})(\faml{Y})$ in $F(\idx{X})$.
 
 \begin{definition}[Category of families]
 For any category $\cat{C}$ define $\Fam(\cat{C})$ to be the Grothendieck construction
