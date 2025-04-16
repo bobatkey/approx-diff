@@ -71,6 +71,11 @@ $\varepsilon_Y$;
 \item binary operation $+_{X,Y}$ given by pointwise addition of homomorphisms $(f + g)(x) = f(x) + g(x)$.
 \end{enumerate}
 
+Suppose $F, G: \cat{D} \to \cat{C}$ are functors where $\cat{C}$ is $\CMon$-enriched. Then the hom-object
+$\Hom{\Func{\cat{C}}{\cat{D}}}{F}{G}$ of natural transformations between $F$ and $G$ has a zero $0_{F,G}$ and
+addition $\eta + \mu$ given component-wise as $(0_{F,G})_X = 0_{F(X),G(X)}$ and $(\eta + \mu)_X = \eta_X +
+\mu_X$.
+
 \begin{proposition}
 If $C$ is $\CMon$-enriched then any functor category $\Func{\cat{D}}{\cat{C}}$ is $\CMon$-enriched.
 \end{proposition}

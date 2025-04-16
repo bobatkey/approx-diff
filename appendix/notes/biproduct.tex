@@ -6,14 +6,14 @@ A \emph{zero} object is an object which is both terminal and initial.
 \end{definition}
 
 \begin{definition}[Biproduct]
-Suppose $\cat{C}$ a $\CMon$-enriched category. For any objects $A, B$, the \emph{biproduct} of $A$ and $B$ is
-an object $A \biprod B$ of $C$ together with morphisms
+Suppose $\cat{C}$ a $\CMon$-enriched category. For any objects $X, Y$, the \emph{biproduct} of $X$ and $Y$ is
+an object $X \biprod Y$ of $C$ together with morphisms
 
 \begin{center}
 \begin{tikzcd}
-   A \arrow[r, "\biinj_A", shift left] &
-   A \biprod B \arrow[l, "\biproj_A", shift left] \arrow[r, "\biproj_B"', shift right] &
-   B \arrow[l, "\biinj_B"', shift right]
+   X \arrow[r, "\biinj_X", shift left] &
+   X \biprod Y \arrow[l, "\biproj_X", shift left] \arrow[r, "\biproj_Y"', shift right] &
+   Y \arrow[l, "\biinj_Y"', shift right]
 \end{tikzcd}
 \end{center}
 
@@ -22,16 +22,16 @@ an object $A \biprod B$ of $C$ together with morphisms
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
 \begin{salign*}
-   \biproj_A \comp \biinj_A &= \id_A \\
-   \biproj_B \comp \biinj_A &= \zero_{A,B}
+   \biproj_X \comp \biinj_X &= \id_X \\
+   \biproj_Y \comp \biinj_X &= \zero_{X,Y}
 \end{salign*}
 \end{center}
 \end{minipage}%
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
 \begin{salign*}
-   \biproj_B \comp \biinj_B &= \id_B \\
-   \biproj_A \comp \biinj_B &= \zero_{B,A}
+   \biproj_Y \comp \biinj_Y &= \id_Y \\
+   \biproj_X \comp \biinj_Y &= \zero_{Y,X}
 \end{salign*}
 \end{center}
 \end{minipage}
@@ -39,29 +39,28 @@ an object $A \biprod B$ of $C$ together with morphisms
 \noindent and
 
 \begin{salign*}
-\biinj_A \comp \biproj_A + \biinj_B \comp \biproj_B &= \id_{A \biprod B}
+(\biinj_X \comp \biproj_X) + (\biinj_Y \comp \biproj_Y) &= \id_{X \biprod Y}
 \end{salign*}
 \end{definition}
 
 \noindent \todo{I think we can also define ``biproduct'' just using zero morphisms, and then derive rather
 than assume $\CMon$-enrichment.}
 
-We say a $\CMon$-enriched $\cat{C}$ is \emph{semi-additive} if it also has finite biproducts; having products
-or coproducts is sufficient.
+We call a $\CMon$-enriched $\cat{C}$ \emph{semi-additive} if it also has finite biproducts; having products or
+coproducts is sufficient.
 
 \begin{proposition}
 \label{prop:biproduct:from-product-or-coproduct}
 Suppose $\cat{C}$ is $\CMon$-enriched.
 \begin{itemize}
-\item If $\cat{C}$ has biproducts $(A \biprod B, \biinj_A, \biinj_B, \biproj_A, \biproj_B)$ then $(A
-\biprod B, \biproj_A, \biproj_B)$ is a product and $(A \biprod B, \biinj_A, \biinj_B)$ is a coproduct.
-\item If $\cat{C}$ has binary products $(A \times B, \proj_1, \proj_2)$ then:
+\item If $\cat{C}$ has biproducts $(X \biprod Y, \biinj_X, \biinj_Y, \biproj_X, \biproj_Y)$ then $(X
+\biprod Y, \biproj_X, \biproj_Y)$ is a product and $(X \biprod Y, \biinj_X, \biinj_Y)$ is a coproduct.
+\item If $\cat{C}$ has binary products $(X \times Y, \proj_1, \proj_2)$ then:
 \begin{enumerate}
-\item $\prodM{0_{A,B}}{0_{A,C}} = 0_{A,B \times C}$
+\item $\prodM{0_{X,Y}}{0_{X,Z}} = 0_{X,Y \times Z}$
 \item $\prodM{f_1 + g_1}{f_2 + g_2} = \prodM{f_1}{f_2} + \prodM{g_1}{g_2}$
-\item $(A \times B, \biinj_A, \biinj_B, \proj_1, \proj_2)$ is a
-biproduct with $\biinj_A: A \to A \times B = \prodM{\id_A}{0_{A,B}}$ and $\biinj_B: B \to A \times B =
-\prodM{0_{A,B}}{\id_B}$.
+\item $(X \times Y, \biinj_X, \biinj_Y, \proj_1, \proj_2)$ is a biproduct with $\biinj_X =
+\prodM{\id_X}{0_{X,Y}}: X \to X \times Y$ and $\biinj_Y = \prodM{0_{X,Y}}{\id_Y}: Y \to X \times Y$.
 \end{enumerate}
 \item If $\cat{C}$ has binary coproducts $(A + B, \inj_1, \inj_2)$ then
 \begin{enumerate}
