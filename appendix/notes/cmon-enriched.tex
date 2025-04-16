@@ -145,8 +145,11 @@ $\Yoneda(f)_Z = (f \comp -): \Hom{\cat{C}}{Z}{X} \to \Hom{\cat{C}}{Z}{Y}$.
 \end{itemize}
 
 \noindent Now suppose $\cat{C}$ is $\mathscr{V}$-enriched with $\mathscr{V}$ monoidal closed; then the
-hom-functor $\Hom{\cat{C}}{-}{X}: \cat{C}^\op \to \mathscr{V}$ is itself $\mathscr{V}$-enriched. The following
-diagram commutes because precomposition with the identity is the identity on morphisms:
+hom-functor $\Hom{\cat{C}}{-}{X}: \cat{C}^\op \to \mathscr{V}$ is itself $\mathscr{V}$-enriched, sending
+objects $Y$ to the hom-object $\Hom{\cat{C}}{Y}{X}$ in $\mathscr{V}$, and providing a family of morphisms
+$\Hom{\cat{C}}{-}{X}_{Y,Z} \to \Hom{\mathscr{V}}{\Hom{\cat{C}}{Y}{X}}{\Hom{\cat{C}}{Z}{X}}$ for any $X, Y$ in
+$\cat{C}$. The following diagram commutes because precomposition with the identity is the identity on
+morphisms:
 
 \begin{center}
 \begin{tikzcd}[column sep=1.8cm]
@@ -155,7 +158,7 @@ I \arrow[r, "\id_{\Hom{\cat{C}}{X}{W}}"'] & \Hom{\mathscr{V}}{\Hom{\cat{C}}{X}{W
 \end{tikzcd}
 \end{center}
 
-\noindent and the following by the associativity of composition:
+\noindent and the following commutes by the associativity of composition:
 
 \begin{center}
 \begin{tikzcd}[column sep=2.7cm]
@@ -169,19 +172,15 @@ I \arrow[r, "\id_{\Hom{\cat{C}}{X}{W}}"'] & \Hom{\mathscr{V}}{\Hom{\cat{C}}{X}{W
 \end{tikzcd}
 \end{center}
 
-\noindent We then have an enriched version of the Yoneda embedding, namely a functor $\Yoneda_{\mathscr{V}}:
-\cat{C} \to \Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}$ which sends:
+\noindent There exists an enriched version of the Yoneda embedding, namely a functor $\Yoneda_{\mathscr{V}}:
+\cat{C} \to \Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}$ sending objects $X$ to the enriched hom-functor
+$\Yoneda_{\mathscr{V}}(X) = \Hom{\cat{C}}{-}{X}: \cat{C}^\op \to \mathscr{V}$ and providing a family of
+morphisms $(\Yoneda_{\mathscr{V}})_{X,Y}: \Hom{\cat{C}}{X}{Y} \to
+\Hom{\Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}}{\Hom{\cat{C}}{-}{X}}{\Hom{\cat{C}}{-}{Y}}$.
 
-\begin{itemize}
-\item each object $X$ in $\cat{C}$ to the enriched hom-functor $\Yoneda_{\mathscr{V}}(X) =
-\Hom{\cat{C}}{-}{X}: \cat{C}^\op \to \mathscr{V}$
-\item each morphism $f: X \to Y$ in $\cat{C}$ to the natural transformation $\Yoneda_{\mathscr{V}}(f)$ where
-$\Yoneda_{\mathscr{V}}(f)_Z$ is again $(f \comp -): \Hom{\cat{C}}{Z}{X} \to \Hom{\cat{C}}{Z}{Y}$
-\end{itemize}
-
-\noindent and an enriched Yoneda lemma which says that for any $\mathscr{V}$-enriched presheaf $F$ and any
-object $X \in \cat{C}$ the hom-object of natural transformations between the $\mathscr{V}$-enriched presheaf
-$\Hom{\cat{C}}{-}{X}$ and $F$, which also lives in $\mathscr{V}$, is isomorphic to $F(X)$:
+The enriched Yoneda lemma says that for any $\mathscr{V}$-enriched presheaf $F$ and any object $X \in \cat{C}$
+the hom-object of natural transformations between the $\mathscr{V}$-enriched presheaf $\Hom{\cat{C}}{-}{X}$
+and $F$, which also lives in $\mathscr{V}$, is isomorphic to $F(X)$:
 
 \begin{lemma}
 Suppose $\cat{C}$ is $\mathscr{V}$-enriched with $\mathscr{V}$ monoidal closed. For any $F: \cat{C}^\op \to
