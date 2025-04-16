@@ -85,9 +85,10 @@ If $C$ is $\CMon$-enriched then any functor category $\Func{\cat{D}}{\cat{C}}$ i
 \begin{definition}[$\mathscr{V}$-enriched functor]
 \label{def:cmon-enriched:enriched-functor}
 For any monoidal category $(\mathscr{V}, \tensor, I)$ and $\mathscr{V}$-enriched categories $\cat{C}$ and
-$\cat{D}$, a \emph{$\mathscr{V}$-enriched} functor $F: \cat{C} \to \cat{D}$ on morphisms is a family of
-morphisms $F_{X,Y}: \Hom{\cat{C}}{X}{Y} \to \Hom{\cat{D}}{F(X)}{F(Y)}$ between hom-objects in $\mathscr{V}$
-that makes the following diagrams in $\mathscr{V}$ commute:
+$\cat{D}$, a \emph{$\mathscr{V}$-enriched} functor $F: \cat{C} \to \cat{D}$ on morphisms is a map sending
+every object $X$ of $\cat{C}$ to an object $F(X)$ of $\cat{D}$, plus a family of morphisms $F_{X,Y}:
+\Hom{\cat{C}}{X}{Y} \to \Hom{\cat{D}}{F(X)}{F(Y)}$ between hom-objects in $\mathscr{V}$ making the
+following commute:
 
 \begin{center}
 \begin{tikzcd}[column sep=1.8cm]
@@ -105,7 +106,8 @@ I \arrow[r, "\id_{F(X)}"'] & \Hom{\cat{D}}{F(X)}{F(X)}
 \end{definition}
 
 \noindent These generalise the usual functor laws to a setting where the hom-objects are not necessarily sets
-and thus do not support an elementwise formulation.
+and thus do not support an elementwise formulation, although here we are only interested in the situation
+where $\mathscr{V}$ is concrete.
 
 \begin{definition}[Category of enriched functors]
 Write $\Func{\cat{C}}{\cat{D}}_{\mathscr{V}}$ for the category of $\mathscr{V}$-enriched functors from
