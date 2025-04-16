@@ -62,13 +62,12 @@ Suppose $\cat{C}$ is $\CMon$-enriched.
 \item $(X \times Y, \biinj_X, \biinj_Y, \proj_1, \proj_2)$ is a biproduct with $\biinj_X =
 \prodM{\id_X}{0_{X,Y}}: X \to X \times Y$ and $\biinj_Y = \prodM{0_{X,Y}}{\id_Y}: Y \to X \times Y$.
 \end{enumerate}
-\item If $\cat{C}$ has binary coproducts $(A + B, \inj_1, \inj_2)$ then
+\item If $\cat{C}$ has binary coproducts $(X + Y, \inj_1, \inj_2)$ then
 \begin{enumerate}
-\item $\coprodM{0_{A,C}}{0_{B,C}} = 0_{A + B,C}$
+\item $\coprodM{0_{X,Z}}{0_{Y,Z}} = 0_{X + Y,Z}$
 \item $\coprodM{f_1 + g_1}{f_2 + g_2} = \coprodM{f_1}{f_2} + \coprodM{g_1}{g_2}$
-\item $(A + B, \inj_1, \inj_2, \biproj_A, \biproj_B)$ is a
-biproduct with $\biproj_A: A + B \to A = \coprodM{\id_A}{0_{B,A}}$ and $\biproj_B: A + B \to B =
-\coprodM{0_{A,B}}{\id_B}$.
+\item $(X + Y, \inj_1, \inj_2, \biproj_X, \biproj_Y)$ is a biproduct with $\biproj_X: X + Y \to X =
+\coprodM{\id_X}{0_{Y,X}}$ and $\biproj_Y: X + Y \to Y = \coprodM{0_{X,Y}}{\id_Y}$.
 \end{enumerate}
 \item If $\cat{C}$ has a terminal (or initial) object then it is a zero object.
 \end{itemize}
@@ -80,9 +79,9 @@ Suppose $\cat{C}$ a category with biproducts. Then the following diagram in $\ca
 
 \begin{center}
 \begin{tikzcd}[row sep=3em, column sep=3em]
-   & A \arrow[d, "\biinj_A", shift left] \arrow[dr, "f_2"] \\
-   A' \arrow[r, "\prodM{f_1}{g_1}"] \arrow[dr, "g_1"'] \arrow[ur, "f_1"] & A \biprod B \arrow[u, "\biproj_A", shift left] \arrow[d, "\biproj_B"', shift right] \arrow[r, pos=0.35, "\coprodM{f_2}{g_2}"] & B' \\
-   & B \arrow[u, "\biinj_B"', shift right] \arrow[ur, "g_2"']
+   & Y \arrow[d, "\biinj_Y", shift left] \arrow[dr, "f_2"] \\
+   X \arrow[r, "\prodM{f_1}{g_1}"] \arrow[dr, "g_1"'] \arrow[ur, "f_1"] & Y \biprod Z \arrow[u, "\biproj_Y", shift left] \arrow[d, "\biproj_Z"', shift right] \arrow[r, pos=0.35, "\coprodM{f_2}{g_2}"] & W \\
+   & B \arrow[u, "\biinj_Z"', shift right] \arrow[ur, "g_2"']
 \end{tikzcd}
 \end{center}
 \end{proposition}
