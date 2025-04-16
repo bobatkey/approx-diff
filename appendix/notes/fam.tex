@@ -2,10 +2,11 @@
 \label{sec:fam}
 
 \begin{definition}[Category of $I$-indexed families of objects]
-For any set $I$ and any category $\cat{C}$ write $\Fam(I,\cat{C})$ for the category where:
+For any set $I$ and any category $\cat{C}$ write $\Fam(I,\cat{C})$ for the category which has:
 \begin{itemize}
-\item objects are the $I$-indexed families of objects of $\cat{C}$;
-\item morphisms from $X$ to $Y$ are families of morphisms $f_i: X_i \to Y_i$ in $\cat{C}$ for any $i \in I$.
+\item as objects all $I$-indexed families of objects of $\cat{C}$;
+\item as morphisms from $X$ to $Y$ all families of morphisms $f_i: X_i \to Y_i$ in $\cat{C}$ for any $i \in
+I$.
 \end{itemize}
 \end{definition}
 
@@ -22,9 +23,10 @@ any $J$-indexed family $X$ to the $I$-indexed family $X[f]$ where $X[f]_i = X_{f
 similarly for morphisms.
 \end{definition}
 
-\begin{definition}[$\Fam(-,\cat{C})$ functor]
-$\Fam(-,\cat{C}): \Set^{\op} \to \Cat$ is then the functor which sends any set $I$ to $\Fam(I,\cat{C})$ and
-any function $f: I \to J$ to the functor $\reindex{-}{f}: \Fam(J,\cat{C}) \to \Fam(I,\cat{C})$.
+\begin{definition}
+Then define $\Fam(-,\cat{C}): \Set^{\op} \to \Cat$ to be the functor which sends any set $I$ to
+$\Fam(I,\cat{C})$ and any function $f: I \to J$ to the functor $\reindex{-}{f}: \Fam(J,\cat{C}) \to
+\Fam(I,\cat{C})$.
 \end{definition}
 
 \begin{proposition}
