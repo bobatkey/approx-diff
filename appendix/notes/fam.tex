@@ -18,9 +18,14 @@ For any object $X$ of $\cat{C}$ write $\const_I(X)$ for the constant family $\{X
 \end{definition}
 
 \begin{definition}[Reindexing]
-For any $f: I \to J$ the \emph{reindexing} functor $\reindex{-}{f}: \Fam(J,\cat{C}) \to \Fam(I,\cat{C})$ sends
-any $J$-indexed family $X$ to the $I$-indexed family $X[f]$ where $X[f]_i = X_{f(i)}$ for any $i \in I$, and
-similarly for morphisms.
+For any $f: I \to J$ define the \emph{reindexing} functor $\reindex{-}{f}: \Fam(J,\cat{C}) \to
+\Fam(I,\cat{C})$ which:
+\begin{itemize}
+\item sends any $J$-indexed family $X$ to the $I$-indexed family $\reindex{X}{f}$ where $\reindex{X}{f}_i =
+X_{f(i)}$ for any $i \in I$;
+\item sends any morphism $g: X \to Y$ between $J$-indexed families to the morphism $\reindex{g}{f}:
+\reindex{X}{f} \to \reindex{X}{g}$ where $\reindex{g}{f}_i = g_{f(i)}$.
+\end{itemize}
 \end{definition}
 
 \begin{definition}
