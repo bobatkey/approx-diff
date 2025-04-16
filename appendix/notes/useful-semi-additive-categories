@@ -46,38 +46,38 @@ Define the category $\LatGal$ which has:
 \noindent Right adjoints preserves limits and left adjoints preserves colimits, so for any $f \adj g: X \to Y$
 in $\LatGal$, $f$ and $g$ preserves the meet-semilattice structure of $X$ and join-semilattice structure of
 $Y$ respectively. Moreover since $(X, \top, \meet)$ is a commutative monoid, and thus a $\CMon$-enriched poset
-category, for any $X, Y$ there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y}: X \to Y =
-\const(\top_Y)$ and also (idempotent) addition of homomorphisms $f +_{\meet} g: X \to Y$ given by pointwise
-application of $\meet$. Dually, there is a zero join-semilattice homomorphism $0^{\join}_{X,Y}: X \to Y =
-\const(\bot_Y)$ and idempotent addition of homomorphisms $f +_{\join} g: X \to Y$ again given pointwise by
-$\join$. Thus $\LatGal$ is itself $\CMon$-enriched (in fact $\SemiLat$-enriched), with the hom object
-$\LatGal(X,Y)$ forming a bounded semilattice with:
+category, for any $X, Y$ there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y} = \const(\top_Y): X
+\to Y$ and also (idempotent) addition of homomorphisms $f +_{\meet} g: X \to Y$ given pointwise by $\meet$.
+Dually, there is a zero join-semilattice homomorphism $0^{\join}_{X,Y} = \const(\bot_Y): X \to Y$ and
+idempotent addition of homomorphisms $f +_{\join} g: X \to Y$ given pointwise by $\join$. Thus $\LatGal$ is
+itself $\CMon$-enriched (in fact $\SemiLat$-enriched), with the hom-object $\LatGal(X,Y)$ forming a bounded
+semilattice with:
 \begin{itemize}
 \item zero morphism $0_{X,Y}$ given by the Galois connection $\const(\top_Y) \adj \const(\bot_X): X \to Y$
 \item component-wise idempotent addition of morphisms $(f \adj g) + (f' \adj g') = (f +_{\meet} f') \adj (g
 +_{\join} g'): X \to Y$.
 \end{itemize}
 
-\noindent and biadditivity of composition also arising component-wise. Moreover the projections from the
-product lattice $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y \to Y$ have both upper and lower adjoints,
-and in fact $\LatGal$ has finite biproducts, with the trivial 1-point lattice as zero object and binary
-biproducts $(X \biprod Y, \biinj_X, \biinj_Y, \biproj_X, \biproj_Y)$, where $X \biprod Y$ is the product
-lattice $X \times Y$ and:
+\noindent and biadditivity of composition also arising component-wise. Moreover, writing $X \times Y$ for the
+product of lattices $X$ and $Y$, the projections $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y \to Y$ have
+both upper and lower adjoints which allow $X \times Y$ to also act as a coproduct. Thus $\LatGal$ has finite
+biproducts, with the trivial 1-point lattice as zero object and binary biproducts $(X \biprod Y, \biinj_X,
+\biinj_Y, \biproj_X, \biproj_Y)$, where $X \biprod Y$ is $X \times Y$ and:
 
-\vspace{-3mm}
+\vspace{-4mm}
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
 \begin{align*}
-   \biproj_X: X \biprod Y \to X = \proj_1 \adj \prodM{\id_X}{\const(\bot_Y)} \\
-   \biproj_Y: X \biprod Y \to Y = \proj_2 \adj \prodM{\const(\bot_X)}{\id_Y}
+   \biproj_X = \proj_1 \adj \prodM{\id_X}{\const(\bot_Y)}: X \biprod Y \to X \\
+   \biproj_Y = \proj_2 \adj \prodM{\const(\bot_X)}{\id_Y}: X \biprod Y \to Y
 \end{align*}
 \end{center}
 \end{minipage}%
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
 \begin{align*}
-   \biinj_X: X \to X \biprod Y = \prodM{\id_X}{\const(\top_Y)} \adj \pi_1 \\
-   \biinj_Y: Y \to X \biprod Y = \prodM{\const(\top_X)}{\id_Y} \adj \pi_2
+   \biinj_X = \prodM{\id_X}{\const(\top_Y)} \adj \pi_1: X \to X \biprod Y \\
+   \biinj_Y = \prodM{\const(\top_X)}{\id_Y} \adj \pi_2: Y \to X \biprod Y
 \end{align*}
 \end{center}
 \end{minipage}
@@ -106,10 +106,11 @@ Up to isomorphism a finite-dimensional vector space over $F$ of dimension $n \in
 $(F^n, +, \mult)$ where $+$ and $\mult$ are defined component-wise.
 
 \begin{definition}[Category $\FinVect_F$]
-Define $\FinVect_F$ to be the category where:
+Define $\FinVect_F$ to be the category which as:
 \begin{itemize}
-\item objects $V, W$ are natural numbers $n$ paired with an $n$-dimensional vector space $(F^n, +, \mult)$
-\item morphisms $f: V \to W$ are functions $f$ satisfying $f(u + v) = f(u) + f(v)$ and $f(a \mult v) = a \mult f(v)$.
+\item as objects $V, W$ all pairs of natural numbers $n$ and $n$-dimensional vector spaces $(F^n, +, \mult)$
+\item as morphisms $f: V \to W$ all functions $f$ satisfying $f(u + v) = f(u) + f(v)$ and $f(a \mult v) = a
+\mult f(v)$.
 \end{itemize}
 \end{definition}
 
