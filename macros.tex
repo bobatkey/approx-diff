@@ -9,6 +9,16 @@
 \newcommand*{\propref}[1]{Proposition~\ref{prop:#1}}
 \newcommand*{\secref}[1]{\S\ref{sec:#1}}
 
+\newcommand{\naturalto}{%
+  \mathrel{\vbox{\offinterlineskip
+    \mathsurround=0pt
+    \ialign{\hfil##\hfil\cr
+      \normalfont\scalebox{1.2}{.}\cr
+%      \noalign{\kern-.05ex}
+      $\rightarrow$\cr}
+  }}%
+}
+
 \newcommand*{\adj}{\dashv}
 \newcommand*{\biinj}{\mathsf{i}}
 \newcommand*{\biprod}{\oplus}
