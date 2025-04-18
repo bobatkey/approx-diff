@@ -83,9 +83,9 @@ The \emph{Yoneda embedding} for $\cat{C}$ is the functor $\Yoneda: \cat{C} \to
 $Y, Z$ in $\cat{C}$. Moreover there exists an enriched Yoneda embedding, namely a functor
 $\Yoneda_{\mathscr{V}}: \cat{C} \to \Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}$ which is itself
 $\mathscr{V}$-enriched, sending objects $X$ to the $\mathscr{V}$-enriched hom-functor $\Hom{\cat{C}}{-}{X}$
-and providing a family of morphisms $(\Yoneda_{\mathscr{V}})_{X,Y}: \Hom{\cat{C}}{X}{Y} \to $ to
-$\mathscr{V}$-natural transformations $\Hom{\cat{C}}{-}{X} \naturalto \Hom{\cat{C}}{-}{Y}$ acting at each
-component as post-composition with $f$.
+and providing a family of morphisms $(\Yoneda_{\mathscr{V}})_{X,Y}: \Hom{\cat{C}}{X}{Y} \to
+\Hom{\Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}}{\Hom{\cat{C}}{-}{X}}{\Hom{\cat{C}}{-}{Y}}$ acting
+concretely at each component as post-composition with $f: X \to Y$.
 
 The \emph{enriched Yoneda lemma} states that, for any $\mathscr{V}$-enriched presheaf $F$ and any object $X
 \in \cat{C}$, there is an isomorphism between $F(X)$ and the hom-object (also living in $\mathscr{V}$) of
