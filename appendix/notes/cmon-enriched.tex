@@ -1,49 +1,6 @@
 \subsection{$\CMon$-enriched categories}
 \label{sec:cmon-enriched}
 
-\begin{definition}[Commutative monoid]
-A \emph{commutative monoid} $X = (X, \bullet, \varepsilon)$ is a set $X$ equipped with distinguished element
-$\varepsilon \in X$ called the \emph{unit} and associative binary operation $\bullet: X^2 \to X$ satisfying
-$\varepsilon \bullet x = x$ and $x \bullet \varepsilon = x$ for any $x \in X$.
-\end{definition}
-
-A commutative monoid homomorphism from $X$ to $Y$ is any function $f: X \to Y$ preserving $\varepsilon$ and
-$\bullet$.
-
-\subsubsection{Category of commutative monoids}
-
-\begin{definition}[Category $\CMon$]
-Define $\CMon$ to be the category which has as objects $X$ all commutative monoids and as morphisms $f: X \to
-Y$ all commutative monoid homomorphisms.
-\end{definition}
-
-$\CMon$ is monoidal closed, with the trivial one-element monoid $\One$ as terminal object and monoidal product
-$A \tensor B$ given by the Cartesian product $A \times B$. $\CMon$ is complete and cocomplete, inheriting all
-limits and colimits from $\Set$.
-
-\subsubsection{Example of commutative monoid}
-
-\begin{definition}[Bounded semilattice]
-\label{def:cmon-enriched:bounded-semilattice}
-A \emph{bounded semilattice} $X = (X, \bullet, \varepsilon)$ is a commutative monoid where $\bullet$ is
-\emph{idempotent}, i.e.~satisfies $x \bullet x = x$.
-\end{definition}
-
-\noindent The idempotence of $\bullet$ (together with commutativity and associativity) induces a partial order
-$\le_\bullet$ on $X$, with $x \le_{\bullet} y \iff x \bullet y = x$. With respect to this partial order, $x
-\bullet y$ is the greatest lower bound (meet) of $x$ and $y$ and $\varepsilon$ is the top element; with
-respect to the opposite order, $x \bullet y$ is the least upper bound (join) of $x$ and $y$ and $\varepsilon$
-is the bottom element. This therefore provides an algebraic characterisation of the usual (dual)
-order-theoretic notions of bounded meet semilattices $(X, \meet, \top)$ and bounded join semilattices $(X,
-\join, \bot)$.
-
-\begin{definition}[Category $\SemiLat$]
-Define $\SemiLat$ to be the category which has as objects all bounded semilattices and as morphisms all
-bounded semilattice homomorphisms.
-\end{definition}
-
-\subsubsection{$\CMon$-enriched category}
-
 Recall that if a category $\cat{C}$ is $\CMon$-enriched, then:
 \begin{enumerate}
 \item Every hom-object $\Hom{\cat{C}}{X}{Y}$ is a commutative monoid of morphisms; we write $\zero_{X,Y}$
@@ -81,38 +38,6 @@ If $C$ is $\CMon$-enriched then any functor category $\Func{\cat{D}}{\cat{C}}$ i
 \end{proposition}
 
 \subsubsection{$\CMon$-enriched presheaves}
-
-\begin{definition}[$\mathscr{V}$-enriched functor]
-\label{def:cmon-enriched:enriched-functor}
-For any monoidal category $(\mathscr{V}, \tensor, I)$ and $\mathscr{V}$-enriched categories $\cat{C}$ and
-$\cat{D}$, a \emph{$\mathscr{V}$-enriched} functor $F: \cat{C} \to \cat{D}$ on morphisms is a map sending
-every object $X$ of $\cat{C}$ to an object $F(X)$ of $\cat{D}$, plus a family of morphisms $F_{X,Y}:
-\Hom{\cat{C}}{X}{Y} \to \Hom{\cat{D}}{F(X)}{F(Y)}$ between hom-objects in $\mathscr{V}$ making the
-following commute:
-
-\begin{center}
-\begin{tikzcd}[column sep=1.8cm]
-I \arrow[d, equals] \arrow[r, "\id_X"] & \Hom{\cat{C}}{X}{X} \arrow[d, "F_{X,X}"] \\
-I \arrow[r, "\id_{F(X)}"'] & \Hom{\cat{D}}{F(X)}{F(X)}
-\end{tikzcd}
-\hspace{5mm}
-\begin{tikzcd}[column sep=2.6cm]
-   \Hom{\cat{C}}{Y}{Z} \tensor \Hom{\cat{C}}{X}{Y} \arrow[r, "\comp_{X,Y,Z}"] \arrow[d, "F_{Y,Z} \tensor F_{X,Y}"']
-   & \Hom{\cat{C}}{X}{Z} \arrow[d, "F_{X,Z}"] \\
-   \Hom{\cat{D}}{F(Y)}{F(Z)} \tensor \Hom{\cat{D}}{F(X)}{F(Y)} \arrow[r, "\comp_{F(X),F(Y),F(Z)}"'] &
-   \Hom{\cat{D}}{F(X)}{F(Z)}
-\end{tikzcd}
-\end{center}
-\end{definition}
-
-\noindent These generalise the usual functor laws to a setting where the hom-objects are not necessarily sets
-and thus do not support an elementwise formulation, although here we are only interested in the situation
-where $\mathscr{V}$ is concrete.
-
-\begin{definition}[Category of enriched functors]
-Write $\Func{\cat{C}}{\cat{D}}_{\mathscr{V}}$ for the category of $\mathscr{V}$-enriched functors from
-$\cat{C}$ to $\cat{D}$.
-\end{definition}
 
 In the specific setting of a $\CMon$-enriched presheaf $F: \cat{C}^\op \to \CMon$, enrichment means that $F$
 preserves the additive structure of morphisms:
