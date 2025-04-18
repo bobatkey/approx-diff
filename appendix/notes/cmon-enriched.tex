@@ -53,64 +53,69 @@ It then follows automatically that $F$ also preserves bilinear composition, i.e.
 \end{itemize}
 in addition to the usual enriched functor properties from \defref{cmon-enriched:enriched-functor}.
 
-\subsubsection{$\CMon$-enriched Yoneda embedding}
+\subsubsection{Enriched Yoneda embedding}
 
-Suppose $\cat{C}$ a small category. The usual \emph{Yoneda embedding} for $\cat{C}$ is the functor $\Yoneda:
-\cat{C} \to \Func{\cat{C}^\op}{\Set}$ defined as follows:
+Suppose a monoidal category $\mathscr{V}$ and a $\mathscr{V}$-enriched category $\cat{C}$, again restricted to
+the case where $\mathscr{V}$ is concrete.
+
+\begin{definition}[Hom-functor]
+Define the contravariant \emph{hom-functor} $\Hom{\cat{C}}{-}{X}: \cat{C}^\op \to \mathscr{V}$ sending
 \begin{itemize}
-\item on objects: $\Yoneda(X) = \Hom{\cat{C}}{-}{X}: \cat{C}^\op \to \Set$, the contravariant hom-functor
-sending:
-   \begin{itemize}
-   \item any object $Y$ in $\cat{C}$ to the hom-set $\Hom{\cat{C}}{Y}{X}$;
-   \item any morphism $f: Y \to Z$ in $\cat{C}$ to the function $\Hom{\cat{C}}{f}{X} = (- \comp f):
-   \Hom{\cat{C}}{Z}{X} \to \Hom{\cat{C}}{Y}{X}$.
-   \end{itemize}
-\item on morphisms: for any $f: X \to Y$ in $\cat{C}$, $\Yoneda(f)$ is the natural transformation where
-$\Yoneda(f)_Z = (f \comp -): \Hom{\cat{C}}{Z}{X} \to \Hom{\cat{C}}{Z}{Y}$.
+\item any object $Y$ in $\cat{C}$ to the hom-object $\Hom{\cat{C}}{Y}{X}$ in $\mathscr{V}$;
+\item any morphism $f: Y \to Z$ in $\cat{C}$ to the function $\Hom{\cat{C}}{f}{X} = (- \comp f):
+\Hom{\cat{C}}{Z}{X} \to \Hom{\cat{C}}{Y}{X}$ on the underlying hom-sets.
 \end{itemize}
+\end{definition}
 
-\noindent Now suppose $\cat{C}$ is $\mathscr{V}$-enriched with $\mathscr{V}$ monoidal closed; then the
-hom-functor $\Hom{\cat{C}}{-}{X}: \cat{C}^\op \to \mathscr{V}$ is itself $\mathscr{V}$-enriched, sending
-objects $Y$ to the hom-object $\Hom{\cat{C}}{Y}{X}$ in $\mathscr{V}$, and providing a family of morphisms
-$\Hom{\cat{C}}{-}{X}_{Y,Z} \to \Hom{\mathscr{V}}{\Hom{\cat{C}}{Y}{X}}{\Hom{\cat{C}}{Z}{X}}$ for any $X, Y$ in
-$\cat{C}$. The following diagram commutes because precomposition with the identity is the identity on
-morphisms:
+\begin{definition}[Yoneda embedding]
+The \emph{Yoneda embedding} for $\cat{C}$ is the functor $\Yoneda: \cat{C} \to
+\Func{\cat{C}^\op}{\mathscr{V}}$ sending
+\begin{itemize}
+\item any object $X$ to the hom-functor $\Hom{\cat{C}}{-}{X}: \cat{C}^\op \to \mathscr{V}$;
+\item any morphism $f: X \to Y$ to the $\mathscr{V}$-natural transformation $\Hom{\cat{C}}{-}{X} \naturalto
+\Hom{\cat{C}}{-}{Y}$ where $\Yoneda(f)_Z = (f \comp -): \Hom{\cat{C}}{Z}{X} \to \Hom{\cat{C}}{Z}{Y}$.
+\end{itemize}
+\end{definition}
 
-\begin{center}
-\begin{tikzcd}[column sep=1.8cm]
-I \arrow[d, equals] \arrow[r, "\id_X"] & \Hom{\cat{C}}{X}{X} \arrow[d, "\Hom{\cat{C}}{-}{W}_{X,X}"] \\
-I \arrow[r, "\id_{\Hom{\cat{C}}{X}{W}}"'] & \Hom{\mathscr{V}}{\Hom{\cat{C}}{X}{W}}{\Hom{\cat{C}}{X}{W}}\
-\end{tikzcd}
-\end{center}
+\noindent Now suppose $\mathscr{V}$ is monoidal closed. Then the hom-functor $\Hom{\cat{C}}{-}{X}: \cat{C}^\op
+\to \mathscr{V}$ is itself $\mathscr{V}$-enriched, providing a family of morphisms $\Hom{\cat{C}}{-}{X}_{Y,Z}:
+\Hom{\cat{C}}{Y}{Z} \to \Hom{\mathscr{V}}{\Hom{\cat{C}}{Z}{X}}{\Hom{\cat{C}}{Y}{X}}$ in $\mathscr{V}$ for any
+$Y, Z$ in $\cat{C}$. Moreover there exists an enriched Yoneda embedding, namely a functor
+$\Yoneda_{\mathscr{V}}: \cat{C} \to \Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}$ which is itself
+$\mathscr{V}$-enriched, sending objects $X$ to the $\mathscr{V}$-enriched hom-functor $\Hom{\cat{C}}{-}{X}$
+and morphisms $f: X \to Y$ in $\cat{C}$ to $\mathscr{V}$-natural transformations $\Yoneda_{\mathscr{V}}(f):
+\Hom{\cat{C}}{-}{X} \naturalto \Hom{\cat{C}}{-}{Y}$ acting at each component as post-composition with $f$.
 
-\noindent and the following commutes by the associativity of composition:
-
-\begin{center}
-\begin{tikzcd}[column sep=2.7cm]
-   \Hom{\cat{C}}{Z}{Y} \tensor \Hom{\cat{C}}{Y}{X} \arrow[r, "\comp_{X,Y,Z}"] \arrow[d,
-   "\Hom{\cat{C}}{-}{W}_{Y,Z}\,\tensor\,\Hom{\cat{C}}{-}{W}_{X,Y}"'] & \Hom{\cat{C}}{Z}{X} \arrow[d,
-   "\Hom{\cat{C}}{-}{W}_{X,Z}"] \\
-   \Hom{\mathscr{V}}{\Hom{\cat{C}}{Y}{W}}{\Hom{\cat{C}}{Z}{W}} \tensor
-   \Hom{\mathscr{V}}{\Hom{\cat{C}}{X}{W}}{\Hom{\cat{C}}{Y}{W}} \arrow[r,
-   "\comp_{\Hom{\cat{C}}{X}{W},\Hom{\cat{C}}{Y}{W},\Hom{\cat{C}}{Z}{W}}"'] &
-   \Hom{\mathscr{V}}{\Hom{\cat{C}}{X}{W}}{\Hom{\cat{C}}{Z}{W}}
-\end{tikzcd}
-\end{center}
-
-\noindent \todo{Simplify because we can state the functor laws elementwise if $\mathscr{V}$ is concrete?}
-
-There exists an enriched version of the Yoneda embedding, namely a functor $\Yoneda_{\mathscr{V}}: \cat{C} \to
-\Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}$, which is itself $\mathscr{V}$-enriched, sending objects $X$ to
-the $\mathscr{V}$-enriched hom-functor $\Yoneda_{\mathscr{V}}(X) = \Hom{\cat{C}}{-}{X}: \cat{C}^\op \to
-\mathscr{V}$ and morphisms $f: X \to Y$ in $\cat{C}$ to $\mathscr{V}$-natural transformations
-$\Yoneda_{\mathscr{V}}(f): \Hom{\cat{C}}{-}{X} \naturalto \Hom{\cat{C}}{-}{Y}$ acting at each component as
-post-composition with $f$. The enriched Yoneda lemma says that for any $\mathscr{V}$-enriched presheaf $F$ and
-any object $X \in \cat{C}$, the hom-object of $\mathscr{V}$-natural transformations (which also lives in
-$\mathscr{V}$) between the $\mathscr{V}$-enriched presheaf $\Hom{\cat{C}}{-}{X}$ and $F$ is isomorphic to
-$F(X)$:
+The \emph{enriched Yoneda lemma} states that, for any $\mathscr{V}$-enriched presheaf $F$ and any object $X
+\in \cat{C}$, there is an isomorphism between $F(X)$ and the hom-object (also living in $\mathscr{V}$) of
+$\mathscr{V}$-natural transformations from the $\mathscr{V}$-enriched presheaf $\Hom{\cat{C}}{-}{X}$ to $F$:
 
 \begin{lemma}
 Suppose $\cat{C}$ is $\mathscr{V}$-enriched with $\mathscr{V}$ monoidal closed. For any $F: \cat{C}^\op \to
 \mathscr{V}$ and any object $X$ in $\cat{C}$:
 \[\Hom{\Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}}{\Hom{\cat{C}}{-}{X}}{F} \iso F(X)\]
 \end{lemma}
+
+
+% The following diagram commutes because precomposition with the identity is the identity on morphisms:
+%
+% \begin{center}
+% \begin{tikzcd}[column sep=1.8cm]
+% I \arrow[d, equals] \arrow[r, "\id_X"] & \Hom{\cat{C}}{X}{X} \arrow[d, "\Hom{\cat{C}}{-}{W}_{X,X}"] \\
+% I \arrow[r, "\id_{\Hom{\cat{C}}{X}{W}}"'] & \Hom{\mathscr{V}}{\Hom{\cat{C}}{X}{W}}{\Hom{\cat{C}}{X}{W}}\
+% \end{tikzcd}
+% \end{center}
+%
+% \noindent and the following commutes by the associativity of composition:
+%
+% \begin{center}
+% \begin{tikzcd}[column sep=2.7cm]
+%    \Hom{\cat{C}}{Z}{Y} \tensor \Hom{\cat{C}}{Y}{X} \arrow[r, "\comp_{X,Y,Z}"] \arrow[d,
+%    "\Hom{\cat{C}}{-}{W}_{Y,Z}\,\tensor\,\Hom{\cat{C}}{-}{W}_{X,Y}"'] & \Hom{\cat{C}}{Z}{X} \arrow[d,
+%    "\Hom{\cat{C}}{-}{W}_{X,Z}"] \\
+%    \Hom{\mathscr{V}}{\Hom{\cat{C}}{Y}{W}}{\Hom{\cat{C}}{Z}{W}} \tensor
+%    \Hom{\mathscr{V}}{\Hom{\cat{C}}{X}{W}}{\Hom{\cat{C}}{Y}{W}} \arrow[r,
+%    "\comp_{\Hom{\cat{C}}{X}{W},\Hom{\cat{C}}{Y}{W},\Hom{\cat{C}}{Z}{W}}"'] &
+%    \Hom{\mathscr{V}}{\Hom{\cat{C}}{X}{W}}{\Hom{\cat{C}}{Z}{W}}
+% \end{tikzcd}
+% \end{center}
