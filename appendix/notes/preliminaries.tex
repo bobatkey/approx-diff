@@ -1,10 +1,18 @@
-\section{Notation}
+\section{Preliminaries}
 
-In a category with coproducts or products we write:
+\subsection{Notation}
+
+\paragraph{Coproduct and product of morphisms.}
+
+In a category with coproducts $X + Y$ or products $X \times Y$, we write:
 \begin{itemize}
 \item $\coprodM{f}{g}: X + Y \to Z$ for the coproduct of morphisms $f: X \to Z$ and $g: Y \to Z$
 \item $\prodM{f}{g}: X \to Y \times Z$ for the product of morphisms $f: X \to Y$ and $g: X \to Z$
 \item $(f,g): X \times Y \to Z \times W$ for $\prodM{f \comp \proj_1}{g \comp \proj_2}$ where $f: X \to Z$ and $g: Y \to W$.
 \end{itemize}
 
-Write $\const(y): X \to Y$ for the function which sends any $x \in X$ to $y$.
+\paragraph{Constant function.}
+
+Write $\const(y): X \to Y$ for the function which sends any $x \in X$ to $y \in Y$.
+
+\subsection{Enriched categories}
