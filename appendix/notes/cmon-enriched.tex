@@ -73,8 +73,8 @@ $\Yoneda(f)_Z = (f \comp -): \Hom{\cat{C}}{Z}{X} \to \Hom{\cat{C}}{Z}{Y}$.
 hom-functor $\Hom{\cat{C}}{-}{X}: \cat{C}^\op \to \mathscr{V}$ is itself $\mathscr{V}$-enriched, sending
 objects $Y$ to the hom-object $\Hom{\cat{C}}{Y}{X}$ in $\mathscr{V}$, and providing a family of morphisms
 $\Hom{\cat{C}}{-}{X}_{Y,Z} \to \Hom{\mathscr{V}}{\Hom{\cat{C}}{Y}{X}}{\Hom{\cat{C}}{Z}{X}}$ for any $X, Y$ in
-$\cat{C}$. \todo{Simplify because we can state the functor laws elementwise if $\mathscr{V}$ is concrete?} The
-following diagram commutes because precomposition with the identity is the identity on morphisms:
+$\cat{C}$. The following diagram commutes because precomposition with the identity is the identity on
+morphisms:
 
 \begin{center}
 \begin{tikzcd}[column sep=1.8cm]
@@ -97,16 +97,17 @@ I \arrow[r, "\id_{\Hom{\cat{C}}{X}{W}}"'] & \Hom{\mathscr{V}}{\Hom{\cat{C}}{X}{W
 \end{tikzcd}
 \end{center}
 
-\noindent There exists an enriched version of the Yoneda embedding, namely a functor $\Yoneda_{\mathscr{V}}:
-\cat{C} \to \Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}$, which is itself $\mathscr{V}$-enriched, sending
-objects $X$ to the $\mathscr{V}$-enriched hom-functor $\Yoneda_{\mathscr{V}}(X) = \Hom{\cat{C}}{-}{X}:
-\cat{C}^\op \to \mathscr{V}$ and morphisms $f: X \to Y$ in $\cat{C}$ to $\mathscr{V}$-natural transformations
-$\Yoneda_{\mathscr{V}}(f): \Hom{\cat{C}}{-}{X} \naturalto \Hom{\cat{C}}{-}{Y}$ acting at each component as
-post-composition with $f$.
+\noindent \todo{Simplify because we can state the functor laws elementwise if $\mathscr{V}$ is concrete?}
 
-The enriched Yoneda lemma says that for any $\mathscr{V}$-enriched presheaf $F$ and any object $X \in
-\cat{C}$, the hom-object of $\mathscr{V}$-natural transformations (which also lives in $\mathscr{V}$) between
-the $\mathscr{V}$-enriched presheaf $\Hom{\cat{C}}{-}{X}$ and $F$ is isomorphic to $F(X)$:
+There exists an enriched version of the Yoneda embedding, namely a functor $\Yoneda_{\mathscr{V}}: \cat{C} \to
+\Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}$, which is itself $\mathscr{V}$-enriched, sending objects $X$ to
+the $\mathscr{V}$-enriched hom-functor $\Yoneda_{\mathscr{V}}(X) = \Hom{\cat{C}}{-}{X}: \cat{C}^\op \to
+\mathscr{V}$ and morphisms $f: X \to Y$ in $\cat{C}$ to $\mathscr{V}$-natural transformations
+$\Yoneda_{\mathscr{V}}(f): \Hom{\cat{C}}{-}{X} \naturalto \Hom{\cat{C}}{-}{Y}$ acting at each component as
+post-composition with $f$. The enriched Yoneda lemma says that for any $\mathscr{V}$-enriched presheaf $F$ and
+any object $X \in \cat{C}$, the hom-object of $\mathscr{V}$-natural transformations (which also lives in
+$\mathscr{V}$) between the $\mathscr{V}$-enriched presheaf $\Hom{\cat{C}}{-}{X}$ and $F$ is isomorphic to
+$F(X)$:
 
 \begin{lemma}
 Suppose $\cat{C}$ is $\mathscr{V}$-enriched with $\mathscr{V}$ monoidal closed. For any $F: \cat{C}^\op \to
