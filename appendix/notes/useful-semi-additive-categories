@@ -39,7 +39,7 @@ category.
 Define the category $\LatGal$ which has:
 \begin{itemize}
 \item as objects $X, Y$ all bounded lattices;
-\item as morphisms from $X$ to $Y$ all Galois connections $f \adj g: X \to Y$.
+\item as morphisms from $X \to Y$ all Galois connections $f \adj g: X \to Y$.
 \end{itemize}
 \end{definition}
 
