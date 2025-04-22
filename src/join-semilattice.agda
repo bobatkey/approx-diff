@@ -42,7 +42,7 @@ module _ {A B : Preorder} where
     open IsBottom
     field
       func : A .Carrier → B .Carrier
-      monotone : ∀ {x₁ x₂} → A ._≤_ x₁ x₂ → B ._≤_ (func x₁) (func x₂)
+      monotone : preorder.monotone {A} {B} func
       ∨-preserving : ∀ {x x'} → (func (X ._∨_ x x')) B.≤ (Y ._∨_ (func x) (func x'))
       ⊥-preserving : func (X .⊥) B.≤ Y .⊥
 

@@ -41,7 +41,7 @@ module _ {A B : Preorder} where
     open MeetSemilattice
     field
       func : A .Carrier → B .Carrier
-      monotone : ∀ {x₁ x₂} → A ._≤_ x₁ x₂ → B ._≤_ (func x₁) (func x₂)
+      monotone : preorder.monotone {A} {B} func
       ∧-preserving : ∀ {x x'} → B ._≤_ (Y ._∧_ (func x) (func x')) (func (X ._∧_ x x'))
       ⊤-preserving : B ._≤_ (Y .⊤) (func (X .⊤))
 

@@ -32,6 +32,9 @@ module _ where
   𝟙 .≤-isPreorder .IsPreorder.refl = tt
   𝟙 .≤-isPreorder .IsPreorder.trans tt tt = tt
 
+  monotone : ∀ {A B : Preorder} (f : A .Carrier → B .Carrier) → Prop
+  monotone {A} {B} f = ∀ {x₁} {x₂} → A ._≤_ x₁ x₂ → B ._≤_ (f x₁) (f x₂)
+
 -- Lifting
 module _ where
   open Preorder
@@ -79,8 +82,3 @@ module _ (I : Set) (A : I → Preorder) where
   Π ._≤_ x₁ x₂ = ∀ i → A i ._≤_ (x₁ i) (x₂ i)
   Π .≤-isPreorder .IsPreorder.refl i = A i .≤-refl
   Π .≤-isPreorder .IsPreorder.trans x≤y y≤z i = A i .≤-trans (x≤y i) (y≤z i)
-
-open import fam
-
--- Setoid products
--- module _ (I : Setoid 0ℓ 0ℓ) (A : Fam 0ℓ 0ℓ Preorder-cat) where
