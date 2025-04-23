@@ -84,8 +84,11 @@ Previous work on Galois program slicing uses an operational semantics of program
 
 \todo{Explain what the plan for the paper is}
 
+\todo{Perhaps more elaboration on the applications of program slicing}
+
 \subsection{Galois Program Slicing and Automatic Differentiation}
 
+\todo{explain why we want a more abstract view on galois program slicing}
 There is a close analogy between Galois Program Slicing and Automatic Differentiation for differentiable programs. We have already hinted at this in the description above, but let us now make it explicit.
 
 \begin{itemize}
@@ -96,3 +99,14 @@ There is a close analogy between Galois Program Slicing and Automatic Differenti
 \end{itemize}
 
 Given this close connection between Galois program slicing and differentiable programming, we can take structures intended for modelling automatic differentiation and use them to model Galois program slicing. This will enable us to generalise and expand the scope of Galois program slicing to act as a foundation for data provenance in a wide range of computational settings.
+
+\subsection{Outline and Contributions}
+
+Our primary contribution in this article is to elucidate Galois Program Slicing by relating it to differentiable programming and automatic differentiation. In doing so, we aim to expand the applicability of program slicing, and to potentially transfer efficient automatic differentiation implementation techniques from automatic differentiation to program slicing and provenance tracking.
+
+\begin{enumerate}
+\item We explain how the CHAD framework of Vákár et al. can be adapted to give a general categorical framework for Galois Program Slicing,
+\item Using our adapted CHAD framework, we can explain how type structure can be used to control the approximation lattices associated with data points, something that was ``hard coded'' in previous presentations of Galois Program Slicing.
+\item With the benefit of our abstract setting, we can relate Galois Program Slicing to other parts of denotational semantics. In particular, we show that there is a close connection with Stable Domain Theory, a proposed solution to capturing sequentiality by recording more intensional information about programs' sensitivity to approximations.
+\item We also relate Galois Program Slicing to categorical treatments of differentiability via Tangent Categories \note{Bob: not sure about this.}
+\end{enumerate}
