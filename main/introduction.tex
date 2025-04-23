@@ -75,6 +75,8 @@ At a high level, Galois Program Slicing assumes that, for each possible value th
   \end{displaymath}
   Pieces of the input that were {\em not} used are replaced by $\bot$. As we expect, the run of the query with label $\mathsf{a}$ depends on the entries in the database labelled with $\mathsf{a}$, and likewise for the run with label $\mathsf{b}$.
 
+  In this case, the forwards portion of the Galois connection tells us for each approximation of the input whether or not it is sufficient to compute the output. In this example, if we provide insufficient data to compute the output, then we will get an underapproximated output. For example, $\partial (\mathit{query}\, \mathsf{a})_f([(\mathsf{a},0),(\mathsf{b},\bot),(\mathsf{a},\bot)]) = \bot$ because we need all the values associated with the label $\mathsf{a}$ to compute their sum.
+
   In a simple query like this, it is easy to work out the dependency relationship between the input and output. However, the benefit of Galois Program Slicing is that it is {\em automatic} for all programs, no matter how complex the relationship between input and output is. Moreover, by changing what we mean by ``approximation'' we can compute a range of different information about a program.
 \end{example}
 
