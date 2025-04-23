@@ -1,3 +1,32 @@
 \section{Introduction}
 
-\cite{karvonen2020} % just to generate a bibliography for now
+Provenance tracking aims to answer questions like ``where did these data come from'', ``why are these data in the output'' and ``how were these data computed''. Program slicing is a collection of techniques for provenance tracking that attempts to take a run of a program and and areas of interest in the output and turn them into the subset of the input and the program that were responsible for generating those specific outputs.
+
+Provenance tracking is important because in order to audit any computational process, we need robust and well-founded notions of provenance to track how data are used, how data are computed, and what data influenced a particular outcome. Existing approaches are often tied to particular programming languages or implementations. In this paper we develop a general categorical approach.
+
+\note{We will use biproducts, and use some results from \cite{karvonen2020}.} % just to generate a bibliography for now
+
+\subsection{Galois Program Slicing}
+
+Perera and collaborators introduced the idea of {\em Galois Program Slicing} as a particular conception of program slicing for provenance, described in several publications (FIXME: refs). Galois program slicing forms the basis of Perera's data visualisation tool \href{https://f.luid.org/}{fluid} that allows interactive exploration of programmatically generated visualisations.
+
+At a high level, Galois Program Slicing assumes that, for each possible value that may be input or output by a program, there exists a lattice of {\em approximations} of that value. For a particular run of a program that takes input $x$ and produces output $y$, we also get a Galois connection between the lattice of approximations of $x$ and the lattice of approximations of $y$. The right half of the Galois connection is the ``forward direction'' taking approximations of the input to approximations of the output; the left half of the Galois connection is the ``backward direction'' that takes approximations of the output to the least (i.e., most approximate) approximation of the input that gives rise to this output approximation.
+
+\begin{example}
+  \todo{an example}
+\end{example}
+
+Previous work on Galois program slicing uses an operational semantics of programs that generates a trace of each execution which can be interpreted after the fact to compute the Galois connection described above. This becomes {\em program slicing} by including the source code of the program as part of the input, so that, in the backward direction, the least approximation of the input required for an output approximation includes the least part of the program required.
+
+\subsection{Galois Program Slicing and Automatic Differentiation}
+
+There is a close analogy between Galois Program Slicing and Automatic Differentiation for differentiable programs. We have already hinted at this in the description above, but let us now make it explicit.
+
+\begin{itemize}
+\item For Galois Program Slicing, we assume that every value has an associated lattice of {\em approximations}. For differentiable programs, every point has an associated vector space of {\em tangents}.
+\item For Galois Program Slicing, every program has an associated forward approximation map that takes approximations forward from the input to the output. This map {\em preserves meets}. For differentiable programs, every program has a forward derivative that takes tangents of the input to tangents of the output. The forward derivative map is {\em linear}, so it preserves addition of tangents and the zero tangent.
+\item For Galois Program Slicing, every program has an associated backward approximation map that takes approximations of the output back to least approximations of the input. This map {\em preserves joins}. For differentiable programs, every program has a reverse derivative that takes tangents of the output to tangents of the input. This map is again {\em linear}.
+\item For Galois Program Slicing, the forward and backward approximation maps are related by being a Galois connection. For differentiable programming, the forward and reverse derivatives are related by being each others' transpose.
+\end{itemize}
+
+Given this close connection between Galois program slicing and differentiable programming, we can take structures intended for modelling automatic differentiation and use them to model Galois program slicing. This will enable us to generalise and expand the scope of Galois program slicing to act as a foundation for data provenance in a wide range of computational settings.
