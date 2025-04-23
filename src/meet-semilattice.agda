@@ -205,7 +205,6 @@ module _ where
   open MeetSemilattice
   open _=>_
   open preorder._=>_
-  open preorder._≃m_
 
   𝟙 : MeetSemilattice preorder.𝟙
   𝟙 ._∧_ tt tt = tt
@@ -221,8 +220,8 @@ module _ where
   terminal .∧-preserving = tt
   terminal .⊤-preserving = tt
 
-  open _=>_
   open _≃m_
+  open preorder._≃m_
 
   terminal-unique : ∀ {A}(X : MeetSemilattice A) → (f g : X => 𝟙) → f ≃m g
   terminal-unique X f g .eqfunc .eqfun x = tt , tt
