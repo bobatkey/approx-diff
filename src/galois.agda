@@ -60,13 +60,33 @@ record _⇒g_ (X Y : Obj) : Set where
   -- helper constructor.
 open _⇒g_
 
+record _⇒g'_ (X Y : Obj) : Set where
+  no-eta-equality
+  open preorder._=>_
+  private
+    module X = Obj X
+    module Y = Obj Y
+  field
+    right : X .carrier preorder.=> Y .carrier
+    left : Y .carrier preorder.=> X .carrier
+    left⊣right : ∀ {x y} → y Y.≤ (right .func x) ⇔ (left .func y) X.≤ x
+
+open _⇒g'_
+
 record _≃g_ {X Y : Obj} (f g : X ⇒g Y) : Prop where
   field
     fwd-eq : f .fwd ≃M g .fwd
     bwd-eq : f .bwd ≃J g .bwd
 open _≃g_
 
+record _≃g'_ {X Y : Obj} (f g : X ⇒g' Y) : Prop where
+  field
+    right-eq : f .right ≃m g .right
+    left-eq : f .left ≃m g .left
+open _≃g'_
+
 open IsEquivalence
+open preorder using (≃m-isEquivalence)
 
 ≃g-isEquivalence : ∀ {X Y} → IsEquivalence (_≃g_ {X} {Y})
 ≃g-isEquivalence .refl .fwd-eq = ≃M-isEquivalence .refl
@@ -76,19 +96,41 @@ open IsEquivalence
 ≃g-isEquivalence .trans e₁ e₂ .fwd-eq = ≃M-isEquivalence .trans (e₁ .fwd-eq) (e₂ .fwd-eq)
 ≃g-isEquivalence .trans e₁ e₂ .bwd-eq = ≃J-isEquivalence .trans (e₁ .bwd-eq) (e₂ .bwd-eq)
 
+≃g'-isEquivalence : ∀ {X Y} → IsEquivalence (_≃g'_ {X} {Y})
+≃g'-isEquivalence .refl .right-eq = ≃m-isEquivalence .refl
+≃g'-isEquivalence .refl .left-eq = ≃m-isEquivalence .refl
+≃g'-isEquivalence .sym e .right-eq = ≃m-isEquivalence .sym (e .right-eq)
+≃g'-isEquivalence .sym e .left-eq = ≃m-isEquivalence .sym (e .left-eq)
+≃g'-isEquivalence .trans e₁ e₂ .right-eq = ≃m-isEquivalence .trans (e₁ .right-eq) (e₂ .right-eq)
+≃g'-isEquivalence .trans e₁ e₂ .left-eq = ≃m-isEquivalence .trans (e₁ .left-eq) (e₂ .left-eq)
+
 idg : (X : Obj) → X ⇒g X
 idg X .fwd = idM
 idg X .bwd = idJ
 idg X .bwd⊣fwd = refl-⇔
+
+idg' : (X : Obj) → X ⇒g' X
+idg' X .right = id
+idg' X .left = id
+idg' X .left⊣right = refl-⇔
 
 _∘g_ : ∀ {X Y Z : Obj} → Y ⇒g Z → X ⇒g Y → X ⇒g Z
 (f ∘g g) .fwd = f .fwd ∘M g .fwd
 (f ∘g g) .bwd = g .bwd ∘J f .bwd
 (f ∘g g) .bwd⊣fwd = trans-⇔ (f .bwd⊣fwd) (g .bwd⊣fwd)
 
+_∘g'_ : ∀ {X Y Z : Obj} → Y ⇒g' Z → X ⇒g' Y → X ⇒g' Z
+(f ∘g' g) .right = f .right ∘ g .right
+(f ∘g' g) .left = g .left ∘ f .left
+(f ∘g' g) .left⊣right = trans-⇔ (f .left⊣right) (g .left⊣right)
+
 ∘g-cong : ∀ {X Y Z}{f₁ f₂ : Y ⇒g Z}{g₁ g₂ : X ⇒g Y} → f₁ ≃g f₂ → g₁ ≃g g₂ → (f₁ ∘g g₁) ≃g (f₂ ∘g g₂)
 ∘g-cong f₁≈f₂ g₁≈g₂ .fwd-eq = meet-semilattice.∘-cong (f₁≈f₂ .fwd-eq) (g₁≈g₂ .fwd-eq)
 ∘g-cong f₁≈f₂ g₁≈g₂ .bwd-eq = join-semilattice.∘-cong (g₁≈g₂ .bwd-eq) (f₁≈f₂ .bwd-eq)
+
+∘g'-cong : ∀ {X Y Z}{f₁ f₂ : Y ⇒g' Z}{g₁ g₂ : X ⇒g' Y} → f₁ ≃g' f₂ → g₁ ≃g' g₂ → (f₁ ∘g' g₁) ≃g' (f₂ ∘g' g₂)
+∘g'-cong f₁≈f₂ g₁≈g₂ .right-eq = ∘-cong (f₁≈f₂ .right-eq) (g₁≈g₂ .right-eq)
+∘g'-cong f₁≈f₂ g₁≈g₂ .left-eq = ∘-cong (g₁≈g₂ .left-eq) (f₁≈f₂ .left-eq)
 
 cat : Category (suc 0ℓ) 0ℓ 0ℓ
 cat .Category.obj = Obj
@@ -106,9 +148,26 @@ cat .Category.assoc f g h .fwd-eq = meet-semilattice.assoc (f .fwd) (g .fwd) (h 
 cat .Category.assoc f g h .bwd-eq =
   ≃J-isEquivalence .sym (join-semilattice.assoc (h .bwd) (g .bwd) (f .bwd))
 
+cat' : Category (suc 0ℓ) 0ℓ 0ℓ
+cat' .Category.obj = Obj
+cat' .Category._⇒_ = _⇒g'_
+cat' .Category._≈_ = _≃g'_
+cat' .Category.isEquiv = ≃g'-isEquivalence
+cat' .Category.id = idg'
+cat' .Category._∘_ = _∘g'_
+cat' .Category.∘-cong = ∘g'-cong
+cat' .Category.id-left .right-eq = id-left
+cat' .Category.id-left .left-eq = id-right
+cat' .Category.id-right .right-eq = id-right
+cat' .Category.id-right .left-eq = id-left
+cat' .Category.assoc f g h .right-eq = assoc (f .right) (g .right) (h .right)
+cat' .Category.assoc f g h .left-eq =
+  ≃m-isEquivalence .sym (assoc (h .left) (g .left) (f .left))
+
 ------------------------------------------------------------------------------
 -- CMon enrichment
 module _ {X Y : Obj} where
+  open preorder._=>_
 
   private
     module YM = MeetSemilattice (Y .meets)
@@ -119,6 +178,14 @@ module _ {X Y : Obj} where
   εm .bwd = join-semilattice.εm
   εm .bwd⊣fwd .proj₁ _ = XJ.≤-bottom
   εm .bwd⊣fwd .proj₂ _ = YM.≤-top
+
+  εm' : X ⇒g' Y
+  εm' .right .func x = YM.⊤
+  εm' .right .mono _ = Y .≤-refl
+  εm' .left .func x = XJ.⊥
+  εm' .left .mono x = X .≤-refl
+  εm' .left⊣right .proj₁ _ = XJ.≤-bottom
+  εm' .left⊣right .proj₂ _ = YM.≤-top
 
   _+m_ : X ⇒g Y → X ⇒g Y → X ⇒g Y
   (f +m g) .fwd = meet-semilattice._+m_ (f .fwd) (g .fwd)
@@ -131,6 +198,12 @@ module _ {X Y : Obj} where
     YM.⟨ f .bwd⊣fwd .proj₂ (X .≤-trans XJ.inl fy∨gy≤x)
        ∧ g .bwd⊣fwd .proj₂ (X .≤-trans XJ.inr fy∨gy≤x)
        ⟩
+
+  _+m'_ : X ⇒g' Y → X ⇒g' Y → X ⇒g' Y
+  (f +m' g) .right .func x = {!   !}
+  (f +m' g) .right .mono _ = {!   !}
+  (f +m' g) .left = {!   !}
+  (f +m' g) .left⊣right {x} {y} .proj₁ y≤fx∧gx = {!   !}
 
   +m-cong : ∀ {f₁ f₂ g₁ g₂ : X ⇒g Y} → f₁ ≃g f₂ → g₁ ≃g g₂ → (f₁ +m g₁) ≃g (f₂ +m g₂)
   +m-cong f₁≃f₂ g₁≃g₂ .fwd-eq = meet-semilattice.+m-cong (f₁≃f₂ .fwd-eq) (g₁≃g₂ .fwd-eq)

@@ -25,15 +25,76 @@ record Preorder : Set (suc 0ℓ) where
 module _ where
   open Preorder
 
+  monotone : ∀ {A B : Preorder} (f : A .Carrier → B .Carrier) → Prop
+  monotone {A} {B} f = ∀ {x₁} {x₂} → A ._≤_ x₁ x₂ → B ._≤_ (f x₁) (f x₂)
+
+  record _=>_ (A B : Preorder) : Set where
+    open Preorder
+    private
+      module A = Preorder A
+      module B = Preorder B
+    field
+      func : A .Carrier → B .Carrier
+      mono : monotone {A} {B} func
+
+    resp-≃ : ∀ {x₁ x₂} → x₁ A.≃ x₂ → func x₁ B.≃ func x₂
+    resp-≃ x₁≃x₂ .proj₁ = mono (x₁≃x₂ .proj₁)
+    resp-≃ x₁≃x₂ .proj₂ = mono (x₁≃x₂ .proj₂)
+
+module _ {A B : Preorder} where
+  open _=>_
+  private
+    module A = Preorder A
+    module B = Preorder B
+
+  record _≃m_ (f g : A => B) : Prop where
+    field
+      eqfunc : ∀ x → f .func x B.≃ g .func x
+
+  open IsEquivalence
+  open _≃m_
+
+  ≃m-isEquivalence : IsEquivalence (_≃m_)
+  ≃m-isEquivalence .refl .eqfunc x = B.≃-refl
+  ≃m-isEquivalence .sym e .eqfunc x = B.≃-sym (e .eqfunc x)
+  ≃m-isEquivalence .trans e₁ e₂ .eqfunc x = B.≃-trans (e₁ .eqfunc x) (e₂ .eqfunc x)
+
+module _ where
+  open Preorder
+  open _=>_
+
+  id : ∀ {A : Preorder} → A => A
+  id .func x = x
+  id .mono x₁≤x₂ = x₁≤x₂
+
+  _∘_ : ∀ {A B C : Preorder} → B => C → A => B → A => C
+  (f ∘ g) .func x = f .func (g .func x)
+  (f ∘ g) .mono x₁≤x₂ = f .mono (g .mono x₁≤x₂)
+
+  open _≃m_
+
+  ∘-cong : ∀ {A B C : Preorder} {f₁ f₂ : B => C} {g₁ g₂ : A => B} → f₁ ≃m f₂ → g₁ ≃m g₂ → (f₁ ∘ g₁) ≃m (f₂ ∘ g₂)
+  ∘-cong {A}{B}{C} {f₁ = f₁} f₁≃f₂ g₁≃g₂ .eqfunc x =
+    C .≃-trans (resp-≃ f₁ (g₁≃g₂ .eqfunc x)) (f₁≃f₂ .eqfunc _)
+
+  id-left : ∀ {A B : Preorder} → {f : A => B} → (id ∘ f) ≃m f
+  id-left {A} {B} .eqfunc x = B .≃-refl
+
+  id-right : ∀ {A B : Preorder} → {f : A => B} → (f ∘ id) ≃m f
+  id-right {A} {B} .eqfunc x = B .≃-refl
+
+  assoc : ∀ {A B C D : Preorder} (f : C => D) (g : B => C) (h : A => B) → ((f ∘ g) ∘ h) ≃m (f ∘ (g ∘ h))
+  assoc {D = D} f g h .eqfunc x = D .≃-refl
+
+module _ where
+  open Preorder
+
   -- Unit preorder
   𝟙 : Preorder
   𝟙 .Carrier = Data.Unit.⊤
   𝟙 ._≤_ tt tt = ⊤
   𝟙 .≤-isPreorder .IsPreorder.refl = tt
   𝟙 .≤-isPreorder .IsPreorder.trans tt tt = tt
-
-  monotone : ∀ {A B : Preorder} (f : A .Carrier → B .Carrier) → Prop
-  monotone {A} {B} f = ∀ {x₁} {x₂} → A ._≤_ x₁ x₂ → B ._≤_ (f x₁) (f x₂)
 
 -- Lifting
 module _ where

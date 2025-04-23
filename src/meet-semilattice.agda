@@ -39,23 +39,20 @@ module _ {A B : Preorder} where
 
   record _=>_ (X : MeetSemilattice A) (Y : MeetSemilattice B) : Set where
     open MeetSemilattice
+    open preorder._=>_ using (mono)
     field
-      func : A .Carrier → B .Carrier
-      monotone : preorder.monotone {A} {B} func
-      ∧-preserving : ∀ {x x'} → B ._≤_ (Y ._∧_ (func x) (func x')) (func (X ._∧_ x x'))
-      ⊤-preserving : B ._≤_ (Y .⊤) (func (X .⊤))
+      func : A preorder.=> B
+      ∧-preserving : ∀ {x x'} → B ._≤_ (Y ._∧_ (func .preorder._=>_.func x) (func .preorder._=>_.func x')) (func .preorder._=>_.func (X ._∧_ x x'))
+      ⊤-preserving : B ._≤_ (Y .⊤) (func .preorder._=>_.func (X .⊤))
 
-    ∧-preserving-≃ : ∀ {x x'} → Y ._∧_ (func x) (func x') B.≃ func (X ._∧_ x x')
+    ∧-preserving-≃ : ∀ {x x'} → Y ._∧_ (func .preorder._=>_.func x) (func .preorder._=>_.func x') B.≃ func .preorder._=>_.func (X ._∧_ x x')
     ∧-preserving-≃ .proj₁ = ∧-preserving
-    ∧-preserving-≃ .proj₂ = Y .⟨_∧_⟩ (monotone (X .π₁)) (monotone (X .π₂))
+    ∧-preserving-≃ .proj₂ = Y .⟨_∧_⟩ (mono (X .π₁)) (mono (X .π₂))
 
     ⊤-preserving-≃ : Y .⊤ B.≃ func (X .⊤)
     ⊤-preserving-≃ .proj₁ = ⊤-preserving
     ⊤-preserving-≃ .proj₂ = Y .≤-top
 
-    resp-≃ : ∀ {x₁ x₂} → x₁ A.≃ x₂ → func x₁ B.≃ func x₂
-    resp-≃ x₁≃x₂ .proj₁ = monotone (x₁≃x₂ .proj₁)
-    resp-≃ x₁≃x₂ .proj₂ = monotone (x₁≃x₂ .proj₂)
   open _=>_
 
   record _≃m_ {X : MeetSemilattice A} {Y : MeetSemilattice B} (f g : X => Y) : Prop where
@@ -74,21 +71,20 @@ module _ {A B : Preorder} where
 module _ where
   open MeetSemilattice
   open _=>_
+  open preorder._=>_ using (mono; resp-≃)
 
   id : ∀ {A}{X : MeetSemilattice A} → X => X
-  id .func x = x
-  id .monotone x₁≤x₂ = x₁≤x₂
+  id .func = preorder.id
   id {Α} .∧-preserving = Α .≤-refl
   id {Α} .⊤-preserving = Α .≤-refl
 
   _∘_ : ∀ {A B C}{X : MeetSemilattice A}{Y : MeetSemilattice B}{Z : MeetSemilattice C} →
         Y => Z → X => Y → X => Z
   (f ∘ g) .func x = f .func (g .func x)
-  (f ∘ g) .monotone x₁≤x₂ = f .monotone (g .monotone x₁≤x₂)
   _∘_ {C = C} f g .∧-preserving =
-    C .≤-trans (f .∧-preserving) (f .monotone (g .∧-preserving))
+    C .≤-trans (f .∧-preserving) (f .mono (g .∧-preserving))
   _∘_ {C = C} f g .⊤-preserving =
-    C .≤-trans (f .⊤-preserving) (f .monotone (g .⊤-preserving))
+    C .≤-trans (f .⊤-preserving) (f .mono (g .⊤-preserving))
 
   open _≃m_
 
@@ -124,14 +120,14 @@ module _ where
       module Y = MeetSemilattice Y
 
     εm : X => Y
-    εm .func x = Y.⊤
-    εm .monotone _ = B.≤-refl
+    εm .func .func x = Y.⊤
+    εm .func .mono _ = B.≤-refl
     εm .∧-preserving = Y.∧-lunit .proj₁
     εm .⊤-preserving = B.≤-refl
 
     _+m_ : X => Y → X => Y → X => Y
-    (f +m g) .func x = f .func x Y.∧ g .func x
-    (f +m g) .monotone x₁≤x₂ = Y.∧-mono (f .monotone x₁≤x₂) (g .monotone x₁≤x₂)
+    (f +m g) .func .func x = f .func x Y.∧ g .func x
+    (f +m g) .func .mono x₁≤x₂ = Y.∧-mono (f .mono x₁≤x₂) (g .mono x₁≤x₂)
     (f +m g) .∧-preserving =
       B.≤-trans (Y.interchange Y.∧-comm .proj₁)
                 (Y.∧-mono (f .∧-preserving) (g .∧-preserving))
@@ -174,6 +170,7 @@ module _ where
 module _ (I : Set) {A : I → Preorder} (X : (i : I) → MeetSemilattice (A i)) where
   open MeetSemilattice
   open _=>_
+  open preorder._=>_ using (mono)
 
   Π-preorder : Preorder
   Π-preorder = preorder.Π I A
@@ -187,14 +184,14 @@ module _ (I : Set) {A : I → Preorder} (X : (i : I) → MeetSemilattice (A i)) 
   Π .⊤-isTop .IsTop.≤-top i = X i .⊤-isTop .IsTop.≤-top
 
   proj-Π : (i : I) → Π => X i
-  proj-Π i .func x = x i
-  proj-Π i .monotone x₁≤x₂ = x₁≤x₂ i
+  proj-Π i .func .func x = x i
+  proj-Π i .func .mono x₁≤x₂ = x₁≤x₂ i
   proj-Π i .∧-preserving = A i .≤-refl
   proj-Π i .⊤-preserving = A i .≤-refl
 
   lambda-Π : ∀ {B} {W : MeetSemilattice B} → (W=>X : ∀ i → W => X i) → W => Π
-  lambda-Π W=>X .func w i = W=>X i .func w
-  lambda-Π W=>X .monotone w₁≤w₂ i = W=>X i .monotone w₁≤w₂
+  lambda-Π W=>X .func .func w i = W=>X i .func w
+  lambda-Π W=>X .func .mono w₁≤w₂ i = W=>X i .mono w₁≤w₂
   lambda-Π W=>X .∧-preserving i = W=>X i .∧-preserving
   lambda-Π W=>X .⊤-preserving i = W=>X i .⊤-preserving
 
@@ -202,6 +199,7 @@ module _ (I : Set) {A : I → Preorder} (X : (i : I) → MeetSemilattice (A i)) 
 module _ where
   open MeetSemilattice
   open _=>_
+  open preorder._=>_ using (mono)
 
   𝟙 : MeetSemilattice preorder.𝟙
   𝟙 ._∧_ tt tt = tt
@@ -212,8 +210,8 @@ module _ where
   𝟙 .⊤-isTop .IsTop.≤-top = tt
 
   terminal : ∀ {A}{X : MeetSemilattice A} → X => 𝟙
-  terminal .func _ = tt
-  terminal .monotone _ = tt
+  terminal .func .func _ = tt
+  terminal .func .mono _ = tt
   terminal .∧-preserving = tt
   terminal .⊤-preserving = tt
 
@@ -229,6 +227,7 @@ module _ where
   open Preorder
   open MeetSemilattice
   open _=>_
+  open preorder._=>_ using (mono)
   open _≃m_
 
   _⊕_ : ∀ {A B} → MeetSemilattice A → MeetSemilattice B → MeetSemilattice (A × B)
@@ -241,21 +240,21 @@ module _ where
   (X ⊕ Y) .⊤-isTop .IsTop.≤-top = X .⊤-isTop .IsTop.≤-top , Y .⊤-isTop .IsTop.≤-top
 
   project₁ : ∀ {A B} {X : MeetSemilattice A} {Y : MeetSemilattice B} → (X ⊕ Y) => X
-  project₁ .func = proj₁
-  project₁ .monotone = proj₁
+  project₁ .func .func = proj₁
+  project₁ .func .mono = proj₁
   project₁ {A = A} .∧-preserving = A .≤-refl
   project₁ {A = A} .⊤-preserving = A .≤-refl
 
   project₂ : ∀ {A B} {X : MeetSemilattice A} {Y : MeetSemilattice B} → (X ⊕ Y) => Y
-  project₂ .func = proj₂
-  project₂ .monotone = proj₂
+  project₂ .func .func = proj₂
+  project₂ .func .mono = proj₂
   project₂ {B = B} .∧-preserving = B .≤-refl
   project₂ {B = B} .⊤-preserving = B .≤-refl
 
   ⟨_,_⟩ : ∀ {A B C} {W : MeetSemilattice A} {X : MeetSemilattice B} {Y : MeetSemilattice C} →
           W => X → W => Y → W => (X ⊕ Y)
-  ⟨_,_⟩ f g .func w = f .func w , g .func w
-  ⟨_,_⟩ f g .monotone w₁≤w₂ = (f .monotone w₁≤w₂) , (g .monotone w₁≤w₂)
+  ⟨_,_⟩ f g .func .func w = f .func w , g .func w
+  ⟨_,_⟩ f g .func .mono w₁≤w₂ = (f .mono w₁≤w₂) , (g .mono w₁≤w₂)
   ⟨_,_⟩ f g .∧-preserving = (f .∧-preserving) , (g .∧-preserving)
   ⟨_,_⟩ f g .⊤-preserving = (f .⊤-preserving) , (g .⊤-preserving)
 
@@ -283,25 +282,24 @@ module _ where
   pair-ext {B = B} {C = C} f .eqfunc x = (B × C) .≃-refl
 
   inject₁ : ∀ {A B} {X : MeetSemilattice A} {Y : MeetSemilattice B} → X => (X ⊕ Y)
-  inject₁ {Y = Y} .func x = x , Y .⊤
-  inject₁ {B = B} .monotone x₁≤x₂ = x₁≤x₂ , B .≤-refl
+  inject₁ {Y = Y} .func .func x = x , Y .⊤
+  inject₁ {B = B} .func .mono x₁≤x₂ = x₁≤x₂ , B .≤-refl
   inject₁ {A = A} .∧-preserving .proj₁ = A .≤-refl
   inject₁ {Y = Y} .∧-preserving .proj₂ = Y .⊤-isTop .IsTop.≤-top
   inject₁ {A = A}{B = B} .⊤-preserving = A .≤-refl , B .≤-refl
 
   inject₂ : ∀ {A B} {X : MeetSemilattice A} {Y : MeetSemilattice B} → Y => (X ⊕ Y)
-  inject₂ {X = X} .func y = X .⊤ , y
-  inject₂ {A = A} .monotone y₁≤y₂ = A .≤-refl , y₁≤y₂
+  inject₂ {X = X} .func .func y = X .⊤ , y
+  inject₂ {A = A} .func .mono y₁≤y₂ = A .≤-refl , y₁≤y₂
   inject₂ {X = X} .∧-preserving .proj₁ = X .⊤-isTop .IsTop.≤-top
   inject₂ {B = B} .∧-preserving .proj₂ = B .≤-refl
   inject₂ {A = A}{B = B} .⊤-preserving = A .≤-refl , B .≤-refl
 
   [_,_] : ∀ {A B C}{X : MeetSemilattice A}{Y : MeetSemilattice B}{Z : MeetSemilattice C} →
     X => Z → Y => Z → (X ⊕ Y) => Z
-  [_,_] {Z = Z} f g .func (x , y) = Z ._∧_ (f .func x) (g .func y)
-  [_,_] {Z = Z} f g .monotone (x₁≤x₂ , y₁≤y₂) =
-    mono (f .monotone x₁≤x₂) (g .monotone y₁≤y₂)
-    where open IsMeet (Z .∧-isMeet)
+  [_,_] {Z = Z} f g .func .func (x , y) = Z ._∧_ (f .func x) (g .func y)
+  [_,_] {Z = Z} f g .func .mono (x₁≤x₂ , y₁≤y₂) =
+    IsMeet (Z .∧-isMeet) .mono (f .func .mono x₁≤x₂) (g .func .mono y₁≤y₂)
   [_,_] {C = C}{Z = Z} f g .∧-preserving {x , y} {x' , y'} =
     C .≤-trans (Z.interchange Z.∧-comm .proj₁)
                (Z.∧-mono (f .∧-preserving) (g .∧-preserving))
@@ -315,6 +313,7 @@ module _ where
   open preorder using (LCarrier; <_>; bottom)
   open MeetSemilattice
   open _=>_
+  open preorder._=>_
 
   L : ∀ {A} → MeetSemilattice A → MeetSemilattice (preorder.L A)
   L X ._∧_ bottom _ = bottom
@@ -337,21 +336,21 @@ module _ where
   L X .⊤-isTop .IsTop.≤-top {< x >} = X .⊤-isTop .IsTop.≤-top
 
   L-unit : ∀ {A}{X : MeetSemilattice A} → X => L X
-  L-unit .func x = < x >
-  L-unit .monotone x₁≤x₂ = x₁≤x₂
+  L-unit .func .func x = < x >
+  L-unit .func .mono x₁≤x₂ = x₁≤x₂
   L-unit {A} .∧-preserving = A .≤-refl
   L-unit {A} .⊤-preserving = A .≤-refl
 
   L-join : ∀ {A}{X : MeetSemilattice A} → L (L X) => L X
-  L-join .func bottom = bottom
-  L-join .func < bottom > = bottom
-  L-join .func < < x > > = < x >
-  L-join .monotone {bottom}     {bottom}     x₁≤x₂ = tt
-  L-join .monotone {bottom}     {< bottom >} x₁≤x₂ = tt
-  L-join .monotone {bottom}     {< < x > >}  x₁≤x₂ = tt
-  L-join .monotone {< bottom >} {< bottom >} x₁≤x₂ = tt
-  L-join .monotone {< bottom >} {< < x > >}  x₁≤x₂ = tt
-  L-join .monotone {< < x > >}  {< < y > >}  x₁≤x₂ = x₁≤x₂
+  L-join .func .func bottom = bottom
+  L-join .func .func < bottom > = bottom
+  L-join .func .func < < x > > = < x >
+  L-join .func .mono {bottom}     {bottom}     x₁≤x₂ = tt
+  L-join .func .mono {bottom}     {< bottom >} x₁≤x₂ = tt
+  L-join .func .mono {bottom}     {< < x > >}  x₁≤x₂ = tt
+  L-join .func .mono {< bottom >} {< bottom >} x₁≤x₂ = tt
+  L-join .func .mono {< bottom >} {< < x > >}  x₁≤x₂ = tt
+  L-join .func .mono {< < x > >}  {< < y > >}  x₁≤x₂ = x₁≤x₂
   L-join .∧-preserving {bottom} {bottom} = tt
   L-join .∧-preserving {bottom} {< x >} = tt
   L-join .∧-preserving {< bottom >} {bottom} = tt
@@ -362,11 +361,11 @@ module _ where
   L-join {A} .⊤-preserving = A .≤-refl
 
   L-map : ∀ {A B}{X : MeetSemilattice A}{Y : MeetSemilattice B} → X => Y → L X => L Y
-  L-map f .func bottom = bottom
-  L-map f .func < x > = < f .func x >
-  L-map f .monotone {bottom} {bottom} x₁≤x₂ = tt
-  L-map f .monotone {bottom} {< x₂ >} x₁≤x₂ = tt
-  L-map f .monotone {< x₁ >} {< x₂ >} x₁≤x₂ = f .monotone x₁≤x₂
+  L-map f .func .func bottom = bottom
+  L-map f .func .func < x > = < f .func x >
+  L-map f .func .mono {bottom} {bottom} x₁≤x₂ = tt
+  L-map f .func .mono {bottom} {< x₂ >} x₁≤x₂ = tt
+  L-map f .func .mono {< x₁ >} {< x₂ >} x₁≤x₂ = f .mono x₁≤x₂
   L-map f .∧-preserving {bottom} {x'} = tt
   L-map f .∧-preserving {< x >} {bottom} = tt
   L-map f .∧-preserving {< x >} {< x₁ >} = f .∧-preserving
@@ -374,11 +373,11 @@ module _ where
 
   L-strength : ∀ {A B}{X : MeetSemilattice A}{Y : MeetSemilattice B} →
                (X ⊕ L Y) => L (X ⊕ Y)
-  L-strength .func (x , bottom) = bottom
-  L-strength .func (x , < y >) = < x , y >
-  L-strength .monotone {x₁ , bottom} {x₂ , bottom} (x₁≤x₂ , tt) = tt
-  L-strength .monotone {x₁ , bottom} {x₂ , < y >}  (x₁≤x₂ , tt) = tt
-  L-strength .monotone {x₁ , < y₁ >} {x₂ , < y₂ >} (x₁≤x₂ , y₁≤y₂) = x₁≤x₂ , y₁≤y₂
+  L-strength .func .func (x , bottom) = bottom
+  L-strength .func .func (x , < y >) = < x , y >
+  L-strength .func .mono {x₁ , bottom} {x₂ , bottom} (x₁≤x₂ , tt) = tt
+  L-strength .func .mono {x₁ , bottom} {x₂ , < y >}  (x₁≤x₂ , tt) = tt
+  L-strength .func .mono {x₁ , < y₁ >} {x₂ , < y₂ >} (x₁≤x₂ , y₁≤y₂) = x₁≤x₂ , y₁≤y₂
   L-strength .∧-preserving {x , bottom} {x' , y'} = tt
   L-strength .∧-preserving {x , < x₁ >} {x' , bottom} = tt
   L-strength {A}{B} .∧-preserving {x , < x₁ >} {x' , < x₂ >} = A .≤-refl , B .≤-refl
