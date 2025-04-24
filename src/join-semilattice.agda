@@ -366,15 +366,13 @@ module _ where
   inj₁-copair {C = C} {Y = Y} {Z = Z} f g .eqfunc .eqfun x =
     begin
       f .func .fun x Z.∨ g .func .fun (Y .⊥)
-    ≈⟨ MZ.cong (C .≃-refl) (⊥-preserving-≃ g) ⟩
+    ≈⟨ ∨-cong Z (C .≃-refl) (⊥-preserving-≃ g) ⟩
       f .func .fun x Z.∨ Z .⊥
-    ≈⟨ MZ.runit ⟩
+    ≈⟨ ∨-runit Z ⟩
       f .func .fun x
     ∎
     where open ≈-Reasoning (isEquivalence C)
           module Z = JoinSemilattice Z
-          module Y = JoinSemilattice Y
-          module MZ = IsMonoid (monoidOfJoin _ (Z .∨-isJoin) (Z .⊥-isBottom))
 
   inj₂-copair : ∀ {A B C}
                   {X : JoinSemilattice A}{Y : JoinSemilattice B}{Z : JoinSemilattice C}
@@ -383,14 +381,13 @@ module _ where
   inj₂-copair {C = C} {X = X} {Z = Z} f g .eqfunc .eqfun y =
     begin
       f .func .fun (X .⊥) Z.∨ g .func .fun y
-    ≈⟨ MZ.cong (⊥-preserving-≃ f) (C .≃-refl) ⟩
+    ≈⟨ ∨-cong Z (⊥-preserving-≃ f) (C .≃-refl) ⟩
       Z .⊥ Z.∨ g .func .fun y
-    ≈⟨ MZ.lunit ⟩
+    ≈⟨ ∨-lunit Z ⟩
       g .func .fun y
     ∎
     where open ≈-Reasoning (isEquivalence C)
           module Z = JoinSemilattice Z
-          module MZ = IsMonoid (monoidOfJoin _ (Z .∨-isJoin) (Z .⊥-isBottom))
 
   copair-ext : ∀ {A B C}
                  {X : JoinSemilattice A}
@@ -403,15 +400,13 @@ module _ where
       f .func .fun (x , Y .⊥) Z.∨ f .func .fun (X .⊥ , y)
     ≈⟨ C .≃-sym (∨-preserving-≃ f) ⟩
       f .func .fun (x X.∨ X.⊥ , Y .⊥ Y.∨ y)
-    ≈⟨ resp-≃ (f .func) (preorder.×-≃ {X = A} {Y = B} MX.runit MY.lunit) ⟩
+    ≈⟨ resp-≃ (f .func) (preorder.×-≃ {X = A} {Y = B} (∨-runit X) (∨-lunit Y)) ⟩
       f .func .fun (x , y)
     ∎
     where open ≈-Reasoning (isEquivalence C)
           module Z = JoinSemilattice Z
           module Y = JoinSemilattice Y
           module X = JoinSemilattice X
-          module MX = IsMonoid (monoidOfJoin _ (X .∨-isJoin) (X .⊥-isBottom))
-          module MY = IsMonoid (monoidOfJoin _ (Y .∨-isJoin) (Y .⊥-isBottom))
 
   -- Biproduct properties
   proj₁-inverts-inj₁ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (project₁ {X = X}{Y} ∘ inject₁) ≃m id
@@ -501,10 +496,8 @@ module _ where
   L-counit {X = X} .func .mono {bottom} _ = IsBottom.≤-bottom (X .⊥-isBottom)
   L-counit .func .mono {< _ >} {< _ >} x≤x' = x≤x'
   L-counit {X = X} .∨-preserving {bottom} {bottom} = IsJoin.idem (X .∨-isJoin) .proj₂
-  L-counit {X = X} .∨-preserving {bottom} {< _ >} =
-    IsMonoid.lunit (monoidOfJoin _ (X .∨-isJoin) (X .⊥-isBottom)) .proj₂
-  L-counit {X = X} .∨-preserving {< _ >} {bottom} =
-    IsMonoid.runit (monoidOfJoin _ (X .∨-isJoin) (X .⊥-isBottom)) .proj₂
+  L-counit {X = X} .∨-preserving {bottom} {< _ >} = ∨-lunit X .proj₂
+  L-counit {X = X} .∨-preserving {< _ >} {bottom} = ∨-runit X .proj₂
   L-counit {A} .∨-preserving {< _ >} {< _ >} = A .≤-refl
   L-counit {A} .⊥-preserving = A .≤-refl
 
