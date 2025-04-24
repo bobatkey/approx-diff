@@ -169,6 +169,7 @@ module _ {X Y : Obj} where
   +m-comm : ∀ {f g} → (f +m g) ≃g (g +m f)
   +m-comm {f} {g} .right-eq = meet-semilattice.+m-comm {f = right-∧ f} {right-∧ g} ._≃M_.eqfunc
   +m-comm {f} {g} .left-eq = join-semilattice.+m-comm {f = left-∨ f} {left-∨ g} ._≃J_.eqfunc
+
   +m-assoc : ∀ {f g h} → ((f +m g) +m h) ≃g (f +m (g +m h))
   +m-assoc {f} {g} {h} .right-eq = meet-semilattice.+m-assoc {f = right-∧ f} {right-∧ g} {right-∧ h} ._≃M_.eqfunc
   +m-assoc {f} {g} {h} .left-eq = join-semilattice.+m-assoc {f = left-∨ f} {left-∨ g} {left-∨ h} ._≃J_.eqfunc
