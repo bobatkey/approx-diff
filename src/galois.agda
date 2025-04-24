@@ -70,6 +70,10 @@ record _⇒g'_ (X Y : Obj) : Set where
   private
     module X = Obj X
     module Y = Obj Y
+    module XM = MeetSemilattice (X .meets)
+    module YM = MeetSemilattice (Y .meets)
+    module XJ = JoinSemilattice (X .joins)
+    module YJ = JoinSemilattice (Y .joins)
   field
     right : X .carrier preorder.=> Y .carrier
     left : Y .carrier preorder.=> X .carrier
@@ -78,18 +82,12 @@ record _⇒g'_ (X Y : Obj) : Set where
   right-∧ : X .meets =>M Y .meets
   right-∧ .func = right
   right-∧ .∧-preserving = left⊣right .proj₂ XM.⟨ left⊣right .proj₁ YM.π₁ ∧ left⊣right .proj₁ YM.π₂ ⟩
-    where
-    module XM = MeetSemilattice (X .meets)
-    module YM = MeetSemilattice (Y .meets)
-  right-∧ .⊤-preserving = {!   !}
+  right-∧ .⊤-preserving = left⊣right .proj₂ XM.≤-top
 
   left-∨ : Y .joins =>J X .joins
   left-∨ .func = left
   left-∨ .∨-preserving = left⊣right .proj₁ YJ.[ left⊣right .proj₂ XJ.inl ∨ left⊣right .proj₂ XJ.inr ]
-    where
-    module XJ = JoinSemilattice (X .joins)
-    module YJ = JoinSemilattice (Y .joins)
-  left-∨ .⊥-preserving = {!   !}
+  left-∨ .⊥-preserving = left⊣right .proj₁ YJ.≤-bottom
 
 open _⇒g'_
 
