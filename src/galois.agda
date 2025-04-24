@@ -59,7 +59,7 @@ record _⇒g_ (X Y : Obj) : Set where
     module XJ = JoinSemilattice (X .joins)
     module YJ = JoinSemilattice (Y .joins)
   field
-    -- could define this structure just for preorders with a bit more indirection
+    -- could define this structure just for preorders (with a bit more indirection)
     right : X .carrier preorder.=> Y .carrier
     left : Y .carrier preorder.=> X .carrier
     left⊣right : ∀ {x y} → y Y.≤ (right .fun x) ⇔ (left .fun y) X.≤ x
