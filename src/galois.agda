@@ -45,23 +45,6 @@ record Obj : Set (suc 0ℓ) where
   open Preorder carrier public
 open Obj
 
-{-
-record _⇒g_ (X Y : Obj) : Set where
-  no-eta-equality
-  open preorder._=>_
-  private
-    module X = Obj X
-    module Y = Obj Y
-  field
-    -- FIXME: might be better to call these right and left
-    fwd : X .meets =>M Y .meets
-    bwd : Y .joins =>J X .joins
-    bwd⊣fwd : ∀ {x y} → y Y.≤ (fwd ._=>M_.func .fun x) ⇔ (bwd ._=>J_.func .fun y) X.≤ x
-
-  -- FIXME: preservation of meets and joins comes for free! Make a
-  -- helper constructor.
-open _⇒g_
--}
 record _⇒g_ (X Y : Obj) : Set where
   no-eta-equality
   open _=>M_
@@ -80,11 +63,13 @@ record _⇒g_ (X Y : Obj) : Set where
     left : Y .carrier preorder.=> X .carrier
     left⊣right : ∀ {x y} → y Y.≤ (right .fun x) ⇔ (left .fun y) X.≤ x
 
+  -- right adjoint preserves meets
   right-∧ : X .meets =>M Y .meets
   right-∧ .func = right
   right-∧ .∧-preserving = left⊣right .proj₂ XM.⟨ left⊣right .proj₁ YM.π₁ ∧ left⊣right .proj₁ YM.π₂ ⟩
   right-∧ .⊤-preserving = left⊣right .proj₂ XM.≤-top
 
+  -- left adjoint preserves joins
   left-∨ : Y .joins =>J X .joins
   left-∨ .func = left
   left-∨ .∨-preserving = left⊣right .proj₁ YJ.[ left⊣right .proj₂ XJ.inl ∨ left⊣right .proj₂ XJ.inr ]
@@ -92,13 +77,6 @@ record _⇒g_ (X Y : Obj) : Set where
 
 open _⇒g_
 
-{-
-record _≃g_ {X Y : Obj} (f g : X ⇒g Y) : Prop where
-  field
-    fwd-eq : f .fwd ≃M g .fwd
-    bwd-eq : f .bwd ≃J g .bwd
-open _≃g_
--}
 record _≃g_ {X Y : Obj} (f g : X ⇒g Y) : Prop where
   field
     right-eq : f .right ≃m g .right
@@ -115,15 +93,6 @@ open _≃g_
 open IsEquivalence
 open preorder using (≃m-isEquivalence)
 
-{-
-≃g-isEquivalence : ∀ {X Y} → IsEquivalence (_≃g_ {X} {Y})
-≃g-isEquivalence .refl .fwd-eq = ≃M-isEquivalence .refl
-≃g-isEquivalence .refl .bwd-eq = ≃J-isEquivalence .refl
-≃g-isEquivalence .sym e .fwd-eq = ≃M-isEquivalence .sym (e .fwd-eq)
-≃g-isEquivalence .sym e .bwd-eq = ≃J-isEquivalence .sym (e .bwd-eq)
-≃g-isEquivalence .trans e₁ e₂ .fwd-eq = ≃M-isEquivalence .trans (e₁ .fwd-eq) (e₂ .fwd-eq)
-≃g-isEquivalence .trans e₁ e₂ .bwd-eq = ≃J-isEquivalence .trans (e₁ .bwd-eq) (e₂ .bwd-eq)
--}
 ≃g-isEquivalence : ∀ {X Y} → IsEquivalence (_≃g_ {X} {Y})
 ≃g-isEquivalence .refl .right-eq = ≃m-isEquivalence .refl
 ≃g-isEquivalence .refl .left-eq = ≃m-isEquivalence .refl
@@ -132,60 +101,26 @@ open preorder using (≃m-isEquivalence)
 ≃g-isEquivalence .trans e₁ e₂ .right-eq = ≃m-isEquivalence .trans (e₁ .right-eq) (e₂ .right-eq)
 ≃g-isEquivalence .trans e₁ e₂ .left-eq = ≃m-isEquivalence .trans (e₁ .left-eq) (e₂ .left-eq)
 
-{-
 idg : (X : Obj) → X ⇒g X
-idg X .fwd = idM
-idg X .bwd = idJ
-idg X .bwd⊣fwd = refl-⇔
--}
-idg' : (X : Obj) → X ⇒g X
-idg' X .right = id
-idg' X .left = id
-idg' X .left⊣right = refl-⇔
+idg X .right = id
+idg X .left = id
+idg X .left⊣right = refl-⇔
 
-{-
-_∘g_ : ∀ {X Y Z : Obj} → Y ⇒g Z → X ⇒g Y → X ⇒g Z
-(f ∘g g) .fwd = f .fwd ∘M g .fwd
-(f ∘g g) .bwd = g .bwd ∘J f .bwd
-(f ∘g g) .bwd⊣fwd = trans-⇔ (f .bwd⊣fwd) (g .bwd⊣fwd)
--}
 _∘g_ : ∀ {X Y Z : Obj} → Y ⇒g Z → X ⇒g Y → X ⇒g Z
 (f ∘g g) .right = f .right ∘ g .right
 (f ∘g g) .left = g .left ∘ f .left
 (f ∘g g) .left⊣right = trans-⇔ (f .left⊣right) (g .left⊣right)
 
-{-
-∘g-cong : ∀ {X Y Z}{f₁ f₂ : Y ⇒g Z}{g₁ g₂ : X ⇒g Y} → f₁ ≃g f₂ → g₁ ≃g g₂ → (f₁ ∘g g₁) ≃g (f₂ ∘g g₂)
-∘g-cong f₁≈f₂ g₁≈g₂ .fwd-eq = meet-semilattice.∘-cong (f₁≈f₂ .fwd-eq) (g₁≈g₂ .fwd-eq)
-∘g-cong f₁≈f₂ g₁≈g₂ .bwd-eq = join-semilattice.∘-cong (g₁≈g₂ .bwd-eq) (f₁≈f₂ .bwd-eq)
--}
 ∘g-cong : ∀ {X Y Z}{f₁ f₂ : Y ⇒g Z}{g₁ g₂ : X ⇒g Y} → f₁ ≃g f₂ → g₁ ≃g g₂ → (f₁ ∘g g₁) ≃g (f₂ ∘g g₂)
 ∘g-cong f₁≈f₂ g₁≈g₂ .right-eq = ∘-cong (f₁≈f₂ .right-eq) (g₁≈g₂ .right-eq)
 ∘g-cong f₁≈f₂ g₁≈g₂ .left-eq = ∘-cong (g₁≈g₂ .left-eq) (f₁≈f₂ .left-eq)
 
-{-
 cat : Category (suc 0ℓ) 0ℓ 0ℓ
 cat .Category.obj = Obj
 cat .Category._⇒_ = _⇒g_
 cat .Category._≈_ = _≃g_
 cat .Category.isEquiv = ≃g-isEquivalence
 cat .Category.id = idg
-cat .Category._∘_ = _∘g_
-cat .Category.∘-cong = ∘g-cong
-cat .Category.id-left .fwd-eq = meet-semilattice.id-left
-cat .Category.id-left .bwd-eq = join-semilattice.id-right
-cat .Category.id-right .fwd-eq = meet-semilattice.id-right
-cat .Category.id-right .bwd-eq = join-semilattice.id-left
-cat .Category.assoc f g h .fwd-eq = meet-semilattice.assoc (f .fwd) (g .fwd) (h .fwd)
-cat .Category.assoc f g h .bwd-eq =
-  ≃J-isEquivalence .sym (join-semilattice.assoc (h .bwd) (g .bwd) (f .bwd))
--}
-cat : Category (suc 0ℓ) 0ℓ 0ℓ
-cat .Category.obj = Obj
-cat .Category._⇒_ = _⇒g_
-cat .Category._≈_ = _≃g_
-cat .Category.isEquiv = ≃g-isEquivalence
-cat .Category.id = idg'
 cat .Category._∘_ = _∘g_
 cat .Category.∘-cong = ∘g-cong
 cat .Category.id-left .right-eq = id-left
@@ -206,75 +141,40 @@ module _ {X Y : Obj} where
   private
     module YM = MeetSemilattice (Y .meets)
     module XJ = JoinSemilattice (X .joins)
-{-
+
   εm : X ⇒g Y
-  εm .fwd = meet-semilattice.εm
-  εm .bwd = join-semilattice.εm
-  εm .bwd⊣fwd .proj₁ _ = XJ.≤-bottom
-  εm .bwd⊣fwd .proj₂ _ = YM.≤-top
--}
-  εm' : X ⇒g Y
-  εm' .right = meet-semilattice.εm {X = X .meets} {Y = Y .meets} ._=>M_.func
-  εm' .left = join-semilattice.εm {X = Y .joins} {Y = X .joins} ._=>J_.func
-  εm' .left⊣right .proj₁ _ = XJ.≤-bottom
-  εm' .left⊣right .proj₂ _ = YM.≤-top
-{-
+  εm .right = meet-semilattice.εm {X = X .meets} {Y = Y .meets} ._=>M_.func
+  εm .left = join-semilattice.εm {X = Y .joins} {Y = X .joins} ._=>J_.func
+  εm .left⊣right .proj₁ _ = XJ.≤-bottom
+  εm .left⊣right .proj₂ _ = YM.≤-top
+
   _+m_ : X ⇒g Y → X ⇒g Y → X ⇒g Y
-  (f +m g) .fwd = meet-semilattice._+m_ (f .fwd) (g .fwd)
-  (f +m g) .bwd = join-semilattice._+m_ (f .bwd) (g .bwd)
-  (f +m g) .bwd⊣fwd {x} {y} .proj₁ y≤fx∧gx =
-    XJ.[ f .bwd⊣fwd .proj₁ (Y .≤-trans y≤fx∧gx YM.π₁)
-       ∨ g .bwd⊣fwd .proj₁ (Y .≤-trans y≤fx∧gx YM.π₂)
-       ]
-  (f +m g) .bwd⊣fwd {x} {y} .proj₂ fy∨gy≤x =
-    YM.⟨ f .bwd⊣fwd .proj₂ (X .≤-trans XJ.inl fy∨gy≤x)
-       ∧ g .bwd⊣fwd .proj₂ (X .≤-trans XJ.inr fy∨gy≤x)
-       ⟩
--}
-  _+m'_ : X ⇒g Y → X ⇒g Y → X ⇒g Y
-  (f +m' g) .right = meet-semilattice._+m_ (right-∧ f) (right-∧ g) ._=>M_.func
-  (f +m' g) .left = join-semilattice._+m_ (left-∨ f) (left-∨ g) ._=>J_.func
-  (f +m' g) .left⊣right {x} {y} .proj₁ y≤fx∧gx =
+  (f +m g) .right = meet-semilattice._+m_ (right-∧ f) (right-∧ g) ._=>M_.func
+  (f +m g) .left = join-semilattice._+m_ (left-∨ f) (left-∨ g) ._=>J_.func
+  (f +m g) .left⊣right {x} {y} .proj₁ y≤fx∧gx =
     XJ.[ f .left⊣right .proj₁ (Y .≤-trans y≤fx∧gx YM.π₁)
        ∨ g .left⊣right .proj₁ (Y .≤-trans y≤fx∧gx YM.π₂)
        ]
-  (f +m' g) .left⊣right {x} {y} .proj₂ fy∨gy≤x =
+  (f +m g) .left⊣right {x} {y} .proj₂ fy∨gy≤x =
     YM.⟨ f .left⊣right .proj₂ (X .≤-trans XJ.inl fy∨gy≤x)
        ∧ g .left⊣right .proj₂ (X .≤-trans XJ.inr fy∨gy≤x)
        ⟩
-{-
+
   +m-cong : ∀ {f₁ f₂ g₁ g₂ : X ⇒g Y} → f₁ ≃g f₂ → g₁ ≃g g₂ → (f₁ +m g₁) ≃g (f₂ +m g₂)
-  +m-cong f₁≃f₂ g₁≃g₂ .fwd-eq = meet-semilattice.+m-cong (f₁≃f₂ .fwd-eq) (g₁≃g₂ .fwd-eq)
-  +m-cong f₁≃f₂ g₁≃g₂ .bwd-eq = join-semilattice.+m-cong (f₁≃f₂ .bwd-eq) (g₁≃g₂ .bwd-eq)
--}
-  +m'-cong : ∀ {f₁ f₂ g₁ g₂ : X ⇒g Y} → f₁ ≃g f₂ → g₁ ≃g g₂ → (f₁ +m' g₁) ≃g (f₂ +m' g₂)
-  +m'-cong f₁≃f₂ g₁≃g₂ .right-eq = meet-semilattice.+m-cong (right-∧-cong f₁≃f₂) (right-∧-cong g₁≃g₂) ._≃M_.eqfunc
-  +m'-cong f₁≃f₂ g₁≃g₂ .left-eq = join-semilattice.+m-cong (left-∨-cong f₁≃f₂) (left-∨-cong g₁≃g₂) ._≃J_.eqfunc
-{-
+  +m-cong f₁≃f₂ g₁≃g₂ .right-eq = meet-semilattice.+m-cong (right-∧-cong f₁≃f₂) (right-∧-cong g₁≃g₂) ._≃M_.eqfunc
+  +m-cong f₁≃f₂ g₁≃g₂ .left-eq = join-semilattice.+m-cong (left-∨-cong f₁≃f₂) (left-∨-cong g₁≃g₂) ._≃J_.eqfunc
+
+  -- Could give more directly rather than factoring through meet-/join-semilattices
   +m-comm : ∀ {f g} → (f +m g) ≃g (g +m f)
-  +m-comm {f} {g} .fwd-eq = meet-semilattice.+m-comm {f = f .fwd} {g .fwd}
-  +m-comm {f} {g} .bwd-eq = join-semilattice.+m-comm {f = f .bwd} {g .bwd}
--}
-  -- Could give these directly rather than factoring through meet-/join-semilattices
-  +m'-comm : ∀ {f g} → (f +m' g) ≃g (g +m' f)
-  +m'-comm {f} {g} .right-eq = meet-semilattice.+m-comm {f = right-∧ f} {right-∧ g} ._≃M_.eqfunc
-  +m'-comm {f} {g} .left-eq = join-semilattice.+m-comm {f = left-∨ f} {left-∨ g} ._≃J_.eqfunc
-{-
+  +m-comm {f} {g} .right-eq = meet-semilattice.+m-comm {f = right-∧ f} {right-∧ g} ._≃M_.eqfunc
+  +m-comm {f} {g} .left-eq = join-semilattice.+m-comm {f = left-∨ f} {left-∨ g} ._≃J_.eqfunc
   +m-assoc : ∀ {f g h} → ((f +m g) +m h) ≃g (f +m (g +m h))
-  +m-assoc {f} {g} {h} .fwd-eq = meet-semilattice.+m-assoc {f = f .fwd} {g .fwd} {h .fwd}
-  +m-assoc {f} {g} {h} .bwd-eq = join-semilattice.+m-assoc {f = f .bwd} {g .bwd} {h .bwd}
--}
-  +m'-assoc : ∀ {f g h} → ((f +m' g) +m' h) ≃g (f +m' (g +m' h))
-  +m'-assoc {f} {g} {h} .right-eq = meet-semilattice.+m-assoc {f = right-∧ f} {right-∧ g} {right-∧ h} ._≃M_.eqfunc
-  +m'-assoc {f} {g} {h} .left-eq = join-semilattice.+m-assoc {f = left-∨ f} {left-∨ g} {left-∨ h} ._≃J_.eqfunc
-{-
+  +m-assoc {f} {g} {h} .right-eq = meet-semilattice.+m-assoc {f = right-∧ f} {right-∧ g} {right-∧ h} ._≃M_.eqfunc
+  +m-assoc {f} {g} {h} .left-eq = join-semilattice.+m-assoc {f = left-∨ f} {left-∨ g} {left-∨ h} ._≃J_.eqfunc
+
   +m-lunit : ∀ {f} → (εm +m f) ≃g f
-  +m-lunit {f} .fwd-eq = meet-semilattice.+m-lunit {f = f .fwd}
-  +m-lunit {f} .bwd-eq = join-semilattice.+m-lunit {f = f .bwd}
--}
-  +m'-lunit : ∀ {f} → (εm' +m' f) ≃g f
-  +m'-lunit {f} .right-eq = meet-semilattice.+m-lunit {f = right-∧ f} ._≃M_.eqfunc
-  +m'-lunit {f} .left-eq = join-semilattice.+m-lunit {f = left-∨ f} ._≃J_.eqfunc
+  +m-lunit {f} .right-eq = meet-semilattice.+m-lunit {f = right-∧ f} ._≃M_.eqfunc
+  +m-lunit {f} .left-eq = join-semilattice.+m-lunit {f = left-∨ f} ._≃J_.eqfunc
 
 module _ where
   open import commutative-monoid
@@ -307,12 +207,12 @@ module _ where
     join-semilattice.comp-bilinear-ε₁ (f .bwd)
 -}
   cmon-enriched : CMonEnriched cat
-  cmon-enriched .CMonEnriched.homCM X Y .ε = εm'
-  cmon-enriched .CMonEnriched.homCM X Y ._+_ = _+m'_
-  cmon-enriched .CMonEnriched.homCM X Y .+-cong = +m'-cong
-  cmon-enriched .CMonEnriched.homCM X Y .+-lunit = +m'-lunit
-  cmon-enriched .CMonEnriched.homCM X Y .+-assoc = +m'-assoc
-  cmon-enriched .CMonEnriched.homCM X Y .+-comm = +m'-comm
+  cmon-enriched .CMonEnriched.homCM X Y .ε = εm
+  cmon-enriched .CMonEnriched.homCM X Y ._+_ = _+m_
+  cmon-enriched .CMonEnriched.homCM X Y .+-cong = +m-cong
+  cmon-enriched .CMonEnriched.homCM X Y .+-lunit = +m-lunit
+  cmon-enriched .CMonEnriched.homCM X Y .+-assoc = +m-assoc
+  cmon-enriched .CMonEnriched.homCM X Y .+-comm = +m-comm
   cmon-enriched .CMonEnriched.comp-bilinear₁ {Z = Z} f₁ f₂ g .right-eq .eqfun x = Z .≃-refl
   cmon-enriched .CMonEnriched.comp-bilinear₁ f₁ f₂ g .left-eq .eqfun x =
     _=>J_.∨-preserving-≃ (left-∨ g)
@@ -381,39 +281,6 @@ module _ where
   open _=>_
   open preorder._≃m_
 
-{-
-  products : HasProducts cat
-  products .prod = _⊗_
-  products .p₁ .fwd = meet-semilattice.project₁
-  products .p₁ .bwd = join-semilattice.inject₁
-  products .p₁ {X} {Y} .bwd⊣fwd {x , y} {x'} .proj₁ x'≤x .proj₁ = x'≤x
-  products .p₁ {X} {Y} .bwd⊣fwd {x , y} {x'} .proj₁ x'≤x .proj₂ = Y.≤-bottom
-    where module Y = JoinSemilattice (Y .joins)
-  products .p₁ {X} {Y} .bwd⊣fwd {x , y} {x'} .proj₂ = proj₁
-  products .p₂ .fwd = meet-semilattice.project₂
-  products .p₂ .bwd = join-semilattice.inject₂
-  products .p₂ {X} {Y} .bwd⊣fwd {x , y} {y'} .proj₁ y'≤y .proj₁ = X.≤-bottom
-    where module X = JoinSemilattice (X .joins)
-  products .p₂ {X} {Y} .bwd⊣fwd {x , y} {y'} .proj₁ y'≤y .proj₂ = y'≤y
-  products .p₂ {X} {Y} .bwd⊣fwd {x , y} {y'} .proj₂ = proj₂
-  products .pair f g .fwd = meet-semilattice.⟨ f .fwd , g .fwd ⟩
-  products .pair f g .bwd = join-semilattice.[ f .bwd , g .bwd ]
-  products .pair {X} {Y} {Z} f g .bwd⊣fwd {x} {y , z} .proj₁ (y≤fx , z≤gx) =
-    [ f .bwd⊣fwd .proj₁ y≤fx , g .bwd⊣fwd .proj₁ z≤gx ]
-    where open IsJoin (X .joins .∨-isJoin)
-  products .pair {X} {Y} {Z} f g .bwd⊣fwd {x} {y , z} .proj₂ fy∨gz≤x =
-    f .bwd⊣fwd .proj₂ (X .≤-trans X.inl fy∨gz≤x) ,
-    g .bwd⊣fwd .proj₂ (X .≤-trans X.inr fy∨gz≤x)
-    where module X = JoinSemilattice (X .joins)
-  products .pair-cong f₁≈f₂ g₁≈g₂ .fwd-eq = meet-semilattice.⟨⟩-cong (f₁≈f₂ .fwd-eq) (g₁≈g₂ .fwd-eq)
-  products .pair-cong f₁≈f₂ g₁≈g₂ .bwd-eq = join-semilattice.[]-cong (f₁≈f₂ .bwd-eq) (g₁≈g₂ .bwd-eq)
-  products .pair-p₁ f g .fwd-eq = meet-semilattice.pair-p₁ (f .fwd) (g .fwd)
-  products .pair-p₁ f g .bwd-eq = join-semilattice.inj₁-copair (f .bwd) (g .bwd)
-  products .pair-p₂ f g .fwd-eq = meet-semilattice.pair-p₂ (f .fwd) (g .fwd)
-  products .pair-p₂ f g .bwd-eq = join-semilattice.inj₂-copair (f .bwd) (g .bwd)
-  products .pair-ext f .fwd-eq = meet-semilattice.pair-ext (f .fwd)
-  products .pair-ext f .bwd-eq = join-semilattice.copair-ext (f .bwd)
--}
   products : HasProducts cat
   products .prod = _⊗_
   products .p₁ {X} {Y} .right = meet-semilattice.project₁ {X = X .meets} {Y = Y .meets} ._=>M_.func
@@ -521,21 +388,10 @@ module _ where
   -- This is a monoid because every object in this category is a
   -- monoid by cmon-enrichment. FIXME: actually prove this gives a
   -- monoid.
-{-
-  module _ where
-    open HasProducts products
+  open HasProducts products
 
-    conjunct : (TWO ⊗ TWO) ⇒g TWO
-    conjunct = p₁ +m p₂
+  conjunct : (TWO ⊗ TWO) ⇒g TWO
+  conjunct = p₁ +m p₂
 
-    unit : 𝟙 ⇒g TWO
-    unit = εm
--}
-  module _ where
-    open HasProducts products
-
-    conjunct : (TWO ⊗ TWO) ⇒g TWO
-    conjunct = p₁ +m' p₂
-
-    unit : 𝟙 ⇒g TWO
-    unit = εm'
+  unit : 𝟙 ⇒g TWO
+  unit = εm

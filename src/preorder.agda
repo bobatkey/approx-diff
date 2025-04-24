@@ -25,6 +25,7 @@ record Preorder : Set (suc 0ℓ) where
 module _ where
   open Preorder
 
+  -- Monotone functions
   record _=>_ (A B : Preorder) : Set where
     open Preorder
     private
