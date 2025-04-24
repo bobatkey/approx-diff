@@ -33,6 +33,7 @@ record JoinSemilattice (A : Preorder) : Set (suc 0ℓ) where
 
 module _ {A B : Preorder} where
   open Preorder
+  open preorder._=>_
   private
     module A = Preorder A
     module B = Preorder B
@@ -41,77 +42,72 @@ module _ {A B : Preorder} where
     open JoinSemilattice
     open IsBottom
     field
-      func : A .Carrier → B .Carrier
-      monotone : ∀ {x₁ x₂} → A ._≤_ x₁ x₂ → B ._≤_ (func x₁) (func x₂)
-      ∨-preserving : ∀ {x x'} → (func (X ._∨_ x x')) B.≤ (Y ._∨_ (func x) (func x'))
-      ⊥-preserving : func (X .⊥) B.≤ Y .⊥
+      func : A preorder.=> B
+      ∨-preserving : ∀ {x x'} → (func .fun (X ._∨_ x x')) B.≤ (Y ._∨_ (func .fun x) (func .fun x'))
+      ⊥-preserving : func .fun (X .⊥) B.≤ Y .⊥
 
-    resp-≃ : ∀ {x₁ x₂} → x₁ A.≃ x₂ → func x₁ B.≃ func x₂
-    resp-≃ x₁≃x₂ .proj₁ = monotone (x₁≃x₂ .proj₁)
-    resp-≃ x₁≃x₂ .proj₂ = monotone (x₁≃x₂ .proj₂)
-
-    ∨-preserving-≃ : ∀ {x x'} → func (X ._∨_ x x') B.≃ Y ._∨_ (func x) (func x')
+    ∨-preserving-≃ : ∀ {x x'} → func .fun (X ._∨_ x x') B.≃ Y ._∨_ (func .fun x) (func .fun x')
     ∨-preserving-≃ .proj₁ = ∨-preserving
-    ∨-preserving-≃ .proj₂ = Y.[ monotone X.inl , monotone X.inr ]
+    ∨-preserving-≃ .proj₂ = Y.[ func .mono X.inl , func .mono X.inr ]
       where module Y = IsJoin (Y .∨-isJoin)
             module X = IsJoin (X .∨-isJoin)
 
-    ⊥-preserving-≃ : func (X .⊥) B.≃ Y .⊥
+    ⊥-preserving-≃ : func .fun (X .⊥) B.≃ Y .⊥
     ⊥-preserving-≃ .proj₁ = ⊥-preserving
     ⊥-preserving-≃ .proj₂ = Y .⊥-isBottom .≤-bottom
 
   record _≃m_ {X : JoinSemilattice A} {Y : JoinSemilattice B} (f g : X => Y) : Prop where
     open _=>_
     field
-      eqfunc : ∀ x → _≃_ B (f .func x) (g .func x)
-
-  open _≃m_
+      eqfunc : f .func preorder.≃m g .func
 
   open IsEquivalence
+  open _≃m_
+  open preorder._≃m_
 
   ≃m-isEquivalence : ∀ {X Y} → IsEquivalence (_≃m_ {X} {Y})
-  ≃m-isEquivalence .refl .eqfunc x = B.≃-refl
-  ≃m-isEquivalence .sym e .eqfunc x = B.≃-sym (e .eqfunc x)
-  ≃m-isEquivalence .trans e₁ e₂ .eqfunc x = B.≃-trans (e₁ .eqfunc x) (e₂ .eqfunc x)
+  ≃m-isEquivalence .refl .eqfunc .eqfun x = B.≃-refl
+  ≃m-isEquivalence .sym e .eqfunc .eqfun x = B.≃-sym (e .eqfunc .eqfun x)
+  ≃m-isEquivalence .trans e₁ e₂ .eqfunc .eqfun x = B.≃-trans (e₁ .eqfunc .eqfun x) (e₂ .eqfunc .eqfun x)
 
 module _ where
   open JoinSemilattice
   open _=>_
+  open preorder._=>_
 
   id : ∀ {A}{X : JoinSemilattice A} → X => X
-  id .func x = x
-  id .monotone x≤x' = x≤x'
+  id .func = preorder.id
   id {X} .∨-preserving = X .≤-refl
   id {X} .⊥-preserving = X .≤-refl
 
   _∘_ : ∀ {A B C}{X : JoinSemilattice A}{Y : JoinSemilattice B}{Z : JoinSemilattice C} →
            Y => Z → X => Y → X => Z
-  (f ∘ g) .func x = f .func (g .func x)
-  (f ∘ g) .monotone x≤x' = f .monotone (g .monotone x≤x')
-  _∘_ {C = C} f g .∨-preserving = C .≤-trans (f .monotone (g .∨-preserving)) (f .∨-preserving)
-  _∘_ {C = C} f g .⊥-preserving = C .≤-trans (f .monotone (g .⊥-preserving)) (f .⊥-preserving)
+  (f ∘ g) .func = f .func preorder.∘ g .func
+  _∘_ {C = C} f g .∨-preserving = C .≤-trans (f .func .mono (g .∨-preserving)) (f .∨-preserving)
+  _∘_ {C = C} f g .⊥-preserving = C .≤-trans (f .func .mono (g .⊥-preserving)) (f .⊥-preserving)
 
   ⊥-map : ∀ {A}{B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → X => Y
-  ⊥-map {Y = Y} .func y = Y .⊥
-  ⊥-map {B = B} .monotone _ = B .≤-refl
+  ⊥-map {Y = Y} .func .fun y = Y .⊥
+  ⊥-map {B = B} .func .mono _ = B .≤-refl
   ⊥-map {Y = Y} .∨-preserving = IsJoin.idem (Y .∨-isJoin) .proj₂
   ⊥-map {B = B} .⊥-preserving = B .≤-refl
 
   open _≃m_
+  open preorder._≃m_
 
   ∘-cong : ∀ {A B C}{X : JoinSemilattice A}{Y : JoinSemilattice B}{Z : JoinSemilattice C}
              {f₁ f₂ : Y => Z} {g₁ g₂ : X => Y} →
              f₁ ≃m f₂ → g₁ ≃m g₂ → (f₁ ∘ g₁) ≃m (f₂ ∘ g₂)
-  ∘-cong {A}{B}{C} {f₁ = f₁} f₁≃f₂ g₁≃g₂ .eqfunc x =
-    C .≃-trans (resp-≃ f₁ (g₁≃g₂ .eqfunc x)) (f₁≃f₂ .eqfunc _)
+  ∘-cong {A}{B}{C} {f₁ = f₁} f₁≃f₂ g₁≃g₂ .eqfunc .eqfun x =
+    C .≃-trans (resp-≃ (f₁ .func) (g₁≃g₂ .eqfunc .eqfun x)) (f₁≃f₂ .eqfunc .eqfun _)
 
   id-left : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} →
             {f : X => Y} → (id ∘ f) ≃m f
-  id-left {A} {B} .eqfunc x = B .≃-refl
+  id-left {A} {B} .eqfunc .eqfun x = B .≃-refl
 
   id-right : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} →
             {f : X => Y} → (f ∘ id) ≃m f
-  id-right {A} {B} .eqfunc x = B .≃-refl
+  id-right {A} {B} .eqfunc .eqfun x = B .≃-refl
 
   assoc : ∀ {A B C D}
             {W : JoinSemilattice A}
@@ -120,7 +116,7 @@ module _ where
             {Z : JoinSemilattice D}
             (f : Y => Z) (g : X => Y) (h : W => X) →
             ((f ∘ g) ∘ h) ≃m (f ∘ (g ∘ h))
-  assoc {D = D} f g h .eqfunc x = D .≃-refl
+  assoc {D = D} f g h .eqfunc .eqfun x = D .≃-refl
 
   module _ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} where
     private
@@ -128,14 +124,14 @@ module _ where
       module Y = JoinSemilattice Y
 
     εm : X => Y
-    εm .func x = Y.⊥
-    εm .monotone _ = B.≤-refl
+    εm .func .fun x = Y.⊥
+    εm .func .mono _ = B.≤-refl
     εm .∨-preserving = Y.∨-lunit .proj₂
     εm .⊥-preserving = B.≤-refl
 
     _+m_ : X => Y → X => Y → X => Y
-    (f +m g) .func x = f .func x Y.∨ g .func x
-    (f +m g) .monotone x₁≤x₂ = Y.∨-mono (f .monotone x₁≤x₂) (g .monotone x₁≤x₂)
+    (f +m g) .func .fun x = f .func .fun x Y.∨ g .func .fun x
+    (f +m g) .func .mono x₁≤x₂ = Y.∨-mono (f .func .mono x₁≤x₂) (g .func .mono x₁≤x₂)
     (f +m g) .∨-preserving =
       B.≤-trans (Y.∨-mono (f .∨-preserving) (g .∨-preserving))
                 (Y.interchange Y.∨-comm .proj₁)
@@ -143,17 +139,17 @@ module _ where
       B.≤-trans (Y.∨-mono (f .⊥-preserving) (g .⊥-preserving)) (Y.∨-lunit .proj₁)
 
     +m-cong : ∀ {f₁ f₂ g₁ g₂ : X => Y} → f₁ ≃m f₂ → g₁ ≃m g₂ → (f₁ +m g₁) ≃m (f₂ +m g₂)
-    +m-cong f₁≃f₂ g₁≃g₂ .eqfunc x = Y.∨-cong (f₁≃f₂ .eqfunc x) (g₁≃g₂ .eqfunc x)
+    +m-cong f₁≃f₂ g₁≃g₂ .eqfunc .eqfun x = Y.∨-cong (f₁≃f₂ .eqfunc .eqfun x) (g₁≃g₂ .eqfunc .eqfun x)
 
     +m-comm : ∀ {f g} → (f +m g) ≃m (g +m f)
-    +m-comm .eqfunc x .proj₁ = Y.∨-comm
-    +m-comm .eqfunc x .proj₂ = Y.∨-comm
+    +m-comm .eqfunc .eqfun x .proj₁ = Y.∨-comm
+    +m-comm .eqfunc .eqfun x .proj₂ = Y.∨-comm
 
     +m-assoc : ∀ {f g h} → ((f +m g) +m h) ≃m (f +m (g +m h))
-    +m-assoc .eqfunc x = Y.∨-assoc
+    +m-assoc .eqfunc .eqfun x = Y.∨-assoc
 
     +m-lunit : ∀ {f} → (εm +m f) ≃m f
-    +m-lunit .eqfunc x = Y.∨-lunit
+    +m-lunit .eqfunc .eqfun x = Y.∨-lunit
 
   -- Bilinearity of composition
   module _ {A B C}
@@ -161,22 +157,24 @@ module _ where
 
     comp-bilinear₁ : ∀ (f₁ f₂ : Y => Z) (g : X => Y) →
                        ((f₁ +m f₂) ∘ g) ≃m ((f₁ ∘ g) +m (f₂ ∘ g))
-    comp-bilinear₁ f₁ f₂ g .eqfunc x = C .≃-refl
+    comp-bilinear₁ f₁ f₂ g .eqfunc .eqfun x = C .≃-refl
 
     comp-bilinear₂ : ∀ (f : Y => Z) (g₁ g₂ : X => Y) →
                        (f ∘ (g₁ +m g₂)) ≃m ((f ∘ g₁) +m (f ∘ g₂))
-    comp-bilinear₂ f g₁ g₂ .eqfunc x = ∨-preserving-≃ f
+    comp-bilinear₂ f g₁ g₂ .eqfunc .eqfun x = ∨-preserving-≃ f
 
     comp-bilinear-ε₁ : ∀ (f : X => Y) → (εm ∘ f) ≃m εm {X = X} {Y = Z}
-    comp-bilinear-ε₁ f .eqfunc x = C .≃-refl
+    comp-bilinear-ε₁ f .eqfunc .eqfun x = C .≃-refl
 
     comp-bilinear-ε₂ : ∀ (f : Y => Z) → (f ∘ εm) ≃m εm {X = X} {Y = Z}
-    comp-bilinear-ε₂ f .eqfunc x = ⊥-preserving-≃ f
+    comp-bilinear-ε₂ f .eqfunc .eqfun x = ⊥-preserving-≃ f
 
 ------------------------------------------------------------------------------
 -- One element semilattice, for use when there are no approximations
 module _ where
   open JoinSemilattice
+  open _=>_
+  open preorder._=>_
 
   𝟙 : JoinSemilattice preorder.𝟙
   𝟙 ._∨_ tt tt = tt
@@ -191,22 +189,22 @@ module _ where
   initial = ⊥-map
 
   terminal : ∀ {A}{X : JoinSemilattice A} → X => 𝟙
-  terminal ._=>_.func _ = tt
-  terminal ._=>_.monotone _ = tt
-  terminal ._=>_.∨-preserving = tt
-  terminal ._=>_.⊥-preserving = tt
+  terminal .func .fun _ = tt
+  terminal .func .mono _ = tt
+  terminal .∨-preserving = tt
+  terminal .⊥-preserving = tt
 
-  open _=>_
   open _≃m_
+  open preorder._≃m_
 
   initial-unique : ∀ {A}(X : JoinSemilattice A) → (f g : 𝟙 => X) → f ≃m g
-  initial-unique {A} X f g .eqfunc tt =
+  initial-unique {A} X f g .eqfunc .eqfun tt =
     begin
-      f .func tt
+      f .func .fun tt
     ≈⟨ ⊥-preserving-≃ f ⟩
       X .⊥
     ≈⟨ A .≃-sym (⊥-preserving-≃ g) ⟩
-      g .func tt
+      g .func .fun tt
     ∎
     where open ≈-Reasoning (isEquivalence A)
 
@@ -216,6 +214,7 @@ module _ (I : Set) {A : I -> Preorder} (X : (i : I) → JoinSemilattice (A i)) w
     -- Now where I is a Setoid, and (A,X) is a family of JoinSemilattices respecting equality
   open JoinSemilattice
   open _=>_
+  open preorder._=>_
 
   data FormalJoin : Set where
     bot  : FormalJoin
@@ -248,8 +247,8 @@ module _ (I : Set) {A : I -> Preorder} (X : (i : I) → JoinSemilattice (A i)) w
   ⨁ .⊥-isBottom .IsBottom.≤-bottom = liftS ≤f-bot
 
   inj-⨁ : (i : I) → X i => ⨁
-  inj-⨁ i .func x = el i x
-  inj-⨁ i .monotone x = liftS (≤f-el-mono i x)
+  inj-⨁ i .func .fun x = el i x
+  inj-⨁ i .func .mono x = liftS (≤f-el-mono i x)
   inj-⨁ i .∨-preserving = liftS (≤f-el-join i)
   inj-⨁ i .⊥-preserving = liftS (≤f-el-bot i)
 
@@ -259,13 +258,13 @@ module _ (I : Set) {A : I -> Preorder} (X : (i : I) → JoinSemilattice (A i)) w
 
     elim-⨁-func : ⨁-preorder .Carrier → B .Carrier
     elim-⨁-func bot = Z .⊥
-    elim-⨁-func (el i x) = X=>Z i .func x
+    elim-⨁-func (el i x) = X=>Z i .func .fun x
     elim-⨁-func (join j₁ j₂) = Z ._∨_ (elim-⨁-func j₁) (elim-⨁-func j₂)
 
     elim-⨁-func-monotone : ∀ {j₁ j₂} → j₁ ≤f j₂ → B ._≤_ (elim-⨁-func j₁) (elim-⨁-func j₂)
     elim-⨁-func-monotone ≤f-refl = B .≤-refl
     elim-⨁-func-monotone (≤f-trans j₁≤j₂ j₂≤j₃) = B .≤-trans (elim-⨁-func-monotone j₁≤j₂) (elim-⨁-func-monotone j₂≤j₃)
-    elim-⨁-func-monotone (≤f-el-mono i x₁≤x₂) = X=>Z i .monotone x₁≤x₂
+    elim-⨁-func-monotone (≤f-el-mono i x₁≤x₂) = X=>Z i .func .mono x₁≤x₂
     elim-⨁-func-monotone (≤f-el-bot i) = X=>Z i .⊥-preserving
     elim-⨁-func-monotone (≤f-el-join i) = X=>Z i .∨-preserving
     elim-⨁-func-monotone ≤f-bot = Z.≤-bottom
@@ -275,8 +274,8 @@ module _ (I : Set) {A : I -> Preorder} (X : (i : I) → JoinSemilattice (A i)) w
       Z.[ elim-⨁-func-monotone j₁≤j₃ ∨ elim-⨁-func-monotone j₂≤j₃ ]
 
     elim-⨁ : ⨁ => Z
-    elim-⨁ .func = elim-⨁-func
-    elim-⨁ .monotone (liftS x) = elim-⨁-func-monotone x
+    elim-⨁ .func .fun = elim-⨁-func
+    elim-⨁ .func .mono (liftS x) = elim-⨁-func-monotone x
     elim-⨁ .∨-preserving = B .≤-refl
     elim-⨁ .⊥-preserving = B .≤-refl
 
@@ -285,7 +284,9 @@ module _ (I : Set) {A : I -> Preorder} (X : (i : I) → JoinSemilattice (A i)) w
 module _ where
   open JoinSemilattice
   open _=>_
+  open preorder._=>_
   open _≃m_
+  open preorder._≃m_
 
   _⊕_ : ∀ {A B} → JoinSemilattice A → JoinSemilattice B → JoinSemilattice (A × B)
   (X ⊕ Y) ._∨_ (x₁ , y₁) (x₂ , y₂) = (X ._∨_ x₁ x₂) , (Y ._∨_ y₁ y₂)
@@ -299,51 +300,51 @@ module _ where
 
   -- Product bits:
   project₁ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (X ⊕ Y) => X
-  project₁ .func = proj₁
-  project₁ .monotone = proj₁
+  project₁ .func .fun = proj₁
+  project₁ .func .mono = proj₁
   project₁ {A} .∨-preserving = A .≤-refl
   project₁ {A} .⊥-preserving = A .≤-refl
 
   project₂ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (X ⊕ Y) => Y
-  project₂ .func = proj₂
-  project₂ .monotone = proj₂
+  project₂ .func .fun = proj₂
+  project₂ .func .mono = proj₂
   project₂ {B = B} .∨-preserving = B .≤-refl
   project₂ {B = B} .⊥-preserving = B .≤-refl
 
   ⟨_,_⟩ : ∀ {A B C}{X : JoinSemilattice A}{Y : JoinSemilattice B}{Z : JoinSemilattice C} → X => Y → X => Z → X => (Y ⊕ Z)
-  ⟨ f , g ⟩ .func x = f .func x , g .func x
-  ⟨ f , g ⟩ .monotone x≤x' = f .monotone x≤x' , g .monotone x≤x'
+  ⟨ f , g ⟩ .func .fun x = f .func .fun x , g .func .fun x
+  ⟨ f , g ⟩ .func .mono x≤x' = f .func .mono x≤x' , g .func .mono x≤x'
   ⟨ f , g ⟩ .∨-preserving = f .∨-preserving , g .∨-preserving
   ⟨ f , g ⟩ .⊥-preserving = f .⊥-preserving , g . ⊥-preserving
 
   ⟨⟩-cong : ∀ {A B C}{W : JoinSemilattice A} {X : JoinSemilattice B} {Y : JoinSemilattice C} →
            {f₁ f₂ : W => X} {g₁ g₂ : W => Y} →
            f₁ ≃m f₂ → g₁ ≃m g₂ → ⟨ f₁ , g₁ ⟩ ≃m ⟨ f₂ , g₂ ⟩
-  ⟨⟩-cong f₁≈f₂ g₁≈g₂ .eqfunc x .proj₁ .proj₁ = f₁≈f₂ .eqfunc x .proj₁
-  ⟨⟩-cong f₁≈f₂ g₁≈g₂ .eqfunc x .proj₁ .proj₂ = g₁≈g₂ .eqfunc x .proj₁
-  ⟨⟩-cong f₁≈f₂ g₁≈g₂ .eqfunc x .proj₂ .proj₁ = f₁≈f₂ .eqfunc x .proj₂
-  ⟨⟩-cong f₁≈f₂ g₁≈g₂ .eqfunc x .proj₂ .proj₂ = g₁≈g₂ .eqfunc x .proj₂
+  ⟨⟩-cong f₁≈f₂ g₁≈g₂ .eqfunc .eqfun x .proj₁ .proj₁ = f₁≈f₂ .eqfunc .eqfun x .proj₁
+  ⟨⟩-cong f₁≈f₂ g₁≈g₂ .eqfunc .eqfun x .proj₁ .proj₂ = g₁≈g₂ .eqfunc .eqfun x .proj₁
+  ⟨⟩-cong f₁≈f₂ g₁≈g₂ .eqfunc .eqfun x .proj₂ .proj₁ = f₁≈f₂ .eqfunc .eqfun x .proj₂
+  ⟨⟩-cong f₁≈f₂ g₁≈g₂ .eqfunc .eqfun x .proj₂ .proj₂ = g₁≈g₂ .eqfunc .eqfun x .proj₂
 
   -- FIXME: deduce biproducts from cmon-enrichment
 
   -- Coproduct bits:
   inject₁ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → X => (X ⊕ Y)
-  inject₁ {Y = Y} .func x = x , Y .⊥
-  inject₁ {B = B} .monotone x≤x' = x≤x' , B .≤-refl
+  inject₁ {Y = Y} .func .fun x = x , Y .⊥
+  inject₁ {B = B} .func .mono x≤x' = x≤x' , B .≤-refl
   inject₁ {A}{Y = Y} .∨-preserving = A .≤-refl , IsJoin.idem (Y .∨-isJoin) .proj₂
   inject₁ {X}{Y} .⊥-preserving = X .≤-refl , Y .≤-refl
 
   inject₂ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → Y => (X ⊕ Y)
-  inject₂ {X = X} .func y = X .⊥ , y
-  inject₂ {A} .monotone y≤y' = A. ≤-refl , y≤y'
+  inject₂ {X = X} .func .fun y = X .⊥ , y
+  inject₂ {A} .func .mono y≤y' = A. ≤-refl , y≤y'
   inject₂ {B = B}{X = X} .∨-preserving = IsJoin.idem (X .∨-isJoin) .proj₂ , B .≤-refl
   inject₂ {A}{B} .⊥-preserving = A .≤-refl , B .≤-refl
 
   [_,_] : ∀ {A B C}{X : JoinSemilattice A}{Y : JoinSemilattice B}{Z : JoinSemilattice C} →
           X => Z → Y => Z → (X ⊕ Y) => Z
-  [_,_] {Z = Z} f g .func (x , y) = Z ._∨_ (f .func x) (g .func y)
-  [_,_] {Z = Z} f g .monotone (x₁≤x₁' , x₂≤x₂') =
-    IsJoin.mono (Z .∨-isJoin) (f .monotone x₁≤x₁') (g .monotone x₂≤x₂')
+  [_,_] {Z = Z} f g .func .fun (x , y) = Z ._∨_ (f .func .fun x) (g .func .fun y)
+  [_,_] {Z = Z} f g .func .mono (x₁≤x₁' , x₂≤x₂') =
+    IsJoin.mono (Z .∨-isJoin) (f .func .mono x₁≤x₁') (g .func .mono x₂≤x₂')
   [_,_] {C = C}{Z = Z} f g .∨-preserving {(x₁ , y₁)}{(x₂ , y₂)} =
     C .≤-trans (Z.∨-mono (f .∨-preserving) (g .∨-preserving))
                (Z.interchange Z.∨-comm .proj₁)
@@ -355,41 +356,38 @@ module _ where
             {f₁ f₂ : X => Z} {g₁ g₂ : Y => Z} →
             f₁ ≃m f₂ → g₁ ≃m g₂ →
             [ f₁ , g₁ ] ≃m [ f₂ , g₂ ]
-  []-cong {Z = Z} f₁≈f₂ g₁≈g₂ .eqfunc (x , y) = Z.∨-cong (f₁≈f₂ .eqfunc x) (g₁≈g₂ .eqfunc y)
+  []-cong {Z = Z} f₁≈f₂ g₁≈g₂ .eqfunc .eqfun (x , y) = Z.∨-cong (f₁≈f₂ .eqfunc .eqfun x) (g₁≈g₂ .eqfunc .eqfun y)
     where module Z = JoinSemilattice Z
 
   inj₁-copair : ∀ {A B C}
                   {X : JoinSemilattice A}{Y : JoinSemilattice B}{Z : JoinSemilattice C}
                   (f : X => Z) (g : Y => Z) →
                   ([ f , g ] ∘ inject₁) ≃m f
-  inj₁-copair {C = C} {Y = Y} {Z = Z} f g .eqfunc x =
+  inj₁-copair {C = C} {Y = Y} {Z = Z} f g .eqfunc .eqfun x =
     begin
-      f .func x Z.∨ g .func (Y .⊥)
-    ≈⟨ MZ.cong (C .≃-refl) (⊥-preserving-≃ g) ⟩
-      f .func x Z.∨ Z .⊥
-    ≈⟨ MZ.runit ⟩
-      f .func x
+      f .func .fun x Z.∨ g .func .fun (Y .⊥)
+    ≈⟨ ∨-cong Z (C .≃-refl) (⊥-preserving-≃ g) ⟩
+      f .func .fun x Z.∨ Z .⊥
+    ≈⟨ ∨-runit Z ⟩
+      f .func .fun x
     ∎
     where open ≈-Reasoning (isEquivalence C)
           module Z = JoinSemilattice Z
-          module Y = JoinSemilattice Y
-          module MZ = IsMonoid (monoidOfJoin _ (Z .∨-isJoin) (Z .⊥-isBottom))
 
   inj₂-copair : ∀ {A B C}
                   {X : JoinSemilattice A}{Y : JoinSemilattice B}{Z : JoinSemilattice C}
                   (f : X => Z) (g : Y => Z) →
                   ([ f , g ] ∘ inject₂) ≃m g
-  inj₂-copair {C = C} {X = X} {Z = Z} f g .eqfunc y =
+  inj₂-copair {C = C} {X = X} {Z = Z} f g .eqfunc .eqfun y =
     begin
-      f .func (X .⊥) Z.∨ g .func y
-    ≈⟨ MZ.cong (⊥-preserving-≃ f) (C .≃-refl) ⟩
-      Z .⊥ Z.∨ g .func y
-    ≈⟨ MZ.lunit ⟩
-      g .func y
+      f .func .fun (X .⊥) Z.∨ g .func .fun y
+    ≈⟨ ∨-cong Z (⊥-preserving-≃ f) (C .≃-refl) ⟩
+      Z .⊥ Z.∨ g .func .fun y
+    ≈⟨ ∨-lunit Z ⟩
+      g .func .fun y
     ∎
     where open ≈-Reasoning (isEquivalence C)
           module Z = JoinSemilattice Z
-          module MZ = IsMonoid (monoidOfJoin _ (Z .∨-isJoin) (Z .⊥-isBottom))
 
   copair-ext : ∀ {A B C}
                  {X : JoinSemilattice A}
@@ -397,33 +395,31 @@ module _ where
                  {Z : JoinSemilattice C}
                  (f : (X ⊕ Y) => Z) →
                  [ f ∘ inject₁ , f ∘ inject₂ ] ≃m f
-  copair-ext {A} {B} {C} {X} {Y} {Z} f .eqfunc (x , y) =
+  copair-ext {A} {B} {C} {X} {Y} {Z} f .eqfunc .eqfun (x , y) =
     begin
-      f .func (x , Y .⊥) Z.∨ f .func (X .⊥ , y)
+      f .func .fun (x , Y .⊥) Z.∨ f .func .fun (X .⊥ , y)
     ≈⟨ C .≃-sym (∨-preserving-≃ f) ⟩
-      f .func (x X.∨ X.⊥ , Y .⊥ Y.∨ y)
-    ≈⟨ resp-≃ f (preorder.×-≃ {X = A} {Y = B} MX.runit MY.lunit) ⟩
-      f .func (x , y)
+      f .func .fun (x X.∨ X.⊥ , Y .⊥ Y.∨ y)
+    ≈⟨ resp-≃ (f .func) (preorder.×-≃ {X = A} {Y = B} (∨-runit X) (∨-lunit Y)) ⟩
+      f .func .fun (x , y)
     ∎
     where open ≈-Reasoning (isEquivalence C)
           module Z = JoinSemilattice Z
           module Y = JoinSemilattice Y
           module X = JoinSemilattice X
-          module MX = IsMonoid (monoidOfJoin _ (X .∨-isJoin) (X .⊥-isBottom))
-          module MY = IsMonoid (monoidOfJoin _ (Y .∨-isJoin) (Y .⊥-isBottom))
 
   -- Biproduct properties
   proj₁-inverts-inj₁ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (project₁ {X = X}{Y} ∘ inject₁) ≃m id
-  proj₁-inverts-inj₁ {A} ._≃m_.eqfunc x = ≃-refl A
+  proj₁-inverts-inj₁ {A} ._≃m_.eqfunc .eqfun x = ≃-refl A
 
   proj₂-inverts-inj₂ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (project₁ {X = X}{Y} ∘ inject₁) ≃m id
-  proj₂-inverts-inj₂ {A} ._≃m_.eqfunc x = ≃-refl A
+  proj₂-inverts-inj₂ {A} ._≃m_.eqfunc .eqfun x = ≃-refl A
 
   proj₁-zeroes-inj₂ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (project₁ {X = X}{Y} ∘ inject₂) ≃m ⊥-map
-  proj₁-zeroes-inj₂ {A} ._≃m_.eqfunc x = ≃-refl A
+  proj₁-zeroes-inj₂ {A} ._≃m_.eqfunc .eqfun x = ≃-refl A
 
   proj₂-zeroes-inj₁ : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → (project₂ {X = X}{Y} ∘ inject₁) ≃m ⊥-map
-  proj₂-zeroes-inj₁ {A}{B} ._≃m_.eqfunc x = ≃-refl B
+  proj₂-zeroes-inj₁ {A}{B} ._≃m_.eqfunc .eqfun x = ≃-refl B
 
 ------------------------------------------------------------------------------
 -- Lifting
@@ -431,6 +427,9 @@ module _ where
   open preorder using (LCarrier; <_>; bottom)
   open JoinSemilattice
   open _=>_
+  open preorder._=>_
+  open _≃m_
+  open preorder._≃m_
 
   L : ∀ {A} → JoinSemilattice A → JoinSemilattice (preorder.L A)
   L X ._∨_ bottom bottom = bottom
@@ -455,12 +454,12 @@ module _ where
   L X .⊥-isBottom .IsBottom.≤-bottom {< x >} = tt
 
   L-map : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → X => Y → L X => L Y
-  L-map m .func bottom = bottom
-  L-map m .func < x > = < m .func x >
-  L-map m .monotone {bottom} {bottom} _ = tt
-  L-map m .monotone {bottom} {< _ >} _ = tt
-  L-map m .monotone {< _ >} {bottom} ()
-  L-map m .monotone {< _ >} {< _ >} x₁≤x₂ = m .monotone x₁≤x₂
+  L-map m .func .fun bottom = bottom
+  L-map m .func .fun < x > = < m .func .fun x >
+  L-map m .func .mono {bottom} {bottom} _ = tt
+  L-map m .func .mono {bottom} {< _ >} _ = tt
+  L-map m .func .mono {< _ >} {bottom} ()
+  L-map m .func .mono {< _ >} {< _ >} x₁≤x₂ = m .func .mono x₁≤x₂
   L-map m .∨-preserving {bottom} {bottom} = tt
   L-map {B = B} m .∨-preserving {bottom} {< _ >} = B .≤-refl
   L-map {B = B} m .∨-preserving {< x >} {bottom} = B .≤-refl
@@ -470,15 +469,15 @@ module _ where
   -- Lifting is /not/ a monad: L-unit is not ⊥-preserving
 
   L-join : ∀ {A}{X : JoinSemilattice A} → L (L X) => L X
-  L-join .func bottom = bottom
-  L-join .func < bottom > = bottom
-  L-join .func < < x > > = < x >
-  L-join .monotone {bottom} {bottom} _ = tt
-  L-join .monotone {bottom} {< bottom >} _ = tt
-  L-join .monotone {bottom} {< < _ > >} _ = tt
-  L-join .monotone {< bottom >} {< bottom >} _ = tt
-  L-join .monotone {< bottom >} {< < _ > >} _ = tt
-  L-join .monotone {< < _ > >} {< < _ > >} x≤x' = x≤x'
+  L-join .func .fun bottom = bottom
+  L-join .func .fun < bottom > = bottom
+  L-join .func .fun < < x > > = < x >
+  L-join .func .mono {bottom} {bottom} _ = tt
+  L-join .func .mono {bottom} {< bottom >} _ = tt
+  L-join .func .mono {bottom} {< < _ > >} _ = tt
+  L-join .func .mono {< bottom >} {< bottom >} _ = tt
+  L-join .func .mono {< bottom >} {< < _ > >} _ = tt
+  L-join .func .mono {< < _ > >} {< < _ > >} x≤x' = x≤x'
   L-join .∨-preserving {bottom} {bottom} = tt
   L-join .∨-preserving {bottom} {< bottom >} = tt
   L-join {A} .∨-preserving {bottom} {< < x > >} = A .≤-refl
@@ -492,24 +491,22 @@ module _ where
 
   -- Lifting is a comonad in preorders with a bottom:
   L-counit : ∀ {A}{X : JoinSemilattice A} → L X => X
-  L-counit {X = X} .func bottom = X .⊥
-  L-counit .func < x > = x
-  L-counit {X = X} .monotone {bottom} _ = IsBottom.≤-bottom (X .⊥-isBottom)
-  L-counit .monotone {< _ >} {< _ >} x≤x' = x≤x'
+  L-counit {X = X} .func .fun bottom = X .⊥
+  L-counit .func .fun < x > = x
+  L-counit {X = X} .func .mono {bottom} _ = IsBottom.≤-bottom (X .⊥-isBottom)
+  L-counit .func .mono {< _ >} {< _ >} x≤x' = x≤x'
   L-counit {X = X} .∨-preserving {bottom} {bottom} = IsJoin.idem (X .∨-isJoin) .proj₂
-  L-counit {X = X} .∨-preserving {bottom} {< _ >} =
-    IsMonoid.lunit (monoidOfJoin _ (X .∨-isJoin) (X .⊥-isBottom)) .proj₂
-  L-counit {X = X} .∨-preserving {< _ >} {bottom} =
-    IsMonoid.runit (monoidOfJoin _ (X .∨-isJoin) (X .⊥-isBottom)) .proj₂
+  L-counit {X = X} .∨-preserving {bottom} {< _ >} = ∨-lunit X .proj₂
+  L-counit {X = X} .∨-preserving {< _ >} {bottom} = ∨-runit X .proj₂
   L-counit {A} .∨-preserving {< _ >} {< _ >} = A .≤-refl
   L-counit {A} .⊥-preserving = A .≤-refl
 
   L-dup : ∀ {A}{X : JoinSemilattice A} → L X => L (L X)
-  L-dup .func bottom = bottom
-  L-dup .func < x > = < < x > >
-  L-dup .monotone {bottom} {bottom} _ = tt
-  L-dup .monotone {bottom} {< _ >} _ = tt
-  L-dup .monotone {< _ >} {< _ >} x≤x' = x≤x'
+  L-dup .func .fun bottom = bottom
+  L-dup .func .fun < x > = < < x > >
+  L-dup .func .mono {bottom} {bottom} _ = tt
+  L-dup .func .mono {bottom} {< _ >} _ = tt
+  L-dup .func .mono {< _ >} {< _ >} x≤x' = x≤x'
   L-dup .∨-preserving {bottom} {bottom} = tt
   L-dup {A} .∨-preserving {bottom} {< _ >} = A .≤-refl
   L-dup {A} .∨-preserving {< _ >} {bottom} = A .≤-refl
@@ -518,12 +515,12 @@ module _ where
 
   L-costrength : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} →
                  L (X ⊕ Y) => (X ⊕ L Y)
-  L-costrength {X = X}{Y = Y} .func bottom = (X ⊕ L Y) .⊥
-  L-costrength .func < x , y > = x , < y >
-  L-costrength {A} .monotone {bottom} {bottom} e = A .≤-refl , tt
-  L-costrength {X = X} .monotone {bottom} {< x >} e =
+  L-costrength {X = X}{Y = Y} .func .fun bottom = (X ⊕ L Y) .⊥
+  L-costrength .func .fun < x , y > = x , < y >
+  L-costrength {A} .func .mono {bottom} {bottom} e = A .≤-refl , tt
+  L-costrength {X = X} .func .mono {bottom} {< x >} e =
     X .⊥-isBottom .IsBottom.≤-bottom , tt
-  L-costrength .monotone {< x >} {< x₁ >} e = e
+  L-costrength .func .mono {< x >} {< x₁ >} e = e
   L-costrength {X = X} .∨-preserving {bottom} {bottom} =
     (X .∨-isJoin .IsJoin.inr) , tt
   L-costrength {A} {B} {X} .∨-preserving {bottom} {< x >} =
@@ -535,16 +532,16 @@ module _ where
   L-costrength {A} .⊥-preserving = A .≤-refl , tt
 
   L-coassoc : ∀ {A}{X : JoinSemilattice A} → (L-map L-dup ∘ L-dup) ≃m (L-dup ∘ L-dup {X = X})
-  L-coassoc ._≃m_.eqfunc bottom .proj₁ = tt
-  L-coassoc ._≃m_.eqfunc bottom .proj₂ = tt
-  L-coassoc {A} ._≃m_.eqfunc < x > = A .≃-refl
+  L-coassoc .eqfunc .eqfun bottom .proj₁ = tt
+  L-coassoc .eqfunc .eqfun bottom .proj₂ = tt
+  L-coassoc {A} .eqfunc .eqfun < x > = A .≃-refl
 
   L-unit1 : ∀ {A}{X : JoinSemilattice A} → (L-counit ∘ L-dup) ≃m id {X = L X}
-  L-unit1 ._≃m_.eqfunc bottom .proj₁ = tt
-  L-unit1 ._≃m_.eqfunc bottom .proj₂ = tt
-  L-unit1 {A} ._≃m_.eqfunc < x > = A .≃-refl
+  L-unit1 .eqfunc .eqfun bottom .proj₁ = tt
+  L-unit1 .eqfunc .eqfun bottom .proj₂ = tt
+  L-unit1 {A} .eqfunc .eqfun < x > = A .≃-refl
 
   L-unit2 : ∀ {A}{X : JoinSemilattice A} → (L-map L-counit ∘ L-dup) ≃m id {X = L X}
-  L-unit2 ._≃m_.eqfunc bottom .proj₁ = tt
-  L-unit2 ._≃m_.eqfunc bottom .proj₂ = tt
-  L-unit2 {A} ._≃m_.eqfunc < x > = A .≃-refl
+  L-unit2 .eqfunc .eqfun bottom .proj₁ = tt
+  L-unit2 .eqfunc .eqfun bottom .proj₂ = tt
+  L-unit2 {A} .eqfunc .eqfun < x > = A .≃-refl
