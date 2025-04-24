@@ -87,7 +87,7 @@ module _ where
 
   binary : ∀ {X G} →
             D.Mor (D.simple[ X , G ] DP.⊗ (D.simple[ X , G ] DP.⊗ D.simple[ 𝟙 {0ℓ} {0ℓ} , galois.𝟙 ]))
-                  D.simple[ ⊗-setoid X X , G galois.⊗ G ]
+                  D.simple[ ⊗-setoid X X , G galois.⊕ G ]
   binary = D.Mor-∘ DP.simple-monoidal (pair p₁ (D.Mor-∘ p₁ p₂))
     where open HasProducts DP.products
 

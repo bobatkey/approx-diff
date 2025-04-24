@@ -181,31 +181,7 @@ module _ where
   open CommutativeMonoid
   open _=>_
   open preorder._≃m_
-{-
-  cmon-enriched : CMonEnriched cat
-  cmon-enriched .CMonEnriched.homCM X Y .ε = εm
-  cmon-enriched .CMonEnriched.homCM X Y ._+_ = _+m_
-  cmon-enriched .CMonEnriched.homCM X Y .+-cong = +m-cong
-  cmon-enriched .CMonEnriched.homCM X Y .+-lunit = +m-lunit
-  cmon-enriched .CMonEnriched.homCM X Y .+-assoc = +m-assoc
-  cmon-enriched .CMonEnriched.homCM X Y .+-comm = +m-comm
-  cmon-enriched .CMonEnriched.comp-bilinear₁ f₁ f₂ g .fwd-eq =
-    meet-semilattice.comp-bilinear₁ (f₁ .fwd) (f₂ .fwd) (g .fwd)
-  cmon-enriched .CMonEnriched.comp-bilinear₁ f₁ f₂ g .bwd-eq =
-    join-semilattice.comp-bilinear₂ (g .bwd) (f₁ .bwd) (f₂ .bwd)
-  cmon-enriched .CMonEnriched.comp-bilinear₂ f g₁ g₂ .fwd-eq =
-    meet-semilattice.comp-bilinear₂ (f .fwd) (g₁ .fwd) (g₂ .fwd)
-  cmon-enriched .CMonEnriched.comp-bilinear₂ f g₁ g₂ .bwd-eq =
-    join-semilattice.comp-bilinear₁ (g₁ .bwd) (g₂ .bwd) (f .bwd)
-  cmon-enriched .CMonEnriched.comp-bilinear-ε₁ f .fwd-eq =
-    meet-semilattice.comp-bilinear-ε₁ (f .fwd)
-  cmon-enriched .CMonEnriched.comp-bilinear-ε₁ f .bwd-eq =
-    join-semilattice.comp-bilinear-ε₂ (f .bwd)
-  cmon-enriched .CMonEnriched.comp-bilinear-ε₂ f .fwd-eq =
-    meet-semilattice.comp-bilinear-ε₂ (f .fwd)
-  cmon-enriched .CMonEnriched.comp-bilinear-ε₂ f .bwd-eq =
-    join-semilattice.comp-bilinear-ε₁ (f .bwd)
--}
+
   cmon-enriched : CMonEnriched cat
   cmon-enriched .CMonEnriched.homCM X Y .ε = εm
   cmon-enriched .CMonEnriched.homCM X Y ._+_ = _+m_
@@ -235,27 +211,14 @@ module _ where
   𝟙 .carrier = preorder.𝟙
   𝟙 .meets = meet-semilattice.𝟙
   𝟙 .joins = join-semilattice.𝟙
-{-
-  to-𝟙 : ∀ X → X ⇒g 𝟙
-  to-𝟙 X .fwd = meet-semilattice.terminal
-  to-𝟙 X .bwd = join-semilattice.initial
-  to-𝟙 X .bwd⊣fwd .proj₁ tt =
-    X .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom
-  to-𝟙 X .bwd⊣fwd .proj₂ _ = tt
--}
+
   to-𝟙 : ∀ X → X ⇒g 𝟙
   to-𝟙 X .right = meet-semilattice.terminal {X = X .meets} ._=>M_.func
   to-𝟙 X .left = join-semilattice.initial {X = X .joins} ._=>J_.func
   to-𝟙 X .left⊣right .proj₁ tt =
     X .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom
   to-𝟙 X .left⊣right .proj₂ _ = tt
-{-
-  terminal : HasTerminal cat
-  terminal .witness = 𝟙
-  terminal .terminal-mor = to-𝟙
-  terminal .terminal-unique X f g .fwd-eq = meet-semilattice.terminal-unique _ _ _
-  terminal .terminal-unique X f g .bwd-eq = join-semilattice.initial-unique _ _ _
--}
+
   terminal : HasTerminal cat
   terminal .witness = 𝟙
   terminal .terminal-mor = to-𝟙
@@ -269,11 +232,10 @@ module _ where
 
   open HasProducts
 
-  -- FIXME: this is misnamed: should be _⊕_
-  _⊗_ : Obj → Obj → Obj
-  (X ⊗ Y) .carrier = X .carrier × Y .carrier
-  (X ⊗ Y) .meets = X .meets ⊕M Y .meets
-  (X ⊗ Y) .joins = X .joins ⊕J Y .joins
+  _⊕_ : Obj → Obj → Obj
+  (X ⊕ Y) .carrier = X .carrier × Y .carrier
+  (X ⊕ Y) .meets = X .meets ⊕M Y .meets
+  (X ⊕ Y) .joins = X .joins ⊕J Y .joins
 
   open import Data.Product using (proj₁; proj₂; _,_)
   open JoinSemilattice
@@ -282,7 +244,7 @@ module _ where
   open preorder._≃m_
 
   products : HasProducts cat
-  products .prod = _⊗_
+  products .prod = _⊕_
   products .p₁ {X} {Y} .right = meet-semilattice.project₁ {X = X .meets} {Y = Y .meets} ._=>M_.func
   products .p₁ {X} {Y} .left = join-semilattice.inject₁ {X = X .joins} {Y = Y .joins} ._=>J_.func
   products .p₁ {X} {Y} .left⊣right {x , y} {x'} .proj₁ x'≤x .proj₁ = x'≤x
@@ -390,7 +352,7 @@ module _ where
   -- monoid.
   open HasProducts products
 
-  conjunct : (TWO ⊗ TWO) ⇒g TWO
+  conjunct : (TWO ⊕ TWO) ⇒g TWO
   conjunct = p₁ +m p₂
 
   unit : 𝟙 ⇒g TWO
