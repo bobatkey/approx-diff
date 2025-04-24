@@ -103,10 +103,10 @@ record _≃g'_ {X Y : Obj} (f g : X ⇒g' Y) : Prop where
     left-eq : f .left ≃m g .left
 
   left-∨-cong : left-∨ f ≃J left-∨ g
-  left-∨-cong = {!   !}
+  left-∨-cong ._≃J_.eqfunc = left-eq
 
   right-∧-cong : right-∧ f ≃M right-∧ g
-  right-∧-cong = {!   !}
+  right-∧-cong ._≃M_.eqfunc = right-eq
 
 open _≃g'_
 
