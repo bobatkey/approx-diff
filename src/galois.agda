@@ -336,11 +336,26 @@ module _ where
     X .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom
   to-𝟙 X .bwd⊣fwd .proj₂ _ = tt
 
+  to-𝟙' : ∀ X → X ⇒g' 𝟙
+  to-𝟙' X .right = meet-semilattice.terminal {X = X .meets} ._=>M_.func
+  to-𝟙' X .left = join-semilattice.initial {X = X .joins} ._=>J_.func
+  to-𝟙' X .left⊣right .proj₁ tt =
+    X .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom
+  to-𝟙' X .left⊣right .proj₂ _ = tt
+
   terminal : HasTerminal cat
   terminal .witness = 𝟙
   terminal .terminal-mor = to-𝟙
   terminal .terminal-unique X f g .fwd-eq = meet-semilattice.terminal-unique _ _ _
   terminal .terminal-unique X f g .bwd-eq = join-semilattice.initial-unique _ _ _
+
+  terminal' : HasTerminal cat'
+  terminal' .witness = 𝟙
+  terminal' .terminal-mor = to-𝟙'
+  terminal' .terminal-unique X f g .right-eq =
+    meet-semilattice.terminal-unique (X .meets) (right-∧ f) (right-∧ g) ._≃M_.eqfunc
+  terminal' .terminal-unique X f g .left-eq =
+    join-semilattice.initial-unique (X .joins) (left-∨ f) (left-∨ g) ._≃J_.eqfunc
 
 -- This category has binary products (FIXME: and biproducts)
 module _ where
