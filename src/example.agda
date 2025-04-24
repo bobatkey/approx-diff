@@ -137,7 +137,7 @@ open _⇒f_
 open D.Mor
 open import Data.Product using (_,_; _×_; proj₁; proj₂)
 open import Data.Unit using (tt)
-open import join-semilattice
+open import preorder using (_=>_)
 
 input : List (label.label × nat.ℕ)
 input = (label.a , nat.zero) ∷
@@ -146,7 +146,7 @@ input = (label.a , nat.zero) ∷
         []
 
 back-slice : label.label → _
-back-slice l = ⟦ ex.query l ⟧tm .famf .transf (_ , input) ._⇒g_.bwd  ._=>_.func I .proj₂
+back-slice l = ⟦ ex.query l ⟧tm .famf .transf (_ , input) ._⇒g_.left ._=>_.fun I .proj₂
 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
