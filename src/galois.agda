@@ -249,18 +249,18 @@ module _ where
   products .prod = _⊕_
   products .p₁ {X} {Y} .right = meet-semilattice.project₁ {X = X .meets} {Y = Y .meets} ._=>M_.func
   products .p₁ {X} {Y} .left = join-semilattice.inject₁ {X = X .joins} {Y = Y .joins} ._=>J_.func
-  products .p₁ {X} {Y} .left⊣right {x , y} {x'} .proj₁ x'≤x .proj₁ = x'≤x
+  products .p₁ .left⊣right {x , y} {x'} .proj₁ x'≤x .proj₁ = x'≤x
   products .p₁ {X} {Y} .left⊣right {x , y} {x'} .proj₁ x'≤x .proj₂ = Y.≤-bottom
     where module Y = JoinSemilattice (Y .joins)
-  products .p₁ {X} {Y} .left⊣right {x , y} {x'} .proj₂ = proj₁
+  products .p₁ .left⊣right {x , y} {x'} .proj₂ = proj₁
   products .p₂ {X} {Y} .right = meet-semilattice.project₂ {X = X .meets} {Y = Y .meets} ._=>M_.func
   products .p₂ {X} {Y} .left = join-semilattice.inject₂ {X = X .joins} {Y = Y .joins} ._=>J_.func
   products .p₂ {X} {Y} .left⊣right {x , y} {y'} .proj₁ y'≤y .proj₁ = X.≤-bottom
     where module X = JoinSemilattice (X .joins)
-  products .p₂ {X} {Y} .left⊣right {x , y} {y'} .proj₁ y'≤y .proj₂ = y'≤y
-  products .p₂ {X} {Y} .left⊣right {x , y} {y'} .proj₂ = proj₂
+  products .p₂ .left⊣right {x , y} {y'} .proj₁ y'≤y .proj₂ = y'≤y
+  products .p₂ .left⊣right {x , y} {y'} .proj₂ = proj₂
   products .pair f g .right = meet-semilattice.⟨ right-∧ f , right-∧ g ⟩ ._=>M_.func
-  products .pair {X} {Y} {Z} f g .left = join-semilattice.[ left-∨ f , left-∨ g ] ._=>J_.func
+  products .pair f g .left = join-semilattice.[ left-∨ f , left-∨ g ] ._=>J_.func
   products .pair {X} {Y} {Z} f g .left⊣right {x} {y , z} .proj₁ (y≤fx , z≤gx) =
     [ f .left⊣right .proj₁ y≤fx , g .left⊣right .proj₁ z≤gx ]
     where open IsJoin (X .joins .∨-isJoin)
@@ -270,11 +270,11 @@ module _ where
     where module X = JoinSemilattice (X .joins)
   products .pair-cong f₁≈f₂ g₁≈g₂ .right-eq =
     meet-semilattice.⟨⟩-cong (right-∧-cong f₁≈f₂) (right-∧-cong g₁≈g₂) ._≃M_.eqfunc
-  products .pair-cong {X} {Y} {Z} f₁≈f₂ g₁≈g₂ .left-eq =
+  products .pair-cong f₁≈f₂ g₁≈g₂ .left-eq =
     join-semilattice.[]-cong (left-∨-cong f₁≈f₂) (left-∨-cong g₁≈g₂) ._≃J_.eqfunc
-  products .pair-p₁ {X} {Y} {Z} f g .right-eq = meet-semilattice.pair-p₁ (right-∧ f) (right-∧ g) ._≃M_.eqfunc
-  products .pair-p₁ {X} {Y} {Z} f g .left-eq = join-semilattice.inj₁-copair (left-∨ f) (left-∨ g) ._≃J_.eqfunc
-  products .pair-p₂ {X} {Y} {Z} f g .right-eq = meet-semilattice.pair-p₂ (right-∧ f) (right-∧ g) ._≃M_.eqfunc
+  products .pair-p₁ f g .right-eq = meet-semilattice.pair-p₁ (right-∧ f) (right-∧ g) ._≃M_.eqfunc
+  products .pair-p₁ f g .left-eq = join-semilattice.inj₁-copair (left-∨ f) (left-∨ g) ._≃J_.eqfunc
+  products .pair-p₂ f g .right-eq = meet-semilattice.pair-p₂ (right-∧ f) (right-∧ g) ._≃M_.eqfunc
   products .pair-p₂ f g .left-eq = join-semilattice.inj₂-copair (left-∨ f) (left-∨ g) ._≃J_.eqfunc
   products .pair-ext f .right-eq = meet-semilattice.pair-ext (right-∧ f) ._≃M_.eqfunc
   products .pair-ext f .left-eq = join-semilattice.copair-ext (left-∨ f) ._≃J_.eqfunc
