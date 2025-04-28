@@ -11,11 +11,16 @@
 
 % Syntax
 \newcommand*{\syn}[1]{\mathbf{#1}}
+\newcommand*{\tmFst}[1]{\syn{fst}\;#1}
+\newcommand*{\tmInl}[1]{\syn{inl}\;#1}
+\newcommand*{\tmInr}[1]{\syn{inr}\;#1}
+\newcommand*{\tmPair}[2]{(#1,#2)}
+\newcommand*{\tmSnd}[1]{\syn{snd}\;#1}
+\newcommand*{\tmUnit}{()}
 \newcommand*{\tyUnit}{\syn{1}}
 \newcommand*{\tyProd}{\times}
 \newcommand*{\tySum}{+}
 \newcommand*{\tyFun}{\to}
-\newcommand*{\tmUnit}{()}
 
 \newcommand{\naturalto}{%
   \mathrel{\vbox{\offinterlineskip
