@@ -4,11 +4,14 @@ Provenance tracking aims to answer questions like ``where did these data come fr
 
 Provenance tracking is important because in order to audit any computational process, we need robust and well-founded notions of provenance to track how data are used, how data are computed, and what data influenced a particular outcome. Existing approaches are often tied to particular programming languages or implementations. In this paper we develop a general categorical approach.
 
-\note{We will use biproducts, and use some results from \cite{karvonen2020}.} % just to generate a bibliography for now
+\note{We will use biproducts, and use some results from \cite{karvonen2020}.}
 
 \subsection{Galois Program Slicing}
 
-Perera and collaborators introduced the idea of {\em Galois Program Slicing} as a particular conception of program slicing for provenance, described in several publications (FIXME: refs). Galois program slicing forms the basis of Perera's data visualisation tool \href{https://f.luid.org/}{fluid} that allows interactive exploration of programmatically generated visualisations.
+Perera and collaborators introduced the idea of {\em Galois Program Slicing} as a particular conception of
+program slicing for provenance, described in several publications~\cite{perera12a,perera16d,ricciotti17}.
+Galois program slicing forms the basis of Perera's data visualisation tool \href{https://f.luid.org/}{Fluid}
+that allows interactive exploration of programmatically generated visualisations.
 
 At a high level, Galois Program Slicing assumes that, for each possible value that may be input or output by a program, there exists a lattice of {\em approximations} of that value. For a particular run of a program that takes input $x$ and produces output $y$, we also get a Galois connection between the lattice of approximations of $x$ and the lattice of approximations of $y$. The right half of the Galois connection is the ``forward direction'' taking approximations of the input to approximations of the output; the left half of the Galois connection is the ``backward direction'' that takes approximations of the output to the least (i.e., most approximate) approximation of the input that gives rise to this output approximation.
 
