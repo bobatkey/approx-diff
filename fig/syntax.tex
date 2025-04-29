@@ -1,0 +1,62 @@
+\begin{figure}
+  \small
+  \[
+  \begin{array}{lllll}
+    \textit{Types} &
+    \sigma, \tau
+    & ::= &
+    \tyUnit
+    &
+    \text{unit}
+    \\
+    && | &
+    \sigma \tyProd \tau
+    &
+    \text{product}
+    \\
+    && | &
+    \sigma \tySum \tau
+    &
+    \text{sum}
+    \\
+    && | &
+    \sigma \tyFun \tau
+    &
+    \text{function}
+    \\[3mm]
+    \textit{Terms} &
+    t, s
+    & ::= &
+    \tmUnit
+    &
+    \text{unit}
+    \\
+    && | &
+    \tmPair{s}{t}
+    &
+    \text{pair}
+    \\
+    && | &
+    \tmFst{t}
+    &
+    \text{first projection}
+    \\
+    && | &
+    \tmSnd{t}
+    &
+    \text{second projection}
+    \\
+    && | &
+    \tmInl{t}
+    &
+    \text{left injection}
+    \\
+    && | &
+    \tmInr{t}
+    &
+    \text{right injection}
+    \\
+  \end{array}
+  \]
+  \caption{Syntax of types and terms \todo{lists; functions; primitives ops over a signature $\Sigma$}}
+\end{figure}

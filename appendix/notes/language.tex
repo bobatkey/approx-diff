@@ -1,19 +1,23 @@
-\section{Language}
+\section{Language Syntax and Interpretation}
 
 \subsection{Syntax}
 
-We parameterise our language over a signature $\Sigma = (S, \phi, R)$ consisting of:
+We assume a language parameterised by a signature $\Sigma = (S, \Op, \Rel)$ consisting of:
 \begin{itemize}
-\item a set $S$ of sorts
-\item a set of operations $\phi$ with signature $\Sigma(\phi) \in S^* \times S$
-\item a set of relations $R$ with signature $\Sigma(R) \in S^*$
+\item a set $S$ of sorts;
+\item a set $\Op(s_1, \ldots, s_n; s)$ of operations with input sorts $s_1, \ldots, s_n$ and output sort $s$;
+\item a set $\Rel(s_1, \ldots, s_n)$ of $n$-ary relations over sorts $s_1, \ldots, s_n$
 \end{itemize}
 
-\subsection{Semantic domain}
+\noindent \todo{Are relations just for examples -- perhaps not needed in the formalism?}
 
-We interpret our language into any category with:
-\begin{itemize}
-\item finite products (binary products and a terminal object)
-\item Booleans
-\end{itemize}
-\note{Ignoring lists for now. Booleans can be derived from coproducts.}
+\input{fig/syntax}
+
+% \subsection{Semantic domain}
+%
+% We interpret our language into any category with:
+% \begin{itemize}
+% \item finite products (binary products and a terminal object)
+% \item Booleans
+% \end{itemize}
+% \note{Ignoring lists for now. Booleans can be derived from coproducts.}
