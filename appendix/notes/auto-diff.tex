@@ -1,10 +1,45 @@
 \subsection{Automatic differentiation}
 
 Write $\tangents_x(\RR^n)$ for the tangent space at a point $x \in \RR^n$. Then the \emph{forward derivative}
-(tangent map or pushforward) ${\pushf{f}}_x$ of a differentiable function $f: \RR^m \to \RR^n$ at $x$ is a
-linear map $\tangents_x(\RR^m) \linearto \tangents_{f(x)}(\RR^n)$. Because $\RR^n$ is a Euclidean manifold,
-$\tangents_x(\RR^n)$ is naturally isomorphic to $\RR^n$, so actually ${\pushf{f}}_x: \RR^m \linearto \RR^n$.
-The \emph{backward derivative} (cotangent map or pullback) $\pullf{f}_x$  is a linear map $\RR^n \linearto
-\RR^m$.
+(tangent map or pushforward) $\pushf{f}_x$ of a differentiable function $f: \RR^m \to \RR^n$ at $x \in
+\RR^m$ is a linear map $\tangents_x(\RR^m) \linearto \tangents_{f(x)}(\RR^n)$. Because $\RR^n$ is a Euclidean
+manifold, $\tangents_x(\RR^n)$ is naturally isomorphic to $\RR^n$, so actually $\pushf{f}_x: \RR^m \linearto
+\RR^n$. The \emph{backward derivative} (cotangent map or pullback) $\pullf{f}_x$  is a linear map $\RR^n
+\linearto \RR^m$.
 
-\subsubsection{Composing derivatives}
+\subsubsection{Chain rule}
+
+Suppose $f: \RR^m \to \RR^n$ and $g: \RR^n \to \RR^k$. For any $x \in \RR^m$ we can define the following
+composite derivatives of $g \comp f: \RR^m \to \RR^k$:
+
+\begin{itemize}
+\item $\pushf{(g \comp f)}_x = \pushf{g}_{f(x)} \comp \pushf{f}_x$
+\item $\pullf{(g \comp f)}_x = \pullf{f}_{x} \comp \pullf{g}_{f(x)}$
+\end{itemize}
+
+\begin{definition}[Forward mode automatic differentiation functor]
+Define the functor $\tangents_*$ which sends every vector space $\RR^n$ to itself and every smooth map $f:
+\RR^m \to \RR^n$ to the function $\tangents_*(f) = x \mapsto (f(x), \pushf{f}_x): \RR^m \to \RR^n \times (\RR^m
+\linearto \RR^n)$, associating to every point its image in $f$ and the forward derivative of $f$ at that
+point.
+\end{definition}
+
+For any map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$, define $f_1 = \pi_1 \comp f$ and $f_2$ for
+$\pi_2 \comp f$. Regardless of whether the linear maps $\RR^m \linearto \RR^n$ happen to be derivatives, we
+can define composition on such maps as:
+\begin{align*}
+(g \comp f)_1(x) &= f_1(g_1(x)) \\
+(g \comp f)_2(x) &= g_2(f_1(x)) \comp f_2(x)
+\end{align*}
+\noindent and verify that $\tangents$ is indeed a functor. If $f_2(x)$ happens to be the derivative of $f_1$
+at $x$ for any $x \in \RR^m$ and similarly for $g$ then the derivatives compose according to the forward chain
+rule and $(g \comp f)_2(x)$ is the derivative of $(g \comp f)_1$ at $x$.
+
+\begin{definition}[Reverse mode automatic differentiation functor]
+Define the functor $\tangents^*$ which also sends every vector space $\RR^n$ to itself but which sends every
+smooth map $f: \RR^m \to \RR^n$ to the function $\tangents^*(f) = x \mapsto (f(x), \pullf{f}_x): \RR^m \to
+\RR^n \times (\RR^n \to \RR^m)$.
+\end{definition}
+
+\noindent and again we can define a notion of composition for such maps that respects the (backward) chain
+rule.
