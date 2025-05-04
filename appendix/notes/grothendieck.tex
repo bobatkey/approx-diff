@@ -1,13 +1,17 @@
 \subsection{Category of families}
 \label{sec:grothendieck}
 
+\subsubsection{Grothendieck construction}
+
+By an \emph{indexed category over $\cat{C}$} we shall mean a functor $\cat{C}^\op \to \Cat$.
+
 \begin{definition}[Grothendieck construction for $F$]
-Suppose a functor $F: \cat{C} \to \Cat$. \todo{Actually conventional setup is with $F$ contravariant.} The
-\emph{Grothendieck construction} $\Grothendieck{\cat{C}}F$ for $F$ is the category which has:
+Suppose an indexed category $T: \cat{C}^\op \to \Cat$. The \emph{Grothendieck construction}
+for $T$ is the category $\Grothendieck{}T$ which has:
 \begin{itemize}
-\item as objects $X$ all pairs of an object $\idx{X}$ of $\cat{C}$ and an object $\faml{X}$ of $F(\idx{X})$;
-\item as morphisms $f: X \to Y$ all pairs of a morphism $\idx{f}: \idx{X} \to \idx{Y}$ in $\cat{C}$ and a
-morphism $\faml{f}: F(\idx{f})(\faml{X}) \to \faml{Y}$ in $F(\idx{Y})$.
+\item as objects, all pairs $(X, \partial X)$ of an object $X$ of $\cat{C}$ and an object $\partial X$ of $F(X)$;
+\item as morphisms $(X, \partial X) \to (Y, \partial Y)$ all pairs $(f, \partial f)$ of morphisms $f: X
+\to Y$ in $\cat{C}$ and morphisms $\partial f: F(X)(\partial X) \to \partial Y$ in $F(Y)$.
 \end{itemize}
 \end{definition}
 
