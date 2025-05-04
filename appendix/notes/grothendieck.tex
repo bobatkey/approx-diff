@@ -7,11 +7,23 @@
 Suppose an indexed category $T: \cat{C}^\op \to \Cat$. The \emph{Grothendieck construction}
 for $T$ is the category $\Grothendieck{}T$ which has:
 \begin{itemize}
-\item as objects, all pairs $(X, \partial X)$ of an object $X$ of $\cat{C}$ and an object $\partial X$ of $F(X)$;
-\item as morphisms $(X, \partial X) \to (Y, \partial Y)$ all pairs $(f, \partial f)$ of morphisms $f: X
-\to Y$ in $\cat{C}$ and morphisms $\partial f: \partial X \to F(Y)(\partial Y)$ in $F(X)$.
+\item as objects, all pairs $(X, \partial X)$ of an object $X$ of $\cat{C}$ and an object $\partial X$ of
+$T(X)$;
+\item as morphisms $(X, \partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of morphisms $f: X \to
+Y$ in $\cat{C}$ and morphisms $\partial f: \partial X \to T(f)(\partial Y)$ in $T(X)$.
 \end{itemize}
 \end{definition}
+
+For any $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ and $(g, \partial g): (Y, \partial Y)
+\to (Z, \partial Z)$ in $\Grothendieck{}T$, we have:
+
+\begin{itemize}
+\item $\partial f: \partial X \to T(f)(\partial Y)$;
+\item $T(f)(\partial g): T(f)(\partial Y) \to T(f)(T(g)(\partial Z)) = T(g \comp f)(\partial Z)$.
+\end{itemize}
+
+\noindent The composition $(g, \partial g) \comp (f, \partial f): (X, \partial X) \to (Z, \partial Z)$ is
+given by $(g \comp f, T(f)(\partial g) \comp \partial f)$.
 
 \subsubsection{Category of families}
 
