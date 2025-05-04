@@ -3,30 +3,27 @@
 
 \subsubsection{Grothendieck construction}
 
-By an \emph{indexed category over $\cat{C}$} we shall mean a functor $\cat{C}^\op \to \Cat$.
-
 \begin{definition}[Grothendieck construction for $F$]
 Suppose an indexed category $T: \cat{C}^\op \to \Cat$. The \emph{Grothendieck construction}
 for $T$ is the category $\Grothendieck{}T$ which has:
 \begin{itemize}
 \item as objects, all pairs $(X, \partial X)$ of an object $X$ of $\cat{C}$ and an object $\partial X$ of $F(X)$;
 \item as morphisms $(X, \partial X) \to (Y, \partial Y)$ all pairs $(f, \partial f)$ of morphisms $f: X
-\to Y$ in $\cat{C}$ and morphisms $\partial f: F(X)(\partial X) \to \partial Y$ in $F(Y)$.
+\to Y$ in $\cat{C}$ and morphisms $\partial f: \partial X \to F(Y)(\partial Y)$ in $F(X)$.
 \end{itemize}
 \end{definition}
 
-\noindent When $F$ is contravariant, a morphism $f: X \to Y$ in $\Grothendieck{\cat{C}}{F}$ is a morphism
-$\idx{f}: \idx{X} \to \idx{Y}$ in $\cat{C}$ paired with a morphism $\faml{f}: \faml{X} \to
-F(\idx{f})(\faml{Y})$ in $F(\idx{X})$. \todo{Might want to unpack this a bit.}
+\subsubsection{Category of families}
 
 \begin{definition}[Category of families]
 For any category $\cat{C}$ define $\Fam(\cat{C})$ to be the Grothendieck construction
-$\Grothendieck{\Set^{\op}}\Fam(-,\cat{C})$.
+$\Grothendieck{}\Fam(-,\cat{C})$.
 \end{definition}
 
-\noindent In $\Fam(\cat{C})$ the objects $X$ are thus sets $\idx{X}$ paired with indexed families $\faml{X}$
-in $\Fam(\idx{X},\cat{C})$ and morphisms $f: X \to Y$ are functions $\idx{f}: \idx{X} \to \idx{Y}$ paired with
-morphisms $\faml{f}: \faml{X} \to \reindex{\faml{Y}}{\idx{f}}$ in $\Fam(\idx{X},\cat{C})$.
+\noindent In $\Fam(\cat{C})$ the objects $(X, \partial X)$ are thus sets $X$ paired with indexed families
+$\partial X$ in $\Fam(X,\cat{C})$ and morphisms $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ are
+functions $f: X \to Y$ paired with morphisms $\partial f: \partial X \to \reindex{\partial Y}{f}$ in
+$\Fam(X,\cat{C})$.
 
 \begin{proposition}
 \item
