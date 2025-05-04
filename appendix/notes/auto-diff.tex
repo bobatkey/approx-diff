@@ -1,11 +1,10 @@
 \subsection{Automatic differentiation}
 
 Write $\tangents_x(\RR^n)$ for the tangent space at a point $x \in \RR^n$. Then the \emph{forward derivative}
-(tangent map or pushforward) $\pushf{f}_x$ of a differentiable function $f: \RR^m \to \RR^n$ at $x \in
-\RR^m$ is a linear map $\tangents_x(\RR^m) \linearto \tangents_{f(x)}(\RR^n)$. Because $\RR^n$ is a Euclidean
-manifold, $\tangents_x(\RR^n)$ is naturally isomorphic to $\RR^n$, so actually $\pushf{f}_x: \RR^m \linearto
-\RR^n$. The \emph{backward derivative} (cotangent map or pullback) $\pullf{f}_x$  is a linear map $\RR^n
-\linearto \RR^m$.
+(tangent map or pushforward) $\pushf{f}_x$ of a differentiable function $f: \RR^m \to \RR^n$ at $x \in \RR^m$
+is a linear map $\tangents_x(\RR^m) \linearto \tangents_{f(x)}(\RR^n)$. Because $\RR^n$ is Euclidean (flat),
+$\tangents_x(\RR^n)$ is naturally isomorphic to $\RR^n$, so actually $\pushf{f}_x: \RR^m \linearto \RR^n$. The
+\emph{backward derivative} (cotangent map or pullback) $\pullf{f}_x$  is a linear map $\RR^n \linearto \RR^m$.
 
 \subsubsection{Chain rule}
 
@@ -43,3 +42,5 @@ smooth map $f: \RR^m \to \RR^n$ to the function $\tangents^*(f) = x \mapsto (f(x
 
 \noindent and again we can define a notion of composition for such maps that respects the (backward) chain
 rule.
+
+\subsubsection{Automatic differentiation via the Grothendieck construction}
