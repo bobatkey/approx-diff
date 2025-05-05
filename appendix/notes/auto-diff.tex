@@ -44,3 +44,19 @@ smooth map $f: \RR^m \to \RR^n$ to the function $\tangents^*(f) = x \mapsto (f(x
 rule.
 
 \subsubsection{Automatic differentiation via the Grothendieck construction}
+
+Let $X, Y, Z$ range over sets and $U, V, W$ range over finite vector spaces. Recall that the category
+$\Fam(\FinVect) = \Grothendieck{}\Fam(-, \FinVect)$ (\defref{grothendieck:Grothendieck}) has:
+\begin{itemize}
+\item as objects, all pairs $(X, \{V_x\}_{x \in X})$ of a set $X$ and an object of $\Fam(X,\FinVect)$;
+\item as morphisms $(X, \{V_x\}_{x \in X}) \to (Y, \{W_y\}_{y \in Y})$, all pairs $(f, \partial f)$ of
+functions $f: X \to Y$ and families of morphisms $\partial f_x: \{V_x\}_{x \in X} \to \{W_{f(x)}\}_{x \in X}$
+in $\Fam(X,\FinVect)$.
+\end{itemize}
+
+For any $(f, \partial f): (X, \{V_x\}_{x \in X}) \to (Y, \{W_y\}_{y \in Y})$ and $(g, \partial g): (Y,
+\{W_y\}_{y \in Y}) \to (Z, \{U_z\}_{z \in Z})$ we have:
+\begin{itemize}
+\item $\partial f: \{V_x\}_{x \in X} \to \{W_{f(x)}\}_{x \in X}$;
+\item $\Fam(g, \FinVect)(\partial g): \Fam(g, \FinVect)(\{W_y\}_{y \in Y}) \to \Fam(g, \FinVect)(\{Z_{g(y)}\}_{y \in Y})$.
+\end{itemize}
