@@ -19,17 +19,20 @@ we have:
 \end{itemize}
 
 \begin{definition}[Forward mode automatic differentiation functor]
-Define the functor $\tangents_*$ which sends every vector space $\RR^n$ to itself and every smooth map $f:
-\RR^m \to \RR^n$ to the function $\tangents_*(f) = x \mapsto (f(x), \pushf{f}_x): \RR^m \to \RR^n \times (\RR^m
-\linearto \RR^n)$, associating to every point its image in $f$ and the forward derivative of $f$ at that
-point.
+Define the functor $\tangents_*$ which sends every vector space $\RR^n$ to itself and every differentiable map
+$f: \RR^m \to \RR^n$ to the function $\tangents_*(f) = x \mapsto (f(x), \pushf{f}_x): \RR^m \to \RR^n \times
+(\RR^m \linearto \RR^n)$, associating to every point its image in $f$ and the forward derivative of $f$ at
+that point.
 \end{definition}
+
+For any map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ write $f_1$ for $\pi_1 \comp f$ and $f_2$ for
+$\pi_2 \comp f$.
 
 \begin{definition}[$\Diff$]
 \label{def:auto-diff:Diff}
-Write $\Diff_*$ for the category where the objects are all finite vector spaces $\RR^n$ and the morphisms are
-all maps $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$. Writing $f_1$ for $\pi_1 \comp f$ and $f_2$ for
-$\pi_2 \comp f$, composition in $\Diff_*$ is given by:
+Define $\Diff_*$ to be the category where the objects are all finite vector spaces $\RR^n$ and the morphisms
+are all maps $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$, with $f_1$ differentiable. Composition in
+$\Diff_*$ is given by:
 \begin{align*}
 (g \comp f)_1(x) &= f_1(g_1(x)) \\
 (g \comp f)_2(x) &= g_2(f_1(x)) \comp f_2(x)
@@ -43,8 +46,8 @@ f)_2(x)$ is the derivative of $(g \comp f)_1$ at $x$.
 
 \begin{definition}[Reverse mode automatic differentiation functor]
 Define the functor $\tangents^*$ which also sends every vector space $\RR^n$ to itself but which sends every
-smooth map $f: \RR^m \to \RR^n$ to the function $\tangents^*(f) = x \mapsto (f(x), \pullf{f}_x): \RR^m \to
-\RR^n \times (\RR^n \to \RR^m)$.
+differentiable map $f: \RR^m \to \RR^n$ to the function $\tangents^*(f) = x \mapsto (f(x), \pullf{f}_x): \RR^m
+\to \RR^n \times (\RR^n \to \RR^m)$.
 \end{definition}
 
 \noindent and again we can define a corresponding category $\Diff^*$ of such maps where composition of the
@@ -73,8 +76,14 @@ $\{\partial g_{f(x)}\}_{x \in X}$. Then for any $(f, \partial f): (X, \{V_x\}_{x
 \noindent The composition $(g, \partial g) \comp (f, \partial f): (X, \{V_x\}_{x \in X}) \to (Z, \{U_z\}_{z
 \in Z})$ is thus given by $(g \comp f, \reindex{\partial g}{f} \comp \partial f)$.
 
-If we view any $\Diff$ object $\RR^n$ (\defref{auto-diff:Diff}) as implicitly paired with a constant family
-$\{\RR^n\}_{x \in \RR^n}$ and any $\Diff$ morphism $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ as the
-pair of a smooth function $f_1: \RR^m \to \RR^n$ and constant family of linear maps $f_2: \{\delta f_x: \RR^m
-\linearto \RR^n\}_{x \in \RR^m}$, then it is clear that $\Diff$ is equivalent to a full subcategory of
-$\Fam(\FinVect)$.
+Consider the functor $\Diff \hookrightarrow \Fam(\FinVect)$ which pairs objects $\RR^n$ with the constant
+family $\{\RR^n\}_{x \in \RR^n}$ and sends morphisms $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ to
+the pair of a differentiable function $f_1: \RR^m \to \RR^n$ and constant family of linear maps $f_2: \{\delta
+f_x: \RR^m \linearto \RR^n\}_{x \in \RR^m}$. Then it is clear that $\Diff$ is equivalent to a full subcategory
+of $\Fam(\FinVect)$. For any morphisms $(f, \partial f): (\RR^m, \{\RR^m\}_{x \in \RR^m}) \to (\RR^n,
+\{\RR^n\}_{y \in \RR^n})$ and $(g, \partial g): (\RR^n, \{\RR^n\}_{y \in \RR^n}) \to (\RR^k, \{\RR^k\}_{z \in
+\RR^k})$ in the image of that inclusion functor, we have for any $x \in \RR^m$:
+\begin{itemize}
+\item $\partial f_x: \RR^m \to \RR^n$;
+\item $\reindex{\partial g}{f}_x = \partial g_{f(x)}: \RR^n \to \RR^k$
+\end{itemize}
