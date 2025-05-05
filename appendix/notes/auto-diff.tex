@@ -25,6 +25,8 @@ Define the functor $\tangents_*$ which sends every vector space $\RR^n$ to itsel
 point.
 \end{definition}
 
+\begin{definition}[$\Diff$]
+\label{def:auto-diff:Diff}
 Write $\Diff_*$ for the category where the objects are all finite vector spaces $\RR^n$ and the morphisms are
 all maps $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$. Writing $f_1$ for $\pi_1 \comp f$ and $f_2$ for
 $\pi_2 \comp f$, composition in $\Diff_*$ is given by:
@@ -32,10 +34,12 @@ $\pi_2 \comp f$, composition in $\Diff_*$ is given by:
 (g \comp f)_1(x) &= f_1(g_1(x)) \\
 (g \comp f)_2(x) &= g_2(f_1(x)) \comp f_2(x)
 \end{align*}
-\noindent We can verify that $\tangents_*$ is indeed a functor, regardless of whether the linear maps $\RR^m
-\linearto \RR^n$ happen to be derivatives. But if $f_2(x)$ happens to be the derivative of $f_1$ at $x$ for
-any $x \in \RR^m$ and similarly for $g$ then the derivatives compose according to the forward chain rule and
-$(g \comp f)_2(x)$ is the derivative of $(g \comp f)_1$ at $x$.
+\end{definition}
+
+We can verify that $\tangents_*$ is indeed a functor, regardless of whether the linear maps $\RR^m \linearto
+\RR^n$ happen to be derivatives. But if $f_2(x)$ happens to be the derivative of $f_1$ at $x$ for any $x \in
+\RR^m$ and similarly for $g$ then the derivatives compose according to the forward chain rule and $(g \comp
+f)_2(x)$ is the derivative of $(g \comp f)_1$ at $x$.
 
 \begin{definition}[Reverse mode automatic differentiation functor]
 Define the functor $\tangents^*$ which also sends every vector space $\RR^n$ to itself but which sends every
@@ -69,8 +73,8 @@ $\{\partial g_{f(x)}\}_{x \in X}$. Then for any $(f, \partial f): (X, \{V_x\}_{x
 \noindent The composition $(g, \partial g) \comp (f, \partial f): (X, \{V_x\}_{x \in X}) \to (Z, \{U_z\}_{z
 \in Z})$ is thus given by $(g \comp f, \reindex{\partial g}{f} \comp \partial f)$.
 
-We can think of $\Diff$ as the subcategory of $\Fam(\FinVect)$ where the objects are just finite vector spaces
-$\RR^n$. There is no need to pair with an $\RR^n$-indexed family of finite vector spaces, since the tangent
-space for any $x \in \RR^n$ is simply $\RR^n$. Similarly the morphisms are fully specified by the pair of a
-smooth function $f: \RR^m \to \RR^n$ and constant family of linear maps $\{\delta f_x: \RR^m \linearto
-\RR^n\}_{x \in \RR^m}$.
+If we view any $\Diff$ object $\RR^n$ (\defref{auto-diff:Diff}) as implicitly paired with a constant family
+$\{\RR^n\}_{x \in \RR^n}$ and any $\Diff$ morphism $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ as the
+pair of a smooth function $f_1: \RR^m \to \RR^n$ and constant family of linear maps $f_2: \{\delta f_x: \RR^m
+\linearto \RR^n\}_{x \in \RR^m}$, then it is clear that $\Diff$ is equivalent to a full subcategory of
+$\Fam(\FinVect)$.
