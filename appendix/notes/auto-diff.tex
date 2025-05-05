@@ -3,7 +3,7 @@
 Write $\tangents_x(\RR^n)$ for the tangent space at a point $x \in \RR^n$. Then the \emph{forward derivative}
 (tangent map or pushforward) $\pushf{f}_x$ of a differentiable function $f: \RR^m \to \RR^n$ at $x \in \RR^m$
 is the unique linear map $\tangents_x(\RR^m) \linearto \tangents_{f(x)}(\RR^n)$ given by the Jacobean matrix
-of $f$ at $x$. Since $\RR^n$ is flat, $\tangents_x(\RR^n)$ is naturally isomorphic to $\RR^n$, so actually
+of $f$ at $x$. Since $\RR^n$ is flat, $\tangents_x(\RR^n)$ is naturally isomorphic to $\RR^n$, so in fact
 $\pushf{f}_x$ is a linear map $\RR^m \linearto \RR^n$. The \emph{backward derivative} (cotangent map or
 pullback) $\pullf{f}_x$ is the unique linear map $\RR^n \linearto \RR^m$ given by the transpose (adjoint) of
 the Jacobean matrix of $f$ at $x$.
@@ -25,7 +25,7 @@ Define the functor $\tangents_*$ which sends every vector space $\RR^n$ to itsel
 point.
 \end{definition}
 
-For any map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$, define $f_1 = \pi_1 \comp f$ and $f_2$ for
+For any map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$, write $f_1$ for $\pi_1 \comp f$ and $f_2$ for
 $\pi_2 \comp f$. Regardless of whether the linear maps $\RR^m \linearto \RR^n$ happen to be derivatives, we
 can define composition on such maps as:
 \begin{align*}
