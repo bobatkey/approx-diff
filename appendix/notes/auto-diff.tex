@@ -25,14 +25,14 @@ Define the functor $\tangents_*$ which sends every vector space $\RR^n$ to itsel
 point.
 \end{definition}
 
-Write $\Diff$ for the category where the objects are all finite vector spaces $\RR^n$ and the morphisms are
+Write $\Diff_*$ for the category where the objects are all finite vector spaces $\RR^n$ and the morphisms are
 all maps $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$. Writing $f_1$ for $\pi_1 \comp f$ and $f_2$ for
-$\pi_2 \comp f$, composition in $\Diff$ is given by:
+$\pi_2 \comp f$, composition in $\Diff_*$ is given by:
 \begin{align*}
 (g \comp f)_1(x) &= f_1(g_1(x)) \\
 (g \comp f)_2(x) &= g_2(f_1(x)) \comp f_2(x)
 \end{align*}
-\noindent We can verify that $\tangents$ is indeed a functor, regardless of whether the linear maps $\RR^m
+\noindent We can verify that $\tangents_*$ is indeed a functor, regardless of whether the linear maps $\RR^m
 \linearto \RR^n$ happen to be derivatives. But if $f_2(x)$ happens to be the derivative of $f_1$ at $x$ for
 any $x \in \RR^m$ and similarly for $g$ then the derivatives compose according to the forward chain rule and
 $(g \comp f)_2(x)$ is the derivative of $(g \comp f)_1$ at $x$.
@@ -43,8 +43,8 @@ smooth map $f: \RR^m \to \RR^n$ to the function $\tangents^*(f) = x \mapsto (f(x
 \RR^n \times (\RR^n \to \RR^m)$.
 \end{definition}
 
-\noindent and again we can define a notion of composition for such maps that respects the (backward) chain
-rule.
+\noindent and again we can define a corresponding category $\Diff^*$ of such maps where composition respects
+the (backward) chain rule.
 
 \subsubsection{Automatic differentiation via category of families}
 
