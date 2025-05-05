@@ -43,8 +43,8 @@ smooth map $f: \RR^m \to \RR^n$ to the function $\tangents^*(f) = x \mapsto (f(x
 \RR^n \times (\RR^n \to \RR^m)$.
 \end{definition}
 
-\noindent and again we can define a corresponding category $\Diff^*$ of such maps where composition respects
-the (backward) chain rule.
+\noindent and again we can define a corresponding category $\Diff^*$ of such maps where composition of the
+cotangent maps respects the (backward) chain rule.
 
 \subsubsection{Automatic differentiation via category of families}
 
@@ -68,3 +68,9 @@ $\{\partial g_{f(x)}\}_{x \in X}$. Then for any $(f, \partial f): (X, \{V_x\}_{x
 
 \noindent The composition $(g, \partial g) \comp (f, \partial f): (X, \{V_x\}_{x \in X}) \to (Z, \{U_z\}_{z
 \in Z})$ is thus given by $(g \comp f, \reindex{\partial g}{f} \comp \partial f)$.
+
+We can think of $\Diff$ as the subcategory of $\Fam(\FinVect)$ where the objects are just finite vector spaces
+$\RR^n$. There is no need to pair with an $\RR^n$-indexed family of finite vector spaces, since the tangent
+space for any $x \in \RR^n$ is simply $\RR^n$. Similarly the morphisms are fully specified by the pair of a
+smooth function $f: \RR^m \to \RR^n$ and constant family of linear maps $\{\delta f_x: \RR^m \linearto
+\RR^n\}_{x \in \RR^m}$.
