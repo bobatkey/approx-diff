@@ -46,10 +46,10 @@ smooth map $f: \RR^m \to \RR^n$ to the function $\tangents^*(f) = x \mapsto (f(x
 \noindent and again we can define a notion of composition for such maps that respects the (backward) chain
 rule.
 
-\subsubsection{Automatic differentiation via the Grothendieck construction}
+\subsubsection{Automatic differentiation via category of families}
 
 Let $X, Y, Z$ range over sets and $U, V, W$ range over finite vector spaces. Recall that the category
-$\Fam(\FinVect) = \Grothendieck{}\Fam(-, \FinVect)$ (\defref{grothendieck:Grothendieck}) has:
+$\Fam(\FinVect) = \Grothendieck{X}\Fam(X, \FinVect)$ (\defref{grothendieck:Grothendieck}) has:
 \begin{itemize}
 \item as objects, all pairs $(X, \{V_x\}_{x \in X})$ of a set $X$ and an object of $\Fam(X,\FinVect)$;
 \item as morphisms $(X, \{V_x\}_{x \in X}) \to (Y, \{W_y\}_{y \in Y})$, all pairs $(f, \partial f)$ of
