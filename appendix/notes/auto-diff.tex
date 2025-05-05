@@ -26,15 +26,15 @@ point.
 \end{definition}
 
 For any map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$, write $f_1$ for $\pi_1 \comp f$ and $f_2$ for
-$\pi_2 \comp f$. Regardless of whether the linear maps $\RR^m \linearto \RR^n$ happen to be derivatives, we
-can define composition on such maps as:
+$\pi_2 \comp f$. We can define composition on such maps as:
 \begin{align*}
 (g \comp f)_1(x) &= f_1(g_1(x)) \\
 (g \comp f)_2(x) &= g_2(f_1(x)) \comp f_2(x)
 \end{align*}
-\noindent and verify that $\tangents$ is indeed a functor. If $f_2(x)$ happens to be the derivative of $f_1$
-at $x$ for any $x \in \RR^m$ and similarly for $g$ then the derivatives compose according to the forward chain
-rule and $(g \comp f)_2(x)$ is the derivative of $(g \comp f)_1$ at $x$.
+\noindent and verify that $\tangents$ is indeed a functor, regardless of whether the linear maps $\RR^m
+\linearto \RR^n$ happen to be derivatives. But if $f_2(x)$ happens to be the derivative of $f_1$ at $x$ for
+any $x \in \RR^m$ and similarly for $g$ then the derivatives compose according to the forward chain rule and
+$(g \comp f)_2(x)$ is the derivative of $(g \comp f)_1$ at $x$.
 
 \begin{definition}[Reverse mode automatic differentiation functor]
 Define the functor $\tangents^*$ which also sends every vector space $\RR^n$ to itself but which sends every
