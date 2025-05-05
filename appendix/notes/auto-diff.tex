@@ -2,9 +2,11 @@
 
 Write $\tangents_x(\RR^n)$ for the tangent space at a point $x \in \RR^n$. Then the \emph{forward derivative}
 (tangent map or pushforward) $\pushf{f}_x$ of a differentiable function $f: \RR^m \to \RR^n$ at $x \in \RR^m$
-is a linear map $\tangents_x(\RR^m) \linearto \tangents_{f(x)}(\RR^n)$. Because $\RR^n$ is Euclidean (flat),
-$\tangents_x(\RR^n)$ is naturally isomorphic to $\RR^n$, so actually $\pushf{f}_x: \RR^m \linearto \RR^n$. The
-\emph{backward derivative} (cotangent map or pullback) $\pullf{f}_x$  is a linear map $\RR^n \linearto \RR^m$.
+is the unique linear map $\tangents_x(\RR^m) \linearto \tangents_{f(x)}(\RR^n)$ given by the Jacobean matrix
+of $f$ at $x$. Since $\RR^n$ is flat, $\tangents_x(\RR^n)$ is naturally isomorphic to $\RR^n$, so actually
+$\pushf{f}_x$ is a linear map $\RR^m \linearto \RR^n$. The \emph{backward derivative} (cotangent map or
+pullback) $\pullf{f}_x$ is the unique linear map $\RR^n \linearto \RR^m$ given by the transpose (adjoint) of
+the Jacobean matrix of $f$ at $x$.
 
 \subsubsection{Chain rule}
 
