@@ -40,9 +40,9 @@ $\Diff_*$ is given by:
 \end{definition}
 
 We can verify that $\tangents_*$ is indeed a functor, regardless of whether the linear maps $\RR^m \linearto
-\RR^n$ happen to be derivatives. But if $f_2(x)$ happens to be the derivative of $f_1$ at $x$ for any $x \in
-\RR^m$ and similarly for $g$ then the derivatives compose according to the forward chain rule and $(g \comp
-f)_2(x)$ is the derivative of $(g \comp f)_1$ at $x$.
+\RR^n$ happen to be derivatives. But if $f_2(x)$ is the derivative of $f_1$ at $x$ for any $x \in \RR^m$ and
+similarly for $g$ then the derivatives compose according to the forward chain rule and $(g \comp f)_2(x)$ is
+the derivative of $(g \comp f)_1$ at $x$.
 
 \begin{definition}[Reverse mode automatic differentiation functor]
 Define the functor $\tangents^*$ which also sends every vector space $\RR^n$ to itself but which sends every
@@ -55,35 +55,22 @@ cotangent maps respects the (backward) chain rule.
 
 \subsubsection{Automatic differentiation via category of families}
 
-Let $X, Y, Z$ range over sets and $U, V, W$ range over finite vector spaces. Recall that the category
-$\Fam(\FinVect) = \Grothendieck{X}\Fam(X, \FinVect)$ (\defref{grothendieck:Grothendieck}) has:
-\begin{itemize}
-\item as objects, all pairs $(X, \{V_x\}_{x \in X})$ of a set $X$ and an object of $\Fam(X,\FinVect)$;
-\item as morphisms $(X, \{V_x\}_{x \in X}) \to (Y, \{W_y\}_{y \in Y})$, all pairs $(f, \partial f)$ of
-functions $f: X \to Y$ and families of morphisms $\{\partial f_x: V_x \to W_{f(x)}\}_{x \in X}$
-in $\Fam(X,\FinVect)$.
-\end{itemize}
+Recall that the category $\Fam(\FinVect)$ is the Grothendieck construction $\Grothendieck{X}\Fam(X,
+\FinVect)$. The functor $\Diff_* \hookrightarrow \Fam(\FinVect)$ which send objects $\RR^n$ to constant
+families of tangent spaces $(\RR^n, \{\RR^n\}_{x \in \RR^n})$ and morphisms $f: \RR^m \to \RR^n \times (\RR^m
+\linearto \RR^n)$ to pairs of differentiable functions $f_1: \RR^m \to \RR^n$ and constant families of linear
+maps $f_2: \{\delta f_x: \RR^m \linearto \RR^n\}_{x \in \RR^m}$ exhibits $\Diff$ as equivalent to a full
+subcategory of $\Fam(\FinVect)$.
 
-Also recall that $\Fam(f, \FinVect)$ for any function $f: X \to Y$ is the reindexing functor $\reindex{-}{f}:
-\Fam(Y, \FinVect) \to \Fam(X, \FinVect)$ sending any family of morphisms $\{\partial g_y\}_{y \in Y}$ to
-$\{\partial g_{f(x)}\}_{x \in X}$. Then for any $(f, \partial f): (X, \{V_x\}_{x \in X}) \to (Y, \{W_y\}_{y
-\in Y})$ and $(g, \partial g): (Y, \{W_y\}_{y \in Y}) \to (Z, \{U_z\}_{z \in Z})$ we have, for any $x \in X$:
-\begin{itemize}
-\item $\partial f_x: V_x \to W_{f(x)}$;
-\item $\reindex{\partial g}{f}_x = \partial g_{f(x)}: W_{f(x)} \to U_{g(f(x))}$.
-\end{itemize}
-
-\noindent The composition $(g, \partial g) \comp (f, \partial f): (X, \{V_x\}_{x \in X}) \to (Z, \{U_z\}_{z
-\in Z})$ is thus given by $(g \comp f, \reindex{\partial g}{f} \comp \partial f)$.
-
-Consider the functor $\Diff \hookrightarrow \Fam(\FinVect)$ which pairs objects $\RR^n$ with the constant
-family $\{\RR^n\}_{x \in \RR^n}$ and sends morphisms $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ to
-the pair of a differentiable function $f_1: \RR^m \to \RR^n$ and constant family of linear maps $f_2: \{\delta
-f_x: \RR^m \linearto \RR^n\}_{x \in \RR^m}$. Then it is clear that $\Diff$ is equivalent to a full subcategory
-of $\Fam(\FinVect)$. For any morphisms $(f, \partial f): (\RR^m, \{\RR^m\}_{x \in \RR^m}) \to (\RR^n,
-\{\RR^n\}_{y \in \RR^n})$ and $(g, \partial g): (\RR^n, \{\RR^n\}_{y \in \RR^n}) \to (\RR^k, \{\RR^k\}_{z \in
-\RR^k})$ in the image of that inclusion functor, we have for any $x \in \RR^m$:
+For any $(f, \partial f): (\RR^m, \{\RR^m\}_{x \in \RR^m}) \to (\RR^n, \{\RR^n\}_{x \in \RR^n})$ and $(g,
+\partial g): (\RR^n, \{\RR^n\}_{x \in \RR^n}) \to (\RR^k, \{\RR^k\}_{x \in \RR^k})$ in the image of that
+functor, we have that for any $x \in \RR^m$:
 \begin{itemize}
 \item $\partial f_x: \RR^m \to \RR^n$;
 \item $\reindex{\partial g}{f}_x = \partial g_{f(x)}: \RR^n \to \RR^k$
 \end{itemize}
+
+\noindent with the composition $(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f}
+\comp \partial f): (\RR^m, \{\RR^m\}_{x \in \RR^m}) \to (\RR^k, \{\RR^k\}_{x \in \RR^k})$ corresponding
+exactly to the chain rule, since $(\reindex{\partial g}{f} \comp \partial f)_x = {\partial g}_{f(x)} \comp
+{\partial f}_x$.
