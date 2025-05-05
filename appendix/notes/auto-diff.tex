@@ -10,12 +10,12 @@ the Jacobean matrix of $f$ at $x$.
 
 \subsubsection{Chain rule}
 
-Suppose $f: \RR^m \to \RR^n$ and $g: \RR^n \to \RR^k$. For any $x \in \RR^m$ we can define the following
-composite derivatives of $g \comp f: \RR^m \to \RR^k$:
+Derivatives respect composition. Suppose $f: \RR^m \to \RR^n$ and $g: \RR^n \to \RR^k$. For any $x \in \RR^m$
+we have:
 
 \begin{itemize}
-\item $\pushf{(g \comp f)}_x = \pushf{g}_{f(x)} \comp \pushf{f}_x$
-\item $\pullf{(g \comp f)}_x = \pullf{f}_{x} \comp \pullf{g}_{f(x)}$
+\item $\pushf{(g \comp f)}_x = \pushf{g}_{f(x)} \comp \pushf{f}_x: \RR^m \to \RR^k$
+\item $\pullf{(g \comp f)}_x = \pullf{f}_{x} \comp \pullf{g}_{f(x)}: \RR^k \to \RR^m$
 \end{itemize}
 
 \begin{definition}[Forward mode automatic differentiation functor]
@@ -57,12 +57,12 @@ in $\Fam(X,\FinVect)$.
 \end{itemize}
 
 Also recall that $\Fam(f, \FinVect)$ for any function $f: X \to Y$ is the reindexing functor $\reindex{-}{f}:
-\Fam(Y, \FinVect) \to \Fam(X, \FinVect)$ sending any family of morphisms $\{g_y\}_{y \in Y}$ to
-$\{g_{f(x)}\}_{x \in X}$. Then for any $(f, \partial f): (X, \{V_x\}_{x \in X}) \to (Y, \{W_y\}_{y \in Y})$
-and $(g, \partial g): (Y, \{W_y\}_{y \in Y}) \to (Z, \{U_z\}_{z \in Z})$ we have, for any $x \in X$:
+\Fam(Y, \FinVect) \to \Fam(X, \FinVect)$ sending any family of morphisms $\{\partial g_y\}_{y \in Y}$ to
+$\{\partial g_{f(x)}\}_{x \in X}$. Then for any $(f, \partial f): (X, \{V_x\}_{x \in X}) \to (Y, \{W_y\}_{y
+\in Y})$ and $(g, \partial g): (Y, \{W_y\}_{y \in Y}) \to (Z, \{U_z\}_{z \in Z})$ we have, for any $x \in X$:
 \begin{itemize}
 \item $\partial f_x: V_x \to W_{f(x)}$;
-\item $\reindex{\partial g}{f}_x: W_{f(x)} \to U_{g(f(x))}$.
+\item $\reindex{\partial g}{f}_x = \partial g_{f(x)}: W_{f(x)} \to U_{g(f(x))}$.
 \end{itemize}
 
 \noindent The composition $(g, \partial g) \comp (f, \partial f): (X, \{V_x\}_{x \in X}) \to (Z, \{U_z\}_{z
