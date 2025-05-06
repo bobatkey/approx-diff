@@ -90,3 +90,11 @@ $\partial X_x$;
 \item as morphisms $(X, \partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of functions $f: X \to
 Y$ and Galois connections $\partial f: \partial X_x \to \partial Y_{f(x)}$.
 \end{itemize}
+
+\[
+\begin{tikzcd}
+(\RR^m, \partial X) \\ %\arrow[r, "{(f, \partial f)}"] \arrow[d, phantom, "\text{in } \int_X \mathrm{Fam}(X, \FinVect^\op)" description] & (\RR^n, \partial Y) \\
+\mathbb{R}^m \arrow[r, "f"] & \mathbb{R}^n \\
+\partial X \arrow[u] & T(f)(\partial Y) \arrow[l, "\partial f"] \arrow[u]
+\end{tikzcd}
+\]
