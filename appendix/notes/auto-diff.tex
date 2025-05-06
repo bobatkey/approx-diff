@@ -32,8 +32,8 @@ $f: \RR^m \to \RR^n$ to the function $\tangents(f) = x \mapsto (f(x), \pushf{f}_
 that point.
 \end{definition}
 
-For any map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ write $f_1$ for $\pi_1 \comp f$ and $f_2$ for
-$\pi_2 \comp f$.
+For any map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ define $f_1 = \pi_1 \comp f: \RR^m \to \RR^n$
+and $f_2 = \pi_2 \comp f: \RR^m \to (\RR^m \linearto \RR^n)$.
 
 \begin{definition}[$\Diff$]
 \label{def:auto-diff:Diff}
@@ -63,24 +63,22 @@ cotangent maps respects the (backward) chain rule.
 \subsubsection{Automatic differentiation via category of families}
 
 Recall that the category $\Fam(\FinVect)$ is the Grothendieck construction $\Grothendieck{X}\Fam(X,
-\FinVect)$. The functor $\Diff \hookrightarrow \Fam(\FinVect)$ which send objects $\RR^n$ to constant
-families of tangent spaces $(\RR^n, \{\RR^n\}_{x \in \RR^n})$ and morphisms $f: \RR^m \to \RR^n \times (\RR^m
-\linearto \RR^n)$ to pairs of differentiable functions $f_1: \RR^m \to \RR^n$ and constant families of linear
-maps $f_2: \{\delta f_x: \RR^m \linearto \RR^n\}_{x \in \RR^m}$ exhibits $\Diff$ as equivalent to a full
-subcategory of $\Fam(\FinVect)$.
+\FinVect)$. The functor $\Diff \hookrightarrow \Fam(\FinVect)$ which send objects $\RR^n$ to constant families
+of tangent spaces $(\RR^n, \const(\RR^n))$ and morphisms $f: \RR^m \to \RR^n \times (\RR^m \linearto
+\RR^n)$ to pairs $(f_1, f_2)$ of differentiable functions $f_1: \RR^m \to \RR^n$ and families of linear maps
+$f_2: \{{f_2}_x: \RR^m \linearto \RR^n\}_{x \in \RR^m}$ exhibits $\Diff$ as equivalent to a full subcategory
+of $\Fam(\FinVect)$.
 
-For any $(f, \partial f): (\RR^m, \{\RR^m\}_{x \in \RR^m}) \to (\RR^n, \{\RR^n\}_{x \in \RR^n})$ and $(g,
-\partial g): (\RR^n, \{\RR^n\}_{x \in \RR^n}) \to (\RR^k, \{\RR^k\}_{x \in \RR^k})$ in the image of that
-functor, we have that for any $x \in \RR^m$:
+For any $(f, \partial f): (\RR^m, \const(\RR^m)) \to (\RR^n, \const(\RR^n))$ and $(g, \partial g): (\RR^n,
+\const(\RR^n)) \to (\RR^k, \const(\RR^k))$ in that subcategory, we have that for any $x \in \RR^m$:
 \begin{itemize}
 \item $\partial f_x: \RR^m \to \RR^n$;
 \item $\reindex{\partial g}{f}_x = \partial g_{f(x)}: \RR^n \to \RR^k$
 \end{itemize}
 
-\noindent with the composition $(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f}
-\comp \partial f): (\RR^m, \{\RR^m\}_{x \in \RR^m}) \to (\RR^k, \{\RR^k\}_{x \in \RR^k})$ corresponding
-exactly to the chain rule, since $(\reindex{\partial g}{f} \comp \partial f)_x = {\partial g}_{f(x)} \comp
-{\partial f}_x$.
+\noindent The composition $(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp
+\partial f): (\RR^m, \const(\RR^m)) \to (\RR^k, \const(\RR^k))$ corresponds exactly to the chain rule, since
+$(\reindex{\partial g}{f} \comp \partial f)_x = {\partial g}_{f(x)} \comp {\partial f}_x$.
 
 \subsubsection{Galois slicing via category of families}
 
