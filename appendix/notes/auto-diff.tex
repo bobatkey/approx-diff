@@ -1,12 +1,19 @@
 \subsection{Automatic differentiation}
 
-Write $\tangents_x(\RR^n)$ for the tangent space at a point $x \in \RR^n$. Then the \emph{forward derivative}
-(tangent map or pushforward) $\pushf{f}_x$ of a differentiable function $f: \RR^m \to \RR^n$ at $x \in \RR^m$
-is the unique linear map $\tangents_x(\RR^m) \linearto \tangents_{f(x)}(\RR^n)$ given by the Jacobean matrix
-of $f$ at $x$. Since $\RR^n$ is flat, $\tangents_x(\RR^n)$ is canonically isomorphic to $\RR^n$, so in fact
-$\pushf{f}_x$ is a linear map $\RR^m \linearto \RR^n$. The \emph{backward derivative} (cotangent map or
-pullback) $\pullf{f}_x$ is the unique linear map $\RR^n \linearto \RR^m$ given by the transpose (adjoint) of
-the Jacobean matrix of $f$ at $x$.
+For a differentiable manifold $M$, write $\tangents_x(M)$ for the tangent space at a point $x \in M$ and
+$\cotangents_x(M)$ for the cotangent space at $x$. Now consider flat manifolds of the form $\RR^n$.
+
+\begin{itemize}
+\item The \emph{forward derivative} (tangent map or pushforward) $\pushf{f}_x$ of a differentiable function
+$f: \RR^m \to \RR^n$ at $x \in \RR^m$ is the unique linear map $\tangents_x(\RR^m) \linearto
+\tangents_{f(x)}(\RR^n)$ given by the Jacobean matrix of $f$ at $x$. Since $\RR^n$ is flat,
+$\tangents_x(\RR^n)$ is canonically isomorphic to $\RR^n$, so in fact $\pushf{f}_x$ is a linear map $\RR^m
+\linearto \RR^n$.
+\item The \emph{backward derivative} (cotangent map or pullback) $\pullf{f}_x$ is the unique linear map
+$\cotangents_{f(x)}(\RR^n) \linearto \cotangents_x(\RR^m)$ given by the transpose (adjoint) of the Jacobean
+matrix of $f$ at $x$. Since $\RR^n$ is flat, $\cotangents_x(\RR^n)$ is also canonically isomorphic to $\RR^n$,
+so in fact $\pullf{f}_x$ is a linear map $\RR^n \linearto \RR^m$.
+\end{itemize}
 
 \subsubsection{Chain rule}
 
@@ -19,8 +26,8 @@ we have:
 \end{itemize}
 
 \begin{definition}[Forward mode automatic differentiation functor]
-Define the functor $\tangents_*$ which sends every vector space $\RR^n$ to itself and every differentiable map
-$f: \RR^m \to \RR^n$ to the function $\tangents_*(f) = x \mapsto (f(x), \pushf{f}_x): \RR^m \to \RR^n \times
+Define the functor $\tangents$ which sends every vector space $\RR^n$ to itself and every differentiable map
+$f: \RR^m \to \RR^n$ to the function $\tangents(f) = x \mapsto (f(x), \pushf{f}_x): \RR^m \to \RR^n \times
 (\RR^m \linearto \RR^n)$, associating to every point its image in $f$ and the forward derivative of $f$ at
 that point.
 \end{definition}
@@ -28,25 +35,25 @@ that point.
 For any map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ write $f_1$ for $\pi_1 \comp f$ and $f_2$ for
 $\pi_2 \comp f$.
 
-\begin{definition}[$\Diff_*$]
+\begin{definition}[$\Diff$]
 \label{def:auto-diff:Diff}
-Define $\Diff_*$ to be the category where the objects are all finite vector spaces $\RR^n$ and the morphisms
+Define $\Diff$ to be the category where the objects are all finite vector spaces $\RR^n$ and the morphisms
 are all maps $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ with $f_1$ differentiable. Composition in
-$\Diff_*$ is given by:
+$\Diff$ is given by:
 \begin{align*}
 (g \comp f)_1(x) &= f_1(g_1(x)) \\
 (g \comp f)_2(x) &= g_2(f_1(x)) \comp f_2(x)
 \end{align*}
 \end{definition}
 
-We can verify that $\tangents_*$ is indeed a functor, regardless of whether the linear maps $\RR^m \linearto
+We can verify that $\tangents$ is indeed a functor, regardless of whether the linear maps $\RR^m \linearto
 \RR^n$ happen to be derivatives. But if $f_2(x)$ is the derivative of $f_1$ at $x$ for any $x \in \RR^m$ and
 similarly for $g$ then the derivatives compose according to the forward chain rule and $(g \comp f)_2(x)$ is
 the derivative of $(g \comp f)_1$ at $x$.
 
 \begin{definition}[Reverse mode automatic differentiation functor]
-Define the functor $\tangents^*$ which also sends every vector space $\RR^n$ to itself but which sends every
-differentiable map $f: \RR^m \to \RR^n$ to the function $\tangents^*(f) = x \mapsto (f(x), \pullf{f}_x): \RR^m
+Define the functor $\cotangents$ which also sends every vector space $\RR^n$ to itself but which sends every
+differentiable map $f: \RR^m \to \RR^n$ to the function $\cotangents(f) = x \mapsto (f(x), \pullf{f}_x): \RR^m
 \to \RR^n \times (\RR^n \linearto \RR^m)$.
 \end{definition}
 
@@ -56,10 +63,10 @@ cotangent maps respects the (backward) chain rule.
 \subsubsection{Automatic differentiation via category of families}
 
 Recall that the category $\Fam(\FinVect)$ is the Grothendieck construction $\Grothendieck{X}\Fam(X,
-\FinVect)$. The functor $\Diff_* \hookrightarrow \Fam(\FinVect)$ which send objects $\RR^n$ to constant
+\FinVect)$. The functor $\Diff \hookrightarrow \Fam(\FinVect)$ which send objects $\RR^n$ to constant
 families of tangent spaces $(\RR^n, \{\RR^n\}_{x \in \RR^n})$ and morphisms $f: \RR^m \to \RR^n \times (\RR^m
 \linearto \RR^n)$ to pairs of differentiable functions $f_1: \RR^m \to \RR^n$ and constant families of linear
-maps $f_2: \{\delta f_x: \RR^m \linearto \RR^n\}_{x \in \RR^m}$ exhibits $\Diff_*$ as equivalent to a full
+maps $f_2: \{\delta f_x: \RR^m \linearto \RR^n\}_{x \in \RR^m}$ exhibits $\Diff$ as equivalent to a full
 subcategory of $\Fam(\FinVect)$.
 
 For any $(f, \partial f): (\RR^m, \{\RR^m\}_{x \in \RR^m}) \to (\RR^n, \{\RR^n\}_{x \in \RR^n})$ and $(g,
