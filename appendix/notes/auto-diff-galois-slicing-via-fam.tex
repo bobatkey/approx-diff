@@ -1,10 +1,12 @@
 \subsection{Galois slicing and automatic differentiation via categories of families}
 \label{sec:galois-slicing-auto-diff-via-fam}
 
+Recall that $\Fam(\cat{C})$ is the Grothendieck construction $\Grothendieck{X}\Fam(X, \cat{C})$.
+
 \subsubsection{Galois slicing}
 \label{sec:galois-slicing-auto-diff-via-fam:galois-slicing}
 
-Recall that $\Fam(\LatGal)$ is the Grothendieck construction $\Grothendieck{X}\Fam(X, \LatGal)$ which has:
+$\Fam(\LatGal)$ has:
 \begin{itemize}
 \item as objects $(X, \partial X)$ all pairs of a set $X$ and and for each $x \in X$, a bounded lattice
 $\partial X_x$;
@@ -12,12 +14,11 @@ $\partial X_x$;
 Y$ and Galois connections $\partial f: \partial X_x \to \partial Y_{f(x)}$.
 \end{itemize}
 
-The action of $\Fam(-,\LatGal)$ on a morphism $f: X \to Y$. Composition of any $(f, \partial f):$
+\todo{This is the basic setting for interpreting first-order programs.}
 
 \subsubsection{Automatic differentiation}
 \label{sec:galois-slicing-auto-diff-via-fam:auto-diff}
 
-Recall that $\Fam(\FinVect)$ denotes the Grothendieck construction $\Grothendieck{X}\Fam(X, \FinVect)$.
 Consider the functor $\Diff \hookrightarrow \Fam(\FinVect)$ which send objects $\RR^n$ to constant families of
 tangent spaces $(\RR^n, \const(\RR^n))$ and morphisms $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ to
 pairs $(f_1, f_2)$ of differentiable functions $f_1: \RR^m \to \RR^n$ and families of linear maps $f_2:
