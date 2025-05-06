@@ -44,14 +44,14 @@ Define the category $\LatGal$ which has:
 \end{definition}
 
 \noindent Right adjoints preserves limits and left adjoints preserves colimits, so for any $f \adj g: X \to Y$
-in $\LatGal$, $f$ and $g$ preserves the meet-semilattice structure of $X$ and join-semilattice structure of
-$Y$ respectively. Moreover since $(X, \top, \meet)$ is a commutative monoid, and thus a $\CMon$-enriched
-(poset) category, for any $X, Y$ there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y} =
-\const(\top_Y): X \to Y$ and also (idempotent) addition of homomorphisms $f +_{\meet} g: X \to Y$ given
-pointwise by $\meet$. Dually, there is a zero join-semilattice homomorphism $0^{\join}_{X,Y} = \const(\bot_Y):
-X \to Y$ and idempotent addition of homomorphisms $f +_{\join} g: X \to Y$ given pointwise by $\join$. Thus
-$\LatGal$ is itself $\CMon$-enriched (in fact $\SemiLat$-enriched), with the hom-object $\LatGal(X,Y)$ forming
-a bounded semilattice with:
+in $\LatGal$, $f$ and $g$ preserve the meet-semilattice structure of $X$ and join-semilattice structure of $Y$
+respectively. Moreover since $(X, \top, \meet)$ is a commutative monoid, and thus a $\CMon$-enriched (poset)
+category, for any $X, Y$ there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y} = \const(\top_Y): X
+\to Y$ and also (idempotent) addition of homomorphisms $f +_{\meet} g: X \to Y$ given pointwise by $\meet$.
+Dually, there is a zero join-semilattice homomorphism $0^{\join}_{X,Y} = \const(\bot_Y): X \to Y$ and
+idempotent addition of homomorphisms $f +_{\join} g: X \to Y$ given pointwise by $\join$. Thus $\LatGal$ is
+itself $\CMon$-enriched (in fact $\SemiLat$-enriched), with the hom-object $\LatGal(X,Y)$ forming a bounded
+semilattice with:
 \begin{itemize}
 \item zero morphism $0_{X,Y}$ given by the Galois connection $\const(\top_Y) \adj \const(\bot_X): X \to Y$
 \item component-wise idempotent addition of morphisms $(f \adj g) + (f' \adj g') = (f +_{\meet} f') \adj (g

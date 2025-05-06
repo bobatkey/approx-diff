@@ -9,17 +9,17 @@
     &
     \text{unit}
     \\
-    && | &
+    && \mid &
     \sigma \tyProd \tau
     &
     \text{product}
     \\
-    && | &
+    && \mid &
     \sigma \tySum \tau
     &
     \text{sum}
     \\
-    && | &
+    && \mid &
     \sigma \tyFun \tau
     &
     \text{function}
@@ -31,30 +31,20 @@
     &
     \text{unit}
     \\
-    && | &
+    && \mid &
     \tmPair{s}{t}
     &
     \text{pair}
     \\
-    && | &
-    \tmFst{t}
+    && \mid &
+    \tmFst{t} \mid \tmSnd{t}
     &
-    \text{first projection}
+    \text{projection}
     \\
-    && | &
-    \tmSnd{t}
+    && \mid &
+    \tmInl{t} \mid \tmInr{t}
     &
-    \text{second projection}
-    \\
-    && | &
-    \tmInl{t}
-    &
-    \text{left injection}
-    \\
-    && | &
-    \tmInr{t}
-    &
-    \text{right injection}
+    \text{injection}
     \\
   \end{array}
   \]

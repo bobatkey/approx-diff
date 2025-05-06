@@ -1,28 +1,45 @@
 \subsection{Category of families}
 \label{sec:grothendieck}
 
+\subsubsection{Grothendieck construction}
+
 \begin{definition}[Grothendieck construction for $F$]
-Suppose a functor $F: \cat{C} \to \Cat$. \todo{Actually conventional setup is with $F$ contravariant.} The
-\emph{Grothendieck construction} $\Grothendieck{\cat{C}}F$ for $F$ is the category which has:
+\label{def:grothendieck:Grothendieck}
+Suppose an indexed category $T: \cat{C}^\op \to \Cat$. The \emph{Grothendieck construction} for $T$ is the
+category $\Grothendieck{X}T(X)$ (also written $\Grothendieck{}T$) which has:
 \begin{itemize}
-\item as objects $X$ all pairs of an object $\idx{X}$ of $\cat{C}$ and an object $\faml{X}$ of $F(\idx{X})$;
-\item as morphisms $f: X \to Y$ all pairs of a morphism $\idx{f}: \idx{X} \to \idx{Y}$ in $\cat{C}$ and a
-morphism $\faml{f}: F(\idx{f})(\faml{X}) \to \faml{Y}$ in $F(\idx{Y})$.
+\item as objects, all pairs $(X, \partial X)$ of an object $X$ of $\cat{C}$ and an object $\partial X$ of
+$T(X)$;
+\item as morphisms $(X, \partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of morphisms $f: X \to
+Y$ in $\cat{C}$ and morphisms $\partial f: \partial X \to T(f)(\partial Y)$ in $T(X)$.
 \end{itemize}
 \end{definition}
 
-\noindent When $F$ is contravariant, a morphism $f: X \to Y$ in $\Grothendieck{\cat{C}}{F}$ is a morphism
-$\idx{f}: \idx{X} \to \idx{Y}$ in $\cat{C}$ paired with a morphism $\faml{f}: \faml{X} \to
-F(\idx{f})(\faml{Y})$ in $F(\idx{X})$. \todo{Might want to unpack this a bit.}
+\noindent The $\partial X$ notation is justified by the fact that the Grothendieck construction formalises the
+idea of tangent spaces and derivatives.
+
+For any $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ and $(g, \partial g): (Y, \partial Y)
+\to (Z, \partial Z)$ in $\Grothendieck{}T$, we have:
+
+\begin{itemize}
+\item $\partial f: \partial X \to T(f)(\partial Y)$;
+\item $T(f)(\partial g): T(f)(\partial Y) \to T(f)(T(g)(\partial Z)) = T(g \comp f)(\partial Z)$.
+\end{itemize}
+
+\noindent The composition $(g, \partial g) \comp (f, \partial f): (X, \partial X) \to (Z, \partial Z)$ is
+given by $(g \comp f, T(f)(\partial g) \comp \partial f)$.
+
+\subsubsection{Category of families}
 
 \begin{definition}[Category of families]
 For any category $\cat{C}$ define $\Fam(\cat{C})$ to be the Grothendieck construction
-$\Grothendieck{\Set^{\op}}\Fam(-,\cat{C})$.
+$\Grothendieck{}\Fam(-,\cat{C})$.
 \end{definition}
 
-\noindent In $\Fam(\cat{C})$ the objects $X$ are thus sets $\idx{X}$ paired with indexed families $\faml{X}$
-in $\Fam(\idx{X},\cat{C})$ and morphisms $f: X \to Y$ are functions $\idx{f}: \idx{X} \to \idx{Y}$ paired with
-morphisms $\faml{f}: \faml{X} \to \reindex{\faml{Y}}{\idx{f}}$ in $\Fam(\idx{X},\cat{C})$.
+\noindent In $\Fam(\cat{C})$ the objects $(X, \partial X)$ are thus sets $X$ paired with indexed families
+$\partial X$ in $\Fam(X,\cat{C})$ and morphisms $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ are
+functions $f: X \to Y$ paired with morphisms $\partial f: \partial X \to \reindex{\partial Y}{f}$ in
+$\Fam(X,\cat{C})$.
 
 \begin{proposition}
 \item

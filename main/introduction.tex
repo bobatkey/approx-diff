@@ -8,10 +8,7 @@ Provenance tracking is important because in order to audit any computational pro
 
 \subsection{Galois Program Slicing}
 
-Perera and collaborators introduced the idea of {\em Galois Program Slicing} as a particular conception of
-program slicing for provenance, described in several publications~\cite{perera12a,perera16d,ricciotti17}.
-Galois program slicing forms the basis of Perera's data visualisation tool \href{https://f.luid.org/}{Fluid}
-that allows interactive exploration of programmatically generated visualisations.
+Perera and collaborators introduced the idea of {\em Galois Program Slicing} as a particular conception of program slicing for provenance, described in several publications~\cite{perera12a,perera16d,ricciotti17}. Galois program slicing forms the basis of Perera's data visualisation tool \href{https://f.luid.org/}{Fluid} that allows interactive exploration of programmatically generated visualisations.
 
 At a high level, Galois Program Slicing assumes that, for each possible value that may be input or output by a program, there exists a lattice of {\em approximations} of that value. For a particular run of a program that takes input $x$ and produces output $y$, we also get a Galois connection between the lattice of approximations of $x$ and the lattice of approximations of $y$. The right half of the Galois connection is the ``forward direction'' taking approximations of the input to approximations of the output; the left half of the Galois connection is the ``backward direction'' that takes approximations of the output to the least (i.e., most approximate) approximation of the input that gives rise to this output approximation.
 
@@ -91,7 +88,7 @@ Previous work on Galois program slicing uses an operational semantics of program
 
 \subsection{Galois Program Slicing and Automatic Differentiation}
 
-\todo{explain why we want a more abstract view on galois program slicing}
+\todo{explain why we want a more abstract view on Galois program slicing}
 There is a close analogy between Galois Program Slicing and Automatic Differentiation for differentiable programs. We have already hinted at this in the description above, but let us now make it explicit.
 
 \begin{itemize}

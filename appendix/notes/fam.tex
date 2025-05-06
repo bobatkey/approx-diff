@@ -2,6 +2,7 @@
 \label{sec:fam}
 
 \begin{definition}[Category of $I$-indexed families of objects]
+\label{def:fam:Fam}
 For any set $I$ and any category $\cat{C}$ write $\Fam(I,\cat{C})$ for the category which has:
 \begin{itemize}
 \item as objects all $I$-indexed families of objects of $\cat{C}$;
@@ -28,8 +29,11 @@ X_{f(i)}$ for any $i \in I$;
 \end{itemize}
 \end{definition}
 
+By \emph{(strictly) indexed category over $\cat{C}$} we shall mean any (strict) functor $\cat{C}^\op \to
+\Cat$.
+
 \begin{definition}
-Then define $\Fam(-,\cat{C}): \Set^{\op} \to \Cat$ to be the functor which sends any set $I$ to
+Define $\Fam(-,\cat{C}): \Set^{\op} \to \Cat$ to be the indexed category which sends any set $I$ to
 $\Fam(I,\cat{C})$ and any function $f: I \to J$ to the functor $\reindex{-}{f}: \Fam(J,\cat{C}) \to
 \Fam(I,\cat{C})$.
 \end{definition}
