@@ -8,11 +8,15 @@ Recall that $\Fam(\cat{C})$ is the Grothendieck construction $\Grothendieck{X}\F
 
 $\Fam(\LatGal)$ has:
 \begin{itemize}
-\item as objects $(X, \partial X)$ all pairs of a set $X$ and and for each $x \in X$, a bounded lattice
+\item as objects $(X, \partial X)$ all pairs of a set $X$ and and for every $x \in X$, a bounded lattice
 $\partial X_x$;
 \item as morphisms $(X, \partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of functions $f: X \to
-Y$ and Galois connections $\partial f: \partial X_x \to \partial Y_{f(x)}$.
+Y$ and families of Galois connections $\partial f_x: \partial X_x \to \partial Y_{f(x)}$ for every $x \in X$.
 \end{itemize}
+
+\noindent with the role of the pullback along $f$ in the composition $(g, \partial g) \comp (f, \partial f) =
+(g \comp f, \reindex{\partial g}{f} \comp \partial f)$ being to select the appropriate lattice of
+approximations and Galois connection at each point.
 
 \todo{This is the basic setting for interpreting first-order programs.}
 
