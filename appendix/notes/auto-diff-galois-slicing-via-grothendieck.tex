@@ -1,16 +1,18 @@
 \subsection{Galois slicing and automatic differentiation via Grothendieck construction}
 \label{sec:galois-slicing-auto-diff-via-grothendieck}
 
-\subsubsection{Galois slicing via category of families}
+\subsubsection{Galois slicing via a category of families}
 \label{sec:galois-slicing-auto-diff-via-grothendieck:galois-slicing}
 
-Now recall that $\Fam(\LatGal)$ is the Grothendieck construction $\Grothendieck{X}\Fam(X, \LatGal)$, with:
+Recall that $\Fam(\LatGal)$ is the Grothendieck construction $\Grothendieck{X}\Fam(X, \LatGal)$ which has:
 \begin{itemize}
 \item as objects $(X, \partial X)$ all pairs of a set $X$ and and for each $x \in X$, a bounded lattice
 $\partial X_x$;
 \item as morphisms $(X, \partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of functions $f: X \to
 Y$ and Galois connections $\partial f: \partial X_x \to \partial Y_{f(x)}$.
 \end{itemize}
+
+The action of $\Fam(-,\LatGal)$ on a morphism $f: X \to Y$. Composition of any $(f, \partial f):$
 
 \subsubsection{Automatic differentiation via categories of families}
 \label{sec:galois-slicing-auto-diff-via-grothendieck:auto-diff}
@@ -32,3 +34,6 @@ For any $(f, \partial f): (\RR^m, \const(\RR^m)) \to (\RR^n, \const(\RR^n))$ and
 \noindent The composition $(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp
 \partial f): (\RR^m, \const(\RR^m)) \to (\RR^k, \const(\RR^k))$ corresponds exactly to the forward chain rule,
 since $(\reindex{\partial g}{f} \comp \partial f)_x = {\partial g}_{f(x)} \comp {\partial f}_x$.
+
+Similarly, $\Diff^*$ is equivalent to a full subcategory of $\Fam(\FinVect^\op)$ with composition
+corresponding to the backward chain rule.
