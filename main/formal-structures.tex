@@ -1,28 +1,31 @@
 \section{Formal Structures for Generalised Automatic Differentiation}
 
-\begin{definition}[Biproducts and Semi-additive categories]
+\subsection{Biproducts and Semi-Additive Categories}
+
+\begin{definition}[Semi-additive category]
 A category with finite products and coproducts is \emph{semi-additive} if the canonical morphisms (projections
 and injections) give an isomorphism
-\[\textstyle X \coprod Y \iso X \prod Y\] that is natural in both variables. The product/coproduct is called a
-\emph{biproduct}, and the biproduct structure is denoted by $(\biprod, 0)$. The unit $0$ is both terminal and
-initial and is called a \emph{zero} object.
+\[\textstyle X \coprod Y \iso X \prod Y\] that is natural in both variables.
 \end{definition}
 
-A semi-additive category $\cat{C}$ is enriched in $\CMon$, the category of commutative monoids: for any two
-morphisms $f, g: X \to Y$ in $\cat{C}$, the biproduct structure provides a way to ``add'' them together,
-forming a morphism $f + g: X \to Y$. Diagrammatically:
+The product/coproduct is called a \emph{biproduct}, and the biproduct structure is denoted by $(\biprod, 0)$.
+The unit $0$ is both terminal and initial and is called a \emph{zero} object. A semi-additive category
+$\cat{C}$ is enriched in $\CMon$, the category of commutative monoids: for any two morphisms $f, g: X \to Y$
+in $\cat{C}$, the biproduct structure provides a way to ``add'' them together, forming a morphism $f + g: X
+\to Y$. Diagrammatically:
 
+\vspace{-2mm}
 \begin{center}
 \begin{tikzcd}
    X \arrow[r, "\diag"] & X \biprod X \arrow[r, "f \biprod g"] & Y \biprod Y \arrow[r, "\codiag"] & Y
 \end{tikzcd}
 \end{center}
 
-\noindent Here $\diag$ denotes the diagonal $\prodM{\id_X}{\id_X}$ given by the universal property of the
-product and $\codiag$ denotes the codiagonal $\coprodM{\id_X}{\id_Y}$ given by the universal property of the
-coproduct. The $f \oplus g$ morphism is the component-wise map $\prodM{f \comp \pi_1}{g \comp \pi_2} =
-\coprodM{\inj_1 \comp f}{\inj_2 \comp g}$. Similarly we can exhibit a \emph{zero} morphism $0_{X,Y}$ by
-composing the unique maps in and out of the zero object:
+Here $\diag$ denotes the diagonal $\prodM{\id_X}{\id_X}$ given by the universal property of the product and
+$\codiag$ denotes the codiagonal $\coprodM{\id_X}{\id_Y}$ given by the universal property of the coproduct.
+The $f \oplus g$ morphism is the component-wise map $\prodM{f \comp \pi_1}{g \comp \pi_2} = \coprodM{\inj_1
+\comp f}{\inj_2 \comp g}$. Similarly we can exhibit a \emph{zero} morphism $0_{X,Y}$ by composing the unique
+maps in and out of the zero object:
 
 \begin{center}
 \begin{tikzcd}
