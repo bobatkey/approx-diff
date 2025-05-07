@@ -20,7 +20,14 @@ forming a morphism $f + g: X \to Y$. Diagrammatically:
 
 \noindent Here $\diag$ denotes the diagonal $\prodM{\id_X}{\id_X}$ given by the universal property of the
 product and $\codiag$ denotes the codiagonal $\coprodM{\id_X}{\id_Y}$ given by the universal property of the
-coproduct. The $f \oplus g$ morphism is the component-wise map $\prodM{f}{g} = \coprodM{f}{g}$.
+coproduct. The $f \oplus g$ morphism is the component-wise map $\prodM{f}{g} = \coprodM{f}{g}$. Similarly we
+can define a \emph{zero} morphism $0_{X,Y}$ by composing the unique maps in and out of the zero object:
+
+\begin{center}
+\begin{tikzcd}
+   X \arrow[r] & 0 \arrow[r] & Y
+\end{tikzcd}
+\end{center}
 
 \note{Probably a better way: (1) introduce the category of lattices and Galois connections, which is what we will use to interpret forward and backward approximation, and establish some properties of this category; (2) say that we want sets with each point having an associated lattice of approximations, and morphisms to match; (3) note that this is exactly the Grothendieck construction for a particular indexed category; (4) Say that CHAD is what we need here; (5) Recapitulate the bits of CHAD that we need, with our Agda formalisation; (6) Explain how we cope with higher-order structure, by using presheaves and the Yoneda embedding.}
 
