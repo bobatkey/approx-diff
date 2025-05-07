@@ -4,7 +4,7 @@
 
 First we introduce the category of lattices and Galois connections, which will serve as our base category for
 interpreting forward and backward Galois slicing. Galois connections are pairs of monotone functions between
-posets, where each is the closest approximation to an inverse of the other: one from above, one from below.
+posets, where each is the closest approximation (one from above, one from below) to an inverse of the other.
 
 \begin{definition}[Galois connection]
 Suppose $X$ and $Y$ are posets. A \emph{Galois connection} $f \adj g: X \to Y$ is a pair of monotone functions
@@ -12,19 +12,19 @@ $f: X \to Y$ and $g: Y \to X$ satisfying $y \leq f(x) \iff g(y) \leq x$ for any 
 \end{definition}
 
 \noindent The $\adj$ notation is justified because a Galois connection $f \adj g: X \to Y$ can also be seen an
-adjunction between poset-as-categories, with monotone $f$ and $g$ interpreted as functors; $f$ is usually
+adjunction between poset categories, with monotone $f$ and $g$ interpreted as functors; $f$ is usually
 referred to as the \emph{upper} (right) adjoint and $g$ as the \emph{lower} (left) adjoint. Galois connections
 compose component-wise, with $\id_X \adj \id_X: X \to X$ as the unit for composition, and thus form a category
 where the objects are posets and the morphisms are Galois connections.
 
-As indicated in \secref{introduction:galois-slicing}, for Galois slicing we require a setting where the
+As shown in \secref{introduction:galois-slicing}, for Galois slicing we require a setting where the
 approximants of a point form a bounded lattice, with least element $\bot$ representing the approximation that
 discards all information and greatest element $\top$ representing the approximation that discards no
-information; so we define the following subcategory.
+information. So we define the following subcategory.
 
 \begin{definition}
-Define the category $\LatGal$ which has as objects $X, Y$ all bounded lattices, and as morphisms from $X$ to
-$Y$, all Galois connections $f \adj g: X \to Y$.
+Define the category $\LatGal$ which has as objects $X, Y$ all bounded lattices, and as morphisms all Galois
+connections $f \adj g: X \to Y$.
 \end{definition}
 
 \noindent Right adjoints preserves limits and left adjoints preserves colimits, so for any $f \adj g: X \to Y$
