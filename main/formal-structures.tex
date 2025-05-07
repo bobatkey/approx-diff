@@ -2,7 +2,7 @@
 
 \begin{definition}[Biproducts and Semi-additive categories]
 A category with finite products and coproducts is \emph{semi-additive} if the canonical morphisms (projections
-and inclusions) give an isomorphism
+and injections) give an isomorphism
 \[\textstyle X \coprod Y \iso X \prod Y\] that is natural in both variables. The product/coproduct is called a
 \emph{biproduct}, and the biproduct structure is denoted by $(\biprod, 0)$. The unit $0$ is both terminal and
 initial and is called a \emph{zero} object.
@@ -20,14 +20,28 @@ forming a morphism $f + g: X \to Y$. Diagrammatically:
 
 \noindent Here $\diag$ denotes the diagonal $\prodM{\id_X}{\id_X}$ given by the universal property of the
 product and $\codiag$ denotes the codiagonal $\coprodM{\id_X}{\id_Y}$ given by the universal property of the
-coproduct. The $f \oplus g$ morphism is the component-wise map $\prodM{f}{g} = \coprodM{f}{g}$. Similarly we
-can define a \emph{zero} morphism $0_{X,Y}$ by composing the unique maps in and out of the zero object:
+coproduct. The $f \oplus g$ morphism is the component-wise map $\prodM{f \comp \pi_1}{g \comp \pi_2} =
+\coprodM{\inj_1 \comp f}{\inj_2 \comp g}$. Similarly we can exhibit a \emph{zero} morphism $0_{X,Y}$ by
+composing the unique maps in and out of the zero object:
 
 \begin{center}
 \begin{tikzcd}
    X \arrow[r, "!_X"] & 0 \arrow[r, "!^Y"] & Y
 \end{tikzcd}
 \end{center}
+
+It is easy to verify that $+$ is associative and commutative and that $f + 0 = f = 0 + f$, and so every
+hom-object $\cat{C}(X,Y)$ is an object in $\CMon$. Moreover composition is \emph{bilinear}, i.e.~given by a
+family of morphisms $\Hom{\cat{C}}{Y}{Z} \tensor \Hom{\cat{C}}{X}{Y} \to \Hom{\cat{C}}{X}{Z}$ in $\CMon$ that
+preserve the additive structure in $\Hom{\cat{C}}{Y}{Z}$ and $\Hom{\cat{C}}{X}{Y}$ separately:
+
+\begin{salign*}
+f \comp \zero = f = \zero \comp f
+\end{salign*}
+\begin{salign*}
+(f + g) \comp h &= (f \comp h) + (g \comp h) \\
+h \comp (f + g) &= (h \comp f) + (h \comp g)
+\end{salign*}
 
 \note{Probably a better way: (1) introduce the category of lattices and Galois connections, which is what we will use to interpret forward and backward approximation, and establish some properties of this category; (2) say that we want sets with each point having an associated lattice of approximations, and morphisms to match; (3) note that this is exactly the Grothendieck construction for a particular indexed category; (4) Say that CHAD is what we need here; (5) Recapitulate the bits of CHAD that we need, with our Agda formalisation; (6) Explain how we cope with higher-order structure, by using presheaves and the Yoneda embedding.}
 
