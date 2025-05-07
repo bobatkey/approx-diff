@@ -2,6 +2,21 @@
 
 \subsection{Category of lattices and Galois connections}
 
+First we introduce the category of lattices and Galois connections, which will serve as our base category for
+interpreting forward and backward Galois slicing. Galois connections are pairs of monotone functions between
+posets, where each is the closest approximation to an inverse of the other: one from above, one from below.
+
+\begin{definition}[Galois connection]
+Suppose $X$ and $Y$ are posets. A \emph{Galois connection} $f \adj g: X \to Y$ is a pair of monotone functions
+$f: X \to Y$ and $g: Y \to X$ satisfying $y \leq f(x) \iff g(y) \leq x$ for any $x \in X$ and $y \in Y$.
+\end{definition}
+
+\noindent The $\adj$ notation is justified because a Galois connection $f \adj g: X \to Y$ can also be seen an
+adjunction between poset-as-categories, with monotone $f$ and $g$ interpreted as functors; $f$ is usually
+referred to as the \emph{upper} (right) adjoint and $g$ as the \emph{lower} (left) adjoint. Galois connections
+compose component-wise, with $\id_X \adj \id_X: X \to X$ as the unit for composition. Thus we can define the
+following category.
+
 \subsection{Biproducts and Semi-Additive Categories}
 
 \begin{definition}[Semi-additive category]
