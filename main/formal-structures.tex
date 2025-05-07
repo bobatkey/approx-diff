@@ -14,8 +14,22 @@ $f: X \to Y$ and $g: Y \to X$ satisfying $y \leq f(x) \iff g(y) \leq x$ for any 
 \noindent The $\adj$ notation is justified because a Galois connection $f \adj g: X \to Y$ can also be seen an
 adjunction between poset-as-categories, with monotone $f$ and $g$ interpreted as functors; $f$ is usually
 referred to as the \emph{upper} (right) adjoint and $g$ as the \emph{lower} (left) adjoint. Galois connections
-compose component-wise, with $\id_X \adj \id_X: X \to X$ as the unit for composition. Thus we can define the
-following category.
+compose component-wise, with $\id_X \adj \id_X: X \to X$ as the unit for composition, and thus form a category
+where the objects are posets and the morphisms are Galois connections.
+
+As indicated in \secref{introduction:galois-slicing}, for Galois slicing we require a setting where the
+approximants of a point form a bounded lattice, with least element $\bot$ representing the approximation that
+discards all information and greatest element $\top$ representing the approximation that discards no
+information; so we define the following subcategory.
+
+\begin{definition}
+Define the category $\LatGal$ which has as objects $X, Y$ all bounded lattices, and as morphisms from $X$ to
+$Y$, all Galois connections $f \adj g: X \to Y$.
+\end{definition}
+
+\noindent Right adjoints preserves limits and left adjoints preserves colimits, so for any $f \adj g: X \to Y$
+in $\LatGal$, $f$ and $g$ preserve the meet-semilattice structure of $X$ and join-semilattice structure of $Y$
+respectively.
 
 \subsection{Biproducts and Semi-Additive Categories}
 
@@ -50,7 +64,7 @@ maps in and out of the zero object:
 \end{tikzcd}
 \end{center}
 
-It is easy to verify that $+$ is associative and commutative and that $f + 0 = f = 0 + f$, and so every
+It is easy to verify that $+$ is associative and commutative and that $f + 0 = f = 0 + f$, and thus that every
 hom-object $\cat{C}(X,Y)$ is an object in $\CMon$. Moreover composition is \emph{bilinear}, i.e.~given by a
 family of morphisms $\Hom{\cat{C}}{Y}{Z} \tensor \Hom{\cat{C}}{X}{Y} \to \Hom{\cat{C}}{X}{Z}$ in $\CMon$ that
 preserve the additive structure in $\Hom{\cat{C}}{Y}{Z}$ and $\Hom{\cat{C}}{X}{Y}$ separately:
@@ -63,7 +77,10 @@ f \comp \zero = f = \zero \comp f
 h \comp (f + g) &= (h \comp f) + (h \comp g)
 \end{salign*}
 
-\note{Probably a better way: (1) introduce the category of lattices and Galois connections, which is what we will use to interpret forward and backward approximation, and establish some properties of this category; (2) say that we want sets with each point having an associated lattice of approximations, and morphisms to match; (3) note that this is exactly the Grothendieck construction for a particular indexed category; (4) Say that CHAD is what we need here; (5) Recapitulate the bits of CHAD that we need, with our Agda formalisation; (6) Explain how we cope with higher-order structure, by using presheaves and the Yoneda embedding.}
+% Done:
+% (1) introduce the category of lattices and Galois connections, which is what we will use to interpret forward and backward approximation, and establish some properties of this category;
+
+\note{Probably a better way: (2) say that we want sets with each point having an associated lattice of approximations, and morphisms to match; (3) note that this is exactly the Grothendieck construction for a particular indexed category; (4) Say that CHAD is what we need here; (5) Recapitulate the bits of CHAD that we need, with our Agda formalisation; (6) Explain how we cope with higher-order structure, by using presheaves and the Yoneda embedding.}
 
 We take an approach based on the CHAD (Combinatory Homomorphic Automatic Differentiation) of Mattias Vákár and others \cite{nunes2023}. Here follows a rough overview of this approach and how we have applied it to Galois program slicing. \todo{Final version shouldn't be ``rough''!}
 
