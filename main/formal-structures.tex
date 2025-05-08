@@ -84,6 +84,17 @@ of $\cat{C}$, and as morphisms from $F \to G$, all families of morphisms $\eta(x
 for every $x \in X$, with naturality trivial because $X$ only has identity morphisms.
 \end{definition}
 
+\begin{definition}[Reindexing]
+For any function $f: X \to Y$ define the \emph{reindexing} functor $\reindex{-}{f}: \Func{Y}{\cat{C}} \to
+\Func(X,\cat{C})$ which:
+\begin{itemize}
+\item sends any $J$-indexed family $X$ to the $I$-indexed family $\reindex{X}{f}$ where $\reindex{X}{f}_i =
+X_{f(i)}$ for any $i \in I$;
+\item sends any morphism $g: X \to Y$ between $J$-indexed families to the morphism $\reindex{g}{f}:
+\reindex{X}{f} \to \reindex{Y}{f}$ where $\reindex{g}{f}_i = g_{f(i)}$.
+\end{itemize}
+\end{definition}
+
 \subsection{Biproducts and Semi-Additive Categories}
 
 An important observation about the semilattice homomorphisms that appear in adjoint pairs in $\LatGal$ is that
