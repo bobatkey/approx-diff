@@ -126,14 +126,24 @@ Z)$ in $\Grothendieck{}T$. We have:
 \partial g) \comp (f, \partial f): (X, \partial X) \to (Z, \partial Z)$ is then given by $(g \comp f,
 T(f)(\partial g) \comp \partial f)$.
 
+\begin{definition}[Category of families]
+For any category $\cat{C}$ define $\Fam(\cat{C})$ to be the Grothendieck construction
+$\Grothendieck{X}\Func{X}{\cat{C}}$.
+\end{definition}
+
+\noindent In $\Fam(\cat{C})$ the objects $(X, \partial X)$ are thus sets $X$ paired with indexed families
+$\partial X$ in $\Fam(X,\cat{C})$ and morphisms $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ are
+functions $f: X \to Y$ paired with morphisms $\partial f: \partial X \to \reindex{\partial Y}{f}$ in
+$\Fam(X,\cat{C})$.
+
 \subsubsection{Galois slicing via the Grothendieck construction}
 
 Now consider the total category $\Fam(\LatGal)$, which is our basic setting for interpreting first-order
-programs. This has as objects $(X, \partial X)$, all pairs of a set $X$ and and for every $x \in X$, a bounded
-lattice $\partial X_x$, and as morphisms $(X, \partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of
-a function $f: X \to Y$ and for every $x \in X$, a Galois connection $\partial f(x): \partial X(x) \to
-\partial Y(f(x))$, as required. The role of the pullback (reindexing) along $f$ in the composition $(g,
-\partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp \partial f)$ is to select the
+programs for Galois slicing. This has as objects $(X, \partial X)$, all pairs of a set $X$ and and for every
+$x \in X$, a bounded lattice $\partial X_x$, and as morphisms $(X, \partial X) \to (Y, \partial Y)$, all pairs
+$(f, \partial f)$ of a function $f: X \to Y$ and for every $x \in X$, a Galois connection $\partial f(x):
+\partial X(x) \to \partial Y(f(x))$, as required. The pullback (reindexing) along $f$ in the composition $(g,
+\partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp \partial f)$ selects the
 appropriate lattice of approximations and Galois connection at each point, using the baseline (unapproximated)
 function $f$.
 
