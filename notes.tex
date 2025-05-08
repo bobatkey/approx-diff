@@ -1,4 +1,21 @@
-\section{Notes}
+\documentclass[acmsmall,screen]{acmart}
+
+\usepackage{tabularx}
+\usepackage{bbm}
+\usepackage{tikz-cd}
+
+%\geometry{paperwidth=8.3in, paperheight=11.7in} % force to A4 for now
+\settopmatter{printacmref=false}
+\citestyle{acmauthoryear}
+\raggedbottom
+
+\input{macros}
+
+\begin{document}
+
+\title{Approximation as Differentiation: Notes}
+
+\maketitle
 
 \subsection{Overview}
 
@@ -27,14 +44,20 @@ Covered so far:
 
 \noindent $\Set$ will usually be $\Setoid$ in the Agda implementation but we will gloss that detail for now.
 
-\input{appendix/notes/preliminaries}
-\input{appendix/notes/auto-diff}
-\input{appendix/notes/cmon}
-\input{appendix/notes/cmon-enriched}
-\input{appendix/notes/biproduct}
-\input{appendix/notes/useful-semi-additive-categories}
-\input{appendix/notes/fam}
-\input{appendix/notes/set-indexed-product}
-\input{appendix/notes/grothendieck}
-\input{appendix/notes/auto-diff-galois-slicing-via-fam}
-\input{appendix/notes/language}
+\input{notes/preliminaries}
+\input{notes/auto-diff}
+\input{notes/cmon}
+\input{notes/cmon-enriched}
+\input{notes/biproduct}
+\input{notes/useful-semi-additive-categories}
+\input{notes/fam}
+\input{notes/set-indexed-product}
+\input{notes/grothendieck}
+\input{notes/auto-diff-galois-slicing-via-fam}
+
+\input{notes/language}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{bib}
+
+\end{document}
