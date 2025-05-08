@@ -86,13 +86,10 @@ for every $x \in X$, with naturality trivial because $X$ only has identity morph
 
 \begin{definition}[Reindexing]
 For any function $f: X \to Y$ define the \emph{reindexing} functor $\reindex{-}{f}: \Func{Y}{\cat{C}} \to
-\Func(X,\cat{C})$ which:
-\begin{itemize}
-\item sends any $J$-indexed family $X$ to the $I$-indexed family $\reindex{X}{f}$ where $\reindex{X}{f}_i =
-X_{f(i)}$ for any $i \in I$;
-\item sends any morphism $g: X \to Y$ between $J$-indexed families to the morphism $\reindex{g}{f}:
-\reindex{X}{f} \to \reindex{Y}{f}$ where $\reindex{g}{f}_i = g_{f(i)}$.
-\end{itemize}
+\Func{X}{\cat{C}}$ which sends any $Y$-indexed family $F$ over $\cat{C}$ to the $X$-indexed family
+$\reindex{F}{f}$ where $\reindex{F}{f}(x) = F(f(x))$ for any $x \in X$, and which sends any morphism $\eta: F
+\to G$ between $Y$-indexed families to the morphism $\reindex{g}{f}: \reindex{X}{f} \to \reindex{Y}{f}$
+between $X$-indexed families, with $\reindex{\eta}{f}(x) = \eta(f(x))$.
 \end{definition}
 
 \subsection{Biproducts and Semi-Additive Categories}
