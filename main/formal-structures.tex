@@ -20,25 +20,6 @@ Happily, $\FinVect$ and $\LatGal$ both have biproducts, as a consequence of them
 
 Vákár overcomes this by using different interpretations for forward and backward derivatives. we overcome this by using $\CMon$-enriched presheaves.\todo{elaborate.}
 
-\subsection{A categorical framework for Galois slicing}
-
-For a total language where types denote sets, the goal is to interpret programs as Galois connections relating
-approximations of their input to approximations of their output. Since these lattice of approximations depends
-on the value being approximated, the semantics of every type $\tau$ must have both a ``conventional''
-component, assigning $\tau$ to a set $X$, and an associated lattice of approximations $\partial X(x)$ for
-every point $x \in X$. The semantics of expression $e$ of type $Y$ with a single free variable of type $X$
-must then also have two components: a function $f: X \to Y$ giving the baseline (unapproximated) meaning of
-the expression, plus a family of Galois connections $\partial f(x): \partial X(x) \to \partial Y(f(x))$ for
-every $x \in X$ which can be used for slicing over that expression.
-
-This pattern of objects and morphisms is exactly the \emph{Grothendieck construction} for a particular indexed
-category $T: \Set^\op \to \Cat$, namely the functor which assigns to every set $X$ the functor category $T(X)
-= \Func{X}{\LatGal}$. Here the (discrete) category $X$ is a plain set and so $\Func{X}{\LatGal}$ is exactly
-the category of $X$-indexed families of bounded lattices, with $X$-indexed families of Galois connections
-between them as morphisms. The Grothendieck construction $\Grothendieck{}T$ is the ``total category'' which
-gloms all such $\Set$-indexed families together, with reindexing morphisms to transport between different
-indexing sets.
-
 \subsection{Category of lattices and Galois connections}
 
 First we introduce the category of lattices and Galois connections, which will serve as our base category for
@@ -65,16 +46,43 @@ As sketched in \secref{introduction:galois-slicing}, Galois slicing requires tha
 $x$ form a bounded lattice $(X, \meet, \join, \top, \bot)$, with least element $\bot$ representing the
 approximation that discards all information about $x$, greatest element $\top$ representing the approximation
 that retains all information about $x$, and $\meet$ and $\join$ providing two canonical ways to combine
-approximations. Thus rather than working directly in $\PosGal$, we define the following subcategory.
+approximations. Thus rather than working directly in $\PosGal$, we consider the following subcategory instead.
 
 \begin{definition}
-Define the category $\LatGal$ which has as objects $X = (X, \meet, \join, \top, \bot)$ all bounded lattices,
-and as morphisms all Galois connections $f \adj g: X \to Y$.
+Define $\LatGal$ to be the category which has as objects $X = (X, \meet, \join, \top, \bot)$ all bounded
+lattices, and as morphisms all Galois connections $f \adj g: X \to Y$.
 \end{definition}
 
 \noindent Right adjoints preserves limits and left adjoints preserves colimits, so for any $f \adj g: X \to Y$
 in $\LatGal$, $f$ is a \emph{meet-semilattice homomorphism}, i.e.~preserves the meet-semilattice structure
 $(X, \meet, \top)$. Similarly, $g$ is a join-semilattice homomorphism with respect to $(X, \join, \bot)$.
+
+\subsection{A categorical framework for Galois slicing}
+
+For a total language where types denote sets, our goal is to interpret programs as Galois connections relating
+approximations of their inputs to approximations of their outputs. Since these lattice of approximations
+depends on the value being approximated, the semantics of every type $\tau$ must have both a ``conventional''
+component, assigning $\tau$ to a set $X$, and an associated lattice of approximations $\partial X(x)$ for
+every point $x \in X$. The semantics of expression $e$ of type $Y$ with a single free variable of type $X$
+must then also have two components: a function $f: X \to Y$ giving the baseline (unapproximated) meaning of
+the expression, plus a family of Galois connections $\partial f(x): \partial X(x) \to \partial Y(f(x))$ for
+every $x \in X$ which can be used for slicing over that expression.
+
+This pattern of objects and morphisms is exactly the \emph{Grothendieck construction} for a particular indexed
+category $T: \Set^\op \to \Cat$, namely the functor which assigns to every set $X$ the functor category $T(X)
+= \Func{X}{\LatGal}$. Here the (discrete) category $X$ is a plain set and so $\Func{X}{\LatGal}$ is exactly
+the category of $X$-indexed families of bounded lattices, with $X$-indexed families of Galois connections
+between them as morphisms. The Grothendieck construction $\Grothendieck{}T$ is the ``total category'' which
+gloms all such $\Set$-indexed families of bounded lattices into the same category, with reindexing morphisms
+to transport between different indexing sets.
+
+\begin{definition}[Category of $X$-indexed families of objects]
+\label{def:fam:Fam}
+For any set $X$ (interpreted as a discrete category) and any category $\cat{C}$, recall that the functor
+category $\Func{X}{C}$ has as objects all functors $X \to \cat{C}$, in other words all $X$-indexed families of
+objects of $\cat{C}$, and as morphisms from $X \to \cat{C}$ to $Y \to \cat{C}$, all natural transformations,
+i.e.~families of morphisms $f_x: X_x \to Y_x$ in $\cat{C}$ for every $x \in X$.
+\end{definition}
 
 \subsection{Biproducts and Semi-Additive Categories}
 
