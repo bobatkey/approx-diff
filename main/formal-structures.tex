@@ -22,13 +22,14 @@ Vákár overcomes this by using different interpretations for forward and backwa
 
 \subsection{A categorical framework for Galois slicing}
 
-We will consider a total language where types can be interpreted as sets. The goal is to interpret programs as
-Galois connections relating approximations of their input to approximations of their output. Since the
-appropriate lattice of approximations depends on the value being approximated, the semantics of every type
-$\tau$ must have both a ``conventional'' component assigning $\tau$ to a set $X$, and an associated lattice of
+We will consider a total language where types denote sets. The goal is to interpret programs as Galois
+connections relating approximations of their input to approximations of their output. Since the appropriate
+lattice of approximations depends on the value being approximated, the semantics of every type $\tau$ must
+have both a ``conventional'' component assigning $\tau$ to a set $X$, and an associated lattice of
 approximations $\partial X(x)$ for every point $x \in X$. An expression $e$ of type $Y$ with a single free
-variable of type $X$ must be interpreted as a morphism that combining both a function $f: X \to Y$ and a
-family of Galois connections $\partial f(x): \partial X(x) \to \partial Y(f(x))$ for every $x \in X$.
+variable of type $X$ must then be interpreted as a morphism which also has two components: a function $f: X
+\to Y$ giving the baseline (unapproximated) behaviour of the program, plus a family of Galois connections
+$\partial f(x): \partial X(x) \to \partial Y(f(x))$ for every $x \in X$ which can be used for program slicing.
 
 \subsection{Category of lattices and Galois connections}
 
