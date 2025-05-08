@@ -76,12 +76,12 @@ between them as morphisms. The Grothendieck construction $\Grothendieck{}T$ is t
 gloms all such $\Set$-indexed families of bounded lattices into the same category, with reindexing morphisms
 to transport between different indexing sets.
 
-\begin{definition}[Category of $X$-indexed families of objects]
+\begin{definition}[Functor category of $X$-indexed families]
 \label{def:fam:Fam}
 For any set $X$ (interpreted as a discrete category) and any category $\cat{C}$, recall that the functor
-category $\Func{X}{C}$ has as objects all functors $X \to \cat{C}$, in other words all $X$-indexed families of
-objects of $\cat{C}$, and as morphisms from $X \to \cat{C}$ to $Y \to \cat{C}$, all families of morphisms
-$f_x: X_x \to Y_x$ in $\cat{C}$ for every $x \in X$, with naturality in $X$ immediate.
+category $\Func{X}{C}$ has as objects all functors $F: X \to \cat{C}$, namely $X$-indexed families of objects
+of $\cat{C}$, and as morphisms from $F \to G$, all families of morphisms $\eta(x): F(x) \to G(x)$ in $\cat{C}$
+for every $x \in X$, with naturality trivial because $X$ only has identity morphisms.
 \end{definition}
 
 \subsection{Biproducts and Semi-Additive Categories}
