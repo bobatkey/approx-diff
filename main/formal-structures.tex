@@ -64,13 +64,13 @@ maps in and out of the zero object:
 \end{tikzcd}
 \end{center}
 
-It is easy to verify that $+$ is associative and commutative and that $f + 0 = f = 0 + f$, and thus that every
+It is easy to verify that $+$ is associative and commutative and that $f + 0_{X,Y} = f$, and thus that every
 hom-object $\cat{C}(X,Y)$ is an object in $\CMon$. Moreover composition is \emph{bilinear}, i.e.~given by a
 family of morphisms $\Hom{\cat{C}}{Y}{Z} \tensor \Hom{\cat{C}}{X}{Y} \to \Hom{\cat{C}}{X}{Z}$ in $\CMon$ that
 preserve the additive structure in $\Hom{\cat{C}}{Y}{Z}$ and $\Hom{\cat{C}}{X}{Y}$ separately:
 
 \begin{salign*}
-f \comp \zero = f = \zero \comp f
+f \comp \zero_{X,Y} = 0_{X,Z} = \zero_{Y,Z} \comp f
 \end{salign*}
 \begin{salign*}
 (f + g) \comp h &= (f \comp h) + (g \comp h) \\
