@@ -3,33 +3,53 @@
 \subsection{Category of lattices and Galois connections}
 
 First we introduce the category of lattices and Galois connections, which will serve as our base category for
-interpreting forward and backward Galois slicing. Galois connections are pairs of monotone functions between
-posets, where each is the closest approximation (one from above, one from below) to an inverse of the other.
+interpreting forward and backward Galois slicing. Galois connections are pairs of monotone functions $f: Y \to
+X$ and $g: X \to Y$ between posets, where $f$ is the (pointwise) best approximation from below to an inverse
+of $g$, and $g$ the best approximation from above to an inverse of $f$.
 
 \begin{definition}[Galois connection]
 Suppose $X$ and $Y$ are posets. A \emph{Galois connection} $f \adj g: X \to Y$ is a pair of monotone functions
-$f: X \to Y$ and $g: Y \to X$ satisfying $y \leq f(x) \iff g(y) \leq x$ for any $x \in X$ and $y \in Y$.
+$f: Y \to X$ and $g: X \to Y$ satisfying $y \leq f(x) \iff g(y) \leq x$ for any $x \in X$ and $y \in Y$.
 \end{definition}
 
-\noindent The $\adj$ notation is justified because a Galois connection $f \adj g: X \to Y$ can also be seen an
-adjunction between poset categories, with monotone $f$ and $g$ interpreted as functors; $f$ is usually
-referred to as the \emph{upper} (right) adjoint and $g$ as the \emph{lower} (left) adjoint. Galois connections
-compose component-wise, with $\id_X \adj \id_X: X \to X$ as the unit for composition, and thus form a category
-where the objects are posets and the morphisms are Galois connections.
+\noindent Galois connections thus generalise order isomorphisms. The $\adj$ notation is justified because a
+Galois connection $f \adj g: X \to Y$ can also be seen an adjunction between poset categories, with monotone
+$f$ and $g$ interpreted as functors; $f$ is usually referred to as the \emph{upper} (right) adjoint and $g$ as
+the \emph{lower} (left) adjoint. Galois connections compose component-wise, with $\id_X \adj \id_X: X \to X$
+as the unit for composition, and thus form a category $\PosGal$ with all posets as objects and all Galois
+connections between them as morphisms.
 
-As shown in \secref{introduction:galois-slicing}, for Galois slicing we require a setting where the
-approximants of a point form a bounded lattice, with least element $\bot$ representing the approximation that
-discards all information and greatest element $\top$ representing the approximation that discards no
-information. So we define the following subcategory.
+As sketched in \secref{introduction:galois-slicing}, for Galois slicing we require a setting where the
+approximants of a point $x$ form a bounded lattice $(X, \meet, \join, \top, \bot)$, with least element $\bot$
+representing the approximation that discards all information about $x$, greatest element $\top$ representing
+the approximation that retains all information about $x$, and $\meet$ and $\join$ providing two canonical ways
+to combine approximations. Thus rather than working in $\PosGal$, we define the following subcategory.
 
 \begin{definition}
-Define the category $\LatGal$ which has as objects $X, Y$ all bounded lattices, and as morphisms all Galois
-connections $f \adj g: X \to Y$.
+Define the category $\LatGal$ which has as objects $X = (X, \meet, \join, \top, \bot)$ all bounded lattices,
+and as morphisms all Galois connections $f \adj g: X \to Y$.
 \end{definition}
 
 \noindent Right adjoints preserves limits and left adjoints preserves colimits, so for any $f \adj g: X \to Y$
-in $\LatGal$, $f$ and $g$ preserve the meet-semilattice structure of $X$ and join-semilattice structure of $Y$
-respectively.
+in $\LatGal$, $f$ is a \emph{meet-semilattice homomorphism}, i.e.~preserves the meet-semilattice structure
+$(X, \meet, \top)$. Similarly, $g$ is a join-semilattice homomorphism with respect to $(X, \join, \bot)$.
+
+\subsubsection{Additive structure on morphisms.}
+
+A bounded semilattice is an example of a \emph{commutative monoid} $(X, +, 0)$, namely a set $X$ equipped with
+an associative, commutative binary operation $+$ with unit $0$. One observation about commutative monoids is
+that pointwise lifting of $+$ to homomorphisms $f, g: X \to Y$, where $(f + g)(x) = f(x) + g(x): X \to Y$, is
+also ``additive'', in the sense of being associative and commutative and having a ``zero'' homomorphism
+$0_{X,Y}: X \to Y$ given by the constant map sending any $x \in X$ to $0_Y$, which acts as a unit for addition
+of homomorphisms. The homomorphisms from $X$ to $Y$ thus have a commutative monoid structure themselves.
+
+In particular $\LatGal$ has this structure..
+
+% Moreover since $(X, \top, \meet)$ is a commutative monoid, and thus a $\CMon$-enriched (poset)
+% category, for any $X, Y$ there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y} = \const(\top_Y): X
+% \to Y$ and also (idempotent) addition of homomorphisms $f +_{\meet} g: X \to Y$ given pointwise by $\meet$.
+% Dually, there is a zero join-semilattice homomorphism $0^{\join}_{X,Y} = \const(\bot_Y): X \to Y$ and
+% idempotent addition of homomorphisms $f +_{\join} g: X \to Y$ given pointwise by $\join$.
 
 \subsection{Biproducts and Semi-Additive Categories}
 
@@ -40,11 +60,10 @@ and injections) give an isomorphism
 \end{definition}
 
 The product/coproduct is called a \emph{biproduct}, and the biproduct structure is denoted by $(\biprod, 0)$.
-The unit $0$ is both terminal and initial and is called a \emph{zero} object. \todo{Probably want to state the
-biproduct ``laws'' that follow from this formulation.} A semi-additive category $\cat{C}$ is enriched in
-$\CMon$, the category of commutative monoids: for any two morphisms $f, g: X \to Y$ in $\cat{C}$, the
-biproduct structure provides a way to ``add'' them together, forming a morphism $f + g: X \to Y$.
-Diagrammatically:
+The unit $0$ is both terminal and initial and is called a \emph{zero} object. \todo{State biproduct ``laws''
+that follow from this formulation.} A semi-additive category $\cat{C}$ is enriched in $\CMon$, the category of
+commutative monoids: for any two morphisms $f, g: X \to Y$ in $\cat{C}$, the biproduct structure provides a
+way to ``add'' them together, forming a morphism $f + g: X \to Y$. Diagrammatically:
 
 \vspace{-2mm}
 \begin{center}

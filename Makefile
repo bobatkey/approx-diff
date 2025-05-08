@@ -1,4 +1,6 @@
-.PHONY default: main notes # otherwise confused by folders with the same name
+.PHONY: main notes # otherwise confused by folders with the same name
+
+default: main
 
 main:
 	pdflatex main
