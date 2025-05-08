@@ -94,14 +94,22 @@ pointwise.
 \begin{definition}[Reindexing]
 For any function $f: X \to Y$ define the \emph{reindexing} functor $\reindex{-}{f}: \Func{Y}{\cat{C}} \to
 \Func{X}{\cat{C}}$ which sends any $Y$-indexed family $F$ over $\cat{C}$ to the $X$-indexed family
-$\reindex{F}{f} = F \comp f$, with $f$ interpreted as the unique functor between $X$ and $Y$ as discrete
-categories.
+$\reindex{F}{f} = F \comp f$, regarding $f$ as a functor between $X$ and $Y$ as discrete categories.
 \end{definition}
 
 \begin{definition}
 Let $\Func{-}{\cat{C}}: \Set^{\op} \to \Cat$ denote the indexed category which sends any set $X$ to the
 category $\Func{X}{\cat{C}}$ and any function $f: X \to Y$ to the functor $\reindex{-}{f}: \Func{Y}{\cat{C}}
 \to \Func{X}{\cat{C}}$.
+\end{definition}
+
+\begin{definition}
+\label{def:grothendieck:Grothendieck}
+Suppose an indexed category $T: \cat{C}^\op \to \Cat$. The \emph{Grothendieck construction} for $T$ is the
+category $\Grothendieck{X}T(X)$ (also written $\Grothendieck{}T$) which has as objects, all pairs $(X,
+\partial X)$ of an object $X$ of $\cat{C}$ and an object $\partial X$ of $T(X)$, and as morphisms $(X,
+\partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of morphisms $f: X \to Y$ in $\cat{C}$ and
+morphisms $\partial f: \partial X \to T(f)(\partial Y)$ in $T(X)$.
 \end{definition}
 
 \subsection{Biproducts and Semi-Additive Categories}
