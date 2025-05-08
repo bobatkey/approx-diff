@@ -19,11 +19,11 @@ the \emph{lower} (left) adjoint. Galois connections compose component-wise, with
 as the unit for composition, and thus form a category $\PosGal$ with all posets as objects and all Galois
 connections between them as morphisms.
 
-As sketched in \secref{introduction:galois-slicing}, Galois slicing requires the approximants of a point $x$
-to form a bounded lattice $(X, \meet, \join, \top, \bot)$, with least element $\bot$ representing the
+As sketched in \secref{introduction:galois-slicing}, Galois slicing requires that the approximants of a point
+$x$ form a bounded lattice $(X, \meet, \join, \top, \bot)$, with least element $\bot$ representing the
 approximation that discards all information about $x$, greatest element $\top$ representing the approximation
 that retains all information about $x$, and $\meet$ and $\join$ providing two canonical ways to combine
-approximations. Thus rather than working in $\PosGal$, we define the following subcategory.
+approximations. Thus rather than working directly in $\PosGal$, we define the following subcategory.
 
 \begin{definition}
 Define the category $\LatGal$ which has as objects $X = (X, \meet, \join, \top, \bot)$ all bounded lattices,
@@ -34,24 +34,17 @@ and as morphisms all Galois connections $f \adj g: X \to Y$.
 in $\LatGal$, $f$ is a \emph{meet-semilattice homomorphism}, i.e.~preserves the meet-semilattice structure
 $(X, \meet, \top)$. Similarly, $g$ is a join-semilattice homomorphism with respect to $(X, \join, \bot)$.
 
-\subsubsection{Additive structure on morphisms.}
-
-A bounded semilattice is an example of a \emph{commutative monoid} $(X, +, 0)$, namely a set $X$ equipped with
-an associative, commutative binary operation $+$ with unit $0$. One observation about commutative monoids is
-that pointwise lifting of $+$ to homomorphisms $f, g: X \to Y$, where $(f + g)(x) = f(x) + g(x): X \to Y$, is
-also ``additive'', in the sense of being associative and commutative and having a ``zero'' homomorphism
-$0_{X,Y}: X \to Y$ given by the constant map sending any $x \in X$ to $0_Y$, which acts as a unit for addition
-of homomorphisms. The homomorphisms from $X$ to $Y$ thus have a commutative monoid structure themselves.
-
-In particular $\LatGal$ has this structure..
-
-% Moreover since $(X, \top, \meet)$ is a commutative monoid, and thus a $\CMon$-enriched (poset)
-% category, for any $X, Y$ there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y} = \const(\top_Y): X
-% \to Y$ and also (idempotent) addition of homomorphisms $f +_{\meet} g: X \to Y$ given pointwise by $\meet$.
-% Dually, there is a zero join-semilattice homomorphism $0^{\join}_{X,Y} = \const(\bot_Y): X \to Y$ and
-% idempotent addition of homomorphisms $f +_{\join} g: X \to Y$ given pointwise by $\join$.
-
 \subsection{Biproducts and Semi-Additive Categories}
+
+An important observation about the semilattice homomorphisms that appear in adjoint pairs in $\LatGal$ is that
+pointwise lifting of $\meet$ to meet-semilattice homomorphisms $f, g: X \to Y$, where $(f \meet g)(x) = f(x)
+\meet g(x): X \to Y$, gives a notion of ``addition'' for these maps which is associative and commutative, and
+which has a ``zero'' homomorphism $0_{X,Y}: X \to Y$ given by the constant map sending any $x \in X$ to $0_Y$,
+acting as a unit for addition of homomorphisms. The same can be said for the join-preserving maps from $X$ to
+$Y$, which also have a commutative monoid structure; Galois connections inherit this structure component-wise.
+We now say more generally how this so-called \emph{semi-additive} structure on morphisms arises and explain
+its significance to adapting CHAD to provide a semantic basis for Galois slicing as well as automatic
+differentiation.
 
 \begin{definition}[Semi-additive category]
 A category with finite products and coproducts is \emph{semi-additive} if the canonical morphisms (projections
@@ -65,7 +58,6 @@ that follow from this formulation.} A semi-additive category $\cat{C}$ is enrich
 commutative monoids: for any two morphisms $f, g: X \to Y$ in $\cat{C}$, the biproduct structure provides a
 way to ``add'' them together, forming a morphism $f + g: X \to Y$. Diagrammatically:
 
-\vspace{-2mm}
 \begin{center}
 \begin{tikzcd}
    X \arrow[r, "\diag"] & X \biprod X \arrow[r, "f \biprod g"] & Y \biprod Y \arrow[r, "\codiag"] & Y
@@ -97,10 +89,7 @@ f \comp \zero_{X,Y} = 0_{X,Z} = \zero_{Y,Z} \comp f
 h \comp (f + g) &= (h \comp f) + (h \comp g)
 \end{salign*}
 
-% Done:
-% (1) introduce the category of lattices and Galois connections, which is what we will use to interpret forward and backward approximation, and establish some properties of this category;
-
-\note{Probably a better way: (2) say that we want sets with each point having an associated lattice of approximations, and morphisms to match; (3) note that this is exactly the Grothendieck construction for a particular indexed category; (4) Say that CHAD is what we need here; (5) Recapitulate the bits of CHAD that we need, with our Agda formalisation; (6) Explain how we cope with higher-order structure, by using presheaves and the Yoneda embedding.}
+\note{Probably a better way: (1) introduce the category of lattices and Galois connections, which is what we will use to interpret forward and backward approximation, and establish some properties of this category; (2) say that we want sets with each point having an associated lattice of approximations, and morphisms to match; (3) note that this is exactly the Grothendieck construction for a particular indexed category; (4) Say that CHAD is what we need here; (5) Recapitulate the bits of CHAD that we need, with our Agda formalisation; (6) Explain how we cope with higher-order structure, by using presheaves and the Yoneda embedding.}
 
 We take an approach based on the CHAD (Combinatory Homomorphic Automatic Differentiation) of Mattias Vákár and others \cite{nunes2023}. Here follows a rough overview of this approach and how we have applied it to Galois program slicing. \todo{Final version shouldn't be ``rough''!}
 
