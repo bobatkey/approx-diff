@@ -112,6 +112,31 @@ category $\Grothendieck{X}T(X)$ (also written $\Grothendieck{}T$) which has as o
 morphisms $\partial f: \partial X \to T(f)(\partial Y)$ in $T(X)$.
 \end{definition}
 
+\noindent The $\partial X$ is intended to suggest the connection between the Grothendieck construction and the
+idea of tangent spaces and derivatives. To understand how the $\partial X$ components compose, consider any
+$(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ and $(g, \partial g): (Y, \partial Y) \to (Z, \partial
+Z)$ in $\Grothendieck{}T$. We have:
+
+\begin{itemize}
+\item $\partial f: \partial X \to T(f)(\partial Y)$;
+\item $T(f)(\partial g): T(f)(\partial Y) \to T(f)(T(g)(\partial Z)) = T(g \comp f)(\partial Z)$.
+\end{itemize}
+
+\noindent where $T(f)(\partial g)$ is the image of $\partial g$ in the functor $T(f)$. The composition $(g,
+\partial g) \comp (f, \partial f): (X, \partial X) \to (Z, \partial Z)$ is then given by $(g \comp f,
+T(f)(\partial g) \comp \partial f)$.
+
+\subsubsection{Galois slicing via the Grothendieck construction}
+
+Now consider the total category $\Fam(\LatGal)$, which is our basic setting for interpreting first-order
+programs. This has as objects $(X, \partial X)$, all pairs of a set $X$ and and for every $x \in X$, a bounded
+lattice $\partial X_x$, and as morphisms $(X, \partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of
+a function $f: X \to Y$ and for every $x \in X$, a Galois connection $\partial f(x): \partial X(x) \to
+\partial Y(f(x))$, as required. The role of the pullback (reindexing) along $f$ in the composition $(g,
+\partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp \partial f)$ is to select the
+appropriate lattice of approximations and Galois connection at each point, using the baseline (unapproximated)
+function $f$.
+
 \subsection{Biproducts and Semi-Additive Categories}
 
 An important observation about the semilattice homomorphisms that appear in adjoint pairs in $\LatGal$ is that
