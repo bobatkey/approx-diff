@@ -20,12 +20,25 @@ Happily, $\FinVect$ and $\LatGal$ both have biproducts, as a consequence of them
 
 Vákár overcomes this by using different interpretations for forward and backward derivatives. we overcome this by using $\CMon$-enriched presheaves.\todo{elaborate.}
 
+\subsection{A categorical framework for Galois slicing}
+
+We will consider a total language where types denote sets. The goal is to interpret programs as Galois
+connections relating approximations of their input to approximations of their output. Since the appropriate
+lattice of approximations depends on the value being approximated, the semantics of every type $\tau$ must
+have both a ``conventional'' component assigning $\tau$ to a set $X$, and an associated lattice of
+approximations $\partial X(x)$ for every point $x \in X$. An expression $e$ of type $Y$ with a single free
+variable of type $X$ must be interpreted as a morphism that combining both a function $f: X \to Y$ and a
+family of Galois connections $\partial f(x): \partial X(x) \to \partial Y(f(x))$ for every $x \in X$.
+
 \subsection{Category of lattices and Galois connections}
 
 First we introduce the category of lattices and Galois connections, which will serve as our base category for
 interpreting forward and backward Galois slicing. Galois connections are pairs of monotone functions $f: Y \to
 X$ and $g: X \to Y$ between posets, where $f$ is the (pointwise) best approximation from below to an inverse
-of $g$, and $g$ the best approximation from above to an inverse of $f$.
+of $g$, and $g$ the best approximation from above to an inverse of $f$. This setup is a nice fit for the
+bidirectional nature of (dynamic) program slicing, with $f$ capturing \emph{backward} slicing (producing the
+least input slice for a given slice of the output), and $g$ capturing \emph{forward} slicing (producing the
+greatest output slice for a given slice of the input).
 
 \begin{definition}[Galois connection]
 Suppose $X$ and $Y$ are posets. A \emph{Galois connection} $f \adj g: X \to Y$ is a pair of monotone functions
