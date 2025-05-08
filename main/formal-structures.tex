@@ -54,13 +54,13 @@ lattices, and as morphisms all Galois connections $f \adj g: X \to Y$.
 \end{definition}
 
 \noindent Right adjoints preserves limits and left adjoints preserves colimits, so for any $f \adj g: X \to Y$
-in $\LatGal$, $f$ is a \emph{meet-semilattice homomorphism}, i.e.~preserves the meet-semilattice structure
-$(X, \meet, \top)$. Similarly, $g$ is a join-semilattice homomorphism with respect to $(X, \join, \bot)$.
+in $\LatGal$, $g$ is a \emph{meet-semilattice homomorphism}, i.e.~preserves the meet-semilattice structure
+$(X, \meet, \top)$. Similarly, $f$ is a join-semilattice homomorphism with respect to $(X, \join, \bot)$.
 
 \subsection{A categorical framework for Galois slicing}
 
 For a total language where types denote sets, our goal is to interpret programs as Galois connections relating
-approximations of their inputs to approximations of their outputs. Since these lattice of approximations
+approximations of their inputs to approximations of their outputs. Since these lattices of approximations
 depends on the value being approximated, the semantics of every type $\tau$ must have both a ``conventional''
 component, assigning $\tau$ to a set $X$, and an associated lattice of approximations $\partial X(x)$ for
 every point $x \in X$. The semantics of expression $e$ of type $Y$ with a single free variable of type $X$
@@ -122,9 +122,9 @@ Z)$ in $\Grothendieck{}T$. We have:
 \item $T(f)(\partial g): T(f)(\partial Y) \to T(f)(T(g)(\partial Z)) = T(g \comp f)(\partial Z)$.
 \end{itemize}
 
-\noindent where $T(f)(\partial g)$ is the image of $\partial g$ in the functor $T(f)$. The composition $(g,
-\partial g) \comp (f, \partial f): (X, \partial X) \to (Z, \partial Z)$ is then given by $(g \comp f,
-T(f)(\partial g) \comp \partial f)$.
+\noindent where $T(f)(\partial g)$ is the image of $\partial g$ in the ``reindexing'' functor $T(f)$. The
+composition $(g, \partial g) \comp (f, \partial f): (X, \partial X) \to (Z, \partial Z)$ is then given by $(g
+\comp f, T(f)(\partial g) \comp \partial f)$.
 
 \begin{definition}[Category of families]
 For any category $\cat{C}$ define $\Fam(\cat{C})$ to be the Grothendieck construction
