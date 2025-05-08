@@ -1,0 +1,72 @@
+\subsection{Preliminaries}
+
+\subsubsection{Notation}
+
+\paragraph{Coproduct and product of morphisms.} In a category with coproducts $X + Y$ or products $X \times
+Y$, we write:
+\begin{itemize}
+\item $\coprodM{f}{g}: X \coprod Y \to Z$ for the coproduct of morphisms $f: X \to Z$ and $g: Y \to Z$
+\item $\prodM{f}{g}: X \to Y \times Z$ for the product of morphisms $f: X \to Y$ and $g: X \to Z$
+\item $(f,g): X \times Y \to Z \times W$ for $\prodM{f \comp \proj_1}{g \comp \proj_2}$ where $f: X \to Z$ and $g: Y \to W$.
+\end{itemize}
+
+\paragraph{Constant function.} Write $\const(y): X \to Y$ for the function which sends any $x \in X$ to $y \in
+Y$.
+
+\paragraph{Functor category.} Write $\Func{\cat{C}}{\cat{D}}$ for the category of functors $\cat{C} \to
+\cat{D}$.
+
+\subsubsection{$\mathscr{V}$-categories (for concrete $\mathscr{V}$)}
+
+Let $\mathscr{V}$ range over monoidal categories $(\mathscr{V}, \tensor, I)$ that are \emph{concrete},
+i.e.~have a forgetful functor to $\Set$. In any $\mathscr{V}$-enriched category (or
+\emph{$\mathscr{V}$-category}) $\cat{C}$, the hom-objects $\Hom{\cat{C}}{X}{Y}$ have underlying sets and the
+functoriality and naturality conditions for $\mathscr{V}$-functors and $\mathscr{V}$-natural transformations
+can be formulated elementwise (as per the $\Set$-enriched case) rather than more generally in terms of
+morphisms from the tensor unit $I$. \todo{Be explicit about composition being a family of morphisms
+$\Hom{\cat{C}}{Y}{Z} \tensor \Hom{\cat{C}}{X}{Y} \to \Hom{\cat{C}}{X}{Z}$ in $\mathscr{V}$.}
+
+\begin{definition}[$\mathscr{V}$-functor]
+\label{def:cmon-enriched:enriched-functor}
+For any $\mathscr{V}$-enriched categories $\cat{C}$ and $\cat{D}$, a \emph{$\mathscr{V}$-enriched} functor $F:
+\cat{C} \to \cat{D}$ on morphisms is a map sending every object $X$ of $\cat{C}$ to an object $F(X)$ of
+$\cat{D}$, plus a family of morphisms $F_{X,Y}: \Hom{\cat{C}}{X}{Y} \to \Hom{\cat{D}}{F(X)}{F(Y)}$ between
+hom-objects in $\mathscr{V}$, obeying the usual functor laws.
+\end{definition}
+
+\noindent The action of a $\mathscr{V}$-functor on morphisms thus necessarily preserves the
+$\mathscr{V}$-structure on the hom-objects, since it is is given by a morphism in $\mathscr{V}$. The notion of
+$\mathscr{V}$-natural transformation is defined similarly.
+
+\begin{definition}[$\mathscr{V}$-natural transformation]
+For any $\mathscr{V}$-enriched categories $\cat{C}$ and $\cat{D}$ and $\mathscr{V}$-functors $F, G: \cat{C}
+\to \cat{D}$, a {$\mathscr{V}$-natural transformation} $\eta: F \naturalto G$ is a family of morphisms
+$\eta_X: F(X) \to G(X)$ in $\cat{D}$ satisfying the usual naturality square for every $f: X \to Y$ in
+$\cat{C}$. \todo{This is sufficient because $\comp_{X,Y,Z}$ as well as $F$ and $G$ respects the
+$\mathscr{V}$-structure?}
+\end{definition}
+
+% making the following commute:
+%
+% \begin{center}
+% \begin{tikzcd}[column sep=1.8cm]
+% I \arrow[d, equals] \arrow[r, "\id_X"] & \Hom{\cat{C}}{X}{X} \arrow[d, "F_{X,X}"] \\
+% I \arrow[r, "\id_{F(X)}"'] & \Hom{\cat{D}}{F(X)}{F(X)}
+% \end{tikzcd}
+% \hspace{5mm}
+% \begin{tikzcd}[column sep=2.6cm]
+%    \Hom{\cat{C}}{Y}{Z} \tensor \Hom{\cat{C}}{X}{Y} \arrow[r, "\comp_{X,Y,Z}"] \arrow[d, "F_{Y,Z} \tensor F_{X,Y}"']
+%    & \Hom{\cat{C}}{X}{Z} \arrow[d, "F_{X,Z}"] \\
+%    \Hom{\cat{D}}{F(Y)}{F(Z)} \tensor \Hom{\cat{D}}{F(X)}{F(Y)} \arrow[r, "\comp_{F(X),F(Y),F(Z)}"'] &
+%    \Hom{\cat{D}}{F(X)}{F(Z)}
+% \end{tikzcd}
+% \end{center}
+%
+% \noindent These generalise the usual functor laws to a setting where the hom-objects are not necessarily sets
+% and thus do not support an elementwise formulation, although here we are only interested in the situation
+% where $\mathscr{V}$ is concrete.
+
+\begin{definition}[Category of enriched functors]
+Write $\Func{\cat{C}}{\cat{D}}_{\mathscr{V}}$ for the category of $\mathscr{V}$-enriched functors from
+$\cat{C}$ to $\cat{D}$.
+\end{definition}
