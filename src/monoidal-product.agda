@@ -171,8 +171,8 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂}
          𝒟.≈ (F.fmor 𝒞M.⊗-lunit⁻¹ 𝒟.∘ 𝒟M.⊗-lunit)
 
       mult-runit : ∀ {x} →
-              (mult {𝒞M.I⊗}{x} 𝒟.∘ (unit 𝒟M.⊗m 𝒟.id _))
-         𝒟.≈ (F.fmor 𝒞M.⊗-lunit⁻¹ 𝒟.∘ 𝒟M.⊗-lunit)
+              (mult {x}{𝒞M.I⊗} 𝒟.∘ (𝒟.id _ 𝒟M.⊗m unit))
+         𝒟.≈ (F.fmor 𝒞M.⊗-runit⁻¹ 𝒟.∘ 𝒟M.⊗-runit)
 
   -- a.k.a. strong monoidal
   record MonoidalFunctor : Set (o₁ ⊔ m₁ ⊔ m₂ ⊔ e₂) where
