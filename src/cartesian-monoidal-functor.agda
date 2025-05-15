@@ -77,7 +77,99 @@ F-monoidal .lax-monoidal .mult-natural {x₁} {x₂} {y₁} {y₂} f g = begin
         module PFx₁Fy₁ = IsProduct (FP .preserve-products _ _ Px₁y₁.prod Px₁y₁.p₁ Px₁y₁.p₂ Px₁y₁.isProduct)
         module Px₂y₂ = Product (HasProducts.getProduct 𝒞-products x₂ y₂)
         module PFx₂Fy₂ = IsProduct (FP .preserve-products _ _ Px₂y₂.prod Px₂y₂.p₁ Px₂y₂.p₂ Px₂y₂.isProduct)
-F-monoidal .lax-monoidal .mult-assoc = {!!}
+F-monoidal .lax-monoidal .mult-assoc {x} {y} {z} = begin
+    PFxFyz.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ (𝒟P.pair (𝒟.id _ 𝒟.∘ 𝒟P.p₁) (PFyFz.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₂) 𝒟.∘ 𝒟P.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.p₁) (𝒟P.pair (𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂))
+  ≈⟨ PFxFyz.pair-natural _ _ _ ⟩
+    PFxFyz.pair (𝒟P.p₁ 𝒟.∘ (𝒟P.pair (𝒟.id _ 𝒟.∘ 𝒟P.p₁) (PFyFz.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₂) 𝒟.∘ 𝒟P.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.p₁) (𝒟P.pair (𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂)))
+                (𝒟P.p₂ 𝒟.∘ (𝒟P.pair (𝒟.id _ 𝒟.∘ 𝒟P.p₁) (PFyFz.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₂) 𝒟.∘ 𝒟P.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.p₁) (𝒟P.pair (𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂)))
+  ≈˘⟨ PFxFyz.pair-cong (𝒟.assoc _ _ _) (𝒟.assoc _ _ _) ⟩
+    PFxFyz.pair ((𝒟P.p₁ 𝒟.∘ 𝒟P.pair (𝒟.id _ 𝒟.∘ 𝒟P.p₁) (PFyFz.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₂)) 𝒟.∘ 𝒟P.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.p₁) (𝒟P.pair (𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂))
+                ((𝒟P.p₂ 𝒟.∘ 𝒟P.pair (𝒟.id _ 𝒟.∘ 𝒟P.p₁) (PFyFz.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₂)) 𝒟.∘ 𝒟P.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.p₁) (𝒟P.pair (𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂))
+  ≈⟨ PFxFyz.pair-cong (𝒟.∘-cong (𝒟P.pair-p₁ _ _) 𝒟.≈-refl) (𝒟.∘-cong (𝒟P.pair-p₂ _ _) 𝒟.≈-refl) ⟩
+    PFxFyz.pair ((𝒟.id _ 𝒟.∘ 𝒟P.p₁) 𝒟.∘ 𝒟P.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.p₁) (𝒟P.pair (𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂))
+                ((PFyFz.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₂) 𝒟.∘ 𝒟P.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.p₁) (𝒟P.pair (𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂))
+  ≈⟨ PFxFyz.pair-cong (𝒟.∘-cong 𝒟.id-left 𝒟.≈-refl) (𝒟.assoc _ _ _) ⟩
+    PFxFyz.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.p₁) (𝒟P.pair (𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂))
+                (PFyFz.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ (𝒟P.p₂ 𝒟.∘ 𝒟P.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.p₁) (𝒟P.pair (𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂)))
+  ≈⟨ PFxFyz.pair-cong (𝒟P.pair-p₁ _ _) (𝒟.∘-cong 𝒟.≈-refl (𝒟P.pair-p₂ _ _)) ⟩
+    PFxFyz.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.p₁)
+                (PFyFz.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.pair (𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂)
+  ≈⟨ PFxFyz.pair-cong 𝒟.≈-refl (PFyFz.pair-natural _ _ _) ⟩
+    PFxFyz.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.p₁)
+                (PFyFz.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.pair (𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂) (𝒟P.p₂ 𝒟.∘ 𝒟P.pair (𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂))
+  ≈⟨ PFxFyz.pair-cong 𝒟.≈-refl (PFyFz.pair-cong (𝒟P.pair-p₁ _ _) (𝒟P.pair-p₂ _ _)) ⟩
+    PFxFyz.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.p₁)
+                (PFyFz.pair (𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂)
+  ≈˘⟨ PFxFyz.pair-cong 𝒟.≈-refl (PFyFz.pair-cong (𝒟.∘-cong (PFxFy.pair-p₂ _ _) 𝒟.≈-refl) 𝒟.≈-refl) ⟩
+    PFxFyz.pair
+      (𝒟P.p₁ 𝒟.∘ 𝒟P.p₁)
+      (PFyFz.pair ((F .fmor 𝒞P.p₂ 𝒟.∘ PFxFy.pair 𝒟P.p₁ 𝒟P.p₂) 𝒟.∘ 𝒟P.p₁)
+                  𝒟P.p₂)
+  ≈⟨ PFxFyz.pair-cong 𝒟.≈-refl (PFyFz.pair-cong (𝒟.assoc _ _ _) 𝒟.≈-refl) ⟩
+    PFxFyz.pair
+      (𝒟P.p₁ 𝒟.∘ 𝒟P.p₁)
+      (PFyFz.pair (F .fmor 𝒞P.p₂ 𝒟.∘ (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁))
+                  𝒟P.p₂)
+  ≈˘⟨ PFxFyz.pair-cong (𝒟.∘-cong (PFxFy.pair-p₁ _ _) 𝒟.≈-refl) (PFyFz.pair-cong (𝒟.∘-cong 𝒟.≈-refl (PFxyFz.pair-p₁ _ _)) 𝒟.≈-refl) ⟩
+    PFxFyz.pair
+      ((F .fmor 𝒞P.p₁ 𝒟.∘ PFxFy.pair 𝒟P.p₁ 𝒟P.p₂) 𝒟.∘ 𝒟P.p₁)
+      (PFyFz.pair (F .fmor 𝒞P.p₂ 𝒟.∘ (F .fmor 𝒞P.p₁ 𝒟.∘ PFxyFz.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂))
+                  𝒟P.p₂)
+  ≈⟨ PFxFyz.pair-cong (𝒟.assoc _ _ _) (PFyFz.pair-cong (𝒟.≈-sym (𝒟.assoc _ _ _)) 𝒟.≈-refl) ⟩
+    PFxFyz.pair
+      (F .fmor 𝒞P.p₁ 𝒟.∘ (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁))
+      (PFyFz.pair ((F .fmor 𝒞P.p₂ 𝒟.∘ F .fmor 𝒞P.p₁) 𝒟.∘ PFxyFz.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂)
+                  𝒟P.p₂)
+  ≈˘⟨ PFxFyz.pair-cong (𝒟.∘-cong 𝒟.≈-refl (PFxyFz.pair-p₁ _ _)) (PFyFz.pair-cong (𝒟.∘-cong (F .fmor-comp _ _) 𝒟.≈-refl) (PFxyFz.pair-p₂ _ _)) ⟩
+    PFxFyz.pair
+      (F .fmor 𝒞P.p₁ 𝒟.∘ (F .fmor 𝒞P.p₁ 𝒟.∘ PFxyFz.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂))
+      (PFyFz.pair (F .fmor (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁) 𝒟.∘ PFxyFz.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂)
+                  (F .fmor 𝒞P.p₂ 𝒟.∘ PFxyFz.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂))
+  ≈˘⟨ PFxFyz.pair-cong (𝒟.assoc _ _ _) (PFyFz.pair-natural _ _ _) ⟩
+    PFxFyz.pair
+      ((F .fmor 𝒞P.p₁ 𝒟.∘ F .fmor 𝒞P.p₁) 𝒟.∘ PFxyFz.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂)
+      (PFyFz.pair (F .fmor (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁)) (F .fmor 𝒞P.p₂) 𝒟.∘ PFxyFz.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂)
+  ≈˘⟨ PFxFyz.pair-natural _ _ _ ⟩
+    PFxFyz.pair (F .fmor 𝒞P.p₁ 𝒟.∘ F .fmor 𝒞P.p₁) (PFyFz.pair (F .fmor (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁)) (F .fmor 𝒞P.p₂))
+      𝒟.∘ PFxyFz.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂
+  ≈˘⟨ 𝒟.∘-cong (PFxFyz.pair-cong 𝒟.≈-refl (PFyFz.pair-cong (F .fmor-cong (𝒞P.pair-p₁ _ _)) (F .fmor-cong (𝒞P.pair-p₂ _ _)))) 𝒟.≈-refl ⟩
+    PFxFyz.pair (F .fmor 𝒞P.p₁ 𝒟.∘ F .fmor 𝒞P.p₁) (PFyFz.pair (F .fmor (𝒞P.p₁ 𝒞.∘ 𝒞P.pair (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁) 𝒞P.p₂))
+                                                                (F .fmor (𝒞P.p₂ 𝒞.∘ 𝒞P.pair (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁) 𝒞P.p₂)))
+      𝒟.∘ PFxyFz.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂
+  ≈⟨ 𝒟.∘-cong (PFxFyz.pair-cong 𝒟.≈-refl (PFyFz.pair-cong (F .fmor-comp _ _) (F .fmor-comp _ _))) 𝒟.≈-refl ⟩
+    PFxFyz.pair (F .fmor 𝒞P.p₁ 𝒟.∘ F .fmor 𝒞P.p₁) (PFyFz.pair (F .fmor 𝒞P.p₁ 𝒟.∘ F .fmor (𝒞P.pair (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁) 𝒞P.p₂))
+                                                                (F .fmor 𝒞P.p₂ 𝒟.∘ F .fmor (𝒞P.pair (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁) 𝒞P.p₂)))
+      𝒟.∘ PFxyFz.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂
+  ≈˘⟨ 𝒟.∘-cong (PFxFyz.pair-cong (F .fmor-comp _ _) (𝒟.≈-sym (PFyFz.pair-ext _))) 𝒟.≈-refl ⟩
+    PFxFyz.pair (F .fmor (𝒞P.p₁ 𝒞.∘ 𝒞P.p₁)) (F .fmor (𝒞P.pair (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁) 𝒞P.p₂))
+      𝒟.∘ PFxyFz.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂
+  ≈˘⟨ 𝒟.∘-cong (PFxFyz.pair-cong (F .fmor-cong (𝒞P.pair-p₁ _ _)) (F .fmor-cong (𝒞P.pair-p₂ _ _))) 𝒟.≈-refl ⟩
+    PFxFyz.pair (F .fmor (𝒞P.p₁ 𝒞.∘ 𝒞P.pair (𝒞P.p₁ 𝒞.∘ 𝒞P.p₁) (𝒞P.pair (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁) 𝒞P.p₂)))
+                (F .fmor (𝒞P.p₂ 𝒞.∘ 𝒞P.pair (𝒞P.p₁ 𝒞.∘ 𝒞P.p₁) (𝒞P.pair (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁) 𝒞P.p₂)))
+      𝒟.∘ PFxyFz.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂
+  ≈⟨ 𝒟.∘-cong (PFxFyz.pair-cong (F .fmor-comp _ _) (F .fmor-comp _ _)) 𝒟.≈-refl ⟩
+    PFxFyz.pair (F .fmor 𝒞P.p₁ 𝒟.∘ F .fmor (𝒞P.pair (𝒞P.p₁ 𝒞.∘ 𝒞P.p₁) (𝒞P.pair (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁) 𝒞P.p₂)))
+                (F .fmor 𝒞P.p₂ 𝒟.∘ F .fmor (𝒞P.pair (𝒞P.p₁ 𝒞.∘ 𝒞P.p₁) (𝒞P.pair (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁) 𝒞P.p₂)))
+      𝒟.∘ PFxyFz.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂
+  ≈⟨ 𝒟.∘-cong (PFxFyz.pair-ext _) 𝒟.≈-refl ⟩
+    F .fmor (𝒞P.pair (𝒞P.p₁ 𝒞.∘ 𝒞P.p₁) (𝒞P.pair (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁) 𝒞P.p₂)) 𝒟.∘ PFxyFz.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) 𝒟P.p₂
+  ≈˘⟨ 𝒟.∘-cong 𝒟.≈-refl (PFxyFz.pair-cong 𝒟.≈-refl 𝒟.id-left) ⟩
+    F .fmor (𝒞P.pair (𝒞P.p₁ 𝒞.∘ 𝒞P.p₁) (𝒞P.pair (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁) 𝒞P.p₂)) 𝒟.∘ PFxyFz.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) (𝒟.id _ 𝒟.∘ 𝒟P.p₂)
+  ≈˘⟨ 𝒟.∘-cong 𝒟.≈-refl (PFxyFz.pair-cong (𝒟P.pair-p₁ _ _) (𝒟P.pair-p₂ _ _)) ⟩
+    F .fmor (𝒞P.pair (𝒞P.p₁ 𝒞.∘ 𝒞P.p₁) (𝒞P.pair (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁) 𝒞P.p₂)) 𝒟.∘ PFxyFz.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) (𝒟.id _ 𝒟.∘ 𝒟P.p₂))
+                                                                                                  (𝒟P.p₂ 𝒟.∘ 𝒟P.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) (𝒟.id _ 𝒟.∘ 𝒟P.p₂))
+  ≈˘⟨ 𝒟.∘-cong 𝒟.≈-refl (PFxyFz.pair-natural _ _ _) ⟩
+    F .fmor (𝒞P.pair (𝒞P.p₁ 𝒞.∘ 𝒞P.p₁) (𝒞P.pair (𝒞P.p₂ 𝒞.∘ 𝒞P.p₁) 𝒞P.p₂)) 𝒟.∘ (PFxyFz.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.pair (PFxFy.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.p₁) (𝒟.id _ 𝒟.∘ 𝒟P.p₂))
+  ∎
+  where open ≈-Reasoning 𝒟.isEquiv
+        module Pxy = Product (𝒞P.getProduct x y)
+        module Pyz = Product (𝒞P.getProduct y z)
+        module PFxFy = IsProduct (FP .preserve-products _ _ (𝒞P.prod x y) 𝒞P.p₁ 𝒞P.p₂ Pxy.isProduct)
+        module PFyFz = IsProduct (FP .preserve-products _ _ (𝒞P.prod y z) 𝒞P.p₁ 𝒞P.p₂ Pyz.isProduct)
+        module PxPyz = Product (𝒞P.getProduct x (𝒞P.prod y z))
+        module PxyPz = Product (𝒞P.getProduct (𝒞P.prod x y) z)
+        module PFxFyz = IsProduct (FP .preserve-products _ _ (𝒞P.prod x (𝒞P.prod y z)) 𝒞P.p₁ 𝒞P.p₂ PxPyz.isProduct)
+        module PFxyFz = IsProduct (FP .preserve-products _ _ (𝒞P.prod (𝒞P.prod x y) z) 𝒞P.p₁ 𝒞P.p₂ PxyPz.isProduct)
 F-monoidal .lax-monoidal .mult-lunit {x} = begin
     PFIFx.pair 𝒟P.p₁ 𝒟P.p₂ 𝒟.∘ 𝒟P.prod-m to-terminal (𝒟.id _)
   ≈⟨ PFIFx.pair-natural _ _ _ ⟩
