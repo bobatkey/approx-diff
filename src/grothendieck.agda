@@ -240,8 +240,6 @@ module CategoryOfFamilies {o m e} os es (𝒞 : Category o m e) where
 
   -- This category always has coproducts, because it is the free
   -- co-product completion.
-  --
-  -- FIXME: extend this to infinite coproducts.
   module _ where
 
     open Category 𝒞
