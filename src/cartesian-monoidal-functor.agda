@@ -176,7 +176,21 @@ F-monoidal .lax-monoidal .mult-lunit {x} = begin
     PFIFx.pair (𝒟P.p₁ 𝒟.∘ 𝒟P.prod-m to-terminal (𝒟.id _)) (𝒟P.p₂ 𝒟.∘ 𝒟P.prod-m to-terminal (𝒟.id _))
   ≈⟨ PFIFx.pair-cong (𝒟P.pair-p₁ _ _) (𝒟P.pair-p₂ _ _) ⟩
     PFIFx.pair (to-terminal 𝒟.∘ 𝒟P.p₁) (𝒟.id _ 𝒟.∘ 𝒟P.p₂)
-  ≈⟨ {!!} ⟩
+  ≈˘⟨ PFIFx.pair-cong (to-terminal-ext _) 𝒟.≈-refl ⟩
+    PFIFx.pair to-terminal (𝒟.id _ 𝒟.∘ 𝒟P.p₂)
+  ≈⟨ PFIFx.pair-cong (to-terminal-ext _) (𝒟.∘-cong (𝒟.≈-sym (F .fmor-id)) 𝒟.≈-refl) ⟩
+    PFIFx.pair (F .fmor (𝒞P.p₁ 𝒞.∘ 𝒞P.pair (𝒞T.terminal-mor x) (𝒞.id _)) 𝒟.∘ 𝒟P.p₂)
+               (F .fmor (𝒞.id _) 𝒟.∘ 𝒟P.p₂)
+  ≈˘⟨ PFIFx.pair-cong 𝒟.≈-refl (𝒟.∘-cong (F .fmor-cong (𝒞P.pair-p₂ _ _)) 𝒟.≈-refl) ⟩
+    PFIFx.pair (F .fmor (𝒞P.p₁ 𝒞.∘ 𝒞P.pair (𝒞T.terminal-mor x) (𝒞.id _)) 𝒟.∘ 𝒟P.p₂)
+               (F .fmor (𝒞P.p₂ 𝒞.∘ 𝒞P.pair (𝒞T.terminal-mor x) (𝒞.id _)) 𝒟.∘ 𝒟P.p₂)
+  ≈⟨ PFIFx.pair-cong (𝒟.∘-cong (F .fmor-comp _ _) 𝒟.≈-refl) (𝒟.∘-cong (F .fmor-comp _ _) 𝒟.≈-refl) ⟩
+    PFIFx.pair ((F .fmor 𝒞P.p₁ 𝒟.∘ F .fmor (𝒞P.pair (𝒞T.terminal-mor x) (𝒞.id _))) 𝒟.∘ 𝒟P.p₂)
+               ((F .fmor 𝒞P.p₂ 𝒟.∘ F .fmor (𝒞P.pair (𝒞T.terminal-mor x) (𝒞.id _))) 𝒟.∘ 𝒟P.p₂)
+  ≈⟨ PFIFx.pair-cong (𝒟.assoc _ _ _) (𝒟.assoc _ _ _) ⟩
+    PFIFx.pair (F .fmor 𝒞P.p₁ 𝒟.∘ (F .fmor (𝒞P.pair (𝒞T.terminal-mor x) (𝒞.id _)) 𝒟.∘ 𝒟P.p₂))
+               (F .fmor 𝒞P.p₂ 𝒟.∘ (F .fmor (𝒞P.pair (𝒞T.terminal-mor x) (𝒞.id _)) 𝒟.∘ 𝒟P.p₂))
+  ≈⟨ PFIFx.pair-ext _ ⟩
     F .fmor (𝒞P.pair (𝒞T.terminal-mor x) (𝒞.id _)) 𝒟.∘ 𝒟P.p₂
   ∎
   where open ≈-Reasoning 𝒟.isEquiv
