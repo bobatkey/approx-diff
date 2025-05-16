@@ -68,10 +68,10 @@ semilattices and semilattice homomorphisms. The hom-set $\LatGal(X,Y)$ forms a b
 unit $\top_{X,Y}$ given by the Galois connection $\bot_{Y,X} \adj \top_{X,Y}: X \to Y$ and meet of Galois
 connections $(f \adj g) \meet (f' \adj g') = (f \join f') \adj (g \meet g'): X \to Y$.
 
-An further important property is that the projections $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y \to Y$,
-where $X \times Y$ denotes the product of lattices, have both and upper adjoints. This means $X \times Y$ is
-both a product and a coproduct in $\LatGal$, which we write as $X \biprod Y$, with projections $\biproj_X$ and
-$\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$.
+Another notable property of $\LatGal$ is that the projections $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y
+\to Y$, where $X \times Y$ denotes the product of lattices, have both upper and lower adjoints. This means $X
+\times Y$, which we shall hereafter write as $X \biprod Y$, acts as both a product and a coproduct, with
+projections $\biproj_X$ and $\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$.
 
 \vspace{-4mm}
 \begin{minipage}[t]{0.45\textwidth}
@@ -92,9 +92,10 @@ $\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$.
 \end{minipage}
 \vspace{2mm}
 
-\noindent The trivial 1-point lattice is the unit for $\biprod$ and is both terminal and initial. Although the
-presence of biproducts is incompatible with $\LatGal$ itself being Cartesian closed, the biproduct structure
-will prove crucial for a establishing a Cartesian closed setting for interpreting higher-order programs.
+\noindent The trivial 1-point lattice, which is both terminal and initial, is the unit for $\biprod$. Although
+the presence of biproducts is incompatible with $\LatGal$ itself being Cartesian closed, the biproduct
+structure will prove crucial for a establishing a Cartesian closed setting for interpreting higher-order
+programs for Galois slicing.
 
 \subsection{A categorical framework for Galois slicing}
 
