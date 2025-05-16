@@ -69,15 +69,20 @@ $e$ of type $Y$ with a single free variable of type $X$ must then also have two 
 $\partial f(x): \partial X(x) \to \partial Y(f(x))$ for every $x \in X$ which can be used for slicing over
 that expression.
 
+\subsubsection{Grothendieck construction for indexed categories}
+
 This pattern of objects and morphisms is exactly the \emph{Grothendieck construction} for a particular indexed
 category $T: \Set^\op \to \Cat$, namely the functor which assigns to every set $X$ the functor category $T(X)
 = \Func{X}{\LatGal}$. Here the (discrete) category $X$ is a plain set and so $\Func{X}{\LatGal}$ is exactly
 the category of $X$-indexed families of bounded lattices, with $X$-indexed families of Galois connections
-between them as morphisms. The Grothendieck construction $\Grothendieck{}T$ is the ``total category'' which
-gloms all such $\Set$-indexed families of bounded lattices into the same category, with reindexing morphisms
-transporting between data indexed by different sets.
+between them as morphisms. The Grothendieck construction $\Grothendieck{}T$
+(\defref{grothendieck:Grothendieck} below) is the category of all $\Set$-indexed families of bounded lattices,
+together with morphisms that account for both structure within each family and how families transform under
+reindexing.
 
-\begin{definition}[Functor category of $X$-indexed families]
+First we formalise $X$-indexed families and their categories.
+
+\begin{definition}[Category of $X$-indexed families]
 \label{def:fam:Fam}
 For any set $X$ (interpreted as a discrete category) and any category $\cat{C}$, recall that the functor
 category $\Func{X}{\cat{C}}$ has as objects all functors $F: X \to \cat{C}$, namely $X$-indexed families of
@@ -92,11 +97,10 @@ If $\cat{C}$ has limits (resp.~colimits) then $\Func{X}{\cat{C}}$ has limits (re
 pointwise.
 \end{proposition}
 
-\begin{definition}[Reindexing]
-For any function $f: X \to Y$ define the \emph{reindexing} functor $\reindex{-}{f}: \Func{Y}{\cat{C}} \to
-\Func{X}{\cat{C}}$ which sends any $Y$-indexed family $F$ over $\cat{C}$ to the $X$-indexed family
-$\reindex{F}{f} = F \comp f$, regarding $f$ as a functor between $X$ and $Y$ as discrete categories.
-\end{definition}
+Any function $f: X \to Y$ induces a \emph{reindexing} functor $- \comp f: \Func{Y}{\cat{C}} \to
+\Func{X}{\cat{C}}$ which sends any $Y$-indexed family $F$ over $\cat{C}$ to the $X$-indexed family $F \comp f$
+(regarding $f$ as a functor between $X$ and $Y$ as discrete categories) and any family of morphisms $\eta: F
+\to G$ to $\eta \comp f: F \comp f \to G \comp f$ with $(\eta \comp f)_x = \eta_{f(x)}$.
 
 \begin{definition}
 \label{def:grothendieck:Grothendieck}
@@ -121,9 +125,9 @@ compose, consider any $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ and
 composition $(g, \partial g) \comp (f, \partial f): (X, \partial X) \to (Z, \partial Z)$ is then given by $(g
 \comp f, T(f)(\partial g) \comp \partial f)$.
 
-Of interest to us is the Grothendieck construction for $\Func{-}{\cat{C}}: \Set^{\op} \to \Cat$, the indexed
-category which sends any set $X$ to the functor category $\Func{X}{\cat{C}}$ and any function $f: X \to Y$ to
-the reindexing functor $- \comp f: \Func{Y}{\cat{C}} \to \Func{X}{\cat{C}}$.
+Of interest here is the Grothendieck construction for $\Func{-}{\cat{C}}: \Set^{\op} \to \Cat$, the indexed
+category which sends any set $X$ to the category of $X$-indexed families $\Func{X}{\cat{C}}$ and any function
+$f: X \to Y$ to the reindexing functor $- \comp f: \Func{Y}{\cat{C}} \to \Func{X}{\cat{C}}$ .
 
 \begin{definition}[Category of families]
 For any category $\cat{C}$ define $\Fam(\cat{C})$ to be the Grothendieck construction
@@ -132,7 +136,7 @@ $\Grothendieck{X}\Func{X}{\cat{C}}$.
 
 \noindent In $\Fam(\cat{C})$ the objects $(X, \partial X)$ are thus sets $X$ paired with indexed families
 $\partial X: X \to \cat{C}$ and morphisms $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ are functions
-$f: X \to Y$ paired with morphisms $\partial f: \partial X \to \reindex{\partial Y}{f}$ in $\Fam(X,\cat{C})$.
+$f: X \to Y$ paired with morphisms $\partial f: \partial X \to \partial Y \comp f$ in $\Func{X}{\cat{C}}$.
 
 \subsubsection{Galois slicing via the Grothendieck construction}
 
