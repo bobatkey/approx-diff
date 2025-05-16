@@ -87,10 +87,20 @@ morphisms $(\Yoneda_{\mathscr{V}})_{X,Y}: \Hom{\cat{C}}{X}{Y} \to
 \Hom{\PSh_{\mathscr{V}}(\cat{C})}{\Hom{\cat{C}}{-}{X}}{\Hom{\cat{C}}{-}{Y}}$ acting concretely at each
 component as post-composition with $f: X \to Y$.
 
-The $\CMon$-enriched Yoneda embedding preserves biproducts:
+The $\CMon$-enriched Yoneda embedding preserves biproducts, where (as in any functor category) biproducts in
+$\PSh_{\CMon}(\cat{C})$ are computed pointwise.
 
 \begin{proposition}
+$\Yoneda_{\CMon}(X \biprod Y) \iso \Yoneda_{\CMon}(X) \biprod \Yoneda_{\CMon}(Y)$.
 \end{proposition}
+
+\begin{proof}
+Suppose $Z$ an object in $C$. Then $\Yoneda_{\CMon}(X \biprod Y)(Z) = \Hom{\cat{C}}{Z}{X \biprod Y}$. But for
+any $f: Z \to X \biprod Y$ in $\cat{C}$, there exist unique morphisms $f_1: Z \to X$ and $f_2: Z \to Y$ such
+that $f = \biinj_X \comp f_1 + \biinj_Y \comp f_2$ by the universal property of the biproduct. Thus we have
+$\Hom{\cat{C}}{Z}{X \biprod Y} \iso \Hom{\cat{C}}{Z}{X} \biprod \Hom{\cat{C}}{Z}{Y} = \Yoneda_{\CMon}(X)(Z)
+\biprod \Yoneda_{\CMon}(Y)(Z) = (\Yoneda_{\CMon}(X) \biprod \Yoneda_{\CMon}(Y))(Z)$.
+\end{proof}
 
 The \emph{enriched Yoneda lemma} states that, for any $\mathscr{V}$-enriched presheaf $F$ and any object $X
 \in \cat{C}$, there is an isomorphism between $F(X)$ and the hom-object (also living in $\mathscr{V}$) of
