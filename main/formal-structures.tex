@@ -57,26 +57,56 @@ lattices, and as morphisms all Galois connections $f \adj g: X \to Y$.
 in $\LatGal$, $g$ is a \emph{meet-semilattice homomorphism}, i.e.~preserves the meet-semilattice structure
 $(X, \meet, \top)$. Similarly, $f$ is a join-semilattice homomorphism with respect to $(X, \join, \bot)$.
 
-\todo{Introduce that $\LatGal$ is $\SemiLat$-enriched -- the hom-set $\LatGal(X)(Y)$ is has an (idempotent) addition of morphisms and a zero morphism. Moreover it has biproducts -- product of lattices $X \times Y$ is also a coproduct, although formal definition will come later.}
+One observation about the (bounded) meet-semilattice homomorphisms from $X$ to $Y$ is that they admit a
+meet-semilattice structure themselves: the pointwise lifting of $\meet$ to meet-preserving maps $f, g: X \to
+Y$, where $(f \meet g)(x) = f(x) \meet g(x): X \to Y$ also preserves meets, giving a notion of $\meet$ for
+morphisms, as does the constant map $\top_{X,Y}: X \to Y$ sending any $x \in X$ to $\top_Y$, and which acts a
+unit for $\meet$. Dually the (bounded) join-preserving maps from $Y$ to $X$ also have a join-semilattice
+structure given pointwise by $\join$ and the constant homomorphism $\bot_{Y,X}: Y \to X$ sending any $y \in Y$
+to $\bot_Y$. Since these two constructions are adjoint, $\LatGal$ is enriched in the category $\SemiLat$ of
+semilattices and semilattice homomorphisms. The hom-set $\LatGal(X,Y)$ forms a bounded meet semilattice with
+unit $\top_{X,Y}$ given by the Galois connection $\bot_{Y,X} \adj \top_{X,Y}: X \to Y$ and meet of Galois
+connections $(f \adj g) \meet (f' \adj g') = (f \join f') \adj (g \meet g'): X \to Y$.
 
-% the pointwise lifting of $\meet$ to meet-semilattice homomorphisms $f, g: X \to Y$, where $(f \meet g)(x) =
-% f(x) \meet g(x): X \to Y$, gives a notion of ``addition'' for those maps which is associative and commutative,
-% and which has a ``zero'' homomorphism $0_{X,Y}: X \to Y$ given by the constant map sending any $x \in X$ to
-% $0_Y$, acting as a unit for addition of homomorphisms. The same can be said for the join-preserving maps from
-% $Y$ to $X$, which also have a commutative monoid structure; Galois connections then inherit this structure
-% component-wise.
+An further important property is that the projections $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y \to Y$,
+where $X \times Y$ denotes the product of lattices, have both and upper adjoints. This means $X \times Y$ is
+both a product and a coproduct in $\LatGal$, which we write as $X \biprod Y$, with projections $\biproj_X$ and
+$\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$.
+
+\vspace{-4mm}
+\begin{minipage}[t]{0.45\textwidth}
+\begin{center}
+\begin{align*}
+   \biproj_X = \prodM{\id_X}{\bot_Y} \adj \proj_1: X \biprod Y \to X \\
+   \biproj_Y = \prodM{\bot_X}{\id_Y} \adj \proj_2: X \biprod Y \to Y
+\end{align*}
+\end{center}
+\end{minipage}%
+\begin{minipage}[t]{0.45\textwidth}
+\begin{center}
+\begin{align*}
+   \biinj_X = \pi_1 \adj \prodM{\id_X}{\top_Y} : X \to X \biprod Y \\
+   \biinj_Y = \pi_2 \adj \prodM{\top_X}{\id_Y}: Y \to X \biprod Y
+\end{align*}
+\end{center}
+\end{minipage}
+\vspace{2mm}
+
+\noindent The trivial 1-point lattice is the unit for $\biprod$ and is both terminal and initial. Although the
+presence of biproducts is incompatible with $\LatGal$ itself being Cartesian closed, the biproduct structure
+will prove crucial for a establishing a Cartesian closed setting for interpreting higher-order programs.
 
 \subsection{A categorical framework for Galois slicing}
 
-We will consider a pure, total language, where types can be interpreted as sets. Our goal is to interpret
-programs as Galois connections relating approximations of their inputs to approximations of their outputs.
-Since these lattices of approximations depends on the value being approximated, the semantics of every type
-$\tau$ must have both a ``conventional'' component, providing the set $X$ associated with $\tau$, plus an
-associated lattice of approximations $\partial X(x)$ for every point $x \in X$. The semantics of an expression
-$e$ of type $Y$ with a single free variable of type $X$ must then also have two components: a function $f: X
-\to Y$ giving the baseline (unapproximated) meaning of the expression, plus a family of Galois connections
-$\partial f(x): \partial X(x) \to \partial Y(f(x))$ for every $x \in X$ which can be used for slicing over
-that expression.
+We will consider a pure, total language, where types can be interpreted as sets. Our goal is to equip the
+interpretations of programs with Galois connections relating approximations of their inputs to approximations
+of their outputs. Since these lattices of approximations depends on the value being approximated, the
+semantics of every type $\tau$ must have both a ``conventional'' component, providing the set $X$ associated
+with $\tau$, plus an associated lattice of approximations $\partial X(x)$ for every point $x \in X$. The
+semantics of an expression $e$ of type $Y$ with a single free variable of type $X$ must then also have two
+components: a function $f: X \to Y$ giving the baseline (unapproximated) meaning of the expression, plus a
+family of Galois connections $\partial f(x): \partial X(x) \to \partial Y(f(x))$ for every $x \in X$ which can
+be used for slicing over that expression.
 
 \subsubsection{Grothendieck construction for indexed categories}
 
@@ -114,7 +144,7 @@ family of morphisms $\eta: F \to G$ to $\reindex{\eta}{f}: \reindex{F}{f} \to \r
 $\reindex{\eta}{f}(x) = \eta(f(x))$.
 \end{definition}
 
-Although reindexing just precomposes with $f$, writing it as $\reindex{-}{f}$ avoids notational confusion when
+Although it just precomposes with $f$, writing reindexing as $\reindex{-}{f}$ avoids notational confusion when
 combining composition of morphisms in $\Func{X}{C}$ with reindexing.
 
 \begin{definition}
