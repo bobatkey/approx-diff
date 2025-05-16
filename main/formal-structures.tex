@@ -57,6 +57,15 @@ lattices, and as morphisms all Galois connections $f \adj g: X \to Y$.
 in $\LatGal$, $g$ is a \emph{meet-semilattice homomorphism}, i.e.~preserves the meet-semilattice structure
 $(X, \meet, \top)$. Similarly, $f$ is a join-semilattice homomorphism with respect to $(X, \join, \bot)$.
 
+\todo{Introduce that $\LatGal$ is $\SemiLat$-enriched -- the hom-set $\LatGal(X)(Y)$ is has an (idempotent) addition of morphisms and a zero morphism. Moreover it has biproducts -- product of lattices $X \times Y$ is also a coproduct, although formal definition will come later.}
+
+% the pointwise lifting of $\meet$ to meet-semilattice homomorphisms $f, g: X \to Y$, where $(f \meet g)(x) =
+% f(x) \meet g(x): X \to Y$, gives a notion of ``addition'' for those maps which is associative and commutative,
+% and which has a ``zero'' homomorphism $0_{X,Y}: X \to Y$ given by the constant map sending any $x \in X$ to
+% $0_Y$, acting as a unit for addition of homomorphisms. The same can be said for the join-preserving maps from
+% $Y$ to $X$, which also have a commutative monoid structure; Galois connections then inherit this structure
+% component-wise.
+
 \subsection{A categorical framework for Galois slicing}
 
 We will consider a pure, total language, where types can be interpreted as sets. Our goal is to interpret
@@ -142,7 +151,8 @@ $\Grothendieck{X}\Func{X}{\cat{C}}$.
 
 \noindent In $\Fam(\cat{C})$ the objects $(X, \partial X)$ are thus sets $X$ paired with indexed families
 $\partial X: X \to \cat{C}$ and morphisms $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ are functions
-$f: X \to Y$ paired with morphisms $\partial f: \partial X \to \partial Y \comp f$ in $\Func{X}{\cat{C}}$.
+$f: X \to Y$ paired with morphisms $\partial f: \partial X \to \partial \reindex{Y}{f}$ in
+$\Func{X}{\cat{C}}$.
 
 \subsubsection{Galois slicing via the Grothendieck construction}
 
@@ -151,23 +161,15 @@ programs for Galois slicing. This has as objects $(X, \partial X)$, all pairs of
 $x \in X$, a bounded lattice $\partial X(x)$, and as morphisms $(X, \partial X) \to (Y, \partial Y)$, all
 pairs $(f, \partial f)$ of a function $f: X \to Y$ and for every $x \in X$, a Galois connection $\partial
 f(x): \partial X(x) \to \partial Y(f(x))$, as required. The pullback (reindexing) along $f$ in the composition
-$(g, \partial g) \comp (f, \partial f) = (g \comp f, \partial g \comp f \comp \partial f)$ selects the
+$(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp \partial f)$ selects the
 appropriate lattice of approximations and Galois connection at each point, using the baseline (unapproximated)
 function $f$.
 
 \subsection{Biproducts and Semi-Additive Categories}
 
-An important observation about the semilattice homomorphisms that appear in adjoint pairs in $\LatGal$ is that
-the pointwise lifting of $\meet$ to meet-semilattice homomorphisms $f, g: X \to Y$, where $(f \meet g)(x) =
-f(x) \meet g(x): X \to Y$, gives a notion of ``addition'' for those maps which is associative and commutative,
-and which has a ``zero'' homomorphism $0_{X,Y}: X \to Y$ given by the constant map sending any $x \in X$ to
-$0_Y$, acting as a unit for addition of homomorphisms. The same can be said for the join-preserving maps from
-$Y$ to $X$, which also have a commutative monoid structure; Galois connections then inherit this structure
-component-wise.
-
-We now say more generally when this so-called \emph{semi-additive} structure on morphisms arises and explain
-its role in generalising CHAD from automatic differentiation to providing a semantics for Galois slicing as
-well.
+We noted that $\LatGal$ is $\CMon$-enriched (actually $\SemiLat$-enriched) and moreover that the product of
+lattices is also a coproduct, making $\LatGal$ into a category with \emph{biproducts}. In fact having
+biproducts is sufficient to ensure $\CMon$-enrichment; such a category is called \emph{semi-additive}.
 
 \begin{definition}[Semi-additive category]
 A category with finite products and coproducts is \emph{semi-additive} if the canonical morphisms (projections
