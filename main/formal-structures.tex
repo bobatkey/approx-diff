@@ -61,9 +61,9 @@ One observation about the (bounded) meet-semilattice homomorphisms from $X$ to $
 meet-semilattice structure themselves: the pointwise lifting of $\meet$ to meet-preserving maps $f, g: X \to
 Y$, where $(f \meet g)(x) = f(x) \meet g(x): X \to Y$ also preserves meets, giving a notion of $\meet$ for
 morphisms, as does the constant map $\top_{X,Y}: X \to Y$ sending any $x \in X$ to $\top_Y$, and which acts a
-unit for $\meet$. Dually the (bounded) join-preserving maps from $Y$ to $X$ also have a join-semilattice
-structure given pointwise by $\join$ and the constant homomorphism $\bot_{Y,X}: Y \to X$ sending any $y \in Y$
-to $\bot_Y$. Since these two constructions are adjoint, $\LatGal$ is enriched in the category $\SemiLat$ of
+unit for $\meet$. Dually the (bounded) join-preserving maps from $Y$ to $X$ have a join-semilattice structure
+given pointwise by $\join$ and the constant homomorphism $\bot_{Y,X}: Y \to X$ sending any $y \in Y$ to
+$\bot_X$. Since these two constructions are adjoint, $\LatGal$ is enriched in the category $\SemiLat$ of
 semilattices and semilattice homomorphisms. The hom-set $\LatGal(X,Y)$ forms a bounded meet semilattice with
 unit $\top_{X,Y}$ given by the Galois connection $\bot_{Y,X} \adj \top_{X,Y}: X \to Y$ and meet of Galois
 connections $(f \adj g) \meet (f' \adj g') = (f \join f') \adj (g \meet g'): X \to Y$.
@@ -71,7 +71,7 @@ connections $(f \adj g) \meet (f' \adj g') = (f \join f') \adj (g \meet g'): X \
 Another notable property of $\LatGal$ is that the projections $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y
 \to Y$, where $X \times Y$ denotes the product of lattices, have both upper and lower adjoints. This means $X
 \times Y$, which we shall hereafter write as $X \biprod Y$, acts as both a product and a coproduct, with
-projections $\biproj_X$ and $\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$.
+projections $\biproj_X$ and $\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$ given by:
 
 \vspace{-4mm}
 \begin{minipage}[t]{0.45\textwidth}
@@ -94,7 +94,7 @@ projections $\biproj_X$ and $\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$
 
 \noindent The trivial 1-point lattice, which is both terminal and initial, is the unit for $\biprod$. Although
 the presence of biproducts is incompatible with $\LatGal$ itself being Cartesian closed, the biproduct
-structure will prove crucial for a establishing a Cartesian closed setting for interpreting higher-order
+structure will prove crucial for establishing a Cartesian closed setting for interpreting higher-order
 programs for Galois slicing.
 
 \subsection{A categorical framework for Galois slicing}
