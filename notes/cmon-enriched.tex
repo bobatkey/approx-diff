@@ -81,11 +81,16 @@ The \emph{Yoneda embedding} for $\cat{C}$ is the functor $\Yoneda: \cat{C} \to
 \to \mathscr{V}$ is itself $\mathscr{V}$-enriched, providing a family of morphisms $\Hom{\cat{C}}{-}{X}_{Y,Z}:
 \Hom{\cat{C}}{Y}{Z} \to \Hom{\mathscr{V}}{\Hom{\cat{C}}{Z}{X}}{\Hom{\cat{C}}{Y}{X}}$ in $\mathscr{V}$ for any
 $Y, Z$ in $\cat{C}$. Moreover there exists an enriched Yoneda embedding, namely a functor
-$\Yoneda_{\mathscr{V}}: \cat{C} \to \Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}$ which is itself
-$\mathscr{V}$-enriched, sending objects $X$ to the $\mathscr{V}$-enriched hom-functor $\Hom{\cat{C}}{-}{X}$
-and providing a family of morphisms $(\Yoneda_{\mathscr{V}})_{X,Y}: \Hom{\cat{C}}{X}{Y} \to
-\Hom{\Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}}{\Hom{\cat{C}}{-}{X}}{\Hom{\cat{C}}{-}{Y}}$ acting
-concretely at each component as post-composition with $f: X \to Y$.
+$\Yoneda_{\mathscr{V}}: \cat{C} \to \PSh_{\mathscr{V}}(\cat{C})$ which is itself $\mathscr{V}$-enriched,
+sending objects $X$ to the $\mathscr{V}$-enriched hom-functor $\Hom{\cat{C}}{-}{X}$ and providing a family of
+morphisms $(\Yoneda_{\mathscr{V}})_{X,Y}: \Hom{\cat{C}}{X}{Y} \to
+\Hom{\PSh_{\mathscr{V}}(\cat{C})}{\Hom{\cat{C}}{-}{X}}{\Hom{\cat{C}}{-}{Y}}$ acting concretely at each
+component as post-composition with $f: X \to Y$.
+
+The $\CMon$-enriched Yoneda embedding preserves biproducts:
+
+\begin{proposition}
+\end{proposition}
 
 The \emph{enriched Yoneda lemma} states that, for any $\mathscr{V}$-enriched presheaf $F$ and any object $X
 \in \cat{C}$, there is an isomorphism between $F(X)$ and the hom-object (also living in $\mathscr{V}$) of
@@ -94,7 +99,7 @@ $\mathscr{V}$-natural transformations from the $\mathscr{V}$-enriched presheaf $
 \begin{lemma}
 Suppose $\cat{C}$ is $\mathscr{V}$-enriched with $\mathscr{V}$ monoidal closed. For any $F: \cat{C}^\op \to
 \mathscr{V}$ and any object $X$ in $\cat{C}$:
-\[\Hom{\Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}}{\Hom{\cat{C}}{-}{X}}{F} \iso F(X)\]
+\[\Hom{\PSh_{\mathscr{V}}{(\cat{C})}}{\Hom{\cat{C}}{-}{X}}{F} \iso F(X)\]
 \end{lemma}
 
 
