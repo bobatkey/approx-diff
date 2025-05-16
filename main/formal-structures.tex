@@ -97,10 +97,16 @@ If $\cat{C}$ has limits (resp.~colimits) then $\Func{X}{\cat{C}}$ has limits (re
 pointwise.
 \end{proposition}
 
-Any function $f: X \to Y$ induces a \emph{reindexing} functor $- \comp f: \Func{Y}{\cat{C}} \to
-\Func{X}{\cat{C}}$ which sends any $Y$-indexed family $F$ over $\cat{C}$ to the $X$-indexed family $F \comp f$
-(regarding $f$ as a functor between $X$ and $Y$ as discrete categories) and any family of morphisms $\eta: F
-\to G$ to $\eta \comp f: F \comp f \to G \comp f$.
+\begin{definition}[Reindexing]
+For any function $f: X \to Y$ define the \emph{reindexing} functor $\reindex{-}{f}: \Func{Y}{\cat{C}} \to
+\Func{X}{\cat{C}}$ which sends any $Y$-indexed family $F$ over $\cat{C}$ to the $X$-indexed family
+$\reindex{F}{f} = F \comp f$ (regarding $f$ as a functor between $X$ and $Y$ as discrete categories) and any
+family of morphisms $\eta: F \to G$ to $\reindex{\eta}{f}: \reindex{F}{f} \to \reindex{G}{f}$ with
+$\reindex{\eta}{f}(x) = \eta(f(x))$.
+\end{definition}
+
+Although reindexing just precomposes with $f$, writing it as $\reindex{-}{f}$ avoids notational confusion when
+combining composition of morphisms in $\Func{X}{C}$ with reindexing.
 
 \begin{definition}
 \label{def:grothendieck:Grothendieck}
