@@ -1,6 +1,15 @@
 \subsection{Useful semi-additive categories}
 \label{sec:useful-semi-additive-categories}
 
+\subsubsection{Category of commutative monoids}
+\label{sec:categories-with-biproducts:cmon}
+
+$\CMon$ itself (\defref{cmon:cmon}) is semi-additive, with binary biproducts $(X \oplus Y, \biproj_X,
+\biproj_Y, \biinj_X, \biinj_Y)$ where $\oplus$ is the Cartesian product of the carriers with pointwise addition
+(so $(x_1, y_1) \oplus (x_2, y_2) = (x_1 \oplus x_2, y_1 \oplus y_2)$ and $0_{X \oplus Y} = (0_X, 0_Y)$),
+projection $\biproj_X = \pi_1$ and $\biproj_Y = \pi_2$, and injection pairing an element with zero on the left
+or right, so $\biinj_X(x) = (x, 0_Y)$ and $\biinj_Y(y) = (0_X,y)$.
+
 \subsubsection{Category of bounded lattices and Galois connections}
 \label{sec:categories-with-biproducts:latgal}
 

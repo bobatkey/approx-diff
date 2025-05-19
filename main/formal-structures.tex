@@ -57,26 +57,72 @@ lattices, and as morphisms all Galois connections $f \adj g: X \to Y$.
 in $\LatGal$, $g$ is a \emph{meet-semilattice homomorphism}, i.e.~preserves the meet-semilattice structure
 $(X, \meet, \top)$. Similarly, $f$ is a join-semilattice homomorphism with respect to $(X, \join, \bot)$.
 
+One observation about the (bounded) meet-semilattice homomorphisms from $X$ to $Y$ is that they admit a
+meet-semilattice structure themselves: the pointwise lifting of $\meet$ to meet-preserving maps $f, g: X \to
+Y$, where $(f \meet g)(x) = f(x) \meet g(x): X \to Y$ also preserves meets, giving a notion of $\meet$ for
+morphisms, as does the constant map $\top_{X,Y}: X \to Y$ sending any $x \in X$ to $\top_Y$, and which acts a
+unit for $\meet$. Dually the (bounded) join-preserving maps from $Y$ to $X$ have a join-semilattice structure
+given pointwise by $\join$ and the constant homomorphism $\bot_{Y,X}: Y \to X$ sending any $y \in Y$ to
+$\bot_X$. Since these two constructions are adjoint, $\LatGal$ is enriched in the category $\SemiLat$ of
+semilattices and semilattice homomorphisms. The hom-set $\LatGal(X,Y)$ forms a bounded meet semilattice with
+unit $\top_{X,Y}$ given by the Galois connection $\bot_{Y,X} \adj \top_{X,Y}: X \to Y$ and meet of Galois
+connections $(f \adj g) \meet (f' \adj g') = (f \join f') \adj (g \meet g'): X \to Y$.
+
+Another notable property of $\LatGal$ is that the projections $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y
+\to Y$, where $X \times Y$ denotes the product of lattices, have both upper and lower adjoints. This means $X
+\times Y$, which we shall hereafter write as $X \biprod Y$, acts as both a product and a coproduct, with
+projections $\biproj_X$ and $\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$ given by:
+
+\vspace{-4mm}
+\begin{minipage}[t]{0.45\textwidth}
+\begin{center}
+\begin{align*}
+   \biproj_X = \prodM{\id_X}{\bot_Y} \adj \proj_1: X \biprod Y \to X \\
+   \biproj_Y = \prodM{\bot_X}{\id_Y} \adj \proj_2: X \biprod Y \to Y
+\end{align*}
+\end{center}
+\end{minipage}%
+\begin{minipage}[t]{0.45\textwidth}
+\begin{center}
+\begin{align*}
+   \biinj_X = \pi_1 \adj \prodM{\id_X}{\top_Y} : X \to X \biprod Y \\
+   \biinj_Y = \pi_2 \adj \prodM{\top_X}{\id_Y}: Y \to X \biprod Y
+\end{align*}
+\end{center}
+\end{minipage}
+\vspace{2mm}
+
+\noindent The trivial 1-point lattice, which is both terminal and initial, is the unit for $\biprod$. Although
+the presence of biproducts is incompatible with $\LatGal$ itself being Cartesian closed, the biproduct
+structure will prove crucial for establishing a Cartesian closed setting for interpreting higher-order
+programs for Galois slicing.
+
 \subsection{A categorical framework for Galois slicing}
 
-For a total language where types denote sets, our goal is to interpret programs as Galois connections relating
-approximations of their inputs to approximations of their outputs. Since these lattices of approximations
-depends on the value being approximated, the semantics of every type $\tau$ must have both a ``conventional''
-component, assigning $\tau$ to a set $X$, and an associated lattice of approximations $\partial X(x)$ for
-every point $x \in X$. The semantics of expression $e$ of type $Y$ with a single free variable of type $X$
-must then also have two components: a function $f: X \to Y$ giving the baseline (unapproximated) meaning of
-the expression, plus a family of Galois connections $\partial f(x): \partial X(x) \to \partial Y(f(x))$ for
-every $x \in X$ which can be used for slicing over that expression.
+We will consider a pure, total language, where types can be interpreted as sets. Our goal is to equip the
+interpretations of programs with Galois connections relating approximations of their inputs to approximations
+of their outputs. Since these lattices of approximations depends on the value being approximated, the
+semantics of every type $\tau$ must have both a ``conventional'' component, providing the set $X$ associated
+with $\tau$, plus an associated lattice of approximations $\partial X(x)$ for every point $x \in X$. The
+semantics of an expression $e$ of type $Y$ with a single free variable of type $X$ must then also have two
+components: a function $f: X \to Y$ giving the baseline (unapproximated) meaning of the expression, plus a
+family of Galois connections $\partial f(x): \partial X(x) \to \partial Y(f(x))$ for every $x \in X$ which can
+be used for slicing over that expression.
+
+\subsubsection{Grothendieck construction for indexed categories}
 
 This pattern of objects and morphisms is exactly the \emph{Grothendieck construction} for a particular indexed
 category $T: \Set^\op \to \Cat$, namely the functor which assigns to every set $X$ the functor category $T(X)
 = \Func{X}{\LatGal}$. Here the (discrete) category $X$ is a plain set and so $\Func{X}{\LatGal}$ is exactly
 the category of $X$-indexed families of bounded lattices, with $X$-indexed families of Galois connections
-between them as morphisms. The Grothendieck construction $\Grothendieck{}T$ is the ``total category'' which
-gloms all such $\Set$-indexed families of bounded lattices into the same category, with reindexing morphisms
-transporting between data indexed by different sets.
+between them as morphisms. The Grothendieck construction $\Grothendieck{}T$
+(\defref{grothendieck:Grothendieck} below) is the category of all $\Set$-indexed families of bounded lattices,
+together with morphisms that account for both structure within each family and how families transform under
+reindexing.
 
-\begin{definition}[Functor category of $X$-indexed families]
+First we formalise $X$-indexed families and their categories.
+
+\begin{definition}[Category of $X$-indexed families]
 \label{def:fam:Fam}
 For any set $X$ (interpreted as a discrete category) and any category $\cat{C}$, recall that the functor
 category $\Func{X}{\cat{C}}$ has as objects all functors $F: X \to \cat{C}$, namely $X$-indexed families of
@@ -94,14 +140,13 @@ pointwise.
 \begin{definition}[Reindexing]
 For any function $f: X \to Y$ define the \emph{reindexing} functor $\reindex{-}{f}: \Func{Y}{\cat{C}} \to
 \Func{X}{\cat{C}}$ which sends any $Y$-indexed family $F$ over $\cat{C}$ to the $X$-indexed family
-$\reindex{F}{f} = F \comp f$, regarding $f$ as a functor between $X$ and $Y$ as discrete categories.
+$\reindex{F}{f} = F \comp f$ (regarding $f$ as a functor between $X$ and $Y$ as discrete categories) and any
+family of morphisms $\eta: F \to G$ to $\reindex{\eta}{f}: \reindex{F}{f} \to \reindex{G}{f}$ with
+$\reindex{\eta}{f}(x) = \eta(f(x))$.
 \end{definition}
 
-\begin{definition}
-Let $\Func{-}{\cat{C}}: \Set^{\op} \to \Cat$ denote the indexed category which sends any set $X$ to the
-category $\Func{X}{\cat{C}}$ and any function $f: X \to Y$ to the functor $\reindex{-}{f}: \Func{Y}{\cat{C}}
-\to \Func{X}{\cat{C}}$.
-\end{definition}
+Although reindexing is just precomposition with $f$, writing it as $\reindex{-}{f}$ avoids notational
+confusion when combining composition of morphisms in $\Func{X}{C}$ with reindexing.
 
 \begin{definition}
 \label{def:grothendieck:Grothendieck}
@@ -113,18 +158,22 @@ morphisms $\partial f: \partial X \to T(f)(\partial Y)$ in $T(X)$.
 \end{definition}
 
 \noindent The $\partial X$ notation is intended to suggest the connection between the Grothendieck
-construction and the idea of tangent spaces and derivatives. To understand how the $\partial X$ components
+construction and the idea of tangent spaces and derivatives. To understand how the $\partial f$ components
 compose, consider any $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ and $(g, \partial g): (Y,
 \partial Y) \to (Z, \partial Z)$ in $\Grothendieck{}T$. We have:
 
 \begin{itemize}
-\item $\partial f: \partial X \to T(f)(\partial Y)$;
-\item $T(f)(\partial g): T(f)(\partial Y) \to T(f)(T(g)(\partial Z)) = T(g \comp f)(\partial Z)$.
+\item $\partial f: \partial X \to T(f)(\partial Y)$, and
+\item $T(f)(\partial g): T(f)(\partial Y) \to T(f)(T(g)(\partial Z)) = T(g \comp f)(\partial Z)$
 \end{itemize}
 
 \noindent where $T(f)(\partial g)$ is the image of $\partial g$ in the ``reindexing'' functor $T(f)$. The
 composition $(g, \partial g) \comp (f, \partial f): (X, \partial X) \to (Z, \partial Z)$ is then given by $(g
 \comp f, T(f)(\partial g) \comp \partial f)$.
+
+Of interest to us is the Grothendieck construction for $\Func{-}{\cat{C}}: \Set^{\op} \to \Cat$, the indexed
+category which sends any set $X$ to the category of $X$-indexed families $\Func{X}{\cat{C}}$ and any function
+$f: X \to Y$ to the reindexing functor $\reindex{-}{f}: \Func{Y}{\cat{C}} \to \Func{X}{\cat{C}}$ .
 
 \begin{definition}[Category of families]
 For any category $\cat{C}$ define $\Fam(\cat{C})$ to be the Grothendieck construction
@@ -133,7 +182,8 @@ $\Grothendieck{X}\Func{X}{\cat{C}}$.
 
 \noindent In $\Fam(\cat{C})$ the objects $(X, \partial X)$ are thus sets $X$ paired with indexed families
 $\partial X: X \to \cat{C}$ and morphisms $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ are functions
-$f: X \to Y$ paired with morphisms $\partial f: \partial X \to \reindex{\partial Y}{f}$ in $\Fam(X,\cat{C})$.
+$f: X \to Y$ paired with morphisms $\partial f: \partial X \to \partial \reindex{Y}{f}$ in
+$\Func{X}{\cat{C}}$.
 
 \subsubsection{Galois slicing via the Grothendieck construction}
 
@@ -148,17 +198,9 @@ function $f$.
 
 \subsection{Biproducts and Semi-Additive Categories}
 
-An important observation about the semilattice homomorphisms that appear in adjoint pairs in $\LatGal$ is that
-the pointwise lifting of $\meet$ to meet-semilattice homomorphisms $f, g: X \to Y$, where $(f \meet g)(x) =
-f(x) \meet g(x): X \to Y$, gives a notion of ``addition'' for those maps which is associative and commutative,
-and which has a ``zero'' homomorphism $0_{X,Y}: X \to Y$ given by the constant map sending any $x \in X$ to
-$0_Y$, acting as a unit for addition of homomorphisms. The same can be said for the join-preserving maps from
-$Y$ to $X$, which also have a commutative monoid structure; Galois connections then inherit this structure
-component-wise.
-
-We now say more generally when this so-called \emph{semi-additive} structure on morphisms arises and explain
-its role in generalising CHAD from automatic differentiation to providing a semantics for Galois slicing as
-well.
+We noted that $\LatGal$ is $\CMon$-enriched (actually $\SemiLat$-enriched) and moreover that the product of
+lattices is also a coproduct, making $\LatGal$ into a category with \emph{biproducts}. In fact having
+biproducts is sufficient to ensure $\CMon$-enrichment; such a category is called \emph{semi-additive}.
 
 \begin{definition}[Semi-additive category]
 A category with finite products and coproducts is \emph{semi-additive} if the canonical morphisms (projections

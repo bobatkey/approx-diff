@@ -81,11 +81,27 @@ The \emph{Yoneda embedding} for $\cat{C}$ is the functor $\Yoneda: \cat{C} \to
 \to \mathscr{V}$ is itself $\mathscr{V}$-enriched, providing a family of morphisms $\Hom{\cat{C}}{-}{X}_{Y,Z}:
 \Hom{\cat{C}}{Y}{Z} \to \Hom{\mathscr{V}}{\Hom{\cat{C}}{Z}{X}}{\Hom{\cat{C}}{Y}{X}}$ in $\mathscr{V}$ for any
 $Y, Z$ in $\cat{C}$. Moreover there exists an enriched Yoneda embedding, namely a functor
-$\Yoneda_{\mathscr{V}}: \cat{C} \to \Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}$ which is itself
-$\mathscr{V}$-enriched, sending objects $X$ to the $\mathscr{V}$-enriched hom-functor $\Hom{\cat{C}}{-}{X}$
-and providing a family of morphisms $(\Yoneda_{\mathscr{V}})_{X,Y}: \Hom{\cat{C}}{X}{Y} \to
-\Hom{\Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}}{\Hom{\cat{C}}{-}{X}}{\Hom{\cat{C}}{-}{Y}}$ acting
-concretely at each component as post-composition with $f: X \to Y$.
+$\Yoneda_{\mathscr{V}}: \cat{C} \to \PSh_{\mathscr{V}}(\cat{C})$ which is itself $\mathscr{V}$-enriched,
+sending objects $X$ to the $\mathscr{V}$-enriched hom-functor $\Hom{\cat{C}}{-}{X}$ and providing a family of
+morphisms $(\Yoneda_{\mathscr{V}})_{X,Y}: \Hom{\cat{C}}{X}{Y} \to
+\Hom{\PSh_{\mathscr{V}}(\cat{C})}{\Hom{\cat{C}}{-}{X}}{\Hom{\cat{C}}{-}{Y}}$ acting concretely at each
+component as post-composition with $f: X \to Y$.
+
+\todo{Generalise to any monoidal closed $\mathscr{V}$ with biproducts?} $\CMon$ is monoidal closed, and has
+biproducts (\secref{categories-with-biproducts:cmon}) which are inherited pointwise into
+$\PSh_{\CMon}(\cat{C})$ and preserved by the $\CMon$-enriched Yoneda embedding.
+
+\begin{proposition}
+$\Yoneda_{\CMon}(X \biprod Y) \iso \Yoneda_{\CMon}(X) \biprod \Yoneda_{\CMon}(Y)$.
+\end{proposition}
+
+\begin{proof}
+Suppose $Z$ an object in $C$. Then $\Yoneda_{\CMon}(X \biprod Y)(Z) = \Hom{\cat{C}}{Z}{X \biprod Y}$. But for
+any $f: Z \to X \biprod Y$ in $\cat{C}$, there exist unique morphisms $f_1: Z \to X$ and $f_2: Z \to Y$ such
+that $f = \biinj_X \comp f_1 + \biinj_Y \comp f_2$ by the universal property of the biproduct. Thus we have
+$\Hom{\cat{C}}{Z}{X \biprod Y} \iso \Hom{\cat{C}}{Z}{X} \biprod \Hom{\cat{C}}{Z}{Y} = \Yoneda_{\CMon}(X)(Z)
+\biprod \Yoneda_{\CMon}(Y)(Z) = (\Yoneda_{\CMon}(X) \biprod \Yoneda_{\CMon}(Y))(Z)$.
+\end{proof}
 
 The \emph{enriched Yoneda lemma} states that, for any $\mathscr{V}$-enriched presheaf $F$ and any object $X
 \in \cat{C}$, there is an isomorphism between $F(X)$ and the hom-object (also living in $\mathscr{V}$) of
@@ -94,7 +110,7 @@ $\mathscr{V}$-natural transformations from the $\mathscr{V}$-enriched presheaf $
 \begin{lemma}
 Suppose $\cat{C}$ is $\mathscr{V}$-enriched with $\mathscr{V}$ monoidal closed. For any $F: \cat{C}^\op \to
 \mathscr{V}$ and any object $X$ in $\cat{C}$:
-\[\Hom{\Func{\cat{C}^\op}{\mathscr{V}}_{\mathscr{V}}}{\Hom{\cat{C}}{-}{X}}{F} \iso F(X)\]
+\[\Hom{\PSh_{\mathscr{V}}{(\cat{C})}}{\Hom{\cat{C}}{-}{X}}{F} \iso F(X)\]
 \end{lemma}
 
 
