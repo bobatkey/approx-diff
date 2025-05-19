@@ -87,8 +87,9 @@ morphisms $(\Yoneda_{\mathscr{V}})_{X,Y}: \Hom{\cat{C}}{X}{Y} \to
 \Hom{\PSh_{\mathscr{V}}(\cat{C})}{\Hom{\cat{C}}{-}{X}}{\Hom{\cat{C}}{-}{Y}}$ acting concretely at each
 component as post-composition with $f: X \to Y$.
 
-The $\CMon$-enriched Yoneda embedding preserves biproducts, where (as in any functor category) biproducts in
-$\PSh_{\CMon}(\cat{C})$ are computed pointwise.
+The $\CMon$-enriched Yoneda embedding \todo{think this works for any monoidal closed $\mathscr{V} with
+biproducts?$} preserves biproducts, where (as in any functor category) biproducts in $\PSh_{\CMon}(\cat{C})$
+are computed pointwise, and noting that $\CMon$ itself has biproducts.
 
 \begin{proposition}
 $\Yoneda_{\CMon}(X \biprod Y) \iso \Yoneda_{\CMon}(X) \biprod \Yoneda_{\CMon}(Y)$.
