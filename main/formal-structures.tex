@@ -201,9 +201,10 @@ function $f$.
 \subsection{Biproducts and Semi-Additive Categories}
 \label{sec:biproducts}
 
-We noted that $\LatGal$ is $\CMon$-enriched (actually $\SemiLat$-enriched) and moreover that the product of
-lattices is also a coproduct, making $\LatGal$ into a category with \emph{biproducts}. In fact having
-biproducts is sufficient to ensure $\CMon$-enrichment; such a category is called \emph{semi-additive}.
+We noted that $\LatGal$ is enriched in $\CMon$, the category of commutative monoids (in fact in $\SemiLat$)
+and moreover that the product of lattices is also a coproduct, making $\LatGal$ into a category with
+\emph{biproducts}. In fact the presence of biproducts is sufficient for $\CMon$-enrichment; such a category is
+called \emph{semi-additive}.
 
 \begin{definition}[Semi-additive category]
 A category with finite products and coproducts is \emph{semi-additive} if the canonical morphisms (projections
@@ -211,11 +212,11 @@ and injections) give an isomorphism
 \[\textstyle X \coprod Y \iso X \prod Y\] that is natural in both variables.
 \end{definition}
 
-The product/coproduct is called a \emph{biproduct}, and the biproduct structure is denoted by $(\biprod, 0)$.
+The product/coproduct is called a \emph{biproduct}, with the biproduct structure denoted by $(\biprod, 0)$.
 The unit $0$ is both terminal and initial and is called a \emph{zero} object. \todo{State the biproduct
-``laws'' that follow from this formulation.} A semi-additive category $\cat{C}$ is enriched in $\CMon$, the
-category of commutative monoids: for any two morphisms $f, g: X \to Y$ in $\cat{C}$, the biproduct structure
-provides a way to ``add'' them together, forming a morphism $f + g: X \to Y$. Diagrammatically:
+``laws'' that follow from this formulation.} A semi-additive category $\cat{C}$ is enriched in $\CMon$: for
+any two morphisms $f, g: X \to Y$ in $\cat{C}$, the biproduct structure provides a way to ``add'' them
+together, forming a morphism $f + g: X \to Y$. Diagrammatically:
 
 \begin{center}
 \begin{tikzcd}
