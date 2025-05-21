@@ -1,0 +1,106 @@
+\section{A categorical framework for Galois slicing}
+
+We will consider a pure, total language, where types can be interpreted as sets. Our goal is to equip the
+interpretations of programs with Galois connections relating approximations of their inputs to approximations
+of their outputs. Since these lattices of approximations depends on the value being approximated, the
+semantics of every type $\tau$ must have both a ``conventional'' component, providing the set $X$ associated
+with $\tau$, plus an associated lattice of approximations $\partial X(x)$ for every point $x \in X$. The
+semantics of an expression $e$ of type $Y$ with a single free variable of type $X$ must then also have two
+components: a function $f: X \to Y$ giving the baseline (unapproximated) meaning of the expression, plus a
+family of Galois connections $\partial f(x): \partial X(x) \to \partial Y(f(x))$ for every $x \in X$ which can
+be used for slicing over that expression.
+
+\subsection{Grothendieck construction for indexed categories}
+\label{sec:Grothendieck}
+
+This pattern of objects and morphisms is exactly the \emph{Grothendieck construction} for a particular indexed
+category $\Set^\op \to \Cat$, namely the indexed category $\Func{-}{\LatGal}$ which assigns to every set $X$
+the functor category $\Func{X}{\LatGal}$. Here the (discrete) category $X$ is a plain set and so
+$\Func{X}{\LatGal}$ is exactly the category of $X$-indexed families of bounded lattices, with $X$-indexed
+families of Galois connections between them as morphisms. The Grothendieck construction
+$\Grothendieck{}T$~(\defref{Grothendieck} below) for an indexed category $T$, sometimes called the \emph{total
+category} for $T$, is the category of all $\Set$-indexed families of objects of $T$, together with morphisms
+that account for both structure within each family and how families transform under reindexing.
+
+First we formalise $X$-indexed families and their categories.
+
+\begin{definition}[Category of $X$-indexed families]
+For any set $X$ (interpreted as a discrete category) and any category $\cat{C}$, recall that the functor
+category $\Func{X}{\cat{C}}$ has as objects all functors $F: X \to \cat{C}$, namely $X$-indexed families of
+objects of $\cat{C}$, and as morphisms from $F \to G$, all families of morphisms $\eta(x): F(x) \to G(x)$ in
+$\cat{C}$ for every $x \in X$, with naturality trivial because $X$ only has identity morphisms.
+\end{definition}
+
+Like any functor category $\Func{X}{\cat{C}}$ inherits limits and colimits from its codomain.
+
+\begin{proposition}
+If $\cat{C}$ has limits (resp.~colimits) then $\Func{X}{\cat{C}}$ has limits (resp.~colimits) computed
+pointwise.
+\end{proposition}
+
+\begin{definition}[Reindexing]
+For any function $f: X \to Y$ define the \emph{reindexing} functor $\reindex{-}{f}: \Func{Y}{\cat{C}} \to
+\Func{X}{\cat{C}}$ which sends any $Y$-indexed family $F$ over $\cat{C}$ to the $X$-indexed family
+$\reindex{F}{f} = F \comp f$ (regarding $f$ as a functor between $X$ and $Y$ as discrete categories) and any
+family of morphisms $\eta: F \to G$ to $\reindex{\eta}{f}: \reindex{F}{f} \to \reindex{G}{f}$ with
+$\reindex{\eta}{f}(x) = \eta(f(x))$.
+\end{definition}
+
+Although reindexing is just precomposition with $f$, writing it as $\reindex{-}{f}$ avoids notational
+confusion when combining composition of morphisms in $\Func{X}{C}$ with reindexing.
+
+\begin{definition}
+\label{def:Grothendieck}
+Suppose an indexed category $T: \cat{C}^\op \to \Cat$. The \emph{Grothendieck construction} for $T$ is the
+category $\Grothendieck{X}T(X)$ (also written $\Grothendieck{}T$) which has as objects, all pairs $(X,
+\partial X)$ of an object $X$ of $\cat{C}$ and an object $\partial X$ of $T(X)$, and as morphisms $(X,
+\partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of morphisms $f: X \to Y$ in $\cat{C}$ and
+morphisms $\partial f: \partial X \to T(f)(\partial Y)$ in $T(X)$.
+\end{definition}
+
+\noindent The $\partial X$ notation is intended to suggest the connection between the Grothendieck
+construction and the idea of tangent spaces and derivatives. To understand how the $\partial f$ components
+compose, consider any $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ and $(g, \partial g): (Y,
+\partial Y) \to (Z, \partial Z)$ in $\Grothendieck{}T$. We have:
+
+\begin{itemize}
+\item $\partial f: \partial X \to T(f)(\partial Y)$, and
+\item $T(f)(\partial g): T(f)(\partial Y) \to T(f)(T(g)(\partial Z)) = T(g \comp f)(\partial Z)$
+\end{itemize}
+
+\noindent where $T(f)(\partial g)$ is the image of $\partial g$ in the ``reindexing'' functor $T(f)$. The
+composition $(g, \partial g) \comp (f, \partial f): (X, \partial X) \to (Z, \partial Z)$ is then given by $(g
+\comp f, T(f)(\partial g) \comp \partial f)$.
+
+\subsection{Category of families}
+\label{sec:Fam}
+
+Of interest to us is the Grothendieck construction for $\Func{-}{\cat{C}}: \Set^{\op} \to \Cat$, the indexed
+category which sends any set $X$ to the category of $X$-indexed families $\Func{X}{\cat{C}}$ and any function
+$f: X \to Y$ to the reindexing functor $\reindex{-}{f}: \Func{Y}{\cat{C}} \to \Func{X}{\cat{C}}$ .
+
+\begin{definition}[Category of families]
+\label{def:Fam}
+For any category $\cat{C}$ define $\Fam(\cat{C})$ to be the Grothendieck construction
+$\Grothendieck{X}\Func{X}{\cat{C}}$.
+\end{definition}
+
+\noindent In $\Fam(\cat{C})$ the objects $(X, \partial X)$ are thus sets $X$ paired with indexed families
+$\partial X: X \to \cat{C}$ and morphisms $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ are functions
+$f: X \to Y$ paired with morphisms $\partial f: \partial X \to \partial \reindex{Y}{f}$ in
+$\Func{X}{\cat{C}}$.
+
+\subsection{Galois slicing via the Grothendieck construction}
+
+Now consider the total category $\Fam(\LatGal)$, which is our basic setting for interpreting first-order
+programs for Galois slicing. This has as objects $(X, \partial X)$, all pairs of a set $X$ and and for every
+$x \in X$, a bounded lattice $\partial X(x)$, and as morphisms $(X, \partial X) \to (Y, \partial Y)$, all
+pairs $(f, \partial f)$ of a function $f: X \to Y$ and for every $x \in X$, a Galois connection $\partial
+f(x): \partial X(x) \to \partial Y(f(x))$, as we sketched informally at the beginning of this section. The
+pullback (reindexing) along $f$ in the composition $(g, \partial g) \comp (f, \partial f) = (g \comp f,
+\reindex{\partial g}{f} \comp \partial f)$ selects the appropriate lattice of approximations and Galois
+connection at each point, using the baseline (unapproximated) function $f$.
+
+\subsection{Interpreting higher-order programs}
+
+\todo{conditions under which $\Fam(\cat{C})$ is Cartesian closed, why we need $\PSh_{\CMon}(\cat{C})$, etc}
