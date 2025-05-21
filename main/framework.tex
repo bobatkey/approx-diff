@@ -14,12 +14,13 @@ be used for slicing over that expression.
 \label{sec:Grothendieck}
 
 This pattern of objects and morphisms is exactly the \emph{Grothendieck construction} for a particular indexed
-category $T: \Set^\op \to \Cat$, namely the functor which assigns to every set $X$ the functor category $T(X)
-= \Func{X}{\LatGal}$. Here the (discrete) category $X$ is a plain set and so $\Func{X}{\LatGal}$ is exactly
-the category of $X$-indexed families of bounded lattices, with $X$-indexed families of Galois connections
-between them as morphisms. The Grothendieck construction $\Grothendieck{}T$~(\defref{Grothendieck} below) is
-the category of all $\Set$-indexed families of bounded lattices, together with morphisms that account for both
-structure within each family and how families transform under reindexing.
+category $\Set^\op \to \Cat$, namely the indexed category $\Func{-}{\LatGal}$ which assigns to every set $X$
+the functor category $\Func{X}{\LatGal}$. Here the (discrete) category $X$ is a plain set and so
+$\Func{X}{\LatGal}$ is exactly the category of $X$-indexed families of bounded lattices, with $X$-indexed
+families of Galois connections between them as morphisms. The Grothendieck construction
+$\Grothendieck{}T$~(\defref{Grothendieck} below) for an indexed category $T$, sometimes called the \emph{total
+category} for $T$, is the category of all $\Set$-indexed families of objects of $T$, together with morphisms
+that account for both structure within each family and how families transform under reindexing.
 
 First we formalise $X$-indexed families and their categories.
 
