@@ -1,0 +1,78 @@
+\subsection{Stable Functions}
+\label{sec:stable-functions}
+
+\begin{definition}
+  Let $f : X \to Y$ be a monotone function between posets $X$ and
+  $Y$. The function $f$ is \emph{stable} if for all $x \in X$ and
+  $y \leq f(x)$, there exists an $x_0 \leq x$ such that $y \leq f(x_0)$ which
+  is minimal: for any other $x'_0 \leq x$ such that $y \leq f(x'_0)$ then
+  $x_0 \leq x'_0$.
+\end{definition}
+
+The intuition behind stability is that for stable functions, we have a
+way of determining what minimal approximation of the input is required
+for any approximation of the output. The ordering on $X$ and $Y$
+describes an ordering of information content between
+elements. Monotonicity means that increases in information content on
+the input are not lost on the output. Stability means that, if we use
+$f$ to derive a result $f(x)$ from $x$, and then we identify some
+approximation $y$ of $f(x)$, then there is a unique minimal
+approximation of $x$ that gets us as close as possible to $y$.
+
+We can rephrase stability in terms of Galois connections / adjunctions
+between principal downsets.
+
+\newcommand{\downset}[1]{\mathop{\downarrow}(#1)}
+
+\begin{definition}
+  For a poset $X$ and element $x \in X$, the \emph{principal
+    downset of $x$} is $\downset{x} = \{ x' \in X \mid x' \leq x \}$.
+\end{definition}
+
+\begin{lemma}
+  If $f : X \to Y$ is monotonic, then for all $x \in X$, the
+  restriction of $f$ to $\downset{x}$ is a monotone function
+  $f_x : \downset{x} \to \downset{f(x)}$.
+\end{lemma}
+
+\begin{proof}
+  $f_x$ is well defined: for any $x' \leq x$,
+  $f_x(x') = f(x') \leq f(x)$ by monotonicity, so
+  $f_x(x') \in \downset{f(x)}$. The function $f_x$ is monotone because
+  $f$ is.
+\end{proof}
+
+\begin{lemma}
+  A monotone function $f : X \to Y$ is stable if and only if for all
+  $x \in X$, the restriction of $f_x : \downset{x} \to \downset{f(x)}$
+  has a left adjoint.
+\end{lemma}
+
+\begin{proof}
+  If $f$ is stable, then define a left adjoint
+  $g_x : \downset{f(x)} \to \downset{x}$ by setting $g_x(y)$ to be the
+  minimal $x_0$ required by stability. (FIXME: this is monotone?). Let
+  $x' \leq x$ and $y \leq f(x)$. Then if $g_x(y) \leq x'$, we have
+  $y \leq f(g_x(y)) \leq f(x')$ by monotonicity of $f$ and the first
+  part of stability. In the other direction, if we have
+  $y \leq f(x')$, then by uniqueness we have $g_x(y) \leq x'$.
+
+  TODO: left adjoint implies stability.
+\end{proof}
+
+
+
+\begin{enumerate}
+\item Posets where the principal downsets are meet-semilattices. And
+  posets where the principal downsets are lattices.
+\item Stable functions on these.
+\item Full and faithful functor into Fam(LatGal), copying the idea
+  from automatic differentiation: we formally delineate points and
+  their tangent bundles.
+\item
+  \begin{enumerate}
+  \item Posets that are meet semilattices in their downsets, with
+    monotone functions form a Tangent Category
+  \item To get ``reverse derivatives'', we further assume stability.
+  \end{enumerate}
+\end{enumerate}
