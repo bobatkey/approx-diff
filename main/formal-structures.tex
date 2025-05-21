@@ -91,10 +91,11 @@ projections $\biproj_X$ and $\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$
 \end{minipage}
 \vspace{2mm}
 
-\noindent The trivial 1-point lattice, which is both terminal and initial, is the unit for $\biprod$. Although
-the presence of biproducts is incompatible with $\LatGal$ itself being Cartesian closed, the biproduct
-structure will prove crucial for establishing a Cartesian closed setting for interpreting higher-order
-programs for Galois slicing.
+\noindent The trivial 1-point lattice, which is both terminal and initial and we will write as $0$, is the
+unit for $\biprod$. Such a structure $(\biprod, 0)$ is called a \emph{biproduct} (\secref{biproducts}).
+Although $\LatGal$ is not itself Cartesian closed (in particular the set of Galois connections $X \to Y$ does
+not in general form a bounded lattice), the biproduct structure will prove crucial for establishing a
+Cartesian closed setting for interpreting higher-order programs.
 
 \subsection{Biproducts and Semi-Additive Categories}
 \label{sec:biproducts}
@@ -105,6 +106,7 @@ of biproducts is sufficient for enrichment in $\CMon$, the category of commutati
 semilattices); such a category is called \emph{semi-additive}.
 
 \begin{definition}[Semi-additive category]
+\label{def:biproducts:semi-additive}
 A category with finite products and coproducts is \emph{semi-additive} if the canonical morphisms (projections
 and injections) give an isomorphism
 \[\textstyle X \coprod Y \iso X \prod Y\] that is natural in both variables.
@@ -148,7 +150,8 @@ h \comp (f + g) &= (h \comp f) + (h \comp g)
 \end{salign*}
 
 \subsubsection{Biproduct laws}
-It is also easy to show that the following equations hold:
+It is also easy to show that in a semi-additive category, as defined in \defref{biproducts:semi-additive}, the
+following equations hold:
 
 \vspace{-3mm}
 \begin{minipage}[t]{0.45\textwidth}
@@ -290,7 +293,7 @@ Now consider the total category $\Fam(\LatGal)$, which is our basic setting for 
 programs for Galois slicing. This has as objects $(X, \partial X)$, all pairs of a set $X$ and and for every
 $x \in X$, a bounded lattice $\partial X(x)$, and as morphisms $(X, \partial X) \to (Y, \partial Y)$, all
 pairs $(f, \partial f)$ of a function $f: X \to Y$ and for every $x \in X$, a Galois connection $\partial
-f(x): \partial X(x) \to \partial Y(f(x))$, as required. The pullback (reindexing) along $f$ in the composition
-$(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp \partial f)$ selects the
-appropriate lattice of approximations and Galois connection at each point, using the baseline (unapproximated)
-function $f$.
+f(x): \partial X(x) \to \partial Y(f(x))$, as we sketched informally at the beginning of this section. The
+pullback (reindexing) along $f$ in the composition $(g, \partial g) \comp (f, \partial f) = (g \comp f,
+\reindex{\partial g}{f} \comp \partial f)$ selects the appropriate lattice of approximations and Galois
+connection at each point, using the baseline (unapproximated) function $f$.
