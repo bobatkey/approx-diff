@@ -1,6 +1,18 @@
 \subsection{Stable Functions}
 \label{sec:stable-functions}
 
+Stable functions arise in domain theory as an attempt to capture the
+idea that any function describing a computational process must explore
+its input in a way that allows identification of minimal parts of the
+input that are needed for chosen approximations of the input. They
+were invented by Berry \cite{berry86} in an attempt to capture
+sequentiality, and were also instrumental in the discovery of Linear
+Logic via Coherence Spaces \cite{girard}. A textbook description of
+stable functions in the context of domain theory is given by Amadio
+and Curien \cite{amadio-curien}. Here, we are not concerned with
+completeness properties considered in domain theory. Stable functions
+can be defined between any two partially ordered sets:
+
 \begin{definition}
   Let $f : X \to Y$ be a monotone function between posets $X$ and
   $Y$. The function $f$ is \emph{stable} if for all $x \in X$ and
@@ -25,7 +37,7 @@ between principal downsets.
 \newcommand{\downset}[1]{\mathop{\downarrow}(#1)}
 
 \begin{definition}
-  For a poset $X$ and element $x \in X$, the \emph{principal
+  For a poset $X$ and $x \in X$, the \emph{principal
     downset of $x$} is $\downset{x} = \{ x' \in X \mid x' \leq x \}$.
 \end{definition}
 
@@ -51,16 +63,20 @@ between principal downsets.
 \begin{proof}
   If $f$ is stable, then define a left adjoint
   $g_x : \downset{f(x)} \to \downset{x}$ by setting $g_x(y)$ to be the
-  minimal $x_0$ required by stability. (FIXME: this is monotone?). Let
-  $x' \leq x$ and $y \leq f(x)$. Then if $g_x(y) \leq x'$, we have
+  minimal $x_0$ required by stability. This is monotone: if
+  $y \leq y'$, then we know that $y \leq y' \leq f(g_x(y'))$ by
+  defintition of $g_x$, so $g_x(y) \leq g_x(y')$ by minimality of
+  $g_x(y)$. For the adjointness, let $x' \leq x$ and $y \leq
+  f(x)$. Then if $g_x(y) \leq x'$, we have
   $y \leq f(g_x(y)) \leq f(x')$ by monotonicity of $f$ and the first
   part of stability. In the other direction, if we have
   $y \leq f(x')$, then by uniqueness we have $g_x(y) \leq x'$.
 
-  TODO: left adjoint implies stability.
+  If, for every $x$, $f_x$ has a left adjoint $g_x$, then for any
+  $x', y$ we have $y \leq f_x(x') \Leftrightarrow g_x(y) \leq x'$. So
+  $g_x(y)$ is the element that satisfies $y \leq f(g_x(y))$, and it is
+  minimal since if $y \leq f_x(x'_0)$ then $g_x(y) \leq x'_0$.
 \end{proof}
-
-
 
 \begin{enumerate}
 \item Posets where the principal downsets are meet-semilattices. And
