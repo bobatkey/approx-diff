@@ -36,9 +36,10 @@ two partially ordered sets:
   To see how stability works, consider the following examples of the
   OR operation on the lifted booleans $\mathbb{B}_\bot$. Two functions
   that are stable are the strict and left-short-circuiting
-  ORs\footnote{These clauses are shorthand for the graph of the
-    function. They are not to be understood as pattern matching
-    clauses in a language like Haskell.}:
+  ORs\footnote{The clauses in these examples are shorthand for the
+    graph of the function. They are not to be understood as pattern
+    matching clauses in a language like Haskell, where it is not
+    possible to match on $\bot$.}:
   \begin{displaymath}
     \begin{array}[t]{l@{(}l@{,~}l@{)~}c@{~}l}
       \mathrm{strictOr}&\mathsf{tt}&\mathsf{tt}&=&\mathsf{tt} \\
@@ -60,15 +61,14 @@ two partially ordered sets:
   minimal input that gives this output is exactly
   $(\mathsf{tt}, \mathsf{ff})$. If we take the approximation
   $\bot \leq \mathsf{tt}$ of the output, then the corresponding
-  minimal input is $(\bot, \bot)$.
-
-  The function $\mathrm{shortCircuitOR}$ is also stable. For the
-  input-output pair $(\mathsf{tt},\mathsf{ff}),\mathsf{tt}$, the
-  minimal input that gives this input is $(\mathsf{tt},\bot)$,
-  indicating that the presence of $\mathsf{ff}$ in the second argument
-  was not necessary to produce this output. As with
-  $\mathrm{strictOr}$, the minimal input required to produce the
-  output $\bot \leq \mathsf{tt}$ is again $(\bot,\bot)$.
+  minimal input is $(\bot, \bot)$. The function
+  $\mathrm{shortCircuitOR}$ is also stable. For the input-output pair
+  $(\mathsf{tt},\mathsf{ff}),\mathsf{tt}$, the minimal input that
+  gives this input is $(\mathsf{tt},\bot)$, indicating that the
+  presence of $\mathsf{ff}$ in the second argument was not necessary
+  to produce this output. As with $\mathrm{strictOr}$, the minimal
+  input required to produce the output $\bot \leq \mathsf{tt}$ is
+  again $(\bot,\bot)$.
 
   The fact that these two functions's stability witnesses reveal
   information about how they depend on their input is what we will
@@ -121,16 +121,19 @@ two partially ordered sets:
   the first three lines of the definition).
 
   In terms of program slicing, however, the $\mathrm{gustave}$
-  function does not present a problem. For any particular run of the
-  program, there is an unambiguous minimal input that achieves the
-  output, no matter that it was not achieved by a sequential
-  processing of the input.
+  function does not present a problem. For any particular run (i.e.,
+  input-output pair) of the program, there is an unambiguous minimal
+  input that achieves the output, no matter that it was not achieved
+  by a sequential processing of the input.
 \end{example}
 
 The definition of stability has a nice operational meaning, but seems
 a little ad-hoc. We can rephrase stability in terms of Galois
 connections / adjunctions between principal downsets / slices of the
-partial orders.
+partial orders. The alternative presentation also has the advantage
+that it explicitly defines the stability witness as ``backwards''
+function from approximations of the output to approximations of the
+input.
 
 \newcommand{\downset}[1]{\mathop{\downarrow}(#1)}
 
@@ -176,17 +179,36 @@ partial orders.
   minimal since if $y \leq f_x(x'_0)$ then $g_x(y) \leq x'_0$.
 \end{proof}
 
-\begin{enumerate}
-\item Posets where the principal downsets are meet-semilattices. And
-  posets where the principal downsets are lattices.
-\item Stable functions on these.
-\item Full and faithful functor into Fam(LatGal), copying the idea
-  from automatic differentiation: we formally delineate points and
-  their tangent bundles.
-\item
-  \begin{enumerate}
-  \item Posets that are meet semilattices in their downsets, with
-    monotone functions form a Tangent Category
-  \item To get ``reverse derivatives'', we further assume stability.
-  \end{enumerate}
-\end{enumerate}
+For what follows\footnote{Need a better way of motivating this.}, it
+will be useful for the principal downsets to be bounded lattices, so
+that we are guaranteed to have meets and joints of approximations of
+points. Note that the principal downsets always have a top element
+(the original element), but now we are also requiring a bottom
+element, as well as finite meets and joins.
+
+FIXME: is this a good name? Maybe just $\mathbf{Stable}$ or something
+like that?
+
+FIXME: if $x \leq x'$ then $\downset{x} \subseteq \downset{x'}$ and I
+assume that the inclusion preserves lattice structure?
+
+\begin{definition}
+  An \emph{approximation set} is a partial order such that every
+  principal downset $\downset{x}$ is a bounded lattice.
+
+  A morphism of approxmation sets is monotone function whose
+  restriction to each slice has a left adjoint.
+\end{definition}
+
+Note that, by standard properties of Galois connections/adjoints, the
+pairs $g_x \vdash f_x$ preserve the finite joins and meets respectively.
+
+\begin{proposition}
+  Approximation sets and their morphisms form a category.
+\end{proposition}
+
+FIXME: what properties does this category have? I think it has finite
+products, and probably finite coproducts?
+
+FIXME: there is a full and faithful functor from approximation sets to
+$\Fam(\LatGal)$.
