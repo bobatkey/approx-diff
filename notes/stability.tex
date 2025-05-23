@@ -1,38 +1,136 @@
 \subsection{Stable Functions}
 \label{sec:stable-functions}
 
-Stable functions arise in domain theory as an attempt to capture the
-idea that any function describing a computational process must explore
-its input in a way that allows identification of minimal parts of the
-input that are needed for chosen approximations of the input. They
-were invented by Berry \cite{berry86} in an attempt to capture
+Stable functions are an antecedent of Galois slicing that arose in
+domain theory as an attempt to capture the idea that any function
+describing a computational process must explore its input in a way
+that allows identification of minimal parts of the input that are
+needed for chosen approximations of the output.
+
+Stability was invented by Berry \cite{berry86} in an attempt to capture
 sequentiality, and were also instrumental in the discovery of Linear
 Logic via Coherence Spaces \cite{girard}. A textbook description of
 stable functions in the context of domain theory is given by Amadio
-and Curien \cite{amadio-curien}. Here, we are not concerned with
-completeness properties considered in domain theory. Stable functions
-can be defined between any two partially ordered sets:
+and Curien \cite{amadio-curien} (Chapter 12). Here, we are not
+concerned with completeness properties considered in domain theory, so
+we start with only partially ordered sets. Stable functions can be
+defined as a certain subset of the set of monotone functions between
+two partially ordered sets:
 
 \begin{definition}
   Let $f : X \to Y$ be a monotone function between posets $X$ and
   $Y$. The function $f$ is \emph{stable} if for all $x \in X$ and
-  $y \leq f(x)$, there exists an $x_0 \leq x$ such that $y \leq f(x_0)$ which
-  is minimal: for any other $x'_0 \leq x$ such that $y \leq f(x'_0)$ then
-  $x_0 \leq x'_0$.
+  $y \leq f(x)$:
+  \begin{enumerate}
+  \item (\textsc{Existence}) there exists an $x_0 \leq x$ such that $y \leq f(x_0)$, and
+  \item (\textsc{Minimality}) for any $x'_0 \leq x$ such that $y \leq f(x'_0)$ then
+    $x_0 \leq x'_0$ .
+  \end{enumerate}
 \end{definition}
 
-The intuition behind stability is that for stable functions, we have a
-way of determining what minimal approximation of the input is required
-for any approximation of the output. The ordering on $X$ and $Y$
-describes an ordering of information content between
-elements. Monotonicity means that increases in information content on
-the input are not lost on the output. Stability means that, if we use
-$f$ to derive a result $f(x)$ from $x$, and then we identify some
-approximation $y$ of $f(x)$, then there is a unique minimal
-approximation of $x$ that gets us as close as possible to $y$.
+\begin{lemma}
+  Stable functions are closed under identities and composition.
+\end{lemma}
 
-We can rephrase stability in terms of Galois connections / adjunctions
-between principal downsets.
+\begin{example}[Stability reveals intensional information]
+  To see how stability works, consider the following examples of the
+  OR operation on the lifted booleans $\mathbb{B}_\bot$. Two functions
+  that are stable are the strict and left-short-circuiting
+  ORs\footnote{These clauses are shorthand for the graph of the
+    function. They are not to be understood as pattern matching
+    clauses in a language like Haskell.}:
+  \begin{displaymath}
+    \begin{array}[t]{l@{(}l@{,~}l@{)~}c@{~}l}
+      \mathrm{strictOr}&\mathsf{tt}&\mathsf{tt}&=&\mathsf{tt} \\
+      \mathrm{strictOr}&\mathsf{tt}&\mathsf{ff}&=&\mathsf{tt} \\
+      \mathrm{strictOr}&\mathsf{ff}&\mathsf{tt}&=&\mathsf{tt} \\
+      \mathrm{strictOr}&\mathsf{ff}&\mathsf{ff}&=&\mathsf{ff} \\
+      \mathrm{strictOr}&\bot&\_&=&\bot \\
+      \mathrm{strictOr}&\_&\bot&=&\bot \\
+    \end{array}
+    \qquad
+    \begin{array}[t]{l@{(}l@{,~}l@{)~}c@{~}l}
+      \mathrm{shortCircuitOR}&\mathsf{tt}&\_&=&\mathsf{tt} \\
+      \mathsf{shortCircuitOR}&\mathsf{ff}&x&=&x \\
+      \mathsf{shortCircuitOR}&\bot&\_& =& \bot
+    \end{array}
+  \end{displaymath}
+  The function $\mathrm{strictOr}$ is stable. For example, for the
+  input-output pair $(\mathsf{tt},\mathsf{ff}), \mathsf{tt}$, the
+  minimal input that gives this output is exactly
+  $(\mathsf{tt}, \mathsf{ff})$. If we take the approximation
+  $\bot \leq \mathsf{tt}$ of the output, then the corresponding
+  minimal input is $(\bot, \bot)$.
+
+  The function $\mathrm{shortCircuitOR}$ is also stable. For the
+  input-output pair $(\mathsf{tt},\mathsf{ff}),\mathsf{tt}$, the
+  minimal input that gives this input is $(\mathsf{tt},\bot)$,
+  indicating that the presence of $\mathsf{ff}$ in the second argument
+  was not necessary to produce this output. As with
+  $\mathrm{strictOr}$, the minimal input required to produce the
+  output $\bot \leq \mathsf{tt}$ is again $(\bot,\bot)$.
+
+  The fact that these two functions's stability witnesses reveal
+  information about how they depend on their input is what we will
+  exploit in order to use the idea of stability for slicing.
+\end{example}
+
+\begin{example}[Functions that are not stable]
+  A function that is not stable is Plotkin's Parallel OR \cite{lcf77},
+  which short-circuits in both arguments, returning $\mathsf{tt}$ if
+  either argment is $\mathsf{tt}$, even if the other argument is not
+  defined:
+  \begin{displaymath}
+    \begin{array}{l@{(}l@{,~}l@{)~}c@{~}l}
+      \mathrm{parallelOR}&\mathsf{tt}&\_&=&\mathsf{tt} \\
+      \mathrm{parallelOR}&\_&\mathsf{tt}&=&\mathsf{tt} \\
+      \mathsf{parallelOR}&\mathsf{ff}&\mathsf{ff}&=&\mathsf{ff} \\
+      \mathsf{parallelOR}&\bot&\bot&=&\bot
+    \end{array}
+  \end{displaymath}
+  For the input-output pair $(\mathsf{tt},\mathsf{tt}),\mathsf{tt}$,
+  there is no one minimal input that produces this output. We have
+  both $\mathrm{parallelOR}(\mathsf{tt},\bot) = \mathsf{tt}$ and
+  $\mathrm{parallelOR}(\bot,\mathsf{tt}) = \mathsf{tt}$, which are
+  incomparable and their greatest lower bound $(\bot,\bot)$ gives the
+  output $\bot$.
+
+  Parallel OR is famous because it is not \emph{sequential}, meaning
+  intuitively that it cannot be implemented without running the two
+  arguments in parallel to see if one of them returns
+  $\mathsf{tt}$. That fact that it exists in the standard domain
+  theoretic semantics of PCF means that this semantics is not fully
+  abstract. Since Parallel OR is not stable, one might hope that
+  stability is enough to capture sequentiality, and hence potentially
+  give a fully abstract model of PCF. However, the following ternary
+  function $\mathbb{B}_\bot^3 \to \{\top,\bot\}$ is stable but admits
+  no sequential implementation that fixes an order that the arguments
+  are examined in:
+  \begin{displaymath}
+    \begin{array}{l@{(}l@{,~}l@{,~}l@{)~}c@{~}l}
+      \mathrm{gustave}&\mathsf{tt}&\mathsf{ff}&\_&=&\top \\
+      \mathrm{gustave}&\mathsf{ff}&\_&\mathsf{tt}&=&\top \\
+      \mathrm{gustave}&\_&\mathsf{tt}&\mathsf{ff}&=&\top \\
+      \mathrm{gustave}&\_&\_&\_&=&\bot
+    \end{array}
+  \end{displaymath}
+  Despite there being no one minimal input that achieves the output
+  $\top$, each of the minimal inputs that can achieve this output are
+  pairwise incomparable, so for each specific input that gets output
+  $\top$ there is a unique minimal input that achieves it (listed in
+  the first three lines of the definition).
+
+  In terms of program slicing, however, the $\mathrm{gustave}$
+  function does not present a problem. For any particular run of the
+  program, there is an unambiguous minimal input that achieves the
+  output, no matter that it was not achieved by a sequential
+  processing of the input.
+\end{example}
+
+The definition of stability has a nice operational meaning, but seems
+a little ad-hoc. We can rephrase stability in terms of Galois
+connections / adjunctions between principal downsets / slices of the
+partial orders.
 
 \newcommand{\downset}[1]{\mathop{\downarrow}(#1)}
 
@@ -65,7 +163,7 @@ between principal downsets.
   $g_x : \downset{f(x)} \to \downset{x}$ by setting $g_x(y)$ to be the
   minimal $x_0$ required by stability. This is monotone: if
   $y \leq y'$, then we know that $y \leq y' \leq f(g_x(y'))$ by
-  defintition of $g_x$, so $g_x(y) \leq g_x(y')$ by minimality of
+  definition of $g_x$, so $g_x(y) \leq g_x(y')$ by minimality of
   $g_x(y)$. For the adjointness, let $x' \leq x$ and $y \leq
   f(x)$. Then if $g_x(y) \leq x'$, we have
   $y \leq f(g_x(y)) \leq f(x')$ by monotonicity of $f$ and the first
