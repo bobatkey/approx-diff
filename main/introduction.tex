@@ -61,7 +61,7 @@ At a high level, Galois Program Slicing assumes that, for each possible value th
       \draw (top) -- (bot);
     \end{tikzpicture}
   \end{center}
-  These are not the only choices of approximation lattices that we could have taken. For the input, we have chosen a lattice that allows us to ``forget'' (approximate away) numbers in the input, but not any of the other data or the overall structure. However, other choices are also useful. Indeed, one of the aims of this work is to clarify how to choose approximation structure approriate for different tasks by use of type information. We elaborate on this further in Section \todo{XYZ}.
+  These are not the only choices of approximation lattices that we could have taken. For the input, we have chosen a lattice that allows us to ``forget'' (approximate away) numbers in the input, but not any of the other data or the overall structure. However, other choices are also useful. Indeed, one of the aims of this work is to clarify how to choose an approximation structure appropriate for different tasks by use of type information. We elaborate on this further in Section \todo{XYZ}.
 
   Galois program slicing associates with each run of the program a Galois connection telling us how the inputs and outputs are related in that run. The backwards portion $\partial (\mathit{query}\,l)_r$ tells us, given an approximation of the output what the least approximation of the input is needed to generate that output. In the case of the two runs considered in this example, if we say we are not interested in the output by feeding in the least approximation $\bot$, then we find that we only need the least approximation of the input:
   \begin{displaymath}
