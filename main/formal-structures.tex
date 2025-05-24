@@ -1,18 +1,18 @@
 \section{Formal Structures for Generalised Automatic Differentiation}
 
-Our approach to a denotational account of \GPS is based on the CHAD (Combinatory Homomorphic Automatic Differentiation) work of Mattias Vákár and others~\cite{vákár22,nunes2023}. Before we go into details, we present a high-level overview of this approach and how we have applied it to \GPS.
+Our approach to a denotational account of \GPS is based on the CHAD (Combinatory Homomorphic Automatic Differentiation) work of Mattias Vákár and others~\cite{vákár22,nunes2023}. Before we go into details, we present a high-level overview of their approach and how we have applied it to \GPS.
 
-The fundamental approach in CHAD is to consider Grothendieck constructions on indexed categories $T : \cat{C}^\op \to \Cat$. An object of the Grothendieck construction $\int T$~, described in more detail in \secref{Grothendieck}, is a pair $(X \in \cat{C}, \partial X \in T(X))$, which we read as pairing a space $X$ of ``points'' from $\cat{C}$ with an associated bundle of tangent spaces. The maps from the ``base'' category $\cat{C}$ are used to interpret the programs we are modelling. The maps in the indexed category are the maps of tangents or approximations, being derivatives and Galois connections respectively.
+The fundamental approach in CHAD is to consider Grothendieck constructions on indexed categories $T : \cat{C}^\op \to \Cat$. An object of the Grothendieck construction $\int T$, described in more detail in \secref{Grothendieck}, is a pair $(X \in \cat{C}, \partial X \in T(X))$, which we read as pairing a space $X$ of ``points'' from $\cat{C}$ with an associated bundle of tangent spaces. The maps from the ``base'' category $\cat{C}$ are used to interpret the programs we are modelling. The maps in the indexed category are the maps of tangents or approximations, being derivatives and Galois connections respectively.
 
 In the case of differentiable programs and automatic differentiation, a basic model can be constructed by taking $\cat{C}$ to be $\Set$ and $T(X) = X \to \FinVect$: indexed collections of finite dimensional vector spaces, whose elements are interpreted as tangents at the given point, with linear maps. The Grothendieck category $\int T$ has objects that are pairs of a set $X$ and for each $x \in X$ a tangent vector space $\partial X(x)$. Morphisms are pairs of maps of points to points, accompanied by linear maps of tangents at those points. If we carefully choose an initial set of maps, we can read these maps as derivatives (note that nothing in the Grothendieck construction says that they must be derivatives!). Composition in the Grothendieck category is exactly the {\em chain rule} for composing derivatives, so we at least do know that if we start with derivatives on basic operations, then composing them will retain this property.
 
 For \GPS, we again take $\cat{C}$ to be $\Set$ and now take $T(X) = X \to \LatGal$: indexed collections of lattices, whose elements are interpreted as approximations at the given point, with indexed Galois connections as the maps between them.
 
-In these special cases when $\cat{C} = \Set$, the Grothendieck construction is the {\em families} constructions $\Fam(\FinVect)$ and $\Fam(\LatGal)$~(\secref{Fam}). These settings are adequate for interpreting first-order programs, but neither is Cartesian closed. To interpret higher-order programs, the picture is more complicated. As is well known, $\Fam(\cat{X})$ for any category $\cat{X}$ is the free coproduct completion of $\cat{X}$~\cite{lawvere63}. In the case that $\cat{X}$ has a (symmetric) monoidal product, then we always get a symmetric monoidal product on $\Fam(\cat{X})$ (using the Cartesian products from $\Set$). When $\cat{X}$ has all (small) products, and the monoidal product is actually a coproduct, then $\Fam(\cat{X})$ is symmetric monoidal closed. If the coproducts are actually {\em biproducts}~(\secref{biproducts}), then $\Fam(\cat{X})$ is Cartesian closed, and we can interpret higher-order programs.
+In these special cases when $\cat{C} = \Set$, the Grothendieck construction is the {\em families} constructions $\Fam(\FinVect)$ and $\Fam(\LatGal)$~(\secref{Fam}). These settings are adequate for interpreting first-order programs, but neither is Cartesian closed. The picture for higher-order programs is more complicated. As is well known, $\Fam(\cat{X})$ for any category $\cat{X}$ is the free coproduct completion of $\cat{X}$~\cite{lawvere63}. In the case that $\cat{X}$ has a (symmetric) monoidal product, then we always get a symmetric monoidal product on $\Fam(\cat{X})$, using the Cartesian products from $\Set$. When $\cat{X}$ has all (small) products, and the monoidal product is actually a coproduct, then $\Fam(\cat{X})$ is symmetric monoidal closed. If the coproducts are actually {\em biproducts}~(\secref{biproducts}), then $\Fam(\cat{X})$ is Cartesian closed, and we can interpret higher-order programs.
 
 Happily, $\FinVect$ and $\LatGal$ both have biproducts, as a consequence of their having products and being enriched in commutative monoids~(\propref{biproducts:from-product-or-coproduct} below). However, neither of them has all small products, without moving to infinite dimensional vector spaces (in the case of $\FinVect$) or complete lattices (in the case of $\LatGal$). Neither of these are ideal. In infinite dimensional vector spaces, dualisation is not involutive and the connection between the forward and reverse derivatives is lost. In complete lattices, we can no longer easily implement the infinite meets and joins required, and we lose the computability of the model. Moreover, in Agda, there are issues with predicativity when considering complete lattices. \todo{be more specific}
 
-Vákár and collaborators overcome this by using different interpretations for forward and backward derivatives. We overcome this by using $\CMon$-enriched presheaves; we turn to this in \secref{higher-order}, but first we flesh out the first-order setting.
+Vákár and collaborators overcome this by using different interpretations for forward and backward derivatives. We overcome this by using $\CMon$-enriched presheaves; we turn to this in \secref{higher-order} but first flesh out the first-order setting.
 
 \subsection{Category of Lattices and Galois Connections}
 
@@ -53,20 +53,22 @@ in $\LatGal$, $g$ is a (bounded) \emph{meet-semilattice homomorphism}, i.e.~pres
 structure $(X, \meet, \top)$. Similarly, $f$ is a join-semilattice homomorphism with respect to $(X, \join,
 \bot)$.
 
-The meet-semilattice homomorphisms from $X$ to $Y$ themselves form a meet-semilattice. The operation $\meet$
-on homomorphisms is defined pointwise, so that $(f \meet g)(x) = f(x) \meet g(x): X \to Y$, and preserves
-meets; the constant map $\top_{X,Y}: X \to Y$ sending any $x \in X$ to $\top_Y$, which also preserves meets,
-provides the unit. Dually the join-preserving maps from $Y$ to $X$ have a join-semilattice structure given
-pointwise by $\join$ and the constant homomorphism $\bot_{Y,X}: Y \to X$ sending any $y \in Y$ to $\bot_X$.
-Since these two constructions come in adjoint pairs, the hom-set $\LatGal(X,Y)$ forms a bounded meet
-semilattice with unit $\top_{X,Y}$ given by the Galois connection $\bot_{Y,X} \adj \top_{X,Y}: X \to Y$ and
-meet of Galois connections $(f \adj g) \meet (f' \adj g') = (f \join f') \adj (g \meet g'): X \to Y$. Thus
-$\LatGal$ is enriched in $\SemiLat$, the category of semilattices and semilattice homomorphisms.
+The meet-preserving maps from $X$ to $Y$ themselves form a meet-semilattice. The operation $\meet$ on such
+maps is defined pointwise, so that $(f \meet g)(x) = f(x) \meet g(x): X \to Y$, and preserves meets; the
+constant map $\top_{X,Y}: X \to Y$ sending any $x \in X$ to $\top_Y$, which also preserves meets, provides the
+unit. Dually the join-preserving maps from $Y$ to $X$ have a join-semilattice structure given pointwise by
+$\join$ and the constant homomorphism $\bot_{Y,X}: Y \to X$ sending any $y \in Y$ to $\bot_X$. Since these two
+constructions come in adjoint pairs, the hom-set $\LatGal(X,Y)$ forms a bounded meet semilattice with unit
+$\top_{X,Y}$ given by the Galois connection $\bot_{Y,X} \adj \top_{X,Y}: X \to Y$ and meet of Galois
+connections $(f \adj g) \meet (f' \adj g') = (f \join f') \adj (g \meet g'): X \to Y$. Thus $\LatGal$ is
+enriched in $\SemiLat$, the category of semilattices and semilattice homomorphisms.
 
-Another notable property of $\LatGal$ is that the projections $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y
-\to Y$, where $X \times Y$ denotes the product of lattices, have both upper and lower adjoints. This allows $X
-\times Y$, which we shall hereafter write as $X \biprod Y$, to act as both a product and a coproduct, with
-projections $\biproj_X$ and $\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$ given by:
+$\LatGal$ is not Cartesian closed, and so we cannot use it directly to interpret higher-order programs. In
+fact Cartesian closure is incompatible with another notable property of $\LatGal$, which follows from the fact
+that the projections $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y \to Y$, where $X \times Y$ denotes the
+product of lattices, have both upper and lower adjoints. This allows $X \times Y$, which we shall hereafter
+write as $X \biprod Y$, to act as both a product and a coproduct, with projections $\biproj_X$ and $\biproj_Y$
+and injections $\biinj_X$ and $\biinj_Y$ given by:
 
 \vspace{-4mm}
 \begin{minipage}[t]{0.45\textwidth}
@@ -87,13 +89,10 @@ projections $\biproj_X$ and $\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$
 \end{minipage}
 \vspace{2mm}
 
-\noindent The trivial 1-point lattice, which is both terminal and initial and we will write as $0$, is the
-unit for $\biprod$. Such a structure $(\biprod, 0)$, where $\biprod$ acts as both a product and a coproduct,
-is called a \emph{biproduct} (\secref{biproducts}).
-
-$\LatGal$ is not Cartesian closed; the set of Galois connections $X \to Y$ does not in general form a bounded
-lattice, for a start. In fact if $\cat{C}$ has biproducts $(\biprod, 0)$ and is Cartesian closed, then every
-morphism in $\cat{C}$ is trivial. If $0$ is both initial and terminal, and therefore $0 \times X \iso X$, then
-$\Hom{\cat{C}}{X}{Y} \iso \Hom{\cat{C}}{0}{X \Rightarrow Y} \iso 1$ and so any morphism $f: X \to Y$ must be
-equal to the composite $X \to 0 \to Y$ of the unique morphisms in and out of $0$. The biproduct structure will
-prove crucial for establishing a Cartesian closed setting for interpreting higher-order programs.
+\noindent The trivial 1-point lattice, which is both terminal and initial and we write as $0$, is the unit for
+$\biprod$. Such a structure $(\biprod, 0)$ where $\biprod$ acts as both a product and a coproduct is called a
+\emph{biproduct} (\secref{biproducts}). The presence of a zero object in a Cartesian closed category $\cat{C}$
+renders $\cat{C}$ trivial; if $0 \times X \iso X$ then $\Hom{\cat{C}}{X}{Y} \iso \Hom{\cat{C}}{0}{X
+\Rightarrow Y} \iso 1$, and $\cat{C}$ has only a single object, up to isomorphism. Although the biproduct
+structure rules out Cartesian closure, it will prove crucial for establishing a Cartesian closed setting in
+\secref{higher-order}; first we develop a suitable categorical setting for first-order programs.
