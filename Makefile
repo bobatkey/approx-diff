@@ -5,7 +5,7 @@ default: main
 main: main.pdf
 notes: notes.pdf
 
-MAIN_DEPS:=$(wildcard main/*.tex) bib.bib
+MAIN_DEPS:=$(wildcard main/*.tex) macros.tex bib.bib
 
 main.pdf: main.tex $(MAIN_DEPS)
 	pdflatex main
@@ -14,7 +14,7 @@ main.pdf: main.tex $(MAIN_DEPS)
 	pdflatex main
 	rm *.aux *.log *.out *.bbl *.blg
 
-NOTES_DEPS:=$(wildcard notes/*.tex) bib.bib
+NOTES_DEPS:=$(wildcard notes/*.tex) macros.tex bib.bib
 
 notes.pdf: notes.tex $(NOTES_DEPS)
 	pdflatex notes
