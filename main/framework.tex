@@ -1,4 +1,4 @@
-\section{A categorical framework for Galois slicing}
+\section{A categorical framework for \GPS}
 
 We will consider a pure, total language, where types can be interpreted as sets. Our goal is to equip the
 interpretations of programs with Galois connections relating approximations of their inputs to approximations
@@ -90,14 +90,14 @@ $\partial X: X \to \cat{C}$ and morphisms $(f, \partial f): (X, \partial X) \to 
 $f: X \to Y$ paired with morphisms $\partial f: \partial X \to \partial \reindex{Y}{f}$ in
 $\Func{X}{\cat{C}}$.
 
-\subsection{Galois slicing via the Grothendieck construction}
+\subsection{\GPS via the Grothendieck construction}
 
 Now consider the total category $\Fam(\LatGal)$, which is our basic setting for interpreting first-order
-programs for Galois slicing. This has as objects $(X, \partial X)$, all pairs of a set $X$ and and for every
-$x \in X$, a bounded lattice $\partial X(x)$, and as morphisms $(X, \partial X) \to (Y, \partial Y)$, all
-pairs $(f, \partial f)$ of a function $f: X \to Y$ and for every $x \in X$, a Galois connection $\partial
-f(x): \partial X(x) \to \partial Y(f(x))$, as we sketched informally at the beginning of this section. The
-pullback (reindexing) along $f$ in the composition $(g, \partial g) \comp (f, \partial f) = (g \comp f,
+programs for \GPS. This has as objects $(X, \partial X)$, all pairs of a set $X$ and and for every $x \in X$,
+a bounded lattice $\partial X(x)$, and as morphisms $(X, \partial X) \to (Y, \partial Y)$, all pairs $(f,
+\partial f)$ of a function $f: X \to Y$ and for every $x \in X$, a Galois connection $\partial f(x): \partial
+X(x) \to \partial Y(f(x))$, as we sketched informally at the beginning of this section. The pullback
+(reindexing) along $f$ in the composition $(g, \partial g) \comp (f, \partial f) = (g \comp f,
 \reindex{\partial g}{f} \comp \partial f)$ selects the appropriate lattice of approximations and Galois
 connection at each point, using the baseline (unapproximated) function $f$.
 
