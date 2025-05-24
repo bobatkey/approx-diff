@@ -12,7 +12,7 @@ In these special cases when $\cat{C} = \Set$, the Grothendieck construction is t
 
 Happily, $\FinVect$ and $\LatGal$ both have biproducts, as a consequence of their having products and being enriched in commutative monoids~(\propref{biproducts:from-product-or-coproduct} below). However, neither of them has all small products, without moving to infinite dimensional vector spaces (in the case of $\FinVect$) or complete lattices (in the case of $\LatGal$). Neither of these are ideal. In infinite dimensional vector spaces, dualisation is not involutive and the connection between the forward and reverse derivatives is lost. In complete lattices, we can no longer easily implement the infinite meets and joins required, and we lose the computability of the model. Moreover, in Agda, there are issues with predicativity when considering complete lattices. \todo{be more specific}
 
-Vákár and collaborators overcome this by using different interpretations for forward and backward derivatives. We overcome this by using $\CMon$-enriched presheaves; we turn to this in \secref{}, but first we flesh out the first-order setting.
+Vákár and collaborators overcome this by using different interpretations for forward and backward derivatives. We overcome this by using $\CMon$-enriched presheaves; we turn to this in \secref{higher-order}, but first we flesh out the first-order setting.
 
 \subsection{Category of Lattices and Galois Connections}
 
@@ -53,19 +53,19 @@ in $\LatGal$, $g$ is a (bounded) \emph{meet-semilattice homomorphism}, i.e.~pres
 structure $(X, \meet, \top)$. Similarly, $f$ is a join-semilattice homomorphism with respect to $(X, \join,
 \bot)$.
 
-The meet-semilattice homomorphisms from $X$ to $Y$ form a meet-semilattice themselves, with $\meet$ on
-homomorphisms defined pointwise, so that $(f \meet g)(x) = f(x) \meet g(x): X \to Y$, and the constant map
-$\top_{X,Y}: X \to Y$ sending any $x \in X$ to $\top_Y$ providing the unit (and both preserving meets). Dually
-the join-preserving maps from $Y$ to $X$ have a join-semilattice structure given pointwise by $\join$ and the
-constant homomorphism $\bot_{Y,X}: Y \to X$ sending any $y \in Y$ to $\bot_X$. Since these two constructions
-come in adjoint pairs, $\LatGal$ is enriched in the category $\SemiLat$ of semilattices and semilattice
-homomorphisms. The hom-set $\LatGal(X,Y)$ forms a bounded meet semilattice with unit $\top_{X,Y}$ given by the
-Galois connection $\bot_{Y,X} \adj \top_{X,Y}: X \to Y$ and meet of Galois connections $(f \adj g) \meet (f'
-\adj g') = (f \join f') \adj (g \meet g'): X \to Y$.
+The meet-semilattice homomorphisms from $X$ to $Y$ themselves form a meet-semilattice. The operation $\meet$
+on homomorphisms is defined pointwise, so that $(f \meet g)(x) = f(x) \meet g(x): X \to Y$, and preserves
+meets; the constant map $\top_{X,Y}: X \to Y$ sending any $x \in X$ to $\top_Y$, which also preserves meets,
+provides the unit. Dually the join-preserving maps from $Y$ to $X$ have a join-semilattice structure given
+pointwise by $\join$ and the constant homomorphism $\bot_{Y,X}: Y \to X$ sending any $y \in Y$ to $\bot_X$.
+Since these two constructions come in adjoint pairs, the hom-set $\LatGal(X,Y)$ forms a bounded meet
+semilattice with unit $\top_{X,Y}$ given by the Galois connection $\bot_{Y,X} \adj \top_{X,Y}: X \to Y$ and
+meet of Galois connections $(f \adj g) \meet (f' \adj g') = (f \join f') \adj (g \meet g'): X \to Y$. Thus
+$\LatGal$ is enriched in $\SemiLat$, the category of semilattices and semilattice homomorphisms.
 
 Another notable property of $\LatGal$ is that the projections $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y
-\to Y$, where $X \times Y$ denotes the product of lattices, have both upper and lower adjoints. This means $X
-\times Y$, which we shall hereafter write as $X \biprod Y$, acts as both a product and a coproduct, with
+\to Y$, where $X \times Y$ denotes the product of lattices, have both upper and lower adjoints. This allows $X
+\times Y$, which we shall hereafter write as $X \biprod Y$, to act as both a product and a coproduct, with
 projections $\biproj_X$ and $\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$ given by:
 
 \vspace{-4mm}
@@ -88,7 +88,12 @@ projections $\biproj_X$ and $\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$
 \vspace{2mm}
 
 \noindent The trivial 1-point lattice, which is both terminal and initial and we will write as $0$, is the
-unit for $\biprod$. Such a structure $(\biprod, 0)$ is called a \emph{biproduct} (\secref{biproducts}).
-Although $\LatGal$ is not itself Cartesian closed (in particular the set of Galois connections $X \to Y$ does
-not in general form a bounded lattice), the biproduct structure will prove crucial for establishing a
-Cartesian closed setting for interpreting higher-order programs.
+unit for $\biprod$. Such a structure $(\biprod, 0)$, where $\biprod$ acts as both a product and a coproduct,
+is called a \emph{biproduct} (\secref{biproducts}).
+
+$\LatGal$ is not Cartesian closed; the set of Galois connections $X \to Y$ does not in general form a bounded
+lattice, for a start. In fact if $\cat{C}$ has biproducts $(\biprod, 0)$ and is Cartesian closed, then every
+morphism in $\cat{C}$ is trivial. If $0$ is both initial and terminal, and therefore $0 \times X \iso X$, then
+$\Hom{\cat{C}}{X}{Y} \iso \Hom{\cat{C}}{0}{X \Rightarrow Y} \iso 1$ and so any morphism $f: X \to Y$ must be
+equal to the composite $X \to 0 \to Y$ of the unique morphisms in and out of $0$. The biproduct structure will
+prove crucial for establishing a Cartesian closed setting for interpreting higher-order programs.

@@ -1,17 +1,15 @@
-\section{A categorical framework for \GPS}
-
-We will consider a pure, total language, where types can be interpreted as sets. Our goal is to equip the
-interpretations of programs with Galois connections relating approximations of their inputs to approximations
-of their outputs. Since these lattices of approximations depends on the value being approximated, the
-semantics of every type $\tau$ must have both a ``conventional'' component, providing the set $X$ which
-interprets $\tau$, plus an associated lattice of approximations $\partial X(x)$ for every point $x \in X$. The
-semantics of an expression $e$ of type $\sigma$ with a single free variable of type $\tau$ (with $\tau$ and
-$\sigma$ conventionally interpreted by $X$ and $Y$) must then also have two components: a function $f: X \to
-Y$ giving the conventional interpretation of $e$, and a family of Galois connections $\partial f(x): \partial
-X(x) \to \partial Y(f(x))$ for every $x \in X$ which can be used for slicing over that expression.
-
 \subsection{Grothendieck Construction for Indexed Categories}
 \label{sec:Grothendieck}
+
+What we want to do now is understand how to equip the interpretation of a (first-order) program with a Galois
+connections relating approximations of its inputs to approximations of its output. Since these lattices of
+approximations depend on the value being approximated, the semantics of every type $\tau$ must have both a
+``conventional'' component, providing the set $X$ which interprets $\tau$, plus an associated lattice of
+approximations $\partial X(x)$ for every point $x \in X$. The semantics of an expression $e$ of type $\sigma$
+with a single free variable of type $\tau$ (with $\tau$ and $\sigma$ denoting $X$ and $Y$) must then also have
+two components: a function $f: X \to Y$ giving the conventional interpretation of $e$, and a family of Galois
+connections $\partial f(x): \partial X(x) \to \partial Y(f(x))$ for every $x \in X$ which can be used for
+slicing over that expression.
 
 This pattern of objects and morphisms is exactly the \emph{Grothendieck construction} for a particular indexed
 category $\Set^\op \to \Cat$, namely the indexed category $\Func{-}{\LatGal}$ which assigns to every set $X$
