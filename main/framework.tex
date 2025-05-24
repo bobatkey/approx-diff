@@ -3,12 +3,12 @@
 We will consider a pure, total language, where types can be interpreted as sets. Our goal is to equip the
 interpretations of programs with Galois connections relating approximations of their inputs to approximations
 of their outputs. Since these lattices of approximations depends on the value being approximated, the
-semantics of every type $\tau$ must have both a ``conventional'' component, providing the set $X$ associated
-with $\tau$, plus an associated lattice of approximations $\partial X(x)$ for every point $x \in X$. The
-semantics of an expression $e$ of type $Y$ with a single free variable of type $X$ must then also have two
-components: a function $f: X \to Y$ giving the baseline (unapproximated) meaning of the expression, plus a
-family of Galois connections $\partial f(x): \partial X(x) \to \partial Y(f(x))$ for every $x \in X$ which can
-be used for slicing over that expression.
+semantics of every type $\tau$ must have both a ``conventional'' component, providing the set $X$ which
+interprets $\tau$, plus an associated lattice of approximations $\partial X(x)$ for every point $x \in X$. The
+semantics of an expression $e$ of type $\sigma$ with a single free variable of type $\tau$ (with $\tau$ and
+$\sigma$ conventionally interpreted by $X$ and $Y$) must then also have two components: a function $f: X \to
+Y$ giving the conventional interpretation of $e$, and a family of Galois connections $\partial f(x): \partial
+X(x) \to \partial Y(f(x))$ for every $x \in X$ which can be used for slicing over that expression.
 
 \subsection{Grothendieck construction for indexed categories}
 \label{sec:Grothendieck}
