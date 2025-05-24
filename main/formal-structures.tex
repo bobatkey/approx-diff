@@ -1,10 +1,6 @@
 \section{Formal Structures for Generalised Automatic Differentiation}
 
-\note{Probably a better way: (1) introduce the category of lattices and Galois connections, which is what we will use to interpret forward and backward approximation, and establish some properties of this category; (2) say that we want sets with each point having an associated lattice of approximations, and morphisms to match; (3) note that this is exactly the Grothendieck construction for a particular indexed category; (4) Say that CHAD is what we need here; (5) Recapitulate the bits of CHAD that we need, with our Agda formalisation; (6) Explain how we cope with higher-order structure, by using presheaves and the Yoneda embedding.}
-
-We take an approach based on the CHAD (Combinatory Homomorphic Automatic Differentiation) of Mattias Vákár and others~\cite{vákár22,nunes2023}. Here follows a rough overview of this approach and how we have applied it to \GPS.
-
-We have \href{https://github.com/bobatkey/approx-diff}{formalised this work in Agda}. Not only does this mean that the constructions and proofs have been checked, the construction is executable and can be run on small examples. We are also planning to use Agda's JavaScript backend to produce a demo.\todo{Do this?}
+Our approach to a denotational account of \GPS is based on the CHAD (Combinatory Homomorphic Automatic Differentiation) work of Mattias Vákár and others~\cite{vákár22,nunes2023}. Before we go into details, we present a high-level overview of this approach and how we have applied it to \GPS.
 
 The fundamental approach in CHAD is to consider Grothendieck constructions on indexed categories $T : \cat{C}^\op \to \Cat$. An object of the Grothendieck construction $\int T$~, described in more detail in \secref{Grothendieck}, is a pair $(X \in \cat{C}, \partial X \in T(X))$, which we read as pairing a space $X$ of ``points'' from $\cat{C}$ with an associated bundle of tangent spaces. The maps from the ``base'' category $\cat{C}$ are used to interpret the programs we are modelling. The maps in the indexed category are the maps of tangents or approximations, being derivatives and Galois connections respectively.
 
