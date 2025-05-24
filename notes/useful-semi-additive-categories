@@ -39,7 +39,7 @@ Y$.
 \end{definition}
 
 \noindent The notation is justified because a Galois connection $f \adj g: X \to Y$ is an adjunction between
-poset categories, with monotone $f$ and $g$ interpreted as functors; $f$ is usually referred to as the
+poset categories, with monotone $f$ and $g$ regarded as functors; $f$ is usually referred to as the
 \emph{upper} (right) adjoint and $g$ as the \emph{lower} (left) adjoint. Galois connections compose
 component-wise, with $\id_X \adj \id_X: X \to X$ as the unit for composition. Thus we can define the following
 category.
