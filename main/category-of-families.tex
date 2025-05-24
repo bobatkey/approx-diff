@@ -129,40 +129,27 @@ we have:
 
 \begin{definition}
 Define the functor $\tangents$ which sends every vector space $\RR^n$ to itself and every differentiable map
-$f: \RR^m \to \RR^n$ to $(f, \pushf{f})$: \RR^m \to \RR^n \times
+$f: \RR^m \to \RR^n$ to the function $\tangents(f) = x \mapsto (f(x), \pushf{f}_x): \RR^m \to \RR^n \times
 (\RR^m \linearto \RR^n)$, associating to every point its image in $f$ and the forward derivative of $f$ at
 that point.
 \end{definition}
 
 For any map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ it is useful to define $f_1 = \pi_1 \comp f:
-\RR^m \to \RR^n$ and $f_2 = \pi_2 \comp f: \RR^m \to (\RR^m \linearto \RR^n)$.
-
-\begin{definition}[$\Diff$]
-\label{def:auto-diff:Diff}
-\todo{Overkill -- try and give a construction that lives in $\Fam(\FinVect)$ directly} Define $\Diff$
-to be the category where the objects are all finite vector spaces $\RR^n$ and the morphisms are all maps $f:
-\RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ with $f_1$ differentiable. Composition in $\Diff$ is given by:
+\RR^m \to \RR^n$ and $f_2 = \pi_2 \comp f: \RR^m \to (\RR^m \linearto \RR^n)$. Then composition of such maps can be expressed as:
 \begin{align*}
 (g \comp f)_1(x) &= f_1(g_1(x)) \\
 (g \comp f)_2(x) &= g_2(f_1(x)) \comp f_2(x)
 \end{align*}
-\end{definition}
 
 We can verify that $\tangents$ is indeed a functor, regardless of whether the linear maps $\RR^m \linearto
 \RR^n$ happen to be derivatives. But if $f_2(x)$ is the derivative of $f_1$ at $x$ for any $x \in \RR^m$ and
 similarly for $g$ then the derivatives compose according to the forward chain rule and $(g \comp f)_2(x)$ is
-the derivative of $(g \comp f)_1$ at $x$.
+the derivative of $(g \comp f)_1$ at $x$. We can see these maps as living in $\Fam(\FinVect)$ if we regard
+every $\RR^n$ as paired with a constant family of tangent spaces also of the form $\RR^n$ and each map $f:
+\RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ to pairs $(f_1, f_2)$ as the pair of a differentiable function
+$f_1: \RR^m \to \RR^n$ and a family of linear maps $f_2: \RR^m \to \RR^m \linearto \RR^n$.
 
-\subsubsection{Embedding into $\Fam(\FinVect)$}
-\label{sec:galois-slicing-auto-diff-via-fam:auto-diff}
-
-Consider the functor $\Diff \hookrightarrow \Fam(\FinVect)$ which send objects $\RR^n$ to constant families of
-tangent spaces $(\RR^n, \const(\RR^n))$ and morphisms $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ to
-pairs $(f_1, f_2)$ of differentiable functions $f_1: \RR^m \to \RR^n$ and families of linear maps $f_2:
-\{{f_2}_x: \RR^m \linearto \RR^n\}_{x \in \RR^m}$. This exhibits $\Diff$ as equivalent to a full subcategory
-of $\Fam(\FinVect)$.
-
-In that subcategory, for any $(f, \partial f): (\RR^m, \const(\RR^m)) \to (\RR^n, \const(\RR^n))$ and $(g,
+Then for any $(f, \partial f): (\RR^m, \const(\RR^m)) \to (\RR^n, \const(\RR^n))$ and $(g,
 \partial g): (\RR^n, \const(\RR^n)) \to (\RR^k, \const(\RR^k))$, we have that for any $x \in \RR^m$:
 \begin{itemize}
 \item $\partial f_x: \RR^m \to \RR^n$;
