@@ -1,24 +1,25 @@
 \subsection{Grothendieck Construction for Indexed Categories}
 \label{sec:Grothendieck}
 
-What we want to do now is understand how to equip the interpretation of a (first-order) program with a Galois
-connections relating approximations of its inputs to approximations of its output. Since these lattices of
-approximations depend on the value being approximated, the semantics of every type $\tau$ must have both a
-``conventional'' component, providing the set $X$ which interprets $\tau$, plus an associated lattice of
-approximations $\partial X(x)$ for every point $x \in X$. The semantics of an expression $e$ of type $\sigma$
-with a single free variable of type $\tau$ (with $\tau$ and $\sigma$ denoting $X$ and $Y$) must then also have
-two components: a function $f: X \to Y$ giving the conventional interpretation of $e$, and a family of Galois
+The goal now is to equip the interpretation of a (first-order) program with a Galois connection relating
+approximations of its inputs to approximations of its output. Since the specific lattices of approximations
+depend on the value being approximated, the semantics of every type $\tau$ must have both a ``conventional''
+component, providing the set $X$ which interprets $\tau$, plus an associated lattice of approximations
+$\partial X(x)$ for every point $x \in X$. The semantics of an expression $e$ of type $\sigma$ with a single
+free variable of type $\tau$ (with $\tau$ and $\sigma$ denoting $X$ and $Y$) must then also have two
+components: a function $f: X \to Y$ giving the conventional interpretation of $e$, and a family of Galois
 connections $\partial f(x): \partial X(x) \to \partial Y(f(x))$ for every $x \in X$ which can be used for
 slicing over that expression.
 
-This pattern of objects and morphisms is exactly the \emph{Grothendieck construction} for a particular indexed
-category $\Set^\op \to \Cat$, namely the indexed category $\Func{-}{\LatGal}$ which assigns to every set $X$
-the functor category $\Func{X}{\LatGal}$. Here the (discrete) category $X$ is a plain set and so
-$\Func{X}{\LatGal}$ is exactly the category of $X$-indexed families of bounded lattices, with $X$-indexed
-families of Galois connections between them as morphisms. The Grothendieck construction
-$\Grothendieck{}T$~(\defref{Grothendieck} below) for an indexed category $T$, sometimes called the \emph{total
-category} for $T$, is the category of all $\Set$-indexed families of objects of $T$, together with morphisms
-that account for both structure within each family and how families transform under reindexing.
+This pattern of objects and morphisms is captured by the construction used in CHAD~\cite{vákár22,nunes2023} to
+describe automatic differentiation, namely the \emph{Grothendieck construction} for a particular indexed
+category $T: \Set^\op \to \Cat$. For CHAD $T(X)$ is the functor category $\Func{X}{\FinVect}$, regarded as the
+category of $X$-indexed families of finite vector spaces, with ; here $T(X) = \Func{X}{\LatGal}$, the category of
+$X$-indexed families of bounded lattices, with $X$-indexed families of Galois connections between them as
+morphisms. The Grothendieck construction $\Grothendieck{}T$~(\defref{Grothendieck} below) for an indexed
+category $T$, sometimes called the \emph{total category} for $T$, is the category of all $\Set$-indexed
+families of objects of $T$, together with morphisms that account for both structure within each family and how
+families transform under reindexing.
 
 First we formalise $X$-indexed families and their categories.
 
