@@ -129,11 +129,11 @@ any $x \in \RR^m$ we have:
 \subsubsection{Forward-Mode Automatic Differentiation}
 
 The basic idea of (forward-mode) automatic differentiation, as first described by \citet{linnainmaa76}, was to
-recognise that one could efficiently compute the pushforward map $\RR^m \to (\RR^m \linearto \RR^n)$ of a
-differentiable function $f: \RR^m \to \RR^n$ alongside the computation of $f$ itself by defining a single map
-$\tangents(f) = x \mapsto (f(x), \pushf{f}_x): \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$. Defining $f_1
-= \pi_1 \comp f: \RR^m \to \RR^n$ and $f_2 = \pi_2 \comp f: \RR^m \to (\RR^m \linearto \RR^n)$, composition of
-such maps can be expressed as:
+recognise that one could efficiently compute the pushforward map $\pushf{f}: \RR^m \to (\RR^m \linearto
+\RR^n)$ of a differentiable function $f: \RR^m \to \RR^n$ alongside the computation of $f$ itself by defining
+a single map $\tangents(f) = x \mapsto (f(x), \pushf{f}_x): \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$.
+Defining $f_1 = \pi_1 \comp f: \RR^m \to \RR^n$ and $f_2 = \pi_2 \comp f: \RR^m \to (\RR^m \linearto \RR^n)$,
+composition of such maps can be expressed as:
 \begin{align*}
 (g \comp f)_1(x) &= f_1(g_1(x)) \\
 (g \comp f)_2(x) &= g_2(f_1(x)) \comp f_2(x)
