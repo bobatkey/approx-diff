@@ -1,6 +1,29 @@
 \section{Interpreting Higher-Order Programs}
 \label{sec:higher-order}
 
+Although $\Fam(\FinVect)$ nor $\Fam(\LatGal)$ provide an appropriate notion of composition for automatic
+differentiation and Galois slicing respectively, neither is Cartesian closed. Both are therefore unsuitable
+for interpreting higher-order programs. However the following is a special case of a construction due to
+\citet{nunes2023}:
+
+\begin{proposition}
+Suppose $\cat{C}$ locally small. If $\cat{C}$ has binary biproducts and all small products, then
+$\Fam(\cat{C})$ is Cartesian closed.
+\end{proposition}
+
+$\cat{C}$ has all small (set-indexed) products if, for any set $X$ and any $X$-indexed family $A$ of objects
+of $\cat{C}$, there exists an object $\prod_{x \in X}A_x$ (also written $\prod_{X} A$) and family of
+projection morphisms $\{\eval_x: \prod_{X} A \to A_x\}_{x \in X}$ in $\cat{C}$ such that for any object $B$
+and any family of morphisms $\{f_x: B \to A_x\}_{x \in X}$ in $\cat{C}$, there exists a unique product
+morphism $\lambda(f)$ making the following diagram commute for every $x \in X$:
+
+\begin{center}
+\begin{tikzcd}
+   \prod_{X} A \arrow[r, "\eval_x"] & A_x \\
+   B \arrow[ru, "f_x"'] \arrow[u, dotted, "\lambda(f)"]
+\end{tikzcd}
+\end{center}
+
 \todo{
 \begin{enumerate}
   \item if $\cat{C}$ has biproducts and all small products then $\Fam(\cat{C})$ is Cartesian closed
