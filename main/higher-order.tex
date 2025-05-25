@@ -2,7 +2,7 @@
 \label{sec:higher-order}
 
 $\Fam(\FinVect)$ nor $\Fam(\LatGal)$ provide appropriate notions of composition for automatic differentiation
-and Galois slicing respectively, but neither is Cartesian closed. Both are therefore unsuitable for
+and Galois slicing respectively, but neither is Cartesian closed. Neither is therefore suitable for
 interpreting higher-order programs. However the following is a special case of a construction due to
 \citet{nunes2023}:
 
@@ -23,6 +23,15 @@ morphism $\lambda(f)$ making the following diagram commute for every $x \in X$:
    B \arrow[ru, "f_x"'] \arrow[u, dotted, "\lambda(f)"]
 \end{tikzcd}
 \end{center}
+
+If $\cat{C}$ has all small products and also biproducts, then the internal hom $\internalHom{(X, \partial
+X)}{(Y, \partial Y)}$ in $\Fam(\cat{C})$ is the object $(Z, \partial Z)$, where:
+\begin{itemize}
+\item the indexing set $Z$ is the hom-set $\Fam(\cat{C})(X,Y)$, which is indeed a set by
+\propref{Grothendieck:fam-inherits};
+\item the indexed family $\partial Z$ is the family of objects $\prod_{X}\reindex{\partial Y}{f}$ for every
+${(f, \partial f): (X, \partial X) \to (Y, \partial Y)}$.
+\end{itemize}
 
 \todo{
 \begin{enumerate}

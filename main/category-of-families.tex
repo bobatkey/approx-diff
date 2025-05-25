@@ -85,10 +85,21 @@ For any category $\cat{C}$ define $\Fam(\cat{C})$ to be the Grothendieck constru
 $\Grothendieck{X}\Func{X}{\cat{C}}$.
 \end{definition}
 
-\noindent In $\Fam(\cat{C})$ the objects $(X, \partial X)$ are thus sets $X$ paired with indexed families
-$\partial X: X \to \cat{C}$ and morphisms $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ are functions
-$f: X \to Y$ paired with morphisms $\partial f: \partial X \to \partial \reindex{Y}{f}$ in
+\noindent In $\Fam(\cat{C})$ the objects $(X, \partial X)$ are thus all sets $X$ paired with indexed families
+$\partial X: X \to \cat{C}$ and the morphisms $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ are all
+functions $f: X \to Y$ paired with morphisms $\partial f: \partial X \to \partial \reindex{Y}{f}$ in
 $\Func{X}{\cat{C}}$.
+
+\todo{Maybe unpack why these are true}
+
+\begin{proposition}
+\label{prop:Grothendieck:fam-inherits}
+\item
+\begin{enumerate}
+\item If $\cat{C}$ is locally small then so is $\Fam(\cat{C})$.
+\item If $\cat{C}$ has binary products then so does $\Fam(\cat{C})$.
+\end{enumerate}
+\end{proposition}
 
 \subsection{Galois Slicing via a Category of Families}
 \label{sec:fam:galois-slicing}
