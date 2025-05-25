@@ -144,10 +144,10 @@ We can verify that $\tangents$ is functorial, regardless of whether the linear m
 happen to be derivatives. But if $f_2(x)$ is the derivative of $f_1$ at $x$ for any $x \in \RR^m$ and
 similarly for $g$ then the derivatives compose according to the forward chain rule and $(g \comp f)_2(x)$ is
 the derivative of $(g \comp f)_1$ at $x$. Thus this setup provides a way of computing the forward derivative
-of a composite function automatically, without computing each constituent $f(x)$ more than once, so long as
-the primitive operations of the system can provide derivatives. An efficient implementation of \GPS based on
-$\Fam(\LatGal)$ (\secref{fam:galois-slicing} above) would most likely apply a similar optimisation to avoid
-recomputing $f(x)$ at each step during forward slicing.
+of a composite function without have to recompute the function itself, so long as all atomic operations
+provide derivatives. An efficient implementation of \GPS based on $\Fam(\LatGal)$ (\secref{fam:galois-slicing}
+above) would most likely apply a similar optimisation to avoid recomputing $f(x)$ at each step during forward
+slicing.
 
 We can see these ``optimised'' maps as living in $\Fam(\FinVect)$ if we regard every finite vector space
 $\RR^n$ as paired with the constant family of tangent spaces at $\RR^n$ (also written $\RR^n$, for
