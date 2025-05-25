@@ -3,25 +3,25 @@
 
 The goal now is to equip the interpretation of a (first-order) program with a Galois connection relating
 approximations of its inputs to approximations of its output. Since the specific lattices of approximations
-depend on the value being approximated, the semantics of every type $\tau$ must have both a ``conventional''
-component, providing the set $X$ which interprets $\tau$, plus an associated lattice of approximations
-$\partial X(x)$ for every point $x \in X$. The semantics of an expression $e$ of type $\sigma$ with a single
-free variable of type $\tau$ (with $\tau$ and $\sigma$ denoting $X$ and $Y$) must then also have two
-components: a function $f: X \to Y$ giving the conventional interpretation of $e$, plus a family of Galois
-connections $\partial f(x): \partial X(x) \to \partial Y(f(x))$ for every $x \in X$ which can be used for
-slicing over that expression.
+depend on the value being approximated, the semantics of every type $\tau$ must have both a conventional
+component as well as an approximating component, i.e.~a set $X$ which serves as the usual interpretation of
+$\tau$, plus an associated lattice of approximations $\partial X(x)$ for every point $x \in X$. The semantics
+of an expression $e$ of type $\sigma$ with a single free variable of type $\tau$ (with $\tau$ and $\sigma$
+denoting $X$ and $Y$) must then also have two components: a function $f: X \to Y$ giving the conventional
+interpretation of $e$, plus a family of Galois connections $\partial f(x): \partial X(x) \to \partial Y(f(x))$
+for every $x \in X$ which can be used for slicing over that expression.
 
 This pattern of objects and morphisms is captured by the construction used in CHAD~\cite{vákár22,nunes2023} to
-describe automatic differentiation, namely the \emph{Grothendieck construction} for a particular indexed
-category $T: \Set^\op \to \Cat$. For CHAD, $T(X)$ will be the functor category $\Func{X}{\FinVect}$, regarded
-as the category of $X$-indexed families of finite vector spaces, with indexed linear maps; for Galois slicing
-we will take $T(X) = \Func{X}{\LatGal}$, the category of $X$-indexed families of bounded lattices, with
-indexed Galois connections as morphisms. The Grothendieck construction
-$\Grothendieck{}T$~(\defref{Grothendieck} below) for an indexed category $T$, sometimes called the \emph{total
-category} for $T$, is the category of all $\Set$-indexed families of objects of $T$, together with morphisms
-that account for both structure within each family and how families transform under reindexing.
+model automatic differentiation, namely the \emph{Grothendieck construction} for a particular set-indexed
+category $T: \Set^\op \to \Cat$. For automatic differentiation, $T(X)$ will be the functor category
+$\Func{X}{\FinVect}$, regarded as the category of $X$-indexed families of finite vector spaces, with indexed
+linear maps as morphisms. For Galois slicing, we will take $T(X) = \Func{X}{\LatGal}$, the category of
+$X$-indexed families of bounded lattices, with indexed Galois connections as morphisms.
 
-First we formalise $X$-indexed families and their categories.
+The Grothendieck construction $\Grothendieck{}T$~(\defref{Grothendieck} below) for an indexed category $T$,
+sometimes called the \emph{total category} for $T$, is the category of all set-indexed families of objects of
+$T$, together with morphisms that account for both structure within each family and how families transform
+under reindexing functions $f: X \to Y$. First we formalise $X$-indexed families and their categories.
 
 \begin{definition}[Category of $X$-indexed families]
 For any set $X$ (regarded as a discrete category) and any category $\cat{C}$, recall that the functor
@@ -50,11 +50,12 @@ confusion when combining composition of morphisms in $\Func{X}{C}$ with reindexi
 
 \begin{definition}
 \label{def:Grothendieck}
-Suppose an indexed category $T: \cat{C}^\op \to \Cat$. The \emph{Grothendieck construction} for $T$ is the
-category $\Grothendieck{X}T(X)$ (also written $\Grothendieck{}T$) which has as objects, all pairs $(X,
-\partial X)$ of an object $X$ of $\cat{C}$ and an object $\partial X$ of $T(X)$, and as morphisms $(X,
-\partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of morphisms $f: X \to Y$ in $\cat{C}$ and
-morphisms $\partial f: \partial X \to T(f)(\partial Y)$ in $T(X)$.
+\todo{Move earlier because doesn't assume $\cat{C} = \Set$.} Suppose an indexed category $T: \cat{C}^\op \to
+\Cat$. The \emph{Grothendieck construction} for $T$ is the category $\Grothendieck{X}T(X)$ (also written
+$\Grothendieck{}T$) which has as objects, all pairs $(X, \partial X)$ of an object $X$ of $\cat{C}$ and an
+object $\partial X$ of $T(X)$, and as morphisms $(X, \partial X) \to (Y, \partial Y)$, all pairs $(f, \partial
+f)$ of morphisms $f: X \to Y$ in $\cat{C}$ and morphisms $\partial f: \partial X \to T(f)(\partial Y)$ in
+$T(X)$.
 \end{definition}
 
 \noindent The $\partial X$ notation is intended to suggest the connection between the Grothendieck
