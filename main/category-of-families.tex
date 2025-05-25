@@ -105,8 +105,8 @@ connection at each point, using the baseline (unapproximated) function $f$.
 Following the CHAD approach, automatic differentiation for first-order programs can also be recovered in this
 setup, via the total category $\Fam(\FinVect)$. We recapitulate the basic idea here. For flat manifolds like
 $\RR^n$, the tangent space and cotangent space at a point $x$ are both canonically isomorphic to $\RR^n$, so
-the forward and backward derivatives at $x$ of a differentiable function $f: \RR^m \to \RR^n$ have the
-following form.
+the forward and backward derivatives of a differentiable function $f: \RR^m \to \RR^n$ at a point $x$ have the
+following form:
 
 \begin{itemize}
 \item The \emph{forward derivative} (tangent map or pushforward) $\pushf{f}_x$ of $f$ at $x \in \RR^m$ is the
@@ -115,7 +115,7 @@ unique linear map $\RR^m \linearto \RR^n$ given by the Jacobean matrix of $f$ at
 $\RR^n \linearto \RR^m$ given by the transpose (adjoint) of the Jacobean matrix of $f$ at $x$.
 \end{itemize}
 
-\subsubsection{Chain rule}
+\subsubsection{Chain Rule}
 
 Derivatives respect composition~\cite{spivak65}. Suppose $f: \RR^m \to \RR^n$ and $g: \RR^n \to \RR^k$. For
 any $x \in \RR^m$ we have:
@@ -125,7 +125,7 @@ any $x \in \RR^m$ we have:
 \item $\pullf{(g \comp f)}_x = \pullf{f}_{x} \comp \pullf{g}_{f(x)}: \RR^k \to \RR^m$
 \end{itemize}
 
-\subsubsection{Forward mode automatic differentiation}
+\subsubsection{Forward-Mode Automatic Differentiation}
 
 \begin{definition}
 Define the functor $\tangents$ which sends every vector space $\RR^n$ to itself and every differentiable map
@@ -135,7 +135,8 @@ that point.
 \end{definition}
 
 For any map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ it is useful to define $f_1 = \pi_1 \comp f:
-\RR^m \to \RR^n$ and $f_2 = \pi_2 \comp f: \RR^m \to (\RR^m \linearto \RR^n)$. Then composition of such maps can be expressed as:
+\RR^m \to \RR^n$ and $f_2 = \pi_2 \comp f: \RR^m \to (\RR^m \linearto \RR^n)$. Then composition of such maps
+can be expressed as:
 \begin{align*}
 (g \comp f)_1(x) &= f_1(g_1(x)) \\
 (g \comp f)_2(x) &= g_2(f_1(x)) \comp f_2(x)
