@@ -96,10 +96,10 @@ The total category $\Fam(\LatGal)$ is then basic setting for interpreting first-
 has as objects $(X, \partial X)$, all pairs of a set $X$ and and for every $x \in X$, a bounded lattice
 $\partial X(x)$, and as morphisms $(X, \partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of a
 function $f: X \to Y$ and for every $x \in X$, a Galois connection $\partial f(x): \partial X(x) \to \partial
-Y(f(x))$. This is precisely the setup we identified informally at the beginning of this section. The pullback
-(reindexing) along $f$ in the composition $(g, \partial g) \comp (f, \partial f) = (g \comp f,
-\reindex{\partial g}{f} \comp \partial f)$ selects the appropriate lattice of approximations and Galois
-connection at each point, using the baseline (unapproximated) function $f$.
+Y(f(x))$. This is precisely the setup we identified informally at the beginning of this section. The
+reindexing along $f$ in the composition $(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial
+g}{f} \comp \partial f)$ selects the appropriate lattice of approximations and Galois connection at each
+point, using the baseline (unapproximated) function $f$.
 
 \subsection{Automatic Differentiation via a Category of Families}
 
@@ -128,37 +128,33 @@ any $x \in \RR^m$ we have:
 
 \subsubsection{Forward-Mode Automatic Differentiation}
 
-\begin{definition}
-Define the functor $\tangents$ which sends every vector space $\RR^n$ to itself and every differentiable map
-$f: \RR^m \to \RR^n$ to the function $\tangents(f) = x \mapsto (f(x), \pushf{f}_x): \RR^m \to \RR^n \times
-(\RR^m \linearto \RR^n)$, associating to every point its image in $f$ and the forward derivative of $f$ at
-that point.
-\end{definition}
-
-For any map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ it is useful to define $f_1 = \pi_1 \comp f:
-\RR^m \to \RR^n$ and $f_2 = \pi_2 \comp f: \RR^m \to (\RR^m \linearto \RR^n)$. Then composition of such maps
-can be expressed as:
+The basic idea of (forward-mode) automatic differentiation, as first described by \citet{linnainmaa76}, was to
+recognise that one could efficiently compute the pushforward map $\RR^m \to (\RR^m \linearto \RR^n)$ of a
+differentiable function $f: \RR^m \to \RR^n$ alongside the computation of $f$ itself by defining a single map
+$\tangents(f) = x \mapsto (f(x), \pushf{f}_x): \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$. Defining $f_1
+= \pi_1 \comp f: \RR^m \to \RR^n$ and $f_2 = \pi_2 \comp f: \RR^m \to (\RR^m \linearto \RR^n)$, composition of
+such maps can be expressed as:
 \begin{align*}
 (g \comp f)_1(x) &= f_1(g_1(x)) \\
 (g \comp f)_2(x) &= g_2(f_1(x)) \comp f_2(x)
 \end{align*}
 
-We can verify that $\tangents$ is indeed a functor, regardless of whether the linear maps $\RR^m \linearto
-\RR^n$ happen to be derivatives. But if $f_2(x)$ is the derivative of $f_1$ at $x$ for any $x \in \RR^m$ and
+We can verify that $\tangents$ is functorial, regardless of whether the linear maps $\RR^m \linearto \RR^n$
+happen to be derivatives. But if $f_2(x)$ is the derivative of $f_1$ at $x$ for any $x \in \RR^m$ and
 similarly for $g$ then the derivatives compose according to the forward chain rule and $(g \comp f)_2(x)$ is
-the derivative of $(g \comp f)_1$ at $x$. We can see these maps as living in $\Fam(\FinVect)$ if we regard
-every finite vector space $\RR^n$ as paired with the constant family of tangent spaces which is always $\RR^n$
-(also written $\RR^n$, for convenience), and each map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ as
-the pair $(f_1, f_2)$ of a differentiable function $f_1: \RR^m \to \RR^n$ and family of linear maps $f_2:
-\RR^m \to \RR^m \linearto \RR^n$.
+the derivative of $(g \comp f)_1$ at $x$. Thus this setup provides a way of computing composite forward
+derivatives automatically so long as the primitive operations of the system are appropriately equipped with
+them.
 
-Then for any $(f, \partial f): (\RR^m, \RR^m) \to (\RR^n, \RR^n)$ and $(g, \partial g): (\RR^n, \RR^n) \to
-(\RR^k, \RR^k)$, we have that for any $x \in \RR^m$:
-\begin{itemize}
-\item $\partial f_x: \RR^m \to \RR^n$;
-\item $\reindex{\partial g}{f}_x = \partial g_{f(x)}: \RR^n \to \RR^k$.
-\end{itemize}
+We can see these maps as living in $\Fam(\FinVect)$ if we regard every finite vector space $\RR^n$ as paired
+with the family of tangent spaces which is constantly $\RR^n$ (also written $\RR^n$, for convenience), and
+each map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ as the pair $(f_1, f_2)$ of a differentiable
+function $f_1: \RR^m \to \RR^n$ and family of linear maps $f_2: \RR^m \to \RR^m \linearto \RR^n$. Then the
+composition $(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp \partial f):
+(\RR^m, \RR^m) \to (\RR^k, \RR^k)$ corresponds exactly to the forward chain rule, since $(\reindex{\partial
+g}{f} \comp \partial f)_x = {\partial g}_{f(x)} \comp {\partial f}_x$, with the reindexing along $f$ computing
+the pushforward.
 
-\noindent The composition $(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp
-\partial f): (\RR^m, \RR^m) \to (\RR^k, \RR^k)$ corresponds exactly to the forward chain rule,
-since $(\reindex{\partial g}{f} \comp \partial f)_x = {\partial g}_{f(x)} \comp {\partial f}_x$.
+\subsubsection{Reverse-Mode Automatic Differentiation}
+
+\todo{brief summary}
