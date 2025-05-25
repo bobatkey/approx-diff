@@ -3,11 +3,14 @@
 
 \todo{
 \begin{enumerate}
-\item if $\cat{C}$ has biproducts and all small products then $\Fam(\cat{C})$ is Cartesian closed
-\item $\PSh(\cat{C})$ has all small products (inherited from $\Set$)
-\item $\FinVect$ and $\LatGal$ have biproducts but not all small products
-\item but actually we need $\PSh_{\CMon}(\cat{C})$ rather than $\PSh(\cat{C})$ because $\CMon$-enriched Yoneda embedding preserves biproducts
-\end{enumerate}
+  \item if $\cat{C}$ has biproducts and all small products then $\Fam(\cat{C})$ is Cartesian closed
+  \item $\FinVect$ and $\LatGal$ both have biproducts but neither has all small products (\todo{restrict $\LatGal$ to finite lattices?})
+  \item $\PSh(\cat{C})$ has all small products (inherited from $\Set$), but doesn't automatically inherit
+  biproducts from $\cat{C}$
+  \item however, $\PSh_{\CMon}(\cat{C})$ does indeed have biproducts if $\cat{C}$ does
+  \item thus $\Fam(\PSh_{\CMon}(\FinVect))$ and $\Fam(\PSh_{\CMon}(\LatGal))$ are both Cartesian closed
+  \item also need that $\CMon$-enriched Yoneda embedding preserves biproducts \todo{check: because this is how we will interpret base types? E.g.~$\sem{\mathsf{Bool}} = \Hom{\cat{C}}{-}{2}$ assuming $\cat{C}$ provides a suitable object 2}
+  \end{enumerate}
 }
 
 \subsection{Biproducts and Semi-Additive Categories}

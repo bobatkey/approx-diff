@@ -145,17 +145,18 @@ We can verify that $\tangents$ is indeed a functor, regardless of whether the li
 \RR^n$ happen to be derivatives. But if $f_2(x)$ is the derivative of $f_1$ at $x$ for any $x \in \RR^m$ and
 similarly for $g$ then the derivatives compose according to the forward chain rule and $(g \comp f)_2(x)$ is
 the derivative of $(g \comp f)_1$ at $x$. We can see these maps as living in $\Fam(\FinVect)$ if we regard
-every $\RR^n$ as paired with a constant family of tangent spaces also of the form $\RR^n$ and each map $f:
-\RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ to pairs $(f_1, f_2)$ as the pair of a differentiable function
-$f_1: \RR^m \to \RR^n$ and a family of linear maps $f_2: \RR^m \to \RR^m \linearto \RR^n$.
+every finite vector space $\RR^n$ as paired with the constant family of tangent spaces which is always $\RR^n$
+(also written $\RR^n$, for convenience), and each map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ to
+pairs $(f_1, f_2)$ as the pair of a differentiable function $f_1: \RR^m \to \RR^n$ and a family of linear maps
+$f_2: \RR^m \to \RR^m \linearto \RR^n$.
 
-Then for any $(f, \partial f): (\RR^m, \const(\RR^m)) \to (\RR^n, \const(\RR^n))$ and $(g,
-\partial g): (\RR^n, \const(\RR^n)) \to (\RR^k, \const(\RR^k))$, we have that for any $x \in \RR^m$:
+Then for any $(f, \partial f): (\RR^m, \RR^m) \to (\RR^n, \RR^n)$ and $(g, \partial g): (\RR^n, \RR^n) \to
+(\RR^k, \RR^k)$, we have that for any $x \in \RR^m$:
 \begin{itemize}
 \item $\partial f_x: \RR^m \to \RR^n$;
 \item $\reindex{\partial g}{f}_x = \partial g_{f(x)}: \RR^n \to \RR^k$.
 \end{itemize}
 
 \noindent The composition $(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp
-\partial f): (\RR^m, \const(\RR^m)) \to (\RR^k, \const(\RR^k))$ corresponds exactly to the forward chain rule,
+\partial f): (\RR^m, \RR^m) \to (\RR^k, \RR^k)$ corresponds exactly to the forward chain rule,
 since $(\reindex{\partial g}{f} \comp \partial f)_x = {\partial g}_{f(x)} \comp {\partial f}_x$.
