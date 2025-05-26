@@ -130,8 +130,8 @@ multiplication written $a \mult b$.
 Up to isomorphism, an \emph{$n$-dimensional vector space over $\RR$} is the set $\RR^n$ equipped with
 component-wise addition of vectors $+: \RR^n \times \RR^n \to \RR^n$ and scalar multiplication $\mult: \RR
 \times \RR^n \to \RR^n$ (overloading $+$ and $\mult$), where $(\RR^n,+)$ is an abelian group (with identity
-$0$ and additive inverse $-v$ again defined component-wise) and the vector operations are compatible with the
-field operations in that the following equations hold:
+$0$ and additive inverse $-v$ again defined component-wise), and where the vector operations are compatible
+with the field operations in that the following equations hold:
 
 \vspace{-4mm}
 \begin{minipage}[t]{0.45\textwidth}
@@ -155,7 +155,7 @@ field operations in that the following equations hold:
 \begin{definition}[Category $\FinVect$]
 Define $\FinVect$ to be the category which has as objects $\RR^n$ all finite-dimensional vector spaces, and as
 morphisms $f: \RR^m \to \RR^n$ all functions $f$ satisfying $f(u + v) = f(u) + f(v)$ and $f(a \mult v) = a
-\mult f(v)$.
+\mult f(v)$, with $f$ preserving the abelian group structure automatically.
 \end{definition}
 
 $\FinVect$ is enriched in $\Ab$, the category of abelian groups. For any objects $V = \RR^m$ and $W = \RR^n$
@@ -179,7 +179,7 @@ the hom-set $\FinVect(V,W)$ is an abelian group, with identity $0_{V,W}$ given b
 \vspace{1mm}
 \noindent Composition is with bilinear. The direct sum $V \biprod W \iso \RR^{m + n}$ given by the Cartesian
 product is a biproduct $(V \biprod W, \biinj_{V}, \biinj_{W}, \pi_1, \pi_2)$ with $\biinj_{V} =
-\prodM{\id_{V}}{0_{V,W}}$ and $\biinj_{W} = \prodM{0_{V,W}}{\id_{W}}$.
+\prodM{\id_{V}}{0_{V,W}}$ and $\biinj_{W} = \prodM{0_{V,W}}{\id_{W}}$. \todo{Significance of biproducts}
 
 \subsubsection{Derivatives of Differentiable Functions}
 
@@ -196,8 +196,8 @@ $\RR^n \linearto \RR^m$ given by the transpose (adjoint) of the Jacobean matrix 
 
 \subsubsection{Chain Rule}
 
-Derivatives respect composition~\cite{spivak65}. Suppose $f: \RR^m \to \RR^n$ and $g: \RR^n \to \RR^k$. For
-any $x \in \RR^m$ we have:
+Derivatives respect composition~\cite{spivak65}. Suppose $f: \RR^m \to \RR^n$ and $g: \RR^n \to \RR^k$. Then
+for any $x \in \RR^m$ we have:
 
 \begin{itemize}
 \item $\pushf{(g \comp f)}_x = \pushf{g}_{f(x)} \comp \pushf{f}_x: \RR^m \to \RR^k$
@@ -230,9 +230,9 @@ We can see these ``optimised'' forward-mode maps as living in $\Fam(\FinVect)$ i
 vector space $\RR^n$ as paired with the constant family of tangent spaces at $\RR^n$ (also written $\RR^n$,
 for convenience), and each map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ as the pair $(f_1, f_2)$.
 Then the composition $(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp
-\partial f)$ corresponds exactly to the forward chain rule, since $(\reindex{\partial g}{f} \comp \partial
-f)_x = {\partial g}_{f(x)} \comp {\partial f}_x$, with the reindexing along $f$ selecting the appropriate
-pushforward by recomputing $f(x)$.
+\partial f)$ again corresponds exactly to the forward chain rule, since $(\reindex{\partial g}{f} \comp
+\partial f)_x = {\partial g}_{f(x)} \comp {\partial f}_x$, with the reindexing along $f$ recomputing $f(x)$ in
+order to select the appropriate pushforward.
 
 \subsubsection{Reverse-Mode Automatic Differentiation}
 
