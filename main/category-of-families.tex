@@ -90,11 +90,9 @@ $\partial X: X \to \cat{C}$ and the morphisms $(f, \partial f): (X, \partial X) 
 functions $f: X \to Y$ paired with morphisms $\partial f: \partial X \to \partial \reindex{Y}{f}$ in
 $\Func{X}{\cat{C}}$.
 
-\todo{Maybe unpack why these are true}
-
 \begin{proposition}
 \label{prop:Grothendieck:fam-inherits}
-\item
+\item \todo{Maybe unpack why these are true}
 \begin{enumerate}
 \item If $\cat{C}$ is locally small then so is $\Fam(\cat{C})$.
 \item If $\cat{C}$ has binary products then so does $\Fam(\cat{C})$.
@@ -116,10 +114,68 @@ point, using the baseline (unapproximated) function $f$.
 \subsection{Automatic Differentiation via a Category of Families}
 
 Following the CHAD approach, automatic differentiation for first-order programs can also be recovered in this
-setup, via the total category $\Fam(\FinVect)$. We recapitulate the basic idea here. For flat manifolds like
-$\RR^n$, the tangent space and cotangent space at a point $x$ are both canonically isomorphic to $\RR^n$, so
-the forward and backward derivatives of a differentiable function $f: \RR^m \to \RR^n$ at a point $x$ have the
-following form:
+setup, via the total category $\Fam(\FinVect)$. We recapitulate the basic ideas here, starting with the
+category $\FinVect$ of finite vector spaces over $\RR$.
+
+\subsubsection{Category of finite-dimensional vector spaces}
+\label{sec:categories-with-biproducts:fdvect}
+
+\begin{definition}[Vector space over $\RR$]
+We define vector spaces over the reals, with addition of real numbers $a, b$ written $a + b$ and
+multiplication written $a \mult b$. Then a \emph{vector space $V = (V, +, \mult)$ over $\RR$} (overloading $+$
+and $\mult$) is a set $V$ equipped with addition of vectors $+: V^2 \to V$ and scalar multiplication $\mult:
+\RR \times V \to V$ where $(V,+)$ is an abelian group (with identity element $0_V$ and additive inverse $-v$
+for any $v \in V$) and the vector operations are compatible with the field operations in that the following
+equations hold:
+
+\vspace{-3mm}
+\begin{minipage}[t]{0.45\textwidth}
+\begin{center}
+\begin{align*}
+   1 \mult v &= v \\
+   (a \mult b) \mult v &= a \mult (b \mult v)
+\end{align*}
+\end{center}
+\end{minipage}%
+\begin{minipage}[t]{0.45\textwidth}
+\begin{center}
+\begin{align*}
+   (a + b) \mult v &= (a \mult v) + (b \mult v) \\
+   a \mult (u + v) &= (a \mult u) + (b \mult v)
+\end{align*}
+\end{center}
+\end{minipage}
+\end{definition}
+
+Up to isomorphism a finite-dimensional vector space over $\RR$ of dimension $n \in \Nat$ is the vector space
+$(\RR^n, +, \mult)$ where $+$ and $\mult$ are defined component-wise.
+
+\begin{definition}[Category $\FinVect$]
+Define $\FinVect$ to be the category which has:
+\begin{itemize}
+\item as objects $V, W$ all pairs of natural numbers $n$ and $n$-dimensional vector spaces $(\RR^n, +, \mult)$
+\item as morphisms $f: V \to W$ all functions $f$ satisfying $f(u + v) = f(u) + f(v)$ and $f(a \mult v) = a
+\mult f(v)$.
+\end{itemize}
+\end{definition}
+
+$\FinVect$ is enriched in $\Ab$, the category of abelian groups. For any $V, W$ we have that $\FinVect(V,W)$
+is an abelian group, where:
+\begin{enumerate}
+\item $0_{V,W}(v) = 0_W$
+\item $(f + g)(v) = f(v) + g(v)$
+\item $(-f)(v) = -f(v)$
+\end{enumerate}
+\noindent with composition bilinear by (2) and addition of morphisms computed component-wise. The direct sum
+$V \biprod W = (V \times W, +, \mult)$, with $+$ and $\mult$ defined component-wise, is a biproduct $(V
+\biprod W, \biinj_V, \biinj_W, \pi_1, \pi_2)$ with $\biinj_V = \prodM{\id_V}{0_{V,W}}$ and $\biinj_W =
+\prodM{0_{V,W}}{\id_W}$.
+
+\subsubsection{Derivatives of Differentiable Functions}
+
+For flat manifolds like $\RR^n$, the tangent space and cotangent space at a point $x$ are both canonically
+isomorphic to $\RR^n$, so the forward and backward derivatives of a differentiable function $f: \RR^m \to
+\RR^n$ at a point $x$ have the following form:
 
 \begin{itemize}
 \item The \emph{forward derivative} (tangent map or pushforward) $\pushf{f}_x$ of $f$ at $x \in \RR^m$ is the
