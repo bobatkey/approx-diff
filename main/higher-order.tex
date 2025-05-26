@@ -2,18 +2,17 @@
 \label{sec:higher-order}
 
 $\Fam(\FinVect)$ and $\Fam(\LatGal)$ provide appropriate notions of composition for automatic differentiation
-and Galois slicing respectively, but neither is Cartesian closed and thereby a potential candidate for
-interpreting higher-order programs. However the following is a special case of a construction due to
-\citet{nunes2023}:
+and Galois slicing respectively, but neither is Cartesian closed and thereby able to interpret higher-order
+programs directly. However the following is a special case of a construction due to \citet{nunes2023}:
 
 \begin{proposition}
 Suppose $\cat{C}$ locally small. If $\cat{C}$ has binary biproducts and all small products, then
 $\Fam(\cat{C})$ is Cartesian closed.
 \end{proposition}
 
-$\cat{C}$ has all small (set-indexed) products if, for any set $X$ and any $X$-indexed family $A$ of objects
-of $\cat{C}$, there exists an object $\prod_{x \in X}A_x$ (also written $\prod_{X} A$) and family of
-projection morphisms $\{\pi_x: \prod_{X} A \to A_x\}_{x \in X}$ in $\cat{C}$ such that for any object $B$
+A category $\cat{C}$ has all small (set-indexed) products if, for any set $X$ and any $X$-indexed family $A$
+of objects of $\cat{C}$, there exists an object $\prod_{x \in X}A_x$ (also written $\prod_{X} A$) and family
+of projection morphisms $\{\pi_x: \prod_{X} A \to A_x\}_{x \in X}$ in $\cat{C}$ such that for any object $B$
 and family of morphisms $\{f_x: B \to A_x\}_{x \in X}$ in $\cat{C}$, there exists a unique product morphism
 $\prodFam{f}$ making the following diagram commute for every $x \in X$:
 
@@ -24,20 +23,41 @@ $\prodFam{f}$ making the following diagram commute for every $x \in X$:
 \end{tikzcd}
 \end{center}
 
-If $\cat{C}$ has all small products and also biproducts, then the internal hom $\internalHom{(X, \partial
-X)}{(Y, \partial Y)}$ in $\Fam(\cat{C})$ is the object $(Z, \partial Z)$, where:
+Abusing notation somewhat, we shall write $X$ for an object $(X, \partial X)$ in $\Fam(C)$, and similarly for
+morphisms $f = (f, \partial f)$. If $\cat{C}$ has all small products and also biproducts, then the internal
+hom $\internalHom{X}{Y}$ in $\Fam(\cat{C})$ is the object $Z$ where:
 \begin{itemize}
-\item the indexing set $Z$ is the $\Fam(\cat{C})((X, \partial X), (Y, \partial Y))$, which is indeed a set by
-\propref{Grothendieck:fam-inherits};
-\item the indexed family $\partial Z$ is the family of objects $\prod_{X}\reindex{\partial Y}{f}$ for every
-${(f, \partial f): (X, \partial X) \to (Y, \partial Y)}$.
+\item the indexing set $Z$ is the $\Fam(\cat{C})(X, Y)$, which is indeed a set by
+\propref{Grothendieck:fam-inherits-local-smallness};
+\item the indexed family $\partial Z$ is the family of products $\prod_{X}\reindex{\partial Y}{f}$ for every
+${f: X \to Y}$.
 \end{itemize}
 
-\todo{Explain role of biproducts}
+The products in $\Fam(C)$ arise from the products in $\cat{C}$ (\propref{Grothendieck:fam-inherits-products}).
+The evaluation morphism $\eval_{X,Y}: (\internalHom{X}{Y}) \times X \to Y$ is a family of morphisms in
+$\cat{C}$ given by:
+\begin{align*}
+\eval_{X,Y}(f,x) &= f(x) \\
+\partial\eval_{X,Y}(f,x) &= \coprodM{\pi_x}{\partial f(x)}
+  : \textstyle\prod_{X}\reindex{\partial Y}{f} \biprod \partial X(x) \to \partial Y(f(x))
+\end{align*}
+\noindent using the coproduct of morphisms from the biproduct in $\cat{C}$.
+
+The currying isomorphism $\lambda_{X,Y,Z}: \Hom{\Fam(C)}{X \times Y}{Z} \to
+\Hom{\Fam(C)}{X}{\internalHom{Y}{Z}}$ natural in $X, Y, Z$ is given by:
+
+\vspace{-3mm}
+\begin{align*}
+\lambda_{X,Y,Z}(f)(x) &= g \quad\text{with $g = f \comp (x,-)$ and $\partial g(x) = \reindex{\partial f}{(x,-)}$} \\
+\partial\lambda_{X,Y,Z}(f)(x) &= \prodFam{\{\partial f(x,y) \comp \biinj_{\partial X(x)}\}_{y \in Y}}
+\end{align*}
+\noindent Here $(x,-): Y \to X \times Y$ is the ``reindexing'' function that pairs any $y$ with a fixed $x$,
+and for any $y$ $\biinj_{\partial X(x)}$ denotes the canonical injection $\partial X(x) \to \partial X(x)
+\biprod \partial Y(y)$.
 
 \todo{
 \begin{enumerate}
-  \item $\FinVect$ and $\LatGal$ both have biproducts but neither has all small products (\todo{restrict $\LatGal$ to finite lattices?})
+  \item $\FinVect$ and $\LatGal$ both have biproducts but neither has all small products
   \item $\PSh(\cat{C})$ has all small products (inherited from $\Set$), but doesn't automatically inherit
   biproducts from $\cat{C}$
   \item however, $\PSh_{\CMon}(\cat{C})$ does indeed have biproducts if $\cat{C}$ does
