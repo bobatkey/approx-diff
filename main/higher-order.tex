@@ -1,9 +1,10 @@
 \section{Interpreting Higher-Order Programs}
 \label{sec:higher-order}
 
-$\Fam(\FinVect)$ nor $\Fam(\LatGal)$ provide appropriate notions of composition for automatic differentiation
-and Galois slicing respectively, but neither is Cartesian closed and thereby a candidate for interpreting
-higher-order programs. However the following is a special case of a construction due to \citet{nunes2023}:
+$\Fam(\FinVect)$ and $\Fam(\LatGal)$ provide appropriate notions of composition for automatic differentiation
+and Galois slicing respectively, but neither is Cartesian closed and thereby a potential candidate for
+interpreting higher-order programs. However the following is a special case of a construction due to
+\citet{nunes2023}:
 
 \begin{proposition}
 Suppose $\cat{C}$ locally small. If $\cat{C}$ has binary biproducts and all small products, then
@@ -13,8 +14,8 @@ $\Fam(\cat{C})$ is Cartesian closed.
 $\cat{C}$ has all small (set-indexed) products if, for any set $X$ and any $X$-indexed family $A$ of objects
 of $\cat{C}$, there exists an object $\prod_{x \in X}A_x$ (also written $\prod_{X} A$) and family of
 projection morphisms $\{\eval_x: \prod_{X} A \to A_x\}_{x \in X}$ in $\cat{C}$ such that for any object $B$
-and any family of morphisms $\{f_x: B \to A_x\}_{x \in X}$ in $\cat{C}$, there exists a unique product
-morphism $\lambda(f)$ making the following diagram commute for every $x \in X$:
+and family of morphisms $\{f_x: B \to A_x\}_{x \in X}$ in $\cat{C}$, there exists a unique product morphism
+$\lambda(f)$ making the following diagram commute for every $x \in X$:
 
 \begin{center}
 \begin{tikzcd}
@@ -26,15 +27,16 @@ morphism $\lambda(f)$ making the following diagram commute for every $x \in X$:
 If $\cat{C}$ has all small products and also biproducts, then the internal hom $\internalHom{(X, \partial
 X)}{(Y, \partial Y)}$ in $\Fam(\cat{C})$ is the object $(Z, \partial Z)$, where:
 \begin{itemize}
-\item the indexing set $Z$ is the hom-set $\Fam(\cat{C})(X,Y)$, which is indeed a set by
+\item the indexing set $Z$ is the $\Fam(\cat{C})((X, \partial X), (Y, \partial Y))$, which is indeed a set by
 \propref{Grothendieck:fam-inherits};
 \item the indexed family $\partial Z$ is the family of objects $\prod_{X}\reindex{\partial Y}{f}$ for every
 ${(f, \partial f): (X, \partial X) \to (Y, \partial Y)}$.
 \end{itemize}
 
+\todo{Explain role of biproducts}
+
 \todo{
 \begin{enumerate}
-  \item if $\cat{C}$ has biproducts and all small products then $\Fam(\cat{C})$ is Cartesian closed
   \item $\FinVect$ and $\LatGal$ both have biproducts but neither has all small products (\todo{restrict $\LatGal$ to finite lattices?})
   \item $\PSh(\cat{C})$ has all small products (inherited from $\Set$), but doesn't automatically inherit
   biproducts from $\cat{C}$
@@ -97,10 +99,8 @@ h \comp (f + g) &= (h \comp f) + (h \comp g)
 \end{salign*}
 
 \subsubsection{Biproduct laws}
-It is also easy to show that in a semi-additive category, as defined in \defref{biproducts:semi-additive}, the
-following equations hold:
-
-\vspace{-3mm}
+It is also easy to show that in a semi-additive category the following equations hold:
+%\vspace{-4mm}
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
 \begin{salign*}
@@ -118,27 +118,24 @@ following equations hold:
 \end{center}
 \end{minipage}
 
-\noindent and
-
 \begin{salign*}
 (\biinj_X \comp \biproj_X) + (\biinj_Y \comp \biproj_Y) &= \id_{X \biprod Y}
 \end{salign*}
 
-Alternatively, we can take these to be the defining equations of a biproduct $(X \biprod Y, \biproj_X,
-\biproj_Y, \biinj_X, \biinj_Y)$ in any category $\cat{C}$ known to be $\CMon$-enriched, and therefore
-providing addition of morphisms; in that case any products or coproducts in $\cat{C}$ are necessarily
-biproducts.
+\vspace{3mm}
+\noindent It is also possible to use these laws to define biproducts, in the case where $\cat{C}$ is enriched
+in $\CMon$ and so equipped with addition of morphisms and zero morphisms. In that case any products or
+coproducts in $\cat{C}$ are necessarily biproducts.
 
 \begin{proposition}
 \label{prop:biproducts:from-product-or-coproduct}
-Suppose $\cat{C}$ is $\CMon$-enriched.
+In a category $\cat{C}$ enriched in $\CMon$:
 \begin{enumerate}
-\item If $(X \times Y, \pi_1, \pi_2)$ is a product in $\cat{C}$ then $(X \times Y, \biinj_X, \biinj_Y, \proj_1, \proj_2)$
-is a biproduct, where $\biinj_X = \prodM{\id_X}{0_{X,Y}}: X \to X \times Y$ and $\biinj_Y =
-\prodM{0_{X,Y}}{\id_Y}: Y \to X \times Y$.
-\item If $(X \coprod Y, \inj_1, \inj_2)$ is a coproduct in $\cat{C}$ then $(X \coprod Y, \inj_1, \inj_2,
-\biproj_X, \biproj_Y)$ is a biproduct, where $\biproj_X = \coprodM{\id_X}{0_{Y,X}}: X \coprod Y \to X$ and
-$\biproj_Y = \coprodM{0_{X,Y}}{\id_Y}: X \coprod Y \to Y$.
-\item If $X$ is terminal (or initial) in $\cat{C}$ then it is a zero object.
+\item If $(X \times Y, \pi_1, \pi_2)$ is a product then $(X \times Y, \inj_1, \inj_2)$ is a coproduct, where
+$\inj_X = \prodM{\id_X}{0_{X,Y}}: X \to X \times Y$ and $\inj_Y = \prodM{0_{X,Y}}{\id_Y}: Y \to X \times Y$.
+\item If $(X \coprod Y, \inj_1, \inj_2)$ is a coproduct then $(X \coprod Y, \pi_1, \pi_2)$ is a product, where
+$\pi_1 = \coprodM{\id_X}{0_{Y,X}}: X \coprod Y \to X$ and $\pi_2 = \coprodM{0_{X,Y}}{\id_Y}: X \coprod Y \to
+Y$.
+\item If $X$ is terminal (resp.~initial) then $X$ is initial (resp.~terminal).
 \end{enumerate}
 \end{proposition}
