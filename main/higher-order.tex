@@ -13,14 +13,14 @@ $\Fam(\cat{C})$ is Cartesian closed.
 
 $\cat{C}$ has all small (set-indexed) products if, for any set $X$ and any $X$-indexed family $A$ of objects
 of $\cat{C}$, there exists an object $\prod_{x \in X}A_x$ (also written $\prod_{X} A$) and family of
-projection morphisms $\{\eval_x: \prod_{X} A \to A_x\}_{x \in X}$ in $\cat{C}$ such that for any object $B$
+projection morphisms $\{\pi_x: \prod_{X} A \to A_x\}_{x \in X}$ in $\cat{C}$ such that for any object $B$
 and family of morphisms $\{f_x: B \to A_x\}_{x \in X}$ in $\cat{C}$, there exists a unique product morphism
-$\lambda(f)$ making the following diagram commute for every $x \in X$:
+$\prodFam{f}$ making the following diagram commute for every $x \in X$:
 
 \begin{center}
 \begin{tikzcd}
-   \prod_{X} A \arrow[r, "\eval_x"] & A_x \\
-   B \arrow[ru, "f_x"'] \arrow[u, dotted, "\lambda(f)"]
+   \prod_{X} A \arrow[r, "\pi_x"] & A_x \\
+   B \arrow[ru, "f_x"'] \arrow[u, dotted, "\prodFam{f}"]
 \end{tikzcd}
 \end{center}
 
