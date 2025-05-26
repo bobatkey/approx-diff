@@ -115,20 +115,20 @@ point, using the baseline (unapproximated) function $f$.
 
 Following the CHAD approach, automatic differentiation for first-order programs can also be recovered in this
 setup, via the total category $\Fam(\FinVect)$. We recapitulate the basic ideas here, starting with the
-category $\FinVect$ of finite vector spaces over $\RR$.
+category $\FinVect$ of finite vector spaces over $\RR$, with addition of real numbers written $a + b$ and
+multiplication written $a \mult b$.
 
 \subsubsection{Category of finite-dimensional vector spaces}
 \label{sec:categories-with-biproducts:fdvect}
 
-\begin{definition}[Vector space over $\RR$]
-We define vector spaces over the reals, with addition of real numbers $a, b$ written $a + b$ and
-multiplication written $a \mult b$. Then a \emph{vector space $V = (V, +, \mult)$ over $\RR$} (overloading $+$
-and $\mult$) is a set $V$ equipped with addition of vectors $+: V^2 \to V$ and scalar multiplication $\mult:
-\RR \times V \to V$ where $(V,+)$ is an abelian group (with identity element $0_V$ and additive inverse $-v$
-for any $v \in V$) and the vector operations are compatible with the field operations in that the following
-equations hold:
+\begin{definition}[Finite dimensional vector space over $\RR$]
+Up to isomorphism, an \emph{$n$-dimensional vector space over $\RR$} is the set $\RR^n$ equipped with
+component-wise addition of vectors $+: \RR^n \times \RR^n \to \RR^n$ and scalar multiplication $\mult: \RR
+\times \RR^n \to \RR^n$ (overloading $+$ and $\mult$), where $(\RR^n,+)$ is an abelian group (with identity
+$0$ and additive inverse $-v$ again defined component-wise) and the vector operations are compatible with the
+field operations in that the following equations hold:
 
-\vspace{-3mm}
+\vspace{-4mm}
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
 \begin{align*}
@@ -147,29 +147,34 @@ equations hold:
 \end{minipage}
 \end{definition}
 
-Up to isomorphism a finite-dimensional vector space over $\RR$ of dimension $n \in \Nat$ is the vector space
-$(\RR^n, +, \mult)$ where $+$ and $\mult$ are defined component-wise.
-
 \begin{definition}[Category $\FinVect$]
-Define $\FinVect$ to be the category which has:
-\begin{itemize}
-\item as objects $V, W$ all pairs of natural numbers $n$ and $n$-dimensional vector spaces $(\RR^n, +, \mult)$
-\item as morphisms $f: V \to W$ all functions $f$ satisfying $f(u + v) = f(u) + f(v)$ and $f(a \mult v) = a
+Define $\FinVect$ to be the category which has as objects $\RR^n$ all finite-dimensional vector spaces, and as
+morphisms $f: \RR^m \to \RR^n$ all functions $f$ satisfying $f(u + v) = f(u) + f(v)$ and $f(a \mult v) = a
 \mult f(v)$.
-\end{itemize}
 \end{definition}
 
-$\FinVect$ is enriched in $\Ab$, the category of abelian groups. For any $V, W$ we have that $\FinVect(V,W)$
-is an abelian group, where:
-\begin{enumerate}
-\item $0_{V,W}(v) = 0_W$
-\item $(f + g)(v) = f(v) + g(v)$
-\item $(-f)(v) = -f(v)$
-\end{enumerate}
-\noindent with composition bilinear by (2) and addition of morphisms computed component-wise. The direct sum
-$V \biprod W = (V \times W, +, \mult)$, with $+$ and $\mult$ defined component-wise, is a biproduct $(V
-\biprod W, \biinj_V, \biinj_W, \pi_1, \pi_2)$ with $\biinj_V = \prodM{\id_V}{0_{V,W}}$ and $\biinj_W =
-\prodM{0_{V,W}}{\id_W}$.
+$\FinVect$ is enriched in $\Ab$, the category of abelian groups. For any objects $V = \RR^m$ and $W = \RR^n$
+the hom-set $\FinVect(V,W)$ is an abelian group, with identity $0_{V,W}$ given by the constant map $v \mapsto
+0_W$ and addition and additive inverse given pointwise:
+
+\vspace{-4mm}
+\begin{center}
+\begin{minipage}[t]{0.45\textwidth}
+\begin{align*}
+(f + g)(v) &= f(v) + g(v)
+\end{align*}
+\end{minipage}%
+\begin{minipage}[t]{0.45\textwidth}
+\begin{align*}
+(-f)(v) &= -f(v)
+\end{align*}
+\end{minipage}
+\end{center}
+
+\vspace{1mm}
+\noindent Composition is with bilinear. The direct sum $V \biprod W \iso \RR^{m + n}$ given by the Cartesian
+product is a biproduct $(V \biprod W, \biinj_{V}, \biinj_{W}, \pi_1, \pi_2)$ with $\biinj_{V} =
+\prodM{\id_{V}}{0_{V,W}}$ and $\biinj_{W} = \prodM{0_{V,W}}{\id_{W}}$.
 
 \subsubsection{Derivatives of Differentiable Functions}
 
