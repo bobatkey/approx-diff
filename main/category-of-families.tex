@@ -18,10 +18,39 @@ $\Func{X}{\FinVect}$, regarded as the category of $X$-indexed families of finite
 linear maps as morphisms. For Galois slicing, we will take $T(X) = \Func{X}{\LatGal}$, the category of
 $X$-indexed families of bounded lattices, with indexed Galois connections as morphisms.
 
-The Grothendieck construction $\Grothendieck{}T$~(\defref{Grothendieck} below) for an indexed category $T$,
-sometimes called the \emph{total category} for $T$, is the category of all set-indexed families of objects of
-$T$, together with morphisms that account for both structure within each family and how families transform
-under reindexing functions $f: X \to Y$. First we formalise $X$-indexed families and their categories.
+The general form of the Grothendieck construction $\Grothendieck{}T$ for an arbitrary indexed category $T:
+\cat{C}^\op \to \Cat$, sometimes called the \emph{total category} for $T$, assembles all the categories $T(X)$
+(for objects $X$ in $\cat{C}$) into a single category, together with morphisms that account for both internal
+structure and reindexing along morphisms $f: X \to Y$ in $\cat{C}$.
+
+\begin{definition}
+\label{def:Grothendieck}
+Suppose an indexed category $T: \cat{C}^\op \to \Cat$. The \emph{Grothendieck construction} for $T$ is the
+category $\Grothendieck{X}T(X)$ (also written $\Grothendieck{}T$) which has as objects, all pairs $(X,
+\partial X)$ of an object $X$ of $\cat{C}$ and an object $\partial X$ of $T(X)$, and as morphisms $(X,
+\partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of morphisms $f: X \to Y$ in $\cat{C}$ and
+morphisms $\partial f: \partial X \to T(f)(\partial Y)$ in $T(X)$.
+\end{definition}
+
+\noindent The $\partial X$ notation we adopt here is intended to suggest the connection between the
+Grothendieck construction and the idea of tangent spaces and derivatives. To understand how the $\partial f$
+components compose, consider any $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ and $(g, \partial g):
+(Y, \partial Y) \to (Z, \partial Z)$ in $\Grothendieck{}T$. We have:
+
+\begin{itemize}
+\item $\partial f: \partial X \to T(f)(\partial Y)$, and
+\item $T(f)(\partial g): T(f)(\partial Y) \to T(f)(T(g)(\partial Z)) = T(g \comp f)(\partial Z)$
+\end{itemize}
+
+\noindent where $T(f)(\partial g)$ is the image of $\partial g$ in the ``reindexing'' functor $T(f)$. The
+composition $(g, \partial g) \comp (f, \partial f): (X, \partial X) \to (Z, \partial Z)$ is then given by $(g
+\comp f, T(f)(\partial g) \comp \partial f)$.
+
+\subsection{Category of Families}
+\label{sec:Fam}
+
+Now we formalise $X$-indexed families as functor categories $\Func{X}{\cat{C}}$ and consider the specific case
+of the Grothendieck construction for set-indexed categories $\Func{-}{\cat{C}}: \Set^\op \to \Cat$.
 
 \begin{definition}[Category of $X$-indexed families]
 For any set $X$ (regarded as a discrete category) and any category $\cat{C}$, recall that the functor
@@ -42,42 +71,17 @@ For any function $f: X \to Y$ define the \emph{reindexing} functor $\reindex{-}{
 \Func{X}{\cat{C}}$ which sends any $Y$-indexed family $F$ over $\cat{C}$ to the $X$-indexed family
 $\reindex{F}{f} = F \comp f$ (regarding $f$ as a functor between $X$ and $Y$ as discrete categories) and any
 family of morphisms $\eta: F \to G$ to $\reindex{\eta}{f}: \reindex{F}{f} \to \reindex{G}{f}$ with
-$\reindex{\eta}{f}(x) = \eta(f(x))$.
+$\reindex{\eta}{f}(x) = \eta(f(x))$. \todo{Should be clearer that $\reindex{-}{f}$ is actually
+$\Func{f}{\cat{C}}$.}
 \end{definition}
 
 Although reindexing is just precomposition with $f$, writing it as $\reindex{-}{f}$ avoids notational
 confusion when combining composition of morphisms in $\Func{X}{C}$ with reindexing.
 
-\begin{definition}
-\label{def:Grothendieck}
-\todo{Move earlier because doesn't assume $\cat{C} = \Set$.} Suppose an indexed category $T: \cat{C}^\op \to
-\Cat$. The \emph{Grothendieck construction} for $T$ is the category $\Grothendieck{X}T(X)$ (also written
-$\Grothendieck{}T$) which has as objects, all pairs $(X, \partial X)$ of an object $X$ of $\cat{C}$ and an
-object $\partial X$ of $T(X)$, and as morphisms $(X, \partial X) \to (Y, \partial Y)$, all pairs $(f, \partial
-f)$ of morphisms $f: X \to Y$ in $\cat{C}$ and morphisms $\partial f: \partial X \to T(f)(\partial Y)$ in
-$T(X)$.
-\end{definition}
-
-\noindent The $\partial X$ notation is intended to suggest the connection between the Grothendieck
-construction and the idea of tangent spaces and derivatives. To understand how the $\partial f$ components
-compose, consider any $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ and $(g, \partial g): (Y,
-\partial Y) \to (Z, \partial Z)$ in $\Grothendieck{}T$. We have:
-
-\begin{itemize}
-\item $\partial f: \partial X \to T(f)(\partial Y)$, and
-\item $T(f)(\partial g): T(f)(\partial Y) \to T(f)(T(g)(\partial Z)) = T(g \comp f)(\partial Z)$
-\end{itemize}
-
-\noindent where $T(f)(\partial g)$ is the image of $\partial g$ in the ``reindexing'' functor $T(f)$. The
-composition $(g, \partial g) \comp (f, \partial f): (X, \partial X) \to (Z, \partial Z)$ is then given by $(g
-\comp f, T(f)(\partial g) \comp \partial f)$.
-
-\subsection{Category of Families}
-\label{sec:Fam}
-
-Of interest to us is the Grothendieck construction for $\Func{-}{\cat{C}}: \Set^{\op} \to \Cat$, the indexed
-category which sends any set $X$ to the category of $X$-indexed families $\Func{X}{\cat{C}}$ and any function
-$f: X \to Y$ to the reindexing functor $\reindex{-}{f}: \Func{Y}{\cat{C}} \to \Func{X}{\cat{C}}$ .
+The Grothendieck construction for $\Func{-}{\cat{C}}: \Set^{\op} \to \Cat$, the indexed category which sends
+any set $X$ to the category of $X$-indexed families $\Func{X}{\cat{C}}$ and any function $f: X \to Y$ to the
+reindexing functor $\reindex{-}{f}: \Func{Y}{\cat{C}} \to \Func{X}{\cat{C}}$, is called the \emph{families}
+construction for $\cat{C}$.
 
 \begin{definition}[Categories of families]
 \label{def:Fam}
