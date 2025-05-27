@@ -1,17 +1,131 @@
 \subsection{Stable Functions}
 \label{sec:stable-functions}
 
-Stable functions are an antecedent of \GPS that arose in
+\newcommand{\downset}[1]{\mathop{\downarrow}(#1)}
+
+Central to the concept of Galois slicing is the idea that
+approximations of a value are a lattice, and that the functions
+transporting approximations forwards and backwards form a Galois
+connection between those lattices. We present a motivation for this
+theory starting from the idea of qualitative information ordering from
+Domain Theory. We argue that, with reference to differentiability,
+monotone functions between certain partially ordered sets are
+analogous to differentiable functions, and \emph{stable} functions
+between those sets are analogous to functions with a reverse
+derivative.
+
+The stable function approach works, but mixes values and their
+approximations into a single set. We use the families construction
+over the category of lattices and Galois connections to separate
+approximation from computation, and to provide a stepping stone to
+executable models of Galois slicing.
+
+\subsubsection{Domain Theory}
+
+Domain theory is a method for giving denotational semantics to
+programs that handle infinite data (i.e., functions,
+streams). \emph{Domains} are special partially ordered sets where the
+ordering denotes a relationship of qualitative information content: if
+$x \sqsubseteq y$, then $y$ may contain more information than $x$. For
+example, if $x$ and $y$ are functions, then $y$ may be defined at more
+places in its domain than $x$.
+
+Domains are typically closed under least upper bounds (\emph{lubs}) of
+directed sets, meaning that any collection of elements that is
+internally consistent has a ``completion'' that contains all the
+information covered by the set. These directed lubs are used to give
+semantics to recursive programs in terms of their finite
+approximations.
+
+Programs themselves are interpreted as monotone functions that
+preserve directed lubs. The latter property is called
+continuity. Monoticity captures the idea that if the input gets more
+defined, then the output can get more defined. Continuity intuitively
+expresses the idea that a function interpreting a program cannot
+``look at all the approximations'' when determining the output, which
+corresponds to the intuitive idea that a computable function cannot
+look at a non-finite amount of input to produce an output.
+
+For the purposes of Galois slicing, we are not interested in using
+approximations to model computation on infinite objects, but rather to
+use them for the related task of revealing how programs explore their
+inputs for provenance tracking. Therefore, we start by only
+considering certain partially ordered sets and monotone functions
+between them.
+
+\subsubsection{Forwards Slicing}
+
+We now set up an analogy between certain partial orders with monotone
+functions and manifolds and smooth functions.
+
+In a partially ordered set $X$, for any $x \in X$ the set of elements
+below $x$, $\downset{x} = \{ x' \mid x' \sqsubseteq x \}$, is itself a
+partially ordered set. These approximations of $x$ we will think of as
+``derivatives'' of $x$, and the whole set $\downset{x}$ as the
+``tangent space''. Tangent spaces are vector spaces, since they are
+linear approximations to curves at that point. In the partially
+ordered setting, we take elements of $\downset{x}$ to be
+approximations of processes defined at $x$. As we can add tangents, we
+assume we can take meets of approximations in $\downset{x}$:
+
+\begin{definition}
+  A \emph{meet approximation space} is a partially ordered set $X$
+  where every for every $x \in X$, $\downset{x}$ is a meet
+  semilattice, with $x$ as the top element.
+\end{definition}
+
+Smooth functions have a ``pushforward'' derivative that takes tangents
+at a point $x$ to tangents at the point $f(x)$. In the partially
+ordered setting, we require that the restriction of a monotone
+function $f$ to each $\downset{x}$ preserves meets:
+
+\begin{definition}
+  A \emph{morphism of meet approximation spaces} $f : X \to Y$ is a
+  monotone function such that for all $x \in X$, the restriction
+  $f_x : \downset{x} \to \downset{f(x)}$ preserves meets.
+\end{definition}
+
+\begin{lemma}
+  Morphisms of meet approximation spaces are closed under identities
+  and composition, forming a category. FIXME: with products?
+  functions? sums?
+\end{lemma}
+
+\begin{example}
+  FIXME: various forms of OR:
+  \begin{itemize}
+  \item strict and left-short-circuiting
+  \item parallel or
+  \item gustave
+  \end{itemize}
+\end{example}
+
+\begin{example}
+  An example that preserves meets, but isn't stable (from Amadio and
+  Curien just before Lemma 12.2.3, originally due to Berry): Define
+  $f : D \to \{\bot, \top\}$, where:
+  \begin{displaymath}
+    D = \bot \sqsubseteq \cdots \sqsubseteq n \sqsubseteq \cdots \sqsubseteq 1 \sqsubseteq 0
+  \end{displaymath}
+  as $f(\bot) = \bot$ and $f(n) = \top$. This is monotone, and
+  preserves meets in every $\downset{x}$. However, there is no
+  ``best'' (i.e., least) input that gives us any finite output. To
+  rectify this, we will further assume that our functions are stable.
+\end{example}
+
+\subsubsection{Backwards Slicing}
+
+Stable functions are an antecedent of Galois slicing that arose in
 domain theory as an attempt to capture the idea that any function
 describing a computational process must explore its input in a way
 that allows identification of minimal parts of the input that are
 needed for chosen approximations of the output.
 
-Stability was invented by \citet{berry79} in an attempt to capture
-sequentiality, and was also instrumental in the discovery of Linear
+Stability was invented by Berry \cite{berry86} in an attempt to capture
+sequentiality, and were also instrumental in the discovery of Linear
 Logic via Coherence Spaces \cite{girard}. A textbook description of
-stable functions in the context of domain theory is given by
-\citet{amadio-curien} (Chapter 12). Here, we are not
+stable functions in the context of domain theory is given by Amadio
+and Curien \cite{amadio-curien} (Chapter 12). Here, we are not
 concerned with completeness properties considered in domain theory, so
 we start with only partially ordered sets. Stable functions can be
 defined as a certain subset of the set of monotone functions between
@@ -76,7 +190,7 @@ two partially ordered sets:
 \end{example}
 
 \begin{example}[Functions that are not stable]
-  A function that is not stable is Plotkin's Parallel OR~\cite{lcf77},
+  A function that is not stable is Plotkin's Parallel OR \cite{lcf77},
   which short-circuits in both arguments, returning $\mathsf{tt}$ if
   either argment is $\mathsf{tt}$, even if the other argument is not
   defined:
@@ -135,7 +249,6 @@ that it explicitly defines the stability witness as ``backwards''
 function from approximations of the output to approximations of the
 input.
 
-\newcommand{\downset}[1]{\mathop{\downarrow}(#1)}
 
 \begin{definition}
   For a poset $X$ and $x \in X$, the \emph{principal
@@ -196,7 +309,7 @@ assume that the inclusion preserves lattice structure?
   An \emph{approximation set} is a partial order such that every
   principal downset $\downset{x}$ is a bounded lattice.
 
-  A morphism of approximation sets is monotone function whose
+  A morphism of approxmation sets is monotone function whose
   restriction to each slice has a left adjoint.
 \end{definition}
 
