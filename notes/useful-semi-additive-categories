@@ -39,7 +39,7 @@ Y$.
 \end{definition}
 
 \noindent The notation is justified because a Galois connection $f \adj g: X \to Y$ is an adjunction between
-poset categories, with monotone $f$ and $g$ interpreted as functors; $f$ is usually referred to as the
+poset categories, with monotone $f$ and $g$ regarded as functors; $f$ is usually referred to as the
 \emph{upper} (right) adjoint and $g$ as the \emph{lower} (left) adjoint. Galois connections compose
 component-wise, with $\id_X \adj \id_X: X \to X$ as the unit for composition. Thus we can define the following
 category.
@@ -134,9 +134,3 @@ is an abelian group, where:
 W = (V \times W, +, \mult)$, with $+$ and $\mult$ defined component-wise, is a biproduct $(V \biprod W,
 \biinj_V, \biinj_W, \pi_1, \pi_2)$ with $\biinj_V = \prodM{\id_V}{0_{V,W}}$ and $\biinj_W =
 \prodM{0_{V,W}}{\id_W}$.
-
-%\subsubsection{Category of presheaves on a semi-additive category}
-%
-%\begin{proposition}
-%If $C$ is semi-additive then the presheaf category $\Func{C^\op}{\Set}$ is semi-additive.
-%\end{proposition}

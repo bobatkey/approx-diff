@@ -1,5 +1,6 @@
 \newcommand*{\note}[1]{\textcolor{blue}{\textbf{note:} #1}}
 \newcommand*{\todo}[1]{\textcolor{blue}{\textbf{todo:} #1}}
+\newcommand*{\GPS}{Galois slicing\xspace} % in case we change our mind about how to refer to this
 
 \newenvironment{salign*}
    {\par\nobreak\small\noindent\csname align*\endcsname}
@@ -51,6 +52,7 @@
 \newcommand*{\id}{\mathsf{id}}
 \newcommand*{\idx}[1]{\widehat{#1}}
 \newcommand*{\inj}{\mathsf{inj}}
+\newcommand*{\internalHom}[2]{#1 \Rightarrow #2}
 \newcommand*{\iso}{\cong}
 \newcommand*{\join}{\vee}
 \newcommand*{\linearto}{\multimap}
@@ -59,12 +61,14 @@
 \newcommand*{\namedcat}[1]{\mathbf{#1}}
 \newcommand*{\op}{\mathsf{op}}
 \newcommand*{\pairM}[2]{(#1, #2)}
-\renewcommand*{\prod}{\times}
+% \renewcommand*{\prod}{\times} -- probably not a good idea
+\newcommand*{\prodFam}[1]{\langle #1\rangle} % \lambda(f) bit overloaded
 \newcommand*{\prodM}[2]{\langle #1, #2\rangle}
 \newcommand*{\proj}{\pi}
 \newcommand*{\pullf}[1]{#1^{*}}
 \newcommand*{\pushf}[1]{{#1_{*}}}
 \newcommand*{\reindex}[2]{#1[#2]}
+\newcommand*{\sem}[1]{\llbracket #1 \rrbracket}
 \newcommand*{\tangents}{\mathrm{T}}
 \newcommand*{\tensor}{\otimes}
 \newcommand*{\zero}{0}

@@ -1,0 +1,239 @@
+\subsection{Grothendieck Construction for Indexed Categories}
+\label{sec:Grothendieck}
+
+The goal now is to equip the interpretation of a (first-order) program with a Galois connection relating
+approximations of its inputs to approximations of its output. Since the specific lattices of approximations
+depend on the value being approximated, the semantics of every type $\tau$ must have both a conventional
+component as well as an approximating component, i.e.~a set $X$ which serves as the usual interpretation of
+$\tau$, plus an associated lattice of approximations $\partial X(x)$ for every point $x \in X$. The semantics
+of an expression $e$ of type $\sigma$ with a single free variable of type $\tau$ (with $\tau$ and $\sigma$
+denoting $X$ and $Y$) must then also have two components: a function $f: X \to Y$ giving the conventional
+interpretation of $e$, plus a family of Galois connections $\partial f(x): \partial X(x) \to \partial Y(f(x))$
+for every $x \in X$ which can be used for slicing over that expression.
+
+This pattern of objects and morphisms is captured by the construction used in CHAD~\cite{vákár22,nunes2023} to
+model automatic differentiation, namely the \emph{Grothendieck construction} for a particular set-indexed
+category $T: \Set^\op \to \Cat$. For automatic differentiation, $T(X)$ will be the functor category
+$\Func{X}{\FinVect}$, regarded as the category of $X$-indexed families of finite vector spaces, with indexed
+linear maps as morphisms. For Galois slicing, we will take $T(X) = \Func{X}{\LatGal}$, the category of
+$X$-indexed families of bounded lattices, with indexed Galois connections as morphisms.
+
+In its general form, the Grothendieck construction $\Grothendieck{}T$ for an arbitrary indexed category $T:
+\cat{C}^\op \to \Cat$, sometimes called the \emph{total category} for $T$, assembles all the categories $T(X)$
+(for objects $X$ in $\cat{C}$) into a single category, together with morphisms that account for both internal
+structure and reindexing along morphisms $f: X \to Y$ in $\cat{C}$.
+
+\begin{definition}
+\label{def:Grothendieck}
+Suppose an indexed category $T: \cat{C}^\op \to \Cat$. The \emph{Grothendieck construction} for $T$ is the
+category $\Grothendieck{X}T(X)$ (also written $\Grothendieck{}T$) which has as objects, all pairs $(X,
+\partial X)$ of an object $X$ of $\cat{C}$ and an object $\partial X$ of $T(X)$, and as morphisms $(X,
+\partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of morphisms $f: X \to Y$ in $\cat{C}$ and
+morphisms $\partial f: \partial X \to T(f)(\partial Y)$ in $T(X)$.
+\end{definition}
+
+\noindent The $\partial X$ notation used here is intended to suggest the connection between the Grothendieck
+construction and the idea of tangent spaces and derivatives. To understand how the $\partial f$ components
+compose, consider any $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ and $(g, \partial g): (Y,
+\partial Y) \to (Z, \partial Z)$ in $\Grothendieck{}T$. We have:
+
+\begin{itemize}
+\item $\partial f: \partial X \to T(f)(\partial Y)$, and
+\item $T(f)(\partial g): T(f)(\partial Y) \to T(f)(T(g)(\partial Z)) = T(g \comp f)(\partial Z)$
+\end{itemize}
+
+\noindent where $T(f)(\partial g)$ is the image of $\partial g$ in the ``reindexing'' functor $T(f)$. The
+composition $(g, \partial g) \comp (f, \partial f): (X, \partial X) \to (Z, \partial Z)$ is then given by $(g
+\comp f, T(f)(\partial g) \comp \partial f)$.
+
+\subsection{Category of Families}
+\label{sec:Fam}
+
+Now we formalise $X$-indexed families as functor categories $\Func{X}{\cat{C}}$ and consider the specific case
+of the Grothendieck construction for set-indexed categories $\Func{-}{\cat{C}}: \Set^\op \to \Cat$.
+
+\begin{definition}[Category of $X$-indexed families]
+For any set $X$ (regarded as a discrete category) and any category $\cat{C}$, recall that the functor
+category $\Func{X}{\cat{C}}$ has as objects all functors $F: X \to \cat{C}$, namely $X$-indexed families of
+objects of $\cat{C}$, and as morphisms from $F \to G$, all families of morphisms $\eta(x): F(x) \to G(x)$ in
+$\cat{C}$ for every $x \in X$, with naturality trivial because $X$ has only identity morphisms.
+\end{definition}
+
+Like any functor category $\Func{X}{\cat{C}}$ inherits limits and colimits pointwise from its codomain.
+
+\begin{proposition}
+If $\cat{C}$ has limits (resp.~colimits) then $\Func{X}{\cat{C}}$ has limits (resp.~colimits) computed
+pointwise.
+\end{proposition}
+
+\begin{definition}[Reindexing]
+For any function $f: X \to Y$ define the \emph{reindexing} functor $\reindex{-}{f}: \Func{Y}{\cat{C}} \to
+\Func{X}{\cat{C}}$ which sends any $Y$-indexed family $F$ over $\cat{C}$ to the $X$-indexed family
+$\reindex{F}{f} = F \comp f$ (regarding $f$ as a functor between $X$ and $Y$ as discrete categories) and any
+family of morphisms $\eta: F \to G$ to $\reindex{\eta}{f}: \reindex{F}{f} \to \reindex{G}{f}$ with
+$\reindex{\eta}{f}(x) = \eta(f(x))$. \todo{Should be clearer that $\reindex{-}{f}$ is actually
+$\Func{f}{\cat{C}}$.}
+\end{definition}
+
+\noindent Although reindexing is just precomposition with $f$, writing it as $\reindex{-}{f}$ avoids
+notational confusion when combining composition of morphisms in $\Func{X}{C}$ with reindexing.
+
+The Grothendieck construction for $\Func{-}{\cat{C}}: \Set^{\op} \to \Cat$, the indexed category which sends
+any set $X$ to the category of indexed families $\Func{X}{\cat{C}}$ and any function $f: X \to Y$ to the
+reindexing functor $\reindex{-}{f}: \Func{Y}{\cat{C}} \to \Func{X}{\cat{C}}$, is called the \emph{families}
+construction for $\cat{C}$.
+
+\begin{definition}[Categories of families]
+\label{def:Fam}
+For any category $\cat{C}$ define $\Fam(\cat{C})$ to be the Grothendieck construction
+$\Grothendieck{X}\Func{X}{\cat{C}}$.
+\end{definition}
+
+\noindent In $\Fam(\cat{C})$ the objects $(X, \partial X)$ are thus all sets $X$ paired with indexed families
+$\partial X: X \to \cat{C}$ and the morphisms $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ are all
+functions $f: X \to Y$ paired with morphisms $\partial f: \partial X \to \partial \reindex{Y}{f}$ in
+$\Func{X}{\cat{C}}$.
+
+\begin{proposition}
+\label{prop:Grothendieck:fam-inherits-local-smallness}
+If $\cat{C}$ is locally small then so is $\Fam(\cat{C})$.
+\end{proposition}
+
+\begin{proposition}
+\label{prop:Grothendieck:fam-inherits-products}
+If $\cat{C}$ has binary products then so does $\Fam(\cat{C})$.
+\end{proposition}
+
+\subsection{Galois Slicing via a Category of Families}
+\label{sec:fam:galois-slicing}
+
+The total category $\Fam(\LatGal)$ is then a suitable setting for interpreting first-order programs for \GPS.
+It has as objects $(X, \partial X)$, all pairs of a set $X$ and and for every $x \in X$, a bounded lattice
+$\partial X(x)$, and as morphisms $(X, \partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of a
+function $f: X \to Y$ and for every $x \in X$, a Galois connection $\partial f(x): \partial X(x) \to \partial
+Y(f(x))$. This is precisely the setup we identified informally at the beginning of this section. The
+reindexing along $f$ in the composition $(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial
+g}{f} \comp \partial f)$ selects the appropriate lattice of approximations and Galois connection at each
+point, using the baseline (unapproximated) function $f$.
+
+\subsection{Automatic Differentiation via a Category of Families}
+
+Following the CHAD approach, automatic differentiation for first-order programs can also be recovered in this
+setup, via the total category $\Fam(\FinVect)$. We recapitulate the basic ideas here, starting with the
+category $\FinVect$ of finite vector spaces over $\RR$, with addition of real numbers written $a + b$ and
+multiplication written $a \mult b$.
+
+\subsubsection{Category of finite-dimensional vector spaces}
+\label{sec:categories-with-biproducts:fdvect}
+
+\begin{definition}[Finite dimensional vector space over $\RR$]
+Up to isomorphism, an \emph{$n$-dimensional vector space over $\RR$} is the set $\RR^n$ equipped with
+component-wise addition of vectors $+: \RR^n \times \RR^n \to \RR^n$ and scalar multiplication $\mult: \RR
+\times \RR^n \to \RR^n$ (overloading $+$ and $\mult$), where $(\RR^n,+)$ is an abelian group (with identity
+$0$ and additive inverse $-v$ again defined component-wise), and where the vector operations are compatible
+with the field operations in that the following equations hold:
+
+\vspace{-4mm}
+\begin{minipage}[t]{0.45\textwidth}
+\begin{center}
+\begin{align*}
+   1 \mult v &= v \\
+   (a \mult b) \mult v &= a \mult (b \mult v)
+\end{align*}
+\end{center}
+\end{minipage}%
+\begin{minipage}[t]{0.45\textwidth}
+\begin{center}
+\begin{align*}
+   (a + b) \mult v &= (a \mult v) + (b \mult v) \\
+   a \mult (u + v) &= (a \mult u) + (b \mult v)
+\end{align*}
+\end{center}
+\end{minipage}
+\end{definition}
+
+\begin{definition}[Category $\FinVect$]
+Define $\FinVect$ to be the category which has as objects $\RR^n$ all finite-dimensional vector spaces, and as
+morphisms $f: \RR^m \to \RR^n$ all functions $f$ satisfying $f(u + v) = f(u) + f(v)$ and $f(a \mult v) = a
+\mult f(v)$, with $f$ preserving the abelian group structure automatically.
+\end{definition}
+
+$\FinVect$ is enriched in $\Ab$, the category of abelian groups. For any objects $V = \RR^m$ and $W = \RR^n$
+the hom-set $\FinVect(V,W)$ is an abelian group, with identity $0_{V,W}$ given by the constant map $v \mapsto
+0_W$ and addition and additive inverse given pointwise:
+
+\vspace{-4mm}
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+\begin{align*}
+(f + g)(v) &= f(v) + g(v)
+\end{align*}
+\end{minipage}%
+\begin{minipage}[t]{0.35\textwidth}
+\begin{align*}
+(-f)(v) &= -f(v)
+\end{align*}
+\end{minipage}
+\end{center}
+
+\vspace{1mm}
+\noindent Composition is with bilinear. The direct sum $V \biprod W \iso \RR^{m + n}$ given by the Cartesian
+product is a biproduct $(V \biprod W, \biinj_{V}, \biinj_{W}, \pi_1, \pi_2)$ with $\biinj_{V} =
+\prodM{\id_{V}}{0_{V,W}}$ and $\biinj_{W} = \prodM{0_{V,W}}{\id_{W}}$. \todo{Significance of biproducts}
+
+\subsubsection{Derivatives of Differentiable Functions}
+
+For flat manifolds like $\RR^n$, the tangent space and cotangent space at a point $x$ are both canonically
+isomorphic to $\RR^n$, so the forward and backward derivatives of a differentiable function $f: \RR^m \to
+\RR^n$ at a point $x$ have the following form:
+
+\begin{itemize}
+\item The \emph{forward derivative} (tangent map or pushforward) $\pushf{f}_x$ of $f$ at $x \in \RR^m$ is the
+unique linear map $\RR^m \linearto \RR^n$ given by the Jacobean matrix of $f$ at $x$.
+\item The \emph{backward derivative} (cotangent map or pullback) $\pullf{f}_x$ is the unique linear map
+$\RR^n \linearto \RR^m$ given by the transpose (adjoint) of the Jacobean matrix of $f$ at $x$.
+\end{itemize}
+
+\subsubsection{Chain Rule}
+
+Derivatives respect composition~\cite{spivak65}. Suppose $f: \RR^m \to \RR^n$ and $g: \RR^n \to \RR^k$. Then
+for any $x \in \RR^m$ we have:
+
+\begin{itemize}
+\item $\pushf{(g \comp f)}_x = \pushf{g}_{f(x)} \comp \pushf{f}_x: \RR^m \to \RR^k$
+\item $\pullf{(g \comp f)}_x = \pullf{f}_{x} \comp \pullf{g}_{f(x)}: \RR^k \to \RR^m$
+\end{itemize}
+
+\subsubsection{Forward-Mode Automatic Differentiation}
+
+The basic idea of (forward-mode) automatic differentiation, as first described by \citet{linnainmaa76}, was to
+recognise that one could efficiently compute the pushforward map $\pushf{f}: \RR^m \to (\RR^m \linearto
+\RR^n)$ of a differentiable function $f: \RR^m \to \RR^n$ alongside the computation of $f$ itself, by defining
+a single map $\tangents(f) = x \mapsto (f(x), \pushf{f}_x): \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$.
+Defining $f_1 = \pi_1 \comp f: \RR^m \to \RR^n$ and $f_2 = \pi_2 \comp f: \RR^m \to (\RR^m \linearto \RR^n)$,
+composition of such maps can be expressed as:
+\begin{align*}
+(g \comp f)_1(x) &= f_1(g_1(x)) \\
+(g \comp f)_2(x) &= g_2(f_1(x)) \comp f_2(x)
+\end{align*}
+
+We can verify that $\tangents$ is functorial, regardless of whether the linear maps $\RR^m \linearto \RR^n$
+happen to be derivatives. But if $f_2(x)$ is the derivative of $f_1$ at $x$ for any $x \in \RR^m$ and
+similarly for $g$ then the derivatives compose according to the forward chain rule and $(g \comp f)_2(x)$ is
+the derivative of $(g \comp f)_1$ at $x$. Thus this setup provides an algorithmic method for computing the
+forward derivative of a composite function, without have to recompute the function itself, as long as all
+atomic operations provide derivatives. An efficient implementation of \GPS based on $\Fam(\LatGal)$
+(\secref{fam:galois-slicing} above) would most likely apply a similar optimisation to make it possible to
+compute forwards slices without having to reexecute the program at the same time.
+
+We can see these ``optimised'' forward-mode maps as living in $\Fam(\FinVect)$ if we regard every finite
+vector space $\RR^n$ as paired with the constant family of tangent spaces at $\RR^n$ (also written $\RR^n$,
+for convenience), and each map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ as the pair $(f_1, f_2)$.
+Then the composition $(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp
+\partial f)$ again corresponds exactly to the forward chain rule, since $(\reindex{\partial g}{f} \comp
+\partial f)_x = {\partial g}_{f(x)} \comp {\partial f}_x$, with the reindexing along $f$ recomputing $f(x)$ in
+order to select the appropriate pushforward.
+
+\subsubsection{Reverse-Mode Automatic Differentiation}
+
+\todo{brief summary}
