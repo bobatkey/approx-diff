@@ -63,12 +63,12 @@ $\top_{X,Y}$ given by the Galois connection $\bot_{Y,X} \adj \top_{X,Y}: X \to Y
 connections $(f \adj g) \meet (f' \adj g') = (f \join f') \adj (g \meet g'): X \to Y$. Thus $\LatGal$ is
 enriched in $\SemiLat$, the category of semilattices and semilattice homomorphisms.
 
-$\LatGal$ is not Cartesian closed, and so cannot serve directly as the basis for interpreting higher-order
-programs. In fact Cartesian closure is incompatible with another notable property of $\LatGal$. The
-projections $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y \to Y$, where $X \times Y$ denotes the product of
-lattices, have both upper and lower adjoints; this means that $X \times Y$, which we shall hereafter write as
-$X \biprod Y$, is both a product and a coproduct, with projections $\biproj_X$ and $\biproj_Y$ and
-injections $\biinj_X$ and $\biinj_Y$ given by:
+$\LatGal$ is not Cartesian closed, and so not directly suitable for interpreting higher-order programs. In
+fact Cartesian closure is incompatible with another important property of $\LatGal$. The projections $\pi_1: X
+\times Y \to X$ and $\pi_2: X \times Y \to Y$, where $X \times Y$ denotes the product of lattices, have both
+upper and lower adjoints; this means that $X \times Y$, which we shall hereafter write as $X \biprod Y$, is
+both a product and a coproduct, with projections $\biproj_X$ and $\biproj_Y$ and injections $\biinj_X$ and
+$\biinj_Y$ given by:
 
 \vspace{-4mm}
 \begin{minipage}[t]{0.45\textwidth}
@@ -93,7 +93,6 @@ injections $\biinj_X$ and $\biinj_Y$ given by:
 $\biprod$. Such a structure $(\biprod, 0)$ where $\biprod$ acts as both a product and a coproduct is called a
 \emph{biproduct} (\secref{biproducts}). The presence of a zero object in a Cartesian closed category $\cat{C}$
 renders $\cat{C}$ trivial; if $0 \times X \iso X$ then $\Hom{\cat{C}}{X}{Y} \iso \Hom{\cat{C}}{0}{X
-\Rightarrow Y} \iso 1$, and $\cat{C}$ has only a single object, up to isomorphism. However although biproducts
-rule out Cartesian closure, they will prove crucial for establishing a Cartesian closed setting in
-\secref{higher-order}; but let us first see how to develop a suitable categorical setting for first-order
-programs.
+\Rightarrow Y} \iso 1$, and so $\cat{C}$ has only a single object, up to isomorphism. \todo{Bridge better to
+next section; even if $\LatGal$ were Cartesian closed, directly interpreting into $\LatGal$ wouldn't allow
+each point to be associated with its own lattice of approximants.}
