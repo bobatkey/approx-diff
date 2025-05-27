@@ -1,6 +1,6 @@
 \section{Formal Structures for Generalised Automatic Differentiation}
 
-Our approach to a denotational account of \GPS is based on the CHAD (Combinatory Homomorphic Automatic Differentiation) work of Mattias Vákár and others~\cite{vákár22,nunes2023}. Before we go into details, we present a high-level overview of their approach and how we have applied it to \GPS.
+Our denotational approach to \GPS is based on the CHAD (Combinatory Homomorphic Automatic Differentiation) work of Mattias Vákár and others~\cite{vákár22,nunes2023}. Before we go into details, we present a high-level overview of their approach and how we have applied it to \GPS.
 
 The fundamental approach in CHAD is to consider Grothendieck constructions on indexed categories $T : \cat{C}^\op \to \Cat$. An object of the Grothendieck construction $\int T$, described in more detail in \secref{Grothendieck}, is a pair $(X \in \cat{C}, \partial X \in T(X))$, which we read as pairing a space $X$ of ``points'' from $\cat{C}$ with an associated bundle of tangent spaces. The maps from the ``base'' category $\cat{C}$ are used to interpret the programs we are modelling. The maps in the indexed category are the maps of tangents or approximations, being derivatives and Galois connections respectively.
 
@@ -12,17 +12,17 @@ In these special cases when $\cat{C} = \Set$, the Grothendieck construction is t
 
 Happily, $\FinVect$ and $\LatGal$ both have biproducts, as a consequence of their having products and being enriched in commutative monoids~(\propref{biproducts:from-product-or-coproduct} below). However, neither of them has all small products, without moving to infinite dimensional vector spaces (in the case of $\FinVect$) or complete lattices (in the case of $\LatGal$). Neither of these is ideal. In infinite dimensional vector spaces, dualisation is not involutive and the connection between the forward and reverse derivatives is lost. In complete lattices, we can no longer easily implement the infinite meets and joins required, and we lose the computability of the model. Moreover, in Agda, there are issues with predicativity when considering complete lattices. \todo{be more specific}
 
-Vákár and collaborators overcome this by using different interpretations for forward and backward derivatives. We overcome this by using $\CMon$-enriched presheaves; we turn to this in \secref{higher-order} but first flesh out the first-order setting.
+Vákár and collaborators overcome this by using different interpretations for forward and backward derivatives. We overcome this by using $\CMon$-enriched presheaves, as described in \secref{higher-order}; first we present a suitable first-order setting.
 
 \subsection{Category of Lattices and Galois Connections}
 
-First we introduce the category of lattices and Galois connections, which will serve as our base category for
-interpreting forward and backward \GPS. Galois connections are pairs of monotone functions $f: Y \to
-X$ and $g: X \to Y$ between posets, where $f$ is the (pointwise) best approximation from below to an inverse
-of $g$, and $g$ the best approximation from above to an inverse of $f$. This setup is a nice fit for the
-bidirectional nature of (dynamic) program slicing, with $f$ capturing \emph{backward} slicing (producing the
-least input slice for a given slice of the output), and $g$ capturing \emph{forward} slicing (producing the
-greatest output slice for a given slice of the input).
+We start with the category of lattices and Galois connections, which will serve as our base category for
+interpreting forward and backward \GPS. Galois connections are pairs of monotone functions $f: Y \to X$ and
+$g: X \to Y$ between posets, where $f$ is the (pointwise) best approximation from below to an inverse of $g$,
+and $g$ the best approximation from above to an inverse of $f$. This setup is a nice fit for the bidirectional
+nature of (dynamic) program slicing, with $f$ capturing \emph{backward} slicing (producing the least input
+slice for a given slice of the output), and $g$ capturing \emph{forward} slicing (producing the greatest
+output slice for a given slice of the input).
 
 \begin{definition}[Galois connection]
 Suppose $X$ and $Y$ are posets. A \emph{Galois connection} $f \adj g: X \to Y$ is a pair of monotone functions
@@ -40,7 +40,7 @@ As sketched in \secref{introduction:galois-slicing}, for \GPS we would like a se
 of a point $x$ form a bounded lattice $(X, \meet, \join, \top, \bot)$, with least element $\bot$ representing
 the approximation that discards all information about $x$, greatest element $\top$ representing the
 approximation that retains all information about $x$, and $\meet$ and $\join$ providing two canonical ways to
-combine approximations. Thus rather than working directly in $\PosGal$, we consider the following subcategory
+combine approximations. Thus rather than working directly in $\PosGal$, we will use the following subcategory
 instead.
 
 \begin{definition}
@@ -54,10 +54,10 @@ structure $(X, \meet, \top)$. Similarly, $f$ is a join-semilattice homomorphism 
 \bot)$.
 
 The meet-preserving maps from $X$ to $Y$ themselves form a meet-semilattice. The operation $\meet$ on such
-maps is defined pointwise, so that $(f \meet g)(x) = f(x) \meet g(x): X \to Y$, and preserves meets; the
+maps is given pointwise, so that $(f \meet g)(x) = f(x) \meet g(x): X \to Y$, and preserves meets; the
 constant map $\top_{X,Y}: X \to Y$ sending any $x \in X$ to $\top_Y$, which also preserves meets, provides the
 unit. Dually the join-preserving maps from $Y$ to $X$ have a join-semilattice structure given pointwise by
-$\join$ and the constant homomorphism $\bot_{Y,X}: Y \to X$ sending any $y \in Y$ to $\bot_X$. Since these two
+$\join$ and the constant map $\bot_{Y,X}: Y \to X$ sending any $y \in Y$ to $\bot_X$. Since these two
 constructions come in adjoint pairs, the hom-set $\LatGal(X,Y)$ forms a bounded meet semilattice with unit
 $\top_{X,Y}$ given by the Galois connection $\bot_{Y,X} \adj \top_{X,Y}: X \to Y$ and meet of Galois
 connections $(f \adj g) \meet (f' \adj g') = (f \join f') \adj (g \meet g'): X \to Y$. Thus $\LatGal$ is
