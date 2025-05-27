@@ -81,7 +81,7 @@ At a high level, \GPS assumes that, for each possible value that may be input or
 
 \subsection{Galois Slicing and Automatic Differentiation}
 
-Previous work on \GPS uses an operational semantics of programs that generates a trace of each execution which can be rewound or replayed after the fact, to compute the Galois connection described above. It would be satisfying to have a denotational account of \GPS as well, for which traces would then offer a plausible implementation technique (perhaps one of several). As it happens there is a close analogy between \GPS and \emph{automatic differentiation} for differentiable programs~\cite{siskind08,elliott18}, which points to a way to develop such an approach. We have already hinted at this in the description above, but let us now make it explicit.
+Previous work on \GPS used a special operational semantics to generate a trace of each execution, and then separately used that trace to compute the Galois connection described above, by re-running forwards or backwards over the trace. It would be useful to have a denotational account of \GPS as well, especially if we could provide a semantics where the backwards analysis is baked in, rather than provided by a separately (but somewhat redundantly) defined ``backwards evaluation'' operation. As it happens there is a close analogy between \GPS and \emph{automatic differentiation} for differentiable programs~\cite{siskind08,elliott18,vákár22}, which points to a way to develop such an approach. We have already hinted at this in the description above, but let us now make it explicit.
 
 \begin{itemize}
 \item For \GPS, we assume that every value has an associated lattice of {\em approximations}. For differentiable programs, every point has an associated vector space of {\em tangents}.
@@ -97,7 +97,7 @@ Given this close connection between \GPS and differentiable programming, we can 
 Our primary contribution in this article is to elucidate \GPS by relating it to differentiable programming and automatic differentiation. In doing so, we aim to expand the applicability of program slicing, and to potentially transfer efficient automatic differentiation implementation techniques from automatic differentiation to program slicing and provenance tracking.
 
 \begin{enumerate}
-\item We explain how the CHAD framework of Vákár et al. can be adapted to give a general categorical framework for \GPS,
+\item We explain how the CHAD framework of Vákár et al. can be adapted to give a general categorical framework for \GPS.
 \item Using our adapted CHAD framework, we can explain how type structure can be used to control the approximation lattices associated with data points, something that was ``hard coded'' in previous presentations of \GPS.
 \item With the benefit of our abstract setting, we can relate \GPS to other parts of denotational semantics. In particular, we show that there is a close connection with Stable Domain Theory, a proposed solution to capturing sequentiality by recording more intensional information about programs' sensitivity to approximations.
 \item We also relate \GPS to categorical treatments of differentiability via Tangent Categories \note{Bob: not sure about this.}
