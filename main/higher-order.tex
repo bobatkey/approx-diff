@@ -1,9 +1,6 @@
 \section{Interpreting Higher-Order Programs}
 \label{sec:higher-order}
 
-\input{fig/syntax}
-\input{fig/typing}
-
 $\Fam(\FinVect)$ and $\Fam(\LatGal)$ provide appropriate notions of composition for automatic differentiation
 and Galois slicing respectively, but neither is Cartesian closed and thereby able to interpret higher-order
 programs directly. However the following is a special case of a construction due to \citet{nunes2023}:
@@ -164,3 +161,16 @@ Y$.
 \item If $X$ is terminal (resp.~initial) then $X$ is initial (resp.~terminal).
 \end{enumerate}
 \end{proposition}
+
+\subsection{Higher-order language}
+\todo{Introduce earlier}
+
+\subsubsection{Syntax}
+
+\input{fig/syntax}
+
+\figrefTwo{syntax}{typing} give the syntax and typing rules of the higher-order language.
+
+\subsubsection{Semantics}
+
+\input{fig/typing}
