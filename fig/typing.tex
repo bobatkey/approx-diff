@@ -1,0 +1,38 @@
+\begin{figure}
+\begin{mathpar}
+  \small
+  \inferrule*
+  {
+    x : \tau \in \Gamma
+  }
+  {
+    \Gamma \vdash x: \tau
+  }
+  \and
+  \inferrule*
+  {
+    \strut
+  }
+  {
+    \Gamma \vdash \tmUnit : \tyUnit
+  }
+  \and
+  \inferrule*
+  {
+    \Gamma \vdash s : \sigma \\
+    \Gamma \vdash t : \tau
+  }
+  {
+    \Gamma \vdash \tmPair{s}{t}: \sigma \tyProd \tau
+  }
+  \and
+  \inferrule*
+  {
+    \Gamma \vdash t : \sigma \tyProd \tau
+  }
+  {
+    \Gamma \vdash \tmPair{s}{t}: \sigma \tyProd \tau
+  }
+\end{mathpar}
+\caption{Typing rules for the higher-order language}
+\end{figure}
