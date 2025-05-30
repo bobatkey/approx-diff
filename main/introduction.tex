@@ -83,6 +83,7 @@ At a high level, \GPS assumes that, for each possible value that may be input or
 
 Previous work on \GPS used a special operational semantics to generate a trace of each execution, and then separately used that trace to compute the Galois connection described above, by re-running forwards or backwards over the trace. It would be useful to have a denotational account of \GPS as well, especially if we could provide a semantics where the backwards analysis is baked in, rather than provided by a separately (but somewhat redundantly) defined ``backwards evaluation'' operation. As it happens there is a close analogy between \GPS and \emph{automatic differentiation} for differentiable programs~\cite{siskind08,elliott18,vákár22}, which points to a way to develop such an approach. We have already hinted at this in the description above, but let us now make it explicit.
 
+\bob{Have stolen this text for \autoref{sec:diff-stab-summary}}
 \begin{itemize}
 \item For \GPS, we assume that every value has an associated lattice of {\em approximations}. For differentiable programs, every point has an associated vector space of {\em tangents}.
 \item For \GPS, every program has an associated forward approximation map that takes approximations forward from the input to the output. This map {\em preserves meets}. For differentiable programs, every program has a forward derivative that takes tangents of the input to tangents of the output. The forward derivative map is {\em linear}, so it preserves addition of tangents and the zero tangent.
