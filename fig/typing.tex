@@ -1,102 +1,137 @@
 \begin{figure}
-\begin{mathpar}
+\begin{subfigure}{\linewidth}
+  \begin{mathpar}
   \small
   \inferrule*
   {
-    x : \tau \in \Gamma
-  }
-  {
-    \Gamma \vdash x: \tau
-  }
-  \and
-  \inferrule*
-  {
-    \Gamma \vdash t : \sigma
-  }
-  {
-    \Gamma \vdash \tmInl{t}: \sigma \tySum \tau
-  }
-  \and
-  \inferrule*
-  {
-    \Gamma \vdash t : \tau
-  }
-  {
-    \Gamma \vdash \tmInr{t}: \sigma \tySum \tau
-  }
-  \and
-  \inferrule*
-  {
-    \Gamma \vdash t : \sigma \tySum \tau
+    \emptyCxt \vdash \sigma: \kType
     \\
-    \Gamma, x: \sigma \vdash s_1 : \tau'
-    \\
-    \Gamma, y : \tau \vdash s_2 : \tau'
+    \emptyCxt \vdash \tau: \kType
   }
   {
-    \Gamma \vdash \tmCase{t}{x}{s_1}{y}{s_2}: \tau'
+    \emptyCxt \vdash \sigma \tyFun \tau: \kType
   }
-  \and
-  \inferrule*
-  {
-    \strut
-  }
-  {
-    \Gamma \vdash \tmUnit : \tyUnit
-  }
-  \and
-  \inferrule*
-  {
-    \Gamma \vdash s : \sigma
-    \\
-    \Gamma \vdash t : \tau
-  }
-  {
-    \Gamma \vdash \tmPair{s}{t}: \sigma \tyProd \tau
-  }
-  \and
-  \inferrule*
-  {
-    \Gamma \vdash t : \sigma \tyProd \tau
-  }
-  {
-    \Gamma \vdash \tmFst{t}: \sigma
-  }
-  \and
-  \inferrule*
-  {
-    \Gamma \vdash t : \sigma \tyProd \tau
-  }
-  {
-    \Gamma \vdash \tmSnd{t}: \tau
-  }
-  \and
-  \inferrule*
-  {
-    \Gamma, x: \sigma \vdash t : \tau
-  }
-  {
-    \Gamma \vdash \tmFun{x}{t}: \sigma \tyFun \tau
-  }
-  \and
-  \inferrule*
-  {
-    \Gamma \vdash t : \tau
-  }
-  {
-    \Gamma \vdash \tmReturn{t}: \tyLift\tau
-  }
-  \and
-  \inferrule*
-  {
-    \Gamma \vdash s : \tyLift\sigma
-    \\
-    \Gamma \vdash t : \sigma \tyFun \tyLift\tau
-  }
-  {
-    \Gamma \vdash \tmBind{s}{t}: \tyLift\tau
-  }
-\end{mathpar}
-\caption{Typing rules for the higher-order language}
+  \end{mathpar}
+  \caption{Well-kinded types (function types $\sigma \tyFun \tau$ restricted to ground $\sigma, \tau$)}
+\end{subfigure}
+\begin{subfigure}{\linewidth}
+  \begin{mathpar}
+    \small
+    \inferrule*
+    {
+      x : \tau \in \Gamma
+    }
+    {
+      \Gamma \vdash x: \tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash t : \sigma
+    }
+    {
+      \Gamma \vdash \tmInl{t}: \sigma \tySum \tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash t : \tau
+    }
+    {
+      \Gamma \vdash \tmInr{t}: \sigma \tySum \tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash t : \sigma \tySum \tau
+      \\
+      \Gamma, x: \sigma \vdash s_1 : \tau'
+      \\
+      \Gamma, y : \tau \vdash s_2 : \tau'
+    }
+    {
+      \Gamma \vdash \tmCase{t}{x}{s_1}{y}{s_2}: \tau'
+    }
+    \and
+    \inferrule*
+    {
+      \strut
+    }
+    {
+      \Gamma \vdash \tmUnit : \tyUnit
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash s : \sigma
+      \\
+      \Gamma \vdash t : \tau
+    }
+    {
+      \Gamma \vdash \tmPair{s}{t}: \sigma \tyProd \tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash t : \sigma \tyProd \tau
+    }
+    {
+      \Gamma \vdash \tmFst{t}: \sigma
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash t : \sigma \tyProd \tau
+    }
+    {
+      \Gamma \vdash \tmSnd{t}: \tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma, x: \sigma \vdash t : \tau
+    }
+    {
+      \Gamma \vdash \tmFun{x}{t}: \sigma \tyFun \tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash t : \subst{\tau}{\mu \alpha.\tau}{\alpha}
+    }
+    {
+      \Gamma \vdash \tmRoll{t}: \mu\alpha.\tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash s: \mu\alpha.\sigma
+      \\
+      \Gamma, x: \subst{\sigma}{\tau}{\alpha} \vdash t: \tau
+    }
+    {
+      \Gamma \vdash \tmFold{s}{x}{t}: \tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash t : \tau
+    }
+    {
+      \Gamma \vdash \tmReturn{t}: \tyLift\tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash s : \tyLift\sigma
+      \\
+      \Gamma \vdash t : \sigma \tyFun \tyLift\tau
+    }
+    {
+      \Gamma \vdash \tmBind{s}{t}: \tyLift\tau
+    }
+  \end{mathpar}
+  \caption{Well-typed terms (all types well-kinded in $\Delta$)}
+\end{subfigure}
 \label{fig:typing}
 \end{figure}

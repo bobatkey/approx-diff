@@ -18,9 +18,12 @@
 
 % Syntax
 \newcommand*{\syn}[1]{\mathsf{#1}}
+
+\newcommand*{\kType}{\mathsf{type}}
+
 \newcommand*{\tmBind}[2]{{#1}\gg={#2}}
 \newcommand*{\tmCase}[5]{\syn{case}\;#1\;\{#2.#3; #4.#5\}}
-\newcommand*{\tmFold}[1]{\syn{fold}\;#1}
+\newcommand*{\tmFold}[3]{\syn{fold}\;#1\;\syn{with}\;#2\;\syn{in}\;#3}
 \newcommand*{\tmFst}[1]{\syn{fst}\;#1}
 \newcommand*{\tmFun}[2]{\lambda#1.#2}
 \newcommand*{\tmInl}[1]{\syn{inl}\;#1}
@@ -30,6 +33,7 @@
 \newcommand*{\tmRoll}[1]{\syn{roll}\;#1}
 \newcommand*{\tmSnd}[1]{\syn{snd}\;#1}
 \newcommand*{\tmUnit}{()}
+
 \newcommand*{\tyFun}{\to}
 \newcommand*{\tyLift}{\mathcal{L}}
 \newcommand*{\tyProd}{\times}
@@ -37,8 +41,11 @@
 \newcommand*{\tyUnit}{\syn{1}}
 \newcommand*{\tyZero}{\syn{0}}
 \newcommand*{\Rel}{\mathsf{Rel}}
-
 \newcommand*{\Op}{\mathsf{Op}}
+
+\newcommand*{\emptyCxt}{\cdot}
+\newcommand*{\subst}[3]{#1[#2/#3]}
+
 \newcommand{\naturalto}{%
   \mathrel{\vbox{\offinterlineskip
     \mathsurround=0pt
