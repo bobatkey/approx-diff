@@ -35,6 +35,16 @@
     \Delta \vdash \tau: \kType
   }
   {
+    \Delta \vdash \sigma \tyProd \tau: \kType
+  }
+  \and
+  \inferrule*
+  {
+    \Delta \vdash \sigma: \kType
+    \\
+    \Delta \vdash \tau: \kType
+  }
+  {
     \Delta \vdash \sigma \tyFun \tau: \kType
   }
   \and
@@ -46,6 +56,14 @@
   }
   {
     \Delta \vdash \mu\alpha.\tau: \kType
+  }
+  \and
+  \inferrule*
+  {
+    \Delta \vdash \tau: \kType
+  }
+  {
+    \Delta \vdash \tyLift\tau: \kType
   }
   \end{mathpar}
   \caption{Well-kinded types}
@@ -141,12 +159,12 @@
     \and
     \inferrule*
     {
-      \Gamma \vdash s: \mu\alpha.\sigma
+      \Gamma \vdash s : \subst{\sigma}{\tau}{\alpha} \tyFun \tau
       \\
-      \Gamma, x: \subst{\sigma}{\tau}{\alpha} \vdash t: \tau
+      \Gamma \vdash t : \mu\alpha.\sigma
     }
     {
-      \Gamma \vdash \tmFold{s}{x}{t}: \tau
+      \Gamma \vdash \tmFold{s}{t} : \tau
     }
     \and
     \inferrule*
@@ -154,7 +172,7 @@
       \Gamma \vdash t : \tau
     }
     {
-      \Gamma \vdash \tmReturn{t}: \tyLift\tau
+      \Gamma \vdash \tmReturn{t} : \tyLift\tau
     }
     \and
     \inferrule*
@@ -164,10 +182,10 @@
       \Gamma \vdash t : \sigma \tyFun \tyLift\tau
     }
     {
-      \Gamma \vdash \tmBind{s}{t}: \tyLift\tau
+      \Gamma \vdash \tmBind{s}{t} : \tyLift\tau
     }
   \end{mathpar}
-  \caption{Well-typed terms (all types well-kinded in $\Delta$)}
+  \caption{Well-typed terms (all types well-kinded)}
 \end{subfigure}
 \label{fig:typing}
 \end{figure}
