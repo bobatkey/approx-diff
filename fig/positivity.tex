@@ -4,17 +4,74 @@
   \small
   \inferrule*
   {
+    \alpha \neq \beta
+  }
+  {
+    \Pos(\alpha,\beta)
+  }
+  \and
+  \inferrule*
+  {
     \strut
   }
   {
     \Pos(\alpha,\tyZero)
   }
+  \and
+  \inferrule*
+  {
+    \Pos(\alpha,\sigma)
+    \\
+    \Pos(\alpha,\tau)
+  }
+  {
+    \Pos(\alpha,\sigma \tySum \tau)
+  }
+  \and
   \inferrule*
   {
     \strut
   }
   {
     \Pos(\alpha,\tyUnit)
+  }
+  \and
+  \inferrule*
+  {
+    \Pos(\alpha,\sigma)
+    \\
+    \Pos(\alpha,\tau)
+  }
+  {
+    \Pos(\alpha,\sigma \tyProd \tau)
+  }
+  \and
+  \inferrule*
+  {
+    \Neg(\alpha,\sigma)
+    \\
+    \Pos(\alpha,\tau)
+  }
+  {
+    \Pos(\alpha,\sigma \tyFun \tau)
+  }
+  \and
+  \inferrule*
+  {
+    \strut
+  }
+  {
+    \Pos(\alpha,\mu\alpha.\tau)
+  }
+  \and
+  \inferrule*
+  {
+    \alpha \neq \beta
+    \\
+    \Pos(\alpha, \tau)
+  }
+  {
+    \Pos(\alpha,\mu\beta.\tau)
   }
   \end{mathpar}
 \end{subfigure}
