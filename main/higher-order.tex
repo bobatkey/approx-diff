@@ -165,9 +165,17 @@ Y$.
 \subsection{Higher-order language}
 \todo{Introduce earlier?}
 
-Total functional languages with (reasonably) expressive type systems~\cite{crole94,pitts01,santocanale02}.
+We introduce a standard total functional languages with a (reasonably) expressive type
+system~\cite{crole94,pitts01,santocanale02}.
 
 \subsubsection{Syntax}
+
+\input{fig/mu-polynomial}
+
+\begin{definition}[$\mu$-polynomial]
+Suppose $\cat{C}$ a category with finite coproducts and finite products. Define $\muPoly$
+to be the smallest subcategory of $\Cat$ closed under the rules in \figref{mu-polynomial}.
+\end{definition}
 
 \input{fig/syntax}
 
