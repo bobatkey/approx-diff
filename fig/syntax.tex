@@ -5,6 +5,16 @@
     \textit{Types} &
     \sigma, \tau
     & ::= &
+    \tyZero
+    &
+    \text{zero}
+    \\
+    && \mid &
+    \sigma \tySum \tau
+    &
+    \text{sum}
+    \\
+    && \mid &
     \tyUnit
     &
     \text{unit}
@@ -15,14 +25,14 @@
     \text{product}
     \\
     && \mid &
-    \sigma \tySum \tau
-    &
-    \text{sum}
-    \\
-    && \mid &
     \sigma \tyFun \tau
     &
     \text{function}
+    \\
+    && \mid &
+    \tyLift\tau
+    &
+    \text{lifting}
     \\[3mm]
     \textit{Terms} &
     t, s
@@ -30,6 +40,16 @@
     x
     &
     \text{variable}
+    \\
+    && \mid &
+    \tmInl{t} \mid \tmInr{t}
+    &
+    \text{injection}
+    \\
+    && \mid &
+    \tmCase{t}{x}{s_1}{y}{s_2}
+    &
+    \text{case}
     \\
     && \mid &
     \tmUnit
@@ -47,12 +67,26 @@
     \text{projection}
     \\
     && \mid &
-    \tmInl{t} \mid \tmInr{t}
+    \tmFun{x}{t}
     &
-    \text{injection}
+    \text{function}
     \\
+    && \mid &
+    \tmRoll{t}
+    &
+    \text{roll}
+    \\
+    && \mid &
+    \tmReturn{t}
+    &
+    \text{return}
+    \\
+    && \mid &
+    \tmBind{s}{t}
+    &
+    \text{bind}
   \end{array}
   \]
-  \caption{Syntax of types and terms \todo{lists; functions; primitives ops over a signature $\Sigma$}}
+  \caption{Syntax of types and terms \todo{inductive types; primitives ops over $\Sigma$}}
   \label{fig:syntax}
 \end{figure}

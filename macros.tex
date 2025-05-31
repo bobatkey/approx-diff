@@ -17,17 +17,25 @@
 \newcommand*{\secref}[1]{\S\ref{sec:#1}}
 
 % Syntax
-\newcommand*{\syn}[1]{\mathbf{#1}}
+\newcommand*{\syn}[1]{\mathsf{#1}}
+\newcommand*{\tmBind}[2]{{#1}\gg={#2}}
+\newcommand*{\tmCase}[5]{\syn{case}\;#1\;\{#2.#3; #4.#5\}}
+\newcommand*{\tmFold}[1]{\syn{fold}\;#1}
 \newcommand*{\tmFst}[1]{\syn{fst}\;#1}
+\newcommand*{\tmFun}[2]{\lambda#1.#2}
 \newcommand*{\tmInl}[1]{\syn{inl}\;#1}
 \newcommand*{\tmInr}[1]{\syn{inr}\;#1}
 \newcommand*{\tmPair}[2]{(#1,#2)}
+\newcommand*{\tmReturn}[1]{\syn{return}\;#1}
+\newcommand*{\tmRoll}[1]{\syn{roll}\;#1}
 \newcommand*{\tmSnd}[1]{\syn{snd}\;#1}
 \newcommand*{\tmUnit}{()}
-\newcommand*{\tyUnit}{\syn{1}}
+\newcommand*{\tyFun}{\to}
+\newcommand*{\tyLift}{\mathcal{L}}
 \newcommand*{\tyProd}{\times}
 \newcommand*{\tySum}{+}
-\newcommand*{\tyFun}{\to}
+\newcommand*{\tyUnit}{\syn{1}}
+\newcommand*{\tyZero}{\syn{0}}
 \newcommand*{\Rel}{\mathsf{Rel}}
 
 \newcommand*{\Op}{\mathsf{Op}}

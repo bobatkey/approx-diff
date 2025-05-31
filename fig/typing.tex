@@ -19,7 +19,24 @@
   \and
   \inferrule*
   {
-    \Gamma \vdash s : \sigma \\
+    \Gamma \vdash t : \sigma
+  }
+  {
+    \Gamma \vdash \tmInl{t}: \sigma \tySum \tau
+  }
+  \and
+  \inferrule*
+  {
+    \Gamma \vdash t : \tau
+  }
+  {
+    \Gamma \vdash \tmInr{t}: \sigma \tySum \tau
+  }
+  \and
+  \inferrule*
+  {
+    \Gamma \vdash s : \sigma
+    \\
     \Gamma \vdash t : \tau
   }
   {
@@ -31,7 +48,33 @@
     \Gamma \vdash t : \sigma \tyProd \tau
   }
   {
-    \Gamma \vdash \tmPair{s}{t}: \sigma \tyProd \tau
+    \Gamma \vdash \tmFst{t}: \sigma
+  }
+  \and
+  \inferrule*
+  {
+    \Gamma \vdash t : \sigma \tyProd \tau
+  }
+  {
+    \Gamma \vdash \tmSnd{t}: \tau
+  }
+  \and
+  \inferrule*
+  {
+    \Gamma \vdash t : \tau
+  }
+  {
+    \Gamma \vdash \tmReturn{t}: \tyLift\tau
+  }
+  \and
+  \inferrule*
+  {
+    \Gamma \vdash s : \tyLift\sigma
+    \\
+    \Gamma \vdash t : \sigma \tyFun \tyLift\tau
+  }
+  {
+    \Gamma \vdash \tmBind{s}{t}: \tyLift\tau
   }
 \end{mathpar}
 \caption{Typing rules for the higher-order language}
