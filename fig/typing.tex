@@ -4,15 +4,51 @@
   \small
   \inferrule*
   {
-    \emptyCxt \vdash \sigma: \kType
-    \\
-    \emptyCxt \vdash \tau: \kType
+    \strut
   }
   {
-    \emptyCxt \vdash \sigma \tyFun \tau: \kType
+    \Delta \vdash \tyZero: \kType
+  }
+  \and
+  \inferrule*
+  {
+    \Delta \vdash \sigma: \kType
+    \\
+    \Delta \vdash \tau: \kType
+  }
+  {
+    \Delta \vdash \sigma \tySum \tau: \kType
+  }
+  \and
+  \inferrule*
+  {
+    \strut
+  }
+  {
+    \Delta \vdash \tyUnit: \kType
+  }
+  \and
+  \inferrule*
+  {
+    \Delta \vdash \sigma: \kType
+    \\
+    \Delta \vdash \tau: \kType
+  }
+  {
+    \Delta \vdash \sigma \tyFun \tau: \kType
+  }
+  \and
+  \inferrule*
+  {
+    \Delta, \alpha: \kType \vdash \tau: \kType
+    \\
+    \Pos(\alpha,\tau)
+  }
+  {
+    \Delta \vdash \mu\alpha.\tau: \kType
   }
   \end{mathpar}
-  \caption{Well-kinded types (function types $\sigma \tyFun \tau$ restricted to ground $\sigma, \tau$)}
+  \caption{Well-kinded types}
 \end{subfigure}
 \begin{subfigure}{\linewidth}
   \begin{mathpar}
