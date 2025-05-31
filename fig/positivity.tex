@@ -1,5 +1,4 @@
 \begin{figure}
-\begin{subfigure}{\linewidth}
   \begin{mathpar}
   \small
   \inferrule*
@@ -7,7 +6,7 @@
     \alpha \neq \beta
   }
   {
-    \Pos(\alpha,\beta)
+    \Pol(p,\alpha,\beta)
   }
   \and
   \inferrule*
@@ -15,17 +14,17 @@
     \strut
   }
   {
-    \Pos(\alpha,\tyZero)
+    \Pol(p,\alpha,\tyZero)
   }
   \and
   \inferrule*
   {
-    \Pos(\alpha,\sigma)
+    \Pol(p,\alpha,\sigma)
     \\
-    \Pos(\alpha,\tau)
+    \Pol(p,\alpha,\tau)
   }
   {
-    \Pos(\alpha,\sigma \tySum \tau)
+    \Pol(p,\alpha,\sigma \tySum \tau)
   }
   \and
   \inferrule*
@@ -33,27 +32,27 @@
     \strut
   }
   {
-    \Pos(\alpha,\tyUnit)
+    \Pol(p,\alpha,\tyUnit)
   }
   \and
   \inferrule*
   {
-    \Pos(\alpha,\sigma)
+    \Pol(p,\alpha,\sigma)
     \\
-    \Pos(\alpha,\tau)
+    \Pol(p,\alpha,\tau)
   }
   {
-    \Pos(\alpha,\sigma \tyProd \tau)
+    \Pol(p,\alpha,\sigma \tyProd \tau)
   }
   \and
   \inferrule*
   {
-    \Neg(\alpha,\sigma)
+    \Pol(\neg p,\alpha,\sigma)
     \\
-    \Pos(\alpha,\tau)
+    \Pol(p,\alpha,\tau)
   }
   {
-    \Pos(\alpha,\sigma \tyFun \tau)
+    \Pol(p,\alpha,\sigma \tyFun \tau)
   }
   \and
   \inferrule*
@@ -61,19 +60,18 @@
     \strut
   }
   {
-    \Pos(\alpha,\mu\alpha.\tau)
+    \Pol(p,\alpha,\mu\alpha.\tau)
   }
   \and
   \inferrule*
   {
     \alpha \neq \beta
     \\
-    \Pos(\alpha, \tau)
+    \Pol(p,\alpha, \tau)
   }
   {
-    \Pos(\alpha,\mu\beta.\tau)
+    \Pol(p,\alpha,\mu\beta.\tau)
   }
   \end{mathpar}
-\end{subfigure}
-\caption{Strict positivity inference rules}
+\caption{Strict polarity checking}
 \end{figure}
