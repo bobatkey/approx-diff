@@ -11,14 +11,6 @@
   \and
   \inferrule*
   {
-    \strut
-  }
-  {
-    \Gamma \vdash \tmUnit : \tyUnit
-  }
-  \and
-  \inferrule*
-  {
     \Gamma \vdash t : \sigma
   }
   {
@@ -31,6 +23,26 @@
   }
   {
     \Gamma \vdash \tmInr{t}: \sigma \tySum \tau
+  }
+  \and
+  \inferrule*
+  {
+    \Gamma \vdash t : \sigma \tySum \tau
+    \\
+    \Gamma, x: \sigma \vdash s_1 : \tau'
+    \\
+    \Gamma, y : \tau \vdash s_2 : \tau'
+  }
+  {
+    \Gamma \vdash \tmCase{t}{x}{s_1}{y}{s_2}: \tau'
+  }
+  \and
+  \inferrule*
+  {
+    \strut
+  }
+  {
+    \Gamma \vdash \tmUnit : \tyUnit
   }
   \and
   \inferrule*
@@ -57,6 +69,14 @@
   }
   {
     \Gamma \vdash \tmSnd{t}: \tau
+  }
+  \and
+  \inferrule*
+  {
+    \Gamma, x: \sigma \vdash t : \tau
+  }
+  {
+    \Gamma \vdash \tmFun{x}{t}: \sigma \tyFun \tau
   }
   \and
   \inferrule*
