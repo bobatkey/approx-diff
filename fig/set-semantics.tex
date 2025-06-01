@@ -1,0 +1,25 @@
+\begin{figure}
+\begin{subfigure}{\linewidth}
+  \begin{align*}
+  \small
+  \sem{\alpha}(X) &= X
+  \\
+  \sem{\tyZero}(X) &= \varnothing
+  \\
+  \sem{\sigma \tySum \tau}(X) &= \sem{\sigma}(X) \uplus \sem{\tau}(X)
+  \\
+  \sem{\tyUnit}(X) &= \One
+  \\
+  \sem{\sigma \tyProd \tau}(X) &= \sem{\sigma}(X) \times \sem{\tau}(X)
+  \\
+  \sem{\sigma \tyFun \tau}(X) &= \sem{\sigma}(X) \to \sem{\tau}(X)
+  \\
+  \sem{\mu\alpha.\tau}(X) &= \mu\sem{\tau}
+  \\
+  \sem{\tyLift\;\tau}(X) &= \sem{\tau} \uplus \One
+  \end{align*}
+  \caption{Well-kinded types}
+  \label{fig:set-semantics:types}
+\end{subfigure}
+\caption{Default interpretation in $\Set$}
+\end{figure}
