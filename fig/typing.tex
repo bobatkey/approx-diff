@@ -63,7 +63,7 @@
     \Delta \vdash \tau: \kType
   }
   {
-    \Delta \vdash \tyLift\tau: \kType
+    \Delta \vdash \tyLift\;\tau: \kType
   }
   \end{mathpar}
   \caption{Well-kinded types}
@@ -172,17 +172,17 @@
       \Gamma \vdash t : \tau
     }
     {
-      \Gamma \vdash \tmReturn{t} : \tyLift\tau
+      \Gamma \vdash \tmReturn{t} : \tyLift\;\tau
     }
     \and
     \inferrule*
     {
-      \Gamma \vdash s : \tyLift\sigma
+      \Gamma \vdash s : \tyLift\;\sigma
       \\
-      \Gamma \vdash t : \sigma \tyFun \tyLift\tau
+      \Gamma \vdash t : \sigma \tyFun \tyLift\;\tau
     }
     {
-      \Gamma \vdash \tmBind{s}{t} : \tyLift\tau
+      \Gamma \vdash \tmBind{s}{t} : \tyLift\;\tau
     }
   \end{mathpar}
   \caption{Well-typed terms (all types well-kinded)}
