@@ -33,7 +33,8 @@
 \begin{subfigure}{\linewidth}
   \begin{align*}
   \small
-  \sem{x} &=
+  \sem{x} &= \pi_i
+  \textit{ where }\Gamma = x_1: \tau_1, \ldots, x_i: \tau_i, \ldots, x_n: \tau_n
   \\
   \sem{\tmInl{t}} &= \mathsf{inj}_1 \comp \sem{t}
   \\
@@ -66,5 +67,5 @@
   \end{align*}
   \caption{Terms $\Gamma \vdash t: \tau$}
 \end{subfigure}
-\caption{Default semantics in a suitable Cartesian closed category $\cat{C}$}
+\caption{Conventional semantics in a suitable Cartesian closed category $\cat{C}$}
 \end{figure}
