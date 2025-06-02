@@ -58,10 +58,11 @@
   \\
   \sem{\tmFold{s}{t}} &= \phi_{\sem{s}} \comp \sem{t}
   \\
-  \sem{\tmReturn{t}} &= \eta_{\sem{\tau}} \comp \sem{t}
-  \\
-  \sem{\tmBind{s}{t}} &= \mu_{\sem{\sigma}} \comp \sem{s}
+  \sem{\tmReturn{t}} &= \eta_{\sem{\sigma}} \comp \sem{t}
   \textit{ where }\tau = \tyLift\;\sigma
+  \\
+  \sem{\tmBind{s}{t}} &= \mu_{\sem{\tau'}} \comp \mathcal{L}(\sem{t}) \comp \mathsf{st}_{\sem{\Gamma},\sem{\sigma}} \comp \prodM{\id_{\sem{\Gamma}}}{\sem{s}}
+  \textit{ where }\Gamma \vdash s: \sigma\textit{ and }\tau = \tyLift\;\tau'
   \end{align*}
   \caption{Terms $\Gamma \vdash t: \tau$}
 \end{subfigure}
