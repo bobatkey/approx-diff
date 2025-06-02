@@ -2,6 +2,25 @@
 \begin{subfigure}{\linewidth}
   \begin{align*}
   \small
+  \sem{\tyZero} &= \Zero
+  \\
+  \sem{\sigma \tySum \tau} &= \textstyle {\sem{\sigma}} \coprod {\sem{\tau}}
+  \\
+  \sem{\tyUnit} &= \One
+  \\
+  \sem{\sigma \tyProd \tau} &= \sem{\sigma} \times \sem{\tau}
+  \\
+  \sem{\sigma \tyFun \tau} &= \internalHom{\sem{\sigma}}{\sem{\tau}}
+  \\
+  \sem{\mu\alpha.\tau} &= \mu\sem{\tau}
+  \\
+  \sem{\tyLift\;\tau} &= \mathcal{L}(\sem{\tau})
+  \end{align*}
+  \caption{Closed types $\emptyCxt \vdash \tau: \kType$}
+\end{subfigure}
+\begin{subfigure}{\linewidth}
+  \begin{align*}
+  \small
   \sem{\alpha}(X) &= X
   \\
   \sem{\tyZero}(X) &= \Zero
@@ -16,7 +35,7 @@
   \\
   \sem{\mu\alpha.\tau}(X) &= \mu\sem{\tau}
   \\
-  \sem{\tyLift\;\tau}(X) &= \mathcal{L}(\sem{\tau})
+  \sem{\tyLift\;\tau}(X) &= \mathcal{L}(\sem{\tau})(X)
   \end{align*}
   \caption{Parameterised types $\alpha \vdash \tau: \kType$}
   \label{fig:default-semantics:types}
