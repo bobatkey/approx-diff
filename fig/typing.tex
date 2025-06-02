@@ -105,14 +105,14 @@
     \and
     \inferrule*
     {
-      \Gamma \vdash t : \sigma \tySum \tau
+      \Gamma \vdash s : \sigma \tySum \tau
       \\
-      \Gamma, x: \sigma \vdash s_1 : \tau'
+      \Gamma, x: \sigma \vdash t_1 : \tau'
       \\
-      \Gamma, y : \tau \vdash s_2 : \tau'
+      \Gamma, y : \tau \vdash t_2 : \tau'
     }
     {
-      \Gamma \vdash \tmCase{t}{x}{s_1}{y}{s_2}: \tau'
+      \Gamma \vdash \tmCase{s}{x}{t_1}{y}{t_2}: \tau'
     }
     \and
     \inferrule*
@@ -159,6 +159,16 @@
     \and
     \inferrule*
     {
+      \Gamma \vdash s: \sigma \tyFun \tau
+      \\
+      \Gamma \vdash t : \sigma
+    }
+    {
+      \Gamma \vdash \tmApp{s}{t}: \tau
+    }
+    \and
+    \inferrule*
+    {
       \Gamma \vdash t : \subst{\tau}{\mu \alpha.\tau}{\alpha}
     }
     {
@@ -195,5 +205,6 @@
   \end{mathpar}
   \caption{Well-typed terms (all types well-kinded)}
 \end{subfigure}
+\caption{Kinding and typing rules}
 \label{fig:typing}
 \end{figure}

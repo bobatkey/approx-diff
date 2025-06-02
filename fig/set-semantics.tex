@@ -18,8 +18,44 @@
   \\
   \sem{\tyLift\;\tau}(X) &= \sem{\tau} \uplus \One
   \end{align*}
-  \caption{Well-kinded types}
+  \caption{Parameterised types $\alpha \vdash \tau: \kType$}
   \label{fig:set-semantics:types}
 \end{subfigure}
-\caption{Default interpretation in $\Set$}
+\begin{subfigure}{\linewidth}
+  \begin{align*}
+  \small
+  \sem{\emptyCxt} &= \One
+  \\
+  \sem{\Gamma, x: \tau} &= \sem{\Gamma} \times \sem{\tau}
+  \end{align*}
+  \caption{Contexts $\Delta \vdash \Gamma$}
+\end{subfigure}
+\begin{subfigure}{\linewidth}
+  \begin{align*}
+  \small
+  \sem{x} &=
+  \\
+  \sem{\tmInl{t}} &= \mathsf{inj}_1 \comp \sem{t}
+  \\
+  \sem{\tmInr{t}} &= \mathsf{inj}_2 \comp \sem{t}
+  \\
+  \sem{\tmCase{s}{x}{t_1}{y}{t_2}} &= \coprodM{t_1}{t_2} \comp \prodM{\id_{\sem{\Gamma}}}{\sem{s}}
+  \\
+  \sem{\tmUnit} &=\;!_{\sem{\Gamma}}
+  \\
+  \sem{\tmPair{s}{t}} &= \prodM{\sem{s}}{\sem{t}}
+  \\
+  \sem{\tmFst{t}} &= \pi_1 \comp \sem{t}
+  \\
+  \sem{\tmSnd{t}} &= \pi_2 \comp \sem{t}
+  \\
+  \sem{\tmFun{x}{t}} &= \lambda z.\lambda x.\sem{t}(z, x)
+  \\
+  \sem{\tmApp{s}{t}} &= (\lambda (f, x).f(x)) \comp \prodM{\sem{s}}{\sem{t}}
+  \\
+  \sem{\tmRoll{s}} &= \sem{s}
+  \end{align*}
+  \caption{Terms $\Gamma \vdash t: \tau$}
+\end{subfigure}
+\caption{Default semantics in $\Set$}
 \end{figure}
