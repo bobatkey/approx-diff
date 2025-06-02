@@ -53,7 +53,13 @@
   \\
   \sem{\tmApp{s}{t}} &= (\lambda (f, x).f(x)) \comp \prodM{\sem{s}}{\sem{t}}
   \\
-  \sem{\tmRoll{s}} &= \iota_{\tau} \comp \sem{s}
+  \sem{\tmRoll{t}} &= \iota_{\tau} \comp \sem{t}
+  \\
+  \sem{\tmFold{s}{t}} &= \phi_{\sem{s}} \comp \sem{t}
+  \\
+  \sem{\tmReturn{t}} &= \mathsf{inj}_1 \comp \sem{t}
+  \\
+  \sem{\tmBind{s}{t}} &=
   \end{align*}
   \caption{Terms $\Gamma \vdash t: \tau$}
 \end{subfigure}
