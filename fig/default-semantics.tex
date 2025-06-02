@@ -1,5 +1,5 @@
 \begin{figure}
-\begin{subfigure}{\linewidth}
+\begin{subfigure}{0.5\linewidth}
   \begin{align*}
   \small
   \sem{\tyZero} &= \Zero
@@ -16,31 +16,32 @@
   \\
   \sem{\tyLift\;\tau} &= \mathcal{L}(\sem{\tau})
   \end{align*}
-  \caption{Closed types $\emptyCxt \vdash \tau: \kType$}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
+  \caption{Closed types as objects}
+\end{subfigure}%
+\begin{subfigure}{0.5\linewidth}
   \begin{align*}
   \small
-  \sem{\alpha}(X) &= X
+  \sem{\Delta \vdash \alpha}(\vec X) &= X
   \\
-  \sem{\tyZero}(X) &= \Zero
+  \sem{\Delta \vdash \tyZero}(\vec X) &= \Zero
   \\
-  \sem{\sigma \tySum \tau}(X) &= \textstyle {\sem{\sigma}(X)} \coprod {\sem{\tau}(X)}
+  \sem{\sigma \tySum \tau}(\vec X) &= \textstyle {\sem{\sigma}(\vec X)} \coprod {\sem{\tau}(\vec X)}
   \\
-  \sem{\tyUnit}(X) &= \One
+  \sem{\tyUnit}(\vec X) &= \One
   \\
-  \sem{\sigma \tyProd \tau}(X) &= \sem{\sigma}(X) \times \sem{\tau}(X)
+  \sem{\sigma \tyProd \tau}(\vec X) &= \sem{\sigma}(\vec X) \times \sem{\tau}(\vec X)
   \\
-  \sem{\sigma \tyFun \tau}(X) &= \internalHom{\sem{\sigma}(X)}{\sem{\tau}(X)}
+  \sem{\sigma \tyFun \tau}(\vec X) &= \internalHom{\sem{\sigma}(\vec X)}{\sem{\tau}(\vec X)}
   \\
-  \sem{\mu\alpha.\tau}(X) &= \mu\sem{\tau}
+  \sem{\Delta, \alpha, \Delta' \vdash \mu\alpha.\tau}(\vec X) &= \mu\sem{\tau}
   \\
-  \sem{\mu\beta.\tau}(X) &=
-  \text{ where }\alpha \neq \beta
+  \sem{\Delta \vdash \mu\alpha.\tau}(\vec X) &=
+  \mu(\lambda Y.\sem{\Delta, \alpha \vdash \tau}(\vec X, Y))
+  \textit{ if }\alpha \notin \Delta
   \\
-  \sem{\tyLift\;\tau}(X) &= \mathcal{L}(\sem{\tau})(X)
+  \sem{\tyLift\;\tau}(\vec X) &= \mathcal{L}(\sem{\tau})(\vec X)
   \end{align*}
-  \caption{Parameterised types $\alpha \vdash \tau': \kType$}
+  \caption{Parameterised types as multifunctors $\cat{C}^n \to \cat{C}$}
   \label{fig:default-semantics:types}
 \end{subfigure}
 \begin{subfigure}{\linewidth}
