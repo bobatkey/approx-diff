@@ -19,7 +19,7 @@
   \sem{\tyLift\;\tau}(X) &= \sem{\tau} \uplus \One
   \end{align*}
   \caption{Parameterised types $\alpha \vdash \tau: \kType$}
-  \label{fig:set-semantics:types}
+  \label{fig:default-semantics:types}
 \end{subfigure}
 \begin{subfigure}{\linewidth}
   \begin{align*}
@@ -53,15 +53,17 @@
   \\
   \sem{\tmApp{s}{t}} &= (\lambda (f, x).f(x)) \comp \prodM{\sem{s}}{\sem{t}}
   \\
-  \sem{\tmRoll{t}} &= \iota_{\tau} \comp \sem{t}
+  \sem{\tmRoll{t}} &= \mathsf{in}_{\sem{\sigma}} \comp \sem{t}
+  \textit{ where }\tau = \mu\alpha.\sigma
   \\
   \sem{\tmFold{s}{t}} &= \phi_{\sem{s}} \comp \sem{t}
   \\
   \sem{\tmReturn{t}} &= \mathsf{inj}_1 \comp \sem{t}
   \\
   \sem{\tmBind{s}{t}} &=
+  \comp \sem{s}
   \end{align*}
   \caption{Terms $\Gamma \vdash t: \tau$}
 \end{subfigure}
-\caption{Default semantics in $\Set$}
+\caption{Default semantics}
 \end{figure}
