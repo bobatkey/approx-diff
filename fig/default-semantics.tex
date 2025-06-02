@@ -4,19 +4,19 @@
   \small
   \sem{\alpha}(X) &= X
   \\
-  \sem{\tyZero}(X) &= \varnothing
+  \sem{\tyZero}(X) &= \Zero
   \\
-  \sem{\sigma \tySum \tau}(X) &= \sem{\sigma}(X) \uplus \sem{\tau}(X)
+  \sem{\sigma \tySum \tau}(X) &= \textstyle {\sem{\sigma}(X)} \coprod {\sem{\tau}(X)}
   \\
   \sem{\tyUnit}(X) &= \One
   \\
   \sem{\sigma \tyProd \tau}(X) &= \sem{\sigma}(X) \times \sem{\tau}(X)
   \\
-  \sem{\sigma \tyFun \tau}(X) &= \sem{\sigma}(X) \to \sem{\tau}(X)
+  \sem{\sigma \tyFun \tau}(X) &= \internalHom{\sem{\sigma}(X)}{\sem{\tau}(X)}
   \\
   \sem{\mu\alpha.\tau}(X) &= \mu\sem{\tau}
   \\
-  \sem{\tyLift\;\tau}(X) &= \sem{\tau} \uplus \One
+  \sem{\tyLift\;\tau}(X) &= \mathcal{L}(\sem{\tau})
   \end{align*}
   \caption{Parameterised types $\alpha \vdash \tau: \kType$}
   \label{fig:default-semantics:types}
@@ -49,19 +49,19 @@
   \\
   \sem{\tmSnd{t}} &= \pi_2 \comp \sem{t}
   \\
-  \sem{\tmFun{x}{t}} &= \lambda z.\lambda x.\sem{t}(z, x)
+  \sem{\tmFun{x}{t}} &= \lambda(\sem{t})
   \\
-  \sem{\tmApp{s}{t}} &= (\lambda (f, x).f(x)) \comp \prodM{\sem{s}}{\sem{t}}
+  \sem{\tmApp{s}{t}} &= \eval \comp \prodM{\sem{s}}{\sem{t}}
   \\
   \sem{\tmRoll{t}} &= \mathsf{in}_{\sem{\sigma}} \comp \sem{t}
   \textit{ where }\tau = \mu\alpha.\sigma
   \\
   \sem{\tmFold{s}{t}} &= \phi_{\sem{s}} \comp \sem{t}
   \\
-  \sem{\tmReturn{t}} &= \mathsf{inj}_1 \comp \sem{t}
+  \sem{\tmReturn{t}} &= \eta_{\sem{\tau}} \comp \sem{t}
   \\
-  \sem{\tmBind{s}{t}} &=
-  \comp \sem{s}
+  \sem{\tmBind{s}{t}} &= \mu_{\sem{\sigma}} \comp \sem{s}
+  \textit{ where }\tau = \tyLift\;\sigma
   \end{align*}
   \caption{Terms $\Gamma \vdash t: \tau$}
 \end{subfigure}
