@@ -53,7 +53,7 @@
   \\
   \sem{\tmApp{s}{t}} &= (\lambda (f, x).f(x)) \comp \prodM{\sem{s}}{\sem{t}}
   \\
-  \sem{\tmRoll{s}} &= \sem{s}
+  \sem{\tmRoll{s}} &= \iota_{\tau} \comp \sem{s}
   \end{align*}
   \caption{Terms $\Gamma \vdash t: \tau$}
 \end{subfigure}
