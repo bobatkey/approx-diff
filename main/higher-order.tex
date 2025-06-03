@@ -165,8 +165,8 @@ Y$.
 \subsection{Higher-order language}
 \todo{Introduce earlier?}
 
-We introduce a standard total functional languages with a (reasonably) expressive type
-system~\cite{crole94,pitts01,santocanale02}.
+We introduce a standard total functional language with a (reasonably) expressive type
+system~\cite{crole94,pitts01,santocanale02}, over a set $\PrimTy$ of primitive types and a set $\PrimOp$
 
 \subsubsection{Syntax}
 
@@ -190,14 +190,16 @@ For any $\mu$-polynomial endofunctor $F: \cat{C} \to \cat{C}$ with initial algeb
 for the structure map $F\mu F \to \mu F$ and write $\cata_f$ for the unique morphism $\mu F \to X$ from the
 initial $F$-algebra to any $F$-algebra $(X, f: FX \to X)$.
 
-Suppose $\cat{C}$ a Cartesian closed category with exponentials $\internalHom{X}{Y}$, evaluation morphisms
-$\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$, and the following additional structure:
+For a ``default'' (baseline) semantics, fix a bicartesian closed category $\cat{C}$ with finite products
+$(\times, \One)$, finite coproducts $(\coprod, \Zero)$, exponentials $\internalHom{X}{Y}$, evaluation
+morphisms $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$, and the following additional structure:
 \begin{enumerate}
-\item finite coproducts $(\coprod, \Zero)$;
 \item a strong monad $\mathcal{L}$ (lifting) with unit $\eta_X: X \to \mathcal{L}(X)$, multiplication $\mu_X:
 \mathcal{L}^2(X) \to \mathcal{L}(X)$ and strength $\mathsf{st}_{X,Y}: X \times \mathcal{L}(Y) \to
 \mathcal{L}(X \times Y)$;
 \item $\mu$-polynomial endofunctors given by $\muPoly_{\cat{C}}$.
 \end{enumerate}
-\figref{default-semantics:types} gives the interpretation of a type $\Delta \vdash \tau$ with $\length{\Delta}
-= n$ as a multifunctor $\cat{C}^n \to \cat{C}$ (as an object of $\cat{C}$ in the case $n = 0$).
+\figref{default-semantics:types} gives the default interpretation of types $\Delta \vdash \tau$ with
+$\length{\Delta} = n$ as multifunctors $\cat{C}^n \to \cat{C}$ (or as objects of $\cat{C}$ in the case $n =
+0$). \figref{default-semantics:terms} gives the default interpretation of terms $\Gamma \vdash t: \tau$ as
+morphisms $\sem{\Gamma} \to \sem{\tau}$.
