@@ -186,7 +186,7 @@ Suppose $\cat{C}$ a category with finite coproducts and finite products. Define 
 smallest subcategory of $\Cat$ generated inductively by the rules in \figref{mu-polynomial}.
 \end{definition}
 
-Suppose $\cat{C}$ a Cartesian closed category with exponential $\internalHom{X}{Y}$, evaluation morphisms
+Suppose $\cat{C}$ a Cartesian closed category with exponentials $\internalHom{X}{Y}$, evaluation morphisms
 $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$, and the following additional structure:
 \begin{enumerate}
 \item finite coproducts $(\coprod, \Zero)$;
@@ -195,5 +195,5 @@ $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$, and the following add
 \mathcal{L}(X \times Y)$;
 \item $\mu$-polynomial endofunctors given by $\muPoly_{\cat{C}}$.
 \end{enumerate}
-\figref{default-semantics:types} gives the interpretation of a type $\tau$ with a single free type variable as
-a $\mu$-polynomial endofunctor on $\cat{C}$.
+\figref{default-semantics:types} gives the interpretation of a type $\Delta \vdash \tau$ with $\length{\Delta}
+= n$ as a multifunctor $\cat{C}^n \to \cat{C}$ (as an object of $\cat{C}$ in the case $n = 0$).

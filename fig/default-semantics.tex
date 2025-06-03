@@ -20,7 +20,8 @@
   \sem{\Delta \vdash \sigma \tyFun \tau}(\vec X) &=
   \internalHom{\sem{\Delta \vdash \sigma}(\vec X)}{\sem{\Delta \vdash \tau}(\vec X)}
   \\
-  \sem{\Delta, \alpha, \Delta' \vdash \mu\alpha.\tau}(\vec X) &= \mu\sem{\tau}
+  \sem{\vec\alpha \vdash \mu\alpha_i.\tau}(\vec X) &=
+  \mu(\lambda Y.\sem{\vec\alpha_{\neq \alpha_i}, \alpha \vdash \tau}(\vec X_{\neq X_i}, Y))
   \\
   \sem{\Delta \vdash \mu\alpha.\tau}(\vec X) &=
   \mu(\lambda Y.\sem{\Delta, \alpha \vdash \tau}(\vec X, Y))
@@ -29,7 +30,7 @@
   \sem{\Delta \vdash \tyLift\;\tau}(\vec X) &=
   \mathcal{L}(\sem{\Delta \vdash \tau})(\vec X)
   \end{align*}
-  \caption{Parameterised types as multifunctors $\cat{C}^n \to \cat{C}$}
+  \caption{Parameterised types $\Delta \vdash \tau$ as multifunctors $\cat{C}^n \to \cat{C}$}
   \label{fig:default-semantics:types}
 \end{subfigure}
 \begin{subfigure}{\linewidth}

@@ -4,28 +4,10 @@
   \small
   \inferrule*
   {
-    \alpha: \kType \in \Delta
+    \alpha \in \Delta
   }
   {
-    \Delta \vdash \alpha: \kType
-  }
-  \and
-  \inferrule*
-  {
-    \strut
-  }
-  {
-    \Delta \vdash \tyZero: \kType
-  }
-  \and
-  \inferrule*
-  {
-    \Delta \vdash \sigma: \kType
-    \\
-    \Delta \vdash \tau: \kType
-  }
-  {
-    \Delta \vdash \sigma \tySum \tau: \kType
+    \Delta \vdash \alpha
   }
   \and
   \inferrule*
@@ -33,45 +15,63 @@
     \strut
   }
   {
-    \Delta \vdash \tyUnit: \kType
+    \Delta \vdash \tyZero
   }
   \and
   \inferrule*
   {
-    \Delta \vdash \sigma: \kType
+    \Delta \vdash \sigma
     \\
-    \Delta \vdash \tau: \kType
+    \Delta \vdash \tau
   }
   {
-    \Delta \vdash \sigma \tyProd \tau: \kType
+    \Delta \vdash \sigma \tySum \tau
   }
   \and
   \inferrule*
   {
-    \Delta \vdash \sigma: \kType
+    \strut
+  }
+  {
+    \Delta \vdash \tyUnit
+  }
+  \and
+  \inferrule*
+  {
+    \Delta \vdash \sigma
     \\
-    \Delta \vdash \tau: \kType
+    \Delta \vdash \tau
   }
   {
-    \Delta \vdash \sigma \tyFun \tau: \kType
+    \Delta \vdash \sigma \tyProd \tau
   }
   \and
   \inferrule*
   {
-    \Delta, \alpha: \kType \vdash \tau: \kType
+    \Delta \vdash \sigma
+    \\
+    \Delta \vdash \tau
+  }
+  {
+    \Delta \vdash \sigma \tyFun \tau
+  }
+  \and
+  \inferrule*
+  {
+    \Delta, \alpha \vdash \tau
     \\
     \Pol(+,\alpha,\tau)
   }
   {
-    \Delta \vdash \mu\alpha.\tau: \kType
+    \Delta \vdash \mu\alpha.\tau
   }
   \and
   \inferrule*
   {
-    \Delta \vdash \tau: \kType
+    \Delta \vdash \tau
   }
   {
-    \Delta \vdash \tyLift\;\tau: \kType
+    \Delta \vdash \tyLift\;\tau
   }
   \end{mathpar}
   \caption{Well-kinded types}
