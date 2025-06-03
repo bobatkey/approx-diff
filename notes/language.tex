@@ -29,9 +29,10 @@ For any $\mu$-polynomial endofunctor $F: \cat{C} \to \cat{C}$ with initial algeb
 for the structure map $F\mu F \to \mu F$ and write $\cata_f$ for the unique morphism $\mu F \to X$ from the
 initial $F$-algebra to any $F$-algebra $(X, f: FX \to X)$.
 
-For the sake of a ``default'' (baseline) semantics, fix a bicartesian closed category $\cat{C}$ with finite
-products $(\times, \One)$, finite coproducts $(\coprod, \Zero)$, exponentials $\internalHom{X}{Y}$, evaluation
-morphisms $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$, plus the following additional structure:
+To give the semantics for the language defined in \figrefTwo{syntax}{typing}, we fix a bicartesian closed
+category $\cat{C}$ with finite products $(\times, \One)$, finite coproducts $(\coprod, \Zero)$, exponentials
+$\internalHom{X}{Y}$, evaluation morphisms $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$, plus the
+following additional structure:
 \begin{enumerate}
 \item a strong monad $\mathcal{L}$ (lifting) with unit $\eta_X: X \to \mathcal{L}(X)$, multiplication $\mu_X:
 \mathcal{L}^2(X) \to \mathcal{L}(X)$ and strength $\mathsf{st}_{X,Y}: X \times \mathcal{L}(Y) \to
@@ -43,8 +44,8 @@ morphisms $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$, plus the fo
 \end{enumerate}
 
 \figref{default-semantics:types} gives the default interpretation of types $\Delta \vdash \tau$ with
-$\length{\Delta} = n$ as multifunctors $\cat{C}^n \to \cat{C}$ (or as objects of $\cat{C}$ in the case $n =
-0$). \figref{default-semantics:terms} gives the default interpretation of terms $\Gamma \vdash t: \tau$ as
+$\length{\Delta} = n$ as functors $\cat{C}^n \to \cat{C}$ (or as objects of $\cat{C}$ in the case $n = 0$).
+\figref{default-semantics:terms} gives the default interpretation of terms $\Gamma \vdash t: \tau$ as
 morphisms $\sem{\Gamma} \to \sem{\tau}$.
 
 \todo{Notation for partially applied functor used in \figref{default-semantics:types}}
