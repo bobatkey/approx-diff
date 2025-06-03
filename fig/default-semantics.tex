@@ -60,7 +60,7 @@
   \\
   \sem{\tmInr{t}} &= \mathsf{inj}_2 \comp \sem{t}
   \\
-  \sem{\tmCase{s}{x}{t_1}{y}{t_2}} &= \coprodM{t_1}{t_2} \comp \prodM{\id_{\sem{\Gamma}}}{\sem{s}}
+  \sem{\tmCase{s}{x}{t_1}{y}{t_2}} &= \coprodM{\sem{t_1}}{\sem{t_2}} \comp \prodM{\id}{\sem{s}}
   \\
   \sem{\tmUnit} &=\;!_{\sem{\Gamma}}
   \\
@@ -82,7 +82,7 @@
   \sem{\tmReturn{t}} &= \eta_{\sem{\sigma}} \comp \sem{t}
   \textit{ where }\tau = \tyLift\;\sigma
   \\
-  \sem{\tmBind{s}{t}} &= \mu_{\sem{\tau'}} \comp \mathcal{L}(\sem{t}) \comp \mathsf{st}_{\sem{\Gamma},\sem{\sigma}} \comp \prodM{\id_{\sem{\Gamma}}}{\sem{s}}
+  \sem{\tmBind{s}{t}} &= \mu_{\sem{\tau'}} \comp \mathcal{L}(\sem{t}) \comp \mathsf{st}_{\sem{\Gamma},\sem{\sigma}} \comp \prodM{\id}{\sem{s}}
   \textit{ where }\Gamma \vdash s: \sigma\textit{ and }\tau = \tyLift\;\tau'
   \end{align*}
   \caption{Terms $\Gamma \vdash t: \tau$}
