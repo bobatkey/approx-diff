@@ -12,6 +12,14 @@
   \and
   \inferrule*
   {
+    \rho \in \Delta
+  }
+  {
+    \Delta \vdash \rho
+  }
+  \and
+  \inferrule*
+  {
     \strut
   }
   {
@@ -85,6 +93,18 @@
     }
     {
       \Gamma \vdash x: \tau
+    }
+    \and
+    \inferrule*
+    {
+      \phi \in \PrimOp^\rho_{\rho_1, \ldots, \rho_n}
+      \\
+      \Gamma \vdash t_i: \rho_i
+      \quad
+      (\forall i \in \{1..n\})
+    }
+    {
+      \Gamma \vdash \phi(t_1, \ldots, t_n): \rho
     }
     \and
     \inferrule*
