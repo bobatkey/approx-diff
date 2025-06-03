@@ -1,5 +1,4 @@
 \subsection{Higher-order language}
-\todo{Introduce earlier?}
 
 We introduce a standard total functional language with a (reasonably) expressive type
 system~\cite{crole94,pitts01,santocanale02}, over a set $\PrimTy$ of primitive types $\rho$ and sets
@@ -27,8 +26,8 @@ For any $\mu$-polynomial endofunctor $F: \cat{C} \to \cat{C}$ with initial algeb
 for the structure map $F\mu F \to \mu F$ and write $\cata_f$ for the unique morphism $\mu F \to X$ from the
 initial $F$-algebra to any $F$-algebra $(X, f: FX \to X)$.
 
-For a ``default'' (baseline) semantics, fix a bicartesian closed category $\cat{C}$ with finite products
-$(\times, \One)$, finite coproducts $(\coprod, \Zero)$, exponentials $\internalHom{X}{Y}$, evaluation
+For the sake of a ``default'' (baseline) semantics, fix a bicartesian closed category $\cat{C}$ with finite
+products $(\times, \One)$, finite coproducts $(\coprod, \Zero)$, exponentials $\internalHom{X}{Y}$, evaluation
 morphisms $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$, plus the following additional structure:
 \begin{enumerate}
 \item a strong monad $\mathcal{L}$ (lifting) with unit $\eta_X: X \to \mathcal{L}(X)$, multiplication $\mu_X:
