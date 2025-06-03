@@ -53,22 +53,37 @@
   {
     \Delta \vdash \sigma \tyProd \tau
   }
-  \and
+%  \and
+%  \inferrule*
+%  {
+%    \Delta \vdash \sigma
+%    \\
+%    \Delta \vdash \tau
+%  }
+%  {
+%    \Delta \vdash \sigma \tyFun \tau
+%  }
+%  \and
+%
+% follow nunes2023 instead
+  \\
   \inferrule*
   {
-    \Delta \vdash \sigma
+    \emptyCxt \vdash \sigma
     \\
-    \Delta \vdash \tau
+    \emptyCxt \vdash \tau
   }
   {
-    \Delta \vdash \sigma \tyFun \tau
+    \emptyCxt \vdash \sigma \tyFun \tau
   }
   \and
   \inferrule*
   {
     \Delta, \alpha \vdash \tau
-    \\
-    \Pol(+,\alpha,\tau)
+%   \\
+%   \Pol(+,\alpha,\tau)
+%
+%   not needed in nunes2023?
   }
   {
     \Delta \vdash \mu\alpha.\tau

@@ -2,12 +2,12 @@
 
 We introduce a standard total functional language with a (reasonably) expressive type
 system~\cite{crole94,pitts01,santocanale02}, over a set $\PrimTy$ of primitive types $\rho$ and sets
-$\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ of primitive operations.
+$\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ of primitive operations $\phi$.
 
 \subsubsection{Syntax}
 \label{sec:language:syntax}
 
-\input{fig/positivity}
+% \input{fig/positivity} -- follow nunes2023 instead
 \input{fig/syntax}
 \input{fig/typing}
 
@@ -20,8 +20,9 @@ $\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ of primitive operations.
 \input{fig/default-semantics}
 
 \begin{definition}[$\mu$-polynomial]
-Suppose $\cat{C}$ a category with finite coproducts and finite products. Define $\muPoly_{\cat{C}}$ to be the
-smallest subcategory of $\Cat$ generated inductively by the rules in \figref{mu-polynomial}.
+Suppose $\cat{C}$ a category with finite coproducts $(\coprod, \Zero)$ and finite products $(\times, \One)$.
+Define $\muPoly_{\cat{C}}$ to be the smallest subcategory of $\Cat$ generated inductively by the rules in
+\figref{mu-polynomial}.
 \end{definition}
 
 For any $\mu$-polynomial endofunctor $F: \cat{C} \to \cat{C}$ with initial algebra $\mu F$, write $\inMap_F$
@@ -40,6 +41,7 @@ morphisms $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$, plus the fo
 \item for each primitive operation $\phi \in \PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism $\sem{\rho}:
 \sem{\rho_1} \times \ldots \times \sem{\rho_n} \to \sem{\rho}$.
 \end{enumerate}
+
 \figref{default-semantics:types} gives the default interpretation of types $\Delta \vdash \tau$ with
 $\length{\Delta} = n$ as multifunctors $\cat{C}^n \to \cat{C}$ (or as objects of $\cat{C}$ in the case $n =
 0$). \figref{default-semantics:terms} gives the default interpretation of terms $\Gamma \vdash t: \tau$ as
