@@ -1,37 +1,24 @@
 \begin{figure}
-\begin{subfigure}{0.5\linewidth}
+\begin{subfigure}{\linewidth}
   \begin{align*}
   \small
-  \sem{\tyZero} &= \Zero
+  \sem{\vec\alpha \vdash \alpha_i}(\vec X) &=
+  X_i
   \\
-  \sem{\sigma \tySum \tau} &= \textstyle {\sem{\sigma}} \coprod {\sem{\tau}}
+  \sem{\Delta \vdash \tyZero}(\vec X) &=
+  \Zero
   \\
-  \sem{\tyUnit} &= \One
+  \sem{\Delta \vdash \sigma \tySum \tau}(\vec X) &=
+  \textstyle {\sem{\sigma}(\vec X)} \coprod {\sem{\tau}(\vec X)}
   \\
-  \sem{\sigma \tyProd \tau} &= \sem{\sigma} \times \sem{\tau}
+  \sem{\Delta \vdash \tyUnit}(\vec X) &=
+  \One
   \\
-  \sem{\sigma \tyFun \tau} &= \internalHom{\sem{\sigma}}{\sem{\tau}}
+  \sem{\Delta \vdash \sigma \tyProd \tau}(\vec X) &=
+  \sem{\Delta \vdash \sigma}(\vec X) \times \sem{\Delta \vdash \tau}(\vec X)
   \\
-  \sem{\mu\alpha.\tau} &= \mu\sem{\tau}
-  \\
-  \sem{\tyLift\;\tau} &= \mathcal{L}(\sem{\tau})
-  \end{align*}
-  \caption{Closed types as objects}
-\end{subfigure}%
-\begin{subfigure}{0.5\linewidth}
-  \begin{align*}
-  \small
-  \sem{\Delta \vdash \alpha}(\vec X) &= X
-  \\
-  \sem{\Delta \vdash \tyZero}(\vec X) &= \Zero
-  \\
-  \sem{\sigma \tySum \tau}(\vec X) &= \textstyle {\sem{\sigma}(\vec X)} \coprod {\sem{\tau}(\vec X)}
-  \\
-  \sem{\tyUnit}(\vec X) &= \One
-  \\
-  \sem{\sigma \tyProd \tau}(\vec X) &= \sem{\sigma}(\vec X) \times \sem{\tau}(\vec X)
-  \\
-  \sem{\sigma \tyFun \tau}(\vec X) &= \internalHom{\sem{\sigma}(\vec X)}{\sem{\tau}(\vec X)}
+  \sem{\Delta \vdash \sigma \tyFun \tau}(\vec X) &=
+  \internalHom{\sem{\Delta \vdash \sigma}(\vec X)}{\sem{\Delta \vdash \tau}(\vec X)}
   \\
   \sem{\Delta, \alpha, \Delta' \vdash \mu\alpha.\tau}(\vec X) &= \mu\sem{\tau}
   \\
@@ -39,7 +26,8 @@
   \mu(\lambda Y.\sem{\Delta, \alpha \vdash \tau}(\vec X, Y))
   \textit{ if }\alpha \notin \Delta
   \\
-  \sem{\tyLift\;\tau}(\vec X) &= \mathcal{L}(\sem{\tau})(\vec X)
+  \sem{\Delta \vdash \tyLift\;\tau}(\vec X) &=
+  \mathcal{L}(\sem{\Delta \vdash \tau})(\vec X)
   \end{align*}
   \caption{Parameterised types as multifunctors $\cat{C}^n \to \cat{C}$}
   \label{fig:default-semantics:types}
