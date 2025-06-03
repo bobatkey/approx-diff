@@ -5,6 +5,9 @@
   \sem{\vec\alpha \vdash \alpha_i}(\vec X) &=
   X_i
   \\
+  \sem{\Delta \vdash \rho}(\vec X) &=
+  \rho
+  \\
   \sem{\Delta \vdash \tyZero}(\vec X) &=
   \Zero
   \\
@@ -47,6 +50,10 @@
   \small
   \sem{x} &= \pi_i
   \textit{ where }\Gamma = x_1: \tau_1, \ldots, x_i: \tau_i, \ldots, x_n: \tau_n
+  \\
+  \sem{\phi(t_1, \ldots, t_n)}
+  &=
+  \sem{\phi} \comp \prodM{\sem{t_1}}{\ldots, \sem{t_n}}
   \\
   \sem{\tmInl{t}} &= \mathsf{inj}_1 \comp \sem{t}
   \\
