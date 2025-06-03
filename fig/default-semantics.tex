@@ -77,7 +77,7 @@
   \sem{\tmRoll{t}} &= \inMap_{\sem{\sigma}} \comp \sem{t}
   \textit{ where }\tau = \mu\alpha.\sigma
   \\
-  \sem{\tmFold{s}{t}} &= \phi_{\sem{s}} \comp \sem{t}
+  \sem{\tmFold{s}{t}} &= \eval \comp \prodM{\phi \comp \sem{s}}{\sem{t}}
   \\
   \sem{\tmReturn{t}} &= \eta_{\sem{\sigma}} \comp \sem{t}
   \textit{ where }\tau = \tyLift\;\sigma
