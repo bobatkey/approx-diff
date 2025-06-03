@@ -24,10 +24,10 @@
   \internalHom{\sem{\Delta \vdash \sigma}(\vec X)}{\sem{\Delta \vdash \tau}(\vec X)}
   \\
   \sem{\vec\alpha \vdash \mu\alpha_i.\tau}(\vec X) &=
-  \mu(\lambda Y.\sem{\vec\alpha_{\neq \alpha_i}, \alpha \vdash \tau}(\vec X_{\neq X_i}, Y))
+  \mu\sem{\vec\alpha_{\neq \alpha_i}, \alpha \vdash \tau}^{\vec X_{\neq X_i}}
   \\
   \sem{\Delta \vdash \mu\alpha.\tau}(\vec X) &=
-  \mu(\lambda Y.\sem{\Delta, \alpha \vdash \tau}(\vec X, Y))
+  \mu\sem{\Delta, \alpha \vdash \tau}^{\vec X}
   \textit{ if }\alpha \notin \Delta
   \\
   \sem{\Delta \vdash \tyLift\;\tau}(\vec X) &=
