@@ -1,8 +1,11 @@
 \begin{figure}
+  \begin{subfigure}[t]{0.48\linewidth}
   \small
   \[
   \begin{array}{lllll}
-    \textit{Types} &
+    & \textit{Types}
+    \\
+    &
     \sigma, \tau
     & ::= &
     \alpha
@@ -48,8 +51,16 @@
     \tyLift\;\tau
     &
     \text{lifting}
-    \\[3mm]
-    \textit{Terms} &
+  \end{array}
+  \]
+  \end{subfigure}%
+  \begin{subfigure}[t]{0.48\linewidth}
+  \small
+  \[
+  \begin{array}{lllll}
+    & \textit{Terms}
+    \\
+    &
     t, s
     & ::= &
     x
@@ -117,6 +128,7 @@
     \text{bind}
   \end{array}
   \]
+  \end{subfigure}
   \caption{Syntax of types and terms}
   \label{fig:syntax}
 \end{figure}
