@@ -11,24 +11,46 @@
    {\csname endalign*\endcsname}
 
 \newcommand*{\defref}[1]{Definition~\ref{def:#1}}
+\newcommand*{\figref}[1]{Figure~\ref{fig:#1}}
+\newcommand*{\figrefTwo}[2]{Figures~\ref{fig:#1} and \ref{fig:#2}}
 \newcommand*{\propref}[1]{Proposition~\ref{prop:#1}}
 \newcommand*{\secref}[1]{\S\ref{sec:#1}}
 
 % Syntax
 \newcommand*{\syn}[1]{\mathbf{#1}}
+
+\newcommand*{\PrimTy}{\mathsf{PrimTy}}
+\newcommand*{\PrimOp}{\mathsf{Op}}
+
+% \newcommand*{\kType}{\mathsf{type}}
+
+\newcommand*{\tmApp}[2]{#1\;#2}
+\newcommand*{\tmBind}[2]{{#1}\gg={#2}}
+\newcommand*{\tmCase}[5]{\syn{case}\;#1\;\{#2.#3; #4.#5\}}
+\newcommand*{\tmFold}[2]{\syn{fold}\;#1\;#2}
 \newcommand*{\tmFst}[1]{\syn{fst}\;#1}
+\newcommand*{\tmFun}[2]{\lambda#1.#2}
 \newcommand*{\tmInl}[1]{\syn{inl}\;#1}
 \newcommand*{\tmInr}[1]{\syn{inr}\;#1}
 \newcommand*{\tmPair}[2]{(#1,#2)}
+\newcommand*{\tmReturn}[1]{\syn{return}\;#1}
+\newcommand*{\tmRoll}[1]{\syn{roll}\;#1}
 \newcommand*{\tmSnd}[1]{\syn{snd}\;#1}
 \newcommand*{\tmUnit}{()}
-\newcommand*{\tyUnit}{\syn{1}}
+
+\newcommand*{\tyFun}{\to}
+\newcommand*{\tyLift}{\syn{L}}
 \newcommand*{\tyProd}{\times}
 \newcommand*{\tySum}{+}
-\newcommand*{\tyFun}{\to}
+\newcommand*{\tyUnit}{\syn{1}}
+\newcommand*{\tyZero}{\syn{0}}
 \newcommand*{\Rel}{\mathsf{Rel}}
-
 \newcommand*{\Op}{\mathsf{Op}}
+
+\newcommand*{\emptyCxt}{\cdot}
+\newcommand*{\Pol}{\mathsf{Pol}}
+\newcommand*{\subst}[3]{#1[#2/#3]}
+
 \newcommand{\naturalto}{%
   \mathrel{\vbox{\offinterlineskip
     \mathsurround=0pt
@@ -53,16 +75,21 @@
 \newcommand*{\eval}{\varepsilon}
 \newcommand*{\faml}[1]{\overline{#1}} % \fam already defined
 \newcommand*{\fin}{\mathsf{fin}}
+\newcommand*{\cata}{\phi}
 \newcommand*{\id}{\mathsf{id}}
 \newcommand*{\idx}[1]{\widehat{#1}}
 \newcommand*{\inj}{\mathsf{inj}}
+\newcommand*{\inMap}{\mathsf{in}}
 \newcommand*{\internalHom}[2]{#1 \Rightarrow #2}
 \newcommand*{\iso}{\cong}
 \newcommand*{\join}{\vee}
+\newcommand*{\length}[1]{|#1|}
 \newcommand*{\linearto}{\multimap}
 \newcommand*{\meet}{\wedge}
+\newcommand*{\Mor}{\mathsf{Mor}}
 \newcommand*{\mult}{\cdot}
 \newcommand*{\namedcat}[1]{\mathbf{#1}}
+\newcommand*{\Ob}{\mathsf{Ob}}
 \newcommand*{\op}{\mathsf{op}}
 \newcommand*{\pairM}[2]{(#1, #2)}
 % \renewcommand*{\prod}{\times} -- probably not a good idea
@@ -82,6 +109,7 @@
 \newcommand*{\Nat}{\mathbbm{N}}
 \newcommand*{\RR}{\mathbbm{R}}
 \newcommand*{\Yoneda}{\mathcal{Y}}
+\newcommand*{\Zero}{\mathbb{0}}
 
 % Specific categories and functors
 \newcommand*{\Ab}{\namedcat{Ab}}
@@ -93,6 +121,7 @@
 \newcommand*{\Func}[2]{[#1,#2]}
 \newcommand*{\Grothendieck}[1]{\int_{#1}}
 \newcommand*{\LatGal}{\namedcat{LatGal}}
+\newcommand*{\muPoly}{\mu\namedcat{Poly}}
 \newcommand*{\PSh}{\namedcat{PSh}}
 \newcommand*{\PosGal}{\namedcat{PosGal}}
 \newcommand*{\SemiLat}{\namedcat{SemiLat}}

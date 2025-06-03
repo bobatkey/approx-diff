@@ -1,0 +1,245 @@
+\begin{figure}
+\begin{subfigure}{\linewidth}
+  \begin{mathpar}
+  \small
+  \inferrule*
+  {
+    \alpha \in \Delta
+  }
+  {
+    \Delta \vdash \alpha
+  }
+  \and
+  \inferrule*
+  {
+    \rho \in \Delta
+  }
+  {
+    \Delta \vdash \rho
+  }
+  \and
+  \inferrule*
+  {
+    \strut
+  }
+  {
+    \Delta \vdash \tyZero
+  }
+  \and
+  \inferrule*
+  {
+    \Delta \vdash \sigma
+    \\
+    \Delta \vdash \tau
+  }
+  {
+    \Delta \vdash \sigma \tySum \tau
+  }
+  \and
+  \inferrule*
+  {
+    \strut
+  }
+  {
+    \Delta \vdash \tyUnit
+  }
+  \and
+  \inferrule*
+  {
+    \Delta \vdash \sigma
+    \\
+    \Delta \vdash \tau
+  }
+  {
+    \Delta \vdash \sigma \tyProd \tau
+  }
+%  \and
+%  \inferrule*
+%  {
+%    \Delta \vdash \sigma
+%    \\
+%    \Delta \vdash \tau
+%  }
+%  {
+%    \Delta \vdash \sigma \tyFun \tau
+%  }
+%  \and
+%
+% follow nunes2023 instead
+  \\
+  \inferrule*
+  {
+    \emptyCxt \vdash \sigma
+    \\
+    \emptyCxt \vdash \tau
+  }
+  {
+    \emptyCxt \vdash \sigma \tyFun \tau
+  }
+  \and
+  \inferrule*
+  {
+    \Delta, \alpha \vdash \tau
+%   \\
+%   \Pol(+,\alpha,\tau)
+%
+%   not needed in nunes2023?
+  }
+  {
+    \Delta \vdash \mu\alpha.\tau
+  }
+  \and
+  \inferrule*
+  {
+    \Delta \vdash \tau
+  }
+  {
+    \Delta \vdash \tyLift\;\tau
+  }
+  \end{mathpar}
+  \caption{Well-kinded types (function types closed)}
+\end{subfigure}
+\begin{subfigure}{\linewidth}
+  \begin{mathpar}
+    \small
+    \inferrule*
+    {
+      x : \tau \in \Gamma
+    }
+    {
+      \Gamma \vdash x: \tau
+    }
+    \and
+    \inferrule*
+    {
+      \phi \in \PrimOp^\rho_{\rho_1, \ldots, \rho_n}
+      \\
+      \Gamma \vdash t_i: \rho_i
+      \quad
+      (\forall i \in \{1..n\})
+    }
+    {
+      \Gamma \vdash \phi(t_1, \ldots, t_n): \rho
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash t : \sigma
+    }
+    {
+      \Gamma \vdash \tmInl{t}: \sigma \tySum \tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash t : \tau
+    }
+    {
+      \Gamma \vdash \tmInr{t}: \sigma \tySum \tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash s : \sigma \tySum \tau
+      \\
+      \Gamma, x: \sigma \vdash t_1 : \tau'
+      \\
+      \Gamma, y : \tau \vdash t_2 : \tau'
+    }
+    {
+      \Gamma \vdash \tmCase{s}{x}{t_1}{y}{t_2}: \tau'
+    }
+    \and
+    \inferrule*
+    {
+      \strut
+    }
+    {
+      \Gamma \vdash \tmUnit : \tyUnit
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash s : \sigma
+      \\
+      \Gamma \vdash t : \tau
+    }
+    {
+      \Gamma \vdash \tmPair{s}{t}: \sigma \tyProd \tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash t : \sigma \tyProd \tau
+    }
+    {
+      \Gamma \vdash \tmFst{t}: \sigma
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash t : \sigma \tyProd \tau
+    }
+    {
+      \Gamma \vdash \tmSnd{t}: \tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma, x: \sigma \vdash t : \tau
+    }
+    {
+      \Gamma \vdash \tmFun{x}{t}: \sigma \tyFun \tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash s: \sigma \tyFun \tau
+      \\
+      \Gamma \vdash t : \sigma
+    }
+    {
+      \Gamma \vdash \tmApp{s}{t}: \tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash t : \subst{\tau}{\mu \alpha.\tau}{\alpha}
+    }
+    {
+      \Gamma \vdash \tmRoll{t}: \mu\alpha.\tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash s : \subst{\sigma}{\tau}{\alpha} \tyFun \tau
+      \\
+      \Gamma \vdash t : \mu\alpha.\sigma
+    }
+    {
+      \Gamma \vdash \tmFold{s}{t} : \tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash t : \tau
+    }
+    {
+      \Gamma \vdash \tmReturn{t} : \tyLift\;\tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash s : \tyLift\;\sigma
+      \\
+      \Gamma \vdash t : \sigma \tyFun \tyLift\;\tau
+    }
+    {
+      \Gamma \vdash \tmBind{s}{t} : \tyLift\;\tau
+    }
+  \end{mathpar}
+  \caption{Well-typed terms (all types well-kinded)}
+\end{subfigure}
+\caption{Kinding and typing rules}
+\label{fig:typing}
+\end{figure}

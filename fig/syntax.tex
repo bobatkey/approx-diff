@@ -1,10 +1,33 @@
 \begin{figure}
+  \begin{subfigure}[t]{0.48\linewidth}
   \small
   \[
   \begin{array}{lllll}
-    \textit{Types} &
+    & \textit{Types}
+    \\
+    &
     \sigma, \tau
     & ::= &
+    \alpha
+    &
+    \text{type variable}
+    \\
+    && \mid &
+    \rho
+    &
+    \text{primitive type}
+    \\
+    && \mid &
+    \tyZero
+    &
+    \text{zero}
+    \\
+    && \mid &
+    \sigma \tySum \tau
+    &
+    \text{sum}
+    \\
+    && \mid &
     \tyUnit
     &
     \text{unit}
@@ -15,18 +38,51 @@
     \text{product}
     \\
     && \mid &
-    \sigma \tySum \tau
-    &
-    \text{sum}
-    \\
-    && \mid &
     \sigma \tyFun \tau
     &
     \text{function}
-    \\[3mm]
-    \textit{Terms} &
+    \\
+    && \mid &
+    \mu\alpha.\tau
+    &
+    \text{inductive type}
+    \\
+    && \mid &
+    \tyLift\;\tau
+    &
+    \text{lifting}
+  \end{array}
+  \]
+  \end{subfigure}%
+  \begin{subfigure}[t]{0.48\linewidth}
+  \small
+  \[
+  \begin{array}{lllll}
+    & \textit{Terms}
+    \\
+    &
     t, s
     & ::= &
+    x
+    &
+    \text{variable}
+    \\
+    && \mid &
+    \phi(\vec t)
+    &
+    \text{primitive op}
+    \\
+    && \mid &
+    \tmInl{t} \mid \tmInr{t}
+    &
+    \text{injection}
+    \\
+    && \mid &
+    \tmCase{s}{x}{t_1}{y}{t_2}
+    &
+    \text{case}
+    \\
+    && \mid &
     \tmUnit
     &
     \text{unit}
@@ -42,11 +98,37 @@
     \text{projection}
     \\
     && \mid &
-    \tmInl{t} \mid \tmInr{t}
+    \tmFun{x}{t}
     &
-    \text{injection}
+    \text{function}
     \\
+    && \mid &
+    \tmApp{s}{t}
+    &
+    \text{application}
+    \\
+    && \mid &
+    \tmRoll{t}
+    &
+    \text{roll}
+    \\
+    && \mid &
+    \tmFold{s}{t}
+    &
+    \text{fold}
+    \\
+    && \mid &
+    \tmReturn{t}
+    &
+    \text{return}
+    \\
+    && \mid &
+    \tmBind{s}{t}
+    &
+    \text{bind}
   \end{array}
   \]
-  \caption{Syntax of types and terms \todo{lists; functions; primitives ops over a signature $\Sigma$}}
+  \end{subfigure}
+  \caption{Syntax of types and terms}
+  \label{fig:syntax}
 \end{figure}
