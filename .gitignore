@@ -1,8 +1,5 @@
 *~
 *.agdai
-*.aux
-*.bbl
-*.blg
-*.log
-*.out
 *.pdf
+/_latex/
+/_build/
