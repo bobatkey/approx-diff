@@ -1,0 +1,51 @@
+\subsection{Higher-order language}
+
+We introduce a standard total functional language with a (reasonably) expressive type
+system~\cite{crole94,pitts01,santocanale02}, over a set $\PrimTy$ of primitive types $\rho$ and sets
+$\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ of primitive operations $\phi$.
+
+\subsubsection{Syntax}
+\label{sec:language:syntax}
+
+% \input{fig/positivity} -- follow nunes2023 instead
+\input{fig/syntax}
+\input{fig/typing}
+
+\figrefTwo{syntax}{typing} give the syntax and typing rules of the higher-order language.
+
+\subsubsection{Semantics}
+\label{sec:language:semantics}
+
+\input{fig/mu-polynomial}
+\input{fig/default-semantics}
+
+\begin{definition}[$\mu$-polynomial]
+Suppose $\cat{C}$ a category with finite coproducts $(\coprod, \Zero)$ and finite products $(\times, \One)$.
+Define $\muPoly_{\cat{C}}$ to be the smallest subcategory of $\Cat$ generated inductively by the rules in
+\figref{mu-polynomial}.
+\end{definition}
+
+For any $\mu$-polynomial endofunctor $F: \cat{C} \to \cat{C}$ with initial algebra $\mu F$, write $\inMap_F$
+for the structure map $F\mu F \to \mu F$ and write $\cata_f$ for the unique morphism $\mu F \to X$ from the
+initial $F$-algebra to any $F$-algebra $(X, f: FX \to X)$.
+
+To give the semantics for the language defined in \figrefTwo{syntax}{typing}, we fix a bicartesian closed
+category $\Sem$ with finite products $(\times, \One)$, finite coproducts $(\coprod, \Zero)$, exponentials
+$\internalHom{X}{Y}$, evaluation morphisms $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$, plus the
+following additional structure:
+\begin{enumerate}
+\item a strong monad $\mathcal{L}$ (lifting) with unit $\eta_X: X \to \mathcal{L}(X)$, multiplication $\mu_X:
+\mathcal{L}^2(X) \to \mathcal{L}(X)$ and strength $\mathsf{st}_{X,Y}: X \times \mathcal{L}(Y) \to
+\mathcal{L}(X \times Y)$;
+\item $\mu$-polynomial endofunctors given by $\muPoly_{\Sem}$;
+\item for each primitive type $\rho \in \PrimTy$, an object $\sem{\rho}$;
+\item for each primitive operation $\phi \in \PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism $\sem{\phi}:
+\sem{\rho_1} \times \ldots \times \sem{\rho_n} \to \sem{\rho}$.
+\end{enumerate}
+
+\figref{default-semantics:types} gives the interpretation of types $\Delta \vdash \tau$ with $\length{\Delta}
+= n$ as functors $\Sem^n \to \Sem$, or as objects of $\Sem$ in the case $n = 0$.
+\figref{default-semantics:terms} gives the interpretation of terms $\Gamma \vdash t: \tau$ as morphisms
+$\sem{\Gamma} \to \sem{\tau}$.
+
+\todo{Notation for partially applied functor used in \figref{default-semantics:types}}
