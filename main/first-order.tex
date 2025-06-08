@@ -341,13 +341,17 @@ If $\cat{C}$ is locally small then so is $\Fam(\cat{C})$.
 
 \begin{proposition}
 \label{prop:Grothendieck:fam-inherits-products}
-\item
-\begin{enumerate}
-If $\cat{C}$ has (symmetric) monoidal products then $\Fam(\cat{C})$ has (symmetric) monoidal products
-$(X, \partial X) \tensor (Y, \partial Y) = (X \times Y, \partial(X \times Y))$ indexed by the Cartesian
-product $X \times Y$, where $\partial(X \times Y)(x,y) = \partial X(x) \tensor \partial Y(y)$.
-\end{enumerate}
+If $\cat{C}$ is (symmetric) monoidal then $\Fam(\cat{C})$ is also (symmetric) monoidal, with tensor product
+$(X, \partial X) \tensor (Y, \partial Y) = (X \times Y,(x, y) \mapsto \partial X(x) \tensor \partial Y(y))$.
 \end{proposition}
+
+The action of the families construction, regarded as a covariant 2-functor $\Cat \to \Cat$, sends functors $F:
+\cat{C} \to \cat{D}$ to functors $\Fam(F): \Fam(\cat{C}) \to \Fam(\cat{D})$ that use $F$ to reassign the
+target category, sending objects $(X, \partial X)$ to $(X, F \comp \partial X)$ and morphisms $(f, \partial
+f)$ to $(f, F \comp \partial f)$, where $F \comp \partial f$ denotes the natural transformation with $(F \comp
+\partial f)(x) = F(\partial f(x))$. If $F$ happens to be a (strong) monad on $\cat{C}$, then $\Fam(F)$ is a
+(strong) monad on $\Fam(\cat{C})$, defined by lifting the original monad $F: \cat{C} \to \cat{C}$ pointwise
+over families.
 
 \subsection{First-Order Galois Slicing via CHAD}
 \label{sec:fam:galois-slicing}
