@@ -372,12 +372,12 @@ is constantly $\Two = (\bot,\top)$, the two-point lattice indicating whether a g
 \secref{introduction}). These ``leaf'' objects would then be combined by the interpretation of composite types
 like sums and products, providing suitable derived approximation structures for composite values.
 
-One might also like to allow the programmer be able to embed additional ``approximation points'' into
-composite structures, by providing the language with a \emph{lifting} monad $\syn{L}$. Rather than the usual
-definition of $\syn{list}\;\syn{nat}$ as $\mu\alpha.1 + \syn{nat} \times \alpha$, one could then define within
-the language a type of ``approximation lists'' $\mu\alpha.\syn{L}\;(1 + \syn{L}\;\syn{nat} \times \alpha)$,
-along with an approximating version of multiplication $*_{\text{appr}}: \syn{L}\;\syn{nat} \times
-\syn{L}\;\syn{nat} \to \syn{L}\;\syn{nat}$ expressible as
+One might also like to allow the programmer to embed additional ``approximation points'' into composite
+structures, by providing the language with a \emph{lifting} monad $\syn{L}$. Rather than the usual definition
+of $\syn{list}\;\syn{nat}$ as $\mu\alpha.1 + \syn{nat} \times \alpha$, one could then define within the
+language a type of ``approximation lists'' $\mu\alpha.\syn{L}\;(1 + \syn{L}\;\syn{nat} \times \alpha)$, along
+with an approximating version of multiplication $*_{\text{appr}}: \syn{L}\;\syn{nat} \times \syn{L}\;\syn{nat}
+\to \syn{L}\;\syn{nat}$ expressible as
 \[x *_{\text{appr}} y = \tmBind{x}{\tmFun{x'}{\syn{if}\;x' =
 0\;\syn{then}\;\tmReturn{0}\;\syn{else}\;\tmBind{y}{\tmFun{y'}{\tmReturn{x' * y'}}}}}\].
 
