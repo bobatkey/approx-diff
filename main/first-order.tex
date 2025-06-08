@@ -241,15 +241,15 @@ $\biprod$.
 \subsection{Grothendieck Construction for Indexed Categories}
 \label{sec:Grothendieck}
 
-The goal now is to equip the interpretation of a (first-order) program with a Galois connection relating
-approximations of its inputs to approximations of its output. Since the specific lattices of approximations
-depend on the value being approximated, the semantics of every type $\tau$ must have both a conventional
-component as well as an approximating component, i.e.~a set $X$ which serves as the usual interpretation of
-$\tau$, plus an associated lattice of approximations $\partial X(x)$ for every point $x \in X$. The semantics
-of an expression $e$ of type $\sigma$ with a single free variable of type $\tau$ (with $\tau$ and $\sigma$
-denoting $X$ and $Y$) must then also have two components: a function $f: X \to Y$ giving the conventional
-interpretation of $e$, plus a family of Galois connections $\partial f(x): \partial X(x) \to \partial Y(f(x))$
-for every $x \in X$ which can be used for slicing over that expression.
+\todo{Rework.} The goal now is to equip the interpretation of a (first-order) program with a Galois connection
+relating approximations of its inputs to approximations of its output. Since the specific lattices of
+approximations depend on the value being approximated, the semantics of every type $\tau$ must have both a
+conventional component as well as an approximating component, i.e.~a set $X$ which serves as the usual
+interpretation of $\tau$, plus an associated lattice of approximations $\partial X(x)$ for every point $x \in
+X$. The semantics of an expression $e$ of type $\sigma$ with a single free variable of type $\tau$ (with
+$\tau$ and $\sigma$ denoting $X$ and $Y$) must then also have two components: a function $f: X \to Y$ giving
+the conventional interpretation of $e$, plus a family of Galois connections $\partial f(x): \partial X(x) \to
+\partial Y(f(x))$ for every $x \in X$ which can be used for slicing over that expression.
 
 This pattern of objects and morphisms is captured by the construction used in CHAD~\cite{vákár22,nunes2023} to
 model automatic differentiation, namely the \emph{Grothendieck construction} for a particular set-indexed
@@ -341,10 +341,15 @@ If $\cat{C}$ is locally small then so is $\Fam(\cat{C})$.
 
 \begin{proposition}
 \label{prop:Grothendieck:fam-inherits-products}
-If $\cat{C}$ has binary products then so does $\Fam(\cat{C})$.
+\item
+\begin{enumerate}
+If $\cat{C}$ has (symmetric) monoidal products then $\Fam(\cat{C})$ has (symmetric) monoidal products
+$(X, \partial X) \tensor (Y, \partial Y) = (X \times Y, \partial(X \times Y))$ indexed by the Cartesian
+product $X \times Y$, where $\partial(X \times Y)(x,y) = \partial X(x) \tensor \partial Y(y)$.
+\end{enumerate}
 \end{proposition}
 
-\subsection{Galois Slicing via a Category of Families}
+\subsection{First-Order Galois Slicing via CHAD}
 \label{sec:fam:galois-slicing}
 
 The total category $\Fam(\LatGal)$ is then a suitable setting for interpreting first-order programs for \GPS.
@@ -356,7 +361,9 @@ reindexing along $f$ in the composition $(g, \partial g) \comp (f, \partial f) =
 g}{f} \comp \partial f)$ selects the appropriate lattice of approximations and Galois connection at each
 point, using the baseline (unapproximated) function $f$.
 
-\subsection{Automatic Differentiation via a Category of Families}
+\todo{Show how $\LatGal$ has a lifting monad?}
+
+\subsection{First-Order Automatic Differentiation via CHAD}
 
 Following the CHAD approach, automatic differentiation for first-order programs can also be recovered in this
 setup, via the total category $\Fam(\FinVect)$. We recapitulate the basic ideas here.
