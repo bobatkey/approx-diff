@@ -20,12 +20,23 @@ Vákár and collaborators overcome this by using different interpretations for f
 
 For differentiable functions, we can combine linear approximations by adding tangent vectors. For stable
 functions, we can combine approximants by taking their meet. The additive structure in both cases form a
-commutative monoid with an addition + and zero element 0. If this additive structure is also present in the
-hom-sets $\cat{C}(X,Y)$ of a category, and composition preserves it, $\cat{C}$ is enriched in $\CMon$, the
-category of commutative monoids.
+commutative monoid with an addition + and zero element 0. A category $\cat{C}$ is enriched in $\CMon$, the
+category of commutative monoids, if every hom-set $\cat{C}(X,Y)$ has a similar additive structure, providing
+an operation + to add morphisms together plus a zero morphism $0: X \to Y$, and if composition is
+\emph{bilinear}, i.e.~given by a family of morphisms $\Hom{\cat{C}}{Y}{Z} \tensor \Hom{\cat{C}}{X}{Y} \to
+\Hom{\cat{C}}{X}{Z}$ in $\CMon$ that preserve the additive structure in $\Hom{\cat{C}}{Y}{Z}$ and
+$\Hom{\cat{C}}{X}{Y}$ separately:
 
-\todo{Introduce $\CMon$-category first.} We start with the idea of a biproduct and semi-additive categories,
-which are always enriched in $\CMon$, the category of commutative monoids.
+\begin{salign*}
+f \comp \zero = f = \zero \comp f
+\end{salign*}
+\begin{salign*}
+(f + g) \comp h &= (f \comp h) + (g \comp h) \\
+h \comp (f + g) &= (h \comp f) + (h \comp g)
+\end{salign*}
+
+We start with the idea of a biproduct and semi-additive categories, which are always enriched in $\CMon$, the
+category of commutative monoids.
 
 \begin{definition}[Semi-additive category]
 \label{def:biproducts:semi-additive}
