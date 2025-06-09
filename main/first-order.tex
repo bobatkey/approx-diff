@@ -21,11 +21,11 @@ Vákár and collaborators overcome this by using different interpretations for f
 For differentiable functions, we can combine linear approximations by adding tangent vectors. For stable
 functions, we can combine approximants by taking their meet. The additive structure in both cases form a
 commutative monoid with an addition + and zero element 0. A category $\cat{C}$ is enriched in $\CMon$, the
-category of commutative monoids, when every hom-set $\cat{C}(X,Y)$ has a similar additive structure, providing
-an operation + to add morphisms together plus a zero morphism $0: X \to Y$, and composition is
-\emph{bilinear}, i.e.~given by a family of morphisms $\Hom{\cat{C}}{Y}{Z} \tensor \Hom{\cat{C}}{X}{Y} \to
-\Hom{\cat{C}}{X}{Z}$ in $\CMon$ that preserve the additive structure in $\Hom{\cat{C}}{Y}{Z}$ and
-$\Hom{\cat{C}}{X}{Y}$ separately:
+(monoidal) category of commutative monoids, when every hom-set $\cat{C}(X,Y)$ has a similar additive
+structure, providing an operation + to add morphisms together plus a zero morphism $0: X \to Y$, and
+composition is \emph{bilinear}, i.e.~given by a family of morphisms $\Hom{\cat{C}}{Y}{Z} \tensor
+\Hom{\cat{C}}{X}{Y} \to \Hom{\cat{C}}{X}{Z}$ in $\CMon$ that preserve the additive structure in
+$\Hom{\cat{C}}{Y}{Z}$ and $\Hom{\cat{C}}{X}{Y}$ separately:
 
 \begin{salign*}
 f \comp \zero = f = \zero \comp f
