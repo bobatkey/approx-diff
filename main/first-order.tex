@@ -228,9 +228,9 @@ typically depends on the value being approximated, we will want to interpret a t
 \partial X)$ where $X$ provides the conventional interpretation as a set and $\partial X$ provides an
 appropriate lattice of approximations $\partial X(x)$ for every point $x \in X$. An expression $e$ of type
 $\sigma$ with a single free variable of type $\tau$ (supposing $\tau$ and $\sigma$ denote $X$ and $Y$ in the
-conventional semantics) must then also be interpreted by a pair $(f, \partial f)$, where $f$ provides the
-conventional interpretation of $e$ as a function $X \to Y$, and $\partial f$ is a family of Galois connections
-$\partial f(x): \partial X(x) \to \partial Y(f(x))$ for every $x \in X$, taking approximants to approximants.
+conventional semantics) must then also be interpreted by a pair $(f, \partial f)$, with $f$ providing the
+conventional interpretation as a function $X \to Y$, and $\partial f$ as a family of Galois connections
+$\partial f(x): \partial X(x) \to \partial Y(f(x))$ taking approximants to approximants.
 
 This pattern of objects and morphisms is captured by the construction used in CHAD to model automatic
 differentiation, namely the \emph{Grothendieck construction} for a particular set-indexed category $T:
@@ -263,18 +263,14 @@ Z)$.
 
 % which can then be composed with $\partial f: \partial X \to T(f)(\partial Y)$.
 
-\subsection{Category of Families}
+\subsubsection{Category of Families}
 \label{sec:Fam}
 
-Now we formalise $X$-indexed families as functor categories $\Func{X}{\cat{C}}$ and consider the specific case
-of the Grothendieck construction for set-indexed categories $\Func{-}{\cat{C}}: \Set^\op \to \Cat$.
-
-\begin{definition}[Category of $X$-indexed families]
-For any set $X$ (regarded as a discrete category) and any category $\cat{C}$, recall that the functor
-category $\Func{X}{\cat{C}}$ has as objects all functors $F: X \to \cat{C}$, namely $X$-indexed families of
-objects of $\cat{C}$, and as morphisms from $F \to G$, all families of morphisms $\eta(x): F(x) \to G(x)$ in
-$\cat{C}$ for every $x \in X$, with naturality trivial because $X$ has only identity morphisms.
-\end{definition}
+For CHAD we are interested in the specific case of the Grothendieck construction where $\cat{C} = \Set$. In
+that case our indexed categories $T$ have the form $\Func{-}{\cat{C}}: \Set^\op \to \Cat$, associating to each
+set $X$ the functor category $\Func{X}{\cat{C}}$ which has as objects all functors $F: X \to \cat{C}$, namely
+$X$-indexed families of objects of $\cat{C}$, and as morphisms $F \to G$, all families of morphisms $\eta(x):
+F(x) \to G(x)$ in $\cat{C}$, with naturality trivial because $X$ has only identity morphisms.
 
 Like any functor category $\Func{X}{\cat{C}}$ inherits limits and colimits pointwise from its codomain.
 
