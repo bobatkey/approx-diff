@@ -184,20 +184,18 @@ lattices, and as morphisms all Galois connections $f \adj g: X \to Y$.
 
 \noindent Since right adjoints preserve limits and left adjoints preserve colimits, for any $f \adj g: X \to
 Y$ we have that $g$ preserves the meet-semilattice structure $(X, \meet, \top)$, and similarly $f$ preserves
-the join-semilattice structure $(X, \join, \bot)$.
+the join-semilattice structure $(X, \join, \bot)$. The meet-preserving maps have their $\CMon$ structure
+structure (in fact $\SemiLat$ structure, but again $\CMon$ is sufficient): addition of maps is pointwise via
+$\meet$, since $(f \meet g)(x) = f(x) \meet g(x)$ preserves meets, with the constant map $\top = x \mapsto
+\top_Y$ as a zero. Dually  the join-preserving maps can be added pointwise using $\join$, with the constant
+map $\bot = y \mapsto \bot_X$ as a zero. Since these constructions come in adjoint pairs, $\LatGal$ is
+enriched in $\CMon$. The hom-set $\LatGal(X,Y)$ provides (component-wise) addition of Galois connections $(f
+\adj g) + (f' \adj g') = (f \join f') \adj (g \meet g')$; the Galois connection $\bot \adj \top$ is zero
+morphism, and composition is bilinear.
 
-$\LatGal$ is enriched in $\CMon$ (in fact in $\SemiLat$, the category of semilattices, but again $\CMon$ will
-do for our purposes). The meet-preserving maps from $X$ to $Y$ can be added pointwise using $\meet$, since $(f
-\meet g)(x) = f(x) \meet g(x)$ preserves meets, with the constant map $\top = x \mapsto \top_Y$ as a zero;
-dually the join-preserving maps from $Y$ to $X$ can be added pointwise using $\join$, with the constant map
-$\bot = y \mapsto \bot_X$ as a zero. Since these constructions come in adjoint pairs, the hom-set
-$\LatGal(X,Y)$ forms a commutative monoid with $0$ given by the Galois connection $\bot \adj \top$ and
-addition $(f \adj g) + (f' \adj g') = (f \join f') \adj (g \meet g')$, with composition bilinear.
-
-The projections $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y \to Y$, where $X \times Y$ denotes the
-product of lattices, have both upper and lower adjoints; this means that $X \times Y$, which we shall
-hereafter write as $X \biprod Y$, is both a product and a coproduct, with projections $\biproj_X$ and
-$\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$ given by:
+The projections $\pi_1$ and $\pi_2$ from the product lattice $X \times Y$, have both upper and lower adjoints;
+this means that $X \times Y$, which we shall hereafter write as $X \biprod Y$, is both a product and a
+coproduct, with projections $\biproj_X$ and $\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$ given by:
 
 \vspace{-4mm}
 \begin{minipage}[t]{0.45\textwidth}
