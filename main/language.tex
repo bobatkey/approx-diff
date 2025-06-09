@@ -1,6 +1,6 @@
 \subsection{Higher-order language}
 
-We introduce a standard total functional language with a (reasonably) expressive type
+We introduce a total higher-order functional language with a (reasonably) expressive type
 system~\cite{crole94,pitts01,santocanale02}, over a set $\PrimTy$ of primitive types $\rho$ and sets
 $\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ of primitive operations $\phi$.
 
@@ -11,7 +11,7 @@ $\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ of primitive operations $\phi$.
 \input{fig/syntax}
 \input{fig/typing}
 
-\figrefTwo{syntax}{typing} give the syntax and typing rules of the higher-order language.
+\figrefTwo{syntax}{typing} give the syntax and typing rules.
 
 \subsubsection{Semantics}
 \label{sec:language:semantics}
@@ -20,8 +20,8 @@ $\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ of primitive operations $\phi$.
 \input{fig/default-semantics}
 
 \begin{definition}[$\mu$-polynomial]
-Suppose $\cat{C}$ a category with finite coproducts $(\coprod, \Zero)$ and finite products $(\times, \One)$.
-Define $\muPoly_{\cat{C}}$ to be the smallest subcategory of $\Cat$ generated inductively by the rules in
+Suppose $\cat{C}$ a category with finite coproducts $(\coprod, 0)$ and finite products $(\times, 1)$. Define
+$\muPoly_{\cat{C}}$ to be the smallest subcategory of $\Cat$ generated inductively by the rules in
 \figref{mu-polynomial}.
 \end{definition}
 
@@ -30,7 +30,7 @@ for the structure map $F\mu F \to \mu F$ and write $\cata_f$ for the unique morp
 initial $F$-algebra to any $F$-algebra $(X, f: FX \to X)$.
 
 To give the semantics for the language defined in \figrefTwo{syntax}{typing}, we fix a bicartesian closed
-category $\Sem$ with finite products $(\times, \One)$, finite coproducts $(\coprod, \Zero)$, exponentials
+category $\Sem$ with finite products $(\times, 1)$, finite coproducts $(\coprod, 0)$, exponentials
 $\internalHom{X}{Y}$, evaluation morphisms $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$, plus the
 following additional structure:
 \begin{enumerate}
