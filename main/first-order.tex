@@ -18,9 +18,9 @@ Vákár and collaborators overcome this by using different interpretations for f
 \subsection{$\CMon$-Categories and Biproducts}
 \label{sec:biproducts}
 
-For differentiable functions, we can combine linear approximations by adding tangent vectors. For stable
-functions, we can combine approximants by taking their meet. The additive structure in both cases form a
-commutative monoid with an addition + and zero element 0. A category $\cat{C}$ is enriched in $\CMon$, the
+For differentiable functions, we can combine linear approximations by adding tangent vectors; for stable
+functions, we can combine approximants by taking their meet. In both cases the additive structure is given by
+a commutative monoid with addition + and zero element 0. A category $\cat{C}$ is enriched in $\CMon$, the
 (monoidal) category of commutative monoids, when every hom-set $\cat{C}(X,Y)$ provides an operation + to add
 morphisms together plus a zero morphism $0: X \to Y$, and composition is \emph{bilinear}, i.e.~given by a
 family of morphisms $\Hom{\cat{C}}{Y}{Z} \tensor \Hom{\cat{C}}{X}{Y} \to \Hom{\cat{C}}{X}{Z}$ in $\CMon$ that
@@ -36,8 +36,35 @@ h \comp (f + g) &= (h \comp f) + (h \comp g)
 
 \subsubsection{Biproducts}
 
-In any $\CMon$-category,
+In any $\CMon$-category, any products and coproducts coincide.
 
+\begin{proposition}
+\label{prop:biproducts:from-product-or-coproduct}
+In any $\CMon$-category:
+\begin{enumerate}
+\item If $X \times Y$ is a product then it is also coproduct, with $\inj_X = \prodM{\id_X}{0_{X,Y}}$ and
+$\inj_Y = \prodM{0_{X,Y}}{\id_Y}$.
+\item If $X \coprod Y$ is a coproduct then it is also a product, with $\pi_1 = \coprodM{\id_X}{0_{Y,X}}$ and
+$\pi_2 = \coprodM{0_{X,Y}}{\id_Y}$.
+\item $X$ is terminal iff $X$ is initial.
+\end{enumerate}
+\end{proposition}
+
+An object that is both terminal and initial is called a \emph{zero} object; an object that is both a product
+and a coproduct is called a \emph{biproduct}. More directly, a biproduct is as an object $X \biprod Y$
+together with morphisms
+
+\begin{center}
+\begin{tikzcd}
+   X \arrow[r, "\biinj_X", shift left] &
+   X \biprod Y \arrow[l, "\biproj_X", shift left] \arrow[r, "\biproj_Y"', shift right] &
+   Y \arrow[l, "\biinj_Y"', shift right]
+\end{tikzcd}
+\end{center}
+
+\noindent satisfying
+
+\vspace{-3mm}
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
 \begin{salign*}
@@ -59,77 +86,37 @@ In any $\CMon$-category,
 (\biinj_X \comp \biproj_X) + (\biinj_Y \comp \biproj_Y) &= \id_{X \biprod Y}
 \end{salign*}
 
-\hrule
+\noindent from which the universal properties of the product and coproduct easily follow. A category $\cat{C}$
+with finite biproducts is called \emph{semi-additive}, and cannot be Cartesian closed without being trivial.
+Since $X \iso 0 \biprod X$, Cartesian closure implies $\Hom{\cat{C}}{X}{Y} \iso \Hom{\cat{C}}{0}{X \Rightarrow
+Y} \iso 1$, and all objects are isomorphic.
 
-We start with the idea of a biproduct and semi-additive categories, which are always enriched in $\CMon$, the
-category of commutative monoids.
-
-\begin{definition}[Semi-additive category]
-\label{def:biproducts:semi-additive}
-A category with finite products and coproducts is \emph{semi-additive} if the canonical morphisms (projections
-and injections) give an isomorphism
-\[\textstyle X \coprod Y \iso X \times Y\] that is natural in both variables.
-\end{definition}
-
-The product/coproduct is called a \emph{biproduct}, with the biproduct structure denoted by $(\biprod, 0)$ and
-projections $\biproj_X, \biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$. The unit $0$ is both terminal and
-initial and is called a \emph{zero} object. A semi-additive category $\cat{C}$ is enriched in $\CMon$: for any
-two morphisms $f, g: X \to Y$ in $\cat{C}$, the biproduct structure provides a way to ``add'' them together,
-forming a morphism $f + g: X \to Y$. Diagrammatically:
-
-\begin{center}
-\begin{tikzcd}
-   X \arrow[r, "\diag"] & X \biprod X \arrow[r, "f \biprod g"] & Y \biprod Y \arrow[r, "\codiag"] & Y
-\end{tikzcd}
-\end{center}
-
-Here $\diag$ denotes the diagonal $\prodM{\id_X}{\id_X}$ given by the universal property of the product and
-$\codiag$ denotes the codiagonal $\coprodM{\id_X}{\id_Y}$ given by the universal property of the coproduct.
-The $f \oplus g$ morphism is the component-wise map $\prodM{f \comp \biproj_X}{g \comp \biproj_Y} =
-\coprodM{\biinj_X \comp f}{\biinj_Y \comp g}$. Similarly we can exhibit a \emph{zero} morphism $0_{X,Y}$ by
-composing the unique maps in and out of the zero object:
-
-\begin{center}
-\begin{tikzcd}
-   X \arrow[r, "!_X"] & 0 \arrow[r, "!^Y"] & Y
-\end{tikzcd}
-\end{center}
-
-It is easy to verify that $+$ is associative and commutative and that $f + 0_{X,Y} = f$, and thus that every
-hom-object $\cat{C}(X,Y)$ is an object in $\CMon$. Moreover composition is \emph{bilinear}, i.e.~given by a
-family of morphisms $\Hom{\cat{C}}{Y}{Z} \tensor \Hom{\cat{C}}{X}{Y} \to \Hom{\cat{C}}{X}{Z}$ in $\CMon$ that
-preserve the additive structure in $\Hom{\cat{C}}{Y}{Z}$ and $\Hom{\cat{C}}{X}{Y}$ separately:
-
-\begin{salign*}
-f \comp \zero_{X,Y} = 0_{X,Z} = \zero_{Y,Z} \comp f
-\end{salign*}
-\begin{salign*}
-(f + g) \comp h &= (f \comp h) + (g \comp h) \\
-h \comp (f + g) &= (h \comp f) + (h \comp g)
-\end{salign*}
-
-\subsubsection{Biproduct laws}
-
-It is also possible to use these laws to define biproducts, in the case where $\cat{C}$ is enriched
-in $\CMon$ and so equipped with addition of morphisms and zero morphisms. In that case any products or
-coproducts in $\cat{C}$ are necessarily biproducts.
-
-\begin{proposition}
-\label{prop:biproducts:from-product-or-coproduct}
-In a category $\cat{C}$ enriched in $\CMon$:
-\begin{enumerate}
-\item If $(X \times Y, \pi_1, \pi_2)$ is a product then $(X \times Y, \inj_1, \inj_2)$ is a coproduct, where
-$\inj_X = \prodM{\id_X}{0_{X,Y}}: X \to X \times Y$ and $\inj_Y = \prodM{0_{X,Y}}{\id_Y}: Y \to X \times Y$.
-\item If $(X \coprod Y, \inj_1, \inj_2)$ is a coproduct then $(X \coprod Y, \pi_1, \pi_2)$ is a product, where
-$\pi_1 = \coprodM{\id_X}{0_{Y,X}}: X \coprod Y \to X$ and $\pi_2 = \coprodM{0_{X,Y}}{\id_Y}: X \coprod Y \to
-Y$.
-\item If $X$ is terminal (resp.~initial) then $X$ is initial (resp.~terminal).
-\end{enumerate}
-\end{proposition}
-
-A biproduct category $\cat{C}$ cannot be Cartesian closed without being trivial. If $0 \times X \iso X$ then
-$\Hom{\cat{C}}{X}{Y} \iso \Hom{\cat{C}}{0}{X \Rightarrow Y} \iso 1$, and so $\cat{C}$ is terminal, with only a
-single object up to isomorphism.
+% in any such category the canonical projections and injections give an isomorphism $\textstyle X \coprod Y
+% \iso X \times Y$ that is natural in both variables
+%
+% A semi-additive category $\cat{C}$ is enriched in $\CMon$: for any two morphisms $f, g: X \to Y$ in
+% $\cat{C}$, the biproduct structure provides a way to ``add'' them together, forming a morphism $f + g: X \to
+% Y$. Diagrammatically:
+%
+% \begin{center} \begin{tikzcd} X \arrow[r, "\diag"] & X \biprod X \arrow[r, "f \biprod g"] & Y \biprod Y
+% \arrow[r, "\codiag"] & Y \end{tikzcd} \end{center}
+%
+% Here $\diag$ denotes the diagonal $\prodM{\id_X}{\id_X}$ given by the universal property of the product and
+% $\codiag$ denotes the codiagonal $\coprodM{\id_X}{\id_Y}$ given by the universal property of the coproduct.
+% The $f \oplus g$ morphism is the component-wise map $\prodM{f \comp \biproj_X}{g \comp \biproj_Y} =
+% \coprodM{\biinj_X \comp f}{\biinj_Y \comp g}$. Similarly we can exhibit a \emph{zero} morphism $0_{X,Y}$ by
+% composing the unique maps in and out of the zero object:
+%
+% \begin{center} \begin{tikzcd} X \arrow[r, "!_X"] & 0 \arrow[r, "!^Y"] & Y \end{tikzcd} \end{center}
+%
+% It is easy to verify that $+$ is associative and commutative and that $f + 0_{X,Y} = f$, and thus that every
+% hom-object $\cat{C}(X,Y)$ is an object in $\CMon$.
+%
+% \subsubsection{Biproduct laws}
+%
+% It is also possible to use these laws to define biproducts, in the case where $\cat{C}$ is enriched in
+% $\CMon$ and so equipped with addition of morphisms and zero morphisms. In that case any products or
+% coproducts in $\cat{C}$ are necessarily biproducts.
 
 \subsubsection{Example: Category of Finite Vector Spaces}
 \label{sec:categories-with-biproducts:fdvect}
