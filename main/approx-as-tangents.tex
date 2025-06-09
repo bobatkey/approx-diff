@@ -28,13 +28,12 @@ Domain theory is a method for defining the semantics of programs that handle inf
 
 For the purposes of \GPS, we are not interested in using approximations to model computation on infinite objects, but instead to use them for the related use of revealing how programs explore their inputs when producing parts of their output. Therefore, we ignore completeness properties of the partially ordered sets we consider.
 
-\subsubsection{Stable Functions as ``Smooth Functions''}
+\subsubsection{Bounded Meets and Conditional Multiplicativity}
+\label{sec:bounded-meets-and-cm}
 
-%FIXME: use cleverref
+When giving a denotational semantics for sequential programming languages, such as PCF, continuous functions are too permissive. Plotkin's Parallel OR (\exref{parallel-or}, below) is continuous but does not explore its input in a way consistent with a sequential implementation \cite{plotkin77lcf}. Continuous functions can explore their input in a ``random access'' way, which is incompatible with the central idea in \GPS that we should be able to identify a \emph{minimal} part of the input that leads to a part of the output.
 
-When giving a denotational semantics for sequential programming languages, such as PCF, continuous functions are too permissive. Plotkin's Parallel OR (\autoref{ex:parallel-or}, below) is continuous but does not treat its input in a way that is consistent with a sequential implementation \cite{plotkin77lcf}. Continuous functions can explore their input in a ``random access'' way, which is incompatible with the central idea in \GPS that we should be able to identify a \emph{minimal} part of the input that leads to a part of the output.
-
-Stability is a property that can be required of monotone functions that was invented by Berry \cite{berry86} in an attempt to capture sequentiality. This was not successful (see the $\mathrm{gustave}$ function in \autoref{ex:parallel-or}), but we will see now how it is closely related to problem of computing forward and backwards maps of approximations needed in \GPS. A textbook description of stable functions in the context of domain theory is given by \citet{amadio-curien} (Chapter 12). We start with a property that is weaker than stability, but is easier to motivate in connection with derivatives of smooth functions.
+Stability is a property that can be required of monotone functions that was invented by Berry \cite{berry86} in an attempt to capture sequentiality. This was not successful (see the $\mathrm{gustave}$ function in \exref{parallel-or}), but we will see now how it is closely related to problem of computing forward and backwards maps of approximations needed in \GPS. A textbook description of stable functions in the context of domain theory is given by \citet{amadio-curien} (Chapter 12). We start with a property that is weaker than stability, but is easier to motivate in connection with derivatives of smooth functions.
 
 In a partially ordered set $X$, for any $x \in X$ the set of elements below $x$, $\downset{x} = \{ x' \mid x' \sqsubseteq x \}$, is itself a partially ordered set. These approximations of $x$ we will think of as ``derivatives'' of $x$, and the whole set $\downset{x}$ as the ``tangent space''. Tangent spaces are vector spaces, since they are linear approximations to curves at that point. In the partially ordered setting, we take elements of $\downset{x}$ to be approximations of processes defined at $x$. As we can add tangents, we assume we can take meets of approximations in $\downset{x}$:
 
@@ -119,8 +118,6 @@ Smooth functions have a ``pushforward'' derivative that takes tangents at a poin
     \end{array}
   \end{displaymath}
   Due to the way that the cases are defined, there is no way of constructing a pair of approximations for which preservation of their meet does not hold. In terms of derivatives, this makes sense in that we are only concerned about the intensional behaviour of a function at a point and its approximations. Parallel OR has two incompatible approximation behaviours at the point $(\mathsf{tt},\mathsf{tt})$. The $\mathrm{gustave}$ function does have consistent behaviour at each approximation for each point.
-
-%  \bob{What have hyperstable functions?}
 \end{example}
 
 Conditional multiplicativity seems to be a reasonable analogue to functions with a well-defined notion of derivative. However, for \GPS we also require an analogue to the reverse derivative, where we map approximations backwards to give the least approximation of the input for a given approximation of the output. In the case of smooth functions, we are always guaranteed a reverse derivative but there is not always a best way to map approximations backwards for cm functions, as the following example shows.
@@ -139,6 +136,8 @@ Conditional multiplicativity seems to be a reasonable analogue to functions with
   as $\mathrm{unstable}(\bot) = \bot$ and $\mathrm{unstable}(n) = \top$. This is monotone, and preserves meets in every $\downset{x}$. However, there is no ``best'' (i.e., least) input that gives us any finite output.
 \end{example}
 
+\subsubsection{Stable functions and L-posets}
+
 In light of the preceeding example, we can give an alternative
 definition of a function that requires the existence of a reverse
 mapping directly, even without assuming that any meets exist:
@@ -153,10 +152,6 @@ mapping directly, even without assuming that any meets exist:
     $x_0 \leq x'_0$ .
   \end{enumerate}
 \end{definition}
-
-\begin{lemma}
-  Stable functions are closed under identities and composition.
-\end{lemma}
 
 \begin{example}
   \begin{enumerate}
@@ -174,12 +169,15 @@ mapping directly, even without assuming that any meets exist:
 
 The fact that these two functions's stability witnesses reveal information about how they depend on their input is what we will exploit in order to use the idea of stability for \GPS. It is interesting that sequentiality is not necessarily required in order to obtain backwards maps of approximations, as might be assumed by thinking about how to trace computations for provenance information.
 
-Stability has an alternative definition in terms of Galois connections, which will be more useful for what follows. This characterisation is due to Paul Taylor\bob{cite}.
+Stability has an alternative definition in terms of Galois connections, which will be more useful for what follows. This characterisation is due to Paul Taylor\bob{cite}. We first formally define Galois connections, which we used informally in \exref{introduction-example}.
+
+\begin{definition}[Galois connection]
+  \label{def:galois-connection}
+  Suppose $X$ and $Y$ are posets. A \emph{Galois connection} $f \adj g: X \to Y$ is a pair of monotone functions $f: Y \to X$ and $g: X \to Y$ satisfying $y \leq g(x) \iff f(y) \leq x$ for any $x \in X$ and $y \in Y$. We refer to $f$ as the left adjoint and $g$ as the right adjoint.
+\end{definition}
 
 \begin{lemma}
-  A monotone function $f : X \to Y$ is stable if and only if for all
-  $x \in X$, the restriction of $f_x : \downset{x} \to \downset{f(x)}$
-  has a left Galois adjoint.
+  A monotone function $f : X \to Y$ is stable if and only if for all $x \in X$, the restriction of $f_x : \downset{x} \to \downset{f(x)}$ has a left Galois adjoint.
 \end{lemma}
 
 \begin{proof}
@@ -215,9 +213,13 @@ The following lemma is an instance of standard facts about Galois connections pr
   $f^*_x$.
 \end{lemma}
 
-The converse to this lemma (that functions that preserve meets in their forward part have a left Galois adjoint) is not true, as was demonstrated by the non-stable function in \autoref{ex:non-stable-function}. In the case when the posets $\downset{x}$ are \emph{complete}, and $f_x$ preserves infinitary meets, then we are guaranteed a left Galois adjoint. In that example, the infinite set $\{0, 1, 2, \dots, n, n-1, \dots\}$ not including $\bot$ of approximations of $0$ does not have a greatest lower bound, so the order is not complete.
+The converse to this lemma (that functions that preserve meets in their forward part have a left Galois adjoint) is not true, as was demonstrated by the non-stable function in \exref{non-stable-function}. In the case when the posets $\downset{x}$ are \emph{complete}, and $f_x$ preserves infinitary meets, then we are guaranteed a left Galois adjoint. In that example, the infinite set $\{0, 1, 2, \dots, n, n-1, \dots\}$ not including $\bot$ of approximations of $0$ does not have a greatest lower bound, so the order is not complete.
 
 We could have required that L-posets' principal downsets were complete lattices, which would mean that we would only need to require that forward approximation maps preserve all meets and we could compute the backwards map automatically. However, our goal is a computable theory for \GPS, analogous to automatic differentiation. Requiring completeness to compute backwards maps of approximations would require that complete joins are always computable, which will not be the case for approximations of functions.
+
+\begin{proposition}
+  L-posets and stable functions form a category. \bob{and the main point is that composition of stability witnesses looks like a chain rule!}
+\end{proposition}
 
 \subsection{Summary}
 \label{sec:diff-stab-summary}
