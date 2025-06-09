@@ -88,9 +88,9 @@ More directly, a biproduct is as an object $X \biprod Y$ together with morphisms
 \end{salign*}
 
 \noindent from which the universal properties of the product and coproduct easily follow. A category $\cat{C}$
-with finite biproducts is called \emph{semi-additive}, and cannot be Cartesian closed without being trivial.
-Since $X \iso 0 \biprod X$, Cartesian closure implies $\Hom{\cat{C}}{X}{Y} \iso \Hom{\cat{C}}{0}{X \Rightarrow
-Y} \iso 1$, and all objects are isomorphic.
+with finite biproducts is called \emph{semi-additive}, and cannot be Cartesian closed without being trivial:
+since $X \iso 0 \biprod X$, Cartesian closure would imply $\Hom{\cat{C}}{X}{Y} \iso \Hom{\cat{C}}{0}{X
+\Rightarrow Y} \iso 1$, and therefore that all objects are isomorphic.
 
 % in any such category the canonical projections and injections give an isomorphism $\textstyle X \coprod Y
 % \iso X \times Y$ that is natural in both variables
@@ -185,14 +185,14 @@ lattices, and as morphisms all Galois connections $f \adj g: X \to Y$.
 
 \noindent Since right adjoints preserve limits and left adjoints preserve colimits, for any $f \adj g: X \to
 Y$ we have that $g$ preserves the meet-semilattice structure $(X, \meet, \top)$, and similarly $f$ preserves
-the join-semilattice structure $(X, \join, \bot)$. The meet-preserving maps have their $\CMon$ structure
-structure (in fact $\SemiLat$ structure, but again $\CMon$ is sufficient): addition of maps is pointwise via
-$\meet$, since $(f \meet g)(x) = f(x) \meet g(x)$ preserves meets, with the constant map $\top = x \mapsto
-\top_Y$ as a zero. Dually  the join-preserving maps can be added pointwise using $\join$, with the constant
-map $\bot = y \mapsto \bot_X$ as a zero. Since these constructions come in adjoint pairs, $\LatGal$ is
-enriched in $\CMon$. The hom-set $\LatGal(X,Y)$ provides (component-wise) addition of Galois connections $(f
-\adj g) + (f' \adj g') = (f \join f') \adj (g \meet g')$; the Galois connection $\bot \adj \top$ is zero
-morphism, and composition is bilinear.
+the join-semilattice structure $(X, \join, \bot)$. The meet-preserving maps are enriched in $\CMon$ (in fact
+in $\SemiLat$, but again $\CMon$ is sufficient): addition of maps is computed pointwise via $\meet$, since $(f
+\meet g)(x) = f(x) \meet g(x)$ preserves meets, with the constant map $\top = x \mapsto \top_Y$ as a zero.
+Dually the join-preserving maps can be added pointwise using $\join$, with the constant map $\bot = y \mapsto
+\bot_X$ as a zero. Since these constructions come in adjoint pairs, $\LatGal$ is enriched in $\CMon$. The
+hom-set $\LatGal(X,Y)$ provides (component-wise) addition of Galois connections $(f \adj g) + (f' \adj g') =
+(f \join f') \adj (g \meet g')$; the Galois connection $\bot \adj \top$ is a zero morphism, and composition is
+bilinear.
 
 $\LatGal$ also has biproducts. The projections $\pi_1$ and $\pi_2$ from the product lattice $X \times Y$ have
 both upper and lower adjoints; this means that $X \times Y$ (which we shall write as $X \biprod Y$), is both a
@@ -269,9 +269,8 @@ Z)$.
 
 For CHAD we are interested in the specific case of the Grothendieck construction where $\cat{C} = \Set$ and
 each category $T(X) = \Func{X}{\cat{C}}$, the functor category which has as objects all $X$-indexed families
-of objects of $\cat{C}$ (regarded as functors $F: X \to \cat{C}$) , and as morphisms $F \to G$, all families
-of morphisms $\eta(x): F(x) \to G(x)$ in $\cat{C}$ (with naturality trivial because $X$ has only identity
-morphisms).
+of objects of $\cat{C}$, and as morphisms $F \to G$, all families of morphisms $\eta(x): F(x) \to G(x)$ in
+$\cat{C}$ (with naturality trivial because $X$ has only identity morphisms).
 
 % Like any functor category $\Func{X}{\cat{C}}$ inherits limits and colimits pointwise from its codomain.
 %
@@ -302,9 +301,9 @@ For any category $\cat{C}$ define $\Fam(\cat{C})$ to be the Grothendieck constru
 $\Grothendieck{X}\Func{X}{\cat{C}}$.
 \end{definition}
 
-\noindent In $\Fam(\cat{C})$ the objects $(X, \partial X)$ are thus all sets $X$ paired with indexed families
+\noindent In $\Fam(\cat{C})$ the objects $(X, \partial X)$ are thus all pairs of sets $X$ and indexed families
 $\partial X: X \to \cat{C}$ and the morphisms $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ are all
-functions $f: X \to Y$ paired with morphisms $\partial f: \partial X \to \partial \reindex{Y}{f}$ in
+pairs of functions $f: X \to Y$ and morphisms $\partial f: \partial X \to \partial \reindex{Y}{f}$ in
 $\Func{X}{\cat{C}}$.
 
 \begin{proposition}
