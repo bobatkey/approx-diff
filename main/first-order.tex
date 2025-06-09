@@ -21,11 +21,10 @@ Vákár and collaborators overcome this by using different interpretations for f
 For differentiable functions, we can combine linear approximations by adding tangent vectors. For stable
 functions, we can combine approximants by taking their meet. The additive structure in both cases form a
 commutative monoid with an addition + and zero element 0. A category $\cat{C}$ is enriched in $\CMon$, the
-(monoidal) category of commutative monoids, when every hom-set $\cat{C}(X,Y)$ has a similar additive
-structure, providing an operation + to add morphisms together plus a zero morphism $0: X \to Y$, and
-composition is \emph{bilinear}, i.e.~given by a family of morphisms $\Hom{\cat{C}}{Y}{Z} \tensor
-\Hom{\cat{C}}{X}{Y} \to \Hom{\cat{C}}{X}{Z}$ in $\CMon$ that preserve the additive structure in
-$\Hom{\cat{C}}{Y}{Z}$ and $\Hom{\cat{C}}{X}{Y}$ separately:
+(monoidal) category of commutative monoids, when every hom-set $\cat{C}(X,Y)$ provides an operation + to add
+morphisms together plus a zero morphism $0: X \to Y$, and composition is \emph{bilinear}, i.e.~given by a
+family of morphisms $\Hom{\cat{C}}{Y}{Z} \tensor \Hom{\cat{C}}{X}{Y} \to \Hom{\cat{C}}{X}{Z}$ in $\CMon$ that
+preserve the additive structure in $\Hom{\cat{C}}{Y}{Z}$ and $\Hom{\cat{C}}{X}{Y}$ separately:
 
 \begin{salign*}
 f \comp \zero = f = \zero \comp f
@@ -34,6 +33,33 @@ f \comp \zero = f = \zero \comp f
 (f + g) \comp h &= (f \comp h) + (g \comp h) \\
 h \comp (f + g) &= (h \comp f) + (h \comp g)
 \end{salign*}
+
+\subsubsection{Biproducts}
+
+In any $\CMon$-category,
+
+\begin{minipage}[t]{0.45\textwidth}
+\begin{center}
+\begin{salign*}
+   \biproj_X \comp \biinj_X &= \id_X \\
+   \biproj_Y \comp \biinj_X &= \zero_{X,Y}
+\end{salign*}
+\end{center}
+\end{minipage}%
+\begin{minipage}[t]{0.45\textwidth}
+\begin{center}
+\begin{salign*}
+   \biproj_Y \comp \biinj_Y &= \id_Y \\
+   \biproj_X \comp \biinj_Y &= \zero_{Y,X}
+\end{salign*}
+\end{center}
+\end{minipage}
+
+\begin{salign*}
+(\biinj_X \comp \biproj_X) + (\biinj_Y \comp \biproj_Y) &= \id_{X \biprod Y}
+\end{salign*}
+
+\hrule
 
 We start with the idea of a biproduct and semi-additive categories, which are always enriched in $\CMon$, the
 category of commutative monoids.
@@ -83,31 +109,8 @@ h \comp (f + g) &= (h \comp f) + (h \comp g)
 \end{salign*}
 
 \subsubsection{Biproduct laws}
-It is also easy to show that in a semi-additive category the following equations hold:
-%\vspace{-4mm}
-\begin{minipage}[t]{0.45\textwidth}
-\begin{center}
-\begin{salign*}
-   \biproj_X \comp \biinj_X &= \id_X \\
-   \biproj_Y \comp \biinj_X &= \zero_{X,Y}
-\end{salign*}
-\end{center}
-\end{minipage}%
-\begin{minipage}[t]{0.45\textwidth}
-\begin{center}
-\begin{salign*}
-   \biproj_Y \comp \biinj_Y &= \id_Y \\
-   \biproj_X \comp \biinj_Y &= \zero_{Y,X}
-\end{salign*}
-\end{center}
-\end{minipage}
 
-\begin{salign*}
-(\biinj_X \comp \biproj_X) + (\biinj_Y \comp \biproj_Y) &= \id_{X \biprod Y}
-\end{salign*}
-
-\vspace{3mm}
-\noindent It is also possible to use these laws to define biproducts, in the case where $\cat{C}$ is enriched
+It is also possible to use these laws to define biproducts, in the case where $\cat{C}$ is enriched
 in $\CMon$ and so equipped with addition of morphisms and zero morphisms. In that case any products or
 coproducts in $\cat{C}$ are necessarily biproducts.
 
