@@ -15,8 +15,14 @@ Happily, $\FinVect$ and $\LatGal$ both have biproducts, as a consequence of thei
 
 Vákár and collaborators overcome this by using different interpretations for forward and backward derivatives. We overcome this by using $\CMon$-enriched presheaves, as described in \secref{higher-order}; first we present a suitable first-order setting.
 
-\subsection{Biproducts and Semi-Additive Categories}
+\subsection{$\CMon$-Categories and Biproducts}
 \label{sec:biproducts}
+
+For differentiable functions, we can combine linear approximations by adding tangent vectors. For stable
+functions, we can combine approximants by taking their meet. The additive structure in both cases form a
+commutative monoid with an addition + and zero element 0. If this additive structure is also present in the
+hom-sets $\cat{C}(X,Y)$ of a category, and composition preserves it, $\cat{C}$ is enriched in $\CMon$, the
+category of commutative monoids.
 
 \todo{Introduce $\CMon$-category first.} We start with the idea of a biproduct and semi-additive categories,
 which are always enriched in $\CMon$, the category of commutative monoids.
@@ -374,8 +380,8 @@ like sums and products, providing suitable derived approximation structures for 
 
 One might also like to allow the programmer to embed additional ``approximation points'' into composite
 structures, by providing the language with a \emph{lifting} monad $\syn{L}$. Rather than the usual definition
-of $\syn{list}\;\syn{nat}$ as $\mu\alpha.1 + \syn{nat} \times \alpha$, one could then define within the
-language a type of ``approximation lists'' $\mu\alpha.\syn{L}\;(1 + \syn{L}\;\syn{nat} \times \alpha)$, along
+of $\syn{list}\;\syn{nat}$ as $\mu\alpha.1 + \syn{nat} \times \alpha$, one could then define (within the
+language) a type of ``approximation lists'' $\mu\alpha.\syn{L}\;(1 + \syn{L}\;\syn{nat} \times \alpha)$, along
 with an approximating version of multiplication $*_{\text{appr}}: \syn{L}\;\syn{nat} \times \syn{L}\;\syn{nat}
 \to \syn{L}\;\syn{nat}$ expressible as
 \[x *_{\text{appr}} y = \tmBind{x}{\tmFun{x'}{\syn{if}\;x' =
