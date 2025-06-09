@@ -182,21 +182,17 @@ Define $\LatGal$ to be the category which has as objects $X = (X, \meet, \join, 
 lattices, and as morphisms all Galois connections $f \adj g: X \to Y$.
 \end{definition}
 
-\noindent Right adjoints preserves limits and left adjoints preserves colimits, so for any $f \adj g: X \to Y$
-in $\LatGal$, $g$ is a (bounded) \emph{meet-semilattice homomorphism}, i.e.~preserves the meet-semilattice
-structure $(X, \meet, \top)$. Similarly, $f$ is a join-semilattice homomorphism with respect to $(X, \join,
-\bot)$.
+\noindent Since right adjoints preserve limits and left adjoints preserve colimits, for any $f \adj g: X \to
+Y$ we have that $g$ preserves the meet-semilattice structure $(X, \meet, \top)$, and similarly $f$ preserves
+the join-semilattice structure $(X, \join, \bot)$.
 
-\todo{Again, introduce $\CMon$-enrichment first and relegate $\SemiLat$-enrichment to parenthetical remark.}
-The meet-preserving maps from $X$ to $Y$ themselves form a meet-semilattice. The operation $\meet$ on such
-maps is given pointwise, so that $(f \meet g)(x) = f(x) \meet g(x): X \to Y$, and preserves meets; the
-constant map $\top_{X,Y}: X \to Y$ sending any $x \in X$ to $\top_Y$, which also preserves meets, provides the
-unit. Dually the join-preserving maps from $Y$ to $X$ have a join-semilattice structure given pointwise by
-$\join$ and the constant map $\bot_{Y,X}: Y \to X$ sending any $y \in Y$ to $\bot_X$. Since these two
-constructions come in adjoint pairs, the hom-set $\LatGal(X,Y)$ forms a bounded meet semilattice with unit
-$\top_{X,Y}$ given by the Galois connection $\bot_{Y,X} \adj \top_{X,Y}: X \to Y$ and meet of Galois
-connections $(f \adj g) \meet (f' \adj g') = (f \join f') \adj (g \meet g'): X \to Y$. Thus $\LatGal$ is
-enriched in $\SemiLat$, the category of semilattices and semilattice homomorphisms.
+$\LatGal$ is enriched in $\CMon$ (in fact in $\SemiLat$, the category of semilattices, but again $\CMon$ will
+do for our purposes). The meet-preserving maps from $X$ to $Y$ can be added pointwise using $\meet$, since $(f
+\meet g)(x) = f(x) \meet g(x)$ preserves meets, with the constant map $\top = x \mapsto \top_Y$ as a zero;
+dually the join-preserving maps from $Y$ to $X$ can be added pointwise using $\join$, with the constant map
+$\bot = y \mapsto \bot_X$ as a zero. Since these constructions come in adjoint pairs, the hom-set
+$\LatGal(X,Y)$ forms a commutative monoid with $0$ given by the Galois connection $\bot \adj \top$ and
+addition $(f \adj g) + (f' \adj g') = (f \join f') \adj (g \meet g')$.
 
 The projections $\pi_1: X \times Y \to X$ and $\pi_2: X \times Y \to Y$, where $X \times Y$ denotes the
 product of lattices, have both upper and lower adjoints; this means that $X \times Y$, which we shall
