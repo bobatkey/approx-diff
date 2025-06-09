@@ -121,64 +121,47 @@ Y} \iso 1$, and all objects are isomorphic.
 \subsubsection{Example: Category of Finite Vector Spaces}
 \label{sec:categories-with-biproducts:fdvect}
 
-The category $\FinVect$ of finite vector spaces over $\RR$ (with addition of real numbers written $a + b$ and
-multiplication written $a \mult b$) is semi-additive.
-
-\begin{definition}[Finite dimensional vector space over $\RR$]
-Up to isomorphism, an \emph{$n$-dimensional vector space over $\RR$} is the set $\RR^n$ equipped with
-component-wise addition of vectors and scalar multiplication (also written $+$ and $\mult$), where $(\RR^n,+)$
-is an abelian group (with identity $0$ and additive inverse $-v$ again defined component-wise), and where the
-vector operations are compatible with the field operations in that the following equations hold \todo{probably
-more detail than we need to go into}:
-
-\vspace{-4mm}
-\begin{minipage}[t]{0.45\textwidth}
-\begin{center}
-\begin{align*}
-   1 \mult v &= v \\
-   (a \mult b) \mult v &= a \mult (b \mult v)
-\end{align*}
-\end{center}
-\end{minipage}%
-\begin{minipage}[t]{0.45\textwidth}
-\begin{center}
-\begin{align*}
-   (a + b) \mult v &= (a \mult v) + (b \mult v) \\
-   a \mult (u + v) &= (a \mult u) + (b \mult v)
-\end{align*}
-\end{center}
-\end{minipage}
-\end{definition}
-
-\vspace{1mm}
-\noindent Composition is with bilinear. The direct sum $V \biprod W \iso \RR^{m + n}$ given by the Cartesian
-product is a biproduct $(V \biprod W, \biinj_{V}, \biinj_{W}, \pi_1, \pi_2)$ with $\biinj_{V} =
-\prodM{\id_{V}}{0_{V,W}}$ and $\biinj_{W} = \prodM{0_{V,W}}{\id_{W}}$.
+The category $\FinVect$ of finite vector spaces over $\RR$ is semi-additive.
 
 \begin{definition}
-Define $\FinVect$ to be the category which has as objects $\RR^n$ all finite-dimensional vector spaces, and as
-morphisms $f: \RR^m \to \RR^n$ all functions $f$ satisfying $f(u + v) = f(u) + f(v)$ and $f(a \mult v) = a
-\mult f(v)$, with $f$ preserving the abelian group structure automatically.
+Define $\FinVect$ to be the category which has as objects $\RR^n$ all finite-dimensional vector spaces
+$(\RR^n, +, \mult)$, and as morphisms $f: \RR^m \to \RR^n$ all functions $f$ satisfying $f(u + v) = f(u) +
+f(v)$ and $f(a \mult v) = a \mult f(v)$.
+% with $f$ preserving the zero and additive inverse structure automatically.
 \end{definition}
 
-$\FinVect$ is enriched in $\Ab$, the category of abelian groups \todo{Introduce $\CMon$-enrichment first, then
-perhaps $\Ab$-enrichment parenthetically}. For any objects $V = \RR^m$ and $W = \RR^n$ the hom-set
-$\FinVect(V,W)$ is an abelian group, with identity $0_{V,W}$ given by the constant map $v \mapsto 0_W$ and
-addition and additive inverse given pointwise:
+%  with addition of real numbers written $a + b$ and multiplication written $a \mult b$
 
-\vspace{-4mm}
-\begin{center}
-\begin{minipage}[t]{0.35\textwidth}
-\begin{align*}
-(f + g)(v) &= f(v) + g(v)
-\end{align*}
-\end{minipage}%
-\begin{minipage}[t]{0.35\textwidth}
-\begin{align*}
-(-f)(v) &= -f(v)
-\end{align*}
-\end{minipage}
-\end{center}
+% \begin{definition}[Finite dimensional vector space over $\RR$]
+% Up to isomorphism, an \emph{$n$-dimensional vector space over $\RR$} is the set $\RR^n$ equipped with
+% component-wise addition of vectors and scalar multiplication (also written $+$ and $\mult$), where $(\RR^n,+)$
+% is an abelian group (with identity $0$ and additive inverse $-v$ again defined component-wise), and where the
+% vector operations are compatible with the field operations in that the following equations hold:
+%
+% \vspace{-4mm}
+% \begin{minipage}[t]{0.45\textwidth}
+% \begin{center}
+% \begin{align*}
+%    1 \mult v &= v \\
+%    (a \mult b) \mult v &= a \mult (b \mult v)
+% \end{align*}
+% \end{center}
+% \end{minipage}%
+% \begin{minipage}[t]{0.45\textwidth}
+% \begin{center}
+% \begin{align*}
+%    (a + b) \mult v &= (a \mult v) + (b \mult v) \\
+%    a \mult (u + v) &= (a \mult u) + (b \mult v)
+% \end{align*}
+% \end{center}
+% \end{minipage}
+% \end{definition}
+
+$\FinVect$ is enriched in $\CMon$ (in fact in $\Ab$, the category of abelian groups, but $\CMon$ will do for
+our purposes). For any objects $V = \RR^m$ and $W = \RR^n$, the hom-set $\FinVect(V,W)$ provides pointwise
+addition of morphisms $(f + g)(v) = f(v) + g(v)$; the constant map $v \mapsto 0$ is a zero morphism, and
+composition is bilinear. Moreover the direct sum $V \biprod W \iso \RR^{m + n}$ given by the Cartesian product
+is a biproduct, with $\biinj_{V} = \prodM{\id}{0}$ and $\biinj_{W} = \prodM{0}{\id}$.
 
 \subsubsection{Example: Category of Lattices and Galois Connections}
 
