@@ -357,12 +357,12 @@ structures, by providing them with a \emph{lifting} monad $\synVar{L}$. Rather t
 the type of lists of natural numbers as $\mu\alpha.1 + \synVar{nat} \times \alpha$, one could then define
 (within the language) a type of ``approximation lists'' $\mu\alpha.\synVar{L}\,(1 + \synVar{L}\,\synVar{nat}
 \times \alpha)$, along with an approximating version of multiplication $*_{\text{appr}}:
-\synVar{L}\,\synVar{nat} \times \synVar{L}\,\synVar{nat} \to \synVar{L}\,\synVar{nat}$ given as as
+\synVar{L}\,\synVar{nat} \times \synVar{L}\,\synVar{nat} \to \synVar{L}\,\synVar{nat}$ expressible as
 \[x *_{\text{appr}} y = \tmBind{x}{\tmFun{x'}{\syn{if}\;x' =
 0\;\syn{then}\;\tmReturn{0}\;\syn{else}\;\tmBind{y}{\tmFun{y'}{\tmReturn{x' * y'}}}}}\].
 
-\noindent This would allow the programmer to emulate the short-circuiting behaviour of $\mathrm{strictOr}$ in
-\exref{strict-short-circuit}, or the short-circuiting multiplication used in \citet{perera22} for slicing
+\noindent This would allow the programmer to emulate the short-circuiting behaviour of $\mathrm{strictOr}$
+from \exref{strict-short-circuit}, or the short-circuiting multiplication used in \citet{perera22} for slicing
 matrix convolutions, without baking this specific approximating behaviour into the interpretation of
 individual operators.
 
@@ -371,25 +371,27 @@ individual operators.
 \subsection{First-Order Automatic Differentiation via CHAD}
 
 Following the CHAD approach, automatic differentiation for first-order programs can also be recovered in this
-setup, via the total category $\Fam(\FinVect)$. We recapitulate the basic ideas here.
+setup, via the total category $\Fam(\FinVect)$. First we recall the chain rule for the forward derivative
+$\pushf{f}_x$ and backward derivative $\pullf{f}_x$, which says that derivatives respect
+composition~\cite{spivak65}.
 
-\subsubsection{Derivatives of Differentiable Functions}
-
-For flat manifolds like $\RR^n$, the tangent space and cotangent space at a point $x$ are both canonically
-isomorphic to $\RR^n$, so the forward and backward derivatives of a differentiable function $f: \RR^m \to
-\RR^n$ at a point $x$ have the following form \todo{Can probably delete now as covered in
-\secref{approx-as-tangents}}:
-
-\begin{itemize}
-\item The \emph{forward derivative} (tangent map or pushforward) $\pushf{f}_x$ of $f$ at $x \in \RR^m$ is the
-unique linear map $\RR^m \linearto \RR^n$ given by the Jacobean matrix of $f$ at $x$.
-\item The \emph{backward derivative} (cotangent map or pullback) $\pullf{f}_x$ is the unique linear map
-$\RR^n \linearto \RR^m$ given by the transpose (adjoint) of the Jacobean matrix of $f$ at $x$.
-\end{itemize}
+% \subsubsection{Derivatives of Differentiable Functions}
+%
+% For flat manifolds like $\RR^n$, the tangent space and cotangent space at a point $x$ are both canonically
+% isomorphic to $\RR^n$, so the forward and backward derivatives of a differentiable function $f: \RR^m \to
+% \RR^n$ at a point $x$ have the following form \todo{Can probably delete now as covered in
+% \secref{approx-as-tangents}}:
+%
+% \begin{itemize}
+% \item The \emph{forward derivative} (tangent map or pushforward) $\pushf{f}_x$ of $f$ at $x \in \RR^m$ is the
+% unique linear map $\RR^m \linearto \RR^n$ given by the Jacobean matrix of $f$ at $x$.
+% \item The \emph{backward derivative} (cotangent map or pullback) $\pullf{f}_x$ is the unique linear map
+% $\RR^n \linearto \RR^m$ given by the transpose (adjoint) of the Jacobean matrix of $f$ at $x$.
+% \end{itemize}
 
 \subsubsection{Chain Rule}
 
-Derivatives respect composition~\cite{spivak65}. Suppose $f: \RR^m \to \RR^n$ and $g: \RR^n \to \RR^k$. Then
+Suppose $f: \RR^m \to \RR^n$ and $g: \RR^n \to \RR^k$. Then
 for any $x \in \RR^m$ we have:
 
 \begin{itemize}
@@ -415,17 +417,20 @@ happen to be derivatives. But if $f_2(x)$ is the derivative of $f_1$ at $x$ for 
 similarly for $g$ then the derivatives compose according to the forward chain rule and $(g \comp f)_2(x)$ is
 the derivative of $(g \comp f)_1$ at $x$. Thus this setup provides an algorithmic method for computing the
 forward derivative of a composite function, without have to recompute the function itself, as long as all
-atomic operations provide derivatives. An efficient implementation of \GPS based on $\Fam(\LatGal)$
-(\secref{fam:galois-slicing} above) would most likely apply a similar optimisation to make it possible to
-compute forwards slices without having to reexecute the program at the same time.
+atomic operations provide derivatives.
+
+% An efficient implementation of \GPS based on $\Fam(\LatGal)$
+% (\secref{fam:galois-slicing} above) would most likely apply a similar optimisation to make it possible to
+% compute forwards slices without having to reexecute the program at the same time.
 
 We can see these ``optimised'' forward-mode maps as living in $\Fam(\FinVect)$ if we regard every finite
 vector space $\RR^n$ as paired with the constant family of tangent spaces at $\RR^n$ (also written $\RR^n$,
 for convenience), and each map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ as the pair $(f_1, f_2)$.
 Then the composition $(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp
 \partial f)$ again corresponds exactly to the forward chain rule, since $(\reindex{\partial g}{f} \comp
-\partial f)_x = {\partial g}_{f(x)} \comp {\partial f}_x$, with the reindexing along $f$ recomputing $f(x)$ in
-order to select the appropriate pushforward.
+\partial f)_x = {\partial g}_{f(x)} \comp {\partial f}_x$
+
+% with the reindexing along $f$ recomputing $f(x)$ in order to select the appropriate pushforward.
 
 \subsubsection{Reverse-Mode Automatic Differentiation}
 
