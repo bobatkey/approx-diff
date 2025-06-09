@@ -8,7 +8,7 @@ We motivate our approach to \GPS by showing how to combine ideas from differenti
 
 The general study of differentiable functions takes place on \emph{manifolds}, which are topological spaces that ``locally'' look like a subset of the Euclidean space $\RR^n$. The spaces $\RR^n$ themselves are manifolds, but so are ``non-flat'' examples such as $n$-spheres and yet more exotic spaces. Every point $x$ in a manifold $M$ has an associated \emph{tangent vector space} $\tangents_x(M)$ and \emph{cotangent vector space} $\cotangents_x(M)$, the latter consisting of linear functions $\tangents_x(M) \linearto \RR$. The tangent and cotangent spaces are finite dimensional, so in the presence of a chosen basis they are canonically isomorphic. In the case when the manifold is $\RR^n$, then every tangent space is isomorphic to $\RR^n$ as well.
 
-Smooth functions $f$ between manifolds $M$ and $N$ are functions on their points that are locally differentiable on $\RR^n$. Each smooth function induces maps of the (co)tangent spaces:
+Smooth functions $f$ between manifolds $M$ and $N$ are functions on their points that are locally differentiable on $\RR^n$. Manifolds and smooth functions form a category $\Man$. Each smooth function induces maps of the (co)tangent spaces:
 \begin{itemize}
 \item The \emph{forward derivative} (tangent map or pushforward) $\pushf{f}_x$ is a linear map $\tangents_x(M) \linearto \tangents_{f(x)}(N)$. In the Eucdlidean case when $M = \RR^m$ and $N = \RR^n$, the tangent map can be represented by the Jacobian matrix of partial derivatives of $f$ at $x$.
 \item The \emph{backward derivative} (cotangent map, or pullback) $\pullf{f}_x$ is a linear map $\cotangents_{f(x)}(N) \linearto \cotangents_x(M)$. In the Euclidean case, the backward derivative is represented by the transpose of the Jacobian of $f$ at $x$.
@@ -161,7 +161,7 @@ mapping directly, even without assuming that any meets exist:
 
   \item The $\mathrm{gustave}$ function is stable. Despite there being no one minimal input that achieves the output $\top$, each of the minimal inputs that can achieve this output are pairwise incomparable, so for each specific input that gets output $\top$ there is a unique minimal input that achieves it (listed in the first three lines of the definition).
 
-    In terms of \GPS the $\mathrm{gustave}$ function does not present a problem. For any particular run (i.e., input-output pair) of the program, there is an unambiguous minimal input that achieves the output, no matter that it was not achieved by a sequential processing of the input.
+    In terms of \GPS the $\mathrm{gustave}$ function does not present a problem. For any particular run (i.e., input$\mapsto$output pair), there is an unambiguous minimal input that achieves the output, no matter that it was not achieved by a sequential processing of the input.
 
   \item As discussed above, $\mathrm{unstable}$ is not stable, but is conditionally multiplicative.
   \end{enumerate}
@@ -199,13 +199,14 @@ Stability has an alternative definition in terms of Galois connections, which wi
   then $f^*_x(y) \leq x'_0$.
 \end{proof}
 
-Even though stable functions can be defined on any partially ordered set, in light of the analogy with tangent spaces, it makes sense to require that meets (for forward approximation maps) and joins (for backwards approximation maps) exist:
+Even though stable functions can be defined on any partially ordered set, in light of the analogy with tangent spaces, it makes sense to require that meets, preserved by forward approximation maps, and joins, preserved by backwards approximation maps, exist:
 
 \begin{definition}
   An \emph{L-poset} is a partially ordered set $X$ such that for every $x \in X$, the principal downset $\downset{x}$ is a bounded lattice (i.e., have all finite meets and joins).
 \end{definition}
 
-The following lemma is an instance of standard facts about Galois connections preserving meets and joins:
+This lemma is an instance of standard facts about Galois connections
+preserving meets and joins:
 
 \begin{lemma}
   For L-posets $X$ and $Y$, a stable function $f : X \to Y$ preserves
@@ -221,10 +222,12 @@ We could have required that L-posets' principal downsets were complete lattices,
   L-posets and stable functions form a category. \bob{and the main point is that composition of stability witnesses looks like a chain rule!}
 \end{proposition}
 
+\bob{L-poset is has products and coproducts, but is not closed. To be closed would require each $\downset{x}$ to be a \emph{complete} lattice. However, this is tricky to implement as we need an infinitary operation to compute the reverse approximation map for function types. See \cite{amadio-curien} for the proof that bounded-complete lattices with stable functions form a cartesian closed category.}
+
 \subsection{Summary}
 \label{sec:diff-stab-summary}
 
-We now summarise our analogy between differentiable functions between manifolds and stable functions between L-posets:
+Let us summarise our analogy between differentiable functions between manifolds and stable functions between L-posets:
 
 \begin{itemize}
 \item For \GPS, we assume that every value has an associated lattice of {\em approximations}. For differentiable programs, every point has an associated vector space of {\em tangents}.
