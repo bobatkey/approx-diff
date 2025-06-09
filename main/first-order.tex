@@ -222,50 +222,46 @@ given by:
 \subsection{Grothendieck Construction for Indexed Categories}
 \label{sec:Grothendieck}
 
-\todo{Rework.} The goal now is to equip the interpretation of a (first-order) program with a Galois connection
-relating approximations of its inputs to approximations of its output. Since the specific lattices of
-approximations depend on the value being approximated, the semantics of every type $\tau$ must have both a
-conventional component as well as an approximating component, i.e.~a set $X$ which serves as the usual
-interpretation of $\tau$, plus an associated lattice of approximations $\partial X(x)$ for every point $x \in
-X$. The semantics of an expression $e$ of type $\sigma$ with a single free variable of type $\tau$ (with
-$\tau$ and $\sigma$ denoting $X$ and $Y$) must then also have two components: a function $f: X \to Y$ giving
-the conventional interpretation of $e$, plus a family of Galois connections $\partial f(x): \partial X(x) \to
-\partial Y(f(x))$ for every $x \in X$ which can be used for slicing over that expression.
+We now consider how to adapt the CHAD framework~\cite{vákár22,nunes2023} to interpret programs as functions
+along with their forward and backward approximation maps. Since the appropriate lattice of approximation
+typically depends on the value being approximated, we will want to interpret a type $\tau$ as a pair $(X,
+\partial X)$ where $X$ provides the conventional interpretation as a set and $\partial X$ provides an
+appropriate lattice of approximations $\partial X(x)$ for every point $x \in X$. An expression $e$ of type
+$\sigma$ with a single free variable of type $\tau$ (supposing $\tau$ and $\sigma$ denote $X$ and $Y$ in the
+conventional semantics) must then also be interpreted by a pair $(f, \partial f)$, where $f$ provides the
+conventional interpretation of $e$ as a function $X \to Y$, and $\partial f$ is a family of Galois connections
+$\partial f(x): \partial X(x) \to \partial Y(f(x))$ for every $x \in X$, taking approximants to approximants.
 
-This pattern of objects and morphisms is captured by the construction used in CHAD~\cite{vákár22,nunes2023} to
-model automatic differentiation, namely the \emph{Grothendieck construction} for a particular set-indexed
-category $T: \Set^\op \to \Cat$. For automatic differentiation, $T(X)$ will be the functor category
-$\Func{X}{\FinVect}$, regarded as the category of $X$-indexed families of finite vector spaces, with indexed
-linear maps as morphisms. For Galois slicing, we will take $T(X) = \Func{X}{\LatGal}$, the category of
-$X$-indexed families of bounded lattices, with indexed Galois connections as morphisms.
+This pattern of objects and morphisms is captured by the construction used in CHAD to model automatic
+differentiation, namely the \emph{Grothendieck construction} for a particular set-indexed category $T:
+\Set^\op \to \Cat$. For automatic differentiation, $T(X)$ will be the functor category $\Func{X}{\FinVect}$,
+regarded as the category of $X$-indexed families of finite vector spaces, with families of linear maps as
+morphisms. For Galois slicing, we will take $T(X) = \Func{X}{\LatGal}$, the category of $X$-indexed families
+of bounded lattices, with families of Galois connections as morphisms.
 
 In its general form, the Grothendieck construction $\Grothendieck{}T$ for an arbitrary indexed category $T:
-\cat{C}^\op \to \Cat$, sometimes called the \emph{total category} for $T$, assembles all the categories $T(X)$
-(for objects $X$ in $\cat{C}$) into a single category, together with morphisms that account for both internal
-structure and reindexing along morphisms $f: X \to Y$ in $\cat{C}$.
+\cat{C}^\op \to \Cat$, sometimes called the \emph{total category} for $T$, incorporates all the categories
+$T(X)$ (for objects $X$ in $\cat{C}$) into a single category, together with morphisms that account for both
+internal structure and reindexing along morphisms $f: X \to Y$ in $\cat{C}$.
 
 \begin{definition}
 \label{def:Grothendieck}
-Suppose an indexed category $T: \cat{C}^\op \to \Cat$. The \emph{Grothendieck construction} for $T$ is the
-category $\Grothendieck{X}T(X)$ (also written $\Grothendieck{}T$) which has as objects, all pairs $(X,
+Suppose $T: \cat{C}^\op \to \Cat$ an indexed category. The \emph{Grothendieck construction}
+$\Grothendieck{X}T(X)$ (also written $\Grothendieck{}T$) is the category which has as objects, all pairs $(X,
 \partial X)$ of an object $X$ of $\cat{C}$ and an object $\partial X$ of $T(X)$, and as morphisms $(X,
 \partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of morphisms $f: X \to Y$ in $\cat{C}$ and
 morphisms $\partial f: \partial X \to T(f)(\partial Y)$ in $T(X)$.
 \end{definition}
 
 \noindent The $\partial X$ notation used here is intended to suggest the connection between the Grothendieck
-construction and the idea of tangent spaces and derivatives. To understand how the $\partial f$ components
-compose, consider any $(f, \partial f): (X, \partial X) \to (Y, \partial Y)$ and $(g, \partial g): (Y,
-\partial Y) \to (Z, \partial Z)$ in $\Grothendieck{}T$. We have:
+construction and the idea of tangent spaces and derivatives. For any $(f, \partial f): (X, \partial X) \to (Y,
+\partial Y)$ and $(g, \partial g): (Y, \partial Y) \to (Z, \partial Z)$ in $\Grothendieck{}T$, the composition
+$(g, \partial g) \comp (f, \partial f): (X, \partial X) \to (Z, \partial Z)$ is given by $(g \comp f,
+T(f)(\partial g) \comp \partial f)$, with the functor $T(f)$ acting to ``reindex'' $\partial g$ along $f$,
+yielding a morphism $T(f)(\partial g): T(f)(\partial Y) \to T(f)(T(g)(\partial Z)) = T(g \comp f)(\partial
+Z)$.
 
-\begin{itemize}
-\item $\partial f: \partial X \to T(f)(\partial Y)$, and
-\item $T(f)(\partial g): T(f)(\partial Y) \to T(f)(T(g)(\partial Z)) = T(g \comp f)(\partial Z)$
-\end{itemize}
-
-\noindent where $T(f)(\partial g)$ is the image of $\partial g$ in the ``reindexing'' functor $T(f)$. The
-composition $(g, \partial g) \comp (f, \partial f): (X, \partial X) \to (Z, \partial Z)$ is then given by $(g
-\comp f, T(f)(\partial g) \comp \partial f)$.
+% which can then be composed with $\partial f: \partial X \to T(f)(\partial Y)$.
 
 \subsection{Category of Families}
 \label{sec:Fam}
