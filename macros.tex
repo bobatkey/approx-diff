@@ -11,13 +11,15 @@
    {\csname endalign*\endcsname}
 
 \newcommand*{\defref}[1]{Definition~\ref{def:#1}}
+\newcommand*{\exref}[1]{Example~\ref{ex:#1}}
 \newcommand*{\figref}[1]{Figure~\ref{fig:#1}}
 \newcommand*{\figrefTwo}[2]{Figures~\ref{fig:#1} and \ref{fig:#2}}
 \newcommand*{\propref}[1]{Proposition~\ref{prop:#1}}
 \newcommand*{\secref}[1]{\S\ref{sec:#1}}
 
 % Syntax
-\newcommand*{\syn}[1]{\mathbf{#1}}
+\newcommand*{\syn}[1]{\mathbf{#1}} % keywords
+\newcommand*{\synVar}[1]{\mathrm{#1}} % variables
 
 \newcommand*{\PrimTy}{\mathsf{PrimTy}}
 \newcommand*{\PrimOp}{\mathsf{Op}}

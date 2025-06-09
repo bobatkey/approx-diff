@@ -318,12 +318,12 @@ $(X, \partial X) \tensor (Y, \partial Y) = (X \times Y,(x, y) \mapsto \partial X
 \end{proposition}
 
 The families construction, regarded as a covariant 2-functor $\Fam(-): \Cat \to \Cat$, sends functors $F:
-\cat{C} \to \cat{D}$ to functors $\Fam(F): \Fam(\cat{C}) \to \Fam(\cat{D})$ that use $F$ to reassign the
-target category by postcomposing with $F$, sending objects $(X, \partial X)$ to $(X, F \comp \partial X)$ and
-morphisms $(f, \partial f)$ to $(f, F \comp \partial f)$, where $F \comp \partial f$ denotes the natural
-transformation with $(F \comp \partial f)(x) = F(\partial f(x))$. If $F$ happens to be a (strong) monad on
-$\cat{C}$, then $\Fam(F)$ is a (strong) monad on $\Fam(\cat{C})$, computed by lifting the original monad $F:
-\cat{C} \to \cat{C}$ pointwise over families.
+\cat{C} \to \cat{D}$ to functors $\Fam(F): \Fam(\cat{C}) \to \Fam(\cat{D})$ that reassign the target category
+by postcomposing with $F$, sending objects $(X, \partial X)$ to $(X, F \comp \partial X)$ and morphisms $(f,
+\partial f)$ to $(f, F \comp \partial f)$, where $F \comp \partial f$ denotes the natural transformation where
+$(F \comp \partial f)(x) = F(\partial f(x))$. If $F$ happens to be a (strong) monad on $\cat{C}$, then
+$\Fam(F)$ is a (strong) monad on $\Fam(\cat{C})$, computed by lifting the original monad $F: \cat{C} \to
+\cat{C}$ pointwise over families.
 
 \subsection{First-Order Galois Slicing via CHAD}
 \label{sec:fam:galois-slicing}
@@ -338,20 +338,33 @@ connection at each point, using the baseline (unapproximated) function $f$.
 
 For a first-order language with a primitive type $\syn{nat}$ and primitive operations such as $+$, the
 ``leaves'' of the approximation lattices would provided by a model of $\syn{nat}$ and its operations in
-$\Fam(\LatGal)$, for example assigning $\syn{nat}$ to the object $(\Nat,n \mapsto \Two)$, where the family is
-fully present ($\top$) or fully absent ($\bot$) from the approximation (as shown in the example in component
-is constantly $\Two = (\bot,\top)$, the two-point lattice indicating whether a given natural number
-\secref{introduction}). These ``leaf'' objects would then be combined by the interpretation of composite types
-like sums and products, providing suitable derived approximation structures for composite values.
+$\Fam(\LatGal)$. For example, we might assign $\syn{nat}$ to the object $(\Nat,n \mapsto \{n, \bot\})$, where
+the family component is the two-point lattice indicating whether a given natural number is fully present ($n$)
+or fully absent ($\bot$) from the approximation, as shown in the example in \secref{introduction}, and we
+might then assign $+$ to the morphism $(\hat+,\partial(\hat+))$, with $\partial(\hat+)$ defined as
+\begin{displaymath}
+    \begin{array}[t]{l@{(}l@{,~}l@{)~}c@{~}l}
+      \partial(\hat+)&n&m&=&n \mathbin{\hat+} m \\
+      \partial(\hat+)&\bot&\_&=&\bot \\
+      \partial(\hat+)&\_&\bot&=&\bot
+    \end{array}
+\end{displaymath}
+These elementary approximations would then be combined by the interpretation of composite types like sums and
+products, providing suitable derived approximation structures for composite values.
 
 One might also like to allow the programmer to embed additional ``approximation points'' into composite
-structures, by providing the language with a \emph{lifting} monad $\syn{L}$. Rather than the usual definition
-of $\syn{list}\;\syn{nat}$ as $\mu\alpha.1 + \syn{nat} \times \alpha$, one could then define (within the
-language) a type of ``approximation lists'' $\mu\alpha.\syn{L}\;(1 + \syn{L}\;\syn{nat} \times \alpha)$, along
-with an approximating version of multiplication $*_{\text{appr}}: \syn{L}\;\syn{nat} \times \syn{L}\;\syn{nat}
-\to \syn{L}\;\syn{nat}$ expressible as
+structures, by providing them with a \emph{lifting} monad $\synVar{L}$. Rather than the usual definition of
+the type of lists of natural numbers as $\mu\alpha.1 + \synVar{nat} \times \alpha$, one could then define
+(within the language) a type of ``approximation lists'' $\mu\alpha.\synVar{L}\,(1 + \synVar{L}\,\synVar{nat}
+\times \alpha)$, along with an approximating version of multiplication $*_{\text{appr}}:
+\synVar{L}\,\synVar{nat} \times \synVar{L}\,\synVar{nat} \to \synVar{L}\,\synVar{nat}$ given as as
 \[x *_{\text{appr}} y = \tmBind{x}{\tmFun{x'}{\syn{if}\;x' =
 0\;\syn{then}\;\tmReturn{0}\;\syn{else}\;\tmBind{y}{\tmFun{y'}{\tmReturn{x' * y'}}}}}\].
+
+\noindent This would allow the programmer to emulate the short-circuiting behaviour of $\mathrm{strictOr}$ in
+\exref{strict-short-circuit}, or the short-circuiting multiplication used in \citet{perera22} for slicing
+matrix convolutions, without baking this specific approximating behaviour into the interpretation of
+individual operators.
 
 \todo{Show how $\LatGal$ has a lifting monad?}
 
