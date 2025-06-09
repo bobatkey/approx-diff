@@ -13,6 +13,7 @@ Perera and collaborators introduced the idea of {\em Galois program slicing} as 
 At a high level, \GPS assumes that, for each possible value that may be input or output by a program, there exists a lattice of {\em approximations} of that value. For a particular run of a program that takes input $x$ and produces output $y$, we also get a Galois connection between the lattice of approximations of $x$ and the lattice of approximations of $y$. The right half of the Galois connection is the ``forward direction'' taking approximations of the input to approximations of the output; the left half of the Galois connection is the ``backward direction'' that takes approximations of the output to the least (i.e., most approximate) approximation of the input that gives rise to this output approximation. This becomes {\em program slicing} by including the source code of the program as part of the input; then, in the backward direction, the least approximation of the input required for an output approximation includes the least part of the program required as well.
 
 \begin{example}
+  \label{ex:introduction-example}
   The following program is written in Haskell \cite{haskell} syntax, using a list comprehension to filter a list of pairs of labels and numbers to those numbers with a given label, and then to compute the sum of the numbers:
   \begin{displaymath}
     \begin{array}{l}
