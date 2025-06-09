@@ -194,31 +194,30 @@ enriched in $\CMon$. The hom-set $\LatGal(X,Y)$ provides (component-wise) additi
 morphism, and composition is bilinear.
 
 $\LatGal$ also has biproducts. The projections $\pi_1$ and $\pi_2$ from the product lattice $X \times Y$ have
-both upper and lower adjoints; this means that $X \times Y$, which we shall hereafter write as $X \biprod Y$,
-is both a product and a coproduct, with projections $\biproj_X$ and $\biproj_Y$ and injections $\biinj_X$ and
-$\biinj_Y$ given by:
+both upper and lower adjoints; this means that $X \times Y$ (which we shall write as $X \biprod Y$), is both a
+product and a coproduct, with projections $\biproj_X$ and $\biproj_Y$ and injections $\biinj_X$ and $\biinj_Y$
+given by:
 
 \vspace{-4mm}
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
 \begin{align*}
-   \biproj_X = \prodM{\id_X}{\bot_Y} \adj \proj_1: X \biprod Y \to X \\
-   \biproj_Y = \prodM{\bot_X}{\id_Y} \adj \proj_2: X \biprod Y \to Y
+   \biproj_X = \prodM{\id}{\bot} \adj \proj_1: X \biprod Y \to X \\
+   \biproj_Y = \prodM{\bot}{\id} \adj \proj_2: X \biprod Y \to Y
 \end{align*}
 \end{center}
 \end{minipage}%
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
 \begin{align*}
-   \biinj_X = \pi_1 \adj \prodM{\id_X}{\top_Y} : X \to X \biprod Y \\
-   \biinj_Y = \pi_2 \adj \prodM{\top_X}{\id_Y}: Y \to X \biprod Y
+   \biinj_X = \pi_1 \adj \prodM{\id}{\top} : X \to X \biprod Y \\
+   \biinj_Y = \pi_2 \adj \prodM{\top}{\id}: Y \to X \biprod Y
 \end{align*}
 \end{center}
 \end{minipage}
 \vspace{2mm}
 
-\noindent The trivial 1-point lattice, which is both terminal and initial and we write as $0$, is the unit for
-$\biprod$.
+\noindent with the trivial 1-point lattice as a zero object (terminal and initial).
 
 \subsection{Grothendieck Construction for Indexed Categories}
 \label{sec:Grothendieck}
