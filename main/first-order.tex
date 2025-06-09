@@ -18,13 +18,13 @@ Vákár and collaborators overcome this by using different interpretations for f
 \subsection{$\CMon$-Categories and Biproducts}
 \label{sec:biproducts}
 
-For differentiable functions, we can combine linear approximations by adding tangent vectors; for stable
-functions, we can combine approximants by taking their meet. In both cases the additive structure is given by
-a commutative monoid with addition + and zero element 0. A category $\cat{C}$ is enriched in $\CMon$, the
-(monoidal) category of commutative monoids, when every hom-set $\cat{C}(X,Y)$ provides an operation + to add
-morphisms together plus a zero morphism $0: X \to Y$, and composition is \emph{bilinear}, i.e.~given by a
-family of morphisms $\Hom{\cat{C}}{Y}{Z} \tensor \Hom{\cat{C}}{X}{Y} \to \Hom{\cat{C}}{X}{Z}$ in $\CMon$ that
-preserve the additive structure in $\Hom{\cat{C}}{Y}{Z}$ and $\Hom{\cat{C}}{X}{Y}$ separately:
+\subsubsection{$\CMon$-Categories}
+
+To say that a category $\cat{C}$ is enriched in $\CMon$, the (monoidal) category of commutative monoids, is to
+say that every hom-set $\cat{C}(X,Y)$ provides an operation + to add morphisms together plus a zero morphism
+$0: X \to Y$, and moreover that composition is \emph{bilinear}, i.e.~given by a family of morphisms
+$\Hom{\cat{C}}{Y}{Z} \tensor \Hom{\cat{C}}{X}{Y} \to \Hom{\cat{C}}{X}{Z}$ in $\CMon$ that preserve the
+additive structure in $\Hom{\cat{C}}{Y}{Z}$ and $\Hom{\cat{C}}{X}{Y}$ separately:
 
 \begin{salign*}
 f \comp \zero = f = \zero \comp f
@@ -34,25 +34,26 @@ f \comp \zero = f = \zero \comp f
 h \comp (f + g) &= (h \comp f) + (h \comp g)
 \end{salign*}
 
-\subsubsection{Biproducts}
-
-In any $\CMon$-category, any products and coproducts coincide.
+In a $\CMon$-category, any products and coproducts coincide.
 
 \begin{proposition}
 \label{prop:biproducts:from-product-or-coproduct}
 In any $\CMon$-category:
 \begin{enumerate}
-\item If $X \times Y$ is a product then it is also coproduct, with $\inj_X = \prodM{\id_X}{0_{X,Y}}$ and
-$\inj_Y = \prodM{0_{X,Y}}{\id_Y}$.
-\item If $X \coprod Y$ is a coproduct then it is also a product, with $\pi_1 = \coprodM{\id_X}{0_{Y,X}}$ and
-$\pi_2 = \coprodM{0_{X,Y}}{\id_Y}$.
-\item $X$ is terminal iff $X$ is initial.
+\item If $X \times Y$ is a product then it is also coproduct, with $\inj_X = \prodM{\id}{0}$ and $\inj_Y =
+\prodM{0}{\id}$.
+\item If $X \coprod Y$ is a coproduct then it is also a product, with $\pi_1 = \coprodM{\id}{0}$ and $\pi_2 =
+\coprodM{0}{\id}$.
+\item $X$ is terminal iff it is initial.
 \end{enumerate}
 \end{proposition}
 
 An object that is both terminal and initial is called a \emph{zero} object; an object that is both a product
-and a coproduct is called a \emph{biproduct}. More directly, a biproduct is as an object $X \biprod Y$
-together with morphisms
+and a coproduct is called a \emph{biproduct}.
+
+\subsubsection{Biproducts}
+
+More directly, a biproduct is as an object $X \biprod Y$ together with morphisms
 
 \begin{center}
 \begin{tikzcd}
