@@ -2,19 +2,15 @@
 \label{sec:higher-order}
 
 $\Fam(\FinVect)$ and $\Fam(\LatGal)$, introduced in \secref{first-order}, provide appropriate notions of
-composition for automatic differentiation and Galois slicing respectively, but neither is Cartesian closed and
-thereby able to interpret higher-order programs directly. However the following is a special case of a
-construction due to \citet{nunes2023}:
+composition for automatic differentiation and Galois slicing respectively, but neither is Cartesian closed. To
+interpret higher-order programs directly, we use a special case of a construction due to \citet{nunes2023}
+(\propref{higher-order:fam-CC} below). First we introduce notation for the product over a set-indexed family.
 
-\begin{proposition}
-Suppose $\cat{C}$ locally small. If $\cat{C}$ has binary biproducts and all small products, then
-$\Fam(\cat{C})$ is Cartesian closed.
-\end{proposition}
-
-A category $\cat{C}$ has all small (set-indexed) products if, for any set $X$ and any $X$-indexed family $A$
-of objects of $\cat{C}$, there exists an object $\prod_{x \in X}A_x$ (also written $\prod_{X} A$) and family
-of projection morphisms $\{\pi_x: \prod_{X} A \to A_x\}_{x \in X}$ in $\cat{C}$ such that for any object $B$
-and family of morphisms $\{f_x: B \to A_x\}_{x \in X}$ in $\cat{C}$, there exists a unique product morphism
+\begin{definition}[Small product]
+Suppose $\cat{C}$ a category and $X$ a
+set. A \emph{product} of the family $A = \{A_x\}_{x \in X}$ is an object $\prod_{X}A$ plus a family of
+projection morphisms $\{\pi_x: \prod_{X} A \to A_x\}_{x \in X}$ in $\cat{C}$ such that for any object $B$ and
+family of morphisms $f = \{f_x: B \to A_x\}_{x \in X}$ in $\cat{C}$, there exists a unique product morphism
 $\prodFam{f}$ making the following diagram commute for every $x \in X$:
 
 \begin{center}
@@ -23,6 +19,13 @@ $\prodFam{f}$ making the following diagram commute for every $x \in X$:
    B \arrow[ru, "f_x"'] \arrow[u, dotted, "\prodFam{f}"]
 \end{tikzcd}
 \end{center}
+\end{definition}
+
+\begin{proposition}
+\label{prop:higher-order:fam-CC}
+Suppose $\cat{C}$ locally small. If $\cat{C}$ has binary biproducts and all small products, then
+$\Fam(\cat{C})$ is Cartesian closed.
+\end{proposition}
 
 Abusing notation somewhat, we shall write $X$ for an object $(X, \partial X)$ in $\Fam(C)$, and similarly for
 morphisms $f = (f, \partial f)$. If $\cat{C}$ has all small products and also biproducts, then the internal
