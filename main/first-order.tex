@@ -317,14 +317,6 @@ If $\cat{C}$ is (symmetric) monoidal then $\Fam(\cat{C})$ is also (symmetric) mo
 $(X, \partial X) \tensor (Y, \partial Y) = (X \times Y,(x, y) \mapsto \partial X(x) \tensor \partial Y(y))$.
 \end{proposition}
 
-The families construction, regarded as a covariant 2-functor $\Fam(-): \Cat \to \Cat$, sends functors $F:
-\cat{C} \to \cat{D}$ to functors $\Fam(F): \Fam(\cat{C}) \to \Fam(\cat{D})$ that reassign the target category
-by postcomposing with $F$, sending objects $(X, \partial X)$ to $(X, F \comp \partial X)$ and morphisms $(f,
-\partial f)$ to $(f, F \comp \partial f)$, where $F \comp \partial f$ denotes the natural transformation where
-$(F \comp \partial f)(x) = F(\partial f(x))$. If $F$ happens to be a (strong) monad on $\cat{C}$, then
-$\Fam(F)$ is a (strong) monad on $\Fam(\cat{C})$, computed by lifting the original monad $F: \cat{C} \to
-\cat{C}$ pointwise over families.
-
 \subsection{First-Order Galois Slicing via CHAD}
 \label{sec:fam:galois-slicing}
 
@@ -359,17 +351,26 @@ One might also like to allow the programmer to embed additional ``approximation 
 structures, by providing them with a \emph{lifting} monad $\synVar{L}$. Rather than the usual definition of
 lists of natural numbers as $\mu\alpha.1 + \synVar{nat} \times \alpha$, one could then (within the language)
 define a type of ``approximation lists'' $\mu\alpha.\synVar{L}\,(1 + \synVar{L}\,\synVar{nat} \times \alpha)$,
-along with an approximating version of multiplication $*_{\text{appr}}: \synVar{L}\,\synVar{nat} \times
+or perhaps a custom approximating version of multiplication $*_{\text{appr}}: \synVar{L}\,\synVar{nat} \times
 \synVar{L}\,\synVar{nat} \to \synVar{L}\,\synVar{nat}$, expressible as
 \[x *_{\text{appr}} y = \tmBind{x}{\tmFun{x'}{\syn{if}\;x' \equiv
-0\;\syn{then}\;\tmReturn{0}\;\syn{else}\;\tmBind{y}{\tmFun{y'}{\tmReturn{x' * y'}}}}}\].
+0\;\syn{then}\;\tmReturn{0}\;\syn{else}\;\tmBind{y}{\tmFun{y'}{\tmReturn{x' * y'}}}}}\]
 
 \noindent This would allow the programmer to emulate the short-circuiting behaviour of $\mathrm{strictOr}$
 from \exref{strict-short-circuit}, or the short-circuiting multiplication used in \citet{perera22} for slicing
-matrix convolutions, without baking this specific choice of approximation into the interpretation of
-individual operators.
+matrix convolutions, without baking specific choices of approximation into the interpretation of individual
+operators.
 
-\todo{Show how $\LatGal$ has a lifting monad?}
+To interpret the syntactic type constructor $\synVar{L}$, \todo{show how $\LatGal$ has a lifting monad.}
+
+The families construction, regarded as a covariant 2-functor $\Fam(-): \Cat \to \Cat$, sends functors $F:
+\cat{C} \to \cat{D}$ to functors $\Fam(F): \Fam(\cat{C}) \to \Fam(\cat{D})$ that reassign the target category
+by postcomposing with $F$, sending objects $(X, \partial X)$ to $(X, F \comp \partial X)$ and morphisms $(f,
+\partial f)$ to $(f, F \comp \partial f)$, where $F \comp \partial f$ denotes the natural transformation where
+$(F \comp \partial f)(x) = F(\partial f(x))$. If $F$ happens to be a (strong) monad on $\cat{C}$, then
+$\Fam(F)$ is a (strong) monad on $\Fam(\cat{C})$, computed by extending the original monad $F: \cat{C} \to
+\cat{C}$ componentwise to families. Thus the lifting monad $\mathcal{L}$ in $\LatGal$ is also a lifting
+monad in $\Fam(\LatGal)$.
 
 \subsection{First-Order Automatic Differentiation via CHAD}
 
@@ -418,8 +419,8 @@ We can verify that $\tangents$ is functorial, regardless of whether the linear m
 happen to be derivatives. But if $f_2(x)$ is the derivative of $f_1$ at $x$ for any $x \in \RR^m$ and
 similarly for $g$ then the derivatives compose according to the forward chain rule and $(g \comp f)_2(x)$ is
 the derivative of $(g \comp f)_1$ at $x$. Thus this setup provides an algorithmic method for computing the
-forward derivative of a composite function, without have to recompute the function itself, as long as all
-atomic operations provide derivatives.
+forward derivative of a composite function, as long as all atomic operations provide derivatives, without have
+to recompute the function itself.
 
 % An efficient implementation of \GPS based on $\Fam(\LatGal)$
 % (\secref{fam:galois-slicing} above) would most likely apply a similar optimisation to make it possible to
