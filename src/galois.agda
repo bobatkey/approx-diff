@@ -306,31 +306,29 @@ module _ where
   𝕃-unit .left⊣right {x} {bottom} .proj₂ x₁ = tt
   𝕃-unit .left⊣right {x} {< x₁ >} .proj₂ x₁≤x = x₁≤x
 
-{-
   𝕃-join : ∀ {X} → 𝕃 (𝕃 X) ⇒g 𝕃 X
-  𝕃-join .fwd = meet-semilattice.L-join
-  𝕃-join .bwd = join-semilattice.L-dup
-  𝕃-join .bwd⊣fwd {bottom} {bottom} .proj₁ e = tt
-  𝕃-join .bwd⊣fwd {< bottom >} {bottom} .proj₁ e = tt
-  𝕃-join .bwd⊣fwd {< < x > >} {bottom} .proj₁ e = tt
-  𝕃-join .bwd⊣fwd {< < x > >} {< x₁ >} .proj₁ e = e
-  𝕃-join .bwd⊣fwd {bottom} {bottom} .proj₂ e = tt
-  𝕃-join .bwd⊣fwd {< bottom >} {bottom} .proj₂ e = tt
-  𝕃-join .bwd⊣fwd {< < x > >} {bottom} .proj₂ e = tt
-  𝕃-join .bwd⊣fwd {< < x > >} {< x₁ >} .proj₂ e = e
+  𝕃-join {X} .right = meet-semilattice.L-join {X = X .meets} ._=>M_.func
+  𝕃-join {X} .left = join-semilattice.L-dup {X = X .joins} ._=>J_.func
+  𝕃-join .left⊣right {bottom} {bottom} .proj₁ e = tt
+  𝕃-join .left⊣right {< bottom >} {bottom} .proj₁ e = tt
+  𝕃-join .left⊣right {< < x > >} {bottom} .proj₁ e = tt
+  𝕃-join .left⊣right {< < x > >} {< x₁ >} .proj₁ e = e
+  𝕃-join .left⊣right {bottom} {bottom} .proj₂ e = tt
+  𝕃-join .left⊣right {< bottom >} {bottom} .proj₂ e = tt
+  𝕃-join .left⊣right {< < x > >} {bottom} .proj₂ e = tt
+  𝕃-join .left⊣right {< < x > >} {< x₁ >} .proj₂ e = e
 
-  𝕃-strength : ∀ {X Y} → (X ⊗ 𝕃 Y) ⇒g 𝕃 (X ⊗ Y)
-  𝕃-strength .fwd = meet-semilattice.L-strength
-  𝕃-strength .bwd = join-semilattice.L-costrength
-  𝕃-strength {X} {Y} .bwd⊣fwd {x , bottom} {bottom} .proj₁ e =
+  𝕃-strength : ∀ {X Y} → (X ⊕ 𝕃 Y) ⇒g 𝕃 (X ⊕ Y)
+  𝕃-strength {X} {Y} .right = meet-semilattice.L-strength {X = X .meets} {Y .meets} ._=>M_.func
+  𝕃-strength {X} {Y} .left = join-semilattice.L-costrength {X = X .joins} {Y .joins} ._=>J_.func
+  𝕃-strength {X} .left⊣right {x , bottom} {bottom} .proj₁ e =
     X .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom , tt
-  𝕃-strength {X} {Y} .bwd⊣fwd {x , < x₁ >} {bottom} .proj₁ e =
+  𝕃-strength {X} .left⊣right {x , < x₁ >} {bottom} .proj₁ e =
     X .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom , tt
-  𝕃-strength {X} {Y} .bwd⊣fwd {x , < x₂ >} {< x₁ >} .proj₁ e = e
-  𝕃-strength {X} {Y} .bwd⊣fwd {x , bottom} {bottom} .proj₂ e = tt
-  𝕃-strength {X} {Y} .bwd⊣fwd {x , < x₁ >} {bottom} .proj₂ e = tt
-  𝕃-strength {X} {Y} .bwd⊣fwd {x , < x₁ >} {< x₂ >} .proj₂ e = e
--}
+  𝕃-strength .left⊣right {x , < x₂ >} {< x₁ >} .proj₁ e = e
+  𝕃-strength .left⊣right {x , bottom} {bottom} .proj₂ e = tt
+  𝕃-strength .left⊣right {x , < x₁ >} {bottom} .proj₂ e = tt
+  𝕃-strength .left⊣right {x , < x₁ >} {< x₂ >} .proj₂ e = e
 
 module _ where
 
