@@ -361,20 +361,13 @@ from \exref{strict-short-circuit}, or the short-circuiting multiplication used i
 matrix convolutions, without baking specific choices of approximation into the interpretation of individual
 operators.
 
-To interpret the syntactic type constructor $\synVar{L}$, consider the strong lifting monad $\mathcal{L}$
-which extends a poset $X$ with a distinguished bottom element $\bot$ and extends a monotone function $f$
-between posets with a mapping from $\bot$ to $\bot$. $\mathcal{L}$ extends to strong monad $\mathcal{L}_\meet$
-on meet-semilattices on $X$. For any join-semilattice on $X$, $\mathcal{L}$ induces a costrong comonad, as
-long as $X$ is bounded; the bottom element of $X$ is needed to implement the counit $\varepsilon_X:
-\mathcal{L}(X) \to X$. These two in turn form a strong monad in $\LatGal$ which sends any lattice on $X$ to a
-lattice on $\mathcal{L}(X)$
-
-we note that the category of join-semilattices has a
-strong monad $\mathcal{L}_{\join}$ which sends any join-semilattice $X = (X, \join, \bot)$ to the semilattice
-which extends $X$ with a new bottom element $\bot_{\mathcal{L}}$ while preserving the original ordering of $X$
-within the lifted structure. One can do the same for meet-semilattices, extending $X = (X, \meet, \top)$ with
-a new element $\bot^*$ which also acts as the bottom element. In both cases the action on
-morphisms $f$ is to map $\bot^*$ to $\bot^*$ and otherwise act as $f$:
+To interpret the syntactic type constructor $\synVar{L}$, consider the functor $\mathcal{L}$ which extends any
+poset $X$ with a distinguished bottom element $\bot$ and any monotone function $f$ between posets with a
+mapping from $\bot$ to $\bot$. $\mathcal{L}$ extends to a strong monad $\mathcal{L}^\meet$ on
+meet-semilattices, and to a costrong comonad $\mathcal{L}^\join$ on bounded join-semilattices; the bottom
+element of $X$ is needed to implement the counit $\varepsilon_X: \mathcal{L}^\join(X) \to X$. These two in
+turn form a strong monad in $\LatGal$ with unit $\varepsilon^\join_X \dashv \eta^\meet_X$ and multiplication
+$\delta^\join_X \dashv \mu^\meet_X$.
 
 The families construction, regarded as a covariant 2-functor $\Fam(-): \Cat \to \Cat$, sends functors $F:
 \cat{C} \to \cat{D}$ to functors $\Fam(F): \Fam(\cat{C}) \to \Fam(\cat{D})$ that reassign the target category
