@@ -369,9 +369,9 @@ module _ where
   L-map : ∀ {A B}{X : MeetSemilattice A}{Y : MeetSemilattice B} → X => Y → L X => L Y
   L-map f .func .fun bottom = bottom
   L-map f .func .fun < x > = < f .func .fun x >
-  L-map f .func .mono {bottom} {bottom} x₁≤x₂ = tt
-  L-map f .func .mono {bottom} {< x₂ >} x₁≤x₂ = tt
-  L-map f .func .mono {< x₁ >} {< x₂ >} x₁≤x₂ = f .func .mono x₁≤x₂
+  L-map f .func .mono {bottom} {bottom} _ = tt
+  L-map f .func .mono {bottom} {< _ >} _ = tt
+  L-map f .func .mono {< _ >} {< _ >} x₁≤x₂ = f .func .mono x₁≤x₂
   L-map f .∧-preserving {bottom} {x'} = tt
   L-map f .∧-preserving {< x >} {bottom} = tt
   L-map f .∧-preserving {< x >} {< x₁ >} = f .∧-preserving
