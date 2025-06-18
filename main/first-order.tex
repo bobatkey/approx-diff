@@ -348,11 +348,11 @@ sums and products, providing suitable derived structures for composite values.
 \subsubsection{Lifting}
 
 One might also like to allow the programmer to embed additional ``approximation points'' into composite
-structures, by providing them with a \emph{lifting} monad $\synVar{L}$. Rather than the usual definition of
-lists of natural numbers as $\mu\alpha.1 + \synVar{nat} \times \alpha$, one could then (within the language)
-define a type of ``approximation lists'' $\mu\alpha.\synVar{L}\,(1 + \synVar{L}\,\synVar{nat} \times \alpha)$,
-or perhaps a custom approximating version of multiplication $*_{\text{appr}}: \synVar{L}\,\synVar{nat} \times
-\synVar{L}\,\synVar{nat} \to \synVar{L}\,\synVar{nat}$, expressible as
+structures, by providing them with a \emph{lifting} type constructor $\synVar{L}$. Rather than the usual
+definition of lists of natural numbers as $\mu\alpha.1 + \synVar{nat} \times \alpha$, one could then (within
+the language) define a type of ``approximation lists'' $\mu\alpha.\synVar{L}\,(1 + \synVar{L}\,\synVar{nat}
+\times \alpha)$, or perhaps a custom approximating version of multiplication $*_{\text{appr}}:
+\synVar{L}\,\synVar{nat} \times \synVar{L}\,\synVar{nat} \to \synVar{L}\,\synVar{nat}$, expressible as
 \[x *_{\text{appr}} y = \tmBind{x}{\tmFun{x'}{\syn{if}\;x' \equiv
 0\;\syn{then}\;\tmReturn{0}\;\syn{else}\;\tmBind{y}{\tmFun{y'}{\tmReturn{x' * y'}}}}}\]
 
@@ -361,7 +361,9 @@ from \exref{strict-short-circuit}, or the short-circuiting multiplication used i
 matrix convolutions, without baking specific choices of approximation into the interpretation of individual
 operators.
 
-To interpret the syntactic type constructor $\synVar{L}$, \todo{show how $\LatGal$ has a lifting monad.}
+To interpret the syntactic type constructor $\synVar{L}$, we note that $\LatGal$ has a lifting monad
+$\mathcal{L}$ which sends any bounded lattice $X = (X, \meet, \join, \top, \bot)$ to the lattice
+$\mathcal{L}(X) = X_\bot$.
 
 The families construction, regarded as a covariant 2-functor $\Fam(-): \Cat \to \Cat$, sends functors $F:
 \cat{C} \to \cat{D}$ to functors $\Fam(F): \Fam(\cat{C}) \to \Fam(\cat{D})$ that reassign the target category
