@@ -342,7 +342,7 @@ interpret $\syn{nat}$ to the object $(\Nat,n \mapsto \downset{n})$, where the fa
 every natural number $n$ the two-point lattice $\downset{n} = \{n, \bot\}$ indicating whether $n$ is fully
 present ($n$) or fully absent ($\bot$) from an approximation of $n$, as shown in the example in
 \secref{introduction}. We could then interpret $+$ as the morphism $(+,\partial+)$, i.e.~the usual addition
-operator + pairs with an approximating version $\partial+_{n,m}: \downset{n} \to \downset{m}$ defined as
+operator + paired with an approximating version $\partial+_{n,m}: \downset{n} \to \downset{m}$ defined as:
 \begin{displaymath}
     \begin{array}[t]{l@{(}l@{,~}l@{)~}c@{~}l}
       \partial+_{n,m}&n&m&=&n + m \\
@@ -350,16 +350,18 @@ operator + pairs with an approximating version $\partial+_{n,m}: \downset{n} \to
       \partial+_{n,m}&\_&\bot&=&\bot
     \end{array}
 \end{displaymath}
-These elementary approximations would then be combined by the interpretation of composite types like sums and
-products, providing suitable derived approximation structures for composite values.
+These elementary approximation structures would then be combined by the interpretation of composite types like
+sums and products, providing suitable derived structures for composite values.
+
+\subsubsection{Lifting}
 
 One might also like to allow the programmer to embed additional ``approximation points'' into composite
 structures, by providing them with a \emph{lifting} monad $\synVar{L}$. Rather than the usual definition of
-the type of lists of natural numbers as $\mu\alpha.1 + \synVar{nat} \times \alpha$, one could (within the
-language) define a type of ``approximation lists'' $\mu\alpha.\synVar{L}\,(1 + \synVar{L}\,\synVar{nat} \times
-\alpha)$, along with an approximating version of multiplication $*_{\text{appr}}: \synVar{L}\,\synVar{nat}
-\times \synVar{L}\,\synVar{nat} \to \synVar{L}\,\synVar{nat}$ expressible as
-\[x *_{\text{appr}} y = \tmBind{x}{\tmFun{x'}{\syn{if}\;x' =
+lists of natural numbers as $\mu\alpha.1 + \synVar{nat} \times \alpha$, one could then (within the language)
+define a type of ``approximation lists'' $\mu\alpha.\synVar{L}\,(1 + \synVar{L}\,\synVar{nat} \times \alpha)$,
+along with an approximating version of multiplication $*_{\text{appr}}: \synVar{L}\,\synVar{nat} \times
+\synVar{L}\,\synVar{nat} \to \synVar{L}\,\synVar{nat}$, expressible as
+\[x *_{\text{appr}} y = \tmBind{x}{\tmFun{x'}{\syn{if}\;x' \equiv
 0\;\syn{then}\;\tmReturn{0}\;\syn{else}\;\tmBind{y}{\tmFun{y'}{\tmReturn{x' * y'}}}}}\].
 
 \noindent This would allow the programmer to emulate the short-circuiting behaviour of $\mathrm{strictOr}$
