@@ -337,16 +337,17 @@ Y(f(x))$. The reindexing along $f$ in the composition $(g, \partial g) \comp (f,
 connection at each point, using the baseline (unapproximated) function $f$.
 
 For a first-order language with a primitive type $\syn{nat}$ and primitive operations such as $+$, the
-``leaves'' of the approximation lattices would provided by a model of $\syn{nat}$ and its operations in
-$\Fam(\LatGal)$. For example, we might assign $\syn{nat}$ to the object $(\Nat,n \mapsto \{n, \bot\})$, where
-the family component is the two-point lattice indicating whether a given natural number is fully present ($n$)
-or fully absent ($\bot$) from the approximation, as shown in the example in \secref{introduction}, and we
-might then assign $+$ to the morphism $(\hat+,\partial(\hat+))$, with $\partial(\hat+)$ defined as
+language would provide a model of $\syn{nat}$ and its operations in $\Fam(\LatGal)$. For example, we might
+interpret $\syn{nat}$ to the object $(\Nat,n \mapsto \downset{n})$, where the family component assigns to
+every natural number $n$ the two-point lattice $\downset{n} = \{n, \bot\}$ indicating whether $n$ is fully
+present ($n$) or fully absent ($\bot$) from an approximation of $n$, as shown in the example in
+\secref{introduction}. We might then interpret $+$ as the morphism $(+,\partial+)$, with $+$ here meaning the
+usual addition operator, and $\partial+_{n,m}: \downset{n} \to \downset{m}$ defined as
 \begin{displaymath}
     \begin{array}[t]{l@{(}l@{,~}l@{)~}c@{~}l}
-      \partial(\hat+)&n&m&=&n \mathbin{\hat+} m \\
-      \partial(\hat+)&\bot&\_&=&\bot \\
-      \partial(\hat+)&\_&\bot&=&\bot
+      \partial+_{n,m}&n&m&=&n + m \\
+      \partial+_{n,m}&\bot&\_&=&\bot \\
+      \partial+_{n,m}&\_&\bot&=&\bot
     \end{array}
 \end{displaymath}
 These elementary approximations would then be combined by the interpretation of composite types like sums and
