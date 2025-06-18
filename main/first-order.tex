@@ -363,8 +363,8 @@ operators.
 
 To interpret the syntactic type constructor $\synVar{L}$, consider the strong lifting monad $\mathcal{L}$
 which extends a poset $X$ with a distinguished bottom element $\bot$ and extends a monotone function $f$
-between posets with a mapping from $\bot$ to $\bot$. $\mathcal{L}$ induces a strong monad $\mathcal{L}_\meet$
-in any meet-semilattice on $X$. For any join-semilattice on $X$, $\mathcal{L}$ induces a costrong comonad, as
+between posets with a mapping from $\bot$ to $\bot$. $\mathcal{L}$ extends to strong monad $\mathcal{L}_\meet$
+on meet-semilattices on $X$. For any join-semilattice on $X$, $\mathcal{L}$ induces a costrong comonad, as
 long as $X$ is bounded; the bottom element of $X$ is needed to implement the counit $\varepsilon_X:
 \mathcal{L}(X) \to X$. These two in turn form a strong monad in $\LatGal$ which sends any lattice on $X$ to a
 lattice on $\mathcal{L}(X)$
