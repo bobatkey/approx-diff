@@ -3,15 +3,15 @@
 
 $\Fam(\FinVect)$ and $\Fam(\LatGal)$, introduced in \secref{first-order}, provide appropriate notions of
 composition for automatic differentiation and Galois slicing respectively, but neither is Cartesian closed. To
-interpret higher-order programs directly, we use a special case of a construction due to \citet{nunes2023}
-(\propref{higher-order:fam-CC} below). First we introduce notation for the product over a set-indexed family.
+interpret higher-order programs, we use a special case of a construction due to \citet{nunes2023}
+(\propref{higher-order:fam-CC} below). First we recall the notion of a product over a set-indexed family.
 
 \begin{definition}[Small product]
-Suppose $\cat{C}$ a category and $X$ a
-set. A \emph{product} of the family $A = \{A_x\}_{x \in X}$ is an object $\prod_{X}A$ plus a family of
-projection morphisms $\{\pi_x: \prod_{X} A \to A_x\}_{x \in X}$ in $\cat{C}$ such that for any object $B$ and
-family of morphisms $f = \{f_x: B \to A_x\}_{x \in X}$ in $\cat{C}$, there exists a unique product morphism
-$\prodFam{f}$ making the following diagram commute for every $x \in X$:
+Suppose $\cat{C}$ a category and $X$ a set. A \emph{product} of the family $A = \{A_x\}_{x \in X}$ is an
+object $\prod_{X}A$ plus a family of projection morphisms $\{\pi_x: \prod_{X} A \to A_x\}_{x \in X}$ in
+$\cat{C}$ such that for any object $B$ and family of morphisms $f = \{f_x: B \to A_x\}_{x \in X}$ in
+$\cat{C}$, there exists a unique morphism $\prodFam{f}$ making the following diagram commute for every $x \in
+X$:
 
 \begin{center}
 \begin{tikzcd}
