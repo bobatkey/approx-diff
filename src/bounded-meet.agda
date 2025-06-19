@@ -20,6 +20,18 @@ module _ {A : Set} {_≤_ : A → A → Prop} (≤-isPreorder : IsPreorder _≤_
       lower₂   : meet ≤ y
       greatest : ∀ {z} → z ≤ x → z ≤ y → z ≤ meet
 
+  open IsPreorder ≤-isPreorder
+    renaming (refl to ≤-refl; trans to ≤-trans)
+    using (isEquivalence; _≃_)
+  open IsEquivalence isEquivalence
+    renaming (refl to ≃-refl; sym to ≃-sym; trans to ≃-trans)
+
+  open IsMeetOf
+
+  meet-unique : ∀ {x y m₁ m₂} → IsMeetOf x y m₁ → IsMeetOf x y m₂ → m₁ ≃ m₂
+  meet-unique is-meet₁ is-meet₂ .proj₁ = is-meet₂ .greatest (is-meet₁ .lower₁) (is-meet₁ .lower₂)
+  meet-unique is-meet₁ is-meet₂ .proj₂ = is-meet₁ .greatest (is-meet₂ .lower₁) (is-meet₂ .lower₂)
+
   record HasMeetOf (x y : A) : Set where
     field
       meet    : A
@@ -333,7 +345,9 @@ eval {X} {Y} .cm {f₁ , x₁} {f₂ , x₂} {f , x} {f₁∧f₂ , x₁∧x₂}
     ϕ₅ : IsMeetOf (Y .≤-isPreorder) (f₁ .fun x) (f₂ .fun x) (f₁∧f₂ .fun x)
     ϕ₅ .lower₁ = ϕ₄ .lower₁ .ext
     ϕ₅ .lower₂ = ϕ₄ .lower₂ .ext
-    ϕ₅ .greatest z≤f₁x z≤f₂x = {!!}
+    ϕ₅ .greatest z≤f₁x z≤f₂x =
+      Y .≤-trans (Y .bounded-∧ _ _ .is-meet .greatest z≤f₁x z≤f₂x)
+                 (meet-unique ((X [→] Y) .≤-isPreorder) ((X [→] Y) .bounded-∧ f₁≤f f₂≤f .is-meet) ϕ₄ .proj₁ .ext)
 
     ϕ₃₅ : IsMeetOf (Y .≤-isPreorder) (f₂ .fun x₂) (f₁ .fun x) (f₁∧f₂ .fun x₂)
     ϕ₃₅ = lemma {Y} (meet-swap {Y} ϕ₃) ϕ₅ (f₂ .mono x₂≤x)
