@@ -433,11 +433,11 @@ to recompute the function itself.
 % compute forwards slices without having to reexecute the program at the same time.
 
 We can see these ``optimised'' forward-mode maps as living in $\Fam(\FinVect)$ if we regard every finite
-vector space $\RR^n$ as paired with the constant family of tangent spaces at $\RR^n$ (also written $\RR^n$,
-for convenience), and each map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ as the pair $(f_1, f_2)$.
-Then the composition $(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp
-\partial f)$ again corresponds exactly to the forward chain rule, since $(\reindex{\partial g}{f} \comp
-\partial f)_x = {\partial g}_{f(x)} \comp {\partial f}_x$.
+vector space $\RR^n$ as paired with the family of tangent spaces which is constantly $\RR^n$, and each map $f:
+\RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ as the pair $(f_1, f_2)$. Then the composition $(g, \partial
+g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp \partial f)$ again corresponds exactly to
+the forward chain rule, since $(\reindex{\partial g}{f} \comp \partial f)_x = {\partial g}_{f(x)} \comp
+{\partial f}_x$.
 
 % with the reindexing along $f$ recomputing $f(x)$ in order to select the appropriate pushforward.
 
