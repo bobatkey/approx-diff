@@ -333,8 +333,13 @@ language would provide a model of $\syn{nat}$ and its operations in $\Fam(\LatGa
 interpret $\syn{nat}$ to the object $(\Nat,n \mapsto \downset{n})$, where the family component assigns to
 every natural number $n$ the two-point lattice $\downset{n} = \{n, \bot\}$ indicating whether $n$ is fully
 present ($n$) or fully absent ($\bot$) from an approximation of $n$, as shown in the example in
-\secref{introduction}. We could then interpret $+$ as the morphism $(+,\partial+)$, i.e.~the usual addition
-operator + paired with an approximating version $\partial+_{n,m}: \downset{n} \to \downset{m}$ defined as:
+\secref{introduction}. A slight variant is to use the constant family which assigns to every $n$ the two-point
+lattice $\Two = \{\mathsf{tt},\mathsf{ff}\}$; using $\downset{n}$ is slightly more ergonomic as the
+approximants of a given value then contain, rather than merely determining, all the information about the
+value that hasn't been approximated away.
+
+We might then interpret $+$ as the morphism $(+,\partial+)$, i.e.~the usual addition operator + paired with an
+approximating version $\partial+_{n,m}: \downset{n} \to \downset{m}$ defined as:
 \begin{displaymath}
     \begin{array}[t]{l@{(}l@{,~}l@{)~}c@{~}l}
       \partial+_{n,m}&n&m&=&n + m \\
@@ -347,12 +352,15 @@ sums and products, providing suitable derived structures for composite values.
 
 \subsubsection{Lifting}
 
-One might also like to allow the programmer to embed additional ``approximation points'' into composite
-structures, by providing them with a \emph{lifting} type constructor $\synVar{L}$. Rather than the usual
-definition of lists of natural numbers as $\mu\alpha.1 + \synVar{nat} \times \alpha$, one could then (within
-the language) define a type of ``approximation lists'' $\mu\alpha.\synVar{L}\,(1 + \synVar{L}\,\synVar{nat}
-\times \alpha)$, or perhaps a custom approximating version of multiplication $*_{\text{appr}}:
-\synVar{L}\,\synVar{nat} \times \synVar{L}\,\synVar{nat} \to \synVar{L}\,\synVar{nat}$, expressible as
+A programmer, or perhaps a language implementor, might also like to embed additional ``approximation points''
+into composite structures, to allow for example the list $1 : 2 : []$ to have the partial list $1 : \bot$ as
+an approximant, representing a list with at least one element. This can be accomplished by extending the
+syntax with a \emph{lifting} type constructor $\synVar{L}$. Then, as an alternative to the usual definition of
+lists of natural numbers as $\mu\alpha.1 + \synVar{nat} \times \alpha$, one could (within the language) define
+a type of ``approximation lists'' $\mu\alpha.\synVar{L}\,(1 + \synVar{L}\,\synVar{nat} \times \alpha)$, with
+monadic computations over approximated lists computing partial lists like $1 : \bot$. Similarly, one could
+define a custom approximating version of multiplication $*_{\text{appr}}: \synVar{L}\,\synVar{nat} \times
+\synVar{L}\,\synVar{nat} \to \synVar{L}\,\synVar{nat}$, as:
 \[x *_{\text{appr}} y = \tmBind{x}{\tmFun{x'}{\syn{if}\;x' \equiv
 0\;\syn{then}\;\tmReturn{0}\;\syn{else}\;\tmBind{y}{\tmFun{y'}{\tmReturn{x' * y'}}}}}\]
 
@@ -360,6 +368,14 @@ the language) define a type of ``approximation lists'' $\mu\alpha.\synVar{L}\,(1
 from \exref{strict-short-circuit}, or the short-circuiting multiplication used in \citet{perera22} for slicing
 matrix convolutions, without baking specific choices of approximation into the interpretation of individual
 operators.
+
+With this lifting operator in the core language, one could then choose to fix certain choices of
+approximation, by providing a surface language without the lifting monad and interpreting it into the core
+language with lifting. The Galois slicing implementations discussed in \citet{perera12a} and
+\citet{ricciotti17}, for example, provide an approximation point at every composite type constructor; we can
+emulate this in our approach by defining a surface language where the data type of lists $\mu\alpha.1 +
+\synVar{nat} \times \alpha$ would desugar automatically into the approximating version
+$\mu\alpha.\synVar{L}\,(1 + \synVar{L}\,\synVar{nat} \times \alpha)$.
 
 To interpret the syntactic type constructor $\synVar{L}$, consider the strong monad $(\mathcal{L}, \eta, \mu)$
 which extends any poset $X$ with a distinguished bottom element $\bot$ and any monotone function $f$ between
