@@ -4,11 +4,11 @@ open import Level using (suc; 0ℓ)
 
 module bounded-meet where
 
-open import prop using (proj₁; proj₂; _∧_; _,_; LiftS; liftS)
+open import prop using (proj₁; proj₂; _∧_; _,_; LiftS; liftS; ⊥)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import basics using (IsPreorder)
 open import prop-setoid using (IsEquivalence)
-open import categories using (Category; HasProducts; HasExponentials)
+open import categories using (Category; HasProducts; HasExponentials; HasCoproducts)
 
 ------------------------------------------------------------------------------
 -- FIXME: move this to basics?
@@ -220,9 +220,53 @@ meet-swap m .greatest z₁ z₂ = m .greatest z₂ z₁
 
 
 ------------------------------------------------------------------------------
--- Coproducts: TODO
+-- Coproducts
 
+open import Data.Sum using (inj₁; inj₂; _⊎_)
 
+_[+]_ : BoundedMeet → BoundedMeet → BoundedMeet
+(X [+] Y) .Carrier = X .Carrier ⊎ Y .Carrier
+(X [+] Y) ._≤_ (inj₁ x₁) (inj₁ x₂) = X ._≤_ x₁ x₂
+(X [+] Y) ._≤_ (inj₁ _)  (inj₂ _)  = ⊥
+(X [+] Y) ._≤_ (inj₂ _)  (inj₁ _)  = ⊥
+(X [+] Y) ._≤_ (inj₂ y₁) (inj₂ y₂) = Y ._≤_ y₁ y₂
+(X [+] Y) .≤-isPreorder .refl {inj₁ x} = X .≤-refl
+(X [+] Y) .≤-isPreorder .refl {inj₂ y} = Y .≤-refl
+(X [+] Y) .≤-isPreorder .trans {inj₁ x} {inj₁ x₁} {inj₁ x₂} = X .≤-trans
+(X [+] Y) .≤-isPreorder .trans {inj₂ y} {inj₂ y₁} {inj₂ y₂} = Y .≤-trans
+(X [+] Y) .bounded-∧ {inj₁ x₁} {inj₁ x₂} {inj₁ x₃} ϕ₁ ϕ₂ .meet = inj₁ (X .bounded-∧ ϕ₁ ϕ₂ .meet)
+(X [+] Y) .bounded-∧ {inj₁ x₁} {inj₁ x₂} {inj₁ x₃} ϕ₁ ϕ₂ .is-meet .lower₁ = X .bounded-∧ ϕ₁ ϕ₂ .is-meet .lower₁
+(X [+] Y) .bounded-∧ {inj₁ x₁} {inj₁ x₂} {inj₁ x₃} ϕ₁ ϕ₂ .is-meet .lower₂ = X .bounded-∧ ϕ₁ ϕ₂ .is-meet .lower₂
+(X [+] Y) .bounded-∧ {inj₁ x₁} {inj₁ x₂} {inj₁ x₃} ϕ₁ ϕ₂ .is-meet .greatest {inj₁ z} = X .bounded-∧ ϕ₁ ϕ₂ .is-meet .greatest
+(X [+] Y) .bounded-∧ {inj₂ y₁} {inj₂ y₂} {inj₂ y₃} ϕ₁ ϕ₂ .meet = inj₂ (Y .bounded-∧ ϕ₁ ϕ₂ .meet)
+(X [+] Y) .bounded-∧ {inj₂ y₁} {inj₂ y₂} {inj₂ y₃} ϕ₁ ϕ₂ .is-meet .lower₁ = Y .bounded-∧ ϕ₁ ϕ₂ .is-meet .lower₁
+(X [+] Y) .bounded-∧ {inj₂ y₁} {inj₂ y₂} {inj₂ y₃} ϕ₁ ϕ₂ .is-meet .lower₂ = Y .bounded-∧ ϕ₁ ϕ₂ .is-meet .lower₂
+(X [+] Y) .bounded-∧ {inj₂ y₁} {inj₂ y₂} {inj₂ y₃} ϕ₁ ϕ₂ .is-meet .greatest {inj₂ z} = Y .bounded-∧ ϕ₁ ϕ₂ .is-meet .greatest
+
+coproducts : HasCoproducts cat
+coproducts .HasCoproducts.coprod = _[+]_
+coproducts .HasCoproducts.in₁ .fun = inj₁
+coproducts .HasCoproducts.in₁ .mono x₁≤x₂ = x₁≤x₂
+coproducts .HasCoproducts.in₁ .cm {x₁} {x₂} {x} {x₁∧x₂} x₁≤x x₂≤x m .lower₁ = m .lower₁
+coproducts .HasCoproducts.in₁ .cm {x₁} {x₂} {x} {x₁∧x₂} x₁≤x x₂≤x m .lower₂ = m .lower₂
+coproducts .HasCoproducts.in₁ .cm {x₁} {x₂} {x} {x₁∧x₂} x₁≤x x₂≤x m .greatest {inj₁ z} z≤x₁ z≤x₂ = m .greatest z≤x₁ z≤x₂
+coproducts .HasCoproducts.in₂ .fun = inj₂
+coproducts .HasCoproducts.in₂ .mono y₁≤y₂ = y₁≤y₂
+coproducts .HasCoproducts.in₂ .cm {y₁} {y₂} {y} x₁≤x x₂≤x m .lower₁ = m .lower₁
+coproducts .HasCoproducts.in₂ .cm {y₁} {y₂} {y} x₁≤x x₂≤x m .lower₂ = m .lower₂
+coproducts .HasCoproducts.in₂ .cm {y₁} {y₂} {y} x₁≤x x₂≤x m .greatest {inj₂ z} z≤y₁ z≤y₂ = m .greatest z≤y₁ z≤y₂
+coproducts .HasCoproducts.copair {X} {Y} {Z} f g .fun (inj₁ x) = f .fun x
+coproducts .HasCoproducts.copair {X} {Y} {Z} f g .fun (inj₂ y) = g .fun y
+coproducts .HasCoproducts.copair {X} {Y} {Z} f g .mono {inj₁ x₁} {inj₁ x₂} = f .mono
+coproducts .HasCoproducts.copair {X} {Y} {Z} f g .mono {inj₂ y₁} {inj₂ y₂} = g .mono
+coproducts .HasCoproducts.copair {X} {Y} {Z} f g .cm {inj₁ x₁} {inj₁ x₂} {inj₁ x} {inj₁ x₁∧x₂} ϕ₁ ϕ₂ m = f .cm ϕ₁ ϕ₂ (record { lower₁ = m .lower₁ ; lower₂ = m .lower₂ ; greatest = λ {z} → m .greatest {inj₁ z} })
+coproducts .HasCoproducts.copair {X} {Y} {Z} f g .cm {inj₂ y₁} {inj₂ y₂} {inj₂ y} {inj₂ y₁∧x₂} ϕ₁ ϕ₂ m = g .cm ϕ₁ ϕ₂ (record { lower₁ = m .lower₁ ; lower₂ = m .lower₂ ; greatest = λ {z} → m .greatest {inj₂ z} })
+coproducts .HasCoproducts.copair-cong f₁≃f₂ g₁≃g₂ .eqfun (inj₁ x) = f₁≃f₂ .eqfun x
+coproducts .HasCoproducts.copair-cong f₁≃f₂ g₁≃g₂ .eqfun (inj₂ y) = g₁≃g₂ .eqfun y
+coproducts .HasCoproducts.copair-in₁ {X}{Y}{Z} f g .eqfun x = Z .BoundedMeet.≃-refl
+coproducts .HasCoproducts.copair-in₂ {X}{Y}{Z} f g .eqfun x = Z .BoundedMeet.≃-refl
+coproducts .HasCoproducts.copair-ext {X} {Y} {Z} f .eqfun (inj₁ x) = Z .BoundedMeet.≃-refl
+coproducts .HasCoproducts.copair-ext {X} {Y} {Z} f .eqfun (inj₂ y) = Z .BoundedMeet.≃-refl
 
 ------------------------------------------------------------------------------
 -- Exponentials
