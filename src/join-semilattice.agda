@@ -458,7 +458,6 @@ module _ where
   L-map m .func .fun < x > = < m .func .fun x >
   L-map m .func .mono {bottom} {bottom} _ = tt
   L-map m .func .mono {bottom} {< _ >} _ = tt
-  L-map m .func .mono {< _ >} {bottom} ()
   L-map m .func .mono {< _ >} {< _ >} x₁≤x₂ = m .func .mono x₁≤x₂
   L-map m .∨-preserving {bottom} {bottom} = tt
   L-map {B = B} m .∨-preserving {bottom} {< _ >} = B .≤-refl

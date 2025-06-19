@@ -20,11 +20,11 @@ Vákár and collaborators overcome this by using different interpretations for f
 
 \subsubsection{$\CMon$-Categories}
 
-To say that a category $\cat{C}$ is enriched in $\CMon$, the (monoidal) category of commutative monoids, is to
-say that every hom-set $\cat{C}(X,Y)$ provides an operation + to add morphisms together plus a zero morphism
-$0: X \to Y$, and moreover that composition is \emph{bilinear}, i.e.~given by a family of morphisms
-$\Hom{\cat{C}}{Y}{Z} \tensor \Hom{\cat{C}}{X}{Y} \to \Hom{\cat{C}}{X}{Z}$ in $\CMon$ that preserve the
-additive structure in $\Hom{\cat{C}}{Y}{Z}$ and $\Hom{\cat{C}}{X}{Y}$ separately:
+A category $\cat{C}$ is enriched in $\CMon$, the (monoidal) category of commutative monoids, if every hom-set
+$\cat{C}(X,Y)$ provides an operation + to add morphisms together, as well as a zero morphism $0: X \to Y$, and
+composition is \emph{bilinear}, i.e.~given by a family of morphisms $\Hom{\cat{C}}{Y}{Z} \tensor
+\Hom{\cat{C}}{X}{Y} \to \Hom{\cat{C}}{X}{Z}$ in $\CMon$ that preserve the additive structure in
+$\Hom{\cat{C}}{Y}{Z}$ and $\Hom{\cat{C}}{X}{Y}$ separately:
 
 \begin{salign*}
 f \comp \zero = f = \zero \comp f
@@ -40,7 +40,7 @@ In a $\CMon$-category, any products and coproducts coincide.
 \label{prop:biproducts:from-product-or-coproduct}
 In any $\CMon$-category:
 \begin{enumerate}
-\item If $X \times Y$ is a product then it is also coproduct, with $\inj_X = \prodM{\id}{0}$ and $\inj_Y =
+\item If $X \times Y$ is a product then it is also coproduct, with $\inj_1 = \prodM{\id}{0}$ and $\inj_2 =
 \prodM{0}{\id}$.
 \item If $X \coprod Y$ is a coproduct then it is also a product, with $\pi_1 = \coprodM{\id}{0}$ and $\pi_2 =
 \coprodM{0}{\id}$.
@@ -229,7 +229,7 @@ typically depends on the value being approximated, we will want to interpret a t
 \partial X)$ where $X$ provides the conventional interpretation as a set and $\partial X$ provides an
 appropriate lattice of approximations $\partial X(x)$ for every point $x \in X$. An expression $e$ of type
 $\sigma$ with a single free variable of type $\tau$ (supposing $\tau$ and $\sigma$ denote $X$ and $Y$ in the
-conventional semantics) must then also be interpreted by a pair $(f, \partial f)$, with $f$ providing the
+conventional semantics) must then be interpreted by a pair $(f, \partial f)$, with $f$ providing the
 conventional interpretation as a function $X \to Y$, and $\partial f$ as a family of Galois connections
 $\partial f(x): \partial X(x) \to \partial Y(f(x))$ taking approximants to approximants.
 
@@ -317,14 +317,6 @@ If $\cat{C}$ is (symmetric) monoidal then $\Fam(\cat{C})$ is also (symmetric) mo
 $(X, \partial X) \tensor (Y, \partial Y) = (X \times Y,(x, y) \mapsto \partial X(x) \tensor \partial Y(y))$.
 \end{proposition}
 
-The families construction, regarded as a covariant 2-functor $\Fam(-): \Cat \to \Cat$, sends functors $F:
-\cat{C} \to \cat{D}$ to functors $\Fam(F): \Fam(\cat{C}) \to \Fam(\cat{D})$ that reassign the target category
-by postcomposing with $F$, sending objects $(X, \partial X)$ to $(X, F \comp \partial X)$ and morphisms $(f,
-\partial f)$ to $(f, F \comp \partial f)$, where $F \comp \partial f$ denotes the natural transformation where
-$(F \comp \partial f)(x) = F(\partial f(x))$. If $F$ happens to be a (strong) monad on $\cat{C}$, then
-$\Fam(F)$ is a (strong) monad on $\Fam(\cat{C})$, computed by lifting the original monad $F: \cat{C} \to
-\cat{C}$ pointwise over families.
-
 \subsection{First-Order Galois Slicing via CHAD}
 \label{sec:fam:galois-slicing}
 
@@ -337,36 +329,71 @@ Y(f(x))$. The reindexing along $f$ in the composition $(g, \partial g) \comp (f,
 connection at each point, using the baseline (unapproximated) function $f$.
 
 For a first-order language with a primitive type $\syn{nat}$ and primitive operations such as $+$, the
-``leaves'' of the approximation lattices would provided by a model of $\syn{nat}$ and its operations in
-$\Fam(\LatGal)$. For example, we might assign $\syn{nat}$ to the object $(\Nat,n \mapsto \{n, \bot\})$, where
-the family component is the two-point lattice indicating whether a given natural number is fully present ($n$)
-or fully absent ($\bot$) from the approximation, as shown in the example in \secref{introduction}, and we
-might then assign $+$ to the morphism $(\hat+,\partial(\hat+))$, with $\partial(\hat+)$ defined as
+language would provide a model of $\syn{nat}$ and its operations in $\Fam(\LatGal)$. For example, we might
+interpret $\syn{nat}$ as the object $(\Nat,n \mapsto \downset{n})$, where the family component assigns to
+every natural number $n$ the two-point lattice $\downset{n} = \{n, \bot\}$ indicating whether $n$ is fully
+present ($n$) or fully absent ($\bot$) from an approximation of $n$, as shown in the example in
+\secref{introduction}. A slight variant is to use the constant family which assigns to every $n$ the two-point
+lattice $\Two = \{\mathsf{tt},\mathsf{ff}\}$; using $\downset{n}$ can be more useful in practice as the
+approximants of a given value then contain all the information about the value that hasn't been approximated
+away.
+
+We might interpret $+$ as the morphism $(+,\partial+)$, i.e.~the usual addition operator + paired with an
+approximating version $\partial+_{n,m}: \downset{n} \to \downset{m}$ defined as:
 \begin{displaymath}
     \begin{array}[t]{l@{(}l@{,~}l@{)~}c@{~}l}
-      \partial(\hat+)&n&m&=&n \mathbin{\hat+} m \\
-      \partial(\hat+)&\bot&\_&=&\bot \\
-      \partial(\hat+)&\_&\bot&=&\bot
+      \partial+_{n,m}&n&m&=&n + m \\
+      \partial+_{n,m}&\bot&\_&=&\bot \\
+      \partial+_{n,m}&\_&\bot&=&\bot
     \end{array}
 \end{displaymath}
-These elementary approximations would then be combined by the interpretation of composite types like sums and
-products, providing suitable derived approximation structures for composite values.
+These elementary approximation structures would then be combined by the interpretation of composite types like
+sums and products, providing suitable derived structures for composite values.
 
-One might also like to allow the programmer to embed additional ``approximation points'' into composite
-structures, by providing them with a \emph{lifting} monad $\synVar{L}$. Rather than the usual definition of
-the type of lists of natural numbers as $\mu\alpha.1 + \synVar{nat} \times \alpha$, one could (within the
-language) define a type of ``approximation lists'' $\mu\alpha.\synVar{L}\,(1 + \synVar{L}\,\synVar{nat} \times
-\alpha)$, along with an approximating version of multiplication $*_{\text{appr}}: \synVar{L}\,\synVar{nat}
-\times \synVar{L}\,\synVar{nat} \to \synVar{L}\,\synVar{nat}$ expressible as
-\[x *_{\text{appr}} y = \tmBind{x}{\tmFun{x'}{\syn{if}\;x' =
-0\;\syn{then}\;\tmReturn{0}\;\syn{else}\;\tmBind{y}{\tmFun{y'}{\tmReturn{x' * y'}}}}}\].
+\subsubsection{Lifting}
+
+A programmer, or perhaps a language implementor, might want to embed additional ``approximation points'' into
+composite data types, to allow for richer approximation structures. For example, for a list like $1 : 2 : []$
+we might want to allow the partial lists $\bot$, $1 : \bot$ and $1 : 2 : \bot$ as approximants, in addition to
+the approximants obtained by replacing elements with $\bot$. This can be accomplished by extending the syntax
+with a \emph{lifting} type constructor $\synVar{L}$. Then, as an alternative to the usual definition of lists
+of natural numbers as $\mu\alpha.1 + \synVar{nat} \times \alpha$, one could (within the language) define a
+type of ``approximation lists'' $\mu\alpha.\synVar{L}\,(1 + \synVar{L}\,\synVar{nat} \times \alpha)$, with
+monadic computations over approximated lists computing partial lists like $1 : \bot$. Similarly, one could
+define a custom approximating version of multiplication $*_{\text{appr}}: \synVar{L}\,\synVar{nat} \times
+\synVar{L}\,\synVar{nat} \to \synVar{L}\,\synVar{nat}$, as:
+\[x *_{\text{appr}} y = \tmBind{x}{\tmFun{x'}{\syn{if}\;x' \equiv
+0\;\syn{then}\;\tmReturn{0}\;\syn{else}\;\tmBind{y}{\tmFun{y'}{\tmReturn{x' * y'}}}}}\]
 
 \noindent This would allow the programmer to emulate the short-circuiting behaviour of $\mathrm{strictOr}$
 from \exref{strict-short-circuit}, or the short-circuiting multiplication used in \citet{perera22} for slicing
-matrix convolutions, without baking this specific choice of approximation into the interpretation of
-individual operators.
+matrix convolutions, without baking specific choices of approximation into the interpretation of individual
+operators.
 
-\todo{Show how $\LatGal$ has a lifting monad?}
+With this lifting operator in the core language, one could then choose to fix certain choices of
+approximation, by providing a surface language without the lifting monad and interpreting it into the core
+language with lifting. The Galois slicing implementations discussed in \citet{perera12a} and
+\citet{ricciotti17}, for example, provide an approximation point at every composite type constructor; we can
+emulate this in our approach by defining a surface language where the data type of lists $\mu\alpha.1 +
+\synVar{nat} \times \alpha$ desugars automatically into the approximating version $\mu\alpha.\synVar{L}\,(1 +
+\synVar{L}\,\synVar{nat} \times \alpha)$.
+
+To interpret the syntactic type constructor $\synVar{L}$, consider the strong monad $(\mathcal{L}, \eta, \mu)$
+which acts on posets $X$ to extend them with a distinguished bottom element $\bot$ and which acts on monotone
+functions $f$ between posets to extend them with a mapping from $\bot$ to $\bot$. $\mathcal{L}$ is also a
+strong monad on meet-semilattices. On (bounded) join-semilattices, $\mathcal{L}$ induces a costrong comonad
+$(\mathcal{L}, \varepsilon, \delta)$, with the bottom element of $X$ needed to implement the counit
+$\varepsilon_X: \mathcal{L}(X) \to X$. These two combine to form a strong lifting monad in $\LatGal$ with unit
+$\varepsilon_X \dashv \eta_X$ and multiplication $\delta_X \dashv \mu_X$.
+
+The lifting monad $\mathcal{L}$ in $\LatGal$ is preserved into $\Fam(\LatGal)$. The families construction,
+regarded as a covariant 2-functor $\Fam(-): \Cat \to \Cat$, sends functors $F: \cat{C} \to \cat{D}$ to
+functors $\Fam(F): \Fam(\cat{C}) \to \Fam(\cat{D})$ that reassign the target category by postcomposing with
+$F$, sending objects $(X, \partial X)$ to $(X, F \comp \partial X)$ and morphisms $(f, \partial f)$ to $(f, F
+\comp \partial f)$, where $F \comp \partial f$ denotes the natural transformation where $(F \comp \partial
+f)(x) = F(\partial f(x))$. If $F$ happens to be a (strong) monad on $\cat{C}$, then $\Fam(F)$ is a (strong)
+monad on $\Fam(\cat{C})$, computed by extending the original monad $F: \cat{C} \to \cat{C}$ componentwise to
+families.
 
 \subsection{First-Order Automatic Differentiation via CHAD}
 
@@ -415,19 +442,19 @@ We can verify that $\tangents$ is functorial, regardless of whether the linear m
 happen to be derivatives. But if $f_2(x)$ is the derivative of $f_1$ at $x$ for any $x \in \RR^m$ and
 similarly for $g$ then the derivatives compose according to the forward chain rule and $(g \comp f)_2(x)$ is
 the derivative of $(g \comp f)_1$ at $x$. Thus this setup provides an algorithmic method for computing the
-forward derivative of a composite function, without have to recompute the function itself, as long as all
-atomic operations provide derivatives.
+forward derivative of a composite function, as long as all atomic operations provide derivatives, without have
+to recompute the function itself.
 
 % An efficient implementation of \GPS based on $\Fam(\LatGal)$
 % (\secref{fam:galois-slicing} above) would most likely apply a similar optimisation to make it possible to
 % compute forwards slices without having to reexecute the program at the same time.
 
 We can see these ``optimised'' forward-mode maps as living in $\Fam(\FinVect)$ if we regard every finite
-vector space $\RR^n$ as paired with the constant family of tangent spaces at $\RR^n$ (also written $\RR^n$,
-for convenience), and each map $f: \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ as the pair $(f_1, f_2)$.
-Then the composition $(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp
-\partial f)$ again corresponds exactly to the forward chain rule, since $(\reindex{\partial g}{f} \comp
-\partial f)_x = {\partial g}_{f(x)} \comp {\partial f}_x$.
+vector space $\RR^n$ as paired with the family of tangent spaces which is constantly $\RR^n$, and each map $f:
+\RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ as the pair $(f_1, f_2)$. Then the composition $(g, \partial
+g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp \partial f)$ again corresponds exactly to
+the forward chain rule, since $(\reindex{\partial g}{f} \comp \partial f)_x = {\partial g}_{f(x)} \comp
+{\partial f}_x$.
 
 % with the reindexing along $f$ recomputing $f(x)$ in order to select the appropriate pushforward.
 
