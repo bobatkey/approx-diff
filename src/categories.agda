@@ -319,6 +319,16 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   getProduct x y .Product.isProduct .IsProduct.pair-p₂ = pair-p₂
   getProduct x y .Product.isProduct .IsProduct.pair-ext = pair-ext
 
+make-HasProducts : ∀ {o m e} (𝒞 : Category o m e) → (∀ x y → Product 𝒞 x y) → HasProducts 𝒞
+make-HasProducts 𝒞 p .HasProducts.prod x y = p x y .Product.prod
+make-HasProducts 𝒞 p .HasProducts.p₁ = p _ _ .Product.p₁
+make-HasProducts 𝒞 p .HasProducts.p₂ = p _ _ .Product.p₂
+make-HasProducts 𝒞 p .HasProducts.pair = p _ _ .Product.pair
+make-HasProducts 𝒞 p .HasProducts.pair-cong = p _ _ .Product.pair-cong
+make-HasProducts 𝒞 p .HasProducts.pair-p₁ = p _ _ .Product.pair-p₁
+make-HasProducts 𝒞 p .HasProducts.pair-p₂ = p _ _ .Product.pair-p₂
+make-HasProducts 𝒞 p .HasProducts.pair-ext = p _ _ .Product.pair-ext
+
 record HasStrongCoproducts {o m e} (𝒞 : Category o m e) (P : HasProducts 𝒞) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞
   open HasProducts P

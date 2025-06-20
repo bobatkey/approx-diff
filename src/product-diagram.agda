@@ -5,8 +5,8 @@ module product-diagram where
 open import Level using (0ℓ)
 open import prop using (⊤; tt)
 open import prop-setoid using (IsEquivalence; module ≈-Reasoning)
-open import categories using (Category; IsProduct)
-open import functor using (Functor; NatTrans; NatIso; IsLimit; ≃-NatTrans; constFmor; constF)
+open import categories using (Category; IsProduct; HasProducts; make-HasProducts; Product)
+open import functor using (Functor; NatTrans; NatIso; IsLimit; ≃-NatTrans; constFmor; constF; HasLimits; Limit)
 
 data Obj : Set where
   L R : Obj
@@ -75,14 +75,14 @@ module _ {o m e} (𝒞 : Category o m e) where
   span→cone-ext .transf-eq L = 𝒞.≈-refl
   span→cone-ext .transf-eq R = 𝒞.≈-refl
 
-  limit→product : ∀ {F : Functor cat 𝒞} {p} {cone} →
+  IsLimit→IsProduct : ∀ {F : Functor cat 𝒞} {p} {cone} →
                   IsLimit F p cone →
                   IsProduct 𝒞 (F .fobj L) (F .fobj R) p (cone .transf L) (cone .transf R)
-  limit→product is-limit .pair {z} f g = is-limit .lambda z (span→cone f g)
-  limit→product is-limit .pair-cong f₁≈f₂ g₁≈g₂ = is-limit .lambda-cong (span→cone-cong f₁≈f₂ g₁≈g₂)
-  limit→product is-limit .pair-p₁ f g = is-limit .lambda-eval _ .transf-eq L
-  limit→product is-limit .pair-p₂ f g = is-limit .lambda-eval _ .transf-eq R
-  limit→product {F} {p} {cone} is-limit .pair-ext {z} f = begin
+  IsLimit→IsProduct is-limit .pair {z} f g = is-limit .lambda z (span→cone f g)
+  IsLimit→IsProduct is-limit .pair-cong f₁≈f₂ g₁≈g₂ = is-limit .lambda-cong (span→cone-cong f₁≈f₂ g₁≈g₂)
+  IsLimit→IsProduct is-limit .pair-p₁ f g = is-limit .lambda-eval _ .transf-eq L
+  IsLimit→IsProduct is-limit .pair-p₂ f g = is-limit .lambda-eval _ .transf-eq R
+  IsLimit→IsProduct {F} {p} {cone} is-limit .pair-ext {z} f = begin
       is-limit .lambda z (span→cone (cone .transf L 𝒞.∘ f) (cone .transf R 𝒞.∘ f))
     ≈⟨ is-limit .lambda-cong span→cone-ext ⟩
       is-limit .lambda z (cone functor.∘ constFmor f)
@@ -90,6 +90,15 @@ module _ {o m e} (𝒞 : Category o m e) where
       f
     ∎
     where open ≈-Reasoning 𝒞.isEquiv
+
+  limit→product : ∀ (F : Functor cat 𝒞) → Limit F → Product 𝒞 (F .fobj L) (F .fobj R)
+  limit→product F limitF .Product.prod = limitF .Limit.apex
+  limit→product F limitF .Product.p₁ = limitF .Limit.cone .transf L
+  limit→product F limitF .Product.p₂ = limitF .Limit.cone .transf R
+  limit→product F limitF .Product.isProduct = IsLimit→IsProduct (limitF .Limit.isLimit)
+
+  limits→products : HasLimits cat 𝒞 → HasProducts 𝒞
+  limits→products limits = make-HasProducts 𝒞 λ x y → limit→product (pair→functor x y) (limits _)
 
   product→limit : ∀ {x y p p₁ p₂} →
                   IsProduct 𝒞 x y p p₁ p₂ →

@@ -595,6 +595,16 @@ limits→limits' hasLimits .HasLimits'.lambda-cong {x} {D} = hasLimits D .Limit.
 limits→limits' hasLimits .HasLimits'.lambda-eval {x} {D} = hasLimits D .Limit.isLimit .IsLimit.lambda-eval
 limits→limits' hasLimits .HasLimits'.lambda-ext {x} {D} = hasLimits D .Limit.isLimit .IsLimit.lambda-ext
 
+limits'→limits : ∀ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒮 : Category o₁ m₁ e₁} {𝒞 : Category o₂ m₂ e₂} →
+                   HasLimits' 𝒮 𝒞 →
+                   HasLimits 𝒮 𝒞
+limits'→limits hasLimits' D .Limit.apex = hasLimits' .HasLimits'.Π D
+limits'→limits hasLimits' D .Limit.cone = hasLimits' .HasLimits'.evalΠ D
+limits'→limits hasLimits' D .Limit.isLimit .IsLimit.lambda x = hasLimits' .HasLimits'.lambdaΠ x D
+limits'→limits hasLimits' D .Limit.isLimit .IsLimit.lambda-cong = hasLimits' .HasLimits'.lambda-cong
+limits'→limits hasLimits' D .Limit.isLimit .IsLimit.lambda-eval = hasLimits' .HasLimits'.lambda-eval
+limits'→limits hasLimits' D .Limit.isLimit .IsLimit.lambda-ext f = hasLimits' .HasLimits'.lambda-ext f
+
 ------------------------------------------------------------------------------
 module _ {o₁ m₁ e₁ o₂ m₂ e₂ o₃ m₃ e₃}
          {𝒞 : Category o₁ m₁ e₁}
