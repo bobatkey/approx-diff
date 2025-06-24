@@ -36,6 +36,23 @@ record CMonEnriched {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
 
 module _ {o m e} {𝒞 : Category o m e} (CM : CMonEnriched 𝒞) where
   open Category 𝒞
+  open CMonEnriched
+  open CommutativeMonoid
+
+  op-cmon-enriched : CMonEnriched (Category.opposite 𝒞)
+  op-cmon-enriched .homCM x y .ε = CM .homCM y x .ε
+  op-cmon-enriched .homCM x y ._+_ = CM .homCM y x ._+_
+  op-cmon-enriched .homCM x y .+-cong = CM .homCM y x .+-cong
+  op-cmon-enriched .homCM x y .+-lunit = CM .homCM y x .+-lunit
+  op-cmon-enriched .homCM x y .+-assoc = CM .homCM y x .+-assoc
+  op-cmon-enriched .homCM x y .+-comm = CM .homCM y x .+-comm
+  op-cmon-enriched .comp-bilinear₁ f₁ f₂ g = CM .comp-bilinear₂ g f₁ f₂
+  op-cmon-enriched .comp-bilinear₂ f g₁ g₂ = CM .comp-bilinear₁ g₁ g₂ f
+  op-cmon-enriched .comp-bilinear-ε₁ = CM .comp-bilinear-ε₂
+  op-cmon-enriched .comp-bilinear-ε₂ = CM .comp-bilinear-ε₁
+
+module _ {o m e} {𝒞 : Category o m e} (CM : CMonEnriched 𝒞) where
+  open Category 𝒞
   open CMonEnriched CM
   open CommutativeMonoid
 
