@@ -12,7 +12,7 @@ open import prop-setoid using (IsEquivalence; module ≈-Reasoning)
 
 record JoinSemilattice (A : Preorder) : Set (suc 0ℓ) where
   no-eta-equality
-  open Preorder public
+  open Preorder
 
   field
     _∨_          : A .Carrier → A .Carrier → A .Carrier
@@ -71,6 +71,7 @@ module _ {A B : Preorder} where
   ≃m-isEquivalence .trans e₁ e₂ .eqfunc .eqfun x = B.≃-trans (e₁ .eqfunc .eqfun x) (e₂ .eqfunc .eqfun x)
 
 module _ where
+  open Preorder
   open JoinSemilattice
   open _=>_
   open preorder._=>_
@@ -172,6 +173,7 @@ module _ where
 ------------------------------------------------------------------------------
 -- One element semilattice, for use when there are no approximations
 module _ where
+  open Preorder
   open JoinSemilattice
   open _=>_
   open preorder._=>_
@@ -212,6 +214,7 @@ module _ where
 -- Set-wide direct sums of JoinSemilattices
 module _ (I : Set) {A : I -> Preorder} (X : (i : I) → JoinSemilattice (A i)) where
     -- Now where I is a Setoid, and (A,X) is a family of JoinSemilattices respecting equality
+  open Preorder
   open JoinSemilattice
   open _=>_
   open preorder._=>_
@@ -282,6 +285,7 @@ module _ (I : Set) {A : I -> Preorder} (X : (i : I) → JoinSemilattice (A i)) w
 ------------------------------------------------------------------------------
 -- Biproducts
 module _ where
+  open Preorder
   open JoinSemilattice
   open _=>_
   open preorder._=>_
@@ -424,6 +428,7 @@ module _ where
 ------------------------------------------------------------------------------
 -- Lifting
 module _ where
+  open Preorder
   open preorder using (LCarrier; <_>; bottom)
   open JoinSemilattice
   open _=>_

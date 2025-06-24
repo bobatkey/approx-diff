@@ -2,18 +2,18 @@
 
 module meet-semilattice where
 
-open import Level
+open import Level using (suc; 0ℓ)
 open import Data.Product using (Σ; proj₁; proj₂; _,_)
 open import Data.Unit using (tt) renaming (⊤ to Unit)
 open import Data.Empty using () renaming (⊥ to 𝟘)
-open import basics
+open import basics using (IsMeet; IsTop; IsMonoid; monoidOfMeet)
 open import prop renaming (_∧_ to _∧p_; ⊤ to ⊤p)
 open import prop-setoid using (IsEquivalence)
 open import preorder using (Preorder; _×_)
 
 record MeetSemilattice (A : Preorder) : Set (suc 0ℓ) where
   no-eta-equality
-  open Preorder public
+  open Preorder
 
   field
     _∧_       : A .Carrier → A .Carrier → A .Carrier
@@ -74,6 +74,7 @@ module _ where
   open MeetSemilattice
   open _=>_
   open preorder._=>_
+  open Preorder
 
   id : ∀ {A}{X : MeetSemilattice A} → X => X
   id .func = preorder.id
@@ -114,7 +115,7 @@ module _ where
             ((f ∘ g) ∘ h) ≃m (f ∘ (g ∘ h))
   assoc {D = D} f g h .eqfunc .eqfun x = D .≃-refl
 
-  -- Additive structure
+  -- Commutative Monoid structure
   --
   -- FIXME: this is true of any monoids: generalise!
   module _ {A B}{X : MeetSemilattice A}{Y : MeetSemilattice B} where
@@ -173,6 +174,7 @@ module _ where
 ------------------------------------------------------------------------------
 -- Big Products
 module _ (I : Set) {A : I → Preorder} (X : (i : I) → MeetSemilattice (A i)) where
+  open Preorder
   open MeetSemilattice
   open _=>_
   open preorder._=>_
@@ -316,6 +318,7 @@ module _ where
 ------------------------------------------------------------------------------
 -- Lifting
 module _ where
+  open Preorder
   open preorder using (LCarrier; <_>; bottom)
   open MeetSemilattice
   open _=>_
