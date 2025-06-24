@@ -4,8 +4,8 @@ module empty-diagram where
 
 open import Level using (0ℓ)
 open import prop-setoid using (IsEquivalence; module ≈-Reasoning)
-open import categories using (Category; IsTerminal)
-open import functor using (Functor; NatTrans; NatIso; IsLimit; ≃-NatTrans; constFmor)
+open import categories using (Category; IsTerminal; HasTerminal)
+open import functor using (Functor; NatTrans; NatIso; IsLimit; ≃-NatTrans; constFmor; HasLimits; Limit)
 
 open IsEquivalence
 
@@ -34,11 +34,11 @@ module _ {o m e} (𝒞 : Category o m e) where
   initial-functor-unique .transform .transf ()
   initial-functor-unique .transf-iso ()
 
-  limit→terminal : ∀ {F : Functor cat 𝒞} {t} {cone} →
-                   IsLimit F t cone → IsTerminal 𝒞 t
-  limit→terminal is-limit .to-terminal =
+  IsLimit→IsTerminal : ∀ {F : Functor cat 𝒞} {t} {cone} →
+                       IsLimit F t cone → IsTerminal 𝒞 t
+  IsLimit→IsTerminal is-limit .to-terminal =
     is-limit .lambda _ (initial-functor-unique .transform)
-  limit→terminal {F} {t} {cone} is-limit .to-terminal-ext {x} f = begin
+  IsLimit→IsTerminal {F} {t} {cone} is-limit .to-terminal-ext {x} f = begin
       is-limit .lambda x (initial-functor-unique .transform)
     ≈⟨ is-limit .lambda-cong (record { transf-eq = λ () }) ⟩
       is-limit .lambda x (cone functor.∘ constFmor f)
@@ -46,6 +46,13 @@ module _ {o m e} (𝒞 : Category o m e) where
       f
     ∎
     where open ≈-Reasoning 𝒞.isEquiv
+
+  limit→terminal : ∀ (F : Functor cat 𝒞) → Limit F → HasTerminal 𝒞
+  limit→terminal F limit .HasTerminal.witness = limit .Limit.apex
+  limit→terminal F limit .HasTerminal.is-terminal = IsLimit→IsTerminal (limit .Limit.isLimit)
+
+  limits→terminal : HasLimits cat 𝒞 → HasTerminal 𝒞
+  limits→terminal limits = limit→terminal initial-functor (limits initial-functor)
 
   terminal→limit : ∀ {t} →
                    IsTerminal 𝒞 t →

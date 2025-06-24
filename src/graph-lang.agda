@@ -3,7 +3,7 @@
 open import Level using (0ℓ)
 open import prop using (LiftS; liftS)
 open import prop-setoid using (IsEquivalence; module ≈-Reasoning)
-open import categories using (Category; HasTerminal; HasProducts)
+open import categories using (Category; HasTerminal; HasProducts; IsTerminal)
 open import commutative-monoid using (CommutativeMonoid)
 open import cmon-enriched using (CMonEnriched)
 
@@ -157,8 +157,8 @@ cat .Category.assoc f g h = liftS (assoc f g h)
 -- This category has all finite products
 hasTerminal : HasTerminal cat
 hasTerminal .HasTerminal.witness = 𝟙
-hasTerminal .HasTerminal.terminal-mor _ = !
-hasTerminal .HasTerminal.terminal-unique _ f g = liftS (≃-trans (≃-sym !≃f) !≃f)
+hasTerminal .HasTerminal.is-terminal .IsTerminal.to-terminal = !
+hasTerminal .HasTerminal.is-terminal .IsTerminal.to-terminal-ext f = liftS !≃f
 
 hasProducts : HasProducts cat
 hasProducts .HasProducts.prod = _×_

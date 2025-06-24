@@ -10,7 +10,7 @@ open import prop using (_,_; tt; ∃ₚ; ⟪_⟫)
 open import prop-setoid
   using (IsEquivalence; Setoid; 𝟙; +-setoid; ⊗-setoid; idS; _∘S_; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_; ≃m-isEquivalence to ≈s-isEquivalence)
-open import categories using (Category; HasTerminal; HasCoproducts; HasProducts; HasStrongCoproducts; HasLists; setoid→category)
+open import categories using (Category; HasTerminal; IsTerminal; HasCoproducts; HasProducts; HasStrongCoproducts; HasLists; setoid→category)
 open import setoid-cat using (Setoid-products)
 open import fam
   using (Fam; _⇒f_; idf; _∘f_; ∘f-cong; _≃f_; ≃f-isEquivalence; ≃f-id-left; ≃f-assoc;
@@ -225,6 +225,7 @@ module CategoryOfFamilies {o m e} os es (𝒞 : Category o m e) where
   -- If 𝒞 has a terminal object, then so does the category of families
   module _ (T : HasTerminal 𝒞) where
     open HasTerminal
+    open IsTerminal
     open IsEquivalence
 
     -- FIXME: try to do this without breaking the abstraction of
@@ -232,11 +233,11 @@ module CategoryOfFamilies {o m e} os es (𝒞 : Category o m e) where
     -- has a terminal object, and that reindexing preserves them.
     terminal : HasTerminal cat
     terminal .witness = simple[ 𝟙 , T .witness ]
-    terminal .terminal-mor x .idxf = prop-setoid.to-𝟙
-    terminal .terminal-mor x .famf ._⇒f_.transf _ = T .terminal-mor _
-    terminal .terminal-mor x .famf ._⇒f_.natural _ = T .terminal-unique _ _ _
-    terminal .terminal-unique x f g .idxf-eq = prop-setoid.to-𝟙-unique _ _
-    terminal .terminal-unique x f g .famf-eq ._≃f_.transf-eq = T .terminal-unique _ _ _
+    terminal .is-terminal .to-terminal .idxf = prop-setoid.to-𝟙
+    terminal .is-terminal .to-terminal .famf ._⇒f_.transf _ = T .is-terminal .to-terminal
+    terminal .is-terminal .to-terminal .famf ._⇒f_.natural _ = to-terminal-unique (T .is-terminal) _ _
+    terminal .is-terminal .to-terminal-ext f .idxf-eq = prop-setoid.to-𝟙-unique _ _
+    terminal .is-terminal .to-terminal-ext f .famf-eq ._≃f_.transf-eq = to-terminal-unique (T .is-terminal) _ _
 
   -- This category always has coproducts, because it is the free
   -- co-product completion.

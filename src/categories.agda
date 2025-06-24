@@ -110,16 +110,14 @@ record IsTerminal {o m e} (𝒞 : Category o m e) (t : Category.obj 𝒞) : Set 
     to-terminal     : ∀ {x} → x ⇒ t
     to-terminal-ext : ∀ {x} (f : x ⇒ t) → to-terminal ≈ f
 
+  to-terminal-unique : ∀ {x} (f g : x ⇒ t) → f ≈ g
+  to-terminal-unique f g = ≈-trans (≈-sym (to-terminal-ext f)) (to-terminal-ext g)
+
 record HasTerminal {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞
   field
     witness         : obj
-    terminal-mor    : (x : obj) → x ⇒ witness
-    terminal-unique : (x : obj) → (f g : x ⇒ witness) → f ≈ g
-
-  isTerminal : IsTerminal 𝒞 witness
-  isTerminal .IsTerminal.to-terminal = terminal-mor _
-  isTerminal .IsTerminal.to-terminal-ext f = terminal-unique _ _ f
+    is-terminal     : IsTerminal 𝒞 witness
 
 ------------------------------------------------------------------------------
 -- Coproducts

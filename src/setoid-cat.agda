@@ -34,12 +34,13 @@ module _ o e where
   SetoidCat .assoc = prop-setoid.assoc
 
   open HasTerminal
+  open IsTerminal
 
   Setoid-terminal : HasTerminal SetoidCat
   Setoid-terminal .witness = 𝟙
-  Setoid-terminal .terminal-mor _ ._⇒s_.func _ = lift tt
-  Setoid-terminal .terminal-mor _ ._⇒s_.func-resp-≈ _ = tt
-  Setoid-terminal .terminal-unique X f g .prop-setoid._≃m_.func-eq _ = tt
+  Setoid-terminal .is-terminal .to-terminal ._⇒s_.func _ = lift tt
+  Setoid-terminal .is-terminal .to-terminal ._⇒s_.func-resp-≈ _ = tt
+  Setoid-terminal .is-terminal .to-terminal-ext f .prop-setoid._≃m_.func-eq _ = tt
 
   open HasProducts
 

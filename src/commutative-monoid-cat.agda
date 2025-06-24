@@ -268,10 +268,10 @@ module _ {o e} where
 
   terminal : HasTerminal (cat o e)
   terminal .HasTerminal.witness = 𝟙
-  terminal .HasTerminal.terminal-mor x .function = prop-setoid.to-𝟙
-  terminal .HasTerminal.terminal-mor x .cmFunc .preserve-ε = tt
-  terminal .HasTerminal.terminal-mor x .cmFunc .preserve-+ = tt
-  terminal .HasTerminal.terminal-unique x f g ._≃s_.func-eq _ = tt
+  terminal .HasTerminal.is-terminal .IsTerminal.to-terminal .function = prop-setoid.to-𝟙
+  terminal .HasTerminal.is-terminal .IsTerminal.to-terminal .cmFunc .preserve-ε = tt
+  terminal .HasTerminal.is-terminal .IsTerminal.to-terminal .cmFunc .preserve-+ = tt
+  terminal .HasTerminal.is-terminal .IsTerminal.to-terminal-ext f ._≃s_.func-eq _ = tt
 
   _⊕_ : Obj {o} {e} → Obj → Obj
   (X ⊕ Y) .carrier = ⊗-setoid (X .carrier) (Y .carrier)

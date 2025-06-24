@@ -103,8 +103,8 @@ module _ where
     halp-natural : ∀ {G x₁ x₂}
                    (e : +-setoid (𝟙 {0ℓ} {0ℓ}) (𝟙 {0ℓ} {0ℓ}) .prop-setoid.Setoid._≈_ x₁ x₂) →
                    halp {G} x₂ ≃g (DB .HasBooleans.Bool .D.Obj.fam .Fam.subst {x₁} {x₂} e ∘g halp {G} x₁)
-    halp-natural {G} {inj₁ x} {inj₁ x₁} e = galois.terminal .HasTerminal.terminal-unique _ _ _
-    halp-natural {G} {inj₂ y} {inj₂ y₁} e = galois.terminal .HasTerminal.terminal-unique _ _ _
+    halp-natural {G} {inj₁ x} {inj₁ x₁} e = IsTerminal.to-terminal-unique (galois.terminal .HasTerminal.is-terminal) _ _
+    halp-natural {G} {inj₂ y} {inj₂ y₁} e = IsTerminal.to-terminal-unique (galois.terminal .HasTerminal.is-terminal) _ _
 
     predicate : ∀ {X G} → (X ⇒s +-setoid (𝟙 {0ℓ} {0ℓ}) (𝟙 {0ℓ} {0ℓ})) →
                 D.Mor D.simple[ X , G ] (DB .HasBooleans.Bool)

@@ -207,6 +207,7 @@ module _ where
 ------------------------------------------------------------------------------
 -- Terminal (FIXME: and initial)
 module _ where
+  open IsTerminal
   open HasTerminal
 
   𝟙 : Obj
@@ -223,11 +224,11 @@ module _ where
 
   terminal : HasTerminal cat
   terminal .witness = 𝟙
-  terminal .terminal-mor = to-𝟙
-  terminal .terminal-unique X f g .right-eq =
-    meet-semilattice.terminal-unique (X .meets) (right-∧ f) (right-∧ g) ._≃M_.eqfunc
-  terminal .terminal-unique X f g .left-eq =
-    join-semilattice.initial-unique (X .joins) (left-∨ f) (left-∨ g) ._≃J_.eqfunc
+  terminal .is-terminal .to-terminal = to-𝟙 _
+  terminal .is-terminal .to-terminal-ext {X} f .right-eq =
+    meet-semilattice.terminal-unique (X .meets) (right-∧ f) _ ._≃M_.eqfunc
+  terminal .is-terminal .to-terminal-ext {X} f .left-eq =
+    join-semilattice.initial-unique (X .joins) (left-∨ (to-𝟙 X)) (left-∨ f) ._≃J_.eqfunc
 
 -- This category has binary products (FIXME: and biproducts)
 module _ where

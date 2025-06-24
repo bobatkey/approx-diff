@@ -89,7 +89,7 @@ module _ {ℓ o₁ m₁ e₁ o₂ m₂ e₂}
         ∀ σs → 𝒟.list→product (λ σ → F .fobj (f σ)) σs 𝒟.⇒ F .fobj (𝒞.list→product f σs)
     transport-product f [] = to-terminal
       where
-        open IsTerminal (FP .preserve-terminal _ (HasTerminal.isTerminal 𝒞.terminal))
+        open IsTerminal (FP .preserve-terminal _ (HasTerminal.is-terminal 𝒞.terminal))
     transport-product f (x ∷ σs) =
       pair (HasProducts.p₁ 𝒟.products)
            (transport-product f σs 𝒟.∘ HasProducts.p₂ 𝒟.products)

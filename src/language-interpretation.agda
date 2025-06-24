@@ -20,6 +20,7 @@ module language-interpretation
 open PointedFPCat PFPC[ 𝒞 , T , P , HasBooleans.Bool B ]
 open HasBooleans B
 open HasLists L renaming (list to ⟦list⟧; nil to ⟦nil⟧; cons to ⟦cons⟧; fold to ⟦fold⟧)
+open IsTerminal
 
 open language Sig
 open Model Int
@@ -42,19 +43,19 @@ open Model Int
 mutual
   ⟦_⟧tm : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
   ⟦ var x ⟧tm = ⟦ x ⟧var
-  ⟦ unit ⟧tm = terminal-mor _
-  ⟦ true ⟧tm = True ∘ terminal-mor _
-  ⟦ false ⟧tm = False ∘ terminal-mor _
+  ⟦ unit ⟧tm = is-terminal .to-terminal
+  ⟦ true ⟧tm = True ∘ is-terminal .to-terminal
+  ⟦ false ⟧tm = False ∘ is-terminal .to-terminal
   ⟦ if M then M₁ else M₂ ⟧tm = cond ⟦ M₁ ⟧tm ⟦ M₂ ⟧tm ∘ ⟨ id _ , ⟦ M ⟧tm ⟩
   ⟦ pair M N ⟧tm = ⟨ ⟦ M ⟧tm , ⟦ N ⟧tm ⟩
   ⟦ fst M ⟧tm = p₁ ∘ ⟦ M ⟧tm
   ⟦ snd M ⟧tm = p₂ ∘ ⟦ M ⟧tm
   ⟦ bop ω Ms ⟧tm = ⟦op⟧ ω ∘ ⟦ Ms ⟧tms
   ⟦ brel ω Ms ⟧tm = ⟦rel⟧ ω ∘ ⟦ Ms ⟧tms
-  ⟦ nil ⟧tm = ⟦nil⟧ ∘ terminal-mor _
+  ⟦ nil ⟧tm = ⟦nil⟧ ∘ is-terminal .to-terminal
   ⟦ cons M N ⟧tm = ⟦cons⟧ ∘ ⟨ ⟦ M ⟧tm , ⟦ N ⟧tm ⟩
   ⟦ fold M₁ M₂ M ⟧tm = ⟦fold⟧ ⟦ M₁ ⟧tm ⟦ M₂ ⟧tm ∘ ⟨ id _ , ⟦ M ⟧tm ⟩
 
   ⟦_⟧tms : ∀ {Γ σs} → Every (λ σ → Γ ⊢ base σ) σs → ⟦ Γ ⟧ctxt ⇒ list→product ⟦sort⟧ σs
-  ⟦ [] ⟧tms = terminal-mor _
+  ⟦ [] ⟧tms = is-terminal .to-terminal
   ⟦ M ∷ Ms ⟧tms = ⟨ ⟦ M ⟧tm , ⟦ Ms ⟧tms ⟩
