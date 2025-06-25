@@ -57,6 +57,3 @@ mul-natural {x}{x'}{y}{y'}{f = f} {g = g} .func-eq {h₁ , h₁'}{h₂ , h₂'} 
 Scone-p₁ : ∀ {x y} → (Scone .fmor (P.p₁ {x} {y}) ∘S mul) ≈s 𝒟P.p₁
 Scone-p₁ .func-eq {f₁ , f₁'}{f₂ , f₂'} (f₁≈f₂ , f₁'≈f₂') =
   𝒞.≈-trans (P.pair-p₁ _ _) f₁≈f₂
-
-------------------------------------------------------------------------------
--- Support for coproducts

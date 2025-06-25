@@ -160,7 +160,8 @@ module _ (CP : HasCoproducts 𝒞)
   coproducts .HasCoproducts.copair-ext f .f≃f = CP.copair-ext (f .morph)
 
 -- products and exponentials
-module _ (P : HasProducts 𝒞) (E : HasExponentials 𝒞 P)
+module products-and-exponentials
+         (P : HasProducts 𝒞) (E : HasExponentials 𝒞 P)
          (mul   : ∀ {x y} → 𝒟P.prod (F .fobj x) (F .fobj y) 𝒟.⇒ F .fobj (P .HasProducts.prod x y))
          (mul⁻¹ : ∀ {x y} → F .fobj (P .HasProducts.prod x y) 𝒟.⇒ 𝒟P.prod (F .fobj x) (F .fobj y))
          (mul-inv : ∀ {x y} → (mul {x} {y} 𝒟.∘ mul⁻¹) 𝒟.≈ 𝒟.id _)

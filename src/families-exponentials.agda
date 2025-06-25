@@ -50,10 +50,11 @@ open HasSetoidProducts
 open HasProducts
 open HasCoproducts
 
+P = biproducts→products _ BP
+
 private
-  P  = biproducts→products _ BP
   CP = biproducts→coproducts _ BP
-open products P
+open products P public
 
 open Setoid
 open _⇒s_

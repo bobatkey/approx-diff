@@ -16,6 +16,7 @@ open import join-semilattice
             ≃m-isEquivalence to ≃J-isEquivalence)
 open import categories using (Category; HasProducts)
 open import functor using (IsColimit; Colimit; HasColimits; Functor; NatTrans; ≃-NatTrans)
+import two
 
 record Obj : Set (suc 0ℓ) where
   no-eta-equality
@@ -182,3 +183,12 @@ module _ (𝒮 : Category 0ℓ 0ℓ 0ℓ) where
   colimits D .Colimit.isColimit .IsColimit.colambda-cong α≃β .f≃f .eqfunc .eqfun = colambda-cong D α≃β
   colimits D .Colimit.isColimit .IsColimit.colambda-coeval X α .transf-eq s .f≃f .eqfunc .eqfun x = X .≃-refl
   colimits D .Colimit.isColimit .IsColimit.colambda-ext X f .f≃f .eqfunc .eqfun = colambda-ext D X f
+
+TWO : Obj
+TWO .carrier .Preorder.Carrier = two.Two
+TWO .carrier .Preorder._≤_ = two._≤_
+TWO .carrier .Preorder.≤-isPreorder = two.≤-isPreorder
+TWO .joins .JoinSemilattice._∨_ = two._⊔_
+TWO .joins .JoinSemilattice.⊥ = two.O
+TWO .joins .JoinSemilattice.∨-isJoin = two.⊔-isJoin
+TWO .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom {x} = two.O-bot {x}

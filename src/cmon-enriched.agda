@@ -3,7 +3,8 @@
 module cmon-enriched where
 
 open import Level
-open import categories
+open import categories using (Category; HasProducts; HasCoproducts; Product)
+open import product-category using (product)
 open import prop-setoid using (module ≈-Reasoning; IsEquivalence)
 open import commutative-monoid using (CommutativeMonoid)
 
@@ -50,6 +51,39 @@ module _ {o m e} {𝒞 : Category o m e} (CM : CMonEnriched 𝒞) where
   op-cmon-enriched .comp-bilinear₂ f g₁ g₂ = CM .comp-bilinear₁ g₁ g₂ f
   op-cmon-enriched .comp-bilinear-ε₁ = CM .comp-bilinear-ε₂
   op-cmon-enriched .comp-bilinear-ε₂ = CM .comp-bilinear-ε₁
+
+module _ {o₁ m₁ e₁ o₂ m₂ e₃} {𝒞 : Category o₁ m₁ e₁} {𝒟 : Category o₂ m₂ e₃}
+         (CM𝒞 : CMonEnriched 𝒞) (CM𝒟 : CMonEnriched 𝒟) where
+
+  private
+    module 𝒞 = Category 𝒞
+    module 𝒟 = Category 𝒟
+  open CMonEnriched
+  open CommutativeMonoid
+  open import Data.Product using (_,_; proj₁; proj₂)
+  open import prop using (_,_; proj₁; proj₂)
+
+  product-cmon-enriched : CMonEnriched (product 𝒞 𝒟)
+  product-cmon-enriched .homCM (x₁ , x₂) (y₁ , y₂) .ε = (ε (homCM CM𝒞 x₁ y₁)) , (ε (homCM CM𝒟 x₂ y₂))
+  product-cmon-enriched .homCM (x₁ , x₂) (y₁ , y₂) ._+_ (f₁ , f₂) (g₁ , g₂) =
+    CM𝒞 .homCM x₁ y₁ ._+_ f₁ g₁ , CM𝒟 .homCM x₂ y₂ ._+_ f₂ g₂
+  product-cmon-enriched .homCM (x₁ , x₂) (y₁ , y₂) .+-cong (f₁≈f₁' , f₂≈f₂') (g₁≈g₁' , g₂≈g₂') =
+    +-cong (homCM CM𝒞 x₁ y₁) f₁≈f₁' g₁≈g₁' ,
+    +-cong (homCM CM𝒟 x₂ y₂) f₂≈f₂' g₂≈g₂'
+  product-cmon-enriched .homCM (x₁ , x₂) (y₁ , y₂) .+-lunit = +-lunit (homCM CM𝒞 x₁ y₁) , +-lunit (homCM CM𝒟 x₂ y₂)
+  product-cmon-enriched .homCM (x₁ , x₂) (y₁ , y₂) .+-assoc = +-assoc (homCM CM𝒞 x₁ y₁) , +-assoc (homCM CM𝒟 x₂ y₂)
+  product-cmon-enriched .homCM (x₁ , x₂) (y₁ , y₂) .+-comm = +-comm (homCM CM𝒞 x₁ y₁) , +-comm (homCM CM𝒟 x₂ y₂)
+  product-cmon-enriched .comp-bilinear₁ f₁ f₂ g =
+    CM𝒞 .comp-bilinear₁ (f₁ .proj₁) (f₂ .proj₁) (g .proj₁) ,
+    CM𝒟 .comp-bilinear₁ (f₁ .proj₂) (f₂ .proj₂) (g .proj₂)
+  product-cmon-enriched .comp-bilinear₂ f g₁ g₂ =
+    comp-bilinear₂ CM𝒞 (f .proj₁) (g₁ .proj₁) (g₂ .proj₁) ,
+    comp-bilinear₂ CM𝒟 (f .proj₂) (g₁ .proj₂) (g₂ .proj₂)
+  product-cmon-enriched .comp-bilinear-ε₁ f =
+    comp-bilinear-ε₁ CM𝒞 (f .proj₁) , comp-bilinear-ε₁ CM𝒟 (f .proj₂)
+  product-cmon-enriched .comp-bilinear-ε₂ f =
+    comp-bilinear-ε₂ CM𝒞 (f .proj₁) , comp-bilinear-ε₂ CM𝒟 (f .proj₂)
+
 
 module _ {o m e} {𝒞 : Category o m e} (CM : CMonEnriched 𝒞) where
   open Category 𝒞

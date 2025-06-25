@@ -61,6 +61,13 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} where
     opF F .fmor-id = F .fmor-id
     opF F .fmor-comp f g = F .fmor-comp g f
 
+    opF' : Functor 𝒞 𝒟.opposite → Functor 𝒞.opposite 𝒟
+    opF' F .fobj = F .fobj
+    opF' F .fmor = F .fmor
+    opF' F .fmor-cong = F .fmor-cong
+    opF' F .fmor-id = F .fmor-id
+    opF' F .fmor-comp f g = F .fmor-comp g f
+
 -- Functors form a category
 module _ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒞 : Category o₁ m₁ e₁} {𝒟 : Category o₂ m₂ e₂} where
 
@@ -635,7 +642,7 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂}
 
   open NatTrans
   open ≃-NatTrans
-
+{-
   switch : ∀ (D : Functor 𝒮 𝒞) {x} → NatTrans D (constF 𝒮 x) → NatTrans (constF 𝒮.opposite x) (opF D)
   switch D α .transf = α .transf
   switch D α .natural f = 𝒞.≈-sym (α .natural f)
@@ -653,7 +660,6 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂}
   switch⁻¹-switch : ∀ D {x α} → ≃-NatTrans (switch⁻¹ D {x} (switch D α)) α
   switch⁻¹-switch D .transf-eq s = 𝒞.≈-refl
 
-
   op-colimit : (D : Functor 𝒮 𝒞) → Colimit D → Limit (opF D)
   op-colimit D colimitD .Limit.apex = colimitD .Colimit.apex
   op-colimit D colimitD .Limit.cone = switch D (colimitD .Colimit.cocone)
@@ -670,6 +676,43 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂}
     ≈⟨ colimitD .Colimit.colambda-cong (∘NT-cong (≃-isEquivalence .refl) (switch⁻¹-switch D)) ⟩
       colimitD .Colimit.colambda x (constFmor f ∘ colimitD .Colimit.cocone)
     ≈⟨ colimitD .Colimit.colambda-ext x f ⟩
+      f
+    ∎
+    where open ≈-Reasoning 𝒞.isEquiv
+-}
+  switch : ∀ (D : Functor 𝒮 𝒞.opposite) {x} → NatTrans (opF' D) (constF 𝒮.opposite x) → NatTrans (constF 𝒮 x) D
+  switch D α .transf = α .transf
+  switch D α .natural f = 𝒞.≈-sym (α .natural f)
+
+  switch⁻¹ : ∀ (D : Functor 𝒮 𝒞.opposite) {x} → NatTrans (constF 𝒮 x) D → NatTrans (opF' D) (constF 𝒮.opposite x)
+  switch⁻¹ D α .transf = α .transf
+  switch⁻¹ D α .natural f = 𝒞.≈-sym (α .natural f)
+
+  switch⁻¹-cong : ∀ (D : Functor 𝒮 𝒞.opposite) {x} {α β} → ≃-NatTrans α β → ≃-NatTrans (switch⁻¹ D {x} α) (switch⁻¹ D {x} β)
+  switch⁻¹-cong D α≃β .transf-eq = α≃β .transf-eq
+
+  switch⁻¹-comp : ∀ D {x y α} {f : y 𝒞.⇒ x} → ≃-NatTrans (switch⁻¹ D {x} (α ∘ constFmor f)) (constFmor f ∘ switch⁻¹ D α)
+  switch⁻¹-comp D .transf-eq s = 𝒞.≈-refl
+
+  switch⁻¹-switch : ∀ D {x α} → ≃-NatTrans (switch⁻¹ D {x} (switch D α)) α
+  switch⁻¹-switch D .transf-eq s = 𝒞.≈-refl
+
+  op-colimit : (D : Functor 𝒮 𝒞.opposite) → Colimit (opF' D) → Limit D
+  op-colimit D colimitOpD .Limit.apex = colimitOpD .Colimit.apex
+  op-colimit D colimitOpD .Limit.cone = switch D (colimitOpD .Colimit.cocone)
+  op-colimit D colimitOpD .Limit.isLimit .IsLimit.lambda x α =
+    colimitOpD .Colimit.colambda x (switch⁻¹ D α)
+  op-colimit D colimitOpD .Limit.isLimit .IsLimit.lambda-cong α≃β =
+    colimitOpD .Colimit.colambda-cong (switch⁻¹-cong D α≃β)
+  op-colimit D colimitOpD .Limit.isLimit .IsLimit.lambda-eval {x} α .transf-eq s =
+    colimitOpD .Colimit.colambda-coeval x _ .transf-eq s
+  op-colimit D colimitOpD .Limit.isLimit .IsLimit.lambda-ext {x} f = begin
+      colimitOpD .Colimit.colambda x (switch⁻¹ D (switch D (colimitOpD .Colimit.cocone) ∘ constFmor f))
+    ≈⟨ colimitOpD .Colimit.colambda-cong (switch⁻¹-comp D) ⟩
+      colimitOpD .Colimit.colambda x (constFmor f ∘ switch⁻¹ D (switch D (colimitOpD .Colimit.cocone)))
+    ≈⟨ colimitOpD .Colimit.colambda-cong (∘NT-cong (≃-isEquivalence .refl) (switch⁻¹-switch D)) ⟩
+      colimitOpD .Colimit.colambda x (constFmor f ∘ colimitOpD .Colimit.cocone)
+    ≈⟨ colimitOpD .Colimit.colambda-ext x f ⟩
       f
     ∎
     where open ≈-Reasoning 𝒞.isEquiv

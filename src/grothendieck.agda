@@ -10,11 +10,13 @@ open import prop using (_,_; tt; ∃ₚ; ⟪_⟫)
 open import prop-setoid
   using (IsEquivalence; Setoid; 𝟙; +-setoid; ⊗-setoid; idS; _∘S_; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_; ≃m-isEquivalence to ≈s-isEquivalence)
-open import categories using (Category; HasTerminal; IsTerminal; HasCoproducts; HasProducts; HasStrongCoproducts; HasLists; setoid→category)
+open import categories
+  using (Category; HasTerminal; IsTerminal; HasCoproducts; HasProducts; HasStrongCoproducts; HasLists; setoid→category)
 open import setoid-cat using (Setoid-products)
 open import fam
   using (Fam; _⇒f_; idf; _∘f_; ∘f-cong; _≃f_; ≃f-isEquivalence; ≃f-id-left; ≃f-assoc;
-         _[_]; reindex-≈; reindex-≈-refl; reindex-≈-trans; reindex-id; reindex-comp; reindex-f; reindex-comp-≈; reindex-f-comp; reindex-f-cong; reindex-sq;
+         _[_]; reindex-≈; reindex-≈-refl; reindex-≈-trans; reindex-id; reindex-comp; reindex-f;
+         reindex-comp-≈; reindex-f-comp; reindex-f-cong; reindex-sq;
          reindex-id-left; reindex-id-right; reindex-id-natural; reindex-assoc; reindex-comp-natural;
          constantFam)
 
@@ -29,7 +31,7 @@ open IsEquivalence
 -- it can be used for any indexed category
 module CategoryOfFamilies {o m e} os es (𝒞 : Category o m e) where
 
-  open Fam
+  open Fam public
 
   record Obj : Set (o ⊔ m ⊔ e ⊔ suc es ⊔ suc os) where
     no-eta-equality

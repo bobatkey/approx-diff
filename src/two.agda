@@ -106,19 +106,19 @@ complement-∨ {I} = tt
 -- FIXME: de Morgan, etc.
 
 
-------------------------------------------------------------------------------
--- XOR
-_⊕_ : Two → Two → Two
-O ⊕ x = x
-I ⊕ x = ¬ x
+-- ------------------------------------------------------------------------------
+-- -- XOR
+-- _⊕_ : Two → Two → Two
+-- O ⊕ x = x
+-- I ⊕ x = ¬ x
 
-------------------------------------------------------------------------------
--- This is just a copy of Prop: not interesting!
---
--- However, without the ⊥-closed part, it is a little more interesting.
-record Prp : Set₁ where
-  field
-    contains : Two → Prop
-    ≤-closed : ∀ {x y} → x ≤ y → contains y → contains x
-    ⊥-closed : contains O
-open Prp
+-- ------------------------------------------------------------------------------
+-- -- This is just a copy of Prop: not interesting!
+-- --
+-- -- However, without the ⊥-closed part, it is a little more interesting.
+-- record Prp : Set₁ where
+--   field
+--     contains : Two → Prop
+--     ≤-closed : ∀ {x y} → x ≤ y → contains y → contains x
+--     ⊥-closed : contains O
+-- open Prp

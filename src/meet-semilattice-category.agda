@@ -19,6 +19,7 @@ open import meet-semilattice
             ≃m-isEquivalence to ≃M-isEquivalence)
 open import categories using (Category; HasProducts)
 open import functor using (IsLimit; Limit; HasLimits; Functor; NatTrans; ≃-NatTrans)
+import two
 
 record Obj : Set (suc 0ℓ) where
   no-eta-equality
@@ -141,4 +142,11 @@ products : HasProducts cat
 products = limits→products cat (limits product-diagram.cat)
   where open import product-diagram using (limits→products)
 
--- FIXME: biproducts
+TWO : Obj
+TWO .carrier .Preorder.Carrier = two.Two
+TWO .carrier .Preorder._≤_ = two._≤_
+TWO .carrier .Preorder.≤-isPreorder = two.≤-isPreorder
+TWO .meets .MeetSemilattice._∧_ = two._⊓_
+TWO .meets .MeetSemilattice.⊤ = two.I
+TWO .meets .MeetSemilattice.∧-isMeet = two.⊓-isMeet
+TWO .meets .MeetSemilattice.⊤-isTop .IsTop.≤-top = two.I-top
