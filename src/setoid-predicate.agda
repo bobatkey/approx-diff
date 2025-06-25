@@ -5,7 +5,7 @@ module setoid-predicate {o e} where
 open import Level using (suc; _⊔_)
 open import Data.Product using (_,_)
 open import Data.Sum using (inj₁; inj₂)
-open import prop using (_∧_; _,_; proj₁; proj₂; ⊤; tt; _∨_; inj₁; inj₂)
+open import prop using (_∧_; _,_; proj₁; proj₂; ⊤; tt; ∃)
 open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; monoidOfMeet)
 open import prop-setoid using (idS; Setoid; IsEquivalence; _∘S_; ∘S-cong; ⊗-setoid; project₁; project₂; +-setoid; inject₁; inject₂)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_; ≃m-isEquivalence to ≈s-isEquivalence)
@@ -54,13 +54,32 @@ TT-isTop : ∀ {X} → IsTop ⊑-isPreorder (TT {X})
 TT-isTop .IsTop.≤-top .*⊑* x _ = tt
 
 open _≈s_
+open _⇒s_
 
 _[_] : ∀ {X Y : Setoid o e} → Predicate Y → X ⇒s Y → Predicate X
 (P [ f ]) .Predicate.pred x = P .Predicate.pred (f ._⇒s_.func x)
 (P [ f ]) .Predicate.pred-≃ x₁≈x₂ = P .Predicate.pred-≃ (f ._⇒s_.func-resp-≈ x₁≈x₂)
 
+_⟨_⟩ : ∀ {X Y : Setoid o e} → Predicate X → X ⇒s Y → Predicate Y
+_⟨_⟩ {X} {Y} P f .Predicate.pred y =
+  ∃ (X .Setoid.Carrier) λ x → P .Predicate.pred x ∧ Y .Setoid._≈_ (f .func x) y
+_⟨_⟩ {X} {Y} P f .Predicate.pred-≃ {y₁} {y₂} y₁≈y₂ (x , p , e) =
+  x , p , Y .Setoid.trans e y₁≈y₂
+
+adjoint₁ : ∀ {X Y} {P : Predicate X} {Q : Predicate Y} {f : X ⇒s Y} →
+           P ⟨ f ⟩ ⊑ Q → P ⊑ Q [ f ]
+adjoint₁ {X} {Y} {f = f} Φ .*⊑* x p = Φ .*⊑* (f .func x) (x , p , Y .Setoid.refl)
+
+adjoint₂ : ∀ {X Y} {P : Predicate X} {Q : Predicate Y} {f : X ⇒s Y} →
+           P ⊑ Q [ f ] → P ⟨ f ⟩ ⊑ Q
+adjoint₂ {X} {Y} {P} {Q} {f} Φ .*⊑* y (x , p , e) =
+  Q .Predicate.pred-≃ e (Φ .*⊑* x p)
+
 _[_]m : ∀ {X Y : Setoid o e} {P Q : Predicate Y} → P ⊑ Q → (f : X ⇒s Y) → P [ f ] ⊑ Q [ f ]
 (P⊑Q [ f ]m) .*⊑* x = P⊑Q .*⊑* (f ._⇒s_.func x)
+
+_⟨_⟩m : ∀ {X Y : Setoid o e} {P Q : Predicate X} → P ⊑ Q → (f : X ⇒s Y) → P ⟨ f ⟩ ⊑ Q ⟨ f ⟩
+(P⊑Q ⟨ f ⟩m) .*⊑* y (x , p , e) = x , P⊑Q .*⊑* x p , e
 
 []-cong : ∀ {X Y : Setoid o e}{P : Predicate Y}{f₁ f₂ : X ⇒s Y} → f₁ ≈s f₂ → P [ f₁ ] ⊑ P [ f₂ ]
 []-cong {X}{P = P} f₁≈f₂ .*⊑* x p = P .Predicate.pred-≃ (f₁≈f₂ .func-eq (X .Setoid.refl)) p
@@ -146,6 +165,10 @@ predicate-system : PredicateSystem (SetoidCat o e) (Setoid-products o e) (Setoid
 predicate-system .PredicateSystem.Predicate = Predicate
 predicate-system .PredicateSystem._⊑_ = _⊑_
 predicate-system .PredicateSystem._[_] = _[_]
+predicate-system .PredicateSystem._⟨_⟩ = _⟨_⟩
+predicate-system .PredicateSystem._⟨_⟩m = _⟨_⟩m
+predicate-system .PredicateSystem.adjoint₁ = adjoint₁
+predicate-system .PredicateSystem.adjoint₂ = adjoint₂
 predicate-system .PredicateSystem.TT = TT
 predicate-system .PredicateSystem._&&_ = _&&_
 predicate-system .PredicateSystem._++_ = _++_

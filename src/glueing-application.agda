@@ -3,7 +3,7 @@
 module glueing-application where
 
 open import Level using (suc; 0ℓ; lift)
-open import prop using (_⇔_)
+open import prop using (_⇔_; _,_; proj₁; proj₂)
 open import Data.Unit using (tt)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum using (inj₁; inj₂)
@@ -11,6 +11,7 @@ open import categories using (Category; HasTerminal; HasProducts; HasCoproducts)
 open import functor using (HasLimits; op-colimit; limits→limits'; Functor)
 open import cmon-category using (CMonCategory)
 open import product-category using (product; product-limit)
+open import setoid-cat using (SetoidCat; Setoid-products; Setoid-coproducts)
 import preorder
 import prop-setoid
 import cmon-enriched
@@ -58,8 +59,8 @@ M×Jop-biproducts =
 -- Fam(Meet × Join^op)
 
 open grothendieck.CategoryOfFamilies 0ℓ 0ℓ M×Jop₀
-  renaming ( cat to Fam⟨M×Jop⟩
-           ; terminal to make-terminal
+  renaming ( cat        to Fam⟨M×Jop⟩
+           ; terminal   to make-terminal
            ; coproducts to Fam⟨M×Jop⟩-coproducts )
   using (module products; Obj; Mor)
   public
@@ -91,38 +92,23 @@ module _ where
 
   -- and this is a monoid wrt the finite products
 
+  -- and there are some base types, interpreted as Sets
+
 ------------------------------------------------------------------------------
-module _ where
-  import sconing
-  open import prop-setoid using (Setoid; +-setoid; const) renaming (_⇒_ to _⇒s_)
-
-
-  module Sc = sconing Fam⟨M×Jop⟩ Fam⟨M×Jop⟩-products Fam⟨Approx⟩
-  open Sc using (Scone)
-
-  private
-    module CP = HasCoproducts Fam⟨M×Jop⟩-coproducts
-
-  open Functor
-  open _⇒s_
-  open Mor
-  open fam._⇒f_
-
-  Scone-coprod : ∀ {X Y} → Scone .fobj (CP.coprod X Y) ⇒s +-setoid (Scone .fobj X) (Scone .fobj Y)
-  Scone-coprod {X} {Y} .func f with f .idxf .func (lift tt)
-  ... | inj₁ x = inj₁ (record { idxf = const _ x
-                              ; famf = record { transf = λ _ → {!f .famf .transf (lift tt)!}
-                                              ; natural = {!!} } })
-  ... | inj₂ y = {!!}
-  Scone-coprod {X} {Y} .func-resp-≈ = {!!}
-
-open import setoid-cat using (SetoidCat; Setoid-products; Setoid-coproducts)
+import sconing
 import glueing-simple
 import setoid-predicate
+
+-- FIXME: do Sconing with respect to n-ary products of Fam⟨Approx⟩
+module Sc = sconing Fam⟨M×Jop⟩ Fam⟨M×Jop⟩-products Fam⟨Approx⟩
+open Sc using (Scone)
+
 module G = glueing-simple
              Fam⟨M×Jop⟩
              (SetoidCat 0ℓ 0ℓ) (Setoid-products 0ℓ 0ℓ) (Setoid-coproducts 0ℓ 0ℓ) setoid-predicate.predicate-system
              Sc.Scone
+
+module GCP = G.coproducts Fam⟨M×Jop⟩-coproducts
 
 module GP = G.products-and-exponentials
                Fam⟨M×Jop⟩-products
@@ -133,7 +119,7 @@ module GP = G.products-and-exponentials
                Sc.mul-natural
                Sc.Scone-p₁
 
--- Now have a CCC, nearly with coproducts
+-- Now have a BiCCC
 
 module _ where
   open setoid-predicate.Predicate
@@ -152,17 +138,12 @@ module _ where
   G⟨Approx⟩ .G.Obj.pred .pred f = ∀ {x y} → y two.≤ fwd x ⇔ bwd y two.≤ x
    where fwd = f .famf .transf (lift tt) .proj₁ .func .fun
          bwd = f .famf .transf (lift tt) .proj₂ .func .fun
-  G⟨Approx⟩ .G.Obj.pred .pred-≃ {f₁} {f₂} f₁≈f₂ f₁-is-galois-connection {x} {y} =
-    {!!}
+  G⟨Approx⟩ .G.Obj.pred .pred-≃ {f₁} {f₂} f₁≈f₂ f₁-is-galois-connection {x} {y} = {!!} -- FIXME: do a general congruence lemma for galois connections
 
 -- For any first-order type, and base element of the type, there is an
 -- 'n ∈ ℕ' such that Fam⟨M×Jop⟩(Approx^n, ⟦ A ⟧) is an isomorphism in
 -- the lower part.
 
-
--- 2. For each n, Scone(𝔸n) : Fam(Meet × Join^op) ⇒ SetoidCat
---    - preserves products and coproducts as appropriate
--- 3. Construct Glued(Scone(𝔸n)) from glueing-simple
 -- 4. There is an approximation object in Glued(Scone(𝔸n))
 --    - which ensures Galois connections by construction
 -- 5. Derive the correctness properties:
@@ -172,12 +153,7 @@ module _ where
 -- Ideally:
 -- 1. Fam(PSh_Cmon(GraphLang)) is a correct normaliser
 
--- If A is a first-order type, then:
---   1. T
 
-data fo-type : Set where
-  `base `approx : fo-type
-  _`×_ _`+_ : fo-type → fo-type → fo-type
-
--- 1. fo-types can be interpreted in any category with products and coproducts
--- 2.
+-- data fo-type : Set where
+--   `base `approx : fo-type
+--   _`×_ _`+_ : fo-type → fo-type → fo-type

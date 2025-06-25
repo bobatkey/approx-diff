@@ -18,7 +18,9 @@ record PredicateSystem {o m e} (𝒟 : Category o m e) (P : HasProducts 𝒟) (C
   infix 2 _⊑_
   field
     _[_]   : ∀ {X Y} → Predicate Y → X 𝒟.⇒ Y → Predicate X
+    _⟨_⟩   : ∀ {X Y} → Predicate X → X 𝒟.⇒ Y → Predicate Y
 
+  field
     TT    : ∀ {X} → Predicate X
     _&&_  : ∀ {X} → Predicate X → Predicate X → Predicate X
     _++_  : ∀ {X Y} → Predicate X → Predicate Y → Predicate (CP.coprod X Y)
@@ -34,6 +36,18 @@ record PredicateSystem {o m e} (𝒟 : Category o m e) (P : HasProducts 𝒟) (C
     []-comp   : ∀ {X Y Z} {P : Predicate Z} (f : Y 𝒟.⇒ Z) (g : X 𝒟.⇒ Y) → ((P [ f ]) [ g ]) ⊑ (P [ f 𝒟.∘ g ])
     []-comp⁻¹ : ∀ {X Y Z} {P : Predicate Z} (f : Y 𝒟.⇒ Z) (g : X 𝒟.⇒ Y) → (P [ f 𝒟.∘ g ]) ⊑ ((P [ f ]) [ g ])
 
+    _⟨_⟩m     : ∀ {X Y} {P Q : Predicate X} → P ⊑ Q → (f : X 𝒟.⇒ Y) → (P ⟨ f ⟩) ⊑ (Q ⟨ f ⟩)
+
+    adjoint₁ : ∀ {X Y} {P : Predicate X} {Q : Predicate Y} {f : X 𝒟.⇒ Y} → P ⟨ f ⟩ ⊑ Q → P ⊑ Q [ f ]
+    adjoint₂ : ∀ {X Y} {P : Predicate X} {Q : Predicate Y} {f : X 𝒟.⇒ Y} → P ⊑ Q [ f ] → P ⟨ f ⟩ ⊑ Q
+
+  unit : ∀ {X Y} {P : Predicate X} (f : X 𝒟.⇒ Y) → P ⊑ P ⟨ f ⟩ [ f ]
+  unit f = adjoint₁ (IsPreorder.refl ⊑-isPreorder)
+
+  counit : ∀ {X Y} {P : Predicate Y} (f : X 𝒟.⇒ Y) → P [ f ] ⟨ f ⟩ ⊑ P
+  counit f = adjoint₂ (IsPreorder.refl ⊑-isPreorder)
+
+  field
     TT-isTop  : ∀ {X} → IsTop ⊑-isPreorder (TT {X})
 
     &&-isMeet : ∀ {X} → IsMeet ⊑-isPreorder (_&&_ {X})
