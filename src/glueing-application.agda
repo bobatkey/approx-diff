@@ -105,7 +105,7 @@ open Sc using (Scone)
 
 module G = glueing-simple
              Fam⟨M×Jop⟩
-             (SetoidCat 0ℓ 0ℓ) (Setoid-products 0ℓ 0ℓ) (Setoid-coproducts 0ℓ 0ℓ) setoid-predicate.predicate-system
+             (SetoidCat 0ℓ 0ℓ) (Setoid-products 0ℓ 0ℓ) (Setoid-coproducts 0ℓ 0ℓ) setoid-predicate.system
              Sc.Scone
 
 module GCP = G.coproducts Fam⟨M×Jop⟩-coproducts

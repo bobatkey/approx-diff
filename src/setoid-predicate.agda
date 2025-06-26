@@ -161,34 +161,33 @@ _++_ : ∀ {X Y} → Predicate X → Predicate Y → Predicate (+-setoid X Y)
 
 open import predicate-system
 
-predicate-system : PredicateSystem (SetoidCat o e) (Setoid-products o e) (Setoid-coproducts o e)
-predicate-system .PredicateSystem.Predicate = Predicate
-predicate-system .PredicateSystem._⊑_ = _⊑_
-predicate-system .PredicateSystem._[_] = _[_]
-predicate-system .PredicateSystem._⟨_⟩ = _⟨_⟩
-predicate-system .PredicateSystem._⟨_⟩m = _⟨_⟩m
-predicate-system .PredicateSystem.adjoint₁ = adjoint₁
-predicate-system .PredicateSystem.adjoint₂ = adjoint₂
-predicate-system .PredicateSystem.TT = TT
-predicate-system .PredicateSystem._&&_ = _&&_
-predicate-system .PredicateSystem._++_ = _++_
-predicate-system .PredicateSystem._==>_ = _==>_
-predicate-system .PredicateSystem.⋀ = ⋀
-predicate-system .PredicateSystem.⊑-isPreorder = ⊑-isPreorder
-predicate-system .PredicateSystem._[_]m = _[_]m
-predicate-system .PredicateSystem.[]-cong = []-cong
-predicate-system .PredicateSystem.[]-id = []-id
-predicate-system .PredicateSystem.[]-id⁻¹ = []-id⁻¹
-predicate-system .PredicateSystem.[]-comp = []-comp
-predicate-system .PredicateSystem.[]-comp⁻¹ = []-comp⁻¹
-predicate-system .PredicateSystem.TT-isTop = TT-isTop
-predicate-system .PredicateSystem.&&-isMeet = &&-isMeet
-predicate-system .PredicateSystem.[]-&& = []-&&
-predicate-system .PredicateSystem.==>-residual = ==>-residual
-predicate-system .PredicateSystem.[]-==> = []-==>
-predicate-system .PredicateSystem.++-in₁ = ++-in₁
-predicate-system .PredicateSystem.++-in₂ = ++-in₂
-predicate-system .PredicateSystem.++-copair = ++-copair
-predicate-system .PredicateSystem.⋀-[] = ⋀-[]
-predicate-system .PredicateSystem.⋀-eval = ⋀-eval
-predicate-system .PredicateSystem.⋀-lambda = ⋀-lambda
+system : PredicateSystem (SetoidCat o e) (Setoid-products o e) (Setoid-coproducts o e)
+system .PredicateSystem.Predicate = Predicate
+system .PredicateSystem._⊑_ = _⊑_
+system .PredicateSystem._[_] = _[_]
+system .PredicateSystem._⟨_⟩ = _⟨_⟩
+system .PredicateSystem.adjoint₁ = adjoint₁
+system .PredicateSystem.adjoint₂ = adjoint₂
+system .PredicateSystem.TT = TT
+system .PredicateSystem._&&_ = _&&_
+system .PredicateSystem._++_ = _++_
+system .PredicateSystem._==>_ = _==>_
+system .PredicateSystem.⋀ = ⋀
+system .PredicateSystem.⊑-isPreorder = ⊑-isPreorder
+system .PredicateSystem._[_]m = _[_]m
+system .PredicateSystem.[]-cong = []-cong
+system .PredicateSystem.[]-id = []-id
+system .PredicateSystem.[]-id⁻¹ = []-id⁻¹
+system .PredicateSystem.[]-comp = []-comp
+system .PredicateSystem.[]-comp⁻¹ = []-comp⁻¹
+system .PredicateSystem.TT-isTop = TT-isTop
+system .PredicateSystem.&&-isMeet = &&-isMeet
+system .PredicateSystem.[]-&& = []-&&
+system .PredicateSystem.==>-residual = ==>-residual
+system .PredicateSystem.[]-==> = []-==>
+system .PredicateSystem.++-in₁ = ++-in₁
+system .PredicateSystem.++-in₂ = ++-in₂
+system .PredicateSystem.++-copair = ++-copair
+system .PredicateSystem.⋀-[] = ⋀-[]
+system .PredicateSystem.⋀-eval = ⋀-eval
+system .PredicateSystem.⋀-lambda = ⋀-lambda

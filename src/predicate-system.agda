@@ -36,8 +36,6 @@ record PredicateSystem {o m e} (𝒟 : Category o m e) (P : HasProducts 𝒟) (C
     []-comp   : ∀ {X Y Z} {P : Predicate Z} (f : Y 𝒟.⇒ Z) (g : X 𝒟.⇒ Y) → ((P [ f ]) [ g ]) ⊑ (P [ f 𝒟.∘ g ])
     []-comp⁻¹ : ∀ {X Y Z} {P : Predicate Z} (f : Y 𝒟.⇒ Z) (g : X 𝒟.⇒ Y) → (P [ f 𝒟.∘ g ]) ⊑ ((P [ f ]) [ g ])
 
-    _⟨_⟩m     : ∀ {X Y} {P Q : Predicate X} → P ⊑ Q → (f : X 𝒟.⇒ Y) → (P ⟨ f ⟩) ⊑ (Q ⟨ f ⟩)
-
     adjoint₁ : ∀ {X Y} {P : Predicate X} {Q : Predicate Y} {f : X 𝒟.⇒ Y} → P ⟨ f ⟩ ⊑ Q → P ⊑ Q [ f ]
     adjoint₂ : ∀ {X Y} {P : Predicate X} {Q : Predicate Y} {f : X 𝒟.⇒ Y} → P ⊑ Q [ f ] → P ⟨ f ⟩ ⊑ Q
 
@@ -46,6 +44,9 @@ record PredicateSystem {o m e} (𝒟 : Category o m e) (P : HasProducts 𝒟) (C
 
   counit : ∀ {X Y} {P : Predicate Y} (f : X 𝒟.⇒ Y) → P [ f ] ⟨ f ⟩ ⊑ P
   counit f = adjoint₂ (IsPreorder.refl ⊑-isPreorder)
+
+  _⟨_⟩m : ∀ {X Y} {P Q : Predicate X} → P ⊑ Q → (f : X 𝒟.⇒ Y) → (P ⟨ f ⟩) ⊑ (Q ⟨ f ⟩)
+  P⊑Q ⟨ f ⟩m = adjoint₂ (IsPreorder.trans ⊑-isPreorder P⊑Q (unit f))
 
   field
     TT-isTop  : ∀ {X} → IsTop ⊑-isPreorder (TT {X})
