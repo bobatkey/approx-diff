@@ -25,6 +25,14 @@ import fam
 
 open Functor
 
+-- Situation:
+-- - First-order category 𝒞
+-- - Higher-order category 𝒟
+-- - A functor F : 𝒞 ⇒ 𝒟 that preserves all the first-order structure
+-- - For each object X ∈ 𝒞, construct the glued category over 𝒟(F(X),-)
+--   - Each object Y ∈ 𝒞 appears in the glued category
+--   -
+
 ------------------------------------------------------------------------------
 module Galois = Category galois.cat
 
@@ -43,24 +51,22 @@ M×Jop₀ = CMonCategory.cat M×Jop
 
 module M×Jop₀ = Category M×Jop₀
 
-module _ where
-
-  𝓖 : Functor galois.cat M×Jop₀
-  𝓖 .fobj X =
-    record { carrier = X .galois.Obj.carrier ; meets = X .galois.Obj.meets } ,
-    record { carrier = X .galois.Obj.carrier ; joins = X .galois.Obj.joins }
-  𝓖 .fmor f =
-    record { *→* = galois._⇒g_.right-∧ f } ,
-    record { *→* = galois._⇒g_.left-∨ f }
-  𝓖 .fmor-cong f≃g =
-    record { f≃f = record { eqfunc = f≃g .galois._≃g_.right-eq } } ,
-    record { f≃f = record { eqfunc = f≃g .galois._≃g_.left-eq } }
-  𝓖 .fmor-id {X} =
-    record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } } ,
-    record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }
-  𝓖 .fmor-comp f g =
-    (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }) ,
-    (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } })
+𝓖 : Functor galois.cat M×Jop₀
+𝓖 .fobj X =
+  record { carrier = X .galois.Obj.carrier ; meets = X .galois.Obj.meets } ,
+  record { carrier = X .galois.Obj.carrier ; joins = X .galois.Obj.joins }
+𝓖 .fmor f =
+  record { *→* = galois._⇒g_.right-∧ f } ,
+  record { *→* = galois._⇒g_.left-∨ f }
+𝓖 .fmor-cong f≃g =
+  record { f≃f = record { eqfunc = f≃g .galois._≃g_.right-eq } } ,
+  record { f≃f = record { eqfunc = f≃g .galois._≃g_.left-eq } }
+𝓖 .fmor-id {X} =
+  record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } } ,
+  record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }
+𝓖 .fmor-comp f g =
+  (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }) ,
+  (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } })
 
 Approx : Category.obj M×Jop₀
 Approx = 𝓖 .fobj galois.TWO
@@ -141,6 +147,7 @@ module Glued = Category G.cat
 module GCP = G.coproducts Fam⟨M×Jop⟩-coproducts
 
 module GP = G.products-and-exponentials
+               Fam⟨M×Jop⟩-terminal
                Fam⟨M×Jop⟩-products
                Fam⟨M×Jop⟩-exponentials
                Sc.mul
@@ -167,7 +174,7 @@ module _ where
   G⟨Approx⟩ .G.Obj.carrier = Fam⟨Approx⟩
   G⟨Approx⟩ .G.Obj.pred .pred f =
     ∃ (galois.TWO Galois.⇒ galois.TWO)
-      (λ g → Category._≈_ M×Jop₀ (𝓖 .fmor g) (f .famf .transf (lift tt)))
+      λ g → 𝓖 .fmor g M×Jop₀.≈ f .famf .transf (lift tt)
   G⟨Approx⟩ .G.Obj.pred .pred-≃ {f₁} {f₂} f₁≈f₂ (g , eq) =
     g , (begin
       𝓖 .fmor g                                        ≈⟨ eq ⟩
@@ -175,6 +182,16 @@ module _ where
       M×Jop₀.id _ M×Jop₀.∘ f₁ .famf .transf (lift tt)  ≈⟨ f₁≈f₂ .famf-eq .transf-eq {lift tt} ⟩
       f₂ .famf .transf (lift tt)                       ∎)
     where open ≈-Reasoning M×Jop₀.isEquiv
+
+-- For any first-order type A:
+--   1. The interpretation is isomorphic to the Fam⟨LatGal⟩ interpretation
+--   2. The lower part of the
+
+--  is-galois-connection :
+
+-- For any first-order type A and base element of A, there is:
+--  (a) a tree t (why not just an object of 'Galois'?)
+--  (b) the pair (const a, id) is an element of the predicate.
 
 -- For any first-order type, and base element of the type, there is an
 -- 'n ∈ ℕ' such that Fam⟨M×Jop⟩(Approx^n, ⟦ A ⟧) is an isomorphism in

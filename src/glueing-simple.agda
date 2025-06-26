@@ -3,7 +3,7 @@
 open import Level using (suc; _⊔_)
 open import prop-setoid using (module ≈-Reasoning; IsEquivalence)
 open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; module ≤-Reasoning)
-open import categories using (Category; HasProducts; HasExponentials; HasCoproducts)
+open import categories using (Category; HasProducts; HasExponentials; HasCoproducts; HasTerminal; IsTerminal)
 open import functor using (Functor)
 open import predicate-system using (PredicateSystem)
 
@@ -178,7 +178,7 @@ module coproducts (CP : HasCoproducts 𝒞) where
 
 -- products and exponentials
 module products-and-exponentials
-         (P : HasProducts 𝒞) (E : HasExponentials 𝒞 P)
+         (T : HasTerminal 𝒞) (P : HasProducts 𝒞) (E : HasExponentials 𝒞 P)
          (mul   : ∀ {x y} → 𝒟P.prod (F .fobj x) (F .fobj y) 𝒟.⇒ F .fobj (P .HasProducts.prod x y))
          (mul⁻¹ : ∀ {x y} → F .fobj (P .HasProducts.prod x y) 𝒟.⇒ 𝒟P.prod (F .fobj x) (F .fobj y))
          (mul-inv : ∀ {x y} → (mul {x} {y} 𝒟.∘ mul⁻¹) 𝒟.≈ 𝒟.id _)
@@ -187,6 +187,7 @@ module products-and-exponentials
      where
 
   private
+    module T = HasTerminal T
     module P = HasProducts P
     module E = HasExponentials E
 
@@ -200,6 +201,28 @@ module products-and-exponentials
     ∎ where open ≈-Reasoning 𝒟.isEquiv
 
   open IsMeet
+
+  -- Terminal
+  [⊤] : Obj
+  [⊤] .carrier = T.witness
+  [⊤] .pred = TT
+
+  to-terminal : ∀ {X} → X => [⊤]
+  to-terminal .morph = T.is-terminal .IsTerminal.to-terminal
+  to-terminal {X} .presv = begin
+      X .pred
+    ≤⟨ TT-isTop .IsTop.≤-top ⟩
+      TT
+    ≤⟨ []-TT ⟩
+      TT [ F .fmor (T.is-terminal .IsTerminal.to-terminal) ]
+    ∎
+    where open ≤-Reasoning ⊑-isPreorder
+
+  terminal : HasTerminal cat
+  terminal .HasTerminal.witness = [⊤]
+  terminal .HasTerminal.is-terminal .IsTerminal.to-terminal = to-terminal
+  terminal .HasTerminal.is-terminal .IsTerminal.to-terminal-ext f .f≃f =
+    T.is-terminal .IsTerminal.to-terminal-ext (f .morph)
 
   -- Products
   _[×]_ : Obj → Obj → Obj
@@ -230,10 +253,6 @@ module products-and-exponentials
       ((Y .pred [ F .fmor P.p₁ ]) && (Z .pred [ F .fmor P.p₂ ])) [ F .fmor (P.pair (f .morph) (g .morph)) ]
     ∎ where open ≤-Reasoning ⊑-isPreorder
 
-  _[→]_ : Obj → Obj → Obj
-  (X [→] Y) .carrier = E.exp (X .carrier) (Y .carrier)
-  (X [→] Y) .pred = ⋀ (((X .pred [ F .fmor P.p₂ ]) ==> (Y .pred [ F .fmor E.eval ])) [ mul ])
-
   products : HasProducts cat
   products .HasProducts.prod = _[×]_
   products .HasProducts.p₁ = p₁
@@ -245,6 +264,10 @@ module products-and-exponentials
   products .HasProducts.pair-ext f .f≃f = P.pair-ext (f .morph)
 
   -- Exponentials
+  _[→]_ : Obj → Obj → Obj
+  (X [→] Y) .carrier = E.exp (X .carrier) (Y .carrier)
+  (X [→] Y) .pred = ⋀ (((X .pred [ F .fmor P.p₂ ]) ==> (Y .pred [ F .fmor E.eval ])) [ mul ])
+
   eval : ∀ {X Y} → ((X [→] Y) [×] X) => Y
   eval .morph = E.eval
   eval {X} {Y} .presv = begin

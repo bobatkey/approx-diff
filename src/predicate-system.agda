@@ -50,6 +50,7 @@ record PredicateSystem {o m e} (𝒟 : Category o m e) (P : HasProducts 𝒟) (C
 
   field
     TT-isTop  : ∀ {X} → IsTop ⊑-isPreorder (TT {X})
+    []-TT     : ∀ {X Y} {f : X 𝒟.⇒ Y} → TT ⊑ TT [ f ]
 
     &&-isMeet : ∀ {X} → IsMeet ⊑-isPreorder (_&&_ {X})
     []-&&     : ∀ {X Y} {P Q : Predicate Y} {f : X 𝒟.⇒ Y} → ((P [ f ]) && (Q [ f ])) ⊑ ((P && Q) [ f ])

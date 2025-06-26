@@ -46,13 +46,6 @@ _&&_ : ∀ {X : Setoid o e} → Predicate X → Predicate X → Predicate X
 &&-isMeet .IsMeet.π₂ .*⊑* x = proj₂
 &&-isMeet .IsMeet.⟨_,_⟩ P⊑Q P⊑R .*⊑* x p = (P⊑Q .*⊑* x p) , (P⊑R .*⊑* x p)
 
-TT : ∀ {X} → Predicate X
-TT .Predicate.pred x = ⊤
-TT .Predicate.pred-≃ _ tt = tt
-
-TT-isTop : ∀ {X} → IsTop ⊑-isPreorder (TT {X})
-TT-isTop .IsTop.≤-top .*⊑* x _ = tt
-
 open _≈s_
 open _⇒s_
 
@@ -101,27 +94,6 @@ _⟨_⟩m : ∀ {X Y : Setoid o e} {P Q : Predicate X} → P ⊑ Q → (f : X �
 []-&& : ∀ {X Y : Setoid o e} {P Q : Predicate Y} {f : X ⇒s Y} → ((P [ f ]) && (Q [ f ])) ⊑ (P && Q) [ f ]
 []-&& .*⊑* x ϕ = ϕ
 
-_==>_ : ∀ {X : Setoid o e} → Predicate X → Predicate X → Predicate X
-(P ==> Q) .Predicate.pred x = P .Predicate.pred x → Q .Predicate.pred x
-_==>_ {X} P Q .Predicate.pred-≃ x₁≈x₂ ϕ p =
-  Q .Predicate.pred-≃ x₁≈x₂ (ϕ (P .Predicate.pred-≃ (X .Setoid.sym x₁≈x₂) p))
-
-==>-residual : ∀ {X} → IsResidual ⊑-isPreorder (monoidOfMeet _ &&-isMeet TT-isTop) (_==>_ {X})
-==>-residual .IsResidual.lambda Φ .*⊑* x p q = Φ .*⊑* x (p , q)
-==>-residual .IsResidual.eval .*⊑* x (f , p) = f p
-
--- ==>-eval : ∀ {X : Setoid o e}{P Q : Predicate X} → ((P ==> Q) && P) ⊑ Q
--- ==>-eval .*⊑* x (f , p) = f p
-
--- ==>-lambda : ∀ {X : Setoid o e}{P Q R : Predicate X} → (P && Q) ⊑ R → P ⊑ (Q ==> R)
--- ==>-lambda Φ .*⊑* x p q = Φ .*⊑* x (p , q)
-
--- ==>-mono : ∀ {X : Setoid o e}{P P' Q Q' : Predicate X} → P' ⊑ P → Q ⊑ Q' → (P ==> Q) ⊑ (P' ==> Q')
--- ==>-mono P'⊑P Q⊑Q' .*⊑* x f p' = Q⊑Q' .*⊑* x (f (P'⊑P .*⊑* x p'))
-
-[]-==> : ∀ {X Y : Setoid o e}{P Q : Predicate Y}{f : X ⇒s Y} → ((P [ f ]) ==> (Q [ f ])) ⊑ (P ==> Q) [ f ]
-[]-==> .*⊑* x z = z
-
 ⋀ : ∀ {X Y : Setoid o e} → Predicate (⊗-setoid X Y) → Predicate X
 ⋀ P .Predicate.pred x = ∀ y → P .Predicate.pred (x , y)
 ⋀ {X} {Y} P .Predicate.pred-≃ x₁≈x₂ p y = P .Predicate.pred-≃ (x₁≈x₂ , Y .Setoid.refl) (p y)
@@ -140,6 +112,31 @@ f ⊗m g = prop-setoid.pair (f ∘S project₁) (g ∘S project₂)
             P [ project₁ ] ⊑ Q →
             P ⊑ ⋀ Q
 ⋀-lambda Φ .*⊑* x p y = Φ .*⊑* ((x , y)) p
+
+-- Top
+TT : ∀ {X} → Predicate X
+TT .Predicate.pred x = ⊤
+TT .Predicate.pred-≃ _ tt = tt
+
+TT-isTop : ∀ {X} → IsTop ⊑-isPreorder (TT {X})
+TT-isTop .IsTop.≤-top .*⊑* x _ = tt
+
+[]-TT : ∀ {X Y} {f : X ⇒s Y} → TT ⊑ TT [ f ]
+[]-TT .*⊑* _ tt = tt
+
+-- Residuals / implication
+_==>_ : ∀ {X : Setoid o e} → Predicate X → Predicate X → Predicate X
+(P ==> Q) .Predicate.pred x = P .Predicate.pred x → Q .Predicate.pred x
+_==>_ {X} P Q .Predicate.pred-≃ x₁≈x₂ ϕ p =
+  Q .Predicate.pred-≃ x₁≈x₂ (ϕ (P .Predicate.pred-≃ (X .Setoid.sym x₁≈x₂) p))
+
+==>-residual : ∀ {X} → IsResidual ⊑-isPreorder (monoidOfMeet _ &&-isMeet TT-isTop) (_==>_ {X})
+==>-residual .IsResidual.lambda Φ .*⊑* x p q = Φ .*⊑* x (p , q)
+==>-residual .IsResidual.eval .*⊑* x (f , p) = f p
+
+[]-==> : ∀ {X Y : Setoid o e}{P Q : Predicate Y}{f : X ⇒s Y} → ((P [ f ]) ==> (Q [ f ])) ⊑ (P ==> Q) [ f ]
+[]-==> .*⊑* x z = z
+
 
 -- Predicates on Coproducts
 _++_ : ∀ {X Y} → Predicate X → Predicate Y → Predicate (+-setoid X Y)
@@ -181,6 +178,7 @@ system .PredicateSystem.[]-id⁻¹ = []-id⁻¹
 system .PredicateSystem.[]-comp = []-comp
 system .PredicateSystem.[]-comp⁻¹ = []-comp⁻¹
 system .PredicateSystem.TT-isTop = TT-isTop
+system .PredicateSystem.[]-TT = []-TT
 system .PredicateSystem.&&-isMeet = &&-isMeet
 system .PredicateSystem.[]-&& = []-&&
 system .PredicateSystem.==>-residual = ==>-residual
