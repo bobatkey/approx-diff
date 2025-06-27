@@ -12,14 +12,16 @@ module language-interpretation
   (𝒞 : Category o m e)
   (T  : HasTerminal 𝒞)
   (P  : HasProducts 𝒞)
+  (E  : HasExponentials 𝒞 P)
   (B  : HasBooleans 𝒞 T P)
   (Int : Model PFPC[ 𝒞 , T , P , HasBooleans.Bool B ] Sig)
-  (L  : HasLists 𝒞 T P)
+--  (L  : HasLists 𝒞 T P)
   where
 
+open HasExponentials E renaming (exp to _⟦→⟧_)
 open PointedFPCat PFPC[ 𝒞 , T , P , HasBooleans.Bool B ]
 open HasBooleans B
-open HasLists L renaming (list to ⟦list⟧; nil to ⟦nil⟧; cons to ⟦cons⟧; fold to ⟦fold⟧)
+-- open HasLists L renaming (list to ⟦list⟧; nil to ⟦nil⟧; cons to ⟦cons⟧; fold to ⟦fold⟧)
 open IsTerminal
 
 open language Sig
@@ -30,7 +32,9 @@ open Model Int
 ⟦ bool ⟧ty = Bool
 ⟦ base σ ⟧ty = ⟦sort⟧ σ
 ⟦ τ₁ [×] τ₂ ⟧ty = ⟦ τ₁ ⟧ty × ⟦ τ₂ ⟧ty
-⟦ list τ ⟧ty = ⟦list⟧ ⟦ τ ⟧ty
+⟦ τ₁ [→] τ₂ ⟧ty = ⟦ τ₁ ⟧ty ⟦→⟧ ⟦ τ₂ ⟧ty
+
+-- ⟦ list τ ⟧ty = ⟦list⟧ ⟦ τ ⟧ty
 
 ⟦_⟧ctxt : ctxt → obj
 ⟦ emp ⟧ctxt = 𝟙
@@ -50,11 +54,13 @@ mutual
   ⟦ pair M N ⟧tm = ⟨ ⟦ M ⟧tm , ⟦ N ⟧tm ⟩
   ⟦ fst M ⟧tm = p₁ ∘ ⟦ M ⟧tm
   ⟦ snd M ⟧tm = p₂ ∘ ⟦ M ⟧tm
+  ⟦ lam M ⟧tm = lambda ⟦ M ⟧tm
+  ⟦ app M  N ⟧tm = eval ∘ ⟨ ⟦ M ⟧tm , ⟦ N ⟧tm ⟩
   ⟦ bop ω Ms ⟧tm = ⟦op⟧ ω ∘ ⟦ Ms ⟧tms
   ⟦ brel ω Ms ⟧tm = ⟦rel⟧ ω ∘ ⟦ Ms ⟧tms
-  ⟦ nil ⟧tm = ⟦nil⟧ ∘ is-terminal .to-terminal
-  ⟦ cons M N ⟧tm = ⟦cons⟧ ∘ ⟨ ⟦ M ⟧tm , ⟦ N ⟧tm ⟩
-  ⟦ fold M₁ M₂ M ⟧tm = ⟦fold⟧ ⟦ M₁ ⟧tm ⟦ M₂ ⟧tm ∘ ⟨ id _ , ⟦ M ⟧tm ⟩
+  -- ⟦ nil ⟧tm = ⟦nil⟧ ∘ is-terminal .to-terminal
+  -- ⟦ cons M N ⟧tm = ⟦cons⟧ ∘ ⟨ ⟦ M ⟧tm , ⟦ N ⟧tm ⟩
+  -- ⟦ fold M₁ M₂ M ⟧tm = ⟦fold⟧ ⟦ M₁ ⟧tm ⟦ M₂ ⟧tm ∘ ⟨ id _ , ⟦ M ⟧tm ⟩
 
   ⟦_⟧tms : ∀ {Γ σs} → Every (λ σ → Γ ⊢ base σ) σs → ⟦ Γ ⟧ctxt ⇒ list→product ⟦sort⟧ σs
   ⟦ [] ⟧tms = is-terminal .to-terminal

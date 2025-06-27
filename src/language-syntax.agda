@@ -17,14 +17,24 @@ module language {ℓ} (Sig : Signature ℓ) where
   data type : Set ℓ where
     unit bool : type
     base : sort → type
-    _[×]_ : type → type → type
-    list : type → type
+    _[×]_ _[→]_ : type → type → type
+--    list : type → type
 
-  infixl 40 _[×]_
+  data first-order : type → Set ℓ where
+    unit  : first-order unit
+    bool  : first-order bool
+    base  : ∀ s → first-order (base s)
+    _[×]_ : ∀ {τ₁ τ₂} → first-order τ₁ → first-order τ₂ → first-order (τ₁ [×] τ₂)
+
+  infixl 40 _[×]_ _[→]_
 
   data ctxt : Set ℓ where
     emp : ctxt
     _,_ : ctxt → type → ctxt
+
+  data first-order-ctxt : ctxt → Set ℓ where
+    emp : first-order-ctxt emp
+    _,_ : ∀ {Γ τ} → first-order-ctxt Γ → first-order τ → first-order-ctxt (Γ , τ)
 
   infixl 30 _,_
 
@@ -59,6 +69,10 @@ module language {ℓ} (Sig : Signature ℓ) where
     fst  : ∀ {Γ τ₁ τ₂} → Γ ⊢ τ₁ [×] τ₂ → Γ ⊢ τ₁
     snd  : ∀ {Γ τ₁ τ₂} → Γ ⊢ τ₁ [×] τ₂ → Γ ⊢ τ₂
 
+    -- functions
+    lam  : ∀ {Γ τ₁ τ₂} → Γ , τ₁ ⊢ τ₂ → Γ ⊢ τ₁ [→] τ₂
+    app  : ∀ {Γ τ₁ τ₂} → Γ ⊢ τ₁ [→] τ₂ → Γ ⊢ τ₁ → Γ ⊢ τ₂
+
     -- base operations
     bop : ∀ {Γ in-sorts out-sort} →
           op in-sorts out-sort →
@@ -68,8 +82,8 @@ module language {ℓ} (Sig : Signature ℓ) where
            rel in-sorts →
            Every (λ σ → Γ ⊢ base σ) in-sorts →
            Γ ⊢ bool
-
-    -- lists
+{-
+    -- lists; FIXME; reinstate
     nil  : ∀ {Γ τ} → Γ ⊢ list τ
     cons : ∀ {Γ τ} → Γ ⊢ τ → Γ ⊢ list τ → Γ ⊢ list τ
     fold : ∀ {Γ τ₁ τ₂} →
@@ -77,7 +91,7 @@ module language {ℓ} (Sig : Signature ℓ) where
            Γ , τ₁ , τ₂ ⊢ τ₂ →
            Γ ⊢ list τ₁ →
            Γ ⊢ τ₂
-
+-}
   -- Applying renamings to terms
   mutual
     _*_ : ∀ {Γ Γ' τ} → Ren Γ Γ' → Γ ⊢ τ → Γ' ⊢ τ
@@ -91,14 +105,17 @@ module language {ℓ} (Sig : Signature ℓ) where
     ρ * snd M = snd (ρ * M)
     ρ * bop ω Ms = bop ω (ρ ** Ms)
     ρ * brel ω Ms = brel ω (ρ ** Ms)
-    ρ * nil = nil
-    ρ * cons M N = cons (ρ * M) (ρ * N)
-    ρ * fold M₁ M₂ M = fold (ρ * M₁) (ext (ext ρ) * M₂) (ρ * M)
+    ρ * lam M = lam (ext ρ * M)
+    ρ * app M N = app (ρ * M) (ρ * N)
+    -- ρ * nil = nil
+    -- ρ * cons M N = cons (ρ * M) (ρ * N)
+    -- ρ * fold M₁ M₂ M = fold (ρ * M₁) (ext (ext ρ) * M₂) (ρ * M)
 
     _**_ : ∀ {Γ Γ' σs} → Ren Γ Γ' → Every (λ σ → Γ ⊢ base σ) σs → Every (λ σ → Γ' ⊢ base σ) σs
     ρ ** [] = []
     ρ ** (M ∷ Ms) = (ρ * M) ∷ (ρ ** Ms)
 
+{-
   -- “macros”
   append : ∀ {Γ τ} → Γ ⊢ list τ → Γ ⊢ list τ → Γ ⊢ list τ
   append xs ys = fold ys (cons (var (succ zero)) (var zero)) xs
@@ -111,3 +128,4 @@ module language {ℓ} (Sig : Signature ℓ) where
 
   when_；_ : ∀ {Γ τ} → Γ ⊢ bool → Γ ⊢ list τ → Γ ⊢ list τ
   when M ； N = if M then N else nil
+-}

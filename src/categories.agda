@@ -76,6 +76,12 @@ record Category o m e : Set (suc (o ⊔ m ⊔ e)) where
       fwd∘bwd≈id : (fwd ∘ bwd) ≈ id y
       bwd∘fwd≈id : (bwd ∘ fwd) ≈ id x
 
+  Iso-refl : ∀ {x} → Iso x x
+  Iso-refl .Iso.fwd = id _
+  Iso-refl .Iso.bwd = id _
+  Iso-refl .Iso.fwd∘bwd≈id = id-left
+  Iso-refl .Iso.bwd∘fwd≈id = id-left
+
   opposite : Category o m e
   opposite .obj = obj
   opposite ._⇒_ x y = y ⇒ x
