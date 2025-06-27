@@ -11,11 +11,11 @@ TODO: prove that the recursion properties hold.
 -}
 
 open import Level using (0ℓ)
-open import prop using (_≡_; ≡-refl; ⟪_⟫; tt)
+open import prop using (⟪_⟫; tt)
 open import prop-setoid using (Setoid; IsEquivalence; module ≈-Reasoning)
 open import categories using (Category; HasLists; setoid→category; HasTerminal; HasProducts; HasExponentials)
 open import functor using (Functor; HasColimits; Colimit; IsColimit; NatTrans)
-open import nat
+open import nat using (ℕ; ℕₛ; zero; succ; _≃_; succ-injective; succ-cong)
 
 module lists
     {o m e}
@@ -51,7 +51,7 @@ module _ (A : 𝒞.obj) where
   ListF .fmor-comp {zero}   {zero}   {zero}   x y = 𝒞.≈-sym 𝒞.id-left
   ListF .fmor-comp {succ m} {succ n} {succ o} ⟪ eq1 ⟫ ⟪ eq2 ⟫ = begin
       𝒞P.prod-m (transport {m} {o} _) (𝒞.id _)
-    ≈⟨ 𝒞P.prod-m-cong (ListF .fmor-comp {m} {n} {o} ⟪ succ-injective eq1 ⟫ ⟪ succ-injective eq2 ⟫) (𝒞.≈-sym 𝒞.id-left) ⟩
+    ≈⟨ 𝒞P.prod-m-cong (ListF .fmor-comp ⟪ succ-injective eq1 ⟫ ⟪ succ-injective eq2 ⟫) (𝒞.≈-sym 𝒞.id-left) ⟩
       𝒞P.prod-m (transport (succ-injective eq1) 𝒞.∘ transport (succ-injective eq2)) (𝒞.id _ 𝒞.∘ 𝒞.id _)
     ≈⟨ 𝒞P.pair-functorial _ _ _ _ ⟩
       𝒞P.prod-m (transport (succ-injective eq1)) (𝒞.id _) 𝒞.∘ 𝒞P.prod-m (transport (succ-injective eq2)) (𝒞.id _)
@@ -69,20 +69,21 @@ module _ (A : 𝒞.obj) where
 
   cons' : List 𝒞.⇒ 𝒞E.exp A List
   cons' = isColimit .colambda (𝒞E.exp A List) α
-    where α : NatTrans ListF (functor.constF _ (𝒞E.exp A List))
-          α .transf n = 𝒞E.lambda (cocone .transf (succ n))
-          α .natural {m} {n} ⟪ eq ⟫ = begin
-               𝒞.id _ 𝒞.∘ 𝒞E.lambda (cocone .transf (succ m))
-             ≈⟨ 𝒞.id-left ⟩
-               𝒞E.lambda (cocone .transf (succ m))
-             ≈˘⟨ 𝒞E.lambda-cong 𝒞.id-left ⟩
-               𝒞E.lambda (𝒞.id _ 𝒞.∘ cocone .transf (succ m))
-             ≈⟨ 𝒞E.lambda-cong (cocone .natural {succ m} {succ n} ⟪ (succ-cong eq) ⟫) ⟩
-               𝒞E.lambda (cocone .transf (succ n) 𝒞.∘ 𝒞P.prod-m (transport eq) (𝒞.id _))
-             ≈˘⟨ 𝒞E.lambda-natural _ _ ⟩
-               𝒞E.lambda (cocone .transf (succ n)) 𝒞.∘ transport eq
-             ∎
-             where open ≈-Reasoning 𝒞.isEquiv
+    where
+      α : NatTrans ListF (functor.constF _ (𝒞E.exp A List))
+      α .transf n = 𝒞E.lambda (cocone .transf (succ n))
+      α .natural {m} {n} ⟪ eq ⟫ = begin
+           𝒞.id _ 𝒞.∘ 𝒞E.lambda (cocone .transf (succ m))
+         ≈⟨ 𝒞.id-left ⟩
+           𝒞E.lambda (cocone .transf (succ m))
+         ≈˘⟨ 𝒞E.lambda-cong 𝒞.id-left ⟩
+           𝒞E.lambda (𝒞.id _ 𝒞.∘ cocone .transf (succ m))
+         ≈⟨ 𝒞E.lambda-cong (cocone .natural {succ m} {succ n} ⟪ (succ-cong eq) ⟫) ⟩
+           𝒞E.lambda (cocone .transf (succ n) 𝒞.∘ 𝒞P.prod-m (transport eq) (𝒞.id _))
+         ≈˘⟨ 𝒞E.lambda-natural _ _ ⟩
+           𝒞E.lambda (cocone .transf (succ n)) 𝒞.∘ transport eq
+         ∎
+         where open ≈-Reasoning 𝒞.isEquiv
 
   cons : 𝒞P.prod A List 𝒞.⇒ List
   cons = 𝒞E.eval 𝒞.∘ 𝒞P.pair (cons' 𝒞.∘ 𝒞P.p₂) 𝒞P.p₁
