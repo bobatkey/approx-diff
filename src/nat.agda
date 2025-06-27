@@ -64,6 +64,10 @@ succ-cong : ∀ {x y} → x ≃ y → succ x ≃ succ y
 succ-cong p .proj₁ = s≤s (proj₁ p)
 succ-cong p .proj₂ = s≤s (proj₂ p)
 
+succ-injective : ∀ {x y} → succ x ≃ succ y → x ≃ y
+succ-injective (s≤s p , _) .proj₁ = p
+succ-injective (_ , s≤s p) .proj₂ = p
+
 ℕₛ : Setoid 0ℓ 0ℓ
 ℕₛ .Setoid.Carrier = ℕ
 ℕₛ .Setoid._≈_ = _≃_

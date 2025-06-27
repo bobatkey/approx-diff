@@ -47,7 +47,7 @@ record ∃ₛ {a b} (A : Set a)(B : A → Prop b) : Set (a ⊔ b) where
   field
     fst : A
     snd : B fst
-open ∃ₚ
+open ∃ₛ
 
 record Prf {ℓ} (P : Prop ℓ) : Set ℓ where
   constructor ⟪_⟫
