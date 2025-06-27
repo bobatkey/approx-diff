@@ -1,7 +1,7 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
 open import prop-setoid using (module ≈-Reasoning)
-open import categories using (Category; HasTerminal; HasProducts)
+open import categories using (Category; HasTerminal; HasProducts; IsTerminal)
 open import functor using (Functor; NatTrans; ≃-NatTrans; [_⇒_])
 
 module functor-cat-products
@@ -51,20 +51,24 @@ _×_ : Functor 𝒞 𝒟 → Functor 𝒞 𝒟 → Functor 𝒞 𝒟
     P.prod-m (F .fmor f) (G .fmor f) 𝒟.∘ P.prod-m (F .fmor g) (G .fmor g)
   ∎ where open ≈-Reasoning 𝒟.isEquiv
 
+open HasTerminal
+open HasProducts
+open IsTerminal
+
 terminal : HasTerminal [ 𝒞 ⇒ 𝒟 ]
-terminal .HasTerminal.witness = 𝟙
-terminal .HasTerminal.terminal-mor F .transf x = T.terminal-mor _
-terminal .HasTerminal.terminal-mor F .natural f = T.terminal-unique _ _ _
-terminal .HasTerminal.terminal-unique F α β .transf-eq x = T.terminal-unique _ _ _
+terminal .witness = 𝟙
+terminal .is-terminal .to-terminal .transf x = T.is-terminal .to-terminal
+terminal .is-terminal .to-terminal .natural f = to-terminal-unique T.is-terminal _ _
+terminal .is-terminal .to-terminal-ext f .transf-eq x = T.is-terminal .to-terminal-ext (f .transf x)
 
 products : HasProducts [ 𝒞 ⇒ 𝒟 ]
-products .HasProducts.prod = _×_
-products .HasProducts.p₁ .transf x = P.p₁
-products .HasProducts.p₁ .natural f = 𝒟.≈-sym (P.pair-p₁ _ _)
-products .HasProducts.p₂ .transf x = P.p₂
-products .HasProducts.p₂ .natural f = 𝒟.≈-sym (P.pair-p₂ _ _)
-products .HasProducts.pair α β .transf x = P.pair (α .transf x) (β .transf x)
-products .HasProducts.pair {F} {G} {H} α β .natural {x} {y} f =
+products .prod = _×_
+products .p₁ .transf x = P.p₁
+products .p₁ .natural f = 𝒟.≈-sym (P.pair-p₁ _ _)
+products .p₂ .transf x = P.p₂
+products .p₂ .natural f = 𝒟.≈-sym (P.pair-p₂ _ _)
+products .pair α β .transf x = P.pair (α .transf x) (β .transf x)
+products .pair {F} {G} {H} α β .natural {x} {y} f =
   begin
     P.prod-m (G .fmor f) (H .fmor f) 𝒟.∘ P.pair (α .transf x) (β .transf x)
   ≈⟨ P.pair-compose _ _ _ _ ⟩
@@ -74,7 +78,7 @@ products .HasProducts.pair {F} {G} {H} α β .natural {x} {y} f =
   ≈⟨ 𝒟.≈-sym (P.pair-natural _ _ _) ⟩
     P.pair (α .transf y) (β .transf y) 𝒟.∘ F .fmor f
   ∎ where open ≈-Reasoning 𝒟.isEquiv
-products .HasProducts.pair-cong e₁ e₂ .transf-eq x = P.pair-cong (e₁ .transf-eq x) (e₂ .transf-eq x)
-products .HasProducts.pair-p₁ f g .transf-eq x = P.pair-p₁ _ _
-products .HasProducts.pair-p₂ f g .transf-eq x = P.pair-p₂ _ _
-products .HasProducts.pair-ext f .transf-eq x = P.pair-ext _
+products .pair-cong e₁ e₂ .transf-eq x = P.pair-cong (e₁ .transf-eq x) (e₂ .transf-eq x)
+products .pair-p₁ f g .transf-eq x = P.pair-p₁ _ _
+products .pair-p₂ f g .transf-eq x = P.pair-p₂ _ _
+products .pair-ext f .transf-eq x = P.pair-ext _
