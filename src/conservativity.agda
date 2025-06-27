@@ -4,7 +4,7 @@ module conservativity where
 
 open import Level
 open import prop using (_,_; proj₁; proj₂; ∃)
-open import categories using (Category; HasProducts; HasCoproducts; HasExponentials; HasTerminal; IsTerminal; IsProduct)
+open import categories using (Category; HasBooleans; HasProducts; HasCoproducts; HasExponentials; HasTerminal; IsTerminal; IsProduct)
 open import functor using (Functor)
 open import prop-setoid using (module ≈-Reasoning)
 open import setoid-cat using (SetoidCat)
@@ -26,8 +26,8 @@ open Functor
 --   3. So every judgement x : A ⊢ M : B, with A, B first-order, has a morphism g : A 𝒞.⇒ B such that F(g) = ⟦ M ⟧
 
 -- For the actual language:
---  1. 𝒞 = Fam⟨Gal⟩ which has finite products and infinite coproducts
---  2. 𝒟 = Fam⟨M×Jop⟩ which is a BiCCC
+--  1. 𝒞 = Fam⟨LatGal⟩ which has finite products and infinite coproducts
+--  2. 𝒟 = Fam⟨M×J^op⟩ which is a BiCCC
 --  3. F  = Fam⟨𝓖⟩ which preserves products and infinite coproducts
 -- Could also replay the whole thing with `Stable` instead of Fam⟨LatGal⟩ ??
 
@@ -50,10 +50,25 @@ module _ {ℓ} (Sig : Signature ℓ)
 
   module L = language-syntax.language Sig
 
+  module _ where
+    open HasBooleans
+    open HasProducts 𝒟P
+    open HasCoproducts 𝒟CP
+    open HasTerminal 𝒟T renaming (witness to One)
+
+    blah : ∀ X → prod X (coprod One One) 𝒟.⇒ coprod X X
+    blah = {!   !}
+
+    𝒟B : HasBooleans 𝒟 𝒟T 𝒟P
+    𝒟B .Bool = coprod One One
+    𝒟B .True = in₁
+    𝒟B .False = in₂
+    𝒟B .cond = {!   !}
+
   module 𝒟Interp =
     language-interpretation
       Sig
-      𝒟 𝒟T 𝒟P 𝒟E {!!}
+      𝒟 𝒟T 𝒟P 𝒟E 𝒟B
       (transport-model Sig F FP {!!} Int)
 
   module glued (Env : Category.obj 𝒞) where
@@ -151,7 +166,15 @@ module _ {ℓ} (Sig : Signature ℓ)
     open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
     type-interp-iso : (τ : type) → 𝒟.Iso (LI.⟦ τ ⟧ty .carrier) 𝒟Interp.⟦ τ ⟧ty
-    type-interp-iso = {!!}
+    type-interp-iso unit .𝒟.Iso.fwd = {!   !}
+    type-interp-iso unit .𝒟.Iso.bwd = {!   !}
+    type-interp-iso unit .𝒟.Iso.fwd∘bwd≈id = {!   !}
+    type-interp-iso unit .𝒟.Iso.bwd∘fwd≈id = {!   !}
+
+    type-interp-iso bool = {!   !}
+    type-interp-iso (base x) = {!   !}
+    type-interp-iso (σ [×] τ) = {!   !}
+    type-interp-iso (σ [→] τ) = {!   !}
 
     ctxt-interp-iso : (Γ : ctxt) → 𝒟.Iso (LI.⟦ Γ ⟧ctxt .carrier) 𝒟Interp.⟦ Γ ⟧ctxt
     ctxt-interp-iso = {!!}
