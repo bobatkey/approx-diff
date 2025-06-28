@@ -28,7 +28,8 @@
   \\
   \sem{\Gamma, x: \tau} &= \sem{\Gamma} \times \sem{\tau}
   \end{align*}
-  \caption{Contexts $\Delta \vdash \Gamma$}
+%  \caption{Contexts $\Delta \vdash \Gamma$}
+  \caption{Contexts $\Gamma$}
   \label{fig:semantics:contexts}
 \end{subfigure}
 \begin{subfigure}{\linewidth}
@@ -62,7 +63,7 @@
 %  \sem{\tmRoll{t}} &= \inMap_{\sem{\sigma}} \comp \sem{t}
 %  \textit{ where }\tau = \mu\alpha.\sigma
   \\
-  \sem{\tmNil} &= \nil
+  \sem{\tmNil} &= \nil \comp {!_{\sem{\Gamma}}}
   \\
   \sem{\tmCons{s}{t}} &= \cons \comp \prodM{\sem{s}}{\sem{t}}
   \\
