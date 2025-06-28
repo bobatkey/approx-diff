@@ -3,7 +3,7 @@
 module predicate-system where
 
 open import Level using (suc; _⊔_)
-open import basics using (IsPreorder; IsTop; IsMeet; IsResidual; monoidOfMeet)
+open import basics using (IsPreorder; IsTop; IsMeet; IsResidual; monoidOfMeet; module ≤-Reasoning)
 open import categories using (Category; HasProducts; HasCoproducts)
 
 record PredicateSystem {o m e} (𝒟 : Category o m e) (P : HasProducts 𝒟) (CP : HasCoproducts 𝒟) : Set (suc (suc (o ⊔ m ⊔ e))) where
@@ -14,20 +14,13 @@ record PredicateSystem {o m e} (𝒟 : Category o m e) (P : HasProducts 𝒟) (C
   field
     Predicate : 𝒟.obj → Set (suc o ⊔ suc m ⊔ suc e)
     _⊑_   : ∀ {X : 𝒟.obj} → Predicate X → Predicate X → Prop (o ⊔ m ⊔ e)
+    ⊑-isPreorder : ∀ {X} → IsPreorder (_⊑_ {X})
 
   infix 2 _⊑_
+
   field
     _[_]   : ∀ {X Y} → Predicate Y → X 𝒟.⇒ Y → Predicate X
     _⟨_⟩   : ∀ {X Y} → Predicate X → X 𝒟.⇒ Y → Predicate Y
-
-  field
-    TT    : ∀ {X} → Predicate X
-    _&&_  : ∀ {X} → Predicate X → Predicate X → Predicate X
-    _++_  : ∀ {X Y} → Predicate X → Predicate Y → Predicate (CP.coprod X Y)
-    _==>_ : ∀ {X} → Predicate X → Predicate X → Predicate X
-    ⋀     : ∀ {X Y} → Predicate (P.prod X Y) → Predicate X
-
-    ⊑-isPreorder : ∀ {X} → IsPreorder (_⊑_ {X})
 
     _[_]m     : ∀ {X Y} {P Q : Predicate Y} → P ⊑ Q → (f : X 𝒟.⇒ Y) → (P [ f ]) ⊑ (Q [ f ])
     []-cong   : ∀ {X Y} {P : Predicate Y}{f₁ f₂ : X 𝒟.⇒ Y} → f₁ 𝒟.≈ f₂ → (P [ f₁ ]) ⊑ (P [ f₂ ])
@@ -49,6 +42,12 @@ record PredicateSystem {o m e} (𝒟 : Category o m e) (P : HasProducts 𝒟) (C
   P⊑Q ⟨ f ⟩m = adjoint₂ (IsPreorder.trans ⊑-isPreorder P⊑Q (unit f))
 
   field
+    TT    : ∀ {X} → Predicate X
+    _&&_  : ∀ {X} → Predicate X → Predicate X → Predicate X
+    _++_  : ∀ {X Y} → Predicate X → Predicate Y → Predicate (CP.coprod X Y)
+    _==>_ : ∀ {X} → Predicate X → Predicate X → Predicate X
+    ⋀     : ∀ {X Y} → Predicate (P.prod X Y) → Predicate X
+
     TT-isTop  : ∀ {X} → IsTop ⊑-isPreorder (TT {X})
     []-TT     : ∀ {X Y} {f : X 𝒟.⇒ Y} → TT ⊑ TT [ f ]
 
@@ -66,3 +65,20 @@ record PredicateSystem {o m e} (𝒟 : Category o m e) (P : HasProducts 𝒟) (C
     ⋀-[] : ∀ {X X' Y} {P : Predicate (P.prod X Y)} {f : X' 𝒟.⇒ X} → (⋀ (P [ P.prod-m f (𝒟.id _) ])) ⊑ (⋀ P) [ f ]
     ⋀-eval : ∀ {X Y} {P : Predicate (P.prod X Y)} → ((⋀ P) [ P.p₁ ]) ⊑ P
     ⋀-lambda : ∀ {X Y} {P : Predicate X} {Q : Predicate (P.prod X Y)} → P [ P.p₁ ] ⊑ Q → P ⊑ ⋀ Q
+
+  ⋀-[]⁻¹ : ∀ {X X' Y} {P : Predicate (P.prod X Y)} {f : X' 𝒟.⇒ X} → (⋀ P) [ f ] ⊑ (⋀ (P [ P.prod-m f (𝒟.id _) ]))
+  ⋀-[]⁻¹ {X} {X'} {Y} {P} {f} = ⋀-lambda Φ
+    where
+      Φ : ((⋀ P [ f ]) [ P.p₁ ]) ⊑ (P [ P.prod-m f (𝒟.id Y) ])
+      Φ = begin
+            (⋀ P [ f ]) [ P.p₁ ]
+           ≤⟨ []-comp _ _ ⟩
+            ⋀ P [ f 𝒟.∘ P.p₁ ]
+           ≤⟨ []-cong (𝒟.≈-sym (P.pair-p₁ _ _)) ⟩
+            ⋀ P [ P.p₁ 𝒟.∘ P.prod-m f (𝒟.id Y) ]
+           ≤⟨ []-comp⁻¹ _ _ ⟩
+            ⋀ P [ P.p₁ ] [ P.prod-m f (𝒟.id Y) ]
+           ≤⟨ ⋀-eval [ _ ]m ⟩
+            P [ P.prod-m f (𝒟.id Y) ]
+       ∎
+       where open ≤-Reasoning ⊑-isPreorder
