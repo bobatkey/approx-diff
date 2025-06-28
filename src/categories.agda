@@ -455,6 +455,31 @@ record HasExponentials {o m e} (𝒞 : Category o m e) (P : HasProducts 𝒞) : 
     ∎
     where open ≈-Reasoning isEquiv
 
+  -- isomorphisms are closed under exponentials
+  iso-exp : ∀ {x₁ x₂ y₁ y₂} → Iso x₁ x₂ → Iso y₁ y₂ → Iso (exp x₁ y₁) (exp x₂ y₂)
+  iso-exp x₁≅x₂ y₁≅y₂ .Iso.fwd = exp-fmor (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.fwd)
+  iso-exp x₁≅x₂ y₁≅y₂ .Iso.bwd = exp-fmor (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.bwd)
+  iso-exp x₁≅x₂ y₁≅y₂ .Iso.fwd∘bwd≈id =
+    begin
+      exp-fmor (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.fwd) ∘ exp-fmor (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.bwd)
+    ≈⟨ isEquiv .IsEquivalence.sym (exp-comp _ _ _ _) ⟩
+      exp-fmor (x₁≅x₂ .Iso.fwd ∘ x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.fwd ∘ y₁≅y₂ .Iso.bwd)
+    ≈⟨ exp-cong (x₁≅x₂ .Iso.fwd∘bwd≈id) (y₁≅y₂ .Iso.fwd∘bwd≈id) ⟩
+      exp-fmor (id _) (id _)
+    ≈⟨ exp-id ⟩
+      id _
+    ∎ where open ≈-Reasoning isEquiv
+  iso-exp x₁≅x₂ y₁≅y₂ .Iso.bwd∘fwd≈id =
+    begin
+      (exp-fmor (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.bwd) ∘ exp-fmor (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.fwd))
+    ≈⟨ isEquiv .IsEquivalence.sym (exp-comp _ _ _ _) ⟩
+      exp-fmor (x₁≅x₂ .Iso.bwd ∘ x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.bwd ∘ y₁≅y₂ .Iso.fwd)
+    ≈⟨ exp-cong (x₁≅x₂ .Iso.bwd∘fwd≈id) (y₁≅y₂ .Iso.bwd∘fwd≈id) ⟩
+      exp-fmor (id _) (id _)
+    ≈⟨ exp-id ⟩
+      id _
+    ∎ where open ≈-Reasoning isEquiv
+
 -- FIXME: separate out 'endofunctor' and 'natural transformation'
 record Monad {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞
