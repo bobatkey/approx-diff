@@ -71,7 +71,7 @@ D-exponentials = exponentials
 
 D-terminal = D.terminal PShGalois-products.terminal
 
-D-booleans = categories.coproducts→booleans D-terminal DP.strongCoproducts
+D-booleans = categories.strong-coproducts→booleans D-terminal DP.strongCoproducts
 
 D-lists = D.lists PShGalois-products.terminal PShGalois-products.products
 

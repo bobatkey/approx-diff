@@ -472,11 +472,28 @@ module _ {o m e} {𝒞 : Category o m e} (T : HasTerminal 𝒞) {P : HasProducts
   open HasStrongCoproducts C
   open HasBooleans
 
-  coproducts→booleans : HasBooleans 𝒞 T P
-  coproducts→booleans .Bool = coprod terminal terminal
-  coproducts→booleans .True = in₁
-  coproducts→booleans .False = in₂
-  coproducts→booleans .cond f g = copair (f ∘ p₁) (g ∘ p₁)
+  strong-coproducts→booleans : HasBooleans 𝒞 T P
+  strong-coproducts→booleans .Bool = coprod terminal terminal
+  strong-coproducts→booleans .True = in₁
+  strong-coproducts→booleans .False = in₂
+  strong-coproducts→booleans .cond f g = copair (f ∘ p₁) (g ∘ p₁)
+
+-- coproducts and exponentials to booleans
+module _ {o m e} {𝒞 : Category o m e} (T : HasTerminal 𝒞) {P : HasProducts 𝒞} (CP : HasCoproducts 𝒞) (E : HasExponentials 𝒞 P) where
+
+  open Category 𝒞
+  open HasProducts P
+  open HasCoproducts CP
+  open HasTerminal T renaming (witness to terminal)
+  open HasExponentials E
+  open HasBooleans
+
+  coproducts+exp→booleans : HasBooleans 𝒞 T P
+  coproducts+exp→booleans .Bool = coprod terminal terminal
+  coproducts+exp→booleans .True = in₁
+  coproducts+exp→booleans .False = in₂
+  coproducts+exp→booleans .cond f g =
+    eval ∘ (prod-m (copair (lambda (f ∘ p₂)) (lambda (g ∘ p₂))) (id _) ∘ pair p₂ p₁)
 
 ------------------------------------------------------------------------------
 -- For every object, there is a list object
