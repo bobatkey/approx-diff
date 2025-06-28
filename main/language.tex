@@ -18,7 +18,7 @@ and a data type of lists. We omit a treatment of general inductive or coinductiv
 \label{sec:language:semantics}
 
 % \input{fig/mu-polynomial}
-\input{fig/inductive-types/semantics}
+% \input{fig/inductive-types/semantics}
 \input{fig/semantics}
 
 % \begin{definition}[$\mu$-polynomial]
@@ -32,22 +32,23 @@ and a data type of lists. We omit a treatment of general inductive or coinductiv
 % initial $F$-algebra to any $F$-algebra $(X, f: FX \to X)$.
 
 To give the semantics for the language defined in \figrefTwo{syntax}{typing}, we fix a bicartesian closed
-category $\Sem$ with finite products $(\times, 1)$, finite coproducts $(\coprod, 0)$, exponentials
-$\internalHom{X}{Y}$, evaluation morphisms $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$, plus the
-following additional structure:
+category $\Sem$ with finite products $(\times, 1)$, finite coproducts $(\coprod, 0)$ and exponentials
+$\internalHom{X}{Y}$, with evaluation morphisms $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$,
+plus the following additional structure:
 \begin{enumerate}
 \item a strong monad $\mathcal{L}$ (lifting) with unit $\eta_X: X \to \mathcal{L}(X)$, multiplication $\mu_X:
 \mathcal{L}^2(X) \to \mathcal{L}(X)$ and strength $\mathsf{st}_{X,Y}: X \times \mathcal{L}(Y) \to
 \mathcal{L}(X \times Y)$;
 % \item $\mu$-polynomial endofunctors given by $\muPoly_{\Sem}$;
-\item for each primitive type $\rho \in \PrimTy$, an object $\sem{\rho}$;
+\item for each primitive type $\rho \in \PrimTy$, an object $\sem{\rho}_{\PrimTy}$;
 \item for each primitive operation $\phi \in \PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism $\sem{\phi}:
 \sem{\rho_1} \times \ldots \times \sem{\rho_n} \to \sem{\rho}$.
 \end{enumerate}
 
-\figref{semantics:types} gives the interpretation of types $\Delta \vdash \tau$ with $\length{\Delta}
-= n$ as functors $\Sem^n \to \Sem$, or as objects of $\Sem$ in the case $n = 0$.
-\figref{semantics:terms} gives the interpretation of terms $\Gamma \vdash t: \tau$ as morphisms
-$\sem{\Gamma} \to \sem{\tau}$.
+% \figref{semantics:types} gives the interpretation of types $\Delta \vdash \tau$ with $\length{\Delta}
+% = n$ as functors $\Sem^n \to \Sem$, or as objects of $\Sem$ in the case $n = 0$.
+\figrefTwo{semantics:types}{semantics:contexts} give the interpretations of types $\tau$ and contexts $\Gamma$
+as objects of $\Sem$. \figref{semantics:terms} gives the interpretation of terms $\Gamma \vdash t: \tau$ as
+morphisms $\sem{\Gamma} \to \sem{\tau}$.
 
 % \todo{Notation for partially applied functor used in \figref{semantics:types}}

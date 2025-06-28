@@ -2,11 +2,34 @@
 \begin{subfigure}{\linewidth}
   \begin{align*}
   \small
+  \sem{\rho} &= \sem{\rho}_{\PrimTy}
+  \\
+  \sem{\tyZero} &= 0
+  \\
+  \sem{\sigma \tySum \tau} &= \textstyle {\sem{\sigma}} \coprod {\sem{\tau}}
+  \\
+  \sem{\tyUnit} &= 1
+  \\
+  \sem{\sigma \tyProd \tau} &= \sem{\sigma} \times \sem{\tau}
+  \\
+  \sem{\sigma \tyFun \tau} &= \internalHom{\sem{\sigma}}{\sem{\tau}}
+  \\
+  \sem{\tyList\;\tau} &= \mu(\sem{\Delta, \alpha \vdash \tau}^{\vec X})
+  \\
+  \sem{\tyLift\;\tau} &= \mathcal{L}(\sem{\tau})
+  \end{align*}
+  \caption{Types $\tau$}
+  \label{fig:semantics:types}
+\end{subfigure}
+\begin{subfigure}{\linewidth}
+  \begin{align*}
+  \small
   \sem{\emptyCxt} &= \One
   \\
   \sem{\Gamma, x: \tau} &= \sem{\Gamma} \times \sem{\tau}
   \end{align*}
   \caption{Contexts $\Delta \vdash \Gamma$}
+  \label{fig:semantics:contexts}
 \end{subfigure}
 \begin{subfigure}{\linewidth}
   \begin{align*}
