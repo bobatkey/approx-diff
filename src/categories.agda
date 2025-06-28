@@ -257,11 +257,14 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     ∎
     where open ≈-Reasoning isEquiv
 
+  prod-m : ∀ {x₁ x₂ y₁ y₂} → x₁ ⇒ y₁ → x₂ ⇒ y₂ → prod x₁ x₂ ⇒ prod y₁ y₂
+  prod-m f₁ f₂ = pair (f₁ ∘ p₁) (f₂ ∘ p₂)
+
   pair-compose : ∀ {x y₁ y₂ z₁ z₂} (f₁ : y₁ ⇒ z₁) (f₂ : y₂ ⇒ z₂) (g₁ : x ⇒ y₁) (g₂ : x ⇒ y₂) →
-    (pair (f₁ ∘ p₁) (f₂ ∘ p₂) ∘ pair g₁ g₂) ≈ pair (f₁ ∘ g₁) (f₂ ∘ g₂)
+    (prod-m f₁ f₂ ∘ pair g₁ g₂) ≈ pair (f₁ ∘ g₁) (f₂ ∘ g₂)
   pair-compose f₁ f₂ g₁ g₂ =
     begin
-      pair (f₁ ∘ p₁) (f₂ ∘ p₂) ∘ pair g₁ g₂
+      prod-m f₁ f₂ ∘ pair g₁ g₂
     ≈⟨ pair-natural _ _ _ ⟩
       pair ((f₁ ∘ p₁) ∘ pair g₁ g₂) ((f₂ ∘ p₂) ∘ pair g₁ g₂)
     ≈⟨ pair-cong (assoc _ _ _) (assoc _ _ _) ⟩
@@ -269,9 +272,6 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     ≈⟨ pair-cong (∘-cong ≈-refl (pair-p₁ _ _)) (∘-cong ≈-refl (pair-p₂ _ _)) ⟩
       pair (f₁ ∘ g₁) (f₂ ∘ g₂)
     ∎ where open ≈-Reasoning isEquiv
-
-  prod-m : ∀ {x₁ x₂ y₁ y₂} → x₁ ⇒ y₁ → x₂ ⇒ y₂ → prod x₁ x₂ ⇒ prod y₁ y₂
-  prod-m f₁ f₂ = pair (f₁ ∘ p₁) (f₂ ∘ p₂)
 
   pair-functorial : ∀ {x₁ x₂ y₁ y₂ z₁ z₂} (f₁ : y₁ ⇒ z₁) (f₂ : y₂ ⇒ z₂) (g₁ : x₁ ⇒ y₁) (g₂ : x₂ ⇒ y₂) →
     prod-m (f₁ ∘ g₁) (f₂ ∘ g₂) ≈ (prod-m f₁ f₂ ∘ prod-m g₁ g₂)
@@ -312,6 +312,24 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
       id _
     ∎
     where open ≈-Reasoning isEquiv
+
+  -- isomorphisms are closed under products
+  iso-product : ∀ {x₁ x₂ y₁ y₂} → Iso x₁ x₂ → Iso y₁ y₂ → Iso (prod x₁ y₁) (prod x₂ y₂)
+  iso-product x₁≅x₂ y₁≅y₂ .Iso.fwd = prod-m (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.fwd)
+  iso-product x₁≅x₂ y₁≅y₂ .Iso.bwd = prod-m (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.bwd)
+  iso-product x₁≅x₂ y₁≅y₂ .Iso.fwd∘bwd≈id =
+    begin
+      prod-m (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.fwd) ∘ prod-m (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.bwd)
+    ≈⟨ pair-compose _ _ _ _ ⟩
+      pair (x₁≅x₂ .Iso.fwd ∘ (x₁≅x₂ .Iso.bwd ∘ p₁)) (y₁≅y₂ .Iso.fwd ∘ (y₁≅y₂ .Iso.bwd ∘ p₂))
+    ≈⟨ pair-cong (isEquiv .IsEquivalence.sym (assoc _ _ _)) (isEquiv .IsEquivalence.sym (assoc _ _ _)) ⟩
+      prod-m (x₁≅x₂ .Iso.fwd ∘ x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.fwd ∘ y₁≅y₂ .Iso.bwd)
+    ≈⟨ prod-m-cong (x₁≅x₂ .Iso.fwd∘bwd≈id) (y₁≅y₂ .Iso.fwd∘bwd≈id) ⟩
+      prod-m (id _) (id _)
+    ≈⟨ prod-m-id ⟩
+      id _
+    ∎ where open ≈-Reasoning isEquiv
+  iso-product x₁≅x₂ y₁≅y₂ .Iso.bwd∘fwd≈id = {!   !}
 
   getProduct : ∀ (x y : obj) → Product 𝒞 x y
   getProduct x y .Product.prod = prod x y
