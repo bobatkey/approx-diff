@@ -378,22 +378,21 @@ emulate this in our approach by defining a surface language where the data type 
 \synVar{nat} \times \alpha$ desugars automatically into the approximating version $\mu\alpha.\synVar{L}\,(1 +
 \synVar{L}\,\synVar{nat} \times \alpha)$.
 
-To interpret the syntactic type constructor $\synVar{L}$, consider the strong monad $(\mathcal{L}, \eta, \mu)$
-which acts on a poset $X$ to extend it with a distinguished bottom element $\bot$ and which acts on a monotone
-function $f$ between posets to extend it with a mapping from $\bot$ to $\bot$. $\mathcal{L}$ is also a strong
-monad on meet-semilattices. On (bounded) join-semilattices, $\mathcal{L}$ induces a costrong comonad
-$(\mathcal{L}, \varepsilon, \delta)$, with the bottom element of $X$ needed to implement the counit
-$\varepsilon_X: \mathcal{L}(X) \to X$. These two combine to form a strong lifting monad in $\LatGal$ with unit
-$\varepsilon_X \dashv \eta_X$ and multiplication $\delta_X \dashv \mu_X$.
+To interpret the syntactic type constructor $\synVar{L}$, consider the strong monad $(\Lift, \eta, \mu)$ which
+acts on a poset $X$ to extend it with a distinguished bottom element $\bot$ and which acts on a monotone
+function $f$ between posets to extend it with a mapping from $\bot$ to $\bot$. $\Lift$ is also a strong monad
+on meet-semilattices. On (bounded) join-semilattices, $\Lift$ induces a costrong comonad $(\Lift, \varepsilon,
+\delta)$, with the bottom element of $X$ needed to implement the counit $\varepsilon_X: \Lift(X) \to X$. These
+two combine to form a strong lifting monad in $\LatGal$ with unit $\varepsilon_X \dashv \eta_X$ and
+multiplication $\delta_X \dashv \mu_X$.
 
-The lifting monad $\mathcal{L}$ in $\LatGal$ is preserved into $\Fam(\LatGal)$. The families construction,
-regarded as a covariant 2-functor $\Fam(-): \Cat \to \Cat$, sends functors $F: \cat{C} \to \cat{D}$ to
-functors $\Fam(F): \Fam(\cat{C}) \to \Fam(\cat{D})$ that reassign the target category by postcomposing with
-$F$, sending objects $(X, \partial X)$ to $(X, F \comp \partial X)$ and morphisms $(f, \partial f)$ to $(f, F
-\comp \partial f)$, where $F \comp \partial f$ denotes the natural transformation where $(F \comp \partial
-f)(x) = F(\partial f(x))$. If $F$ happens to be a (strong) monad on $\cat{C}$, then $\Fam(F)$ is a (strong)
-monad on $\Fam(\cat{C})$, computed by extending the original monad $F: \cat{C} \to \cat{C}$ componentwise to
-families.
+The lifting monad $\Lift$ in $\LatGal$ is preserved into $\Fam(\LatGal)$. The families construction, regarded
+as a covariant 2-functor $\Fam(-): \Cat \to \Cat$, sends functors $F: \cat{C} \to \cat{D}$ to functors
+$\Fam(F): \Fam(\cat{C}) \to \Fam(\cat{D})$ that reassign the target category by postcomposing with $F$,
+sending objects $(X, \partial X)$ to $(X, F \comp \partial X)$ and morphisms $(f, \partial f)$ to $(f, F \comp
+\partial f)$, where $F \comp \partial f$ denotes the natural transformation where $(F \comp \partial f)(x) =
+F(\partial f(x))$. If $F$ happens to be a (strong) monad on $\cat{C}$, then $\Fam(F)$ is a (strong) monad on
+$\Fam(\cat{C})$, computed by extending the original monad $F: \cat{C} \to \cat{C}$ componentwise to families.
 
 \subsection{First-Order Automatic Differentiation via CHAD}
 

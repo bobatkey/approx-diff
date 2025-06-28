@@ -14,9 +14,9 @@
   \\
   \sem{\sigma \tyFun \tau} &= \internalHom{\sem{\sigma}}{\sem{\tau}}
   \\
-  \sem{\tyList\;\tau} &= \mu(\sem{\Delta, \alpha \vdash \tau}^{\vec X})
+  \sem{\tyList\;\tau} &= \List(\sem{\tau})
   \\
-  \sem{\tyLift\;\tau} &= \mathcal{L}(\sem{\tau})
+  \sem{\tyLift\;\tau} &= \Lift(\sem{\tau})
   \end{align*}
   \caption{Types $\tau$}
   \label{fig:semantics:types}
@@ -67,7 +67,7 @@
   \sem{\tmReturn{t}} &= \eta_{\sem{\sigma}} \comp \sem{t}
   \textit{ where }\tau = \tyLift\;\sigma
   \\
-  \sem{\tmBind{s}{t}} &= \mu_{\sem{\tau'}} \comp \mathcal{L}(\sem{t}) \comp \mathsf{st}_{\sem{\Gamma},\sem{\sigma}} \comp \prodM{\id}{\sem{s}}
+  \sem{\tmBind{s}{t}} &= \mu_{\sem{\tau'}} \comp \Lift(\sem{t}) \comp \mathsf{st}_{\sem{\Gamma},\sem{\sigma}} \comp \prodM{\id}{\sem{s}}
   \textit{ where }\Gamma \vdash s: \sigma\textit{ and }\tau = \tyLift\;\tau'
   \end{align*}
   \caption{Terms $\Gamma \vdash t: \tau$}
