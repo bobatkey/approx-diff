@@ -58,9 +58,13 @@
   \sem{\tmFun{x}{t}} &= \lambda(\sem{t})
   \\
   \sem{\tmApp{s}{t}} &= \eval \comp \prodM{\sem{s}}{\sem{t}}
+%  \\
+%  \sem{\tmRoll{t}} &= \inMap_{\sem{\sigma}} \comp \sem{t}
+%  \textit{ where }\tau = \mu\alpha.\sigma
   \\
-  \sem{\tmRoll{t}} &= \inMap_{\sem{\sigma}} \comp \sem{t}
-  \textit{ where }\tau = \mu\alpha.\sigma
+  \sem{\tmNil} &= \nil
+  \\
+  \sem{\tmCons{s}{t}} &= \cons \comp \prodM{\sem{s}}{\sem{t}}
   \\
   \sem{\tmFold{s}{t}} &= \eval \comp \prodM{\phi \comp \sem{s}}{\sem{t}}
   \\
