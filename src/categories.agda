@@ -329,7 +329,18 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     ≈⟨ prod-m-id ⟩
       id _
     ∎ where open ≈-Reasoning isEquiv
-  iso-product x₁≅x₂ y₁≅y₂ .Iso.bwd∘fwd≈id = {!   !}
+  iso-product x₁≅x₂ y₁≅y₂ .Iso.bwd∘fwd≈id =
+    begin
+      prod-m (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.bwd) ∘ prod-m (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.fwd)
+    ≈⟨ pair-compose _ _ _ _ ⟩
+      pair (x₁≅x₂ .Iso.bwd ∘ (x₁≅x₂ .Iso.fwd ∘ p₁)) (y₁≅y₂ .Iso.bwd ∘ (y₁≅y₂ .Iso.fwd ∘ p₂))
+    ≈⟨ pair-cong (isEquiv .IsEquivalence.sym (assoc _ _ _)) (isEquiv .IsEquivalence.sym (assoc _ _ _)) ⟩
+      prod-m (x₁≅x₂ .Iso.bwd ∘ x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.bwd ∘ y₁≅y₂ .Iso.fwd)
+    ≈⟨ prod-m-cong (x₁≅x₂ .Iso.bwd∘fwd≈id) (y₁≅y₂ .Iso.bwd∘fwd≈id) ⟩
+      prod-m (id _) (id _)
+    ≈⟨ prod-m-id ⟩
+      id _
+    ∎ where open ≈-Reasoning isEquiv
 
   getProduct : ∀ (x y : obj) → Product 𝒞 x y
   getProduct x y .Product.prod = prod x y

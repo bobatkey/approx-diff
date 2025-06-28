@@ -175,13 +175,8 @@ module _ {ℓ} (Sig : Signature ℓ)
 
     ctxt-interp-iso : (Γ : ctxt) → 𝒟.Iso (LI.⟦ Γ ⟧ctxt .carrier) 𝒟Interp.⟦ Γ ⟧ctxt
     ctxt-interp-iso L.emp = 𝒟.Iso-refl
-    ctxt-interp-iso (Γ L., τ) = {!   !}
-{-
-    ctxt-interp-iso (Γ L., τ) .fwd = {!   !}
-    ctxt-interp-iso (Γ L., τ) .bwd = {!   !}
-    ctxt-interp-iso (Γ L., τ) .fwd∘bwd≈id = {!   !}
-    ctxt-interp-iso (Γ L., τ) .bwd∘fwd≈id = {!   !}
--}
+    ctxt-interp-iso (Γ L., τ) = iso-product (ctxt-interp-iso Γ) (type-interp-iso τ)
+
     project-all : ∀ {Γ τ} (M : Γ ⊢ τ) →
                   LI.⟦ M ⟧tm .morph 𝒟.≈ {!!} -- 𝒟Interp.⟦ M ⟧tm
     project-all = {!!}
