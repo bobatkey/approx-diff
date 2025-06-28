@@ -1,105 +1,4 @@
 \begin{figure}
-\begin{subfigure}{\linewidth}
-  \begin{mathpar}
-  \small
-  \inferrule*
-  {
-    \alpha \in \Delta
-  }
-  {
-    \Delta \vdash \alpha
-  }
-  \and
-  \inferrule*
-  {
-    \rho \in \Delta
-  }
-  {
-    \Delta \vdash \rho
-  }
-  \and
-  \inferrule*
-  {
-    \strut
-  }
-  {
-    \Delta \vdash \tyZero
-  }
-  \and
-  \inferrule*
-  {
-    \Delta \vdash \sigma
-    \\
-    \Delta \vdash \tau
-  }
-  {
-    \Delta \vdash \sigma \tySum \tau
-  }
-  \and
-  \inferrule*
-  {
-    \strut
-  }
-  {
-    \Delta \vdash \tyUnit
-  }
-  \and
-  \inferrule*
-  {
-    \Delta \vdash \sigma
-    \\
-    \Delta \vdash \tau
-  }
-  {
-    \Delta \vdash \sigma \tyProd \tau
-  }
-%  \and
-%  \inferrule*
-%  {
-%    \Delta \vdash \sigma
-%    \\
-%    \Delta \vdash \tau
-%  }
-%  {
-%    \Delta \vdash \sigma \tyFun \tau
-%  }
-%  \and
-%
-% follow nunes2023 instead
-  \\
-  \inferrule*
-  {
-    \emptyCxt \vdash \sigma
-    \\
-    \emptyCxt \vdash \tau
-  }
-  {
-    \emptyCxt \vdash \sigma \tyFun \tau
-  }
-  \and
-  \inferrule*
-  {
-    \Delta, \alpha \vdash \tau
-%   \\
-%   \Pol(+,\alpha,\tau)
-%
-%   not needed in nunes2023?
-  }
-  {
-    \Delta \vdash \mu\alpha.\tau
-  }
-  \and
-  \inferrule*
-  {
-    \Delta \vdash \tau
-  }
-  {
-    \Delta \vdash \tyLift\;\tau
-  }
-  \end{mathpar}
-  \caption{Well-kinded types (function types closed)}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
   \begin{mathpar}
     \small
     \inferrule*
@@ -238,8 +137,7 @@
       \Gamma \vdash \tmBind{s}{t} : \tyLift\;\tau
     }
   \end{mathpar}
-  \caption{Well-typed terms (all types well-kinded)}
-\end{subfigure}
-\caption{Kinding and typing rules}
+  \caption{Well-typed terms}
+\caption{Typing rules}
 \label{fig:typing}
 \end{figure}
