@@ -1,5 +1,5 @@
 \begin{figure}
-\begin{subfigure}{\linewidth}
+\begin{subfigure}[t]{0.47\linewidth}
   \begin{align*}
   \small
   \sem{\rho} &= \sem{\rho}_{\PrimTy}
@@ -20,11 +20,11 @@
   \end{align*}
   \caption{Types $\tau$}
   \label{fig:semantics:types}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
+\end{subfigure}%
+\begin{subfigure}[t]{0.47\linewidth}
   \begin{align*}
   \small
-  \sem{\emptyCxt} &= \One
+  \sem{\emptyCxt} &= 1
   \\
   \sem{\Gamma, x: \tau} &= \sem{\Gamma} \times \sem{\tau}
   \end{align*}
@@ -34,7 +34,7 @@
 \begin{subfigure}{\linewidth}
   \begin{align*}
   \small
-  \sem{x} &= \pi_i
+  \sem{x_i} &= \pi_i
   \textit{ where }\Gamma = x_1: \tau_1, \ldots, x_i: \tau_i, \ldots, x_n: \tau_n
   \\
   \sem{\phi(t_1, \ldots, t_n)}
