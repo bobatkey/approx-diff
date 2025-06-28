@@ -152,14 +152,14 @@ module _ {ℓ} (Sig : Signature ℓ)
     open 𝒟.Iso
 
     type-interp-iso : (τ : type) → 𝒟.Iso (LI.⟦ τ ⟧ty .carrier) 𝒟Interp.⟦ τ ⟧ty
-    type-interp-iso unit .fwd = 𝒟T .HasTerminal.is-terminal .IsTerminal.to-terminal
-    type-interp-iso unit .bwd = 𝒟T .HasTerminal.is-terminal .IsTerminal.to-terminal
-    type-interp-iso unit .fwd∘bwd≈id = IsTerminal.to-terminal-unique (𝒟T .HasTerminal.is-terminal) _ _
-    type-interp-iso unit .bwd∘fwd≈id = IsTerminal.to-terminal-unique (𝒟T .HasTerminal.is-terminal) _ _
-    type-interp-iso bool .fwd = {!   !}
-    type-interp-iso bool .bwd = {!   !}
-    type-interp-iso bool .fwd∘bwd≈id = {!   !}
-    type-interp-iso bool .bwd∘fwd≈id = {!   !}
+    type-interp-iso unit .fwd = 𝒟.id _
+    type-interp-iso unit .bwd = 𝒟.id _
+    type-interp-iso unit .fwd∘bwd≈id = 𝒟.id-left
+    type-interp-iso unit .bwd∘fwd≈id = 𝒟.id-left
+    type-interp-iso bool .fwd = 𝒟.id _
+    type-interp-iso bool .bwd = 𝒟.id _
+    type-interp-iso bool .fwd∘bwd≈id = 𝒟.id-left
+    type-interp-iso bool .bwd∘fwd≈id = 𝒟.id-left
     type-interp-iso (base s) = {!   !}
     type-interp-iso (σ [×] τ) = {!   !}
     type-interp-iso (σ [→] τ) = {!   !}
