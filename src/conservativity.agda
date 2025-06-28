@@ -4,7 +4,7 @@ module conservativity where
 
 open import Level
 open import prop using (_,_; proj₁; proj₂; ∃)
-open import categories using (Category; HasBooleans; HasProducts; HasCoproducts; HasExponentials; HasTerminal; IsTerminal; IsProduct)
+open import categories using (Category; HasBooleans; HasProducts; HasCoproducts; HasExponentials; HasTerminal; IsTerminal; IsProduct; coproducts+exp→booleans)
 open import functor using (Functor)
 open import prop-setoid using (module ≈-Reasoning)
 open import setoid-cat using (SetoidCat)
@@ -50,25 +50,10 @@ module _ {ℓ} (Sig : Signature ℓ)
 
   module L = language-syntax.language Sig
 
-  module _ where
-    open HasBooleans
-    open HasProducts 𝒟P
-    open HasCoproducts 𝒟CP
-    open HasTerminal 𝒟T renaming (witness to One)
-
-    blah : ∀ X → prod X (coprod One One) 𝒟.⇒ coprod X X
-    blah = {!   !}
-
-    𝒟B : HasBooleans 𝒟 𝒟T 𝒟P
-    𝒟B .Bool = coprod One One
-    𝒟B .True = in₁
-    𝒟B .False = in₂
-    𝒟B .cond = {!   !}
-
   module 𝒟Interp =
     language-interpretation
       Sig
-      𝒟 𝒟T 𝒟P 𝒟E 𝒟B
+      𝒟 𝒟T 𝒟P 𝒟E (coproducts+exp→booleans 𝒟T 𝒟CP 𝒟E)
       (transport-model Sig F FP {!!} Int)
 
   module glued (Env : Category.obj 𝒞) where
