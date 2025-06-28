@@ -42,13 +42,12 @@ plus the following additional structure:
 \begin{enumerate}
 \item a strong monad $(\Lift, \eta, \mu)$ with strength $\mathsf{st}_{X,Y}: X \times \Lift(Y) \to \Lift(X
 \times Y)$;
-% \item $\mu$-polynomial endofunctors given by $\muPoly_{\Sem}$;
 \item for each primitive type $\rho \in \PrimTy$, an object $\sem{\rho}_{\PrimTy}$;
 \item for each primitive operation $\phi \in \PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism $\sem{\phi}:
 \sem{\rho_1} \times \ldots \times \sem{\rho_n} \to \sem{\rho}$
 \item for any object $X$, an object $\List(X)$, morphisms $\nil: 1 \to \List(X)$ and $\cons: X \times \List(X)
-\to \List(X)$, and for any object $Y$ and morphisms $f_\nil: 1 \to Y$ and $f_\cons: X \times Y \to Y$, a
-morphism $\fold(f_\nil,f_\cons): Y \times \List(X) \to Y$.
+\to \List(X)$, and for any objects $Y, Z$ and morphisms $f_\nil: Z \to Y$ and $f_\cons: X \times Z \times Y \to Y$, a
+morphism $\fold(f_\nil,f_\cons): Z \times Y \times \List(X) \to Y$.
 \end{enumerate}
 
 \figrefTwo{semantics:types}{semantics:contexts} give the interpretations of types $\tau$ and contexts $\Gamma$
