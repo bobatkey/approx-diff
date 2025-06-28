@@ -160,16 +160,25 @@ module _ {ℓ} (Sig : Signature ℓ)
     type-interp-iso bool .bwd = 𝒟.id _
     type-interp-iso bool .fwd∘bwd≈id = 𝒟.id-left
     type-interp-iso bool .bwd∘fwd≈id = 𝒟.id-left
-    type-interp-iso (base s) = {!   !}
-    type-interp-iso (σ [×] τ) = {!   !}
+    type-interp-iso (base s) .fwd = 𝒟.id _
+    type-interp-iso (base s) .bwd = 𝒟.id _
+    type-interp-iso (base s) .fwd∘bwd≈id = 𝒟.id-left
+    type-interp-iso (base s) .bwd∘fwd≈id = 𝒟.id-left
+    type-interp-iso (σ [×] τ) .fwd = {!  !}
+    type-interp-iso (σ [×] τ) .bwd = {!   !}
+    type-interp-iso (σ [×] τ) .fwd∘bwd≈id = {!   !}
+    type-interp-iso (σ [×] τ) .bwd∘fwd≈id = {!   !}
     type-interp-iso (σ [→] τ) = {!   !}
 
     ctxt-interp-iso : (Γ : ctxt) → 𝒟.Iso (LI.⟦ Γ ⟧ctxt .carrier) 𝒟Interp.⟦ Γ ⟧ctxt
-    ctxt-interp-iso L.emp .fwd = 𝒟T .HasTerminal.is-terminal .IsTerminal.to-terminal
-    ctxt-interp-iso L.emp .bwd = 𝒟T .HasTerminal.is-terminal .IsTerminal.to-terminal
-    ctxt-interp-iso L.emp .fwd∘bwd≈id = IsTerminal.to-terminal-unique (𝒟T .HasTerminal.is-terminal) _ _
-    ctxt-interp-iso L.emp .bwd∘fwd≈id = IsTerminal.to-terminal-unique (𝒟T .HasTerminal.is-terminal) _ _
-    ctxt-interp-iso (Γ L., τ) = {!   !}
+    ctxt-interp-iso L.emp .fwd = 𝒟.id _
+    ctxt-interp-iso L.emp .bwd = 𝒟.id _
+    ctxt-interp-iso L.emp .fwd∘bwd≈id = 𝒟.id-left
+    ctxt-interp-iso L.emp .bwd∘fwd≈id = 𝒟.id-left
+    ctxt-interp-iso (Γ L., τ) .fwd = {!   !}
+    ctxt-interp-iso (Γ L., τ) .bwd = {!   !}
+    ctxt-interp-iso (Γ L., τ) .fwd∘bwd≈id = {!   !}
+    ctxt-interp-iso (Γ L., τ) .bwd∘fwd≈id = {!   !}
 
     project-all : ∀ {Γ τ} (M : Γ ⊢ τ) →
                   LI.⟦ M ⟧tm .morph 𝒟.≈ {!!} -- 𝒟Interp.⟦ M ⟧tm
