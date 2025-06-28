@@ -36,12 +36,16 @@ category $\Sem$ with finite products $(\times, 1)$, finite coproducts $(\coprod,
 $\internalHom{X}{Y}$, with evaluation morphisms $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$,
 plus the following additional structure:
 \begin{enumerate}
-\item a strong monad $(\mathcal{L}, \eta, \mu)$ (lifting), with strength $\mathsf{st}_{X,Y}: X \times
-\mathcal{L}(Y) \to \mathcal{L}(X \times Y)$;
+\item a strong monad $(\mathcal{L}, \eta, \mu)$ with strength $\mathsf{st}_{X,Y}: X \times \mathcal{L}(Y) \to
+\mathcal{L}(X \times Y)$;
 % \item $\mu$-polynomial endofunctors given by $\muPoly_{\Sem}$;
 \item for each primitive type $\rho \in \PrimTy$, an object $\sem{\rho}_{\PrimTy}$;
 \item for each primitive operation $\phi \in \PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism $\sem{\phi}:
-\sem{\rho_1} \times \ldots \times \sem{\rho_n} \to \sem{\rho}$.
+\sem{\rho_1} \times \ldots \times \sem{\rho_n} \to \sem{\rho}$
+\item for any object $X$, an object $\List(X)$, morphisms $\nil: 1 \to \List(X)$ and $\cons: X \times
+\List(X) \to \List(X)$, and for any object $Y$ and morphisms $1 \to Y$ and $X \times Y \to Y$, a morphism $Y
+\times \List(X) \to Y$.
+% x ⇒ z → prod (prod x y) z ⇒ z → prod x (list y) ⇒ z
 \end{enumerate}
 
 % \figref{semantics:types} gives the interpretation of types $\Delta \vdash \tau$ with $\length{\Delta}
