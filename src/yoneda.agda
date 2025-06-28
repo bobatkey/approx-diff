@@ -11,7 +11,7 @@ open import functor using ([_⇒_]; Functor; NatTrans; ≃-NatTrans;
   HasLimits';
   preserve-limits-of-shape; IsLimit; constF; constF-F; constFmor;
   _∘F_; id; _∘H_; _∘_; ≃-isEquivalence)
-open import setoid-cat using (SetoidCat; Setoid-terminal; Setoid-products; Setoid-Limit')
+open import setoid-cat using (SetoidCat; Setoid-terminal; Setoid-products; Setoid-Limit'; Setoid-coproducts)
 
 -- extra 'os' level is to raise the level of the codomain if needed
 module yoneda {o m e} os (𝒞 : Category o m e) where
@@ -112,9 +112,16 @@ open import functor-cat-products
        (SetoidCat ℓ ℓ)
        (Setoid-terminal _ _)
        (Setoid-products _ _)
+  public
 
 ------------------------------------------------------------------------------
 -- FIXME: cocompleteness
+
+open import functor-cat-coproducts
+       𝒞.opposite
+       (SetoidCat ℓ ℓ)
+       (Setoid-coproducts _ _)
+  public
 
 ------------------------------------------------------------------------------
 -- Exponentials
