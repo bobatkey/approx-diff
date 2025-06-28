@@ -47,7 +47,7 @@ plus the following additional structure:
 \sem{\rho_1} \times \ldots \times \sem{\rho_n} \to \sem{\rho}$
 \item an endofunctor $\List: \Sem \to \Sem$, plus for any object $X$, morphisms $\nil: 1 \to \List(X)$ and
 $\cons: X \times \List(X) \to \List(X)$, and for any objects $Y, Z$ and morphisms $f_\nil: Z \to Y$ and
-$f_\cons: X \times Z \times Y \to Y$, a morphism $\fold(f_\nil,f_\cons): Z \times Y \times \List(X) \to Y$.
+$f_\cons: Z \times X \times Y \to Y$, a morphism $\fold(f_\nil,f_\cons): Z \times \List(X) \to Y$.
 \end{enumerate}
 
 \figrefTwo{semantics:types}{semantics:contexts} give the interpretations of types $\tau$ and contexts $\Gamma$
