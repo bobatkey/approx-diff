@@ -36,9 +36,8 @@ category $\Sem$ with finite products $(\times, 1)$, finite coproducts $(\coprod,
 $\internalHom{X}{Y}$, with evaluation morphisms $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$,
 plus the following additional structure:
 \begin{enumerate}
-\item a strong monad $\mathcal{L}$ (lifting) with unit $\eta_X: X \to \mathcal{L}(X)$, multiplication $\mu_X:
-\mathcal{L}^2(X) \to \mathcal{L}(X)$ and strength $\mathsf{st}_{X,Y}: X \times \mathcal{L}(Y) \to
-\mathcal{L}(X \times Y)$;
+\item a strong monad $(\mathcal{L}, \eta, \mu)$ (lifting), with strength $\mathsf{st}_{X,Y}: X \times
+\mathcal{L}(Y) \to \mathcal{L}(X \times Y)$;
 % \item $\mu$-polynomial endofunctors given by $\muPoly_{\Sem}$;
 \item for each primitive type $\rho \in \PrimTy$, an object $\sem{\rho}_{\PrimTy}$;
 \item for each primitive operation $\phi \in \PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism $\sem{\phi}:
