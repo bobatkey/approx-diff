@@ -19,8 +19,10 @@ and a data type of lists. We omit a treatment of general inductive or coinductiv
 
 % \input{fig/mu-polynomial}
 % \input{fig/inductive-types/semantics}
-\input{fig/semantics}
-
+% \figref{semantics:types} gives the interpretation of types $\Delta \vdash \tau$ with $\length{\Delta}
+% = n$ as functors $\Sem^n \to \Sem$, or as objects of $\Sem$ in the case $n = 0$.
+% \todo{Notation for partially applied functor used in \figref{semantics:types}}
+%
 % \begin{definition}[$\mu$-polynomial]
 % Suppose $\cat{C}$ a category with finite coproducts $(\coprod, 0)$ and finite products $(\times, 1)$. Define
 % $\muPoly_{\cat{C}}$ to be the smallest subcategory of $\Cat$ generated inductively by the rules in
@@ -30,6 +32,8 @@ and a data type of lists. We omit a treatment of general inductive or coinductiv
 % For any $\mu$-polynomial endofunctor $F: \cat{C} \to \cat{C}$ with initial algebra $\mu F$, write $\inMap_F$
 % for the structure map $F\mu F \to \mu F$ and write $\cata_f$ for the unique morphism $\mu F \to X$ from the
 % initial $F$-algebra to any $F$-algebra $(X, f: FX \to X)$.
+
+\input{fig/semantics}
 
 To give the semantics for the language defined in \figrefTwo{syntax}{typing}, we fix a bicartesian closed
 category $\Sem$ with finite products $(\times, 1)$, finite coproducts $(\coprod, 0)$ and exponentials
@@ -45,13 +49,8 @@ plus the following additional structure:
 \item for any object $X$, an object $\List(X)$, morphisms $\nil: 1 \to \List(X)$ and $\cons: X \times \List(X)
 \to \List(X)$, and for any object $Y$ and morphisms $f_\nil: 1 \to Y$ and $f_\cons: X \times Y \to Y$, a
 morphism $\fold(f_\nil,f_\cons): Y \times \List(X) \to Y$.
-% x ⇒ z → prod (prod x y) z ⇒ z → prod x (list y) ⇒ z
 \end{enumerate}
 
-% \figref{semantics:types} gives the interpretation of types $\Delta \vdash \tau$ with $\length{\Delta}
-% = n$ as functors $\Sem^n \to \Sem$, or as objects of $\Sem$ in the case $n = 0$.
 \figrefTwo{semantics:types}{semantics:contexts} give the interpretations of types $\tau$ and contexts $\Gamma$
 as objects of $\Sem$. \figref{semantics:terms} gives the interpretation of terms $\Gamma \vdash t: \tau$ as
 morphisms $\sem{\Gamma} \to \sem{\tau}$.
-
-% \todo{Notation for partially applied functor used in \figref{semantics:types}}
