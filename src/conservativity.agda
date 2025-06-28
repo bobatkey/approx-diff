@@ -143,7 +143,7 @@ module _ {ℓ} (Sig : Signature ℓ)
 
     module LI = language-interpretation
                   Sig G.cat GPE.terminal GPE.products GPE.exponentials
-                  {!!}
+                  (coproducts+exp→booleans GPE.terminal GCP.coproducts GPE.exponentials)
                   (transport-model Sig GF GF-FP {!!} Int)
 
     open L
