@@ -153,6 +153,53 @@ record HasCoproducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     ∎
     where open ≈-Reasoning isEquiv
 
+  coprod-m : ∀ {x₁ y₁ x₂ y₂} → x₁ ⇒ x₂ → y₁ ⇒ y₂ → coprod x₁ y₁ ⇒ coprod x₂ y₂
+  coprod-m f g = copair (in₁ ∘ f) (in₂ ∘ g)
+
+  coprod-m-cong : ∀ {x₁ y₁ x₂ y₂} {f₁ f₂ : x₁ ⇒ x₂} {g₁ g₂ : y₁ ⇒ y₂} →
+                  f₁ ≈ f₂ → g₁ ≈ g₂ → coprod-m f₁ g₁ ≈ coprod-m f₂ g₂
+  coprod-m-cong f₁≈f₂ g₁≈g₂ =
+    copair-cong (∘-cong ≈-refl f₁≈f₂) (∘-cong ≈-refl g₁≈g₂)
+
+  coprod-m-comp : ∀ {x₁ x₂ y₁ y₂ z₁ z₂} (f₁ : y₁ ⇒ z₁) (f₂ : y₂ ⇒ z₂) (g₁ : x₁ ⇒ y₁) (g₂ : x₂ ⇒ y₂) →
+    coprod-m (f₁ ∘ g₁) (f₂ ∘ g₂) ≈ (coprod-m f₁ f₂ ∘ coprod-m g₁ g₂)
+  coprod-m-comp f₁ f₂ g₁ g₂ = begin
+      copair (in₁ ∘ (f₁ ∘ g₁)) (in₂ ∘ (f₂ ∘ g₂))
+    ≈˘⟨ copair-cong (assoc _ _ _) (assoc _ _ _) ⟩
+      copair ((in₁ ∘ f₁) ∘ g₁) ((in₂ ∘ f₂) ∘ g₂)
+    ≈˘⟨ copair-cong (∘-cong (copair-in₁ _ _) ≈-refl) (∘-cong (copair-in₂ _ _) ≈-refl) ⟩
+      copair ((copair (in₁ ∘ f₁) (in₂ ∘ f₂) ∘ in₁) ∘ g₁) ((copair (in₁ ∘ f₁) (in₂ ∘ f₂) ∘ in₂) ∘ g₂)
+    ≈⟨ copair-cong (assoc _ _ _) (assoc _ _ _) ⟩
+      copair (copair (in₁ ∘ f₁) (in₂ ∘ f₂) ∘ (in₁ ∘ g₁)) (copair (in₁ ∘ f₁) (in₂ ∘ f₂) ∘ (in₂ ∘ g₂))
+    ≈˘⟨ copair-natural _ _ _ ⟩
+      copair (in₁ ∘ f₁) (in₂ ∘ f₂) ∘ copair (in₁ ∘ g₁) (in₂ ∘ g₂)
+    ∎
+    where open ≈-Reasoning isEquiv
+
+  coprod-m-id : ∀ {x y} → coprod-m (id x) (id y) ≈ id (coprod x y)
+  coprod-m-id {x} {y} = begin
+      coprod-m (id x) (id y)
+    ≈⟨ copair-cong id-swap' id-swap' ⟩
+      copair (id _ ∘ in₁) (id _ ∘ in₂)
+    ≈⟨ copair-ext (id _) ⟩
+      id (coprod x y)
+    ∎
+    where open ≈-Reasoning isEquiv
+
+  copair-coprod : ∀ {x₁ x₂ y₁ y₂ z} (f₁ : y₁ ⇒ z) (f₂ : y₂ ⇒ z) (g₁ : x₁ ⇒ y₁) (g₂ : x₂ ⇒ y₂) →
+    copair (f₁ ∘ g₁) (f₂ ∘ g₂) ≈ (copair f₁ f₂ ∘ coprod-m g₁ g₂)
+  copair-coprod f₁ f₂ g₁ g₂ = begin
+      copair (f₁ ∘ g₁) (f₂ ∘ g₂)
+    ≈˘⟨ copair-cong (∘-cong (copair-in₁ _ _) ≈-refl) (∘-cong (copair-in₂ _ _) ≈-refl) ⟩
+      copair ((copair f₁ f₂ ∘ in₁) ∘ g₁) ((copair f₁ f₂ ∘ in₂) ∘ g₂)
+    ≈⟨ copair-cong (assoc _ _ _) (assoc _ _ _) ⟩
+      copair (copair f₁ f₂ ∘ (in₁ ∘ g₁)) (copair f₁ f₂ ∘ (in₂ ∘ g₂))
+    ≈˘⟨ copair-natural _ _ _ ⟩
+      copair f₁ f₂ ∘ copair (in₁ ∘ g₁) (in₂ ∘ g₂)
+    ∎
+    where open ≈-Reasoning isEquiv
+
+
 module _ {o m e} (𝒞 : Category o m e) where
 
   open Category 𝒞
