@@ -379,9 +379,9 @@ emulate this in our approach by defining a surface language where the data type 
 \synVar{L}\,\synVar{nat} \times \alpha)$.
 
 To interpret the syntactic type constructor $\synVar{L}$, consider the strong monad $(\mathcal{L}, \eta, \mu)$
-which acts on posets $X$ to extend them with a distinguished bottom element $\bot$ and which acts on monotone
-functions $f$ between posets to extend them with a mapping from $\bot$ to $\bot$. $\mathcal{L}$ is also a
-strong monad on meet-semilattices. On (bounded) join-semilattices, $\mathcal{L}$ induces a costrong comonad
+which acts on a poset $X$ to extend it with a distinguished bottom element $\bot$ and which acts on a monotone
+function $f$ between posets to extend it with a mapping from $\bot$ to $\bot$. $\mathcal{L}$ is also a strong
+monad on meet-semilattices. On (bounded) join-semilattices, $\mathcal{L}$ induces a costrong comonad
 $(\mathcal{L}, \varepsilon, \delta)$, with the bottom element of $X$ needed to implement the counit
 $\varepsilon_X: \mathcal{L}(X) \to X$. These two combine to form a strong lifting monad in $\LatGal$ with unit
 $\varepsilon_X \dashv \eta_X$ and multiplication $\delta_X \dashv \mu_X$.

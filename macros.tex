@@ -29,11 +29,14 @@
 \newcommand*{\tmApp}[2]{#1\;#2}
 \newcommand*{\tmBind}[2]{{#1}\gg={#2}}
 \newcommand*{\tmCase}[5]{\syn{case}\;#1\;\{#2.#3; #4.#5\}}
+\newcommand*{\tmCons}[2]{\syn{cons}\;#1\;#2}
 \newcommand*{\tmFold}[2]{\syn{fold}\;#1\;#2}
+\newcommand*{\tmFoldList}[3]{\syn{fold}\;#1\;#2\;#3}
 \newcommand*{\tmFst}[1]{\syn{fst}\;#1}
 \newcommand*{\tmFun}[2]{\lambda#1.#2}
 \newcommand*{\tmInl}[1]{\syn{inl}\;#1}
 \newcommand*{\tmInr}[1]{\syn{inr}\;#1}
+\newcommand*{\tmNil}{\syn{nil}}
 \newcommand*{\tmPair}[2]{(#1,#2)}
 \newcommand*{\tmReturn}[1]{\syn{return}\;#1}
 \newcommand*{\tmRoll}[1]{\syn{roll}\;#1}
@@ -41,7 +44,8 @@
 \newcommand*{\tmUnit}{()}
 
 \newcommand*{\tyFun}{\to}
-\newcommand*{\tyLift}{\syn{L}}
+\newcommand*{\tyLift}{\syn{lift}}
+\newcommand*{\tyList}{\syn{list}}
 \newcommand*{\tyProd}{\times}
 \newcommand*{\tySum}{+}
 \newcommand*{\tyUnit}{\syn{1}}

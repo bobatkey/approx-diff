@@ -8,11 +8,11 @@
     &
     \sigma, \tau
     & ::= &
-    \alpha
-    &
-    \text{type variable}
-    \\
-    && \mid &
+%    \alpha
+%    &
+%    \text{type variable}
+%    \\
+%    && \mid &
     \rho
     &
     \text{primitive type}
@@ -42,10 +42,15 @@
     &
     \text{function}
     \\
+%    && \mid &
+%    \mu\alpha.\tau
+%    &
+%    \text{inductive type}
+%    \\
     && \mid &
-    \mu\alpha.\tau
+    \tyList\;\tau
     &
-    \text{inductive type}
+    \text{list}
     \\
     && \mid &
     \tyLift\;\tau
@@ -106,14 +111,29 @@
     \tmApp{s}{t}
     &
     \text{application}
+%    \\
+%    && \mid &
+%    \tmRoll{t}
+%    &
+%    \text{roll}
     \\
     && \mid &
-    \tmRoll{t}
+    \tmNil
     &
-    \text{roll}
+    \text{nil}
     \\
     && \mid &
-    \tmFold{s}{t}
+    \tmCons{s}{t}
+    &
+    \text{cons}
+    \\
+%    && \mid &
+%    \tmFold{s}{t}
+%    &
+%    \text{fold}
+%    \\
+    && \mid &
+    \tmFoldList{s}{t_1}{t_2}
     &
     \text{fold}
     \\
