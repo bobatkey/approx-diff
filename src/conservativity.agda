@@ -156,21 +156,7 @@ module _ {ℓ} (Sig : Signature ℓ)
     type-interp-iso unit = 𝒟.Iso-refl
     type-interp-iso bool = 𝒟.Iso-refl
     type-interp-iso (base s) = 𝒟.Iso-refl
-    type-interp-iso (σ [×] τ) .fwd = prod-m (type-interp-iso σ .fwd) (type-interp-iso τ .fwd)
-    type-interp-iso (σ [×] τ) .bwd = prod-m (type-interp-iso σ .bwd) (type-interp-iso τ .bwd)
-    type-interp-iso (σ [×] τ) .fwd∘bwd≈id =
-      begin
-        prod-m (type-interp-iso σ .fwd) (type-interp-iso τ .fwd) 𝒟.∘ pair (type-interp-iso σ .bwd 𝒟.∘ p₁) (type-interp-iso τ .bwd 𝒟.∘ p₂)
-      ≈⟨ pair-compose _ _ _ _ ⟩
-        pair (type-interp-iso σ .fwd 𝒟.∘ (type-interp-iso σ .bwd 𝒟.∘ p₁)) (type-interp-iso τ .fwd 𝒟.∘ (type-interp-iso τ .bwd 𝒟.∘ p₂))
-      ≈⟨ pair-cong (𝒟.isEquiv .IsEquivalence.sym (𝒟.assoc _ _ _)) (𝒟.isEquiv .IsEquivalence.sym (𝒟.assoc _ _ _)) ⟩
-        prod-m (type-interp-iso σ .fwd 𝒟.∘ type-interp-iso σ .bwd) (type-interp-iso τ .fwd 𝒟.∘ type-interp-iso τ .bwd)
-      ≈⟨ prod-m-cong (type-interp-iso σ .fwd∘bwd≈id) (type-interp-iso τ .fwd∘bwd≈id) ⟩
-        prod-m (𝒟.id _) (𝒟.id _)
-      ≈⟨ prod-m-id ⟩
-        𝒟.id _
-      ∎ where open ≈-Reasoning 𝒟.isEquiv
-    type-interp-iso (σ [×] τ) .bwd∘fwd≈id = {!   !}
+    type-interp-iso (σ [×] τ) = iso-product (type-interp-iso σ) (type-interp-iso τ)
     type-interp-iso (σ [→] τ) = {!   !}
 
     ctxt-interp-iso : (Γ : ctxt) → 𝒟.Iso (LI.⟦ Γ ⟧ctxt .carrier) 𝒟Interp.⟦ Γ ⟧ctxt
