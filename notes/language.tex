@@ -17,7 +17,7 @@ $\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ of primitive operations $\phi$.
 \label{sec:language:semantics}
 
 \input{fig/mu-polynomial}
-\input{fig/default-semantics}
+\input{fig/semantics}
 
 \begin{definition}[$\mu$-polynomial]
 Suppose $\cat{C}$ a category with finite coproducts $(\coprod, \Zero)$ and finite products $(\times, \One)$.
@@ -43,9 +43,9 @@ following additional structure:
 \sem{\rho_1} \times \ldots \times \sem{\rho_n} \to \sem{\rho}$.
 \end{enumerate}
 
-\figref{default-semantics:types} gives the interpretation of types $\Delta \vdash \tau$ with $\length{\Delta}
+\figref{semantics:types} gives the interpretation of types $\Delta \vdash \tau$ with $\length{\Delta}
 = n$ as functors $\Sem^n \to \Sem$, or as objects of $\Sem$ in the case $n = 0$.
-\figref{default-semantics:terms} gives the interpretation of terms $\Gamma \vdash t: \tau$ as morphisms
+\figref{semantics:terms} gives the interpretation of terms $\Gamma \vdash t: \tau$ as morphisms
 $\sem{\Gamma} \to \sem{\tau}$.
 
-\todo{Notation for partially applied functor used in \figref{default-semantics:types}}
+\todo{Notation for partially applied functor used in \figref{semantics:types}}

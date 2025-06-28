@@ -100,23 +100,53 @@
     {
       \Gamma \vdash \tmApp{s}{t}: \tau
     }
+%    \and
+%    \inferrule*
+%    {
+%      \Gamma \vdash t : \subst{\tau}{\mu \alpha.\tau}{\alpha}
+%    }
+%    {
+%      \Gamma \vdash \tmRoll{t}: \mu\alpha.\tau
+%    }
+%    \and
+%    \inferrule*
+%    {
+%      \Gamma \vdash s : \subst{\sigma}{\tau}{\alpha} \tyFun \tau
+%      \\
+%      \Gamma \vdash t : \mu\alpha.\sigma
+%    }
+%    {
+%      \Gamma \vdash \tmFold{s}{t} : \tau
+%    }
     \and
     \inferrule*
     {
-      \Gamma \vdash t : \subst{\tau}{\mu \alpha.\tau}{\alpha}
+      \strut
     }
     {
-      \Gamma \vdash \tmRoll{t}: \mu\alpha.\tau
+      \Gamma \vdash \tmNil : \tyList\;\tau
     }
     \and
     \inferrule*
     {
-      \Gamma \vdash s : \subst{\sigma}{\tau}{\alpha} \tyFun \tau
+      \Gamma \vdash s: \tau
       \\
-      \Gamma \vdash t : \mu\alpha.\sigma
+      \Gamma \vdash t: \tyList\;\tau
     }
     {
-      \Gamma \vdash \tmFold{s}{t} : \tau
+      \Gamma \vdash \tmCons{s}{t} : \tyList\;\tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash s_1 : \tau
+      \\
+      \Gamma, x: \sigma, y: \tau \vdash s_2 : \tau
+      \\
+      \Gamma \vdash t : \tyList\;\sigma
+    }
+    {
+      \Gamma \vdash \tmFoldList{s_1}{s_2}{t} : \tau
     }
     \and
     \inferrule*
