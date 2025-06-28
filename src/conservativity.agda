@@ -151,13 +151,14 @@ module _ {ℓ} (Sig : Signature ℓ)
     open import Relation.Binary.PropositionalEquality using (_≡_; refl)
     open 𝒟.Iso
     open HasProducts 𝒟P
+    open HasExponentials 𝒟E
 
     type-interp-iso : (τ : type) → 𝒟.Iso (LI.⟦ τ ⟧ty .carrier) 𝒟Interp.⟦ τ ⟧ty
     type-interp-iso unit = 𝒟.Iso-refl
     type-interp-iso bool = 𝒟.Iso-refl
     type-interp-iso (base s) = 𝒟.Iso-refl
     type-interp-iso (σ [×] τ) = iso-product (type-interp-iso σ) (type-interp-iso τ)
-    type-interp-iso (σ [→] τ) = {!   !}
+    type-interp-iso (σ [→] τ) = iso-exp (type-interp-iso σ) (type-interp-iso τ)
 
     ctxt-interp-iso : (Γ : ctxt) → 𝒟.Iso (LI.⟦ Γ ⟧ctxt .carrier) 𝒟Interp.⟦ Γ ⟧ctxt
     ctxt-interp-iso L.emp = 𝒟.Iso-refl
