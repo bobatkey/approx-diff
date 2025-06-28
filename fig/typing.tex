@@ -1,105 +1,4 @@
 \begin{figure}
-\begin{subfigure}{\linewidth}
-  \begin{mathpar}
-  \small
-  \inferrule*
-  {
-    \alpha \in \Delta
-  }
-  {
-    \Delta \vdash \alpha
-  }
-  \and
-  \inferrule*
-  {
-    \rho \in \Delta
-  }
-  {
-    \Delta \vdash \rho
-  }
-  \and
-  \inferrule*
-  {
-    \strut
-  }
-  {
-    \Delta \vdash \tyZero
-  }
-  \and
-  \inferrule*
-  {
-    \Delta \vdash \sigma
-    \\
-    \Delta \vdash \tau
-  }
-  {
-    \Delta \vdash \sigma \tySum \tau
-  }
-  \and
-  \inferrule*
-  {
-    \strut
-  }
-  {
-    \Delta \vdash \tyUnit
-  }
-  \and
-  \inferrule*
-  {
-    \Delta \vdash \sigma
-    \\
-    \Delta \vdash \tau
-  }
-  {
-    \Delta \vdash \sigma \tyProd \tau
-  }
-%  \and
-%  \inferrule*
-%  {
-%    \Delta \vdash \sigma
-%    \\
-%    \Delta \vdash \tau
-%  }
-%  {
-%    \Delta \vdash \sigma \tyFun \tau
-%  }
-%  \and
-%
-% follow nunes2023 instead
-  \\
-  \inferrule*
-  {
-    \emptyCxt \vdash \sigma
-    \\
-    \emptyCxt \vdash \tau
-  }
-  {
-    \emptyCxt \vdash \sigma \tyFun \tau
-  }
-  \and
-  \inferrule*
-  {
-    \Delta, \alpha \vdash \tau
-%   \\
-%   \Pol(+,\alpha,\tau)
-%
-%   not needed in nunes2023?
-  }
-  {
-    \Delta \vdash \mu\alpha.\tau
-  }
-  \and
-  \inferrule*
-  {
-    \Delta \vdash \tau
-  }
-  {
-    \Delta \vdash \tyLift\;\tau
-  }
-  \end{mathpar}
-  \caption{Well-kinded types (function types closed)}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
   \begin{mathpar}
     \small
     \inferrule*
@@ -201,23 +100,53 @@
     {
       \Gamma \vdash \tmApp{s}{t}: \tau
     }
+%    \and
+%    \inferrule*
+%    {
+%      \Gamma \vdash t : \subst{\tau}{\mu \alpha.\tau}{\alpha}
+%    }
+%    {
+%      \Gamma \vdash \tmRoll{t}: \mu\alpha.\tau
+%    }
+%    \and
+%    \inferrule*
+%    {
+%      \Gamma \vdash s : \subst{\sigma}{\tau}{\alpha} \tyFun \tau
+%      \\
+%      \Gamma \vdash t : \mu\alpha.\sigma
+%    }
+%    {
+%      \Gamma \vdash \tmFold{s}{t} : \tau
+%    }
     \and
     \inferrule*
     {
-      \Gamma \vdash t : \subst{\tau}{\mu \alpha.\tau}{\alpha}
+      \strut
     }
     {
-      \Gamma \vdash \tmRoll{t}: \mu\alpha.\tau
+      \Gamma \vdash \tmNil : \tyList\;\tau
     }
     \and
     \inferrule*
     {
-      \Gamma \vdash s : \subst{\sigma}{\tau}{\alpha} \tyFun \tau
+      \Gamma \vdash s: \tau
       \\
-      \Gamma \vdash t : \mu\alpha.\sigma
+      \Gamma \vdash t: \tyList\;\tau
     }
     {
-      \Gamma \vdash \tmFold{s}{t} : \tau
+      \Gamma \vdash \tmCons{s}{t} : \tyList\;\tau
+    }
+    \and
+    \inferrule*
+    {
+      \Gamma \vdash s_1 : \tau
+      \\
+      \Gamma, x: \sigma, y: \tau \vdash s_2 : \tau
+      \\
+      \Gamma \vdash t : \tyList\;\sigma
+    }
+    {
+      \Gamma \vdash \tmFoldList{s_1}{s_2}{t} : \tau
     }
     \and
     \inferrule*
@@ -238,8 +167,7 @@
       \Gamma \vdash \tmBind{s}{t} : \tyLift\;\tau
     }
   \end{mathpar}
-  \caption{Well-typed terms (all types well-kinded)}
-\end{subfigure}
-\caption{Kinding and typing rules}
+  \caption{Well-typed terms}
+\caption{Typing rules}
 \label{fig:typing}
 \end{figure}

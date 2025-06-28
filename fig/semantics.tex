@@ -1,0 +1,84 @@
+\begin{figure}
+\begin{subfigure}[t]{0.47\linewidth}
+  \begin{align*}
+  \small
+  \sem{\rho} &= \sem{\rho}_{\PrimTy}
+  \\
+  \sem{\tyZero} &= 0
+  \\
+  \sem{\sigma \tySum \tau} &= \textstyle {\sem{\sigma}} \coprod {\sem{\tau}}
+  \\
+  \sem{\tyUnit} &= 1
+  \\
+  \sem{\sigma \tyProd \tau} &= \sem{\sigma} \times \sem{\tau}
+  \\
+  \sem{\sigma \tyFun \tau} &= \internalHom{\sem{\sigma}}{\sem{\tau}}
+  \\
+  \sem{\tyList\;\tau} &= \List(\sem{\tau})
+  \\
+  \sem{\tyLift\;\tau} &= \Lift(\sem{\tau})
+  \end{align*}
+  \caption{Types $\tau$}
+  \label{fig:semantics:types}
+\end{subfigure}%
+\begin{subfigure}[t]{0.47\linewidth}
+  \begin{align*}
+  \small
+  \sem{\emptyCxt} &= 1
+  \\
+  \sem{\Gamma, x: \tau} &= \sem{\Gamma} \times \sem{\tau}
+  \end{align*}
+%  \caption{Contexts $\Delta \vdash \Gamma$}
+  \caption{Contexts $\Gamma$}
+  \label{fig:semantics:contexts}
+\end{subfigure}
+\begin{subfigure}{\linewidth}
+  \begin{align*}
+  \small
+  \sem{x_i} &= \pi_i
+  \textit{ where }\Gamma = x_1: \tau_1, \ldots, x_i: \tau_i, \ldots, x_n: \tau_n
+  \\
+  \sem{\phi(t_1, \ldots, t_n)}
+  &=
+  \sem{\phi} \comp \prodM{\sem{t_1}}{\ldots, \sem{t_n}}
+  \\
+  \sem{\tmInl{t}} &= \mathsf{inj}_1 \comp \sem{t}
+  \\
+  \sem{\tmInr{t}} &= \mathsf{inj}_2 \comp \sem{t}
+  \\
+  \sem{\tmCase{s}{x}{t_1}{y}{t_2}} &= \coprodM{\sem{t_1}}{\sem{t_2}} \comp \prodM{\id}{\sem{s}}
+  \\
+  \sem{\tmUnit} &=\;!_{\sem{\Gamma}}
+  \\
+  \sem{\tmPair{s}{t}} &= \prodM{\sem{s}}{\sem{t}}
+  \\
+  \sem{\tmFst{t}} &= \pi_1 \comp \sem{t}
+  \\
+  \sem{\tmSnd{t}} &= \pi_2 \comp \sem{t}
+  \\
+  \sem{\tmFun{x}{t}} &= \lambda(\sem{t})
+  \\
+  \sem{\tmApp{s}{t}} &= \eval \comp \prodM{\sem{s}}{\sem{t}}
+%  \\
+%  \sem{\tmRoll{t}} &= \inMap_{\sem{\sigma}} \comp \sem{t}
+%  \textit{ where }\tau = \mu\alpha.\sigma
+  \\
+  \sem{\tmNil} &= \nil \comp {!_{\sem{\Gamma}}}
+  \\
+  \sem{\tmCons{s}{t}} &= \cons \comp \prodM{\sem{s}}{\sem{t}}
+  \\
+  \sem{\tmFoldList{t_1}{t_2}{s}} &= \fold(\sem{t_1},\sem{t_2}) \comp \prodM{\id}{\sem{s}}
+%  \\
+%  \sem{\tmFold{s}{t}} &= \eval \comp \prodM{\phi \comp \sem{s}}{\sem{t}}
+  \\
+  \sem{\tmReturn{t}} &= \eta_{\sem{\sigma}} \comp \sem{t}
+  \textit{ where }\tau = \tyLift\;\sigma
+  \\
+  \sem{\tmBind{s}{t}} &= \mu_{\sem{\tau'}} \comp \Lift(\sem{t}) \comp \mathsf{st}_{\sem{\Gamma},\sem{\sigma}} \comp \prodM{\id}{\sem{s}}
+  \textit{ where }\Gamma \vdash s: \sigma\textit{ and }\tau = \tyLift\;\tau'
+  \end{align*}
+  \caption{Terms $\Gamma \vdash t: \tau$}
+  \label{fig:semantics:terms}
+\end{subfigure}
+\caption{Denotational semantics in the category $\Sem$}
+\end{figure}

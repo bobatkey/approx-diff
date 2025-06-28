@@ -157,12 +157,12 @@ module _ {ℓ} (Sig : Signature ℓ)
     type-interp-iso unit = 𝒟.Iso-refl
     type-interp-iso bool = 𝒟.Iso-refl
     type-interp-iso (base s) = 𝒟.Iso-refl
-    type-interp-iso (σ [×] τ) = iso-product (type-interp-iso σ) (type-interp-iso τ)
-    type-interp-iso (σ [→] τ) = iso-exp (type-interp-iso σ) (type-interp-iso τ)
+    type-interp-iso (σ [×] τ) = product-preserves-iso (type-interp-iso σ) (type-interp-iso τ)
+    type-interp-iso (σ [→] τ) = exp-preserves-iso (type-interp-iso σ) (type-interp-iso τ)
 
     ctxt-interp-iso : (Γ : ctxt) → 𝒟.Iso (LI.⟦ Γ ⟧ctxt .carrier) 𝒟Interp.⟦ Γ ⟧ctxt
     ctxt-interp-iso L.emp = 𝒟.Iso-refl
-    ctxt-interp-iso (Γ L., τ) = iso-product (ctxt-interp-iso Γ) (type-interp-iso τ)
+    ctxt-interp-iso (Γ L., τ) = product-preserves-iso (ctxt-interp-iso Γ) (type-interp-iso τ)
 
     project-all : ∀ {Γ τ} (M : Γ ⊢ τ) →
                   LI.⟦ M ⟧tm .morph 𝒟.≈ {!!} -- 𝒟Interp.⟦ M ⟧tm

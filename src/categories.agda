@@ -313,11 +313,11 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     ∎
     where open ≈-Reasoning isEquiv
 
-  -- isomorphisms are closed under products
-  iso-product : ∀ {x₁ x₂ y₁ y₂} → Iso x₁ x₂ → Iso y₁ y₂ → Iso (prod x₁ y₁) (prod x₂ y₂)
-  iso-product x₁≅x₂ y₁≅y₂ .Iso.fwd = prod-m (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.fwd)
-  iso-product x₁≅x₂ y₁≅y₂ .Iso.bwd = prod-m (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.bwd)
-  iso-product x₁≅x₂ y₁≅y₂ .Iso.fwd∘bwd≈id =
+  -- functors preserve isomorphisms
+  product-preserves-iso : ∀ {x₁ x₂ y₁ y₂} → Iso x₁ x₂ → Iso y₁ y₂ → Iso (prod x₁ y₁) (prod x₂ y₂)
+  product-preserves-iso x₁≅x₂ y₁≅y₂ .Iso.fwd = prod-m (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.fwd)
+  product-preserves-iso x₁≅x₂ y₁≅y₂ .Iso.bwd = prod-m (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.bwd)
+  product-preserves-iso x₁≅x₂ y₁≅y₂ .Iso.fwd∘bwd≈id =
     begin
       prod-m (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.fwd) ∘ prod-m (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.bwd)
     ≈⟨ pair-compose _ _ _ _ ⟩
@@ -329,7 +329,7 @@ record HasProducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     ≈⟨ prod-m-id ⟩
       id _
     ∎ where open ≈-Reasoning isEquiv
-  iso-product x₁≅x₂ y₁≅y₂ .Iso.bwd∘fwd≈id =
+  product-preserves-iso x₁≅x₂ y₁≅y₂ .Iso.bwd∘fwd≈id =
     begin
       prod-m (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.bwd) ∘ prod-m (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.fwd)
     ≈⟨ pair-compose _ _ _ _ ⟩
@@ -455,11 +455,11 @@ record HasExponentials {o m e} (𝒞 : Category o m e) (P : HasProducts 𝒞) : 
     ∎
     where open ≈-Reasoning isEquiv
 
-  -- isomorphisms are closed under exponentials
-  iso-exp : ∀ {x₁ x₂ y₁ y₂} → Iso x₁ x₂ → Iso y₁ y₂ → Iso (exp x₁ y₁) (exp x₂ y₂)
-  iso-exp x₁≅x₂ y₁≅y₂ .Iso.fwd = exp-fmor (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.fwd)
-  iso-exp x₁≅x₂ y₁≅y₂ .Iso.bwd = exp-fmor (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.bwd)
-  iso-exp x₁≅x₂ y₁≅y₂ .Iso.fwd∘bwd≈id =
+  -- functors preserve isomorphisms
+  exp-preserves-iso : ∀ {x₁ x₂ y₁ y₂} → Iso x₁ x₂ → Iso y₁ y₂ → Iso (exp x₁ y₁) (exp x₂ y₂)
+  exp-preserves-iso x₁≅x₂ y₁≅y₂ .Iso.fwd = exp-fmor (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.fwd)
+  exp-preserves-iso x₁≅x₂ y₁≅y₂ .Iso.bwd = exp-fmor (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.bwd)
+  exp-preserves-iso x₁≅x₂ y₁≅y₂ .Iso.fwd∘bwd≈id =
     begin
       exp-fmor (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.fwd) ∘ exp-fmor (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.bwd)
     ≈⟨ isEquiv .IsEquivalence.sym (exp-comp _ _ _ _) ⟩
@@ -469,7 +469,7 @@ record HasExponentials {o m e} (𝒞 : Category o m e) (P : HasProducts 𝒞) : 
     ≈⟨ exp-id ⟩
       id _
     ∎ where open ≈-Reasoning isEquiv
-  iso-exp x₁≅x₂ y₁≅y₂ .Iso.bwd∘fwd≈id =
+  exp-preserves-iso x₁≅x₂ y₁≅y₂ .Iso.bwd∘fwd≈id =
     begin
       (exp-fmor (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.bwd) ∘ exp-fmor (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.fwd))
     ≈⟨ isEquiv .IsEquivalence.sym (exp-comp _ _ _ _) ⟩
