@@ -5,9 +5,12 @@ module setoid-predicate {o e} where
 open import Level using (suc; _⊔_)
 open import Data.Product using (_,_)
 open import Data.Sum using (inj₁; inj₂)
-open import prop using (_∧_; _,_; proj₁; proj₂; ⊤; tt; ∃)
+open import prop using (_∧_; _,_; proj₁; proj₂; ⊤; tt; ∃; LiftP; lower)
 open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; monoidOfMeet)
-open import prop-setoid using (idS; Setoid; IsEquivalence; _∘S_; ∘S-cong; ⊗-setoid; project₁; project₂; +-setoid; inject₁; inject₂)
+open import prop-setoid
+  using (idS; Setoid; IsEquivalence; _∘S_; ∘S-cong;
+         ⊗-setoid; project₁; project₂; pair; +-setoid; inject₁; inject₂;
+         module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_; ≃m-isEquivalence to ≈s-isEquivalence)
 open import setoid-cat using (SetoidCat; Setoid-products; Setoid-coproducts)
 
@@ -94,6 +97,7 @@ _⟨_⟩m : ∀ {X Y : Setoid o e} {P Q : Predicate X} → P ⊑ Q → (f : X �
 []-&& : ∀ {X Y : Setoid o e} {P Q : Predicate Y} {f : X ⇒s Y} → ((P [ f ]) && (Q [ f ])) ⊑ (P && Q) [ f ]
 []-&& .*⊑* x ϕ = ϕ
 
+-- Universal quantification
 ⋀ : ∀ {X Y : Setoid o e} → Predicate (⊗-setoid X Y) → Predicate X
 ⋀ P .Predicate.pred x = ∀ y → P .Predicate.pred (x , y)
 ⋀ {X} {Y} P .Predicate.pred-≃ x₁≈x₂ p y = P .Predicate.pred-≃ (x₁≈x₂ , Y .Setoid.refl) (p y)
@@ -112,6 +116,25 @@ f ⊗m g = prop-setoid.pair (f ∘S project₁) (g ∘S project₂)
             P [ project₁ ] ⊑ Q →
             P ⊑ ⋀ Q
 ⋀-lambda Φ .*⊑* x p y = Φ .*⊑* ((x , y)) p
+
+-- Existential quantification
+⋁ : ∀ {X Y : Setoid o e} → Predicate (⊗-setoid X Y) → Predicate X
+⋁ {X} {Y} P .Predicate.pred x = ∃ (Y .Setoid.Carrier) λ y → P .Predicate.pred (x , y)
+⋁ {X} {Y} P .Predicate.pred-≃ x₁≈x₂ (y , p) = y , P .Predicate.pred-≃ (x₁≈x₂ , Y .Setoid.refl) p
+
+⋁-in : ∀ {X Y : Setoid o e} {P : Predicate (⊗-setoid X Y)} →
+        P ⊑ (⋁ P) [ project₁ ]
+⋁-in .*⊑* (x , y) p = y , p
+
+⋁-elim : ∀ {X Y : Setoid o e} {P : Predicate (⊗-setoid X Y)} {Q : Predicate X} →
+          P ⊑ Q [ project₁ ] → ⋁ P ⊑ Q
+⋁-elim Φ .*⊑* x (y , p) = Φ .*⊑* (x , y) p
+
+⋁-frobenius : ∀ {X Y : Setoid o e} {P : Predicate (⊗-setoid X Y)} {Q : Predicate X} →
+              ⋁ (P && (Q [ project₁ ])) ⊑ (⋁ P && Q)
+⋁-frobenius {X} {Y} {P} {Q} .*⊑* x (y , p , q) = (y , p) , q
+
+-- And the inverse...
 
 -- Top
 TT : ∀ {X} → Predicate X
@@ -155,6 +178,21 @@ _++_ : ∀ {X Y} → Predicate X → Predicate Y → Predicate (+-setoid X Y)
             P ⊑ R [ inject₁ ] → Q ⊑ R [ inject₂ ] → (P ++ Q) ⊑ R
 ++-copair Φ Ψ .*⊑* (inj₁ x) p = Φ .*⊑* x p
 ++-copair Φ Ψ .*⊑* (inj₂ y) p = Ψ .*⊑* y p
+
+-- Equality
+Eq : ∀ X → Predicate (⊗-setoid X X)
+Eq X .Predicate.pred (x , x') = LiftP o (X .Setoid._≈_ x x')
+Eq X .Predicate.pred-≃ {x₁ , x'₁} {x₂ , x'₂} (x₁≈x₂ , x'₁≈x'₂) eq .lower =
+  begin x₂ ≈˘⟨ x₁≈x₂ ⟩ x₁ ≈⟨ eq .lower ⟩ x'₁ ≈⟨ x'₁≈x'₂ ⟩ x'₂ ∎
+  where open ≈-Reasoning (X .Setoid.isEquivalence)
+
+dup : ∀ {X : Setoid o e} → X ⇒s ⊗-setoid X X
+dup = pair (idS _) (idS _)
+
+refl : ∀ {X} → TT ⊑ Eq X [ dup ]
+refl {X} .*⊑* x tt .lower = X .Setoid.refl
+
+-- subst : ∀ {X}
 
 open import predicate-system
 
