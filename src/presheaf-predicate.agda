@@ -1,14 +1,15 @@
-{-# OPTIONS --postfix-projections --prop --safe #-}
+{-# OPTIONS --postfix-projections --prop --allow-unsolved-metas #-}
 
 open import Level using (_⊔_; suc)
-open import Data.Product using (_,_)
-open import prop using (_,_; tt)
-open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; module ≤-Reasoning; monoidOfMeet)
+open import Data.Product using (_,_) renaming (_×_ to _××_)
+open import prop using (_,_; tt; ∃; _∧_; LiftS; liftS)
+open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; module ≤-Reasoning; monoidOfMeet; IsJoin; IsClosureOp)
 open import prop-setoid using (Setoid)
-open import categories using (Category; HasProducts; HasCoproducts; HasTerminal; IsTerminal)
+  renaming (_⇒_ to _⇒s_)
+open import categories using (Category; HasProducts; HasTerminal; IsTerminal; HasCoproducts)
 open import setoid-cat using (SetoidCat; Setoid-products; Setoid-coproducts)
 open import functor using (Functor; [_⇒_]; NatTrans; ≃-NatTrans)
-open import predicate-system using (PredicateSystem)
+open import predicate-system using (PredicateSystem; ClosureOp)
 import setoid-predicate
 
 module presheaf-predicate {o m e} os (𝒞 : Category o m e) where
@@ -20,7 +21,6 @@ private
   module P = PredicateSystem (setoid-predicate.system {ℓ} {ℓ})
   module S = Category (SetoidCat ℓ ℓ)
   module SP = HasProducts (Setoid-products ℓ ℓ)
-  module SCP = HasCoproducts (Setoid-coproducts ℓ ℓ)
   module 𝒞 = Category 𝒞
   module PSh = Category PSh
   module PShP = HasProducts products
@@ -35,6 +35,12 @@ record Predicate (X : PSh.obj) : Set (suc (suc ℓ)) where
     pred : ∀ a → P.Predicate (X .fobj a)
     pred-mor : ∀ {a b} (f : b 𝒞.⇒ a) → pred a P.⊑ (pred b P.[ X .fmor f ])
 open Predicate
+
+-- pred a : Predicate (X .fobj a)
+-- pred b : Predicate (X .fobj b)
+
+-- pred a ⟨ X .fmor CP.in₁ ⟩ : Predicate (X .fobj (CP.coprod a b))
+-- pred (CP.coprod a b) : Predicate (X .fobj (CP.coprod a b))
 
 record _⊑_ {X : PSh.obj} (P Q : Predicate X) : Prop (suc ℓ) where
   no-eta-equality
@@ -131,53 +137,24 @@ _&&_ {X} P Q .pred-mor {x} {y} f = begin
 &&-isMeet .π₂ .*⊑* a = P.&&-isMeet .π₂
 &&-isMeet .⟨_,_⟩ ϕ ψ .*⊑* a = P.&&-isMeet .⟨_,_⟩ (ϕ .*⊑* a) (ψ .*⊑* a)
 
-_++_  : ∀ {X Y} → Predicate X → Predicate Y → Predicate (X + Y)
-_++_ {X} {Y} P Q .pred x = P. pred x P.++ Q .pred x
-_++_ {X} {Y} P Q .pred-mor {a} {b} f =
-  P.++-copair left right
-  where
-    left : P .pred a P.⊑ ((P .pred b P.++ Q .pred b) P.[ SCP.coprod-m (X .fmor f) (Y .fmor f) ]) P.[ SCP.in₁ ]
-    left = begin
-        P .pred a
-      ≤⟨ P .pred-mor f ⟩
-        P .pred b P.[ X .fmor f ]
-      ≤⟨ P.++-in₁ P.[ _ ]m ⟩
-        (P .pred b P.++ Q .pred b) P.[ SCP.in₁ ] P.[ X .fmor f ]
-      ≤⟨ P.[]-comp _ _ ⟩
-        (P .pred b P.++ Q .pred b) P.[ SCP.in₁ S.∘ X .fmor f ]
-      ≤⟨ P.[]-cong (S.≈-sym (SCP.copair-in₁ _ _)) ⟩
-        (P .pred b P.++ Q .pred b) P.[ SCP.coprod-m (X .fmor f) (Y .fmor f) S.∘ SCP.in₁ ]
-      ≤⟨ P.[]-comp⁻¹ _ _ ⟩
-        ((P .pred b P.++ Q .pred b) P.[ SCP.coprod-m (X .fmor f) (Y .fmor f) ]) P.[ SCP.in₁ ]
-      ∎
-      where open ≤-Reasoning P.⊑-isPreorder
+_++_ : ∀ {X} → Predicate X → Predicate X → Predicate X
+(P ++ Q) .pred x = P .pred x P.++ Q .pred x
+_++_ {X} P Q .pred-mor {a} {b} f = begin
+    P .pred a P.++ Q .pred a
+  ≤⟨ IsJoin.mono P.++-isJoin (P .pred-mor f) (Q .pred-mor f) ⟩
+    (P .pred b P.[ X .fmor f ]) P.++ (Q .pred b P.[ X .fmor f ])
+  ≤⟨ IsJoin.[_,_] P.++-isJoin ((IsJoin.inl P.++-isJoin) P.[ _ ]m) ((IsJoin.inr P.++-isJoin) P.[ _ ]m) ⟩
+    (P .pred b P.++ Q .pred b) P.[ X .fmor f ]
+  ∎
+  where open ≤-Reasoning P.⊑-isPreorder
 
-    right : Q .pred a P.⊑ ((P .pred b P.++ Q .pred b) P.[ SCP.coprod-m (X .fmor f) (Y .fmor f) ]) P.[ SCP.in₂ ]
-    right = begin
-        Q .pred a
-      ≤⟨ Q .pred-mor f ⟩
-        Q .pred b P.[ Y .fmor f ]
-      ≤⟨ P.++-in₂ P.[ _ ]m ⟩
-        (P .pred b P.++ Q .pred b) P.[ SCP.in₂ ] P.[ Y .fmor f ]
-      ≤⟨ P.[]-comp _ _ ⟩
-        (P .pred b P.++ Q .pred b) P.[ SCP.in₂ S.∘ Y .fmor f ]
-      ≤⟨ P.[]-cong (S.≈-sym (SCP.copair-in₂ _ _)) ⟩
-        (P .pred b P.++ Q .pred b) P.[ SCP.coprod-m (X .fmor f) (Y .fmor f) S.∘ SCP.in₂ ]
-      ≤⟨ P.[]-comp⁻¹ _ _ ⟩
-        ((P .pred b P.++ Q .pred b) P.[ SCP.coprod-m (X .fmor f) (Y .fmor f) ]) P.[ SCP.in₂ ]
-      ∎
-      where open ≤-Reasoning P.⊑-isPreorder
+++-isJoin : ∀ {X} → IsJoin (⊑-isPreorder {X}) _++_
+++-isJoin .IsJoin.inl .*⊑* a = P.++-isJoin .IsJoin.inl
+++-isJoin .IsJoin.inr .*⊑* a = P.++-isJoin .IsJoin.inr
+++-isJoin .IsJoin.[_,_] ϕ ψ .*⊑* a = IsJoin.[_,_] P.++-isJoin (ϕ .*⊑* a) (ψ .*⊑* a)
 
-++-in₁ : ∀ {X Y} {P : Predicate X} {Q : Predicate Y} → P ⊑ (P ++ Q) [ +-in₁ ]
-++-in₁ .*⊑* x = P.++-in₁
-
-++-in₂ : ∀ {X Y} {P : Predicate X} {Q : Predicate Y} → Q ⊑ (P ++ Q) [ +-in₂ ]
-++-in₂ .*⊑* x = P.++-in₂
-
-++-copair : ∀ {X Y} {P : Predicate X} {Q : Predicate Y} {R : Predicate (X + Y)} →
-            P ⊑ R [ +-in₁ ] → Q ⊑ R [ +-in₂ ] → (P ++ Q) ⊑ R
-++-copair ϕ ψ .*⊑* a = P.++-copair (ϕ .*⊑* a) (ψ .*⊑* a)
-
+[]-++ : ∀ {X Y} {P Q : Predicate Y} {f : X PSh.⇒ Y} → ((P ++ Q) [ f ]) ⊑ ((P [ f ]) ++ (Q [ f ]))
+[]-++ .*⊑* a = record { *⊑* = λ x z → z }
 
 open setoid-predicate.Predicate
 open setoid-predicate._⊑_
@@ -229,7 +206,7 @@ _==>_ {X} P Q .pred-mor {a} {b} f .*⊑* x ϕ c g p =
   Φ .*⊑* b .*⊑* (X .fmor f .func x , y) (P .pred-mor f .*⊑* x p)
 
 
-system : PredicateSystem PSh products coproducts
+system : PredicateSystem PSh products
 system .PredicateSystem.Predicate = Predicate
 system .PredicateSystem._⊑_ = _⊑_
 system .PredicateSystem.⊑-isPreorder = ⊑-isPreorder
@@ -254,9 +231,143 @@ system .PredicateSystem.&&-isMeet = &&-isMeet
 system .PredicateSystem.[]-&& = record { *⊑* = λ a → record { *⊑* = λ x z → z } }
 system .PredicateSystem.==>-residual = ==>-residual
 system .PredicateSystem.[]-==> = []-==>
-system .PredicateSystem.++-in₁ = ++-in₁
-system .PredicateSystem.++-in₂ = ++-in₂
-system .PredicateSystem.++-copair = ++-copair
+system .PredicateSystem.[]-++ = []-++
+system .PredicateSystem.++-isJoin = ++-isJoin
 system .PredicateSystem.⋀-[] = ⋀-[]
 system .PredicateSystem.⋀-eval = ⋀-eval
 system .PredicateSystem.⋀-lambda = ⋀-lambda
+
+-- Coproduct closure
+--
+-- This requires the following stability property of the coproducts in 𝒞
+--
+-- FIXME: is the the same thing as extensive coproducts?
+--
+-- f : X₁ + X₂ ⇒ X
+-- g : Y ⇒ X
+--
+-- Let Y₁ = { (y , x₁) | f(in₁ x₁) = g(y) }
+-- Let Y₂ = { (y , x₂) | f(in₂ x₂) = g(y) }
+
+record StableBits (𝒞CP : HasCoproducts 𝒞)
+                  {x₁ x₂ x y}
+                  (f : 𝒞.Iso (𝒞CP .HasCoproducts.coprod x₁ x₂) x)
+                  (g : y 𝒞.⇒ x) : Set (o ⊔ m ⊔ e) where
+  private
+    module 𝒞CP = HasCoproducts 𝒞CP
+  open 𝒞.Iso
+  field
+    y₁  : 𝒞.obj
+    y₂  : 𝒞.obj
+    h₁  : y₁ 𝒞.⇒ x₁
+    h₂  : y₂ 𝒞.⇒ x₂
+    h   : 𝒞.Iso (𝒞CP.coprod y₁ y₂) y
+    eq₁ : (f .fwd 𝒞.∘ (𝒞CP.in₁ 𝒞.∘ h₁)) 𝒞.≈ (g 𝒞.∘ (h .fwd 𝒞.∘ 𝒞CP.in₁))
+    eq₂ : (f .fwd 𝒞.∘ (𝒞CP.in₂ 𝒞.∘ h₂)) 𝒞.≈ (g 𝒞.∘ (h .fwd 𝒞.∘ 𝒞CP.in₂))
+
+module CoproductMonad
+         (𝒞CP : HasCoproducts 𝒞)
+         (stable : ∀ {x₁ x₂ x y} f g → StableBits 𝒞CP {x₁} {x₂} {x} {y} f g)
+         where
+
+  private
+    module 𝒞CP = HasCoproducts 𝒞CP
+
+  open Setoid
+  open _⇒s_
+  open setoid-predicate.Predicate
+  open setoid-predicate._⊑_
+  open 𝒞.Iso
+
+  data Context (X : PSh.obj) (P : Predicate X) : (a : 𝒞.obj) → X .fobj a .Carrier → Set ℓ where
+    leaf : ∀ {a x} → P .pred a .pred x → Context X P a x
+    node : ∀ a b {c} x y {z} (f : 𝒞.Iso (𝒞CP.coprod a b) c) →
+           Context X P a x →
+           Context X P b y →
+           X .fobj a ._≈_ x (X .fmor (f .fwd 𝒞.∘ 𝒞CP.in₁) .func z) →
+           X .fobj b ._≈_ y (X .fmor (f .fwd 𝒞.∘ 𝒞CP.in₂) .func z) →
+           Context X P c z
+
+  Context-reindex : ∀ {X : PSh.obj} (P : Predicate X) →
+                    ∀ {a b} {x} (f : b 𝒞.⇒ a) → Context X P a x → Context X P b (X .fmor f .func x)
+  Context-reindex {X} P {a} {b} {x} f (leaf p) =
+    leaf (P .pred-mor f .*⊑* x p)
+  Context-reindex {X} P {a} {b} {x} f (node a₁ a₂ y₁ y₂ g t₁ t₂ eq₁ eq₂) =
+    node (stbl .StableBits.y₁) (stbl .StableBits.y₂)
+         (X .fmor (stbl .StableBits.h₁) .func y₁)
+         (X .fmor (stbl .StableBits.h₂) .func y₂)
+         (stbl .StableBits.h)
+         (Context-reindex P (stbl .StableBits.h₁) t₁)
+         (Context-reindex P (stbl .StableBits.h₂) t₂)
+         {!!}
+         {!!}
+    where stbl = stable g f
+
+  Context-eq : ∀ {X} {P : Predicate X} {a x₁ x₂} → X .fobj a ._≈_ x₁ x₂ → Context X P a x₁ → Context X P a x₂
+  Context-eq {X} {P} x₁≈x₂ (leaf p) = leaf (P .pred _ .pred-≃ x₁≈x₂ p)
+  Context-eq {X} {P} x₁≈x₂ (node a b x y f t₁ t₂ eq₁ eq₂) =
+    node a b x y f t₁ t₂
+         (X .fobj a .trans eq₁ (X .fmor _ .func-resp-≈ x₁≈x₂))
+         (X .fobj b .trans eq₂ (X .fmor _ .func-resp-≈ x₁≈x₂))
+
+  𝐂 : ∀ {X} → Predicate X → Predicate X
+  𝐂 P .pred a .pred x = LiftS ℓ (Context _ P a x)
+  𝐂 P .pred a .pred-≃ x₁≈x₂ (liftS t) = liftS (Context-eq x₁≈x₂ t)
+  𝐂 P .pred-mor f .*⊑* x (liftS p) = liftS (Context-reindex P f p)
+
+  Context-unit : ∀ {X : PSh.obj} {P : Predicate X} →
+                 ∀ {a x} → P .pred a .pred x → Context X P a x
+  Context-unit p = leaf p
+
+  Context-mono : ∀ {X : PSh.obj} {P Q : Predicate X} →
+                 ∀ (P⊑Q : P ⊑ Q) →
+                 ∀ {a x} → Context X P a x → Context X Q a x
+  Context-mono P⊑Q (leaf p) = leaf (P⊑Q .*⊑* _ .*⊑* _ p)
+  Context-mono P⊑Q (node a b x y f t t₁ x₁ x₂) = node a b x y f (Context-mono P⊑Q t) (Context-mono P⊑Q t₁) x₁ x₂
+
+  Context-strong : ∀ {X : PSh.obj} {P Q : Predicate X} →
+                   ∀ {a x} → Context X P a x → Q .pred a .pred x → Context X (P && Q) a x
+  Context-strong (leaf p) q = leaf (p , q)
+  Context-strong {X} {P} {Q} (node a b x y f t₁ t₂ eq₁ eq₂) q =
+    node a b x y f
+         (Context-strong t₁ (Q .pred a .pred-≃ (X .fobj a .sym eq₁) (Q .pred-mor (f .fwd 𝒞.∘ 𝒞CP.in₁) .*⊑* _ q)))
+         (Context-strong t₂ (Q .pred b .pred-≃ (X .fobj b .sym eq₂) (Q .pred-mor (f .fwd 𝒞.∘ 𝒞CP.in₂) .*⊑* _ q)))
+         eq₁
+         eq₂
+
+  Context-join : ∀ {X : PSh.obj} {P : Predicate X} →
+                 ∀ {a x} → Context X (𝐂 P) a x → LiftS ℓ (Context X P a x)
+  Context-join {X} {P} {a} {x} (leaf (liftS t)) = liftS t
+  Context-join {X} {P} {a} {x} (node a₁ b x₁ y f t₁ t₂ eq₁ eq₂) with Context-join t₁
+  ... | liftS t₁' with Context-join t₂
+  ... | liftS t₂' = liftS (node a₁ b x₁ y f t₁' t₂' eq₁ eq₂)
+
+  𝐂-isClosure : ∀ {X} → IsClosureOp (⊑-isPreorder {X}) 𝐂
+  𝐂-isClosure .IsClosureOp.mono P⊑Q .*⊑* a .*⊑* x (liftS p) = liftS (Context-mono P⊑Q p)
+  𝐂-isClosure .IsClosureOp.unit .*⊑* a .*⊑* x p = liftS (Context-unit p)
+  𝐂-isClosure .IsClosureOp.closed .*⊑* a .*⊑* x (liftS p) = Context-join p
+
+  𝐂-strong : ∀ {X} {P Q : Predicate X} → (𝐂 P && Q) ⊑ 𝐂 (P && Q)
+  𝐂-strong .*⊑* a .*⊑* x (liftS p , q) = liftS (Context-strong p q)
+
+  𝐂-[]⁻¹ : ∀ {X Y} {P : Predicate Y} {f : X PSh.⇒ Y} → (𝐂 P [ f ]) ⊑ 𝐂 (P [ f ])
+  𝐂-[]⁻¹ .*⊑* a .*⊑* x (liftS (leaf p)) = liftS (leaf p)
+  𝐂-[]⁻¹ {X} {Y} {P} {f} .*⊑* a .*⊑* x (liftS (node a₁ a₂ y₁ y₂ g t₁ t₂ eq₁ eq₂)) = {!!}
+    -- liftS (node a₁ a₂
+    --             (X .fmor (g 𝒞.∘ 𝒞CP.in₁) .func x)
+    --             (X .fmor (g 𝒞.∘ 𝒞CP.in₂) .func x)
+    --             g
+    --             {!𝐂-[]⁻¹ {f = f} .*⊑* a₁ .*⊑* (X .fmor (g 𝒞.∘ 𝒞CP.in₁) .func x) (liftS ?)!}
+    --             {!!}
+    --             {!!}
+    --             {!!})
+
+  𝐂-[] : ∀ {X Y} {P : Predicate Y} {f : X PSh.⇒ Y} → 𝐂 (P [ f ]) ⊑ (𝐂 P [ f ])
+  𝐂-[] = {!!}
+
+  closureOp : ClosureOp PSh products system
+  closureOp .ClosureOp.𝐂 = 𝐂
+  closureOp .ClosureOp.𝐂-isClosure = 𝐂-isClosure
+  closureOp .ClosureOp.𝐂-[] = 𝐂-[]
+  closureOp .ClosureOp.𝐂-[]⁻¹ = 𝐂-[]⁻¹
+  closureOp .ClosureOp.𝐂-strong = 𝐂-strong

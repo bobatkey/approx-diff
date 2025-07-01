@@ -2,22 +2,25 @@
 
 open import Level using (suc; _⊔_)
 open import prop-setoid using (module ≈-Reasoning; IsEquivalence)
-open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; module ≤-Reasoning)
+open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; module ≤-Reasoning; IsJoin)
 open import categories using (Category; HasProducts; HasExponentials; HasCoproducts; HasTerminal; IsTerminal)
 open import functor using (Functor)
 open import predicate-system using (PredicateSystem)
 
+-- FIXME: refactor this into
+--   1. glueing with predicates over 𝒞 directly
+--   2. pullback of PredicateSystems along product preserving functors
+
 module glueing-simple {o₁ m₁ e₁ o₂ m₂ e₂}
   (𝒞 : Category o₁ m₁ e₁)
-  (𝒟 : Category o₂ m₂ e₂) (𝒟P : HasProducts 𝒟) (𝒟CP : HasCoproducts 𝒟)
-  (𝒟-predicates : PredicateSystem 𝒟 𝒟P 𝒟CP)
+  (𝒟 : Category o₂ m₂ e₂) (𝒟P : HasProducts 𝒟)
+  (𝒟-predicates : PredicateSystem 𝒟 𝒟P)
   (F : Functor 𝒞 𝒟) where
 
 private
   module 𝒞 = Category 𝒞
   module 𝒟 = Category 𝒟
   module 𝒟P = HasProducts 𝒟P
-  module 𝒟CP = HasCoproducts 𝒟CP
 open Functor
 open PredicateSystem 𝒟-predicates
 
@@ -86,20 +89,16 @@ module coproducts (CP : HasCoproducts 𝒞) where
 
   _[+]_ : Obj → Obj → Obj
   (X [+] Y) .carrier = CP.coprod (X .carrier) (Y .carrier)
-  (X [+] Y) .pred = (X .pred ++ Y .pred) ⟨ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ⟩
+  (X [+] Y) .pred = (X .pred ⟨ F .fmor CP.in₁ ⟩) ++ (Y .pred ⟨ F .fmor CP.in₂ ⟩)
 
   in₁ : ∀ {X Y} → X => (X [+] Y)
   in₁ .morph = CP.in₁
   in₁ {X} {Y} .presv = begin
       X .pred
-    ≤⟨ ++-in₁ ⟩
-      (X .pred ++ Y .pred) [ 𝒟CP.in₁ ]
-    ≤⟨ unit _ [ 𝒟CP.in₁ ]m ⟩
-      (((X .pred ++ Y .pred) ⟨ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ⟩) [ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ]) [ 𝒟CP.in₁ ]
-    ≤⟨ []-comp _ _ ⟩
-      ((X .pred ++ Y .pred) ⟨ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ⟩) [ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) 𝒟.∘ 𝒟CP.in₁ ]
-    ≤⟨ []-cong (𝒟CP.copair-in₁ _ _) ⟩
-      ((X .pred ++ Y .pred) ⟨ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ⟩) [ F .fmor CP.in₁ ]
+    ≤⟨ unit _ ⟩
+      X .pred ⟨ F .fmor CP.in₁ ⟩ [ F .fmor CP.in₁ ]
+    ≤⟨ ++-isJoin .IsJoin.inl [ _ ]m ⟩
+      ((X .pred ⟨ F .fmor CP.in₁ ⟩) ++ (Y .pred ⟨ F .fmor CP.in₂ ⟩)) [ F .fmor CP.in₁ ]
     ∎
     where open ≤-Reasoning ⊑-isPreorder
 
@@ -107,64 +106,37 @@ module coproducts (CP : HasCoproducts 𝒞) where
   in₂ .morph = CP.in₂
   in₂ {X} {Y} .presv = begin
       Y .pred
-    ≤⟨ ++-in₂ ⟩
-      (X .pred ++ Y .pred) [ 𝒟CP.in₂ ]
-    ≤⟨ unit _ [ 𝒟CP.in₂ ]m ⟩
-      (((X .pred ++ Y .pred) ⟨ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ⟩) [ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ]) [ 𝒟CP.in₂ ]
-    ≤⟨ []-comp _ _ ⟩
-      ((X .pred ++ Y .pred) ⟨ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ⟩) [ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) 𝒟.∘ 𝒟CP.in₂ ]
-    ≤⟨ []-cong (𝒟CP.copair-in₂ _ _) ⟩
-      ((X .pred ++ Y .pred) ⟨ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ⟩) [ F .fmor CP.in₂ ]
+    ≤⟨ unit _ ⟩
+      Y .pred ⟨ F .fmor CP.in₂ ⟩ [ F .fmor CP.in₂ ]
+    ≤⟨ ++-isJoin .IsJoin.inr [ _ ]m ⟩
+      ((X .pred ⟨ F .fmor CP.in₁ ⟩) ++ (Y .pred ⟨ F .fmor CP.in₂ ⟩)) [ F .fmor CP.in₂ ]
     ∎
     where open ≤-Reasoning ⊑-isPreorder
 
   copair : ∀ {X Y Z} → X => Z → Y => Z → (X [+] Y) => Z
   copair f g .morph = CP.copair (f .morph) (g .morph)
   copair {X} {Y} {Z} f g .presv = begin
-      (X .pred ++ Y .pred) ⟨ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ⟩
-    ≤⟨ ++-copair left right ⟨ _ ⟩m ⟩
-      ((Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) ]) [ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ])⟨ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ⟩
-    ≤⟨ counit _ ⟩
+      (X .pred ⟨ F .fmor CP.in₁ ⟩) ++ (Y .pred ⟨ F .fmor CP.in₂ ⟩)
+    ≤⟨ IsJoin.mono ++-isJoin (f .presv ⟨ _ ⟩m) (g .presv ⟨ _ ⟩m) ⟩
+      (Z .pred [ F .fmor (f .morph) ] ⟨ F .fmor CP.in₁ ⟩) ++ (Z .pred [ F .fmor (g .morph) ] ⟨ F .fmor CP.in₂ ⟩)
+    ≤⟨ IsJoin.mono ++-isJoin ([]-cong (F .fmor-cong (𝒞.≈-sym (CP.copair-in₁ _ _))) ⟨ _ ⟩m)
+                             ([]-cong (F .fmor-cong (𝒞.≈-sym (CP.copair-in₂ _ _))) ⟨ _ ⟩m) ⟩
+      (Z .pred [ F .fmor (CP.copair (f .morph) (g .morph) 𝒞.∘ CP.in₁) ] ⟨ F .fmor CP.in₁ ⟩)
+        ++
+      (Z .pred [ F .fmor (CP.copair (f .morph) (g .morph) 𝒞.∘ CP.in₂) ] ⟨ F .fmor CP.in₂ ⟩)
+    ≤⟨ IsJoin.mono ++-isJoin ([]-cong (F .fmor-comp _ _) ⟨ _ ⟩m)
+                             ([]-cong (F .fmor-comp _ _) ⟨ _ ⟩m) ⟩
+      (Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) 𝒟.∘ F .fmor CP.in₁ ] ⟨ F .fmor CP.in₁ ⟩)
+        ++
+      (Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) 𝒟.∘ F .fmor CP.in₂ ] ⟨ F .fmor CP.in₂ ⟩)
+    ≤⟨ IsJoin.mono ++-isJoin (([]-comp⁻¹ _ _) ⟨ _ ⟩m) (([]-comp⁻¹ _ _) ⟨ _ ⟩m) ⟩
+      (Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) ] [ F .fmor CP.in₁ ] ⟨ F .fmor CP.in₁ ⟩)
+        ++
+      (Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) ] [ F .fmor CP.in₂ ] ⟨ F .fmor CP.in₂ ⟩)
+    ≤⟨ IsJoin.[_,_] ++-isJoin (counit _) (counit _) ⟩
       Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) ]
     ∎
-    where
-      left : X .pred ⊑ (((Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) ]) [ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ]) [ 𝒟CP.in₁ ])
-      left = begin
-          X .pred
-        ≤⟨ f .presv ⟩
-          Z .pred [ F .fmor (f .morph) ]
-        ≤⟨ []-cong (F .fmor-cong (𝒞.≈-sym (CP.copair-in₁ _ _))) ⟩
-          Z .pred [ F .fmor (CP.copair (f .morph) (g .morph) 𝒞.∘ CP.in₁) ]
-        ≤⟨ []-cong (F .fmor-comp _ _) ⟩
-          Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) 𝒟.∘ F .fmor CP.in₁ ]
-        ≤⟨ []-comp⁻¹ _ _ ⟩
-          (Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) ]) [ F .fmor CP.in₁ ]
-        ≤⟨ []-cong (𝒟.≈-sym (𝒟CP.copair-in₁ _ _)) ⟩
-          (Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) ]) [ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) 𝒟.∘ 𝒟CP.in₁ ]
-        ≤⟨ []-comp⁻¹ _ _ ⟩
-          ((Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) ]) [ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ]) [ 𝒟CP.in₁ ]
-        ∎
-        where open ≤-Reasoning ⊑-isPreorder
-
-      right : Y .pred ⊑ (((Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) ]) [ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ]) [ 𝒟CP.in₂ ])
-      right = begin
-          Y .pred
-        ≤⟨ g .presv ⟩
-          Z .pred [ F .fmor (g .morph) ]
-        ≤⟨ []-cong (F .fmor-cong (𝒞.≈-sym (CP.copair-in₂ _ _))) ⟩
-          Z .pred [ F .fmor (CP.copair (f .morph) (g .morph) 𝒞.∘ CP.in₂) ]
-        ≤⟨ []-cong (F .fmor-comp _ _) ⟩
-          Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) 𝒟.∘ F .fmor CP.in₂ ]
-        ≤⟨ []-comp⁻¹ _ _ ⟩
-          (Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) ]) [ F .fmor CP.in₂ ]
-        ≤⟨ []-cong (𝒟.≈-sym (𝒟CP.copair-in₂ _ _)) ⟩
-          (Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) ]) [ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) 𝒟.∘ 𝒟CP.in₂ ]
-        ≤⟨ []-comp⁻¹ _ _ ⟩
-          ((Z .pred [ F .fmor (CP.copair (f .morph) (g .morph)) ]) [ 𝒟CP.copair (F .fmor CP.in₁) (F .fmor CP.in₂) ]) [ 𝒟CP.in₂ ]
-        ∎
-        where open ≤-Reasoning ⊑-isPreorder
-
-      open ≤-Reasoning ⊑-isPreorder
+    where open ≤-Reasoning ⊑-isPreorder
 
   coproducts : HasCoproducts cat
   coproducts .HasCoproducts.coprod = _[+]_

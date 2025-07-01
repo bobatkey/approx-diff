@@ -4,9 +4,8 @@ module setoid-predicate {o e} where
 
 open import Level using (suc; _⊔_)
 open import Data.Product using (_,_)
-open import Data.Sum using (inj₁; inj₂)
-open import prop using (_∧_; _,_; proj₁; proj₂; ⊤; tt; ∃; LiftP; lower)
-open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; monoidOfMeet)
+open import prop using (_∧_; _,_; proj₁; proj₂; ⊤; tt; ∃; LiftP; lower; _∨_; inj₁; inj₂; lift)
+open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; monoidOfMeet; IsJoin)
 open import prop-setoid
   using (idS; Setoid; IsEquivalence; _∘S_; ∘S-cong;
          ⊗-setoid; project₁; project₂; pair; +-setoid; inject₁; inject₂;
@@ -161,29 +160,26 @@ _==>_ {X} P Q .Predicate.pred-≃ x₁≈x₂ ϕ p =
 []-==> .*⊑* x z = z
 
 
--- Predicates on Coproducts
-_++_ : ∀ {X Y} → Predicate X → Predicate Y → Predicate (+-setoid X Y)
-(P ++ Q) .Predicate.pred (inj₁ x) = P .Predicate.pred x
-(P ++ Q) .Predicate.pred (inj₂ y) = Q .Predicate.pred y
-(P ++ Q) .Predicate.pred-≃ {inj₁ x₁} {inj₁ x₂} e = P .Predicate.pred-≃ e
-(P ++ Q) .Predicate.pred-≃ {inj₂ y₁} {inj₂ y₂} e = Q .Predicate.pred-≃ e
+-- Joins / disjunction
+_++_ : ∀ {X} → Predicate X → Predicate X → Predicate X
+(P ++ Q) .Predicate.pred x = (P .Predicate.pred x) ∨ (Q .Predicate.pred x)
+(P ++ Q) .Predicate.pred-≃ x₁≈x₂ (inj₁ p) = inj₁ (P .Predicate.pred-≃ x₁≈x₂ p)
+(P ++ Q) .Predicate.pred-≃ x₁≈x₂ (inj₂ q) = inj₂ (Q .Predicate.pred-≃ x₁≈x₂ q)
 
-++-in₁ : ∀ {X Y} {P : Predicate X} {Q : Predicate Y} → P ⊑ (P ++ Q) [ inject₁ ]
-++-in₁ .*⊑* = λ x z → z
+++-isJoin : ∀ {X} → IsJoin ⊑-isPreorder (_++_ {X})
+++-isJoin .IsJoin.inl .*⊑* _ = inj₁
+++-isJoin .IsJoin.inr .*⊑* _ = inj₂
+++-isJoin .IsJoin.[_,_] ϕ ψ .*⊑* x (inj₁ p) = ϕ .*⊑* x p
+++-isJoin .IsJoin.[_,_] ϕ ψ .*⊑* x (inj₂ q) = ψ .*⊑* x q
 
-++-in₂ : ∀ {X Y} {P : Predicate X} {Q : Predicate Y} → Q ⊑ (P ++ Q) [ inject₂ ]
-++-in₂ .*⊑* = λ x z → z
-
-++-copair : ∀ {X Y} {P : Predicate X} {Q : Predicate Y} {R : Predicate (+-setoid X Y)} →
-            P ⊑ R [ inject₁ ] → Q ⊑ R [ inject₂ ] → (P ++ Q) ⊑ R
-++-copair Φ Ψ .*⊑* (inj₁ x) p = Φ .*⊑* x p
-++-copair Φ Ψ .*⊑* (inj₂ y) p = Ψ .*⊑* y p
+[]-++ : ∀ {X Y} {P Q : Predicate Y} {f : X ⇒s Y} → ((P ++ Q) [ f ]) ⊑ ((P [ f ]) ++ (Q [ f ]))
+[]-++ .*⊑* x p = p
 
 -- Equality
 Eq : ∀ X → Predicate (⊗-setoid X X)
 Eq X .Predicate.pred (x , x') = LiftP o (X .Setoid._≈_ x x')
-Eq X .Predicate.pred-≃ {x₁ , x'₁} {x₂ , x'₂} (x₁≈x₂ , x'₁≈x'₂) eq .lower =
-  begin x₂ ≈˘⟨ x₁≈x₂ ⟩ x₁ ≈⟨ eq .lower ⟩ x'₁ ≈⟨ x'₁≈x'₂ ⟩ x'₂ ∎
+Eq X .Predicate.pred-≃ {x₁ , x'₁} {x₂ , x'₂} (x₁≈x₂ , x'₁≈x'₂) (lift eq) =
+  lift (begin x₂ ≈˘⟨ x₁≈x₂ ⟩ x₁ ≈⟨ eq ⟩ x'₁ ≈⟨ x'₁≈x'₂ ⟩ x'₂ ∎)
   where open ≈-Reasoning (X .Setoid.isEquivalence)
 
 dup : ∀ {X : Setoid o e} → X ⇒s ⊗-setoid X X
@@ -196,7 +192,7 @@ refl {X} .*⊑* x tt .lower = X .Setoid.refl
 
 open import predicate-system
 
-system : PredicateSystem (SetoidCat o e) (Setoid-products o e) (Setoid-coproducts o e)
+system : PredicateSystem (SetoidCat o e) (Setoid-products o e)
 system .PredicateSystem.Predicate = Predicate
 system .PredicateSystem._⊑_ = _⊑_
 system .PredicateSystem._[_] = _[_]
@@ -221,9 +217,8 @@ system .PredicateSystem.&&-isMeet = &&-isMeet
 system .PredicateSystem.[]-&& = []-&&
 system .PredicateSystem.==>-residual = ==>-residual
 system .PredicateSystem.[]-==> = []-==>
-system .PredicateSystem.++-in₁ = ++-in₁
-system .PredicateSystem.++-in₂ = ++-in₂
-system .PredicateSystem.++-copair = ++-copair
+system .PredicateSystem.[]-++ = []-++
+system .PredicateSystem.++-isJoin = ++-isJoin
 system .PredicateSystem.⋀-[] = ⋀-[]
 system .PredicateSystem.⋀-eval = ⋀-eval
 system .PredicateSystem.⋀-lambda = ⋀-lambda
