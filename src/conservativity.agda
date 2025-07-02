@@ -13,14 +13,15 @@ open import predicate-system using (PredicateSystem; ClosureOp)
 open import stable-coproducts using (StableBits; Stable)
 import glueing-simple
 import setoid-predicate
-
-import language-syntax
-import language-interpretation
-open import signature hiding (FPFunctor)
 open import finite-product-functor
   using (preserve-chosen-products; module preserve-chosen-products-consequences)
 open import finite-coproduct-functor
   using (preserve-chosen-coproducts; module preserve-chosen-coproducts-consequences)
+
+import language-syntax
+import language-interpretation
+open import signature
+
 
 open Functor
 open NatTrans
@@ -67,7 +68,7 @@ private
 
 ------------------------------------------------------------------------------
 -- Kripke Predicates “of varying arity”
-open import yoneda (m ⊔ e) 𝒞 renaming (PSh to PSh⟨𝒞⟩; products to PSh⟨𝒞⟩-products; exponentials to PSh⟨𝒞⟩-exponentials) using ()
+open import yoneda (m ⊔ e) 𝒞 renaming (PSh to PSh⟨𝒞⟩; products to PSh⟨𝒞⟩-products) using ()
 open import yoneda (m ⊔ e) 𝒟 renaming (よ to 𝒟よ) using ()
 
 private
@@ -233,6 +234,8 @@ Definable-coproducts .*⊑* z .*⊑* (lift g) (lift (f , eq)) =
           ∎
           where open ≈-Reasoning 𝒟.isEquiv
 
+-- FIXME: this ought to be true if for any predicate that is closed
+-- under glueing of sums.
 Definable-closed : ∀ {X Y} (f : F .fobj X 𝒟.⇒ F .fobj Y) →
        Context (G .fobj (F .fobj Y)) (Definable Y) X (lift f) →
        ∃ (X 𝒞.⇒ Y) (λ g → F .fmor g 𝒟.≈ f)
@@ -284,7 +287,7 @@ Definable-closed f (node X₁ X₂ (lift f₁) (lift f₂) g t₁ t₂ (lift eq�
 ------------------------------------------------------------------------------
 -- Now construct the category of Grothendieck Logical Relations
 
-open import closure-predicate PSh⟨𝒞⟩ PSh⟨𝒞⟩-products PSh⟨𝒞⟩-system closureOp
+open import closure-predicate PSh⟨𝒞⟩-system closureOp
   using (system; embed)
 
 module Gl = glueing-simple 𝒟 PSh⟨𝒞⟩ _ system G
@@ -360,8 +363,7 @@ GF-preserve-products .Category.IsIso.f∘inverse≈id .f≃f = Category.IsIso.f�
 GF-preserve-products .Category.IsIso.inverse∘f≈id .f≃f = Category.IsIso.inverse∘f≈id FP
 
 presv-cp : ∀ {x y} → GF .fobj (𝒞CP.coprod x y) Glued.⇒ GlCPM.coprod (GF .fobj x) (GF .fobj y)
-presv-cp {x} {y} .morph = mul
-  where open preserve-chosen-coproducts-consequences F 𝒞CP 𝒟CP FC
+presv-cp {x} {y} .morph = FC .𝒟.IsIso.inverse
 presv-cp {x} {y} .presv = begin
     𝐂 (Definable (𝒞CP.coprod x y))
   ≤⟨ 𝐂-isClosure .IsClosureOp.mono Definable-coproducts ⟩

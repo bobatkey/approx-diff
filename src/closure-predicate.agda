@@ -8,7 +8,7 @@ open import predicate-system using (PredicateSystem; ClosureOp)
 
 module closure-predicate
     {o m e}
-    (𝒞 : Category o m e) (𝒞P : HasProducts 𝒞)
+    {𝒞 : Category o m e} {𝒞P : HasProducts 𝒞}
     (S : PredicateSystem 𝒞 𝒞P)
     (C : ClosureOp 𝒞 𝒞P S)
   where
