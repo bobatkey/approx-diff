@@ -19,7 +19,7 @@ suitable for provenance and program slicing (discussed in more detail in \secref
 below). Paul Taylor’s characterisation of stable functions via local Galois connections on principle downsets
 provides the semantic underpinning for the reverse maps used in Galois slicing~\cite{taylor99}. Our work
 builds on these ideas by interpreting Galois slicing as a form of differentiable programming, using the
-machinery of stable functions and Galois connections to present Galois slicing in a denotational style.
+machinery of CHAD to present Galois slicing in a denotational style.
 
 \subsection{Automatic Differentiation}
 
@@ -32,41 +32,39 @@ over symbolic or numerical differentiation. This insight became the foundation o
 underpins many optimisation and scientific computing tools, including JAX~\cite{jax2018github}.
 
 More recent approaches to automatic differentiation have emphasised its semantic foundations.
-\citet{elliott18} proposed a categorical model of AD that interprets programs not only as functions enriched
-with their derivatives, giving a compositional account of differentiation based on duality and linear maps.
-This line of work connects AD to denotational semantics, abstracting over operational concerns and enabling
-principled extensions to differentiable programming languages. Vákár and
-collaborators~\cite{vákár22,nunes2023} developed the CHAD framework, using Grothendieck constructions over
-indexed categories to capture both values and their tangents in a compositional semantic structure. These
-semantic perspectives shed light on the categorical structure of AD and guide the design of systems that
-generalise beyond real analysis, including the application to data provenance and slicing explored in this
-paper.
+\citet{elliott18} proposed a categorical model of AD that interprets programs as functions enriched with their
+derivatives, giving a compositional account of differentiation based on duality and linear maps. This line of
+work connects AD to denotational semantics, abstracting over operational concerns and enabling principled
+extensions to differentiable programming languages. Vákár and collaborators~\cite{vákár22,nunes2023} developed
+the CHAD framework upon which this paper was based, using Grothendieck constructions over indexed categories
+to capture both values and their tangents in a compositional semantic structure. These semantic perspectives
+shed light on the categorical structure of AD and guide the design of systems that generalise beyond real
+analysis, including the application to data provenance and slicing explored in this paper.
 
 \subsection{\GPS}
 \label{sec:related-work:galois-slicing}
 
-Galois slicing was introduced in \cite{perera12a} as an operational approach to program slicing based on the
-idea of computing slices via Galois connections between lattices of input and output approximations. A
-connection to Berry's stable functions in relation to minimal slices for short-circuiting operations was
-alluded to in \citeauthor{perera13}'s PhD thesis but not elaborated upon. Subsequent work extended the
-approach to functional languages with assignment and exceptions~\cite{ricciotti17} and concurrent systems,
-applying Galois slicing to the $\pi$-calculus~\cite{perera16d}. In this latter work, the analysis shifted from
-functions to transition relations, considering individual transitions $P \longrightarrow Q$ between specific
-configurations $P$ and $Q$ as analogous to the ``edge'' between points $x$ and their images $f(x)$ in $f$, and
-building Galois connections between $\downset{P}$ and $\downset{Q}$. This required generalizing the semantics
-to capture behavioural provenance in the presence of nondeterminism. The main difference with the Galois
-slicing approach presented here is that the earlier work also computes \emph{program slices}, using
-approximation lattices that represent partially erased programs.
+Galois slicing was introduced by \citet{perera12a} as an operational approach to program slicing for pure
+functional programs, based on Galois connections between lattices of input and output approximations. A
+connection to stable functions in relation to minimal slices for short-circuiting operations was alluded to
+in~\citet{perera13}. Subsequent work extended the approach to languages with assignment and
+exceptions~\cite{ricciotti17} and concurrent systems, applying Galois slicing to the
+$\pi$-calculus~\cite{perera16d}. For the $\pi$-calculus the analysis shifted from functions to transition
+relations, considering individual transitions $P \longrightarrow Q$ between configurations $P$ and $Q$ as
+analogous to the edge between $x$ and $f(x)$ in the graph of $f$, and building Galois connections between
+$\downset{P}$ and $\downset{Q}$. The main difference with the approach presented here is that the earlier work
+also computes \emph{program slices}, using approximation lattices that represent partially erased programs; we
+discuss this further in \secref{conclusion} below.
 
-More recent work explored the application of Galois slicing in interactive visualisations. \citet{perera22}
-presented an approach where slicing operates over Boolean algebras rather than plain lattices. In this setting
-every Galois connection $f \dashv g: A \to B$ has a conjugate $g^\circ \dashv f^\circ: B \to A$, where
-$f^\circ$ denotes the De Morgan dual $\neg \comp f \comp \neg$~\cite{jonsson51}. The provenance analysis can
-then be composed with its own conjugate to obtain a Galois connection which computes \emph{related outputs}
-(e.g., selecting a region of a chart and observing the regions of other charts which have overlapping data
-dependencies). \citet{bond25} revisited this approach using \emph{dynamic dependence graphs} as an
-implementation technique that decouples the derivation of dependency information from the analyses that make
-use of it, and observing that to compute the conjugate analysis one can just use the opposite graph.
+More recent work explored Galois slicing for interactive visualisations. \citet{perera22} presented an
+approach where slicing operates over Boolean algebras rather than plain lattices. In this setting every Galois
+connection $f \dashv g: A \to B$ has a conjugate $g^\circ \dashv f^\circ: B \to A$, where $f^\circ$ denotes
+the De Morgan dual $\neg \comp f \comp \neg$~\cite{jonsson51}. The provenance analysis can then be composed
+with its own conjugate to obtain a Galois connection which computes \emph{related outputs} (e.g., selecting a
+region of a chart and observing the regions of other charts which share data dependencies). \citet{bond25}
+revisited this approach using \emph{dynamic dependence graphs} to decouple the derivation of dependency
+information from the analyses that make use of it, and observing that to compute the conjugate analysis one
+can just use the opposite graph.
 
 \subsection{Tangent Categories}
 

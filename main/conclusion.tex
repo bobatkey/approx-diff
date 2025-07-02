@@ -1,12 +1,10 @@
 \section{Conclusion and Future Work}
+\label{sec:conclusion}
 
-\todo{
-\begin{itemize}
-\item Explainable AI (XAI) techniques like Gradient-weighted Class Activation Mapping
-(Grad-CAM)~\cite{selvaraju20} use reverse-mode AD selectively on specific activations, calculating \emph{heat
-maps} that highlight input regions contributing to a given classification decision. It might be possible to
-compose these techniques with \GPS whilst still preserving useful round-tripping properties; if so this could
-be a basis for end-to-end explainability in systems that combine neural networks with traditional symbolic
-computation.
-\end{itemize}
-}
+\paragraph{Integrating XAI techniques with Galois slicing.} \todo{Sketch what this might look like.}
+Explainable AI (XAI) techniques like Gradient-weighted Class Activation Mapping (Grad-CAM)~\cite{selvaraju20}
+use reverse-mode AD selectively on specific activations, calculating \emph{heat maps} that highlight input
+regions contributing to a given classification decision. It might be possible to compose these techniques with
+\GPS whilst still preserving useful round-tripping properties; if so this could be a basis for end-to-end
+explainability in systems that combine neural networks with traditional symbolic computation.
+
