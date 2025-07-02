@@ -636,66 +636,29 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂}
          {𝒞 : Category o₂ m₂ e₂}
   where
 
+  open NatTrans
+  open ≃-NatTrans
+
   private
     module 𝒮 = Category 𝒮
     module 𝒞 = Category 𝒞
 
-  open NatTrans
-  open ≃-NatTrans
-{-
-  switch : ∀ (D : Functor 𝒮 𝒞) {x} → NatTrans D (constF 𝒮 x) → NatTrans (constF 𝒮.opposite x) (opF D)
-  switch D α .transf = α .transf
-  switch D α .natural f = 𝒞.≈-sym (α .natural f)
+    switch : ∀ (D : Functor 𝒮 𝒞.opposite) {x} → NatTrans (opF' D) (constF 𝒮.opposite x) → NatTrans (constF 𝒮 x) D
+    switch D α .transf = α .transf
+    switch D α .natural f = 𝒞.≈-sym (α .natural f)
 
-  switch⁻¹ : ∀ (D : Functor 𝒮 𝒞) {x} → NatTrans (constF 𝒮.opposite x) (opF D) → NatTrans D (constF 𝒮 x)
-  switch⁻¹ D α .transf = α .transf
-  switch⁻¹ D α .natural f = 𝒞.≈-sym (α .natural f)
+    switch⁻¹ : ∀ (D : Functor 𝒮 𝒞.opposite) {x} → NatTrans (constF 𝒮 x) D → NatTrans (opF' D) (constF 𝒮.opposite x)
+    switch⁻¹ D α .transf = α .transf
+    switch⁻¹ D α .natural f = 𝒞.≈-sym (α .natural f)
 
-  switch⁻¹-cong : ∀ (D : Functor 𝒮 𝒞) {x} {α β} → ≃-NatTrans α β → ≃-NatTrans (switch⁻¹ D {x} α) (switch⁻¹ D {x} β)
-  switch⁻¹-cong D α≃β .transf-eq = α≃β .transf-eq
+    switch⁻¹-cong : ∀ (D : Functor 𝒮 𝒞.opposite) {x} {α β} → ≃-NatTrans α β → ≃-NatTrans (switch⁻¹ D {x} α) (switch⁻¹ D {x} β)
+    switch⁻¹-cong D α≃β .transf-eq = α≃β .transf-eq
 
-  switch⁻¹-comp : ∀ D {x y α} {f : y 𝒞.⇒ x} → ≃-NatTrans (switch⁻¹ D {x} (α ∘ constFmor f)) (constFmor f ∘ switch⁻¹ D α)
-  switch⁻¹-comp D .transf-eq s = 𝒞.≈-refl
+    switch⁻¹-comp : ∀ D {x y α} {f : y 𝒞.⇒ x} → ≃-NatTrans (switch⁻¹ D {x} (α ∘ constFmor f)) (constFmor f ∘ switch⁻¹ D α)
+    switch⁻¹-comp D .transf-eq s = 𝒞.≈-refl
 
-  switch⁻¹-switch : ∀ D {x α} → ≃-NatTrans (switch⁻¹ D {x} (switch D α)) α
-  switch⁻¹-switch D .transf-eq s = 𝒞.≈-refl
-
-  op-colimit : (D : Functor 𝒮 𝒞) → Colimit D → Limit (opF D)
-  op-colimit D colimitD .Limit.apex = colimitD .Colimit.apex
-  op-colimit D colimitD .Limit.cone = switch D (colimitD .Colimit.cocone)
-  op-colimit D colimitD .Limit.isLimit .IsLimit.lambda x α =
-    colimitD .Colimit.colambda x (switch⁻¹ D α)
-  op-colimit D colimitD .Limit.isLimit .IsLimit.lambda-cong α≃β =
-    colimitD .Colimit.colambda-cong (switch⁻¹-cong D α≃β)
-  op-colimit D colimitD .Limit.isLimit .IsLimit.lambda-eval {x} α .transf-eq s =
-    colimitD .Colimit.colambda-coeval x _ .transf-eq s
-  op-colimit D colimitD .Limit.isLimit .IsLimit.lambda-ext {x} f = begin
-      colimitD .Colimit.colambda x (switch⁻¹ D (switch D (colimitD .Colimit.cocone) ∘ constFmor f))
-    ≈⟨ colimitD .Colimit.colambda-cong (switch⁻¹-comp D) ⟩
-      colimitD .Colimit.colambda x (constFmor f ∘ switch⁻¹ D (switch D (colimitD .Colimit.cocone)))
-    ≈⟨ colimitD .Colimit.colambda-cong (∘NT-cong (≃-isEquivalence .refl) (switch⁻¹-switch D)) ⟩
-      colimitD .Colimit.colambda x (constFmor f ∘ colimitD .Colimit.cocone)
-    ≈⟨ colimitD .Colimit.colambda-ext x f ⟩
-      f
-    ∎
-    where open ≈-Reasoning 𝒞.isEquiv
--}
-  switch : ∀ (D : Functor 𝒮 𝒞.opposite) {x} → NatTrans (opF' D) (constF 𝒮.opposite x) → NatTrans (constF 𝒮 x) D
-  switch D α .transf = α .transf
-  switch D α .natural f = 𝒞.≈-sym (α .natural f)
-
-  switch⁻¹ : ∀ (D : Functor 𝒮 𝒞.opposite) {x} → NatTrans (constF 𝒮 x) D → NatTrans (opF' D) (constF 𝒮.opposite x)
-  switch⁻¹ D α .transf = α .transf
-  switch⁻¹ D α .natural f = 𝒞.≈-sym (α .natural f)
-
-  switch⁻¹-cong : ∀ (D : Functor 𝒮 𝒞.opposite) {x} {α β} → ≃-NatTrans α β → ≃-NatTrans (switch⁻¹ D {x} α) (switch⁻¹ D {x} β)
-  switch⁻¹-cong D α≃β .transf-eq = α≃β .transf-eq
-
-  switch⁻¹-comp : ∀ D {x y α} {f : y 𝒞.⇒ x} → ≃-NatTrans (switch⁻¹ D {x} (α ∘ constFmor f)) (constFmor f ∘ switch⁻¹ D α)
-  switch⁻¹-comp D .transf-eq s = 𝒞.≈-refl
-
-  switch⁻¹-switch : ∀ D {x α} → ≃-NatTrans (switch⁻¹ D {x} (switch D α)) α
-  switch⁻¹-switch D .transf-eq s = 𝒞.≈-refl
+    switch⁻¹-switch : ∀ D {x α} → ≃-NatTrans (switch⁻¹ D {x} (switch D α)) α
+    switch⁻¹-switch D .transf-eq s = 𝒞.≈-refl
 
   op-colimit : (D : Functor 𝒮 𝒞.opposite) → Colimit (opF' D) → Limit D
   op-colimit D colimitOpD .Limit.apex = colimitOpD .Colimit.apex
