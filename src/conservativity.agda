@@ -1,25 +1,24 @@
 {-# OPTIONS --postfix-projections --prop --safe #-}
 
-module conservativity where
-
 open import Level using (Lift; lift; lower; _⊔_)
 open import Data.Product using (_,_)
 open import prop using (_,_; proj₁; proj₂; ∃; LiftP; lift; lower; liftS; LiftS; inj₁; inj₂)
 open import basics using (module ≤-Reasoning; IsClosureOp; IsJoin; IsMeet)
 open import categories using (Category; HasBooleans; HasProducts; HasCoproducts; HasExponentials; HasTerminal; IsTerminal; IsProduct; coproducts+exp→booleans)
-open import functor using (Functor; _∘F_; opF; _∘H_; ∘H-cong; id; _∘_; NatTrans; ≃-NatTrans; ≃-isEquivalence; interchange; NT-id-left)
+open import functor
+  using (Functor; _∘F_; opF; _∘H_; ∘H-cong; id; _∘_; NatTrans; ≃-NatTrans; ≃-isEquivalence; interchange; NT-id-left)
 open import prop-setoid using (module ≈-Reasoning; IsEquivalence)
 open import setoid-cat using (SetoidCat)
 open import predicate-system using (PredicateSystem; ClosureOp)
-open import stable-coproducts
-import sconing
+open import stable-coproducts using (StableBits; Stable)
 import glueing-simple
 import setoid-predicate
 
 import language-syntax
 import language-interpretation
 open import signature hiding (FPFunctor)
-open import finite-product-functor using (preserve-chosen-products; module preserve-chosen-products-consequences)
+open import finite-product-functor
+  using (preserve-chosen-products; module preserve-chosen-products-consequences)
 open import finite-coproduct-functor
   using (preserve-chosen-coproducts; module preserve-chosen-coproducts-consequences)
 
@@ -44,7 +43,7 @@ open ≃-NatTrans
 --   7. Stability: prove it for Fam⟨𝒞⟩ (!!!)
 
 
-module _ {ℓ} (Sig : Signature ℓ)
+module conservativity {ℓ} (Sig : Signature ℓ)
          {o m e}
          -- Category for interpreting first-order things
          (𝒞 : Category o m e) (𝒞T : HasTerminal 𝒞) (𝒞P : HasProducts 𝒞) (𝒞CP : HasCoproducts 𝒞) (stable : Stable 𝒞CP)
@@ -53,7 +52,7 @@ module _ {ℓ} (Sig : Signature ℓ)
          (𝒟 : Category o m e) (𝒟T : HasTerminal 𝒟) (𝒟P : HasProducts 𝒟) (𝒟CP : HasCoproducts 𝒟) (𝒟E : HasExponentials 𝒟 𝒟P)
          -- A functor which preserves terminal, products, and coproducts
          (F  : Functor 𝒞 𝒟)
-         (FT : ∀ {x} → Category.IsIso 𝒟 (𝒟T .HasTerminal.is-terminal .IsTerminal.to-terminal {F .fobj x}))
+         (FT : Category.IsIso 𝒟 (𝒟T .HasTerminal.is-terminal .IsTerminal.to-terminal {F .fobj (𝒞T .HasTerminal.witness)}))
          (FP : preserve-chosen-products F 𝒞P 𝒟P)
          (FC : preserve-chosen-coproducts F 𝒞CP 𝒟CP)
   where
@@ -152,14 +151,14 @@ module _ {ℓ} (Sig : Signature ℓ)
   open _⊑_
 
   -- The “𝒞 definability” predicate.
-  GP : ∀ x → PShPredicate (G .fobj (F .fobj x))
-  GP x .pred y .pred (lift f) = LiftP o (∃ (y 𝒞.⇒ x) λ g → F .fmor g 𝒟.≈ f)
-  GP x .pred y .pred-≃ {lift f₁} {lift f₂} (lift f₁≈f₂) (lift (g , eq)) = lift (g , 𝒟.≈-trans eq f₁≈f₂)
-  GP x .pred-mor h .*⊑* (lift f) (lift (g , eq)) =
+  Definable : ∀ x → PShPredicate (G .fobj (F .fobj x))
+  Definable x .pred y .pred (lift f) = LiftP o (∃ (y 𝒞.⇒ x) λ g → F .fmor g 𝒟.≈ f)
+  Definable x .pred y .pred-≃ {lift f₁} {lift f₂} (lift f₁≈f₂) (lift (g , eq)) = lift (g , 𝒟.≈-trans eq f₁≈f₂)
+  Definable x .pred-mor h .*⊑* (lift f) (lift (g , eq)) =
      lift (g 𝒞.∘ h , 𝒟.≈-trans (F .fmor-comp g h) (𝒟.∘-cong eq 𝒟.≈-refl))
 
-  GP-reindex : ∀ {x y} (f : x 𝒞.⇒ y) → GP x ⊑ (GP y [ G .fmor (F .fmor f) ])
-  GP-reindex {x} {y} f .*⊑* a .*⊑* (lift g) (lift (h , eq)) =
+  Definable-reindex : ∀ {x y} (f : x 𝒞.⇒ y) → Definable x ⊑ (Definable y [ G .fmor (F .fmor f) ])
+  Definable-reindex {x} {y} f .*⊑* a .*⊑* (lift g) (lift (h , eq)) =
     lift (f 𝒞.∘ h , (begin
       F .fmor (f 𝒞.∘ h)
     ≈⟨ F .fmor-comp _ _ ⟩
@@ -171,8 +170,8 @@ module _ {ℓ} (Sig : Signature ℓ)
     ∎))
     where open ≈-Reasoning 𝒟.isEquiv
 
-  GP-terminal : TT ⊑ (GP 𝒞T.witness [ G .fmor (Category.IsIso.inverse FT) ])
-  GP-terminal .*⊑* a .*⊑* (lift f) _ =
+  Definable-terminal : TT ⊑ (Definable 𝒞T.witness [ G .fmor (Category.IsIso.inverse FT) ])
+  Definable-terminal .*⊑* a .*⊑* (lift f) _ =
     lift (𝒞T.is-terminal .IsTerminal.to-terminal , (begin
       F .fmor (𝒞T.is-terminal .IsTerminal.to-terminal)
     ≈˘⟨ 𝒟.id-left ⟩
@@ -186,9 +185,9 @@ module _ {ℓ} (Sig : Signature ℓ)
     ∎))
     where open ≈-Reasoning 𝒟.isEquiv
 
-  GP-products : ∀ {x y} →
-                ((GP x [ G .fmor 𝒟P.p₁ ]) && (GP y [ G .fmor 𝒟P.p₂ ])) ⊑ GP (𝒞P.prod x y) [ G .fmor (Category.IsIso.inverse FP) ]
-  GP-products {x} {y} .*⊑* a .*⊑* (lift f) (lift (g₁ , eq₁) , lift (g₂ , eq₂)) =
+  Definable-products : ∀ {x y} →
+                ((Definable x [ G .fmor 𝒟P.p₁ ]) && (Definable y [ G .fmor 𝒟P.p₂ ])) ⊑ Definable (𝒞P.prod x y) [ G .fmor (Category.IsIso.inverse FP) ]
+  Definable-products {x} {y} .*⊑* a .*⊑* (lift f) (lift (g₁ , eq₁) , lift (g₂ , eq₂)) =
     lift (𝒞P.pair g₁ g₂ , (begin
             F .fmor (𝒞P.pair g₁ g₂)
           ≈˘⟨ F-pair ⟩
@@ -203,10 +202,10 @@ module _ {ℓ} (Sig : Signature ℓ)
 
   open CoproductMonad 𝒞CP stable
 
-  GP-coproducts : ∀ {x y} →
-                  GP (𝒞CP.coprod x y) ⊑
-                  𝐂 ((GP x ⟨ G .fmor (F .fmor 𝒞CP.in₁) ⟩) ++ (GP y ⟨ G .fmor (F .fmor 𝒞CP.in₂) ⟩))
-  GP-coproducts .*⊑* z .*⊑* (lift g) (lift (f , eq)) =
+  Definable-coproducts : ∀ {x y} →
+                  Definable (𝒞CP.coprod x y) ⊑
+                  𝐂 ((Definable x ⟨ G .fmor (F .fmor 𝒞CP.in₁) ⟩) ++ (Definable y ⟨ G .fmor (F .fmor 𝒞CP.in₂) ⟩))
+  Definable-coproducts .*⊑* z .*⊑* (lift g) (lift (f , eq)) =
     liftS (node (stb .StableBits.y₁) (stb .StableBits.y₂)
                 (lift (F .fmor (𝒞CP.in₁ 𝒞.∘ stb .StableBits.h₁)))
                 (lift (F .fmor (𝒞CP.in₂ 𝒞.∘ stb .StableBits.h₂)))
@@ -246,12 +245,12 @@ module _ {ℓ} (Sig : Signature ℓ)
             ∎
             where open ≈-Reasoning 𝒟.isEquiv
 
-  GP-closed : ∀ {X Y} (f : F .fobj X 𝒟.⇒ F .fobj Y) →
-         Context (G .fobj (F .fobj Y)) (GP Y) X (lift f) →
+  Definable-closed : ∀ {X Y} (f : F .fobj X 𝒟.⇒ F .fobj Y) →
+         Context (G .fobj (F .fobj Y)) (Definable Y) X (lift f) →
          ∃ (X 𝒞.⇒ Y) (λ g → F .fmor g 𝒟.≈ f)
-  GP-closed f (leaf (lift p)) = p
-  GP-closed f (node X₁ X₂ (lift f₁) (lift f₂) g t₁ t₂ (lift eq₁) (lift eq₂)) with GP-closed f₁ t₁
-  ... | (g₁ , eq₃) with GP-closed f₂ t₂
+  Definable-closed f (leaf (lift p)) = p
+  Definable-closed f (node X₁ X₂ (lift f₁) (lift f₂) g t₁ t₂ (lift eq₁) (lift eq₂)) with Definable-closed f₁ t₁
+  ... | (g₁ , eq₃) with Definable-closed f₂ t₂
   ... | (g₂ , eq₄) = 𝒞CP.copair g₁ g₂ 𝒞.∘ g .bwd ,
         (begin
           F .fmor (𝒞CP.copair g₁ g₂ 𝒞.∘ g .bwd)
@@ -314,14 +313,14 @@ module _ {ℓ} (Sig : Signature ℓ)
 
   GF : Functor 𝒞 Gl.cat
   GF .fobj x .carrier = F .fobj x
-  GF .fobj x .pred = embed (GP x)
+  GF .fobj x .pred = embed (Definable x)
   GF .fmor f .morph = F .fmor f
   GF .fmor {x} {y} f .presv = begin
-      𝐂 (GP x)
-    ≤⟨ 𝐂-isClosure .IsClosureOp.mono (GP-reindex f) ⟩
-      𝐂 (GP y [ G .fmor (F .fmor f) ])
+      𝐂 (Definable x)
+    ≤⟨ 𝐂-isClosure .IsClosureOp.mono (Definable-reindex f) ⟩
+      𝐂 (Definable y [ G .fmor (F .fmor f) ])
     ≤⟨ 𝐂-[] ⟩
-      𝐂 (GP y) [ G .fmor (F .fmor f) ]
+      𝐂 (Definable y) [ G .fmor (F .fmor f) ]
     ∎
     where open ≤-Reasoning ⊑-isPreorder
   GF .fmor-cong f₁≈f₂ .f≃f = F .fmor-cong f₁≈f₂
@@ -336,71 +335,87 @@ module _ {ℓ} (Sig : Signature ℓ)
       TT
     ≤⟨ 𝐂-isClosure .IsClosureOp.unit ⟩
       𝐂 TT
-    ≤⟨ 𝐂-isClosure .IsClosureOp.mono GP-terminal ⟩
-      𝐂 (GP 𝒞T.witness [ G .fmor (Category.IsIso.inverse FT) ])
+    ≤⟨ 𝐂-isClosure .IsClosureOp.mono Definable-terminal ⟩
+      𝐂 (Definable 𝒞T.witness [ G .fmor (Category.IsIso.inverse FT) ])
     ≤⟨ 𝐂-[] ⟩
-      𝐂 (GP 𝒞T.witness) [ G .fmor (Category.IsIso.inverse FT) ]
+      𝐂 (Definable 𝒞T.witness) [ G .fmor (Category.IsIso.inverse FT) ]
     ∎
     where open ≤-Reasoning ⊑-isPreorder
+
+  GF-preserve-terminal : Glued.IsIso (GlT.to-terminal {GF .fobj 𝒞T.witness})
+  GF-preserve-terminal .Category.IsIso.inverse = presv-terminal
+  GF-preserve-terminal .Category.IsIso.f∘inverse≈id .f≃f = Category.IsIso.f∘inverse≈id FT
+  GF-preserve-terminal .Category.IsIso.inverse∘f≈id .f≃f = Category.IsIso.inverse∘f≈id FT
 
   presv-prod : ∀ {x y} → GlPM.prod (GF .fobj x) (GF .fobj y) Glued.⇒ GF .fobj (𝒞P.prod x y)
   presv-prod {x} {y} .morph = FP {x} {y} .𝒟.IsIso.inverse
   presv-prod {x} {y} .presv = begin
-      (𝐂 (GP x) [ G .fmor 𝒟P.p₁ ]) && (𝐂 (GP y) [ G .fmor 𝒟P.p₂ ])
+      (𝐂 (Definable x) [ G .fmor 𝒟P.p₁ ]) && (𝐂 (Definable y) [ G .fmor 𝒟P.p₂ ])
     ≤⟨ IsMeet.mono &&-isMeet 𝐂-[]⁻¹ 𝐂-[]⁻¹ ⟩
-      (𝐂 (GP x [ G .fmor 𝒟P.p₁ ])) && (𝐂 (GP y [ G .fmor 𝒟P.p₂ ]))
+      (𝐂 (Definable x [ G .fmor 𝒟P.p₁ ])) && (𝐂 (Definable y [ G .fmor 𝒟P.p₂ ]))
     ≤⟨ ClosureOp.𝐂-monoidal closureOp ⟩
-      𝐂 ((GP x [ G .fmor 𝒟P.p₁ ]) && (GP y [ G .fmor 𝒟P.p₂ ]))
-    ≤⟨ 𝐂-isClosure .IsClosureOp.mono GP-products ⟩
-      𝐂 (GP (𝒞P.prod x y) [ G .fmor (Category.IsIso.inverse FP) ])
+      𝐂 ((Definable x [ G .fmor 𝒟P.p₁ ]) && (Definable y [ G .fmor 𝒟P.p₂ ]))
+    ≤⟨ 𝐂-isClosure .IsClosureOp.mono Definable-products ⟩
+      𝐂 (Definable (𝒞P.prod x y) [ G .fmor (Category.IsIso.inverse FP) ])
     ≤⟨ 𝐂-[] ⟩
-      𝐂 (GP (𝒞P.prod x y)) [ G .fmor (Category.IsIso.inverse FP) ]
+      𝐂 (Definable (𝒞P.prod x y)) [ G .fmor (Category.IsIso.inverse FP) ]
     ∎
     where open ≤-Reasoning ⊑-isPreorder
+
+  GF-preserve-products : preserve-chosen-products GF 𝒞P GlPE.products
+  GF-preserve-products .Category.IsIso.inverse = presv-prod
+  GF-preserve-products .Category.IsIso.f∘inverse≈id .f≃f = Category.IsIso.f∘inverse≈id FP
+  GF-preserve-products .Category.IsIso.inverse∘f≈id .f≃f = Category.IsIso.inverse∘f≈id FP
 
   presv-cp : ∀ {x y} → GF .fobj (𝒞CP.coprod x y) Glued.⇒ GlCPM.coprod (GF .fobj x) (GF .fobj y)
   presv-cp {x} {y} .morph = mul
     where open preserve-chosen-coproducts-consequences F 𝒞CP 𝒟CP FC
   presv-cp {x} {y} .presv = begin
-      𝐂 (GP (𝒞CP.coprod x y))
-    ≤⟨ 𝐂-isClosure .IsClosureOp.mono GP-coproducts ⟩
-      𝐂 (𝐂 ((GP x ⟨ G .fmor (F .fmor 𝒞CP.in₁) ⟩) ++ (GP y ⟨ G .fmor (F .fmor 𝒞CP.in₂) ⟩)))
+      𝐂 (Definable (𝒞CP.coprod x y))
+    ≤⟨ 𝐂-isClosure .IsClosureOp.mono Definable-coproducts ⟩
+      𝐂 (𝐂 ((Definable x ⟨ G .fmor (F .fmor 𝒞CP.in₁) ⟩) ++ (Definable y ⟨ G .fmor (F .fmor 𝒞CP.in₂) ⟩)))
     ≤⟨ 𝐂-isClosure .IsClosureOp.closed ⟩
-      𝐂 ((GP x ⟨ G .fmor (F .fmor 𝒞CP.in₁) ⟩) ++ (GP y ⟨ G .fmor (F .fmor 𝒞CP.in₂) ⟩))
+      𝐂 ((Definable x ⟨ G .fmor (F .fmor 𝒞CP.in₁) ⟩) ++ (Definable y ⟨ G .fmor (F .fmor 𝒞CP.in₂) ⟩))
     ≤⟨ 𝐂-isClosure .IsClosureOp.mono (IsJoin.mono ++-isJoin ((𝐂-isClosure .IsClosureOp.unit) PSh⟨𝒞⟩-system.⟨ _ ⟩m) ((𝐂-isClosure .IsClosureOp.unit) PSh⟨𝒞⟩-system.⟨ _ ⟩m)) ⟩
-      𝐂 ((𝐂 (GP x) ⟨ G .fmor (F .fmor 𝒞CP.in₁) ⟩) ++ (𝐂 (GP y) ⟨ G .fmor (F .fmor 𝒞CP.in₂) ⟩))
+      𝐂 ((𝐂 (Definable x) ⟨ G .fmor (F .fmor 𝒞CP.in₁) ⟩) ++ (𝐂 (Definable y) ⟨ G .fmor (F .fmor 𝒞CP.in₂) ⟩))
     ≤⟨ 𝐂-isClosure .IsClosureOp.mono (IsJoin.mono ++-isJoin (𝐂-isClosure .IsClosureOp.unit) (𝐂-isClosure .IsClosureOp.unit)) ⟩
-      𝐂 ((𝐂 (𝐂 (GP x) ⟨ G .fmor (F .fmor 𝒞CP.in₁) ⟩)) ++ (𝐂 (𝐂 (GP y) ⟨ G .fmor (F .fmor 𝒞CP.in₂) ⟩)))
+      𝐂 ((𝐂 (𝐂 (Definable x) ⟨ G .fmor (F .fmor 𝒞CP.in₁) ⟩)) ++ (𝐂 (𝐂 (Definable y) ⟨ G .fmor (F .fmor 𝒞CP.in₂) ⟩)))
     ≤⟨ 𝐂-isClosure .IsClosureOp.mono (IsJoin.mono ++-isJoin (𝐂-isClosure .IsClosureOp.mono (PSh⟨𝒞⟩-system.unit _)) (𝐂-isClosure .IsClosureOp.mono (PSh⟨𝒞⟩-system.unit _))) ⟩
-      𝐂 ((𝐂 (𝐂 (GP x) ⟨ G .fmor (F .fmor 𝒞CP.in₁) ⟩ ⟨ G .fmor mul ⟩ [ G .fmor mul ])) ++ (𝐂 (𝐂 (GP y) ⟨ G .fmor (F .fmor 𝒞CP.in₂) ⟩ ⟨ G .fmor mul ⟩ [ G .fmor mul ])))
+      𝐂 ((𝐂 (𝐂 (Definable x) ⟨ G .fmor (F .fmor 𝒞CP.in₁) ⟩ ⟨ G .fmor mul ⟩ [ G .fmor mul ])) ++ (𝐂 (𝐂 (Definable y) ⟨ G .fmor (F .fmor 𝒞CP.in₂) ⟩ ⟨ G .fmor mul ⟩ [ G .fmor mul ])))
     ≤⟨ 𝐂-isClosure .IsClosureOp.mono
           (IsJoin.mono ++-isJoin (𝐂-isClosure .IsClosureOp.mono (PSh⟨𝒞⟩-system.⟨⟩-comp _ _ PSh⟨𝒞⟩-system.[ _ ]m))
                                  (𝐂-isClosure .IsClosureOp.mono (PSh⟨𝒞⟩-system.⟨⟩-comp _ _ PSh⟨𝒞⟩-system.[ _ ]m))) ⟩
-      𝐂 ((𝐂 (𝐂 (GP x) ⟨ G .fmor mul PSh⟨𝒞⟩.∘ G .fmor (F .fmor 𝒞CP.in₁) ⟩ [ G .fmor mul ])) ++ (𝐂 (𝐂 (GP y) ⟨ G .fmor mul PSh⟨𝒞⟩.∘ G .fmor (F .fmor 𝒞CP.in₂) ⟩ [ G .fmor mul ])))
+      𝐂 ((𝐂 (𝐂 (Definable x) ⟨ G .fmor mul PSh⟨𝒞⟩.∘ G .fmor (F .fmor 𝒞CP.in₁) ⟩ [ G .fmor mul ])) ++ (𝐂 (𝐂 (Definable y) ⟨ G .fmor mul PSh⟨𝒞⟩.∘ G .fmor (F .fmor 𝒞CP.in₂) ⟩ [ G .fmor mul ])))
     ≤⟨ 𝐂-isClosure .IsClosureOp.mono
           (IsJoin.mono ++-isJoin (𝐂-isClosure .IsClosureOp.mono (PSh⟨𝒞⟩-system.⟨⟩-cong (PSh⟨𝒞⟩.≈-sym (G .fmor-comp _ _)) PSh⟨𝒞⟩-system.[ _ ]m))
                                  (𝐂-isClosure .IsClosureOp.mono (PSh⟨𝒞⟩-system.⟨⟩-cong (PSh⟨𝒞⟩.≈-sym (G .fmor-comp _ _)) PSh⟨𝒞⟩-system.[ _ ]m))) ⟩
-      𝐂 ((𝐂 (𝐂 (GP x) ⟨ G .fmor (mul 𝒟.∘ F .fmor 𝒞CP.in₁) ⟩ [ G .fmor mul ])) ++ (𝐂 (𝐂 (GP y) ⟨ G .fmor (mul 𝒟.∘ F .fmor 𝒞CP.in₂) ⟩ [ G .fmor mul ])))
+      𝐂 ((𝐂 (𝐂 (Definable x) ⟨ G .fmor (mul 𝒟.∘ F .fmor 𝒞CP.in₁) ⟩ [ G .fmor mul ])) ++ (𝐂 (𝐂 (Definable y) ⟨ G .fmor (mul 𝒟.∘ F .fmor 𝒞CP.in₂) ⟩ [ G .fmor mul ])))
     ≤⟨ 𝐂-isClosure .IsClosureOp.mono
           (IsJoin.mono ++-isJoin (𝐂-isClosure .IsClosureOp.mono (PSh⟨𝒞⟩-system.⟨⟩-cong (G .fmor-cong F-in₁) PSh⟨𝒞⟩-system.[ _ ]m))
                                  (𝐂-isClosure .IsClosureOp.mono (PSh⟨𝒞⟩-system.⟨⟩-cong (G .fmor-cong F-in₂) PSh⟨𝒞⟩-system.[ _ ]m))) ⟩
-      𝐂 ((𝐂 (𝐂 (GP x) ⟨ G .fmor 𝒟CP.in₁ ⟩ [ G .fmor mul ])) ++ (𝐂 (𝐂 (GP y) ⟨ G .fmor 𝒟CP.in₂ ⟩ [ G .fmor mul ])))
+      𝐂 ((𝐂 (𝐂 (Definable x) ⟨ G .fmor 𝒟CP.in₁ ⟩ [ G .fmor mul ])) ++ (𝐂 (𝐂 (Definable y) ⟨ G .fmor 𝒟CP.in₂ ⟩ [ G .fmor mul ])))
     ≤⟨ 𝐂-isClosure .IsClosureOp.mono (IsJoin.mono ++-isJoin 𝐂-[] 𝐂-[]) ⟩
-      𝐂 ((𝐂 (𝐂 (GP x) ⟨ G .fmor 𝒟CP.in₁ ⟩) [ G .fmor mul ]) ++ (𝐂 (𝐂 (GP y) ⟨ G .fmor 𝒟CP.in₂ ⟩) [ G .fmor mul ]))
+      𝐂 ((𝐂 (𝐂 (Definable x) ⟨ G .fmor 𝒟CP.in₁ ⟩) [ G .fmor mul ]) ++ (𝐂 (𝐂 (Definable y) ⟨ G .fmor 𝒟CP.in₂ ⟩) [ G .fmor mul ]))
     ≤⟨ 𝐂-isClosure .IsClosureOp.mono PSh⟨𝒞⟩-system.[]-++⁻¹ ⟩
-      𝐂 ((𝐂 (𝐂 (GP x) ⟨ G .fmor 𝒟CP.in₁ ⟩) ++ 𝐂 (𝐂 (GP y) ⟨ G .fmor 𝒟CP.in₂ ⟩)) [ G .fmor mul ])
+      𝐂 ((𝐂 (𝐂 (Definable x) ⟨ G .fmor 𝒟CP.in₁ ⟩) ++ 𝐂 (𝐂 (Definable y) ⟨ G .fmor 𝒟CP.in₂ ⟩)) [ G .fmor mul ])
     ≤⟨ 𝐂-[] ⟩
-      𝐂 (𝐂 (𝐂 (GP x) ⟨ G .fmor 𝒟CP.in₁ ⟩) ++ 𝐂 (𝐂 (GP y) ⟨ G .fmor 𝒟CP.in₂ ⟩)) [ G .fmor mul ]
+      𝐂 (𝐂 (𝐂 (Definable x) ⟨ G .fmor 𝒟CP.in₁ ⟩) ++ 𝐂 (𝐂 (Definable y) ⟨ G .fmor 𝒟CP.in₂ ⟩)) [ G .fmor mul ]
     ∎
     where open ≤-Reasoning ⊑-isPreorder
           open preserve-chosen-coproducts-consequences F 𝒞CP 𝒟CP FC
+
+  GF-preserve-coproducts : preserve-chosen-coproducts GF 𝒞CP GlCP.coproducts
+  GF-preserve-coproducts .Category.IsIso.inverse = presv-cp
+  GF-preserve-coproducts .Category.IsIso.f∘inverse≈id .f≃f = Category.IsIso.f∘inverse≈id FC
+  GF-preserve-coproducts .Category.IsIso.inverse∘f≈id .f≃f = Category.IsIso.inverse∘f≈id FC
+
 
   -- Semantic version of first-order definability: if we have a
   -- morphism in the GLR category whose domain and codomain are from
   -- 𝒞, then it is really a 𝒞 morphism.
   thm : ∀ {X Y} → (f : GF .fobj X Glued.⇒ GF .fobj Y) → ∃ (X 𝒞.⇒ Y) (λ g → F .fmor g 𝒟.≈ f .morph)
   thm {X} {Y} f with f .presv .*⊑* X .*⊑* (lift (F .fmor (𝒞.id _))) (liftS (leaf (lift (𝒞.id _ , 𝒟.≈-refl))))
-  ... | liftS t with GP-closed _ t
+  ... | liftS t with Definable-closed _ t
   ... | g , eq = g , (begin
           F .fmor g
         ≈⟨ eq ⟩
@@ -413,7 +428,6 @@ module _ {ℓ} (Sig : Signature ℓ)
           f .morph
         ∎)
         where open ≈-Reasoning 𝒟.isEquiv
-
 
   -- Now need to prove that for first-order types and contexts, the interpretation is preserved.
 
