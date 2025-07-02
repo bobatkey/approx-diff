@@ -1,15 +1,14 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
-open import Level
 open import prop-setoid
   using (IsEquivalence; module ≈-Reasoning)
   renaming (≃m-isEquivalence to ≈s-isEquivalence; _⇒_ to _⇒s_)
-open import categories
-open import setoid-cat
-open import functor
-open import grothendieck
-open import finite-product-functor
-open import fam
+open import categories using (Category; IsTerminal)
+open import setoid-cat using (SetoidCat)
+open import functor using (Functor; NatTrans)
+open import grothendieck using (module CategoryOfFamilies)
+open import finite-product-functor using (FPFunctor)
+open import fam using (Fam; _⇒f_; _≃f_; changeCat)
 
 module families-functor where
 
@@ -84,6 +83,10 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂}
 
   open FPFunctor
   open IsTerminal
+
+  -- FIXME: prove that if F preserves chosen products, then so does
+  -- Fam⟨F⟩. And similar for the terminal objects. And F always
+  -- preserves coproducts.
 
 {-
   -- If F preserves finite products, then so does FamF. Seem to need
