@@ -1,35 +1,29 @@
 \begin{figure}
 \begin{subfigure}[t]{0.47\linewidth}
-  \small
-  \begin{align*}
-  \sem{\rho} &= \sem{\rho}_{\PrimTy}
-  \\
-  \sem{\tyZero} &= 0
-  \\
-  \sem{\sigma \tySum \tau} &= \textstyle {\sem{\sigma}} \coprod {\sem{\tau}}
-  \\
-  \sem{\tyUnit} &= 1
-  \\
-  \sem{\sigma \tyProd \tau} &= \sem{\sigma} \times \sem{\tau}
-  \\
-  \sem{\sigma \tyFun \tau} &= \internalHom{\sem{\sigma}}{\sem{\tau}}
-  \\
-  \sem{\tyList\;\tau} &= \List(\sem{\tau})
-  \\
-  \sem{\tyLift\;\tau} &= \Lift(\sem{\tau})
-  \end{align*}
-  \caption{Types as objects}
+    \small
+    \begin{align*}
+    \sem{\rho} &= \sem{\rho}_{\PrimTy}
+    \\
+    \sem{\tyZero} &= 0
+    \\
+    \sem{\sigma \tySum \tau} &= \textstyle {\sem{\sigma}} \coprod {\sem{\tau}}
+    \\
+    \sem{\tyUnit} &= 1
+    \\
+    \sem{\sigma \tyProd \tau} &= \sem{\sigma} \times \sem{\tau}
+    \\
+    \sem{\sigma \tyFun \tau} &= \internalHom{\sem{\sigma}}{\sem{\tau}}
+    \\
+    \sem{\tyList\;\tau} &= \List(\sem{\tau})
+    \\
+    \sem{\tyLift\;\tau} &= \Lift(\sem{\tau})
+    \\[3mm]
+    \sem{\emptyCxt} &= 1
+    \\
+    \sem{\Gamma, x: \tau} &= \sem{\Gamma} \times \sem{\tau}
+    \end{align*}
+  \caption{Types and contexts as objects}
   \label{fig:semantics:types}
-\end{subfigure}%
-\begin{subfigure}[t]{0.47\linewidth}
-  \small
-  \begin{align*}
-  \sem{\emptyCxt} &= 1
-  \\
-  \sem{\Gamma, x: \tau} &= \sem{\Gamma} \times \sem{\tau}
-  \end{align*}
-  \caption{Contexts as objects}
-  \label{fig:semantics:contexts}
 \end{subfigure}
 \begin{subfigure}{0.8\linewidth}
   \small
