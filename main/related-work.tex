@@ -1,32 +1,30 @@
 \section{Related work}
+\label{sec:related-work}
 
 \subsection{Stable Domain Theory}
 
 Stable Domain Theory was originally proposed by \citet{berry79} as a refinement of domain theory aimed at
-capturing the intensional behaviour of sequential programs. Standard domain-theoretic models interpret
-programs as continuous functions (preserving directed joins) Berry observed that this continuity condition
-alone is too permissive to model sequentiality. His introduction of stability imposed additional constraints
-to reflect how functions preserve bounded meets of approximants, ensuring that the evaluation of a function
-respects a notion of computational order. Subsequent work by \citet{berry82} and Amadio and Curien [1998, Ch.
-12], elaborated these ideas, showing that stable functions admit local Galois adjoints on principal downsets,
-and offering connections to linear logic and sequential algorithms. Though stable functions do not fully
-characterise sequentiality (e.g., they admit Gustave-style counterexamples), they remain a foundational
-concept for refining program denotations by their sensitivity to approximation.
+capturing the intensional behaviour of sequential programs, and elaborated on subsequently by \citet{berry82}
+and \citet{amadio-curien}. Standard domain-theoretic models interpret programs as continuous functions,
+preserving directed joins; Berry observed that this continuity condition alone is too permissive to model
+sequentiality. Stability imposes additional constraints to reflect how functions preserve bounded meets of
+approximants, effectively requiring that the evaluation of a function respect a specific computational order.
+Though stable functions do not fully characterise sequentiality, because they admit $\mathrm{gustave}$-style
+counterexamples (\exref{parallel-or}), they remain an appropriate notion for studying the sensitivity of a
+program to partial data at a specific point.
 
-Our use of stable domain theory diverges from the traditional aim of modelling infinite or partial data.
-Instead, we follow a growing line of work that reinterprets domains as qualitative approximation structures
-suitable for provenance and slicing applications. In particular, Paul Taylor’s characterisation of stable
-functions via local Galois connections provides the semantic underpinning for the reverse maps used in Galois
-slicing, allowing us to reconstruct slices from output approximants [Taylor, 1991]. This perspective has been
-fruitfully adopted in settings such as data provenance [Cheney et al. 2007], program differentiation [Elliott
-2018], and recently by Vákár and collaborators [Lucatelli Nunes and Vákár 2023] in their CHAD framework. Our
-work builds on these ideas by interpreting Galois slicing as a form of differentiable programming, using the
-machinery of stable functions and Galois adjoints to unify forward and backward provenance in a denotational
-setting.
+Our use of Stable Domain Theory diverges from the traditional aim of modelling infinite or partial data,
+however. Instead, we follow a line of work that uses partiality as a qualitative notion of approximation
+suitable for provenance and program slicing (discussed in more detail in \secref{related-work:galois-slicing}
+below). Paul Taylor’s characterisation of stable functions via local Galois connections on principle downsets
+provides the semantic underpinning for the reverse maps used in Galois slicing~\cite{taylor99}. Our work
+builds on these ideas by interpreting Galois slicing as a form of differentiable programming, using the
+machinery of stable functions and Galois connections to present Galois slicing in a denotational style.
 
 \subsection{Automatic Differentiation}
 
-\subsection{Galois Program slicing}
+\subsection{\GPS}
+\label{sec:related-work:galois-slicing}
 
 \cite{berry79,berry82}
 
