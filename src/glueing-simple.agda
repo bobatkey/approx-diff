@@ -6,6 +6,7 @@ open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; module ≤-Reas
 open import categories using (Category; HasProducts; HasExponentials; HasCoproducts; HasTerminal; IsTerminal)
 open import functor using (Functor)
 open import predicate-system using (PredicateSystem)
+open import finite-product-functor using (preserve-chosen-products; module preserve-chosen-products-consequences)
 
 -- FIXME: refactor this into
 --   1. glueing with predicates over 𝒞 directly
@@ -151,11 +152,7 @@ module coproducts (CP : HasCoproducts 𝒞) where
 -- products and exponentials
 module products-and-exponentials
          (T : HasTerminal 𝒞) (P : HasProducts 𝒞) (E : HasExponentials 𝒞 P)
-         (mul   : ∀ {x y} → 𝒟P.prod (F .fobj x) (F .fobj y) 𝒟.⇒ F .fobj (P .HasProducts.prod x y))
-         (mul⁻¹ : ∀ {x y} → F .fobj (P .HasProducts.prod x y) 𝒟.⇒ 𝒟P.prod (F .fobj x) (F .fobj y))
-         (mul-inv : ∀ {x y} → (mul {x} {y} 𝒟.∘ mul⁻¹) 𝒟.≈ 𝒟.id _)
-         (mul-natural : ∀ {x x' y y'} {f : x 𝒞.⇒ x'} {g : y 𝒞.⇒ y'} → (F .fmor (HasProducts.prod-m P f g) 𝒟.∘ mul) 𝒟.≈ (mul 𝒟.∘ 𝒟P.prod-m (F .fmor f) (F .fmor g)))
-         (F-p₁   : ∀ {x y} → (F .fmor (P .HasProducts.p₁ {x} {y}) 𝒟.∘ mul) 𝒟.≈ 𝒟P.p₁)
+         (FP : preserve-chosen-products F P 𝒟P)
      where
 
   private
@@ -163,14 +160,7 @@ module products-and-exponentials
     module P = HasProducts P
     module E = HasExponentials E
 
-  F-p₁' : ∀ {x y} → F .fmor (P .HasProducts.p₁ {x} {y}) 𝒟.≈ (𝒟P.p₁ 𝒟.∘ mul⁻¹)
-  F-p₁' {x} {y} = begin
-      F .fmor (P .HasProducts.p₁ {x} {y})                       ≈˘⟨ 𝒟.id-right ⟩
-      F .fmor (P .HasProducts.p₁ {x} {y}) 𝒟.∘ 𝒟.id _           ≈˘⟨ 𝒟.∘-cong 𝒟.≈-refl mul-inv ⟩
-      F .fmor (P .HasProducts.p₁ {x} {y}) 𝒟.∘ (mul 𝒟.∘ mul⁻¹)  ≈˘⟨ 𝒟.assoc _ _ _ ⟩
-      (F .fmor (P .HasProducts.p₁ {x} {y}) 𝒟.∘ mul) 𝒟.∘ mul⁻¹  ≈⟨ 𝒟.∘-cong F-p₁ 𝒟.≈-refl ⟩
-      𝒟P.p₁ 𝒟.∘ mul⁻¹
-    ∎ where open ≈-Reasoning 𝒟.isEquiv
+  open preserve-chosen-products-consequences F P 𝒟P FP
 
   open IsMeet
 
