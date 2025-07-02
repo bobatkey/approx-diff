@@ -18,6 +18,9 @@ record PredicateSystem : Set (suc (suc (o ⊔ m ⊔ e))) where
 
   infix 2 _⊑_
 
+  ⊑-trans : ∀ {X} {P Q R : Predicate X} → P ⊑ Q → Q ⊑ R → P ⊑ R
+  ⊑-trans = ⊑-isPreorder .IsPreorder.trans
+
   field
     _[_]   : ∀ {X Y} → Predicate Y → X 𝒞.⇒ Y → Predicate X
     _⟨_⟩   : ∀ {X Y} → Predicate X → X 𝒞.⇒ Y → Predicate Y
@@ -40,6 +43,12 @@ record PredicateSystem : Set (suc (suc (o ⊔ m ⊔ e))) where
 
   _⟨_⟩m : ∀ {X Y} {P Q : Predicate X} → P ⊑ Q → (f : X 𝒞.⇒ Y) → (P ⟨ f ⟩) ⊑ (Q ⟨ f ⟩)
   P⊑Q ⟨ f ⟩m = adjoint₂ (IsPreorder.trans ⊑-isPreorder P⊑Q (unit f))
+
+  ⟨⟩-comp : ∀ {X Y Z} {P : Predicate X} (f : Y 𝒞.⇒ Z) (g : X 𝒞.⇒ Y) → (P ⟨ g ⟩ ⟨ f ⟩) ⊑ (P ⟨ f 𝒞.∘ g ⟩)
+  ⟨⟩-comp f g = adjoint₂ (adjoint₂ (⊑-trans (unit _) ([]-comp⁻¹ f g)))
+
+  ⟨⟩-cong : ∀ {X Y} {P : Predicate X}{f₁ f₂ : X 𝒞.⇒ Y} → f₁ 𝒞.≈ f₂ → (P ⟨ f₁ ⟩) ⊑ (P ⟨ f₂ ⟩)
+  ⟨⟩-cong f₁≈f₂ = adjoint₂ (⊑-trans (unit _) ([]-cong (𝒞.≈-sym f₁≈f₂)))
 
   field
     TT    : ∀ {X} → Predicate X
@@ -91,6 +100,10 @@ record PredicateSystem : Set (suc (suc (o ⊔ m ⊔ e))) where
       (Q [&&] R) [ P.pair f g ]
     ∎
     where open ≤-Reasoning ⊑-isPreorder
+
+  --
+  []-++⁻¹ : ∀ {X Y} {P Q : Predicate Y} {f : X 𝒞.⇒ Y} → ((P [ f ]) ++ (Q [ f ])) ⊑ ((P ++ Q) [ f ])
+  []-++⁻¹ = ++-isJoin .IsJoin.[_,_] ((++-isJoin .IsJoin.inl) [ _ ]m) ((++-isJoin .IsJoin.inr) [ _ ]m)
 
   -- Derived properties of products
   ⋀-[]⁻¹ : ∀ {X X' Y} {P : Predicate (P.prod X Y)} {f : X' 𝒞.⇒ X} → (⋀ P) [ f ] ⊑ (⋀ (P [ P.prod-m f (𝒞.id _) ]))
