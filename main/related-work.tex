@@ -1,10 +1,32 @@
 \section{Related work}
 
-\subsection{Galois Program slicing}
+\subsection{Stable Domain Theory}
+
+Stable Domain Theory was originally proposed by \citet{berry79} as a refinement of domain theory aimed at
+capturing the intensional behaviour of sequential programs. Standard domain-theoretic models interpret
+programs as continuous functions (preserving directed joins) Berry observed that this continuity condition
+alone is too permissive to model sequentiality. His introduction of stability imposed additional constraints
+to reflect how functions preserve bounded meets of approximants, ensuring that the evaluation of a function
+respects a notion of computational order. Subsequent work by \citet{berry82} and Amadio and Curien [1998, Ch.
+12], elaborated these ideas, showing that stable functions admit local Galois adjoints on principal downsets,
+and offering connections to linear logic and sequential algorithms. Though stable functions do not fully
+characterise sequentiality (e.g., they admit Gustave-style counterexamples), they remain a foundational
+concept for refining program denotations by their sensitivity to approximation.
+
+Our use of stable domain theory diverges from the traditional aim of modelling infinite or partial data.
+Instead, we follow a growing line of work that reinterprets domains as qualitative approximation structures
+suitable for provenance and slicing applications. In particular, Paul Taylor’s characterisation of stable
+functions via local Galois connections provides the semantic underpinning for the reverse maps used in Galois
+slicing, allowing us to reconstruct slices from output approximants [Taylor, 1991]. This perspective has been
+fruitfully adopted in settings such as data provenance [Cheney et al. 2007], program differentiation [Elliott
+2018], and recently by Vákár and collaborators [Lucatelli Nunes and Vákár 2023] in their CHAD framework. Our
+work builds on these ideas by interpreting Galois slicing as a form of differentiable programming, using the
+machinery of stable functions and Galois adjoints to unify forward and backward provenance in a denotational
+setting.
 
 \subsection{Automatic Differentiation}
 
-\subsection{Stable Domain Theory}
+\subsection{Galois Program slicing}
 
 \cite{berry79,berry82}
 

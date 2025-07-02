@@ -1,0 +1,112 @@
+\begin{figure}
+\begin{subfigure}{\linewidth}
+  \begin{mathpar}
+  \small
+    \inferrule*
+    {
+      \strut
+    }
+    {
+      \cat{C} \in \Ob(\muPoly_{\cat{C}})
+    }
+    \and
+    \inferrule*
+    {
+      \strut
+    }
+    {
+      \One \in \Ob(\muPoly_{\cat{C}})
+    }
+    \and
+    \inferrule*
+    {
+      \cat{D} \in \Ob(\muPoly_{\cat{C}})
+      \\
+      \cat{D}' \in \Ob(\muPoly_{\cat{C}})
+    }
+    {
+      \cat{D} \times \cat{D}' \in \Ob(\muPoly_{\cat{C}})
+    }
+  \end{mathpar}
+  \caption{Objects}
+\end{subfigure}
+\begin{subfigure}{\linewidth}
+  \begin{mathpar}
+  \small
+    \inferrule*
+    {
+      \cat{D} \in \Ob(\muPoly_{\cat{C}})
+    }
+    {
+      !_{\cat{D}} : \cat{D} \to \One \in \Mor(\muPoly_{\cat{C}})
+    }
+    \and
+    \inferrule*
+    {
+      \cat{D} \in \Ob(\muPoly_{\cat{C}})
+    }
+    {
+      F : \One \to \cat{D} \in \Mor(\muPoly_{\cat{C}})
+    }
+    \and
+    \inferrule*
+    {
+      \strut
+    }
+    {
+      - \times - : \cat{C} \times \cat{C} \to \cat{C} \in \Mor(\muPoly_{\cat{C}})
+    }
+    \and
+    \inferrule*
+    {
+      \strut
+    }
+    {
+      - \textstyle\coprod - : \cat{C} \times \cat{C} \to \cat{C} \in \Mor(\muPoly_{\cat{C}})
+    }
+    \and
+    \inferrule*
+    {
+      \cat{D} \in \Ob(\muPoly_{\cat{C}})
+      \\
+      \cat{D}' \in \Ob(\muPoly_{\cat{C}})
+    }
+    {
+      \pi_1 : \cat{D} \times \cat{D}' \to \cat{D} \in \Mor(\muPoly_{\cat{C}})
+    }
+    \and
+    \inferrule*
+    {
+      \cat{D} \in \Ob(\muPoly_{\cat{C}})
+      \\
+      \cat{D}' \in \Ob(\muPoly_{\cat{C}})
+    }
+    {
+      \pi_2 : \cat{D} \times \cat{D}' \to \cat{D}' \in \Mor(\muPoly_{\cat{C}})
+    }
+    \and
+    \inferrule*
+    {
+      F: \cat{E} \to \cat{D} \in \Mor(\muPoly_{\cat{C}})
+      \\
+      G: \cat{E} \to \cat{D}' \in \Mor(\muPoly_{\cat{C}})
+    }
+    {
+      \prodM{F}{G} : \cat{E} \to \cat{D} \times \cat{D}' \in \Mor(\muPoly_{\cat{C}})
+    }
+    \and
+    \inferrule*
+    {
+      F : \cat{D} \times \cat{C} \to \cat{C} \in \Mor(\muPoly_{\cat{C}})
+    }
+    {
+      \mu F : \cat{D} \to \cat{C} \in \Mor(\muPoly_{\cat{C}})
+    }
+  \end{mathpar}
+  \caption{Morphisms}
+\end{subfigure}
+\caption{$\mu$-polynomial functors, for a category $\cat{C}$ with finite coproducts and finite products
+\todo{$\mu F$ is the functor induced by existence of $\mu(F(X,-))$ for every $X$, see \citet{nunes2023}
+Proposition 4}}
+\label{fig:mu-polynomial}
+\end{figure}

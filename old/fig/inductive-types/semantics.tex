@@ -1,0 +1,38 @@
+\begin{figure}
+  \begin{align*}
+  \small
+  \sem{\vec\alpha \vdash \alpha_i}(\vec X) &=
+  X_i
+  \\
+  \sem{\Delta \vdash \rho}(\vec X) &=
+  \sem{\rho}
+  \\
+  \sem{\Delta \vdash \tyZero}(\vec X) &=
+  0
+  \\
+  \sem{\Delta \vdash \sigma \tySum \tau}(\vec X) &=
+  \textstyle {\sem{\sigma}(\vec X)} \coprod {\sem{\tau}(\vec X)}
+  \\
+  \sem{\Delta \vdash \tyUnit}(\vec X) &=
+  1
+  \\
+  \sem{\Delta \vdash \sigma \tyProd \tau}(\vec X) &=
+  \sem{\Delta \vdash \sigma}(\vec X) \times \sem{\Delta \vdash \tau}(\vec X)
+  \\
+  \sem{\Delta \vdash \sigma \tyFun \tau}(\vec X) &=
+  \internalHom{\sem{\Delta \vdash \sigma}(\vec X)}{\sem{\Delta \vdash \tau}(\vec X)}
+  \\
+  \sem{\vec\alpha \vdash \mu\alpha_i.\tau}(\vec X) &=
+  \mu(\sem{\vec\alpha_{\neq \alpha_i}, \alpha \vdash \tau}^{\vec X_{\neq X_i}})
+  \\
+  \sem{\Delta \vdash \mu\alpha.\tau}(\vec X) &=
+  \mu(\sem{\Delta, \alpha \vdash \tau}^{\vec X})
+  \textit{ if }\alpha \notin \Delta
+  \\
+  \sem{\Delta \vdash \tyLift\;\tau}(\vec X) &=
+  \Lift(\sem{\Delta \vdash \tau}(\vec X))
+  \end{align*}
+  \caption{Parameterised types $\Delta \vdash \tau$ as functors $\Sem^n \to \Sem$ \todo{Revisit; also action
+  on morphisms important in $\mu F$ case}}
+  \label{fig:semantics:types}
+\end{figure}

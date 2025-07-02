@@ -1,0 +1,85 @@
+\begin{figure}
+  \begin{mathpar}
+  \small
+  \inferrule*
+  {
+    \strut
+  }
+  {
+    \Pol(+,\alpha,\alpha)
+  }
+  \and
+  \inferrule*
+  {
+    \alpha \neq \beta
+  }
+  {
+    \Pol(p,\alpha,\beta)
+  }
+  \and
+  \inferrule*
+  {
+    \strut
+  }
+  {
+    \Pol(p,\alpha,\tyZero)
+  }
+  \and
+  \inferrule*
+  {
+    \Pol(p,\alpha,\sigma)
+    \\
+    \Pol(p,\alpha,\tau)
+  }
+  {
+    \Pol(p,\alpha,\sigma \tySum \tau)
+  }
+  \and
+  \inferrule*
+  {
+    \strut
+  }
+  {
+    \Pol(p,\alpha,\tyUnit)
+  }
+  \and
+  \inferrule*
+  {
+    \Pol(p,\alpha,\sigma)
+    \\
+    \Pol(p,\alpha,\tau)
+  }
+  {
+    \Pol(p,\alpha,\sigma \tyProd \tau)
+  }
+  \and
+  \inferrule*
+  {
+    \Pol(\neg p,\alpha,\sigma)
+    \\
+    \Pol(p,\alpha,\tau)
+  }
+  {
+    \Pol(p,\alpha,\sigma \tyFun \tau)
+  }
+  \and
+  \inferrule*
+  {
+    \strut
+  }
+  {
+    \Pol(p,\alpha,\mu\alpha.\tau)
+  }
+  \and
+  \inferrule*
+  {
+    \alpha \neq \beta
+    \\
+    \Pol(p,\alpha, \tau)
+  }
+  {
+    \Pol(p,\alpha,\mu\beta.\tau)
+  }
+  \end{mathpar}
+\caption{Polarity checking}
+\end{figure}
