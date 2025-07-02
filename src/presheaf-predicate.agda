@@ -1,10 +1,10 @@
-{-# OPTIONS --postfix-projections --prop --allow-unsolved-metas #-}
+{-# OPTIONS --postfix-projections --prop --safe #-}
 
 open import Level using (_⊔_; suc)
 open import Data.Product using (_,_) renaming (_×_ to _××_)
 open import prop using (_,_; tt; ∃; _∧_; LiftS; liftS)
 open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; module ≤-Reasoning; monoidOfMeet; IsJoin; IsClosureOp)
-open import prop-setoid using (Setoid)
+open import prop-setoid using (Setoid; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_)
 open import categories using (Category; HasProducts; HasTerminal; IsTerminal; HasCoproducts)
 open import setoid-cat using (SetoidCat; Setoid-products; Setoid-coproducts)
@@ -237,17 +237,10 @@ system .PredicateSystem.⋀-[] = ⋀-[]
 system .PredicateSystem.⋀-eval = ⋀-eval
 system .PredicateSystem.⋀-lambda = ⋀-lambda
 
--- Coproduct closure
---
--- This requires the following stability property of the coproducts in 𝒞
---
--- FIXME: is the the same thing as extensive coproducts?
---
--- f : X₁ + X₂ ⇒ X
--- g : Y ⇒ X
---
--- Let Y₁ = { (y , x₁) | f(in₁ x₁) = g(y) }
--- Let Y₂ = { (y , x₂) | f(in₂ x₂) = g(y) }
+------------------------------------------------------------------------------
+-- Coproduct closure. This monad is "sheafification" monad for
+-- Grothendieck logical relations a la Simpson and Fiore for the
+-- “extensive topology” on 𝒞.
 
 open import stable-coproducts
 
@@ -282,9 +275,41 @@ module CoproductMonad (𝒞CP : HasCoproducts 𝒞) (stable : Stable 𝒞CP) whe
          (stbl .StableBits.h)
          (Context-reindex P (stbl .StableBits.h₁) t₁)
          (Context-reindex P (stbl .StableBits.h₂) t₂)
-         {!!}
-         {!!}
+         eq₃
+         eq₄
     where stbl = stable g f
+
+          eq₃ : X .fobj (stbl .StableBits.y₁) ._≈_ (X .fmor (stbl .StableBits.h₁) .func y₁) (X .fmor (stbl .StableBits.h .fwd 𝒞.∘ 𝒞CP.in₁) .func (X .fmor f .func x))
+          eq₃ = begin
+              X .fmor (stbl .StableBits.h₁) .func y₁
+            ≈⟨ X .fmor (stbl .StableBits.h₁) .func-resp-≈ eq₁ ⟩
+              X .fmor (stbl .StableBits.h₁) .func (X .fmor (g .fwd 𝒞.∘ 𝒞CP.in₁) .func x)
+            ≈˘⟨ X .fmor-comp _ _ .func-eq (X .fobj a .refl) ⟩
+              X .fmor ((g .fwd 𝒞.∘ 𝒞CP.in₁) 𝒞.∘ stbl .StableBits.h₁) .func x
+            ≈⟨ X .fmor-cong (𝒞.assoc _ _ _) .func-eq (X .fobj a .refl) ⟩
+              X .fmor (g .fwd 𝒞.∘ (𝒞CP.in₁ 𝒞.∘ stbl .StableBits.h₁)) .func x
+            ≈⟨ X .fmor-cong (stbl .StableBits.eq₁) .func-eq (X .fobj a .refl) ⟩
+              X .fmor (f 𝒞.∘ (stbl .StableBits.h .fwd 𝒞.∘ 𝒞CP.in₁)) .func x
+            ≈⟨ X .fmor-comp _ _ .func-eq (X .fobj a .refl) ⟩
+              X .fmor (stbl .StableBits.h .fwd 𝒞.∘ 𝒞CP.in₁) .func (X .fmor f .func x)
+            ∎
+            where open ≈-Reasoning (X .fobj (stbl .StableBits.y₁) .isEquivalence)
+
+          eq₄ : X .fobj (stbl .StableBits.y₂) ._≈_ (X .fmor (stbl .StableBits.h₂) .func y₂) (X .fmor (stbl .StableBits.h .fwd 𝒞.∘ 𝒞CP.in₂) .func (X .fmor f .func x))
+          eq₄ = begin
+              X .fmor (stbl .StableBits.h₂) .func y₂
+            ≈⟨ X .fmor (stbl .StableBits.h₂) .func-resp-≈ eq₂ ⟩
+              X .fmor (stbl .StableBits.h₂) .func (X .fmor (g .fwd 𝒞.∘ 𝒞CP.in₂) .func x)
+            ≈˘⟨ X .fmor-comp _ _ .func-eq (X .fobj a .refl) ⟩
+              X .fmor ((g .fwd 𝒞.∘ 𝒞CP.in₂) 𝒞.∘ stbl .StableBits.h₂) .func x
+            ≈⟨ X .fmor-cong (𝒞.assoc _ _ _) .func-eq (X .fobj a .refl) ⟩
+              X .fmor (g .fwd 𝒞.∘ (𝒞CP.in₂ 𝒞.∘ stbl .StableBits.h₂)) .func x
+            ≈⟨ X .fmor-cong (stbl .StableBits.eq₂) .func-eq (X .fobj a .refl) ⟩
+              X .fmor (f 𝒞.∘ (stbl .StableBits.h .fwd 𝒞.∘ 𝒞CP.in₂)) .func x
+            ≈⟨ X .fmor-comp _ _ .func-eq (X .fobj a .refl) ⟩
+              X .fmor (stbl .StableBits.h .fwd 𝒞.∘ 𝒞CP.in₂) .func (X .fmor f .func x)
+            ∎
+            where open ≈-Reasoning (X .fobj (stbl .StableBits.y₂) .isEquivalence)
 
   Context-eq : ∀ {X} {P : Predicate X} {a x₁ x₂} → X .fobj a ._≈_ x₁ x₂ → Context X P a x₁ → Context X P a x₂
   Context-eq {X} {P} x₁≈x₂ (leaf p) = leaf (P .pred _ .pred-≃ x₁≈x₂ p)
@@ -333,20 +358,64 @@ module CoproductMonad (𝒞CP : HasCoproducts 𝒞) (stable : Stable 𝒞CP) whe
   𝐂-strong : ∀ {X} {P Q : Predicate X} → (𝐂 P && Q) ⊑ 𝐂 (P && Q)
   𝐂-strong .*⊑* a .*⊑* x (liftS p , q) = liftS (Context-strong p q)
 
+  Context-[]⁻¹ : ∀ {X Y} {P : Predicate Y} {f : X PSh.⇒ Y} a x y →
+                 Y .fobj a ._≈_ y (f .transf a .func x) →
+                 Context Y P a y →
+                 Context X (P [ f ]) a x
+  Context-[]⁻¹ {X} {Y} {P} {f} a x y eq (leaf p) = leaf (P .pred a .pred-≃ eq p)
+  Context-[]⁻¹ {X} {Y} {P} {f} a x y eq (node a₁ a₂ y₁ y₂ i t₁ t₂ eq₁ eq₂) =
+    node a₁ a₂ x₁ x₂ i
+         (Context-[]⁻¹ a₁ x₁ y₁ eq₃ t₁)
+         (Context-[]⁻¹ a₂ x₂ y₂ eq₄ t₂)
+         (X .fobj a₁ .refl) (X .fobj a₂ .refl)
+    where
+      x₁ : X .fobj a₁ .Carrier
+      x₁ = X .fmor (i .fwd 𝒞.∘ 𝒞CP.in₁) .func x
+
+      x₂ : X .fobj a₂ .Carrier
+      x₂ = X .fmor (i .fwd 𝒞.∘ 𝒞CP.in₂) .func x
+
+      eq₃ : Y .fobj a₁ ._≈_ y₁ (f .transf a₁ .func x₁)
+      eq₃ = begin
+          y₁
+        ≈⟨ eq₁ ⟩
+          Y .fmor (i .fwd 𝒞.∘ 𝒞CP.in₁) .func y
+        ≈⟨ Y .fmor (i .fwd 𝒞.∘ 𝒞CP.in₁) .func-resp-≈ eq ⟩
+          Y .fmor (i .fwd 𝒞.∘ 𝒞CP.in₁) .func (f .transf a .func x)
+        ≈⟨ f .natural _ .func-eq (X .fobj a .refl) ⟩
+          f .transf a₁ .func (X .fmor (i .fwd 𝒞.∘ 𝒞CP.in₁) .func x)
+        ∎
+        where open ≈-Reasoning (Y .fobj a₁ .isEquivalence)
+
+      eq₄ : Y .fobj a₂ ._≈_ y₂ (f .transf a₂ .func x₂)
+      eq₄ = begin
+          y₂
+        ≈⟨ eq₂ ⟩
+          Y .fmor (i .fwd 𝒞.∘ 𝒞CP.in₂) .func y
+        ≈⟨ Y .fmor (i .fwd 𝒞.∘ 𝒞CP.in₂) .func-resp-≈ eq ⟩
+          Y .fmor (i .fwd 𝒞.∘ 𝒞CP.in₂) .func (f .transf a .func x)
+        ≈⟨ f .natural _ .func-eq (X .fobj a .refl) ⟩
+          f .transf a₂ .func (X .fmor (i .fwd 𝒞.∘ 𝒞CP.in₂) .func x)
+        ∎
+        where open ≈-Reasoning (Y .fobj a₂ .isEquivalence)
+
   𝐂-[]⁻¹ : ∀ {X Y} {P : Predicate Y} {f : X PSh.⇒ Y} → (𝐂 P [ f ]) ⊑ 𝐂 (P [ f ])
-  𝐂-[]⁻¹ .*⊑* a .*⊑* x (liftS (leaf p)) = liftS (leaf p)
-  𝐂-[]⁻¹ {X} {Y} {P} {f} .*⊑* a .*⊑* x (liftS (node a₁ a₂ y₁ y₂ g t₁ t₂ eq₁ eq₂)) = {!!}
-    -- liftS (node a₁ a₂
-    --             (X .fmor (g 𝒞.∘ 𝒞CP.in₁) .func x)
-    --             (X .fmor (g 𝒞.∘ 𝒞CP.in₂) .func x)
-    --             g
-    --             {!𝐂-[]⁻¹ {f = f} .*⊑* a₁ .*⊑* (X .fmor (g 𝒞.∘ 𝒞CP.in₁) .func x) (liftS ?)!}
-    --             {!!}
-    --             {!!}
-    --             {!!})
+  𝐂-[]⁻¹ {X} {Y} {P} {f} .*⊑* a .*⊑* x (liftS t) =
+    liftS (Context-[]⁻¹ a x (f .transf a .func x) (Y .fobj a .refl) t)
+
+  Context-[] : ∀ {X Y} {P : Predicate Y} {f : X PSh.⇒ Y} a x →
+               Context X (P [ f ]) a x →
+               Context Y P a (f .transf a .func x)
+  Context-[] a x (leaf p) = leaf p
+  Context-[] {X} {Y} {P} {f} a x (node a₁ a₂ x₁ x₂ i t₁ t₂ eq₁ eq₂) =
+    node a₁ a₂ (f .transf _ .func x₁) (f .transf _ .func x₂)
+         i
+         (Context-[] a₁ x₁ t₁) (Context-[] a₂ x₂ t₂)
+         (Y .fobj a₁ .trans (f .transf a₁ .func-resp-≈ eq₁) (Y .fobj a₁ .sym (f .natural _ .func-eq (X .fobj a .refl))))
+         (Y .fobj a₂ .trans (f .transf a₂ .func-resp-≈ eq₂) (Y .fobj a₂ .sym (f .natural _ .func-eq (X .fobj a .refl))))
 
   𝐂-[] : ∀ {X Y} {P : Predicate Y} {f : X PSh.⇒ Y} → 𝐂 (P [ f ]) ⊑ (𝐂 P [ f ])
-  𝐂-[] = {!!}
+  𝐂-[] {X} {Y} {P} {f} .*⊑* a .*⊑* x (liftS t) = liftS (Context-[] a x t)
 
   closureOp : ClosureOp PSh products system
   closureOp .ClosureOp.𝐂 = 𝐂
