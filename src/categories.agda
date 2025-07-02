@@ -76,11 +76,60 @@ record Category o m e : Set (suc (o ⊔ m ⊔ e)) where
       fwd∘bwd≈id : (fwd ∘ bwd) ≈ id y
       bwd∘fwd≈id : (bwd ∘ fwd) ≈ id x
 
+  open IsIso
+  open Iso
+
+  IsIso→Iso : ∀ {x y} {f : x ⇒ y} → IsIso f → Iso x y
+  IsIso→Iso {x} {y} {f} isIso = record
+                                 { fwd = f
+                                 ; bwd = inverse isIso
+                                 ; fwd∘bwd≈id = f∘inverse≈id isIso
+                                 ; bwd∘fwd≈id = inverse∘f≈id isIso
+                                 }
+
   Iso-refl : ∀ {x} → Iso x x
   Iso-refl .Iso.fwd = id _
   Iso-refl .Iso.bwd = id _
   Iso-refl .Iso.fwd∘bwd≈id = id-left
   Iso-refl .Iso.bwd∘fwd≈id = id-left
+
+  Iso-sym : ∀ {x y} → Iso x y → Iso y x
+  Iso-sym iso .fwd = iso .bwd
+  Iso-sym iso .bwd = iso .fwd
+  Iso-sym iso .fwd∘bwd≈id = bwd∘fwd≈id iso
+  Iso-sym iso .bwd∘fwd≈id = fwd∘bwd≈id iso
+
+  Iso-trans : ∀ {x y z} → Iso x y → Iso y z → Iso x z
+  Iso-trans iso₁ iso₂ .fwd = (iso₂ .fwd) ∘ (iso₁ .fwd)
+  Iso-trans iso₁ iso₂ .bwd = (iso₁ .bwd) ∘ (iso₂ .bwd)
+  Iso-trans iso₁ iso₂ .fwd∘bwd≈id = begin
+      (iso₂ .fwd ∘ iso₁ .fwd) ∘ (iso₁ .bwd ∘ iso₂ .bwd)
+    ≈⟨ assoc _ _ _ ⟩
+      iso₂ .fwd ∘ (iso₁ .fwd ∘ (iso₁ .bwd ∘ iso₂ .bwd))
+    ≈˘⟨ ∘-cong ≈-refl (assoc _ _ _) ⟩
+      iso₂ .fwd ∘ ((iso₁ .fwd ∘ iso₁ .bwd) ∘ iso₂ .bwd)
+    ≈⟨ ∘-cong ≈-refl (∘-cong (fwd∘bwd≈id iso₁) ≈-refl) ⟩
+      iso₂ .fwd ∘ (id _ ∘ iso₂ .bwd)
+    ≈⟨ ∘-cong ≈-refl id-left ⟩
+      iso₂ .fwd ∘ iso₂ .bwd
+    ≈⟨ fwd∘bwd≈id iso₂ ⟩
+      id _
+    ∎
+    where open ≈-Reasoning isEquiv
+  Iso-trans iso₁ iso₂ .bwd∘fwd≈id = begin
+      (iso₁ .bwd ∘ iso₂ .bwd) ∘ (iso₂ .fwd ∘ iso₁ .fwd)
+    ≈⟨ assoc _ _ _ ⟩
+      iso₁ .bwd ∘ (iso₂ .bwd ∘ (iso₂ .fwd ∘ iso₁ .fwd))
+    ≈˘⟨ ∘-cong ≈-refl (assoc _ _ _) ⟩
+      iso₁ .bwd ∘ ((iso₂ .bwd ∘ iso₂ .fwd) ∘ iso₁ .fwd)
+    ≈⟨ ∘-cong ≈-refl (∘-cong (bwd∘fwd≈id iso₂) ≈-refl) ⟩
+      iso₁ .bwd ∘ (id _ ∘ iso₁ .fwd)
+    ≈⟨ ∘-cong ≈-refl id-left ⟩
+      iso₁ .bwd ∘ iso₁ .fwd
+    ≈⟨ bwd∘fwd≈id iso₁ ⟩
+      id _
+    ∎
+    where open ≈-Reasoning isEquiv
 
   opposite : Category o m e
   opposite .obj = obj

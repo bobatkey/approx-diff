@@ -12,17 +12,19 @@ module language-interpretation
   (𝒞 : Category o m e)
   (T  : HasTerminal 𝒞)
   (P  : HasProducts 𝒞)
+  (C  : HasCoproducts 𝒞)
   (E  : HasExponentials 𝒞 P)
-  (B  : HasBooleans 𝒞 T P)
-  (Int : Model PFPC[ 𝒞 , T , P , HasBooleans.Bool B ] Sig)
+  (Int : Model PFPC[ 𝒞 , T , P , HasBooleans.Bool (coproducts+exp→booleans T C E) ] Sig)
 --  (L  : HasLists 𝒞 T P)
   where
+
+B : HasBooleans 𝒞 T P
+B = coproducts+exp→booleans T C E
 
 open HasExponentials E renaming (exp to _⟦→⟧_)
 open PointedFPCat PFPC[ 𝒞 , T , P , HasBooleans.Bool B ]
 open HasBooleans B
 -- open HasLists L renaming (list to ⟦list⟧; nil to ⟦nil⟧; cons to ⟦cons⟧; fold to ⟦fold⟧)
-open IsTerminal
 
 open language Sig
 open Model Int
@@ -47,9 +49,9 @@ open Model Int
 mutual
   ⟦_⟧tm : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
   ⟦ var x ⟧tm = ⟦ x ⟧var
-  ⟦ unit ⟧tm = is-terminal .to-terminal
-  ⟦ true ⟧tm = True ∘ is-terminal .to-terminal
-  ⟦ false ⟧tm = False ∘ is-terminal .to-terminal
+  ⟦ unit ⟧tm = to-terminal
+  ⟦ true ⟧tm = True ∘ to-terminal
+  ⟦ false ⟧tm = False ∘ to-terminal
   ⟦ if M then M₁ else M₂ ⟧tm = cond ⟦ M₁ ⟧tm ⟦ M₂ ⟧tm ∘ ⟨ id _ , ⟦ M ⟧tm ⟩
   ⟦ pair M N ⟧tm = ⟨ ⟦ M ⟧tm , ⟦ N ⟧tm ⟩
   ⟦ fst M ⟧tm = p₁ ∘ ⟦ M ⟧tm
@@ -63,5 +65,5 @@ mutual
   -- ⟦ fold M₁ M₂ M ⟧tm = ⟦fold⟧ ⟦ M₁ ⟧tm ⟦ M₂ ⟧tm ∘ ⟨ id _ , ⟦ M ⟧tm ⟩
 
   ⟦_⟧tms : ∀ {Γ σs} → Every (λ σ → Γ ⊢ base σ) σs → ⟦ Γ ⟧ctxt ⇒ list→product ⟦sort⟧ σs
-  ⟦ [] ⟧tms = is-terminal .to-terminal
+  ⟦ [] ⟧tms = to-terminal
   ⟦ M ∷ Ms ⟧tms = ⟨ ⟦ M ⟧tm , ⟦ Ms ⟧tms ⟩
