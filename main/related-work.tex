@@ -45,7 +45,28 @@ paper.
 \subsection{\GPS}
 \label{sec:related-work:galois-slicing}
 
-\cite{perera12a,perera13,perera16d,ricciotti17,perera22,bond25}
+Galois slicing was introduced in \cite{perera12a} as an operational approach to program slicing based on the
+idea of computing slices via Galois connections between lattices of input and output approximations. A
+connection to Berry's stable functions in relation to minimal slices for short-circuiting operations was
+alluded to in \citeauthor{perera13}'s PhD thesis but not elaborated upon. Subsequent work extended the
+approach to functional languages with assignment and exceptions~\cite{ricciotti17} and concurrent systems,
+applying Galois slicing to the $\pi$-calculus~\cite{perera16d}. In this latter work, the analysis shifted from
+functions to transition relations, considering individual transitions $P \longrightarrow Q$ between specific
+configurations $P$ and $Q$ as analogous to the ``edge'' between points $x$ and their images $f(x)$ in $f$, and
+building Galois connections between $\downset{P}$ and $\downset{Q}$. This required generalizing the semantics
+to capture behavioural provenance in the presence of nondeterminism. The main difference with the Galois
+slicing approach presented here is that the earlier work also computes \emph{program slices}, using
+approximation lattices that represent partially erased programs.
+
+More recent work explored the application of Galois slicing in interactive visualisations. \citet{perera22}
+presented an approach where slicing operates over Boolean algebras rather than plain lattices. In this setting
+every Galois connection $f \dashv g: A \to B$ has a conjugate $g^\circ \dashv f^\circ: B \to A$, where
+$f^\circ$ denotes the De Morgan dual $\neg \comp f \comp \neg$~\cite{jonsson51}. The provenance analysis can
+then be composed with its own conjugate to obtain a Galois connection which computes \emph{related outputs}
+(e.g., selecting a region of a chart and observing the regions of other charts which have overlapping data
+dependencies). \citet{bond25} revisited this approach using \emph{dynamic dependence graphs} as an
+implementation technique that decouples the derivation of dependency information from the analyses that make
+use of it, and observing that to compute the conjugate analysis one can just use the opposite graph.
 
 \subsection{Tangent Categories}
 
