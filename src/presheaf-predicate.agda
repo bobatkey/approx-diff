@@ -249,26 +249,9 @@ system .PredicateSystem.⋀-lambda = ⋀-lambda
 -- Let Y₁ = { (y , x₁) | f(in₁ x₁) = g(y) }
 -- Let Y₂ = { (y , x₂) | f(in₂ x₂) = g(y) }
 
-record StableBits (𝒞CP : HasCoproducts 𝒞)
-                  {x₁ x₂ x y}
-                  (f : 𝒞.Iso (𝒞CP .HasCoproducts.coprod x₁ x₂) x)
-                  (g : y 𝒞.⇒ x) : Set (o ⊔ m ⊔ e) where
-  private
-    module 𝒞CP = HasCoproducts 𝒞CP
-  open 𝒞.Iso
-  field
-    y₁  : 𝒞.obj
-    y₂  : 𝒞.obj
-    h₁  : y₁ 𝒞.⇒ x₁
-    h₂  : y₂ 𝒞.⇒ x₂
-    h   : 𝒞.Iso (𝒞CP.coprod y₁ y₂) y
-    eq₁ : (f .fwd 𝒞.∘ (𝒞CP.in₁ 𝒞.∘ h₁)) 𝒞.≈ (g 𝒞.∘ (h .fwd 𝒞.∘ 𝒞CP.in₁))
-    eq₂ : (f .fwd 𝒞.∘ (𝒞CP.in₂ 𝒞.∘ h₂)) 𝒞.≈ (g 𝒞.∘ (h .fwd 𝒞.∘ 𝒞CP.in₂))
+open import stable-coproducts
 
-module CoproductMonad
-         (𝒞CP : HasCoproducts 𝒞)
-         (stable : ∀ {x₁ x₂ x y} f g → StableBits 𝒞CP {x₁} {x₂} {x} {y} f g)
-         where
+module CoproductMonad (𝒞CP : HasCoproducts 𝒞) (stable : Stable 𝒞CP) where
 
   private
     module 𝒞CP = HasCoproducts 𝒞CP
