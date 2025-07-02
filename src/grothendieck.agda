@@ -226,7 +226,7 @@ module CategoryOfFamilies {o m e} os es (𝒞 : Category o m e) where
 
   -- If 𝒞 has a terminal object, then so does the category of families
   module _ (T : HasTerminal 𝒞) where
-    open HasTerminal
+    open HasTerminal hiding (to-terminal-unique)
     open IsTerminal
     open IsEquivalence
 
