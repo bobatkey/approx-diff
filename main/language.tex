@@ -41,8 +41,8 @@ $\internalHom{X}{Y}$, with evaluation morphisms $\eval_{X,Y}$ and currying isomo
 plus the following additional structure:
 \begin{enumerate}
 \item a strong monad $(\Lift, \eta, \mu)$ with strength $\mathsf{st}_{X,Y}: X \times \Lift(Y) \to \Lift(X
-\times Y)$;
-\item for each primitive type $\rho \in \PrimTy$, an object $\sem{\rho}_{\PrimTy}$;
+\times Y)$
+\item for each primitive type $\rho \in \PrimTy$, an object $\sem{\rho}_{\PrimTy}$
 \item for each primitive operation $\phi \in \PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism $\sem{\phi}:
 \sem{\rho_1} \times \ldots \times \sem{\rho_n} \to \sem{\rho}$
 \item an endofunctor $\List: \Sem \to \Sem$, plus for any object $X$, morphisms $\nil: 1 \to \List(X)$ and
