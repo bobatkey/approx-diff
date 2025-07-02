@@ -28,7 +28,6 @@
   \\
   \sem{\Gamma, x: \tau} &= \sem{\Gamma} \times \sem{\tau}
   \end{align*}
-%  \caption{Contexts $\Delta \vdash \Gamma$}
   \caption{Contexts as objects}
   \label{fig:semantics:contexts}
 \end{subfigure}
@@ -36,7 +35,6 @@
   \begin{align*}
   \small
   \sem{x_i} &= \pi_i
-  \tag*{\text{(where $\Gamma = x_1: \tau_1, \ldots, x_i: \tau_i, \ldots, x_n: \tau_n$)}}
   \\
   \sem{\phi(t_1, \ldots, t_n)}
   &=
@@ -72,10 +70,10 @@
 %  \sem{\tmFold{s}{t}} &= \eval \comp \prodM{\phi \comp \sem{s}}{\sem{t}}
   \\
   \sem{\tmReturn{t}} &= \eta_{\sem{\sigma}} \comp \sem{t}
-  \tag*{\text{(where $\Gamma \vdash t: \sigma$)}}
+  \tag*{($\Gamma \vdash t: \sigma$)}
   \\
   \sem{\tmBind{s}{t}} &= \mu_{\sem{\tau}} \comp \Lift(\sem{t}) \comp \mathsf{st}_{\sem{\Gamma},\sem{\sigma}} \comp \prodM{\id}{\sem{s}}
-  \tag*{\text{(where $\Gamma \vdash t: \sigma \to \tyLift\;\tau$)}}
+  \tag*{($\Gamma \vdash t: \sigma \to \tyLift\;\tau$)}
   \end{align*}
   \caption{Terms as morphisms}
   \label{fig:semantics:terms}
