@@ -124,6 +124,7 @@ record HasTerminal {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   field
     witness         : obj
     is-terminal     : IsTerminal 𝒞 witness
+  open IsTerminal is-terminal public
 
 ------------------------------------------------------------------------------
 -- Coproducts

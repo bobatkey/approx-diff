@@ -51,7 +51,7 @@ _×_ : Functor 𝒞 𝒟 → Functor 𝒞 𝒟 → Functor 𝒞 𝒟
     P.prod-m (F .fmor f) (G .fmor f) 𝒟.∘ P.prod-m (F .fmor g) (G .fmor g)
   ∎ where open ≈-Reasoning 𝒟.isEquiv
 
-open HasTerminal
+open HasTerminal hiding (to-terminal-unique)
 open HasProducts
 open IsTerminal
 
