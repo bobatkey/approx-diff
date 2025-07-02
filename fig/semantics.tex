@@ -18,7 +18,7 @@
   \\
   \sem{\tyLift\;\tau} &= \Lift(\sem{\tau})
   \end{align*}
-  \caption{Types $\tau$ as objects}
+  \caption{Types as objects}
   \label{fig:semantics:types}
 \end{subfigure}%
 \begin{subfigure}[t]{0.47\linewidth}
@@ -29,7 +29,7 @@
   \sem{\Gamma, x: \tau} &= \sem{\Gamma} \times \sem{\tau}
   \end{align*}
 %  \caption{Contexts $\Delta \vdash \Gamma$}
-  \caption{Contexts $\Gamma$ as objects}
+  \caption{Contexts as objects}
   \label{fig:semantics:contexts}
 \end{subfigure}
 \begin{subfigure}{\linewidth}
@@ -77,7 +77,7 @@
   \sem{\tmBind{s}{t}} &= \mu_{\sem{\tau}} \comp \Lift(\sem{t}) \comp \mathsf{st}_{\sem{\Gamma},\sem{\sigma}} \comp \prodM{\id}{\sem{s}}
   \tag*{\text{(where $\Gamma \vdash t: \sigma \to \tyLift\;\tau$)}}
   \end{align*}
-  \caption{Terms $\Gamma \vdash t: \tau$ as morphisms}
+  \caption{Terms as morphisms}
   \label{fig:semantics:terms}
 \end{subfigure}
 \caption{Interpretation of types, contexts and terms in category $\Sem$}
