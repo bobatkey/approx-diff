@@ -18,7 +18,7 @@
   \\
   \sem{\tyLift\;\tau} &= \Lift(\sem{\tau})
   \end{align*}
-  \caption{Types $\tau$}
+  \caption{Types $\tau$ as objects}
   \label{fig:semantics:types}
 \end{subfigure}%
 \begin{subfigure}[t]{0.47\linewidth}
@@ -29,14 +29,14 @@
   \sem{\Gamma, x: \tau} &= \sem{\Gamma} \times \sem{\tau}
   \end{align*}
 %  \caption{Contexts $\Delta \vdash \Gamma$}
-  \caption{Contexts $\Gamma$}
+  \caption{Contexts $\Gamma$ as objects}
   \label{fig:semantics:contexts}
 \end{subfigure}
 \begin{subfigure}{\linewidth}
   \begin{align*}
   \small
   \sem{x_i} &= \pi_i
-  \textit{ where }\Gamma = x_1: \tau_1, \ldots, x_i: \tau_i, \ldots, x_n: \tau_n
+  \tag*{\text{(where $\Gamma = x_1: \tau_1, \ldots, x_i: \tau_i, \ldots, x_n: \tau_n$)}}
   \\
   \sem{\phi(t_1, \ldots, t_n)}
   &=
@@ -72,13 +72,13 @@
 %  \sem{\tmFold{s}{t}} &= \eval \comp \prodM{\phi \comp \sem{s}}{\sem{t}}
   \\
   \sem{\tmReturn{t}} &= \eta_{\sem{\sigma}} \comp \sem{t}
-  \textit{ where }\tau = \tyLift\;\sigma
+  \tag*{\text{(where $\Gamma \vdash t: \sigma$)}}
   \\
-  \sem{\tmBind{s}{t}} &= \mu_{\sem{\tau'}} \comp \Lift(\sem{t}) \comp \mathsf{st}_{\sem{\Gamma},\sem{\sigma}} \comp \prodM{\id}{\sem{s}}
-  \textit{ where }\Gamma \vdash s: \sigma\textit{ and }\tau = \tyLift\;\tau'
+  \sem{\tmBind{s}{t}} &= \mu_{\sem{\tau}} \comp \Lift(\sem{t}) \comp \mathsf{st}_{\sem{\Gamma},\sem{\sigma}} \comp \prodM{\id}{\sem{s}}
+  \tag*{\text{(where $\Gamma \vdash t: \sigma \to \tyLift\;\tau$)}}
   \end{align*}
-  \caption{Terms $\Gamma \vdash t: \tau$}
+  \caption{Terms $\Gamma \vdash t: \tau$ as morphisms}
   \label{fig:semantics:terms}
 \end{subfigure}
-\caption{Denotational semantics in the category $\Sem$}
+\caption{Interpretation of types, contexts and terms in category $\Sem$}
 \end{figure}
