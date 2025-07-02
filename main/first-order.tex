@@ -360,22 +360,28 @@ with a \emph{lifting} type constructor $\tyLift$. Then, as an alternative to the
 natural numbers as $\mu\alpha.1 + \synVar{nat} \times \alpha$, one could (within the language) define a type
 of ``approximation lists'' $\mu\alpha.\tyLift\,(1 + \tyLift\,\synVar{nat} \times \alpha)$, with monadic
 computations over approximated lists computing partial lists like $1 : \bot$. The lattice of approximants of
-$1 : 2 : []$ now includes not only the ``shape-preserving'' approximations but also the prefixes obtained by
-truncating successive tails with $\bot$:
+$1 : 2 : []$ now includes not only all the ``shape-preserving'' approximations but also all prefixes obtained
+by truncating successive tails with $\bot$:
 
   \begin{center}
+    \tikzset{node distance=1cm}
     \begin{tikzpicture}
       \node (top) at (0,0) {$1 : 2 : []$};
       % row 2
       \node [below of=top] (ioi) {$1 : \bot : []$};
-      \node [left of=ioi,xshift=-3cm] (oii) {$\bot : 2 : []$};
-      \node [right of=ioi,xshift=3cm] (iio) {$1 : 2 : \bot$};
+      \node [left of=ioi,xshift=-1.5cm] (oii) {$\bot : 2 : []$};
+      \node [right of=ioi,xshift=1.5cm] (iio) {$1 : 2 : \bot$};
       % row 3
       \node [below of=ioi] (oio) {$\bot : 2 : \bot$};
-      \node [left of=oio,xshift=-3cm] (ooi) {$\bot : \bot : []$};
-      \node [right of=oio,xshift=3cm] (ioo) {$1 : \bot : \bot$};
+      \node [left of=oio,xshift=-1.5cm] (ooi) {$\bot : \bot : []$};
+      \node [right of=oio,xshift=1.5cm] (ioo) {$1 : \bot : \bot$};
       % row 4
-      \node [below of=oio] (bot) {$[(\mathsf{a}, \bot), (\mathsf{b}, \bot), (\mathsf{a}, \bot)]$};
+      \node [below of=oio,xshift=-1cm] (ooo) {$\bot : \bot : \bot$};
+      \node [below of=oio,xshift=1cm] (io) {$1 : \bot$};
+      % row 5
+      \node [below of=ooo,xshift=1cm] (oo) {$\bot : \bot$};
+      % row 6
+      \node [below of=oo] (o) {$\bot$};
 
       % links
       \draw (top) -- (ioi);
@@ -384,6 +390,17 @@ truncating successive tails with $\bot$:
       \draw (ioi) -- (oio);
       \draw (ioi) -- (ooi);
       \draw (ioi) -- (ioo);
+      \draw (oii) -- (oio);
+      \draw (oii) -- (ooi);
+      \draw (iio) -- (oio);
+      \draw (iio) -- (ioo);
+      \draw (ooi) -- (ooo);
+      \draw (oio) -- (ooo);
+      \draw (ioo) -- (ooo);
+      \draw (ioo) -- (io);
+      \draw (ooo) -- (oo);
+      \draw (io) -- (oo);
+      \draw (oo) -- (o);
     \end{tikzpicture}
   \end{center}
 
