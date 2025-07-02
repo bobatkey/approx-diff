@@ -23,6 +23,24 @@ machinery of stable functions and Galois connections to present Galois slicing i
 
 \subsection{Automatic Differentiation}
 
+Automatic differentiation (AD), discussed in \secref{first-order:autodiff}, is the idea of computing
+derivatives of functions expressed as programs by systematically applying the chain rule. The observation that
+these derivative computations could be interleaved with the evaluation of the original program is due to
+\citet{linnainmaa76}, who showed how the forward derivative $\pushf{f}_x$ of $f$ at a point $x$ could be
+computed alongside $f(x)$ in a single pass, dramatically improving the efficiency of derivative evaluation
+over symbolic or numerical differentiation. This insight became the foundation of forward-mode AD, which
+underpins many optimisation and scientific computing tools, including JAX~\cite{jax2018github}.
+
+More recent approaches to automatic differentiation have emphasised its semantic foundations.
+\citet{elliott18} proposed a categorical model of AD that interprets programs not only as functions enriched
+with their derivatives, giving a compositional account of differentiation based on duality and linear maps.
+This line of work connects AD to denotational semantics, abstracting over operational concerns and enabling
+principled extensions to differentiable programming languages. Vákár and
+collaborators~\cite{vákár22,nunes2023} developed the CHAD framework, using Grothendieck constructions over
+indexed categories to capture both values and their tangents in a unified semantic structure. These semantic
+perspectives shed light on the categorical structure of AD and guide the design of systems that generalise
+beyond real analysis, including the application to data provenance and slicing explored in this paper.
+
 \subsection{\GPS}
 \label{sec:related-work:galois-slicing}
 
