@@ -356,22 +356,49 @@ A programmer, or perhaps a language implementor, might want to embed additional 
 composite data types, to allow for richer approximation structures. For example, for a list like $1 : 2 : []$
 we might want to allow the partial lists $\bot$, $1 : \bot$ and $1 : 2 : \bot$ as approximants, in addition to
 the approximants obtained by replacing elements with $\bot$. This can be accomplished by extending the syntax
-with a \emph{lifting} type constructor $\tyLift$. Then, as an alternative to the usual definition of lists
-of natural numbers as $\mu\alpha.1 + \synVar{nat} \times \alpha$, one could (within the language) define a
-type of ``approximation lists'' $\mu\alpha.\tyLift\,(1 + \tyLift\,\synVar{nat} \times \alpha)$, with
-monadic computations over approximated lists computing partial lists like $1 : \bot$. Similarly, one could
-define a custom approximating version of multiplication $*_{\text{appr}}: \tyLift\,\synVar{nat} \times
-\tyLift\,\synVar{nat} \to \tyLift\,\synVar{nat}$, as:
+with a \emph{lifting} type constructor $\tyLift$. Then, as an alternative to the usual definition of lists of
+natural numbers as $\mu\alpha.1 + \synVar{nat} \times \alpha$, one could (within the language) define a type
+of ``approximation lists'' $\mu\alpha.\tyLift\,(1 + \tyLift\,\synVar{nat} \times \alpha)$, with monadic
+computations over approximated lists computing partial lists like $1 : \bot$. The lattice of approximants of
+$1 : 2 : []$ now includes not only the ``shape-preserving'' approximations but also the prefixes obtained by
+truncating successive tails with $\bot$:
+
+  \begin{center}
+    \begin{tikzpicture}
+      \node (top) at (0,0) {$1 : 2 : []$};
+      % row 2
+      \node [below of=top] (ioi) {$1 : \bot : []$};
+      \node [left of=ioi,xshift=-3cm] (oii) {$\bot : 2 : []$};
+      \node [right of=ioi,xshift=3cm] (iio) {$1 : 2 : \bot$};
+      % row 3
+      \node [below of=ioi] (oio) {$\bot : 2 : \bot$};
+      \node [left of=oio,xshift=-3cm] (ooi) {$\bot : \bot : []$};
+      \node [right of=oio,xshift=3cm] (ioo) {$1 : \bot : \bot$};
+      % row 4
+      \node [below of=oio] (bot) {$[(\mathsf{a}, \bot), (\mathsf{b}, \bot), (\mathsf{a}, \bot)]$};
+
+      % links
+      \draw (top) -- (ioi);
+      \draw (top) -- (oii);
+      \draw (top) -- (iio);
+      \draw (ioi) -- (oio);
+      \draw (ioi) -- (ooi);
+      \draw (ioi) -- (ioo);
+    \end{tikzpicture}
+  \end{center}
+
+Similarly, one could define a custom approximating version of multiplication $*_{\text{appr}}:
+\tyLift\,\synVar{nat} \times \tyLift\,\synVar{nat} \to \tyLift\,\synVar{nat}$, as:
 \[x *_{\text{appr}} y = \tmBind{x}{\tmFun{x'}{\syn{if}\;x' \equiv
 0\;\syn{then}\;\tmReturn{0}\;\syn{else}\;\tmBind{y}{\tmFun{y'}{\tmReturn{x' * y'}}}}}\]
 
 \noindent This would allow the programmer to emulate the short-circuiting behaviour of $\mathrm{strictOr}$
 from \exref{strict-short-circuit}, or the short-circuiting multiplication used in \citet{perera22} for slicing
-matrix convolutions, without baking specific choices of approximation into the interpretation of individual
-operators.
+matrix convolutions, without having to bake specific choices of approximation into the interpretation of
+individual operators.
 
 With this lifting operator in the core language, one could then choose to fix certain choices of
-approximation, by providing a surface language without the lifting monad and interpreting it into the core
+approximation, providing a surface language without the lifting monad and interpreting it into the core
 language with lifting. The Galois slicing implementations discussed in \citet{perera12a} and
 \citet{ricciotti17}, for example, provide an approximation point at every composite type constructor; we can
 emulate this in our approach by defining a surface language where the data type of lists $\mu\alpha.1 +
