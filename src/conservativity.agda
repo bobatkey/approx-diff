@@ -18,10 +18,7 @@ open import finite-product-functor
 open import finite-coproduct-functor
   using (preserve-chosen-coproducts; module preserve-chosen-coproducts-consequences)
 
-import language-syntax
-import language-interpretation
 open import signature
-
 
 open Functor
 open NatTrans
@@ -403,25 +400,27 @@ GF-preserve-coproducts .Category.IsIso.inverse = presv-cp
 GF-preserve-coproducts .Category.IsIso.f∘inverse≈id .f≃f = Category.IsIso.f∘inverse≈id FC
 GF-preserve-coproducts .Category.IsIso.inverse∘f≈id .f≃f = Category.IsIso.inverse∘f≈id FC
 
+-- FIXME: If 𝒞 has exponentials, then GF preserves them as well.
+
 ------------------------------------------------------------------------------
 -- Semantic version of first-order definability: if we have a
 -- morphism in the GLR category whose domain and codomain are from
 -- 𝒞, then it is really a 𝒞 morphism.
-thm : ∀ {X Y} → (f : GF .fobj X Glued.⇒ GF .fobj Y) → ∃ (X 𝒞.⇒ Y) (λ g → F .fmor g 𝒟.≈ f .morph)
-thm {X} {Y} f with f .presv .*⊑* X .*⊑* (lift (F .fmor (𝒞.id _))) (liftS (leaf (lift (𝒞.id _ , 𝒟.≈-refl))))
+definability : ∀ {X Y} → (f : GF .fobj X Glued.⇒ GF .fobj Y) → ∃ (X 𝒞.⇒ Y) (λ g → F .fmor g 𝒟.≈ f .morph)
+definability {X} {Y} f with f .presv .*⊑* X .*⊑* (lift (F .fmor (𝒞.id _))) (liftS (leaf (lift (𝒞.id _ , 𝒟.≈-refl))))
 ... | liftS t with Definable-closed _ t
 ... | g , eq = g , (begin
-        F .fmor g
-      ≈⟨ eq ⟩
-        f .morph 𝒟.∘ (F .fmor (𝒞.id _) 𝒟.∘ 𝒟.id _)
-      ≈⟨ 𝒟.∘-cong 𝒟.≈-refl 𝒟.id-right ⟩
-        f .morph 𝒟.∘ F .fmor (𝒞.id _)
-      ≈⟨ 𝒟.∘-cong 𝒟.≈-refl (F .fmor-id) ⟩
-        f .morph 𝒟.∘ 𝒟.id _
-      ≈⟨ 𝒟.id-right ⟩
-        f .morph
-      ∎)
-      where open ≈-Reasoning 𝒟.isEquiv
+                      F .fmor g
+                    ≈⟨ eq ⟩
+                      f .morph 𝒟.∘ (F .fmor (𝒞.id _) 𝒟.∘ 𝒟.id _)
+                    ≈⟨ 𝒟.∘-cong 𝒟.≈-refl 𝒟.id-right ⟩
+                      f .morph 𝒟.∘ F .fmor (𝒞.id _)
+                    ≈⟨ 𝒟.∘-cong 𝒟.≈-refl (F .fmor-id) ⟩
+                      f .morph 𝒟.∘ 𝒟.id _
+                    ≈⟨ 𝒟.id-right ⟩
+                      f .morph
+                    ∎)
+    where open ≈-Reasoning 𝒟.isEquiv
 
 ------------------------------------------------------------------------------
 -- The morphisms in the logical relations category that we are
@@ -443,9 +442,9 @@ module syntactic {ℓ}
 
   open Glued.Iso
 
-  definability :
+  syntactic-definability :
     ∀ {Γ τ} (Γ-fo : first-order-ctxt Γ) (τ-fo : first-order τ) (M : Γ ⊢ τ) →
     ∃ (𝒞⟦ Γ-fo ⟧ctxt 𝒞.⇒ 𝒞⟦ τ-fo ⟧ty) λ g →
       F .fmor g 𝒟.≈ (⟦ τ-fo ⟧-iso .bwd .morph 𝒟.∘ (G⟦ M ⟧tm .morph 𝒟.∘ ⟦ Γ-fo ⟧ctxt-iso .fwd .morph))
-  definability {Γ} {τ} Γ-fo τ-fo M =
-    thm (⟦ τ-fo ⟧-iso .bwd Glued.∘ (G⟦ M ⟧tm Glued.∘ ⟦ Γ-fo ⟧ctxt-iso .fwd))
+  syntactic-definability {Γ} {τ} Γ-fo τ-fo M =
+    definability (⟦ τ-fo ⟧-iso .bwd Glued.∘ (G⟦ M ⟧tm Glued.∘ ⟦ Γ-fo ⟧ctxt-iso .fwd))
