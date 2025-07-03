@@ -432,12 +432,9 @@ module syntactic {ℓ}
    (Sig : Signature ℓ)
    (𝒞-Sig-Model : Model PFPC[ 𝒞 , 𝒞T , 𝒞P , 𝒞CP .HasCoproducts.coprod (𝒞T .HasTerminal.witness) (𝒞T .HasTerminal.witness) ] Sig) where
 
-  open import language-syntax
-
-  open language Sig
+  open import language-syntax Sig
 
   open import language-fo-interpretation Sig
-  open interp-preserved
          𝒞 𝒞T 𝒞P 𝒞CP
          Gl.cat GlPE.terminal GlPE.products GlCP.coproducts GlPE.exponentials
          GF GF-preserve-terminal GF-preserve-products GF-preserve-coproducts

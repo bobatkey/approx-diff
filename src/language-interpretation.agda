@@ -3,8 +3,10 @@
 open import Level using (_⊔_)
 open import Data.List using (List; []; _∷_)
 open import categories
-open import language-syntax
-open import signature
+  using (Category; HasTerminal; HasProducts; HasCoproducts; HasExponentials; HasBooleans; coproducts+exp→booleans)
+import language-syntax
+open import signature using (Signature; Model; PFPC[_,_,_,_]; PointedFPCat)
+open import every using (Every; []; _∷_)
 
 module language-interpretation
   {ℓ} (Sig : Signature ℓ)
@@ -26,7 +28,7 @@ open PointedFPCat PFPC[ 𝒞 , T , P , HasBooleans.Bool B ]
 open HasBooleans B
 -- open HasLists L renaming (list to ⟦list⟧; nil to ⟦nil⟧; cons to ⟦cons⟧; fold to ⟦fold⟧)
 
-open language Sig
+open language-syntax Sig
 open Model Int
 
 ⟦_⟧ty : type → obj
