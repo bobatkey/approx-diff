@@ -12,8 +12,6 @@ and a data type of lists. We omit a treatment of general inductive or coinductiv
 % \input{fig/kinding}
 \input{fig/typing}
 
-\figrefTwo{syntax}{typing} give the syntax and typing rules.
-
 \subsubsection{Semantics}
 \label{sec:language:semantics}
 
@@ -32,24 +30,3 @@ and a data type of lists. We omit a treatment of general inductive or coinductiv
 % For any $\mu$-polynomial endofunctor $F: \cat{C} \to \cat{C}$ with initial algebra $\mu F$, write $\inMap_F$
 % for the structure map $F\mu F \to \mu F$ and write $\cata_f$ for the unique morphism $\mu F \to X$ from the
 % initial $F$-algebra to any $F$-algebra $(X, f: FX \to X)$.
-
-\input{fig/semantics}
-
-To give the semantics for the language defined in \figrefTwo{syntax}{typing}, we fix a bicartesian closed
-category $\Sem$ with finite products $(\times, 1)$, finite coproducts $(\coprod, 0)$ and exponentials
-$\internalHom{X}{Y}$, with evaluation morphisms $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$,
-plus the following additional structure:
-\begin{enumerate}
-\item a strong monad $(\Lift, \eta, \mu)$ with strength $\mathsf{st}_{X,Y}: X \times \Lift(Y) \to \Lift(X
-\times Y)$
-\item for each primitive type $\rho \in \PrimTy$, an object $\sem{\rho}_{\PrimTy}$
-\item for each primitive operation $\phi \in \PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism $\sem{\phi}:
-\sem{\rho_1} \times \ldots \times \sem{\rho_n} \to \sem{\rho}$
-\item an endofunctor $\List: \Sem \to \Sem$, plus for any object $X$, morphisms $\nil: 1 \to \List(X)$ and
-$\cons: X \times \List(X) \to \List(X)$, and for any objects $Y, Z$ and morphisms $f_\nil: Z \to Y$ and
-$f_\cons: Z \times X \times Y \to Y$, a morphism $\fold(f_\nil,f_\cons): Z \times \List(X) \to Y$.
-\end{enumerate}
-
-\figref{semantics:types} gives the interpretations of types $\tau$ and contexts $\Gamma$ as objects of $\Sem$.
-\figref{semantics:terms} gives the interpretation of terms $\Gamma \vdash t: \tau$ as morphisms $\sem{\Gamma}
-\to \sem{\tau}$.
