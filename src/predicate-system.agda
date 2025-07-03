@@ -1,7 +1,8 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
-open import Level using (suc; _⊔_)
-open import basics using (IsPreorder; IsTop; IsMeet; IsResidual; monoidOfMeet; module ≤-Reasoning; IsJoin; IsClosureOp)
+open import Level using (suc; _⊔_; 0ℓ)
+open import basics
+  using (IsPreorder; IsTop; IsMeet; IsResidual; monoidOfMeet; module ≤-Reasoning; IsJoin; IsClosureOp; IsBigJoin)
 open import categories using (Category; HasProducts; HasExponentials)
 
 module predicate-system {o m e} (𝒞 : Category o m e) (P : HasProducts 𝒞) where
@@ -72,6 +73,11 @@ record PredicateSystem : Set (suc (suc (o ⊔ m ⊔ e))) where
     ⋀-[] : ∀ {X X' Y} {P : Predicate (P.prod X Y)} {f : X' 𝒞.⇒ X} → (⋀ (P [ P.prod-m f (𝒞.id _) ])) ⊑ (⋀ P) [ f ]
     ⋀-eval : ∀ {X Y} {P : Predicate (P.prod X Y)} → ((⋀ P) [ P.p₁ ]) ⊑ P
     ⋀-lambda : ∀ {X Y} {P : Predicate X} {Q : Predicate (P.prod X Y)} → P [ P.p₁ ] ⊑ Q → P ⊑ ⋀ Q
+
+    -- FIXME: this is experimental
+    ⋁        : ∀ {X} (I : Set 0ℓ) → (I → Predicate X) → Predicate X
+    ⋁-isJoin : ∀ {X} → IsBigJoin (⊑-isPreorder {X}) 0ℓ ⋁
+    []-⋁     : ∀ {X Y I} {P : I → Predicate Y} {f : X 𝒞.⇒ Y} → (⋁ I P [ f ]) ⊑ ⋁ I (λ i → P i [ f ])
 
   -- Derived properties of meets
   _[&&]_ : ∀ {X Y} → Predicate X → Predicate Y → Predicate (P.prod X Y)

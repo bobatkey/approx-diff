@@ -1,8 +1,8 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
-open import Level using (suc; _⊔_)
+open import Level using (suc; _⊔_; 0ℓ)
 open import basics
-  using (IsPreorder; IsTop; IsMeet; IsResidual; monoidOfMeet; module ≤-Reasoning; IsJoin; IsClosureOp)
+  using (IsPreorder; IsTop; IsMeet; IsResidual; monoidOfMeet; module ≤-Reasoning; IsJoin; IsClosureOp; IsBigJoin)
 open import categories using (Category; HasProducts; HasExponentials)
 open import predicate-system using (PredicateSystem; ClosureOp)
 
@@ -138,6 +138,31 @@ _==>_ : ∀ {X} → Predicate X → Predicate X → Predicate X
   ∎
   where open ≤-Reasoning S.⊑-isPreorder
 
+⋁ : ∀ {X} (I : Set 0ℓ) → (I → Predicate X) → Predicate X
+⋁ I P .pred = 𝐂 (S.⋁ I (λ i → P i .pred))
+⋁ I P .closed = 𝐂-isClosure .closed
+
+⋁-isJoin : ∀ {X} → IsBigJoin (⊑-isPreorder {X}) 0ℓ ⋁
+⋁-isJoin .IsBigJoin.upper I P i =
+  S⊑-trans (IsBigJoin.upper S.⋁-isJoin _ _ i) (𝐂-isClosure .unit)
+⋁-isJoin .IsBigJoin.least I P Q ϕ = begin
+    𝐂 (S.⋁ I (λ i → P i .pred))
+  ≤⟨ 𝐂-isClosure .mono (IsBigJoin.least S.⋁-isJoin _ _ _ ϕ) ⟩
+    𝐂 (Q .pred)
+  ≤⟨ Q .closed ⟩
+    Q .pred
+  ∎
+  where open ≤-Reasoning S.⊑-isPreorder
+
+[]-⋁ : ∀ {X Y I} {P : I → Predicate Y} {f : X 𝒞.⇒ Y} → (⋁ I P [ f ]) ⊑ ⋁ I (λ i → P i [ f ])
+[]-⋁ {X} {Y} {I} {P} {f} = begin
+    𝐂 (S.⋁ I (λ i → P i .pred)) S.[ f ]
+  ≤⟨ 𝐂-[]⁻¹ ⟩
+    𝐂 (S.⋁ I (λ i → P i .pred) S.[ f ])
+  ≤⟨ 𝐂-isClosure .mono S.[]-⋁ ⟩
+    𝐂 (S.⋁ I (λ i → P i .pred S.[ f ]))
+  ∎
+  where open ≤-Reasoning S.⊑-isPreorder
 
 system : PredicateSystem 𝒞 𝒞P
 system .PredicateSystem.Predicate = Predicate
@@ -172,3 +197,6 @@ system .PredicateSystem.[]-==> = S.[]-==>
 system .PredicateSystem.⋀-[] = S.⋀-[]
 system .PredicateSystem.⋀-eval = S.⋀-eval
 system .PredicateSystem.⋀-lambda = S.⋀-lambda
+system .PredicateSystem.⋁ = ⋁
+system .PredicateSystem.⋁-isJoin = ⋁-isJoin
+system .PredicateSystem.[]-⋁ {X} {Y} {I} {P} = []-⋁ {X} {Y} {I} {P}

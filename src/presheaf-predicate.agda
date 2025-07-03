@@ -1,9 +1,9 @@
 {-# OPTIONS --postfix-projections --prop --safe #-}
 
-open import Level using (_⊔_; suc)
+open import Level using (_⊔_; suc; 0ℓ)
 open import Data.Product using (_,_) renaming (_×_ to _××_)
 open import prop using (_,_; tt; ∃; _∧_; LiftS; liftS)
-open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; module ≤-Reasoning; monoidOfMeet; IsJoin; IsClosureOp)
+open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; module ≤-Reasoning; monoidOfMeet; IsJoin; IsClosureOp; IsBigJoin)
 open import prop-setoid using (Setoid; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_)
 open import categories using (Category; HasProducts; HasTerminal; IsTerminal; HasCoproducts)
@@ -143,7 +143,7 @@ _++_ {X} P Q .pred-mor {a} {b} f = begin
     P .pred a P.++ Q .pred a
   ≤⟨ IsJoin.mono P.++-isJoin (P .pred-mor f) (Q .pred-mor f) ⟩
     (P .pred b P.[ X .fmor f ]) P.++ (Q .pred b P.[ X .fmor f ])
-  ≤⟨ IsJoin.[_,_] P.++-isJoin ((IsJoin.inl P.++-isJoin) P.[ _ ]m) ((IsJoin.inr P.++-isJoin) P.[ _ ]m) ⟩
+  ≤⟨ P.[]-++⁻¹ ⟩
     (P .pred b P.++ Q .pred b) P.[ X .fmor f ]
   ∎
   where open ≤-Reasoning P.⊑-isPreorder
@@ -155,6 +155,25 @@ _++_ {X} P Q .pred-mor {a} {b} f = begin
 
 []-++ : ∀ {X Y} {P Q : Predicate Y} {f : X PSh.⇒ Y} → ((P ++ Q) [ f ]) ⊑ ((P [ f ]) ++ (Q [ f ]))
 []-++ .*⊑* a = record { *⊑* = λ x z → z }
+
+⋁ : ∀ {X} (I : Set 0ℓ) → (I → Predicate X) → Predicate X
+⋁ I P .pred a = P.⋁ I λ i → P i .pred a
+⋁ {X} I P .pred-mor {a} {b} f = begin
+    P.⋁ I (λ i → P i .pred a)
+  ≤⟨ IsBigJoin.mono P.⋁-isJoin (λ i → P i .pred-mor f) ⟩
+    P.⋁ I (λ i → P i .pred b P.[ X .fmor f ])
+  ≤⟨ IsBigJoin.least P.⋁-isJoin I _ _ (λ i → (IsBigJoin.upper P.⋁-isJoin _ _ i) P.[ _ ]m) ⟩
+    (P.⋁ I (λ i → P i .pred b)) P.[ X .fmor f ]
+  ∎
+  where open ≤-Reasoning P.⊑-isPreorder
+
+⋁-isJoin : ∀ {X} → IsBigJoin (⊑-isPreorder {X}) 0ℓ ⋁
+⋁-isJoin .IsBigJoin.upper I P i .*⊑* a = IsBigJoin.upper P.⋁-isJoin _ _ i
+⋁-isJoin .IsBigJoin.least I P Q ϕ .*⊑* a = IsBigJoin.least P.⋁-isJoin I _ _ (λ i → ϕ i .*⊑* a)
+
+[]-⋁ : ∀ {X Y I} {P : I → Predicate Y} {f : X PSh.⇒ Y} → (⋁ I P [ f ]) ⊑ ⋁ I (λ i → P i [ f ])
+[]-⋁ .*⊑* a = P.[]-⋁
+
 
 open setoid-predicate.Predicate
 open setoid-predicate._⊑_
@@ -205,7 +224,6 @@ _==>_ {X} P Q .pred-mor {a} {b} f .*⊑* x ϕ c g p =
 ⋀-lambda {X} {Y} {P} {Q} Φ .*⊑* a .*⊑* x p b f y =
   Φ .*⊑* b .*⊑* (X .fmor f .func x , y) (P .pred-mor f .*⊑* x p)
 
-
 system : PredicateSystem PSh products
 system .PredicateSystem.Predicate = Predicate
 system .PredicateSystem._⊑_ = _⊑_
@@ -236,11 +254,16 @@ system .PredicateSystem.++-isJoin = ++-isJoin
 system .PredicateSystem.⋀-[] = ⋀-[]
 system .PredicateSystem.⋀-eval = ⋀-eval
 system .PredicateSystem.⋀-lambda = ⋀-lambda
+system .PredicateSystem.⋁ = ⋁
+system .PredicateSystem.⋁-isJoin = ⋁-isJoin
+system .PredicateSystem.[]-⋁ = []-⋁
 
 ------------------------------------------------------------------------------
 -- Coproduct closure. This monad is "sheafification" monad for
 -- Grothendieck logical relations a la Simpson and Fiore for the
 -- “extensive topology” on 𝒞.
+
+-- FIXME: move this to another file
 
 open import stable-coproducts
 

@@ -1,13 +1,16 @@
 {-# OPTIONS --postfix-projections --prop --safe #-}
 
-open import Level using (Lift; lift; lower; _⊔_)
+open import Level using (Lift; lift; lower; _⊔_; 0ℓ)
 open import Data.Product using (_,_)
 open import prop using (_,_; proj₁; proj₂; ∃; LiftP; lift; lower; liftS; LiftS; inj₁; inj₂)
 open import basics using (module ≤-Reasoning; IsClosureOp; IsJoin; IsMeet)
-open import categories using (Category; HasBooleans; HasProducts; HasCoproducts; HasExponentials; HasTerminal; IsTerminal; IsProduct; coproducts+exp→booleans)
+open import categories
+  using (Category; HasBooleans; HasProducts; HasCoproducts; HasExponentials;
+         HasTerminal; IsTerminal; IsProduct; coproducts+exp→booleans; setoid→category)
 open import functor
-  using (Functor; _∘F_; opF; _∘H_; ∘H-cong; id; _∘_; NatTrans; ≃-NatTrans; ≃-isEquivalence; interchange; NT-id-left)
-open import prop-setoid using (module ≈-Reasoning; IsEquivalence)
+  using (Functor; _∘F_; opF; _∘H_; ∘H-cong; id; _∘_; NatTrans; ≃-NatTrans; ≃-isEquivalence; interchange; NT-id-left;
+         HasColimits)
+open import prop-setoid using (module ≈-Reasoning; IsEquivalence; Setoid)
 open import setoid-cat using (SetoidCat)
 open import predicate-system using (PredicateSystem; ClosureOp)
 open import stable-coproducts using (StableBits; Stable)
@@ -46,6 +49,7 @@ module conservativity
   (𝒞 : Category o m e) (𝒞T : HasTerminal 𝒞) (𝒞P : HasProducts 𝒞) (𝒞CP : HasCoproducts 𝒞) (stable : Stable 𝒞CP)
   -- A higher order model
   (𝒟 : Category o m e) (𝒟T : HasTerminal 𝒟) (𝒟P : HasProducts 𝒟) (𝒟CP : HasCoproducts 𝒟) (𝒟E : HasExponentials 𝒟 𝒟P)
+  (𝒟DC : ∀ (A : Setoid 0ℓ 0ℓ) → HasColimits (setoid→category A) 𝒟)
   -- A functor which preserves terminal, products, and coproducts
   (F  : Functor 𝒞 𝒟)
   (FT : Category.IsIso 𝒟 (HasTerminal.to-terminal 𝒟T {F .fobj (𝒞T .HasTerminal.witness)}))
@@ -288,11 +292,20 @@ open import closure-predicate PSh⟨𝒞⟩-system closureOp
   using (system; embed)
 
 module Gl = glueing-simple 𝒟 PSh⟨𝒞⟩ _ system G
+
+-- This category has all the structure we need:
 module GlCP = Gl.coproducts 𝒟CP
 module GlCPM = HasCoproducts GlCP.coproducts
 module GlPE = Gl.products-and-exponentials 𝒟T 𝒟P 𝒟E G-preserve-products
 module GlPM = HasProducts GlPE.products
 module GlT = HasTerminal GlPE.terminal
+
+GDC : ∀ (A : Setoid 0ℓ 0ℓ) → HasColimits (setoid→category A) Gl.cat
+GDC A = colimits where open Gl.colimits (setoid→category A) (𝒟DC A)
+
+open import lists Gl.cat GlPE.terminal GlPE.products GlPE.exponentials GDC
+  using ()
+  renaming (lists to Gl-lists)
 
 module Glued = Category Gl.cat
 open Gl.Obj
@@ -300,8 +313,8 @@ open Gl._=>_
 open Gl._≃m_
 
 ------------------------------------------------------------------------------
--- The category of first-order things embeds into logical relations
--- category, and all first-order type formers are preserved.
+-- The category of first-order things embeds into the logical
+-- relations category, and all first-order type formers are preserved.
 
 GF : Functor 𝒞 Gl.cat
 GF .fobj x .carrier = F .fobj x
@@ -435,7 +448,7 @@ module syntactic {ℓ}
 
   open import language-fo-interpretation Sig
          𝒞 𝒞T 𝒞P 𝒞CP
-         Gl.cat GlPE.terminal GlPE.products GlCP.coproducts GlPE.exponentials
+         Gl.cat GlPE.terminal GlPE.products GlCP.coproducts GlPE.exponentials Gl-lists
          GF GF-preserve-terminal GF-preserve-products GF-preserve-coproducts
          𝒞-Sig-Model
     renaming (𝒟⟦_⟧ty to G⟦_⟧ty; 𝒟⟦_⟧ctxt to G⟦_⟧ctxt; 𝒟⟦_⟧tm to G⟦_⟧tm)

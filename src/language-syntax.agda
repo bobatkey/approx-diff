@@ -13,7 +13,7 @@ data type : Set ℓ where
   unit bool : type
   base : sort → type
   _[×]_ _[→]_ : type → type → type
---    list : type → type
+  list : type → type
 
 data first-order : type → Set ℓ where
   unit  : first-order unit
@@ -77,8 +77,7 @@ data _⊢_ : ctxt → type → Set ℓ where
          rel in-sorts →
          Every (λ σ → Γ ⊢ base σ) in-sorts →
          Γ ⊢ bool
-{-
-  -- lists; FIXME; reinstate
+
   nil  : ∀ {Γ τ} → Γ ⊢ list τ
   cons : ∀ {Γ τ} → Γ ⊢ τ → Γ ⊢ list τ → Γ ⊢ list τ
   fold : ∀ {Γ τ₁ τ₂} →
@@ -86,7 +85,7 @@ data _⊢_ : ctxt → type → Set ℓ where
          Γ , τ₁ , τ₂ ⊢ τ₂ →
          Γ ⊢ list τ₁ →
          Γ ⊢ τ₂
--}
+
 -- Applying renamings to terms
 mutual
   _*_ : ∀ {Γ Γ' τ} → Ren Γ Γ' → Γ ⊢ τ → Γ' ⊢ τ
@@ -102,15 +101,14 @@ mutual
   ρ * brel ω Ms = brel ω (ρ ** Ms)
   ρ * lam M = lam (ext ρ * M)
   ρ * app M N = app (ρ * M) (ρ * N)
-  -- ρ * nil = nil
-  -- ρ * cons M N = cons (ρ * M) (ρ * N)
-  -- ρ * fold M₁ M₂ M = fold (ρ * M₁) (ext (ext ρ) * M₂) (ρ * M)
+  ρ * nil = nil
+  ρ * cons M N = cons (ρ * M) (ρ * N)
+  ρ * fold M₁ M₂ M = fold (ρ * M₁) (ext (ext ρ) * M₂) (ρ * M)
 
   _**_ : ∀ {Γ Γ' σs} → Ren Γ Γ' → Every (λ σ → Γ ⊢ base σ) σs → Every (λ σ → Γ' ⊢ base σ) σs
   ρ ** [] = []
   ρ ** (M ∷ Ms) = (ρ * M) ∷ (ρ ** Ms)
 
-{-
 -- “macros”
 append : ∀ {Γ τ} → Γ ⊢ list τ → Γ ⊢ list τ → Γ ⊢ list τ
 append xs ys = fold ys (cons (var (succ zero)) (var zero)) xs
@@ -123,4 +121,3 @@ from M collect N = fold nil (append (weaken * N) (var zero)) M
 
 when_；_ : ∀ {Γ τ} → Γ ⊢ bool → Γ ⊢ list τ → Γ ⊢ list τ
 when M ； N = if M then N else nil
--}

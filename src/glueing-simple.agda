@@ -1,10 +1,10 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
-open import Level using (suc; _⊔_)
+open import Level using (suc; _⊔_; 0ℓ)
 open import prop-setoid using (module ≈-Reasoning; IsEquivalence)
-open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; module ≤-Reasoning; IsJoin)
+open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; module ≤-Reasoning; IsJoin; IsBigJoin)
 open import categories using (Category; HasProducts; HasExponentials; HasCoproducts; HasTerminal; IsTerminal)
-open import functor using (Functor)
+open import functor using (Functor; HasColimits; Colimit; IsColimit; _∘F_; NatTrans; ≃-NatTrans)
 open import predicate-system using (PredicateSystem)
 open import finite-product-functor using (preserve-chosen-products; module preserve-chosen-products-consequences)
 
@@ -81,6 +81,13 @@ cat .Category.∘-cong e₁ e₂ .f≃f = 𝒞.∘-cong (e₁ .f≃f) (e₂ .f�
 cat .Category.id-left .f≃f = 𝒞.id-left
 cat .Category.id-right .f≃f = 𝒞.id-right
 cat .Category.assoc f g h .f≃f = 𝒞.assoc (f .morph) (g .morph) (h .morph)
+
+project : Functor cat 𝒞
+project .fobj x = x .carrier
+project .fmor f = f .morph
+project .fmor-cong eq = eq .f≃f
+project .fmor-id = IsEquivalence.refl 𝒞.isEquiv
+project .fmor-comp f g = IsEquivalence.refl 𝒞.isEquiv
 
 -- Binary Coproducts
 module coproducts (CP : HasCoproducts 𝒞) where
@@ -299,3 +306,68 @@ module products-and-exponentials
   exponentials .HasExponentials.lambda-cong e .f≃f = E.lambda-cong (e .f≃f)
   exponentials .HasExponentials.eval-lambda f .f≃f = E.eval-lambda (f .morph)
   exponentials .HasExponentials.lambda-ext f .f≃f = E.lambda-ext (f .morph)
+
+-- Colimits
+--
+-- FIXME: be less specific about the universe levels here
+module colimits (𝒮 : Category 0ℓ 0ℓ 0ℓ) (𝒞-colimits : HasColimits 𝒮 𝒞) where
+
+  private
+    module 𝒮 = Category 𝒮
+  open Colimit
+  open IsColimit
+  open NatTrans
+  open ≃-NatTrans
+
+  colimits : HasColimits 𝒮 cat
+  colimits D .apex .carrier = 𝒞-colimits (project ∘F D) .apex
+  colimits D .apex .pred =
+    ⋁ 𝒮.obj λ i → (D .fobj i .pred) ⟨ (F .fmor (𝒞-colimits (project ∘F D) .cocone .transf i)) ⟩
+  colimits D .cocone .transf i .morph = 𝒞-colimits (project ∘F D) .cocone .transf i
+  colimits D .cocone .transf i .presv = begin
+      D .fobj i .pred
+    ≤⟨ unit _ ⟩
+      D .fobj i .pred ⟨ F .fmor (𝒞-colimits (project ∘F D) .cocone .transf i) ⟩
+         [ F .fmor (𝒞-colimits (project ∘F D) .cocone .transf i) ]
+    ≤⟨ (IsBigJoin.upper ⋁-isJoin _ _ i) [ _ ]m ⟩
+      (⋁ 𝒮.obj (λ i₁ → D .fobj i₁ .pred ⟨ F .fmor (𝒞-colimits (project ∘F D) .cocone .transf i₁) ⟩)
+         [ F .fmor (𝒞-colimits (project ∘F D) .cocone .transf i) ])
+    ∎
+    where open ≤-Reasoning ⊑-isPreorder
+  colimits D .cocone .natural f .f≃f = 𝒞-colimits (project ∘F D) .cocone .natural f
+  colimits D .isColimit .colambda X α .morph =
+    𝒞-colimits (project ∘F D) .isColimit .colambda (X .carrier)
+      (record { transf = λ i → α .transf i .morph
+              ; natural = λ f → α .natural f .f≃f })
+  colimits D .isColimit .colambda X α .presv = begin
+      ⋁ 𝒮.obj (λ i → D .fobj i .pred ⟨ F .fmor (inj i) ⟩)
+    ≤⟨ IsBigJoin.mono ⋁-isJoin (λ i → α .transf i .presv ⟨ _ ⟩m) ⟩
+      ⋁ 𝒮.obj (λ i → X .pred [ F .fmor (α .transf i .morph) ] ⟨ F .fmor (inj i) ⟩)
+    ≤⟨ IsBigJoin.mono ⋁-isJoin (λ i → ([]-cong (F .fmor-cong (𝒞.≈-sym (𝒞-colimits _ .isColimit .colambda-coeval _ _ .transf-eq i)))) ⟨ _ ⟩m) ⟩
+      ⋁ 𝒮.obj (λ i → X .pred [ F .fmor (elim 𝒞.∘ inj i) ] ⟨ F .fmor (inj i) ⟩)
+    ≤⟨ IsBigJoin.mono ⋁-isJoin (λ i → ([]-cong (F .fmor-comp _ _)) ⟨ _ ⟩m) ⟩
+      ⋁ 𝒮.obj (λ i → X .pred [ F .fmor elim 𝒟.∘ F. fmor (inj i) ] ⟨ F .fmor (inj i) ⟩)
+    ≤⟨ IsBigJoin.mono ⋁-isJoin (λ i → []-comp⁻¹ _ _ ⟨ _ ⟩m) ⟩
+      ⋁ 𝒮.obj (λ i → X .pred [ F .fmor elim ] [ F. fmor (inj i) ] ⟨ F .fmor (inj i) ⟩)
+    ≤⟨ IsBigJoin.mono ⋁-isJoin (λ i → counit _) ⟩
+      ⋁ 𝒮.obj (λ i → X .pred [ F .fmor elim ])
+    ≤⟨ IsBigJoin.least ⋁-isJoin _ _ _ (λ i → ⊑-isPreorder .IsPreorder.refl) ⟩
+      X .pred [ F .fmor elim ]
+    ∎
+    where open ≤-Reasoning ⊑-isPreorder
+          elim = colambda (𝒞-colimits (project ∘F D) .isColimit) (X .carrier) (record { transf = λ i → α .transf i .morph ; natural = _ })
+          inj = 𝒞-colimits (project ∘F D) .cocone .transf
+  colimits D .isColimit .colambda-cong α≃β .f≃f =
+    𝒞-colimits (project ∘F D) .isColimit .colambda-cong (record { transf-eq = λ i → α≃β .transf-eq i .f≃f })
+  colimits D .isColimit .colambda-coeval X α .transf-eq i .f≃f =
+    𝒞-colimits (project ∘F D) .isColimit .colambda-coeval (X .carrier) _ .transf-eq i
+  colimits D .isColimit .colambda-ext X f .f≃f =
+    begin
+      𝒞-colimits (project ∘F D) .isColimit .colambda (X .carrier)
+         (record { transf = λ i → f .morph 𝒞.∘ 𝒞-colimits (project ∘F D) .cocone .transf i; natural = _ })
+    ≈⟨ 𝒞-colimits (project ∘F D) .isColimit .colambda-cong (record { transf-eq = λ x → 𝒞.≈-refl }) ⟩
+      𝒞-colimits (project ∘F D) .isColimit .colambda (X .carrier) (functor.constFmor (f .morph) functor.∘ 𝒞-colimits (project ∘F D) .cocone)
+    ≈⟨ 𝒞-colimits (project ∘F D) .isColimit .colambda-ext (X .carrier) (f .morph) ⟩
+      f .morph
+    ∎
+    where open ≈-Reasoning 𝒞.isEquiv
