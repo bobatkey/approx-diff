@@ -4,10 +4,10 @@
 A \emph{predicate system} over a category $\cat{C}$ with products is the following data:
 \begin{itemize}
 \item for every object $X$ of $\cat{C}$, a partial order $(\Pred(X), \sqsubseteq)$ of predicates on $X$
-\item for every morphism $f: X \to Y$ of $\cat{C}$:
+\item for every morphism $f: X \to Y$ of $\cat{C}$, two monotone functions:
    \begin{enumerate}
-   \item a function $\reindex{-}{f}: \Pred(Y) \to \Pred(X)$ computing the reindexing or pullback of a predicate along $f$
-   \item a function $\directImage{-}{f}: \Pred(X) \to \Pred(Y)$ computing the pushforward or existential
+   \item $\reindex{-}{f}: \Pred(Y) \to \Pred(X)$ computing the reindexing or pullback of a predicate along $f$
+   \item $\directImage{-}{f}: \Pred(X) \to \Pred(Y)$ computing the pushforward or existential
    image of a predicate along $f$
    \end{enumerate}
 \end{itemize}
