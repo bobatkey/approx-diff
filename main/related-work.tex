@@ -30,16 +30,20 @@ these derivative computations could be interleaved with the evaluation of the or
 computed alongside $f(x)$ in a single pass, dramatically improving the efficiency of derivative evaluation
 over symbolic or numerical differentiation. This insight became the foundation of forward-mode AD, which
 underpins many optimisation and scientific computing tools, including JAX~\cite{jax2018github}.
+\citet{griewank89} showed how the Wengert list, the linear record of assignments used in forward-mode to
+compute derivatives efficiently, could be traversed in reverse to compute the pullback map. This two-pass
+approach is the foundation of reverse-mode AD, and closely resembles implementations of Galois slicing
+(\secref{related-work:galois-slicing} below) that record a trace during forward slicing for use in backward
+slicing.
 
-More recent approaches to automatic differentiation have emphasised its semantic foundations.
-\citet{elliott18} proposed a categorical model of AD that interprets programs as functions enriched with their
-derivatives, giving a compositional account of differentiation based on duality and linear maps. This line of
-work connects AD to denotational semantics, abstracting over operational concerns and enabling principled
-extensions to differentiable programming languages. Vákár and collaborators~\cite{vákár22,nunes2023} developed
-the CHAD framework upon which this paper was based, using Grothendieck constructions over indexed categories
-to capture both values and their tangents in a compositional semantic structure. These semantic perspectives
-shed light on the categorical structure of AD and guide the design of systems that generalise beyond real
-analysis, including the application to data provenance and slicing explored in this paper.
+More recent approaches to automatic differentiation have emphasised semantic foundations. \citet{elliott18}
+proposed a categorical model of AD that interprets programs as functions enriched with their derivatives,
+giving a compositional account of differentiation based on duality and linear maps. Vákár and
+collaborators~\cite{vákár22,nunes2023} developed the CHAD framework which inspired this paper, using
+Grothendieck constructions over indexed categories to capture both values and their tangents in a
+compositional semantic structure. These perspectives shed light on the categorical structure of AD and guide
+the design of systems that generalise AD beyond real analysis, including the application to data provenance
+and slicing explored in this paper.
 
 \subsection{\GPS}
 \label{sec:related-work:galois-slicing}

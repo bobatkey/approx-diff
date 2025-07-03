@@ -262,8 +262,6 @@ T(f)(\partial g) \comp \partial f)$, with the functor $T(f)$ acting to ``reindex
 yielding a morphism $T(f)(\partial g): T(f)(\partial Y) \to T(f)(T(g)(\partial Z)) = T(g \comp f)(\partial
 Z)$.
 
-% which can then be composed with $\partial f: \partial X \to T(f)(\partial Y)$.
-
 \subsubsection{Category of Families}
 \label{sec:Fam}
 
@@ -500,8 +498,9 @@ g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp \partial f)
 the forward chain rule, since $(\reindex{\partial g}{f} \comp \partial f)_x = {\partial g}_{f(x)} \comp
 {\partial f}_x$.
 
-% with the reindexing along $f$ recomputing $f(x)$ in order to select the appropriate pushforward.
-
 \subsubsection{Reverse-Mode Automatic Differentiation}
+
+Reverse-mode automatic differentation, first introduced by \citet{griewank89}, computes the pullback map
+$\pullf{f}: \RR^n$
 
 \todo{brief summary}

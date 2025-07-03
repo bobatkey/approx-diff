@@ -21,7 +21,7 @@ Derivatives can be computed numerically by computing $f$ on small perturbations 
 
 \subsection{Stable Domain Theory as Differentiability}
 
-Our thesis is that \GPS is a form of differentiable programming, where tangents are not linear approximations of functions but instead are qualitiative approximations of elements in the sense of domain theory. Smooth functions in this setting are Berry's \emph{stable functions} \cite{berry79,berry82}. We now introduce these concepts and how they relate to \GPS.
+Our thesis is that \GPS is a form of differentiable programming, where tangents are not linear approximations of functions but instead are qualitative approximations of elements in the sense of domain theory. Smooth functions in this setting are Berry's \emph{stable functions} \cite{berry79,berry82}. We now introduce these concepts and how they relate to \GPS.
 
 \subsubsection{Domains as a Qualitative Theory of Approximation}
 
@@ -156,6 +156,7 @@ mapping directly, even without assuming that any meets exist:
 \end{definition}
 
 \begin{example}
+  \leavevmode\\[-3ex]
   \begin{enumerate}
   \item The function $\mathrm{strictOr}$ is stable. For example, for the input-output pair $(\mathsf{tt},\mathsf{ff}) \mapsto \mathsf{tt}$, the minimal input that gives this output is exactly $(\mathsf{tt}, \mathsf{ff})$. If we take the approximation $\bot \leq \mathsf{tt}$ of the output, then the corresponding minimal input is $(\bot, \bot)$. The function $\mathrm{shortCircuitOR}$ is also stable. For the input-output pair $(\mathsf{tt},\mathsf{ff}) \mapsto \mathsf{tt}$, the minimal input that gives this input is $(\mathsf{tt},\bot)$, indicating that the presence of $\mathsf{ff}$ in the second argument was not necessary to produce this output. As with $\mathrm{strictOr}$, the minimal input required to produce the output $\bot \leq \mathsf{tt}$ is again $(\bot,\bot)$.
 
