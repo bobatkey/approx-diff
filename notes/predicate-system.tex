@@ -1,12 +1,21 @@
 \subsection{Predicate systems}
 \label{sec:predicate-system}
 
-A \emph{predicate system} over a category $\cat{C}$ with products is a functor $\Pred: \cat{C}^\op \to \Set$
+A \emph{predicate system} over a category $\cat{C}$ with products is the following data:
+\begin{itemize}
+\item for every object $X$ of $\cat{C}$, a partial order $(\Pred(X), \sqsubseteq)$ of predicates on $X$
+\item for every morphism $f: X \to Y$ of $\cat{C}$:
+   \begin{enumerate}
+   \item a function $\reindex{-}{f}: \Pred(Y) \to \Pred(X)$ computing the reindexing or pullback of a predicate along $f$
+   \item a function $\directImage{-}{f}: \Pred(X) \to \Pred(Y)$ computing the pushforward or existential
+   image of a predicate along $f$
+   \end{enumerate}
+\end{itemize}
 
-A preorder on predicates (_⊑_).
+The pullback $\reindex{-}{-}$ is functorial.
 
-Reindexing [f] (pullback) and [f⟩ (pushforward or existential image) that satisfy an adjunction.
-
-Logical connectives (&&, ++, ==>, TT) and quantification (⋀).
-
-These operations satisfy standard laws such as monotonicity, closure under reindexing, etc.
+% Reindexing [f] (pullback) and [f⟩ (pushforward or existential image) that satisfy an adjunction.
+%
+% Logical connectives (&&, ++, ==>, TT) and quantification (⋀).
+%
+% These operations satisfy standard laws such as monotonicity, closure under reindexing, etc.
