@@ -34,6 +34,38 @@ module _ {o₁ e₁ o₂ e₂} {X : Setoid o₁ e₁} {Y : Setoid o₂ e₂} whe
   setoid-functor f .Functor.fmor-id = tt
   setoid-functor f .Functor.fmor-comp _ _ = tt
 
+module _ {o₁ m₁ e₁ o₂ m₂ e₂} {𝒞 : Category o₁ m₁ e₁} {𝒟 : Category o₂ m₂ e₂} where
+
+  private
+    module 𝒞 = Category 𝒞
+    module 𝒟 = Category 𝒟
+  open Functor
+  open 𝒞.Iso
+
+  functor-preserve-iso : (F : Functor 𝒞 𝒟) → ∀ {x y} → 𝒞.Iso x y → 𝒟.Iso (F .fobj x) (F .fobj y)
+  functor-preserve-iso F iso .Category.Iso.fwd = F .fmor (iso .fwd)
+  functor-preserve-iso F iso .Category.Iso.bwd = F .fmor (iso .bwd)
+  functor-preserve-iso F iso .Category.Iso.fwd∘bwd≈id = begin
+      F .fmor (iso .fwd) 𝒟.∘ F .fmor (iso .bwd)
+    ≈˘⟨ F .fmor-comp _ _ ⟩
+      F .fmor (iso .fwd 𝒞.∘ iso .bwd)
+    ≈⟨ F .fmor-cong (iso .fwd∘bwd≈id) ⟩
+      F .fmor (𝒞.id _)
+    ≈⟨ F .fmor-id ⟩
+      𝒟.id _
+    ∎
+    where open ≈-Reasoning 𝒟.isEquiv
+  functor-preserve-iso F iso .Category.Iso.bwd∘fwd≈id = begin
+      F .fmor (iso .bwd) 𝒟.∘ F .fmor (iso .fwd)
+    ≈˘⟨ F .fmor-comp _ _ ⟩
+      F .fmor (iso .bwd 𝒞.∘ iso .fwd)
+    ≈⟨ F .fmor-cong (iso .bwd∘fwd≈id) ⟩
+      F .fmor (𝒞.id _)
+    ≈⟨ F .fmor-id ⟩
+      𝒟.id _
+    ∎
+    where open ≈-Reasoning 𝒟.isEquiv
+
 module _ {o₁ m₁ e₁ o₂ m₂ e₂} where
 
   constF : ∀ (𝒞 : Category o₁ m₁ e₁)

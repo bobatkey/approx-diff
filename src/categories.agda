@@ -249,6 +249,31 @@ record HasCoproducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
     ∎
     where open ≈-Reasoning isEquiv
 
+  -- FIXME: do this using the general fact that functors preserve isomorphisms
+  coproduct-preserve-iso : ∀ {x₁ x₂ y₁ y₂} → Iso x₁ x₂ → Iso y₁ y₂ → Iso (coprod x₁ y₁) (coprod x₂ y₂)
+  coproduct-preserve-iso x₁≅x₂ y₁≅y₂ .Iso.fwd = coprod-m (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.fwd)
+  coproduct-preserve-iso x₁≅x₂ y₁≅y₂ .Iso.bwd = coprod-m (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.bwd)
+  coproduct-preserve-iso x₁≅x₂ y₁≅y₂ .Iso.fwd∘bwd≈id =
+    begin
+      coprod-m (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.fwd) ∘ coprod-m (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.bwd)
+    ≈˘⟨ coprod-m-comp _ _ _ _ ⟩
+      coprod-m (x₁≅x₂ .Iso.fwd ∘ x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.fwd ∘ y₁≅y₂ .Iso.bwd)
+    ≈⟨ coprod-m-cong (x₁≅x₂ .Iso.fwd∘bwd≈id) (y₁≅y₂ .Iso.fwd∘bwd≈id) ⟩
+      coprod-m (id _) (id _)
+    ≈⟨ coprod-m-id ⟩
+      id _
+    ∎ where open ≈-Reasoning isEquiv
+  coproduct-preserve-iso x₁≅x₂ y₁≅y₂ .Iso.bwd∘fwd≈id =
+    begin
+      coprod-m (x₁≅x₂ .Iso.bwd) (y₁≅y₂ .Iso.bwd) ∘ coprod-m (x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.fwd)
+    ≈˘⟨ coprod-m-comp _ _ _ _ ⟩
+      coprod-m (x₁≅x₂ .Iso.bwd ∘ x₁≅x₂ .Iso.fwd) (y₁≅y₂ .Iso.bwd ∘ y₁≅y₂ .Iso.fwd)
+    ≈⟨ coprod-m-cong (x₁≅x₂ .Iso.bwd∘fwd≈id) (y₁≅y₂ .Iso.bwd∘fwd≈id) ⟩
+      coprod-m (id _) (id _)
+    ≈⟨ coprod-m-id ⟩
+      id _
+    ∎ where open ≈-Reasoning isEquiv
+
 
 module _ {o m e} (𝒞 : Category o m e) where
 

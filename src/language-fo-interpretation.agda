@@ -44,24 +44,38 @@ module interp-preserved
   (FT : Category.IsIso 𝒟 (HasTerminal.to-terminal 𝒟T {F .fobj (𝒞T .HasTerminal.witness)}))
   (FP : preserve-chosen-products F 𝒞P 𝒟P)
   (FC : preserve-chosen-coproducts F 𝒞CP 𝒟CP)
-  (𝒞-model : Model PFPC[ 𝒞 , 𝒞T , 𝒞P , 𝒞CP .HasCoproducts.coprod (𝒞T .HasTerminal.witness) (𝒞T .HasTerminal.witness) ] Sig)
+  (𝒞-Sig-model : Model PFPC[ 𝒞 , 𝒞T , 𝒞P , 𝒞CP .HasCoproducts.coprod (𝒞T .HasTerminal.witness) (𝒞T .HasTerminal.witness) ] Sig)
   where
 
   private
+    module 𝒞CP = HasCoproducts 𝒞CP
     module 𝒟 = Category 𝒟
+    module 𝒟CP = HasCoproducts 𝒟CP
     module 𝒟P = HasProducts 𝒟P
 
-  open interp 𝒞 𝒞T 𝒞P 𝒞CP 𝒞-model renaming (⟦_⟧ty to 𝒞⟦_⟧ty; ⟦_⟧ctxt to 𝒞⟦_⟧ctxt) using ()
+  open interp 𝒞 𝒞T 𝒞P 𝒞CP 𝒞-Sig-model
+    renaming (⟦_⟧ty to 𝒞⟦_⟧ty; ⟦_⟧ctxt to 𝒞⟦_⟧ctxt)
+    using ()
+    public
 
-  𝒟-model : Model PFPC[ 𝒟 , 𝒟T , 𝒟P , 𝒟CP .HasCoproducts.coprod (𝒟T .HasTerminal.witness) (𝒟T .HasTerminal.witness) ] Sig
-  𝒟-model = transport-model Sig F FT FP {!!} 𝒞-model
+  𝒞Bool = 𝒞CP.coprod (𝒞T .HasTerminal.witness) (𝒞T .HasTerminal.witness)
+  𝒟Bool = 𝒟CP.coprod (𝒟T .HasTerminal.witness) (𝒟T .HasTerminal.witness)
 
-  open import language-interpretation Sig 𝒟 𝒟T 𝒟P 𝒟CP 𝒟E 𝒟-model
-    renaming (⟦_⟧ty to 𝒟⟦_⟧ty; ⟦_⟧ctxt to 𝒟⟦_⟧ctxt) using ()
+  Bool-iso : 𝒟.Iso (F .fobj 𝒞Bool) 𝒟Bool
+  Bool-iso =
+    𝒟.Iso-trans (𝒟.Iso-sym (𝒟.IsIso→Iso FC))
+                (𝒟CP.coproduct-preserve-iso (𝒟.IsIso→Iso FT) (𝒟.IsIso→Iso FT))
+
+  𝒟-Sig-model : Model PFPC[ 𝒟 , 𝒟T , 𝒟P , 𝒟Bool ] Sig
+  𝒟-Sig-model = transport-model Sig F FT FP (Bool-iso .𝒟.Iso.fwd) 𝒞-Sig-model
+
+  open import language-interpretation Sig 𝒟 𝒟T 𝒟P 𝒟CP 𝒟E 𝒟-Sig-model
+    renaming (⟦_⟧ty to 𝒟⟦_⟧ty; ⟦_⟧ctxt to 𝒟⟦_⟧ctxt; ⟦_⟧tm to 𝒟⟦_⟧tm) using ()
+    public
 
   ⟦_⟧-iso : ∀ {τ} (τ-fo : first-order τ) → 𝒟.Iso (F .fobj 𝒞⟦ τ-fo ⟧ty) 𝒟⟦ τ ⟧ty
   ⟦ unit ⟧-iso      = 𝒟.IsIso→Iso FT
-  ⟦ bool ⟧-iso      = 𝒟.Iso-trans (𝒟.Iso-sym (𝒟.IsIso→Iso FC)) {!!}
+  ⟦ bool ⟧-iso      = Bool-iso
   ⟦ base s ⟧-iso    = 𝒟.Iso-refl
   ⟦ τ₁ [×] τ₂ ⟧-iso = 𝒟.Iso-trans (𝒟.IsIso→Iso FP) (𝒟P.product-preserves-iso ⟦ τ₁ ⟧-iso ⟦ τ₂ ⟧-iso)
 
