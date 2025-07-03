@@ -222,7 +222,7 @@ appropriate lattice of approximations $\partial X(x)$ for every point $x \in X$.
 $\sigma$ with a single free variable of type $\tau$ (supposing $\tau$ and $\sigma$ denote $X$ and $Y$ in the
 conventional semantics) must then be interpreted by a pair $(f, \partial f)$, with $f$ providing the
 conventional interpretation as a function $X \to Y$, and $\partial f$ as a family of Galois connections
-$\partial f(x): \partial X(x) \to \partial Y(f(x))$ taking approximants to approximants.
+$\partial f(x): \partial X(x) \to \partial Y(f(x))$ taking approximations of $x$ to approximations of $f(x)$.
 
 This pattern of objects and morphisms is captured by the construction used in CHAD to model automatic
 differentiation, namely the \emph{Grothendieck construction} for a particular set-indexed category $T:
@@ -232,16 +232,16 @@ morphisms. For Galois slicing, we will take $T(X) = \Func{X}{\LatGal}$, the cate
 of bounded lattices, with families of Galois connections as morphisms.
 
 In its general form, the Grothendieck construction $\Grothendieck{}T$ for an arbitrary indexed category $T:
-\cat{C}^\op \to \Cat$, sometimes called the \emph{total category} for $T$, incorporates all the categories
-$T(X)$ (for objects $X$ in $\cat{C}$) into a single category, together with morphisms that account for both
-internal structure and reindexing along morphisms $f: X \to Y$ in $\cat{C}$.
+\cat{D}^\op \to \Cat$, sometimes called the \emph{total category} for $T$, incorporates all the categories
+$T(X)$ (for objects $X$ in $\cat{D}$) into a single category, together with morphisms that account for both
+internal structure and reindexing along morphisms $f: X \to Y$ in $\cat{D}$.
 
 \begin{definition}
 \label{def:Grothendieck}
-Suppose $T: \cat{C}^\op \to \Cat$ an indexed category. The \emph{Grothendieck construction}
+Suppose $T: \cat{D}^\op \to \Cat$ an indexed category. The \emph{Grothendieck construction}
 $\Grothendieck{X}T(X)$ (also written $\Grothendieck{}T$) is the category which has as objects, all pairs $(X,
-\partial X)$ of an object $X$ of $\cat{C}$ and an object $\partial X$ of $T(X)$, and as morphisms $(X,
-\partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of morphisms $f: X \to Y$ in $\cat{C}$ and
+\partial X)$ of an object $X$ of $\cat{D}$ and an object $\partial X$ of $T(X)$, and as morphisms $(X,
+\partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of morphisms $f: X \to Y$ in $\cat{D}$ and
 morphisms $\partial f: \partial X \to T(f)(\partial Y)$ in $T(X)$.
 \end{definition}
 
@@ -256,10 +256,11 @@ Z)$.
 \subsubsection{Category of Families}
 \label{sec:Fam}
 
-For CHAD we are interested in the specific case of the Grothendieck construction where $\cat{C} = \Set$ and
-each category $T(X) = \Func{X}{\cat{C}}$, the functor category which has as objects all $X$-indexed families
-of objects of $\cat{C}$, and as morphisms $F \to G$, all families of morphisms $\eta(x): F(x) \to G(x)$ in
-$\cat{C}$ (with naturality trivial because $X$ has only identity morphisms).
+For CHAD we are interested in the specific case of the Grothendieck construction where $\cat{D} = \Set$ and
+the indexed category $T$ sends every set $X$ to the (functor) category $\Func{X}{\cat{C}}$ which has as
+objects all $X$-indexed families of objects of a fixed category $\cat{C}$, and as morphisms $F \to G$, all
+families of morphisms $\eta(x): F(x) \to G(x)$ in $\cat{C}$ (with naturality trivial because $X$ has only
+identity morphisms).
 
 % Like any functor category $\Func{X}{\cat{C}}$ inherits limits and colimits pointwise from its codomain.
 %
