@@ -2,6 +2,17 @@
 \label{sec:stable-coproducts}
 
 Important to the idea of an extensive category is how coproducts behave under composition with an arbitrary
-morphism. This is an instance of the notion of stability of colimits (in this case, coproducts) under
-pullback or change of base.
+morphism. This is an instance of the notion of stability of colimits (in this case, coproducts) under pullback
+or change of base. Suppose $\cat{C}$ a category with coproducts $(\coprod, 0)$. The coproducts of $\cat{C}$
+are \emph{stable under pullback} if for every object $X \iso X_1 \coprod X_2$ and morphism $g: Y \to X$, there
+exists an object $Y \iso Y_1 \coprod Y_2$ and morphisms $h_1: Y_1 \to X_1$ and $h_2: Y_2 \to X_2$ such that
+the following diagram commutes for every $i \in \{1, 2\}$,:
+
+\begin{center}
+\begin{tikzcd}
+   & Y \arrow[rd, "g"] \\
+   Y_i \arrow[rd, "h_i"'] \arrow[ru, "\inMap_i"] && X \\
+   & X_i \arrow[ru, "\inMap_i"']
+\end{tikzcd}
+\end{center}
 
