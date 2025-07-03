@@ -475,14 +475,14 @@ differentiable function $f: \RR^m \to \RR^n$ alongside the computation of $f$ it
 $\tangents(f) = x \mapsto (f(x), \pushf{f}_x): \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$. Writing $g_1$
 for $\pi_1 \comp g$ and $g_2$ for $\pi_2 \comp g$, composition of such maps can be expressed as:
 \begin{align*}
-(g \comp h)_1(x) &= h_1(g_1(x)) \\
+(g \comp h)_1(x) &= g_1(h_1(x)) \\
 (g \comp h)_2(x) &= g_2(h_1(x)) \comp h_2(x)
 \end{align*}
 
 We can verify that $\tangents$ is functorial, regardless of whether the linear maps happen to be derivatives.
-But if $f_2(x)$ is the derivative of $f_1$ at $x$ for any $x \in \RR^m$ and similarly for $g$ then the
-derivatives compose according to the forward chain rule and $(g \comp f)_2(x)$ is the derivative of $(g \comp
-f)_1$ at $x$. Thus this setup provides an algorithmic method for computing the forward derivative of a
+But if $h_2(x)$ is the derivative of $h_1$ at $x$ for any $x \in \RR^m$ and similarly for $g$ then the
+derivatives compose according to the forward chain rule and $(g \comp h)_2(x)$ is the derivative of $(g \comp
+h)_1$ at $x$. Thus this setup provides an algorithmic method for computing the forward derivative of a
 composite function, as long as all atomic operations provide derivatives, without have to recompute the
 function itself.
 
@@ -491,9 +491,10 @@ function itself.
 % compute forwards slices without having to reexecute the program at the same time.
 
 We can see these ``optimised'' forward-mode maps as living in $\Fam(\FinVect)$ if we regard every finite
-vector space $\RR^n$ as paired with the family of tangent spaces which is constantly $\RR^n$, and each map $f:
-\RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ as a pair of maps $(f_1, f_2)$. Then the composition $(g,
-\partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp \partial f)$ again corresponds
-exactly to the forward chain rule, since $(\reindex{\partial g}{f} \comp \partial f)_x = {\partial g}_{f(x)}
-\comp {\partial f}_x$. Reverse-mode AD can be interpreted similarly in $\Fam(\FinVect^\op)$, reading the
-single map $g: \RR^m \to \RR^n \times (\RR^n \linearto \RR^m)$ as the pair of maps $(g_1, g_2)$.
+vector space $\RR^n$ as paired with the family of tangent spaces which is constantly $\RR^n$, and each map $g:
+\RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ as a pair of maps $(g_1, g_2)$. Then the composition $(g,
+\partial g) \comp (h, \partial h) = (g \comp h, \reindex{\partial g}{h} \comp \partial h)$ again corresponds
+to the forward chain rule, since $(\reindex{\partial g}{h} \comp \partial h)_x = {\partial g}_{h(x)} \comp
+{\partial h}_x$. Analogously, reverse-mode maps $g: \RR^m \to \RR^n \times (\RR^n \linearto \RR^m)$ can be
+interpreted as living in $\Fam(\FinVect^\op)$ by reading them as pair of maps $(g_1, g_2)$ with composition
+being precisely the backwards chain rule.
