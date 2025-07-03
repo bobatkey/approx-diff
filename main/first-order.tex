@@ -439,10 +439,10 @@ $\Fam(\cat{C})$, computed by extending the original monad $F: \cat{C} \to \cat{C
 \subsection{First-Order Automatic Differentiation via CHAD}
 \label{sec:first-order:autodiff}
 
-As per the CHAD work, automatic differentiation for first-order programs can also be recovered in this setup,
-using the total category $\Fam(\FinVect)$ instead of $\Fam(\LatGal)$. First we recall the chain rule for
-forward derivatives $\pushf{f}_x: \RR^m \linearto \RR^n$ and backward derivatives $\pullf{f}_x: \RR^n
-\linearto \RR^m$, which says that derivatives respect composition~\cite{spivak65}.
+As per the CHAD work, automatic differentiation (AD) for first-order programs can also be recovered in this
+setup, using the total categories $\Fam(\FinVect)$ and $\Fam(\FinVect^\op)$ instead of $\Fam(\LatGal)$. First
+we recall the chain rule for forward derivatives $\pushf{f}_x: \RR^m \linearto \RR^n$ and backward derivatives
+$\pullf{f}_x: \RR^n \linearto \RR^m$, which says that derivatives respect composition~\cite{spivak65}.
 
 % \subsubsection{Derivatives of Differentiable Functions}
 %
@@ -467,25 +467,24 @@ Suppose $f: \RR^m \to \RR^n$ and $g: \RR^n \to \RR^k$ differentiable. Then for a
 \end{itemize}
 \end{proposition}
 
-\subsubsection{Forward-Mode Automatic Differentiation}
+\subsubsection{Automatic Differentiation}
 
-The basic idea of (forward-mode) automatic differentiation, as first described by \citet{linnainmaa76}, was to
-recognise that one could efficiently compute the pushforward map $\pushf{f}: \RR^m \to (\RR^m \linearto
-\RR^n)$ of a differentiable function $f: \RR^m \to \RR^n$ alongside the computation of $f$ itself, by defining
-a single map $\tangents(f) = x \mapsto (f(x), \pushf{f}_x): \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$.
-Defining $f_1 = \pi_1 \comp f: \RR^m \to \RR^n$ and $f_2 = \pi_2 \comp f: \RR^m \to (\RR^m \linearto \RR^n)$,
-composition of such maps can be expressed as:
+The basic idea of (forward-mode) AD, as first described by \citet{linnainmaa76}, was to recognise that one
+could efficiently compute the pushforward map $\pushf{f}: \RR^m \to (\RR^m \linearto \RR^n)$ of a
+differentiable function $f: \RR^m \to \RR^n$ alongside the computation of $f$ itself, by defining a single map
+$\tangents(f) = x \mapsto (f(x), \pushf{f}_x): \RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$. Writing $f_1$
+for $\pi_1 \comp f$ and $f_2$ for $\pi_2 \comp f$, composition of such maps can be expressed as:
 \begin{align*}
 (g \comp f)_1(x) &= f_1(g_1(x)) \\
 (g \comp f)_2(x) &= g_2(f_1(x)) \comp f_2(x)
 \end{align*}
 
-We can verify that $\tangents$ is functorial, regardless of whether the linear maps $\RR^m \linearto \RR^n$
-happen to be derivatives. But if $f_2(x)$ is the derivative of $f_1$ at $x$ for any $x \in \RR^m$ and
-similarly for $g$ then the derivatives compose according to the forward chain rule and $(g \comp f)_2(x)$ is
-the derivative of $(g \comp f)_1$ at $x$. Thus this setup provides an algorithmic method for computing the
-forward derivative of a composite function, as long as all atomic operations provide derivatives, without have
-to recompute the function itself.
+We can verify that $\tangents$ is functorial, regardless of whether the linear maps happen to be derivatives.
+But if $f_2(x)$ is the derivative of $f_1$ at $x$ for any $x \in \RR^m$ and similarly for $g$ then the
+derivatives compose according to the forward chain rule and $(g \comp f)_2(x)$ is the derivative of $(g \comp
+f)_1$ at $x$. Thus this setup provides an algorithmic method for computing the forward derivative of a
+composite function, as long as all atomic operations provide derivatives, without have to recompute the
+function itself.
 
 % An efficient implementation of \GPS based on $\Fam(\LatGal)$
 % (\secref{fam:galois-slicing} above) would most likely apply a similar optimisation to make it possible to
@@ -493,14 +492,8 @@ to recompute the function itself.
 
 We can see these ``optimised'' forward-mode maps as living in $\Fam(\FinVect)$ if we regard every finite
 vector space $\RR^n$ as paired with the family of tangent spaces which is constantly $\RR^n$, and each map $f:
-\RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ as the pair $(f_1, f_2)$. Then the composition $(g, \partial
-g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp \partial f)$ again corresponds exactly to
-the forward chain rule, since $(\reindex{\partial g}{f} \comp \partial f)_x = {\partial g}_{f(x)} \comp
-{\partial f}_x$.
-
-\subsubsection{Reverse-Mode Automatic Differentiation}
-
-Reverse-mode automatic differentation, first introduced by \citet{griewank89}, computes the pullback map
-$\pullf{f}: \RR^n$
-
-\todo{brief summary}
+\RR^m \to \RR^n \times (\RR^m \linearto \RR^n)$ as a pair of maps $(f_1, f_2)$. Then the composition $(g,
+\partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial g}{f} \comp \partial f)$ again corresponds
+exactly to the forward chain rule, since $(\reindex{\partial g}{f} \comp \partial f)_x = {\partial g}_{f(x)}
+\comp {\partial f}_x$. Reverse-mode AD can be interpreted similarly in $\Fam(\FinVect^\op)$, reading the
+single map $g: \RR^m \to \RR^n \times (\RR^n \linearto \RR^m)$ as the pair of maps $(g_1, g_2)$.
