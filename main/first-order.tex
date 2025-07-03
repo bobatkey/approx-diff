@@ -249,7 +249,7 @@ morphisms $\partial f: \partial X \to T(f)(\partial Y)$ in $T(X)$.
 construction and the idea of tangent spaces and derivatives. For any $(f, \partial f): (X, \partial X) \to (Y,
 \partial Y)$ and $(g, \partial g): (Y, \partial Y) \to (Z, \partial Z)$ in $\Grothendieck{}T$, the composition
 $(g, \partial g) \comp (f, \partial f): (X, \partial X) \to (Z, \partial Z)$ is given by $(g \comp f,
-T(f)(\partial g) \comp \partial f)$, with the functor $T(f)$ acting to ``reindex'' $\partial g$ along $f$,
+T(f)(\partial g) \comp \partial f)$, with the functor $T(f)$ acting to reindex $\partial g$ along $f$,
 yielding a morphism $T(f)(\partial g): T(f)(\partial Y) \to T(f)(T(g)(\partial Z)) = T(g \comp f)(\partial
 Z)$.
 
@@ -350,8 +350,8 @@ with a \emph{lifting} type constructor $\tyLift$. Then, as an alternative to the
 natural numbers as $\mu\alpha.1 + \synVar{nat} \times \alpha$, one could (within the language) define a type
 of ``approximation lists'' $\mu\alpha.\tyLift\,(1 + \tyLift\,\synVar{nat} \times \alpha)$, with monadic
 computations over approximated lists computing partial lists like $1 : \bot$. The lattice of approximants of
-$1 : 2 : []$ now includes not only all the ``shape-preserving'' approximations but also all prefixes obtained
-by truncating successive tails with $\bot$:
+$1 : 2 : []$ now includes not only all ``shape-preserving'' approximations but also all prefixes obtained by
+truncating successive tails with $\bot$:
 
   \begin{center}
     \tikzset{node distance=1cm}
