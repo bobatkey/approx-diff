@@ -2,10 +2,10 @@
 
 module setoid-predicate {o e} where
 
-open import Level using (suc; _⊔_)
+open import Level using (suc; _⊔_; 0ℓ)
 open import Data.Product using (_,_)
 open import prop using (_∧_; _,_; proj₁; proj₂; ⊤; tt; ∃; LiftP; lower; _∨_; inj₁; inj₂; lift)
-open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; monoidOfMeet; IsJoin)
+open import basics using (IsPreorder; IsMeet; IsTop; IsResidual; monoidOfMeet; IsJoin; IsBigJoin)
 open import prop-setoid
   using (idS; Setoid; IsEquivalence; _∘S_; ∘S-cong;
          ⊗-setoid; project₁; project₂; pair; +-setoid; inject₁; inject₂;
@@ -116,22 +116,22 @@ f ⊗m g = prop-setoid.pair (f ∘S project₁) (g ∘S project₂)
             P ⊑ ⋀ Q
 ⋀-lambda Φ .*⊑* x p y = Φ .*⊑* ((x , y)) p
 
--- Existential quantification
-⋁ : ∀ {X Y : Setoid o e} → Predicate (⊗-setoid X Y) → Predicate X
-⋁ {X} {Y} P .Predicate.pred x = ∃ (Y .Setoid.Carrier) λ y → P .Predicate.pred (x , y)
-⋁ {X} {Y} P .Predicate.pred-≃ x₁≈x₂ (y , p) = y , P .Predicate.pred-≃ (x₁≈x₂ , Y .Setoid.refl) p
+-- Existential quantification (experimental)
+Ex : ∀ {X Y : Setoid o e} → Predicate (⊗-setoid X Y) → Predicate X
+Ex {X} {Y} P .Predicate.pred x = ∃ (Y .Setoid.Carrier) λ y → P .Predicate.pred (x , y)
+Ex {X} {Y} P .Predicate.pred-≃ x₁≈x₂ (y , p) = y , P .Predicate.pred-≃ (x₁≈x₂ , Y .Setoid.refl) p
 
-⋁-in : ∀ {X Y : Setoid o e} {P : Predicate (⊗-setoid X Y)} →
-        P ⊑ (⋁ P) [ project₁ ]
-⋁-in .*⊑* (x , y) p = y , p
+Ex-in : ∀ {X Y : Setoid o e} {P : Predicate (⊗-setoid X Y)} →
+        P ⊑ (Ex P) [ project₁ ]
+Ex-in .*⊑* (x , y) p = y , p
 
-⋁-elim : ∀ {X Y : Setoid o e} {P : Predicate (⊗-setoid X Y)} {Q : Predicate X} →
-          P ⊑ Q [ project₁ ] → ⋁ P ⊑ Q
-⋁-elim Φ .*⊑* x (y , p) = Φ .*⊑* (x , y) p
+Ex-elim : ∀ {X Y : Setoid o e} {P : Predicate (⊗-setoid X Y)} {Q : Predicate X} →
+          P ⊑ Q [ project₁ ] → Ex P ⊑ Q
+Ex-elim Φ .*⊑* x (y , p) = Φ .*⊑* (x , y) p
 
-⋁-frobenius : ∀ {X Y : Setoid o e} {P : Predicate (⊗-setoid X Y)} {Q : Predicate X} →
-              ⋁ (P && (Q [ project₁ ])) ⊑ (⋁ P && Q)
-⋁-frobenius {X} {Y} {P} {Q} .*⊑* x (y , p , q) = (y , p) , q
+Ex-frobenius : ∀ {X Y : Setoid o e} {P : Predicate (⊗-setoid X Y)} {Q : Predicate X} →
+              Ex (P && (Q [ project₁ ])) ⊑ (Ex P && Q)
+Ex-frobenius {X} {Y} {P} {Q} .*⊑* x (y , p , q) = (y , p) , q
 
 -- And the inverse...
 
@@ -175,7 +175,19 @@ _++_ : ∀ {X} → Predicate X → Predicate X → Predicate X
 []-++ : ∀ {X Y} {P Q : Predicate Y} {f : X ⇒s Y} → ((P ++ Q) [ f ]) ⊑ ((P [ f ]) ++ (Q [ f ]))
 []-++ .*⊑* x p = p
 
--- Equality
+-- Big joins
+⋁ : ∀ {X} (I : Set 0ℓ) → (I → Predicate X) → Predicate X
+⋁ I P .Predicate.pred x = ∃ I λ i → P i .Predicate.pred x
+⋁ I P .Predicate.pred-≃ x₁≈x₂ (i , p) = i , P i .Predicate.pred-≃ x₁≈x₂ p
+
+⋁-isJoin : ∀ {X} → IsBigJoin (⊑-isPreorder {X}) 0ℓ ⋁
+⋁-isJoin .IsBigJoin.upper I P i .*⊑* x p = i , p
+⋁-isJoin .IsBigJoin.least I P Q ϕ .*⊑* x (i , p) = ϕ i .*⊑* x p
+
+[]-⋁ : ∀ {X Y I} {P : I → Predicate Y} {f : X ⇒s Y} → (⋁ I P [ f ]) ⊑ ⋁ I (λ i → P i [ f ])
+[]-⋁ .*⊑* x (i , p) = i , p
+
+-- Equality (experimental)
 Eq : ∀ X → Predicate (⊗-setoid X X)
 Eq X .Predicate.pred (x , x') = LiftP o (X .Setoid._≈_ x x')
 Eq X .Predicate.pred-≃ {x₁ , x'₁} {x₂ , x'₂} (x₁≈x₂ , x'₁≈x'₂) (lift eq) =
@@ -222,3 +234,6 @@ system .PredicateSystem.++-isJoin = ++-isJoin
 system .PredicateSystem.⋀-[] = ⋀-[]
 system .PredicateSystem.⋀-eval = ⋀-eval
 system .PredicateSystem.⋀-lambda = ⋀-lambda
+system .PredicateSystem.⋁ = ⋁
+system .PredicateSystem.⋁-isJoin = ⋁-isJoin
+system .PredicateSystem.[]-⋁ = []-⋁

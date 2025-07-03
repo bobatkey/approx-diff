@@ -1,26 +1,27 @@
 {-# OPTIONS --postfix-projections --prop --safe #-}
 
-open import Level using (Lift; lift; lower; _⊔_)
+open import Level using (Lift; lift; lower; _⊔_; 0ℓ)
 open import Data.Product using (_,_)
 open import prop using (_,_; proj₁; proj₂; ∃; LiftP; lift; lower; liftS; LiftS; inj₁; inj₂)
 open import basics using (module ≤-Reasoning; IsClosureOp; IsJoin; IsMeet)
-open import categories using (Category; HasBooleans; HasProducts; HasCoproducts; HasExponentials; HasTerminal; IsTerminal; IsProduct; coproducts+exp→booleans)
+open import categories
+  using (Category; HasBooleans; HasProducts; HasCoproducts; HasExponentials;
+         HasTerminal; IsTerminal; IsProduct; coproducts+exp→booleans; setoid→category)
 open import functor
-  using (Functor; _∘F_; opF; _∘H_; ∘H-cong; id; _∘_; NatTrans; ≃-NatTrans; ≃-isEquivalence; interchange; NT-id-left)
-open import prop-setoid using (module ≈-Reasoning; IsEquivalence)
+  using (Functor; _∘F_; opF; _∘H_; ∘H-cong; id; _∘_; NatTrans; ≃-NatTrans; ≃-isEquivalence; interchange; NT-id-left;
+         HasColimits)
+open import prop-setoid using (module ≈-Reasoning; IsEquivalence; Setoid)
 open import setoid-cat using (SetoidCat)
 open import predicate-system using (PredicateSystem; ClosureOp)
 open import stable-coproducts using (StableBits; Stable)
 import glueing-simple
 import setoid-predicate
-
-import language-syntax
-import language-interpretation
-open import signature hiding (FPFunctor)
 open import finite-product-functor
   using (preserve-chosen-products; module preserve-chosen-products-consequences)
 open import finite-coproduct-functor
   using (preserve-chosen-coproducts; module preserve-chosen-coproducts-consequences)
+
+open import signature
 
 open Functor
 open NatTrans
@@ -48,6 +49,7 @@ module conservativity
   (𝒞 : Category o m e) (𝒞T : HasTerminal 𝒞) (𝒞P : HasProducts 𝒞) (𝒞CP : HasCoproducts 𝒞) (stable : Stable 𝒞CP)
   -- A higher order model
   (𝒟 : Category o m e) (𝒟T : HasTerminal 𝒟) (𝒟P : HasProducts 𝒟) (𝒟CP : HasCoproducts 𝒟) (𝒟E : HasExponentials 𝒟 𝒟P)
+  (𝒟DC : ∀ (A : Setoid 0ℓ 0ℓ) → HasColimits (setoid→category A) 𝒟)
   -- A functor which preserves terminal, products, and coproducts
   (F  : Functor 𝒞 𝒟)
   (FT : Category.IsIso 𝒟 (HasTerminal.to-terminal 𝒟T {F .fobj (𝒞T .HasTerminal.witness)}))
@@ -67,7 +69,7 @@ private
 
 ------------------------------------------------------------------------------
 -- Kripke Predicates “of varying arity”
-open import yoneda (m ⊔ e) 𝒞 renaming (PSh to PSh⟨𝒞⟩; products to PSh⟨𝒞⟩-products; exponentials to PSh⟨𝒞⟩-exponentials) using ()
+open import yoneda (m ⊔ e) 𝒞 renaming (PSh to PSh⟨𝒞⟩; products to PSh⟨𝒞⟩-products) using ()
 open import yoneda (m ⊔ e) 𝒟 renaming (よ to 𝒟よ) using ()
 
 private
@@ -233,6 +235,8 @@ Definable-coproducts .*⊑* z .*⊑* (lift g) (lift (f , eq)) =
           ∎
           where open ≈-Reasoning 𝒟.isEquiv
 
+-- FIXME: this ought to be true if for any predicate that is closed
+-- under glueing of sums.
 Definable-closed : ∀ {X Y} (f : F .fobj X 𝒟.⇒ F .fobj Y) →
        Context (G .fobj (F .fobj Y)) (Definable Y) X (lift f) →
        ∃ (X 𝒞.⇒ Y) (λ g → F .fmor g 𝒟.≈ f)
@@ -284,15 +288,24 @@ Definable-closed f (node X₁ X₂ (lift f₁) (lift f₂) g t₁ t₂ (lift eq�
 ------------------------------------------------------------------------------
 -- Now construct the category of Grothendieck Logical Relations
 
-open import closure-predicate PSh⟨𝒞⟩ PSh⟨𝒞⟩-products PSh⟨𝒞⟩-system closureOp
+open import closure-predicate PSh⟨𝒞⟩-system closureOp
   using (system; embed)
 
 module Gl = glueing-simple 𝒟 PSh⟨𝒞⟩ _ system G
+
+-- This category has all the structure we need:
 module GlCP = Gl.coproducts 𝒟CP
 module GlCPM = HasCoproducts GlCP.coproducts
 module GlPE = Gl.products-and-exponentials 𝒟T 𝒟P 𝒟E G-preserve-products
 module GlPM = HasProducts GlPE.products
 module GlT = HasTerminal GlPE.terminal
+
+GDC : ∀ (A : Setoid 0ℓ 0ℓ) → HasColimits (setoid→category A) Gl.cat
+GDC A = colimits where open Gl.colimits (setoid→category A) (𝒟DC A)
+
+open import lists Gl.cat GlPE.terminal GlPE.products GlPE.exponentials GDC
+  using ()
+  renaming (lists to Gl-lists)
 
 module Glued = Category Gl.cat
 open Gl.Obj
@@ -300,8 +313,8 @@ open Gl._=>_
 open Gl._≃m_
 
 ------------------------------------------------------------------------------
--- The category of first-order things embeds into logical relations
--- category, and all first-order type formers are preserved.
+-- The category of first-order things embeds into the logical
+-- relations category, and all first-order type formers are preserved.
 
 GF : Functor 𝒞 Gl.cat
 GF .fobj x .carrier = F .fobj x
@@ -360,8 +373,7 @@ GF-preserve-products .Category.IsIso.f∘inverse≈id .f≃f = Category.IsIso.f�
 GF-preserve-products .Category.IsIso.inverse∘f≈id .f≃f = Category.IsIso.inverse∘f≈id FP
 
 presv-cp : ∀ {x y} → GF .fobj (𝒞CP.coprod x y) Glued.⇒ GlCPM.coprod (GF .fobj x) (GF .fobj y)
-presv-cp {x} {y} .morph = mul
-  where open preserve-chosen-coproducts-consequences F 𝒞CP 𝒟CP FC
+presv-cp {x} {y} .morph = FC .𝒟.IsIso.inverse
 presv-cp {x} {y} .presv = begin
     𝐂 (Definable (𝒞CP.coprod x y))
   ≤⟨ 𝐂-isClosure .IsClosureOp.mono Definable-coproducts ⟩
@@ -401,25 +413,27 @@ GF-preserve-coproducts .Category.IsIso.inverse = presv-cp
 GF-preserve-coproducts .Category.IsIso.f∘inverse≈id .f≃f = Category.IsIso.f∘inverse≈id FC
 GF-preserve-coproducts .Category.IsIso.inverse∘f≈id .f≃f = Category.IsIso.inverse∘f≈id FC
 
+-- FIXME: If 𝒞 has exponentials, then GF preserves them as well.
+
 ------------------------------------------------------------------------------
 -- Semantic version of first-order definability: if we have a
 -- morphism in the GLR category whose domain and codomain are from
 -- 𝒞, then it is really a 𝒞 morphism.
-thm : ∀ {X Y} → (f : GF .fobj X Glued.⇒ GF .fobj Y) → ∃ (X 𝒞.⇒ Y) (λ g → F .fmor g 𝒟.≈ f .morph)
-thm {X} {Y} f with f .presv .*⊑* X .*⊑* (lift (F .fmor (𝒞.id _))) (liftS (leaf (lift (𝒞.id _ , 𝒟.≈-refl))))
+definability : ∀ {X Y} → (f : GF .fobj X Glued.⇒ GF .fobj Y) → ∃ (X 𝒞.⇒ Y) (λ g → F .fmor g 𝒟.≈ f .morph)
+definability {X} {Y} f with f .presv .*⊑* X .*⊑* (lift (F .fmor (𝒞.id _))) (liftS (leaf (lift (𝒞.id _ , 𝒟.≈-refl))))
 ... | liftS t with Definable-closed _ t
 ... | g , eq = g , (begin
-        F .fmor g
-      ≈⟨ eq ⟩
-        f .morph 𝒟.∘ (F .fmor (𝒞.id _) 𝒟.∘ 𝒟.id _)
-      ≈⟨ 𝒟.∘-cong 𝒟.≈-refl 𝒟.id-right ⟩
-        f .morph 𝒟.∘ F .fmor (𝒞.id _)
-      ≈⟨ 𝒟.∘-cong 𝒟.≈-refl (F .fmor-id) ⟩
-        f .morph 𝒟.∘ 𝒟.id _
-      ≈⟨ 𝒟.id-right ⟩
-        f .morph
-      ∎)
-      where open ≈-Reasoning 𝒟.isEquiv
+                      F .fmor g
+                    ≈⟨ eq ⟩
+                      f .morph 𝒟.∘ (F .fmor (𝒞.id _) 𝒟.∘ 𝒟.id _)
+                    ≈⟨ 𝒟.∘-cong 𝒟.≈-refl 𝒟.id-right ⟩
+                      f .morph 𝒟.∘ F .fmor (𝒞.id _)
+                    ≈⟨ 𝒟.∘-cong 𝒟.≈-refl (F .fmor-id) ⟩
+                      f .morph 𝒟.∘ 𝒟.id _
+                    ≈⟨ 𝒟.id-right ⟩
+                      f .morph
+                    ∎)
+    where open ≈-Reasoning 𝒟.isEquiv
 
 ------------------------------------------------------------------------------
 -- The morphisms in the logical relations category that we are
@@ -428,92 +442,22 @@ thm {X} {Y} f with f .presv .*⊑* X .*⊑* (lift (F .fmor (𝒞.id _))) (liftS 
 
 module syntactic {ℓ}
    (Sig : Signature ℓ)
-   (Int : Model PFPC[ 𝒞 , 𝒞T , 𝒞P , 𝒞CP .HasCoproducts.coprod (𝒞T .HasTerminal.witness) (𝒞T .HasTerminal.witness) ] Sig) where
+   (𝒞-Sig-Model : Model PFPC[ 𝒞 , 𝒞T , 𝒞P , 𝒞CP .HasCoproducts.coprod (𝒞T .HasTerminal.witness) (𝒞T .HasTerminal.witness) ] Sig) where
 
+  open import language-syntax Sig
 
+  open import language-fo-interpretation Sig
+         𝒞 𝒞T 𝒞P 𝒞CP
+         Gl.cat GlPE.terminal GlPE.products GlCP.coproducts GlPE.exponentials Gl-lists
+         GF GF-preserve-terminal GF-preserve-products GF-preserve-coproducts
+         𝒞-Sig-Model
+    renaming (𝒟⟦_⟧ty to G⟦_⟧ty; 𝒟⟦_⟧ctxt to G⟦_⟧ctxt; 𝒟⟦_⟧tm to G⟦_⟧tm)
 
--- Now need to prove that for first-order types and contexts, the
--- interpretation is preserved.
+  open Glued.Iso
 
--- 1. for all first-order types, G.⟦ τ ⟧ty ≅ GF .fobj (𝒞.⟦ τ ⟧ty)  (same for contexts)
--- 2. since GF preserves the type formers, the model can be transported from 𝒞 to Glued
--- 3. so we can interpret the language in Glued, and get the definability property
-
-
-{-
-  module 𝒟Interp =
-    language-interpretation
-      Sig
-      𝒟 𝒟T 𝒟P 𝒟E (coproducts+exp→booleans 𝒟T 𝒟CP 𝒟E)
-      (transport-model Sig F FP {!!} Int)
--}
-
-
-
-
-{-
-    module LI = language-interpretation
-                  Sig G.cat GPE.terminal GPE.products GPE.exponentials
-                  (coproducts+exp→booleans GPE.terminal GCP.coproducts GPE.exponentials)
-                  (transport-model Sig GF GF-FP {!!} Int)
-
-    open L hiding (pair)
-
-    open import Relation.Binary.PropositionalEquality using (_≡_; refl)
-    open 𝒟.Iso
-    open HasProducts 𝒟P
-    open HasExponentials 𝒟E
-
-    type-interp-iso : (τ : type) → 𝒟.Iso (LI.⟦ τ ⟧ty .carrier) 𝒟Interp.⟦ τ ⟧ty
-    type-interp-iso unit = 𝒟.Iso-refl
-    type-interp-iso bool = 𝒟.Iso-refl
-    type-interp-iso (base s) = 𝒟.Iso-refl
-    type-interp-iso (σ [×] τ) = product-preserves-iso (type-interp-iso σ) (type-interp-iso τ)
-    type-interp-iso (σ [→] τ) = exp-preserves-iso (type-interp-iso σ) (type-interp-iso τ)
-
-    ctxt-interp-iso : (Γ : ctxt) → 𝒟.Iso (LI.⟦ Γ ⟧ctxt .carrier) 𝒟Interp.⟦ Γ ⟧ctxt
-    ctxt-interp-iso L.emp = 𝒟.Iso-refl
-    ctxt-interp-iso (Γ L., τ) = product-preserves-iso (ctxt-interp-iso Γ) (type-interp-iso τ)
-
-    project-all : ∀ {Γ τ} (M : Γ ⊢ τ) →
-                  LI.⟦ M ⟧tm .morph 𝒟.≈ {!!} -- 𝒟Interp.⟦ M ⟧tm
-    project-all = {!!}
-
-  open L
-
-  ⟦_⟧fo : ∀ {τ} → L.first-order τ → 𝒞.obj
-  ⟦ unit ⟧fo = 𝒞T .HasTerminal.witness
-  ⟦ bool ⟧fo = {!!}
-  ⟦ base s ⟧fo = Int .Model.⟦sort⟧ s
-  ⟦ τ₁ [×] τ₂ ⟧fo = 𝒞P .HasProducts.prod ⟦ τ₁ ⟧fo ⟦ τ₂ ⟧fo
-
-  ⟦_⟧fo-ctxt : ∀ {Γ} → first-order-ctxt Γ → 𝒞.obj
-  ⟦ emp ⟧fo-ctxt = 𝒞T .HasTerminal.witness
-  ⟦ Γ L., τ ⟧fo-ctxt = 𝒞P .HasProducts.prod ⟦ Γ ⟧fo-ctxt ⟦ τ ⟧fo
-
-  -- The interpretation of first-order types is isomorphic
-  --    FIXME: this ought to be done in the glued category?
-  fo-iso : ∀ {τ} (τ-fo : first-order τ) → 𝒟.Iso (F .fobj ⟦ τ-fo ⟧fo) (𝒟Interp.⟦ τ ⟧ty)
-  fo-iso = {!!}
-
-  fo-ctxt-iso : ∀ {Γ} (Γ-fo : first-order-ctxt Γ) → 𝒟.Iso (F .fobj ⟦ Γ-fo ⟧fo-ctxt) (𝒟Interp.⟦ Γ ⟧ctxt)
-  fo-ctxt-iso = {!!}
-
-  thm2 : ∀ {Γ τ} →
-         (Γ-fo : first-order-ctxt Γ) →
-         (τ-fo : first-order τ) →
-         (M : Γ ⊢ τ) →
-         ∃ (⟦ Γ-fo ⟧fo-ctxt 𝒞.⇒ ⟦ τ-fo ⟧fo)
-           λ g → F .fmor g 𝒟.≈
-                 (𝒟.Iso.bwd (fo-iso τ-fo) 𝒟.∘ (𝒟Interp.⟦ M ⟧tm 𝒟.∘ 𝒟.Iso.fwd (fo-ctxt-iso Γ-fo)))
-  thm2 {Γ} {τ} Γ-fo τ-fo M = {!thm ⟦ τ-fo ⟧fo ⟦M⟧' !}
-    where open glued ⟦ Γ-fo ⟧fo-ctxt
-          ⟦M⟧ : LI.⟦ Γ ⟧ctxt Glued.⇒ LI.⟦ τ ⟧ty
-          ⟦M⟧ = LI.⟦ M ⟧tm
-
-          ⟦M⟧' : GF .fobj ⟦ Γ-fo ⟧fo-ctxt Glued.⇒ GF .fobj ⟦ τ-fo ⟧fo
-          ⟦M⟧' = {!!} Glued.∘ (⟦M⟧ Glued.∘ {!!})
-
-          eq : ⟦M⟧' .G._=>_.morph 𝒟.≈ (𝒟.Iso.bwd (fo-iso τ-fo) 𝒟.∘ (𝒟Interp.⟦ M ⟧tm 𝒟.∘ 𝒟.Iso.fwd (fo-ctxt-iso Γ-fo)))
-          eq = {!!}
--}
+  syntactic-definability :
+    ∀ {Γ τ} (Γ-fo : first-order-ctxt Γ) (τ-fo : first-order τ) (M : Γ ⊢ τ) →
+    ∃ (𝒞⟦ Γ-fo ⟧ctxt 𝒞.⇒ 𝒞⟦ τ-fo ⟧ty) λ g →
+      F .fmor g 𝒟.≈ (⟦ τ-fo ⟧-iso .bwd .morph 𝒟.∘ (G⟦ M ⟧tm .morph 𝒟.∘ ⟦ Γ-fo ⟧ctxt-iso .fwd .morph))
+  syntactic-definability {Γ} {τ} Γ-fo τ-fo M =
+    definability (⟦ τ-fo ⟧-iso .bwd Glued.∘ (G⟦ M ⟧tm Glued.∘ ⟦ Γ-fo ⟧ctxt-iso .fwd))
