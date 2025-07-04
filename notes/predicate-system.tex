@@ -1,7 +1,9 @@
 \subsection{Predicate systems}
 \label{sec:predicate-system}
 
-Suppose $\cat{C}$ at category with finite products. A \emph{predicate system} over $\cat{C}$ consists of the
+\subsubsection{Predicate system over $\cat{C}$}
+
+Suppose $\cat{C}$ a category with finite products. A \emph{predicate system} over $\cat{C}$ consists of the
 following data:
 \begin{itemize}
 \item For every object $X$ of $\cat{C}$, a partial order $(\Pred(X), \sqsubseteq)$ of predicates on $X$.
@@ -19,3 +21,10 @@ $\reindex{-}{\pi_1}$ called \emph{universal quantification}. \todo{Is there a le
 $\residual$ and $\forall_Y$.
 \item $\reindex{-}{f}$ is lax (and thus $\directImage{-}{f}$ is colax) with respect to $\join$.
 \end{itemize}
+
+\subsubsection{Predicates on a presheaf}
+
+Suppose $\mathcal{S} = (\Pred, \top, \meet, \join, \residual, \forall)$ a predicate system over $\Set$,
+$\cat{C}$ a category and $F: \cat{C}^\op \to \Set$ a presheaf. Define a predicate on $F$ to be a family of
+predicates $P_X \in \Pred(F(X))$ for every object $X$ in $\cat{C}$ such that $P_Y \sqsubseteq
+\reindex{P_X}{F(f)}$ for every $f: X \to Y$ in $\cat{C}$.
