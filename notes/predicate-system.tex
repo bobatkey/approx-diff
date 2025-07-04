@@ -2,15 +2,20 @@
 \label{sec:predicate-system}
 
 A \emph{predicate system} over a category $\cat{C}$ consists of the following data:
-\begin{enumerate}
-\item for every object $X$ of $\cat{C}$, a partial order $(\Pred(X), \sqsubseteq)$ of predicates on $X$
-forming a Heyting algebra with universal quantification (i.e.~closed under the null connective $\top$ and
-binary connectives $\meet$, $\join$ and $\implies$ and unary connective $\forall$);
-\item for every morphism $f: X \to Y$ of $\cat{C}$, a Galois connection $\reindex{-}{f} \dashv \directImage{-}{f} : \Pred(X) \to \Pred(Y)$.
-\end{enumerate}
-\noindent The left adjoint $\reindex{-}{f}: \Pred(Y) \to \Pred(X)$ computes the reindexing or pullback of a
-predicate along $f$; the right adjoint $\directImage{-}{f}: \Pred(X) \to \Pred(Y)$ computes the pushforward or
-existential image of a predicate along $f$, with the adjointness property meaning that
+\begin{itemize}
+\item For every object $X$ of $\cat{C}$, a partial order $(\Pred(X), \sqsubseteq)$ of predicates on $X$.
+\item For every morphism $f: X \to Y$ of $\cat{C}$, a Galois connection $\reindex{-}{f} \dashv
+\directImage{-}{f} : \Pred(X) \to \Pred(Y)$. The left adjoint $\reindex{-}{f}: \Pred(Y) \to \Pred(X)$ computes
+the pullback (reindexing) of a predicate along $f$; the right adjoint $\directImage{-}{f}: \Pred(X) \to
+\Pred(Y)$ computes the pushforward (existential image) of a predicate along $f$, with the adjointness property
+meaning that
 \[\directImage{P}{f} \sqsubseteq Q \iff P \sqsubseteq \reindex{Q}{f} \]
-
+\item For every fiber $\Pred(X)$ the following structure:
+   \begin{itemize}
+   \item $\Pred(X)$ is a Heyting algebra with universal quantification, i.e.~closed under top element $\top$,
+   meets $\meet$, joins $\join$, residual $\Rightarrow$, and unary connective $\forall$, satisfying the usual
+   laws;
+   \item each operation is preserved by reindexing.
+   \end{itemize}
+\end{itemize}
 % These operations satisfy standard laws such as monotonicity, closure under reindexing, etc.
