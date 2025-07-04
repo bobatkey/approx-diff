@@ -117,7 +117,7 @@ _×m_ = prod-m
 ×-runit = p₁
 
 ×-runit⁻¹ : ∀ {x} → x ⇒ (x × 𝟙)
-×-runit⁻¹ = pair (id _) (terminal-mor _)
+×-runit⁻¹ = pair (id _) to-terminal
 
 ×-runit-natural : ∀ {x₁ x₂} (f : x₁ ⇒ x₂) → (f ∘ ×-runit) ≈ (×-runit ∘ (f ×m id _))
 ×-runit-natural f = begin
@@ -132,10 +132,10 @@ _×m_ = prod-m
 
 ×-runit-iso2 : ∀ {x} → (×-runit⁻¹ ∘ ×-runit) ≈ id (x × 𝟙)
 ×-runit-iso2 = begin
-    pair (id _) (terminal-mor _) ∘ p₁
+    pair (id _) to-terminal ∘ p₁
   ≈⟨ pair-natural _ _ _ ⟩
-    pair (id _ ∘ p₁) (terminal-mor _ ∘ p₁)
-  ≈⟨ pair-cong id-left (terminal-unique _ _ _) ⟩
+    pair (id _ ∘ p₁) (to-terminal ∘ p₁)
+  ≈⟨ pair-cong id-left (to-terminal-unique _ _) ⟩
     pair p₁ p₂
   ≈⟨ pair-ext0 ⟩
     id _
@@ -147,7 +147,7 @@ _×m_ = prod-m
 ×-lunit = p₂
 
 ×-lunit⁻¹ : ∀ {x} → x ⇒ (𝟙 × x)
-×-lunit⁻¹ = pair (terminal-mor _) (id _)
+×-lunit⁻¹ = pair to-terminal (id _)
 
 ×-lunit-natural : ∀ {x₁ x₂} (f : x₁ ⇒ x₂) → (f ∘ ×-lunit) ≈ (×-lunit ∘ (id _ ×m f))
 ×-lunit-natural f = begin
@@ -162,10 +162,10 @@ _×m_ = prod-m
 
 ×-lunit-iso2 : ∀ {x} → (×-lunit⁻¹ ∘ ×-lunit) ≈ id (𝟙 × x)
 ×-lunit-iso2 = begin
-    pair (terminal-mor _) (id _) ∘ p₂
+    pair to-terminal (id _) ∘ p₂
   ≈⟨ pair-natural _ _ _ ⟩
-    pair (terminal-mor _ ∘ p₂) (id _ ∘ p₂)
-  ≈⟨ pair-cong (terminal-unique _ _ _) id-left ⟩
+    pair (to-terminal ∘ p₂) (id _ ∘ p₂)
+  ≈⟨ pair-cong (to-terminal-unique _ _) id-left ⟩
     pair p₁ p₂
   ≈⟨ pair-ext0 ⟩
     id _

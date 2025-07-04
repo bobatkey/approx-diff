@@ -65,20 +65,20 @@ open preorder._=>_
 
 open L hiding (_,_)
 
--- FIXME: the lists are backwards!
 input2 : ⟦ list (base label [×] base number) ⟧ty .idx .Carrier
-input2 = 3 , (((lift tt) , (label.a , 0)) , (label.b , 1)) , (label.a , 1)
-
+input2 = 3 , (label.a , 56) , (label.b , 90) , (label.a , 1) , _
 
 back-slice : label.label → _
 back-slice l = ⟦ ex.query l ⟧tm .famf .transf (_ , input2) .proj₂ .*→* .func .fun I .proj₂
 
 open import Relation.Binary.PropositionalEquality using (_≡_) renaming (refl to ≡-refl)
 
+_ = {!⟦ ex.query label.a ⟧tm .idxf .func (_ , input2)!}
+
 -- Querying for the 'a' label uses the 1st and 3rd numbers
-test1 : back-slice label.a ≡ (((tt , O , I) , O , O) , O , I)
+test1 : back-slice label.a ≡ ((O , I) , (O , O) , (O , I) , _)
 test1 = ≡-refl
 
 -- Querying for the 'b' label uses the 2nd number
-test2 : back-slice label.b ≡ (((tt , O , O) , O , I) , O , O)
+test2 : back-slice label.b ≡ ((O , O) , (O , I) , (O , O) , _)
 test2 = ≡-refl
