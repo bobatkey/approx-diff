@@ -176,6 +176,29 @@ record HasTerminal {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   open IsTerminal is-terminal public
 
 ------------------------------------------------------------------------------
+-- Initial objects
+record IsInitial {o m e} (𝒞 : Category o m e) (t : Category.obj 𝒞) : Set (o ⊔ m ⊔ e) where
+  open Category 𝒞
+  field
+    from-initial     : ∀ {x} → t ⇒ x
+    from-initial-ext : ∀ {x} (f : t ⇒ x) → from-initial ≈ f
+
+  from-initial-unique : ∀ {x} (f g : t ⇒ x) → f ≈ g
+  from-initial-unique f g = ≈-trans (≈-sym (from-initial-ext f)) (from-initial-ext g)
+
+record HasInitial {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
+  open Category 𝒞
+  field
+    witness         : obj
+    is-initial      : IsInitial 𝒞 witness
+  open IsInitial is-initial public
+
+op-initial→terminal : ∀ {o m e} {𝒞 : Category o m e} → HasInitial 𝒞 → HasTerminal (Category.opposite 𝒞)
+op-initial→terminal i .HasTerminal.witness = i .HasInitial.witness
+op-initial→terminal i .HasTerminal.is-terminal .IsTerminal.to-terminal = i .HasInitial.from-initial
+op-initial→terminal i .HasTerminal.is-terminal .IsTerminal.to-terminal-ext = i .HasInitial.from-initial-ext
+
+------------------------------------------------------------------------------
 -- Coproducts
 record HasCoproducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞
@@ -246,6 +269,16 @@ record HasCoproducts {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
       copair (copair f₁ f₂ ∘ (in₁ ∘ g₁)) (copair f₁ f₂ ∘ (in₂ ∘ g₂))
     ≈˘⟨ copair-natural _ _ _ ⟩
       copair f₁ f₂ ∘ copair (in₁ ∘ g₁) (in₂ ∘ g₂)
+    ∎
+    where open ≈-Reasoning isEquiv
+
+  copair-ext0 : ∀ {x y} → copair in₁ in₂ ≈ id (coprod x y)
+  copair-ext0 = begin
+      copair in₁ in₂
+    ≈˘⟨ copair-cong id-left id-left ⟩
+      copair (id _ ∘ in₁) (id _ ∘ in₂)
+    ≈⟨ copair-ext (id _) ⟩
+      id _
     ∎
     where open ≈-Reasoning isEquiv
 
@@ -483,6 +516,16 @@ make-HasProducts 𝒞 p .HasProducts.pair-cong = p _ _ .Product.pair-cong
 make-HasProducts 𝒞 p .HasProducts.pair-p₁ = p _ _ .Product.pair-p₁
 make-HasProducts 𝒞 p .HasProducts.pair-p₂ = p _ _ .Product.pair-p₂
 make-HasProducts 𝒞 p .HasProducts.pair-ext = p _ _ .Product.pair-ext
+
+op-coproducts→products : ∀ {o m e} {𝒞 : Category o m e} → HasCoproducts 𝒞 → HasProducts (Category.opposite 𝒞)
+op-coproducts→products cp .HasProducts.prod = cp .HasCoproducts.coprod
+op-coproducts→products cp .HasProducts.p₁ = cp .HasCoproducts.in₁
+op-coproducts→products cp .HasProducts.p₂ = cp .HasCoproducts.in₂
+op-coproducts→products cp .HasProducts.pair = cp .HasCoproducts.copair
+op-coproducts→products cp .HasProducts.pair-cong = HasCoproducts.copair-cong cp
+op-coproducts→products cp .HasProducts.pair-p₁ = HasCoproducts.copair-in₁ cp
+op-coproducts→products cp .HasProducts.pair-p₂ = HasCoproducts.copair-in₂ cp
+op-coproducts→products cp .HasProducts.pair-ext = HasCoproducts.copair-ext cp
 
 record HasStrongCoproducts {o m e} (𝒞 : Category o m e) (P : HasProducts 𝒞) : Set (o ⊔ m ⊔ e) where
   open Category 𝒞

@@ -9,15 +9,15 @@ open import Level using (suc; 0ℓ)
 open import prop using (proj₁; proj₂)
 open import prop-setoid using (IsEquivalence; module ≈-Reasoning)
 open import basics using (IsPreorder; IsTop; IsMeet)
-open import preorder using (Preorder)
+open import preorder using (Preorder; _×_)
 open import meet-semilattice
   using ( MeetSemilattice
         ; εm; _+m_; +m-cong; +m-comm; +m-assoc; +m-lunit
-        ; comp-bilinear₁; comp-bilinear₂; comp-bilinear-ε₁; comp-bilinear-ε₂)
+        ; comp-bilinear₁; comp-bilinear₂; comp-bilinear-ε₁; comp-bilinear-ε₂; 𝟙)
   renaming (_=>_ to _=>M_; _≃m_ to _≃M_; id to idM; _∘_ to _∘M_;
             _⊕_ to _⊕M_;
             ≃m-isEquivalence to ≃M-isEquivalence)
-open import categories using (Category; HasProducts)
+open import categories using (Category; HasProducts; HasTerminal)
 open import functor using (IsLimit; Limit; HasLimits; Functor; NatTrans; ≃-NatTrans)
 import two
 
@@ -138,9 +138,26 @@ module _ (𝒮 : Category 0ℓ 0ℓ 0ℓ) where
   limits D .Limit.isLimit .IsLimit.lambda-ext {X} f .f≃f .eqfunc .eqfun x .proj₁ s = D .fobj s .≤-refl
   limits D .Limit.isLimit .IsLimit.lambda-ext {X} f .f≃f .eqfunc .eqfun x .proj₂ s = D .fobj s .≤-refl
 
+-- Do products and terminal object directly to get a nicer representation
 products : HasProducts cat
-products = limits→products cat (limits product-diagram.cat)
-  where open import product-diagram using (limits→products)
+products .HasProducts.prod X Y .carrier = X .carrier × Y .carrier
+products .HasProducts.prod X Y .meets = X .meets ⊕M Y .meets
+products .HasProducts.p₁ .*→* = meet-semilattice.project₁
+products .HasProducts.p₂ .*→* = meet-semilattice.project₂
+products .HasProducts.pair f g .*→* = meet-semilattice.⟨ (f .*→*) , (g .*→*) ⟩
+products .HasProducts.pair-cong eq₁ eq₂ .f≃f = meet-semilattice.⟨⟩-cong (eq₁ .f≃f) (eq₂ .f≃f)
+products .HasProducts.pair-p₁ f g .f≃f = meet-semilattice.pair-p₁ (f .*→*) (g .*→*)
+products .HasProducts.pair-p₂ f g .f≃f = meet-semilattice.pair-p₂ (f .*→*) (g .*→*)
+products .HasProducts.pair-ext f .f≃f = meet-semilattice.pair-ext (f .*→*)
+
+terminal : HasTerminal cat
+terminal .HasTerminal.witness = record { meets = 𝟙 }
+terminal .HasTerminal.is-terminal .categories.IsTerminal.to-terminal .*→* = meet-semilattice.terminal
+terminal .HasTerminal.is-terminal .categories.IsTerminal.to-terminal-ext f .f≃f =
+  meet-semilattice.terminal-unique _ _ _
+
+-- = limits→products cat (limits product-diagram.cat)
+--   where open import product-diagram using (limits→products)
 
 TWO : Obj
 TWO .carrier .Preorder.Carrier = two.Two

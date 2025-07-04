@@ -6,15 +6,15 @@ open import Level using (suc; 0ℓ)
 open import prop using (proj₁; proj₂; LiftS; liftS)
 open import prop-setoid using (IsEquivalence; module ≈-Reasoning)
 open import basics using (IsPreorder; IsBottom; IsJoin)
-open import preorder using (Preorder; _=>_) renaming (_≃m_ to _≃P_)
+open import preorder using (Preorder; _=>_; _×_) renaming (_≃m_ to _≃P_)
 open import join-semilattice
-  using ( JoinSemilattice
+  using ( JoinSemilattice; 𝟙
         ; εm; _+m_; +m-cong; +m-comm; +m-assoc; +m-lunit
         ; comp-bilinear₁; comp-bilinear₂; comp-bilinear-ε₁; comp-bilinear-ε₂)
   renaming (_=>_ to _=>J_; _≃m_ to _≃J_; id to idJ; _∘_ to _∘J_;
             _⊕_ to _⊕J_;
             ≃m-isEquivalence to ≃J-isEquivalence)
-open import categories using (Category; HasProducts)
+open import categories using (Category; HasCoproducts; HasTerminal; HasInitial)
 open import functor using (IsColimit; Colimit; HasColimits; Functor; NatTrans; ≃-NatTrans)
 import two
 
@@ -183,6 +183,29 @@ module _ (𝒮 : Category 0ℓ 0ℓ 0ℓ) where
   colimits D .Colimit.isColimit .IsColimit.colambda-cong α≃β .f≃f .eqfunc .eqfun = colambda-cong D α≃β
   colimits D .Colimit.isColimit .IsColimit.colambda-coeval X α .transf-eq s .f≃f .eqfunc .eqfun x = X .≃-refl
   colimits D .Colimit.isColimit .IsColimit.colambda-ext X f .f≃f .eqfunc .eqfun = colambda-ext D X f
+
+coproducts : HasCoproducts cat
+coproducts .HasCoproducts.coprod X Y .carrier = X .carrier × Y .carrier
+coproducts .HasCoproducts.coprod X Y .joins = X .joins ⊕J Y .joins
+coproducts .HasCoproducts.in₁ .*→* = join-semilattice.inject₁
+coproducts .HasCoproducts.in₂ .*→* = join-semilattice.inject₂
+coproducts .HasCoproducts.copair f g .*→* = join-semilattice.[ (f .*→*) , (g .*→*) ]
+coproducts .HasCoproducts.copair-cong eq₁ eq₂ .f≃f = join-semilattice.[]-cong (eq₁ .f≃f) (eq₂ .f≃f)
+coproducts .HasCoproducts.copair-in₁ f g .f≃f = join-semilattice.inj₁-copair (f .*→*) (g .*→*)
+coproducts .HasCoproducts.copair-in₂ f g .f≃f = join-semilattice.inj₂-copair (f .*→*) (g .*→*)
+coproducts .HasCoproducts.copair-ext f .f≃f = join-semilattice.copair-ext (f .*→*)
+
+-- FIXME: could do products directly too
+
+initial : HasInitial cat
+initial .HasInitial.witness = record { joins = 𝟙 }
+initial .HasInitial.is-initial .categories.IsInitial.from-initial .*→* = join-semilattice.initial
+initial .HasInitial.is-initial .categories.IsInitial.from-initial-ext f .f≃f = join-semilattice.initial-unique _ _ _
+
+terminal : HasTerminal cat
+terminal .HasTerminal.witness = record { joins = 𝟙 }
+terminal .HasTerminal.is-terminal .categories.IsTerminal.to-terminal .*→* = join-semilattice.terminal
+terminal .HasTerminal.is-terminal .categories.IsTerminal.to-terminal-ext f .f≃f = join-semilattice.terminal-unique _ _ _
 
 TWO : Obj
 TWO .carrier .Preorder.Carrier = two.Two

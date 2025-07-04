@@ -6,7 +6,7 @@ open import Level using (_⊔_)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import prop using (_∧_; _,_; proj₁; proj₂)
 open import prop-setoid using (IsEquivalence)
-open import categories using (Category)
+open import categories using (Category; HasProducts; HasTerminal)
 open import functor using (Functor; Limit; IsLimit; _∘F_; NatTrans; ≃-NatTrans)
 
 module _ {o₁ m₁ e₁ o₂ m₂ e₂} (𝒞 : Category o₁ m₁ e₁) (𝒟 : Category o₂ m₂ e₂) where
@@ -87,3 +87,32 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂} (𝒞 : Category o₁ m₁ e₁) (𝒟 
       𝒟.≈-trans
        (limit𝒟 .lambda-cong (record { transf-eq = λ _ → 𝒟.≈-refl }))
        (limit𝒟 .lambda-ext (f .proj₂))
+
+  -- Products as a special case
+  module _ (𝒞P : HasProducts 𝒞) (𝒟P : HasProducts 𝒟) where
+
+    private
+      module 𝒞P = HasProducts 𝒞P
+      module 𝒟P = HasProducts 𝒟P
+
+    product-products : HasProducts product
+    product-products .HasProducts.prod (x₁ , y₁) (x₂ , y₂) = 𝒞P.prod x₁ x₂ , 𝒟P.prod y₁ y₂
+    product-products .HasProducts.p₁ = 𝒞P.p₁ , 𝒟P.p₁
+    product-products .HasProducts.p₂ = 𝒞P.p₂ , 𝒟P.p₂
+    product-products .HasProducts.pair (f₁ , f₂) (g₁ , g₂) = 𝒞P.pair f₁ g₁ , 𝒟P.pair f₂ g₂
+    product-products .HasProducts.pair-cong (eq₁ , eq₂) (eq₃ , eq₄) = 𝒞P.pair-cong eq₁ eq₃ , 𝒟P.pair-cong eq₂ eq₄
+    product-products .HasProducts.pair-p₁ (f₁ , f₂) (g₁ , g₂) = 𝒞P.pair-p₁ f₁ g₁ , 𝒟P.pair-p₁ f₂ g₂
+    product-products .HasProducts.pair-p₂ (f₁ , f₂) (g₁ , g₂) = 𝒞P.pair-p₂ f₁ g₁ , 𝒟P.pair-p₂ f₂ g₂
+    product-products .HasProducts.pair-ext (f₁ , f₂) = 𝒞P.pair-ext f₁ , 𝒟P.pair-ext f₂
+
+  -- Terminal objects as a special case
+  module _ (𝒞T : HasTerminal 𝒞) (𝒟T : HasTerminal 𝒟) where
+
+    private
+      module 𝒞T = HasTerminal 𝒞T
+      module 𝒟T = HasTerminal 𝒟T
+
+    product-terminal : HasTerminal product
+    product-terminal .HasTerminal.witness = 𝒞T.witness , 𝒟T.witness
+    product-terminal .HasTerminal.is-terminal .categories.IsTerminal.to-terminal = 𝒞T.to-terminal , 𝒟T.to-terminal
+    product-terminal .HasTerminal.is-terminal .categories.IsTerminal.to-terminal-ext (f , g) = (𝒞T.to-terminal-ext f) , (𝒟T.to-terminal-ext g)

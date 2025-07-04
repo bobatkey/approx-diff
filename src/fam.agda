@@ -2,12 +2,12 @@
 
 module fam where
 
-open import Level
-open import prop
+open import Level using (suc; _⊔_)
+open import prop using (⟪_⟫)
 open import prop-setoid
   using (IsEquivalence; Setoid; 𝟙; +-setoid; ⊗-setoid; idS; _∘S_; ∘S-cong; module ≈-Reasoning)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_; ≃m-isEquivalence to ≈s-isEquivalence)
-open import categories
+open import categories using (Category; setoid→category)
 
 -- Families of objects over a setoid
 --

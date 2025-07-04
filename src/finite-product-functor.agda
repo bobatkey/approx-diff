@@ -2,7 +2,7 @@
 
 open import Level using (_⊔_; 0ℓ)
 open import prop-setoid using (module ≈-Reasoning)
-open import categories using (Category; IsTerminal; IsProduct; IsProduct-cong; HasProducts)
+open import categories using (Category; IsTerminal; IsProduct; IsProduct-cong; HasProducts; HasTerminal)
 open import functor using (Functor; preserve-limits-of-shape; IsLimit;
                            NatIso; NatTrans; ≃-NatTrans; constFmor)
 
@@ -53,6 +53,15 @@ preserve-fp→FPFunctor preserve-empty preserve-product .FPFunctor.preserve-prod
 continuous→FPFunctor : (∀ (𝒮 : Category 0ℓ 0ℓ 0ℓ) → preserve-limits-of-shape 𝒮 F) →
                        FPFunctor
 continuous→FPFunctor preserve-all = preserve-fp→FPFunctor (preserve-all _) (preserve-all _)
+
+module _ (𝒞T : HasTerminal 𝒞) (𝒟T : HasTerminal 𝒟) where
+
+  private
+    module 𝒞T = HasTerminal 𝒞T
+    module 𝒟T = HasTerminal 𝒟T
+
+  preserve-chosen-terminal : Set (m₂ ⊔ e₂)
+  preserve-chosen-terminal = Category.IsIso 𝒟 (HasTerminal.to-terminal 𝒟T {F.fobj (𝒞T .HasTerminal.witness)})
 
 module _ (𝒞P : HasProducts 𝒞) (𝒟P : HasProducts 𝒟) where
 

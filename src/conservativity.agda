@@ -17,7 +17,9 @@ open import stable-coproducts using (StableBits; Stable)
 import glueing-simple
 import setoid-predicate
 open import finite-product-functor
-  using (preserve-chosen-products; module preserve-chosen-products-consequences)
+  using ( preserve-chosen-products
+        ; preserve-chosen-terminal
+        ; module preserve-chosen-products-consequences)
 open import finite-coproduct-functor
   using (preserve-chosen-coproducts; module preserve-chosen-coproducts-consequences)
 
@@ -52,7 +54,7 @@ module conservativity
   (𝒟DC : ∀ (A : Setoid 0ℓ 0ℓ) → HasColimits (setoid→category A) 𝒟)
   -- A functor which preserves terminal, products, and coproducts
   (F  : Functor 𝒞 𝒟)
-  (FT : Category.IsIso 𝒟 (HasTerminal.to-terminal 𝒟T {F .fobj (𝒞T .HasTerminal.witness)}))
+  (FT : preserve-chosen-terminal F 𝒞T 𝒟T)
   (FP : preserve-chosen-products F 𝒞P 𝒟P)
   (FC : preserve-chosen-coproducts F 𝒞CP 𝒟CP)
   where
@@ -235,8 +237,8 @@ Definable-coproducts .*⊑* z .*⊑* (lift g) (lift (f , eq)) =
           ∎
           where open ≈-Reasoning 𝒟.isEquiv
 
--- FIXME: this ought to be true if for any predicate that is closed
--- under glueing of sums.
+-- FIXME: this ought to be true for any predicate that is closed under
+-- glueing of sums.
 Definable-closed : ∀ {X Y} (f : F .fobj X 𝒟.⇒ F .fobj Y) →
        Context (G .fobj (F .fobj Y)) (Definable Y) X (lift f) →
        ∃ (X 𝒞.⇒ Y) (λ g → F .fmor g 𝒟.≈ f)

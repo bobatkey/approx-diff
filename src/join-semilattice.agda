@@ -199,6 +199,9 @@ module _ where
   open _≃m_
   open preorder._≃m_
 
+  terminal-unique : ∀ {A}(X : JoinSemilattice A) → (f g : X => 𝟙) → f ≃m g
+  terminal-unique {A} X f g .eqfunc .eqfun x = _
+
   initial-unique : ∀ {A}(X : JoinSemilattice A) → (f g : 𝟙 => X) → f ≃m g
   initial-unique {A} X f g .eqfunc .eqfun tt =
     begin

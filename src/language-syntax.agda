@@ -15,13 +15,15 @@ data type : Set ℓ where
   _[×]_ _[→]_ : type → type → type
   list : type → type
 
+infixr 35 _[→]_
+
 data first-order : type → Set ℓ where
   unit  : first-order unit
   bool  : first-order bool
   base  : ∀ s → first-order (base s)
   _[×]_ : ∀ {τ₁ τ₂} → first-order τ₁ → first-order τ₂ → first-order (τ₁ [×] τ₂)
 
-infixl 40 _[×]_ _[→]_
+infixl 40 _[×]_
 
 data ctxt : Set ℓ where
   emp : ctxt
@@ -121,3 +123,17 @@ from M collect N = fold nil (append (weaken * N) (var zero)) M
 
 when_；_ : ∀ {Γ τ} → Γ ⊢ bool → Γ ⊢ list τ → Γ ⊢ list τ
 when M ； N = if M then N else nil
+
+-- Some useful functions:
+append-f : ∀ {Γ τ} → Γ ⊢ list τ [→] list τ [→] list τ
+append-f = lam (lam (fold (var zero) (cons (var (succ zero)) (var zero)) (var (succ zero))))
+
+-- The list monad
+ret : ∀ {Γ τ} → Γ ⊢ τ [→] list τ
+ret = lam (return (var zero))
+
+bind : ∀ {Γ τ₁ τ₂} → Γ ⊢ list τ₁ [→] (τ₁ [→] list τ₂) [→] list τ₂
+bind = lam (lam (from (var (succ zero)) collect (app (var (succ zero)) (var zero))))
+
+guard : ∀ {Γ} → Γ ⊢ bool [→] list unit
+guard = lam (if (var zero) then (cons unit nil) else nil)
