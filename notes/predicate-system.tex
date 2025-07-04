@@ -47,14 +47,11 @@ $\directImage{P}{\alpha}_X = \directImage{P_X}{\alpha_X}$.
 
 A \emph{closure operator} $C$ over a poset $(X, \sqleq)$ is a lax idempotent monad on $X$, with functoriality,
 unit and multiplication given by monotonicity, extensivity ($x \sqleq C(x)$) and idempotence ($C(C(x)) \sqleq
-C(x)$). Suppose $\mathcal{S} = (\Pred, \top, \meet, \join, \residual, \forall)$ a predicate system over a
-category $\cat{C}$. A closure operator $C$ over $\mathcal{S}$ is a fibred lax idempotent monad $C$ on the
-fibration $\Pred: \cat{C}^\op \to \Poset$ such that:
-\begin{enumerate}
-\item for every object $X$ in $\cat{C}$ the fibre map $C_X: \Pred(X) \to \Pred(X)$ is a closure operator;
-\item
-\item $C$ is lax monoidal with respect to $\meet$;
-\item $C$ is lax strong, i.e.~$C(X \times Y) \sqleq X \times C(Y)$.
-\end{enumerate}
-That $C$ is fibred means that it commutes with the reindexing functor $\reindex{-}{f}$, i.e.~$C_X \comp
-\reindex{-}{f}$ is naturally isomorphic to $\reindex{-}{f} \comp C_Y$.
+C(x)$).
+
+Suppose $\mathcal{S} = (\Pred, \top, \meet, \join, \residual, \forall)$ a predicate system over a category
+$\cat{C}$. A closure operator $C$ over $\mathcal{S}$ is a fibred lax idempotent monad $C$ on the fibration
+$\Pred: \cat{C}^\op \to \Poset$ where for every object $X$ the fibre map $C_X: \Pred(X) \to \Pred(X)$ is a
+closure operator, $C$ is lax monoidal with respect to $\meet$ (i.e.~$C(P) \meet C(Q) \sqleq C(P \meet Q)$),
+and $C$ is lax strong, i.e.~$C(P) \meet Q \sqleq C(P \meet Q)$. $C$ being a fibred functor means it commutes
+with any reindexing functor $\reindex{-}{f}$, i.e.~$C_X \comp \reindex{-}{f} \iso \reindex{-}{f} \comp C_Y$.
