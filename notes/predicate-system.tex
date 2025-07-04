@@ -24,12 +24,12 @@ $\residual$ and $\forall_Y$.
 
 \subsubsection{Predicate system over $\Set$}
 
-Suppose $X$ a set. Define a \emph{predicate on $X$} to be a family of (proof-irrelevant) propositions. For any
-function $f: X \to Y$, define $\reindex{P}{f}(x)$ iff $P(f(x))$ and $\directImage{P}{f}(y)$ iff there exists
-$x$ such that $f(x) = y$ and $P(x)$. Define $\mathcal{S}$ to be the predicate system over $\Set$ which assigns
-to any set $X$ the set $\Pred(X)$ of propositions on $X$ ordered by implication, with $\top, \meet, \join$ and
-$\residual$ defined pointwise and universal quantification defined as $\forall_Y(P)(x)$ iff $P(x,y)$ for all
-$y \in Y$.
+Suppose $X$ a set. Define a \emph{predicate on $X$} to be a family of (proof-irrelevant) propositions for
+every $x \in X$. For any function $f: X \to Y$, define $\reindex{P}{f}(x)$ iff $P(f(x))$ and
+$\directImage{P}{f}(y)$ iff there exists $x$ such that $f(x) = y$ and $P(x)$. Define $\mathcal{S}$ to be the
+predicate system over $\Set$ which assigns to any set $X$ the set $\Pred(X)$ of propositions on $X$ ordered by
+implication, with $\top, \meet, \join$ and $\residual$ defined pointwise and universal quantification defined
+as $\forall_Y(P)(x)$ iff $P(x,y)$ for all $y \in Y$.
 
 \subsubsection{Predicates on a presheaf}
 
@@ -38,6 +38,7 @@ a family of predicates $P_X \in \Pred_\mathcal{S}(F(X))$ for every object $X$ in
 \sqsubseteq \reindex{P_X}{F(f)}$ for every $f: X \to Y$ in $\cat{C}$.
 
 Now define the predicate system $\mathcal{S}^{\cat{C}}$ over $\Func{\cat{C}^\op}{\Set}$ which assigns to every
-presheaf $F$ the poset $(\Pred(F), \sqleq)$ of predicates on $F$ ordered pointwise, and where $\top, \meet,
-\join, \residual$ and $\forall$ in $\Pred(F)$ are all given pointwise. For every natural transformation
-$\alpha: F \to G$, the pullback $\reindex{-}{\alpha}: \Pred(G) \to \Pred(F)$ ...
+presheaf $F$ the poset $\Pred(F)$ of predicates on $F$ ordered pointwise, and where $\top, \meet, \join,
+\residual$ and $\forall$ in $\Pred(F)$ are all given pointwise. For every natural transformation $\alpha: F
+\to G$, define $\reindex{P}{\alpha}_X = \reindex{P_X}{\alpha_X}$ and $\directImage{P}{\alpha}_X =
+\directImage{P_X}{\alpha_X}$.
