@@ -52,7 +52,9 @@ category $\cat{C}$. A closure operator $C$ over $\mathcal{S}$ is a fibred lax id
 fibration $\Pred: \cat{C}^\op \to \Poset$ such that:
 \begin{enumerate}
 \item for every object $X$ in $\cat{C}$ the fibre map $C_X: \Pred(X) \to \Pred(X)$ is a closure operator;
-\item $C$ is fibred, i.e. $C_X \comp \reindex{-}{f}$ is naturally isomorphic to $\reindex{-}{f} \comp C_Y$;
+\item
 \item $C$ is lax monoidal with respect to $\meet$;
 \item $C$ is lax strong, i.e.~$C(X \times Y) \sqleq X \times C(Y)$.
 \end{enumerate}
+That $C$ is fibred means that $C_X \comp \reindex{-}{f}$ is naturally isomorphic to $\reindex{-}{f} \comp
+C_Y$.
