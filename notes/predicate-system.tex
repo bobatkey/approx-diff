@@ -7,16 +7,15 @@ following data:
 \item For every object $X$ of $\cat{C}$, a partial order $(\Pred(X), \sqsubseteq)$ of predicates on $X$.
 \item For every $X$, the structure of a Heyting algebra (without $\bot$) on $\Pred(X)$, i.e.~ top element
    $\top$, meets $\meet$, joins $\join$ and residual $\residual$ satisfying the usual laws.
-\item For every morphism $f: X \to Y$ of $\cat{C}$, a Galois connection $\reindex{-}{f} \dashv
-\directImage{-}{f} : \Pred(X) \to \Pred(Y)$. The left adjoint $\reindex{-}{f}: \Pred(Y) \to \Pred(X)$ computes
-the pullback (reindexing) of a predicate along $f$; the right adjoint $\directImage{-}{f}: \Pred(X) \to
+\item For every morphism $f: X \to Y$ of $\cat{C}$, a Galois connection $\directImage{-}{f} \dashv
+\reindex{-}{f} : \Pred(Y) \to \Pred(X)$. The right adjoint $\reindex{-}{f}: \Pred(Y) \to \Pred(X)$ computes
+the pullback (reindexing) of a predicate along $f$; the left adjoint $\directImage{-}{f}: \Pred(X) \to
 \Pred(Y)$ computes the pushforward (existential image) of a predicate along $f$, with the adjointness property
 meaning that
 \[\directImage{P}{f} \sqsubseteq Q \iff P \sqsubseteq \reindex{Q}{f} \]
 \item For every $X$ and $Y$, a right adjoint $\forall_Y: \Pred(X \times Y) \to \Pred(X)$ to the monotone map
-$\reindex{-}{\pi_1}$ called \emph{universal quantification}
+$\reindex{-}{\pi_1}$ called \emph{universal quantification}. \todo{Is there a left adjoint $\exists_Y$?}
 \item $\reindex{-}{f}$ is colax (and thus $\directImage{-}{f}$ is lax) with respect to $\top$, $\meet$,
 $\residual$ and $\forall_Y$.
 \item $\reindex{-}{f}$ is lax (and thus $\directImage{-}{f}$ is colax) with respect to $\join$.
 \end{itemize}
-% These operations satisfy standard laws such as monotonicity, etc.
