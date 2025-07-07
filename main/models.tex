@@ -1,127 +1,454 @@
-\section{Constructing Models of Total \GPS}
+\section{Constructing Models of \GPS for a Total Language}
 \label{sec:models-of-total-gps}
 
-TODO:
-\begin{enumerate}
-\item Link to the discussion in the previous section
-\item Category of Families construction over a category $\cat{C}$:
-  \begin{enumerate}
-  \item Has (all) coproducts
-  \item Has products when $\cat{C}$ does, and is distributive and
-    stable.
-  \end{enumerate}
-\item Categories of interest: $\LatGal$, $\MeetSLat$, $\JoinSLat$ and
-  (for normal differentiation) $\FinVect$.
-\item Some functors between these models and from L-poset. Some
-  interesting objects in these categories.
-\item For higher-order models: we use a theorem of Vákár and Lucatelli
-  Nunes: if $\cat{C}$ has is cmon-enriched with biproducts and has all
-  (small) products, then $\Fam(\cat{C})$ is cartesian closed.
-\item We can construct a list object in $\Fam(\cat{C})$ when it has
-  products.
-\end{enumerate}
+The previous section concluded that L-posets and stable functions give
+a model of \GPS analogous to manifolds and smooth functions. However,
+we noted a conceptual shortcoming of this model, for the purposes of
+modelling total computations, that proper values and their
+approximations live in the same category. In this section, we propose
+a model for total \GPS based on the \emph{Category of Families}
+construction. This construction, adn the more general Grothendieck
+construction, has been previously used by V{\'a}k{\'a}r and
+collaborators \bob{CITE} to model automatic differentiation for
+higher-order programs on the reals. We rely on some of their results,
+and discuss the commonalities as we go.
 
+\subsection{The Category of Families Construction}
 
-
-
-We have seen that the idea of stability from domain theory can be seen
-as a bridging concept between smooth functions and their derivatives
-on one hand, and \GPS on the other. For the next part of our
-development, we want to transport a mathematical framework for
-automatic differentation from normal differentation to \GPS. We take
-the \emph{Combinatory Homomorphic Automatic Differentation} (CHAD)
-framework of Vákár \etal{} and apply it to \GPS. In this section we
-develop this framework for first-order programs only. In
-\autoref{sec:chad-higher-order}, we extend the framework to deal with
-the whole higher-order language we present in \autoref{sec:language}.
-
-\subsection{CMon-enriched and Biproduct Categories}
-
-As we noted above\bob{where?}, one commonality between tangent spaces
-and approximations is the ability to add tangents and to take the meet
-or join of two approximations. For our purposes, the suitable common
-abstraction is given by categories enriched in commutative monoids.
+As we explained in \secref{stab}, L-posets can be seen as partially
+ordered sets where every principal downset $\downset{x}$ is a bounded
+lattice. That is, for an element $x$, $\downset{x}$ is its lattice of
+approximations/tangents. The shortcoming of this setup is that proper
+values and their approximations live in the same set. We fix this by
+changing our model to one where we have sets $X$ of values, and for
+each $x \in X$, a bounded lattice $\partial X(x)$ of approximations of
+$x$. This construction is an instance of the general \emph{Category of
+  Families} construction:
 
 \begin{definition}
-  \bob{CMon-categories}
+  Let $\cat{C}$ be a category. The \emph{Category of Families} over
+  $\cat{C}$, $\Fam(\cat{C})$, has as objects pairs $(X, \partial X)$,
+  where $X$ is a set and $\partial X : X \to \cat{C}$ is an
+  $X$-indexed family of objects in $\cat{C}$. A morphism
+  $f : (X, \partial X) \to (Y, \partial Y)$ consists of a pair of a
+  function $f : X \to Y$ and a familiy of morphisms of $\cat{C}$,
+  $\partial f : (x : X) \to \cat{C}(\partial X(x), \partial Y(f\,x))$.
 \end{definition}
 
-\begin{definition}
-  \bob{Biproducts}
-\end{definition}
-
-\begin{example}
-  FinVect
-\end{example}
-
-\begin{example}
-  $\LatGal$, the category of bounded lattices and Galois connections.
-\end{example}
-
-\subsection{Families}
-
-The basic idea behind the CHAD framework is to use Cmon-categories
-with biproducts as the representation of tangent objects. Tangent
-objects are associated with points formally by constructing a category
-where objects consist of a pair of a set (of points) and for each
-point a corresponding tangent object. This is exactly the
-\emph{families} construction that freely completes any category with
-all coproducts:
-
-\begin{definition}
-  \label{def:category-of-families}
-  For any category $\cat{C}$, the \emph{category of families over
-    $\cat{C}$}, $\Fam(\cat{C})$ has:
-  \begin{itemize}
-  \item Objects $(A, X)$, where $A$ is a set and
-    $X : A \to \Ob\cat{C}$ is an $A$-indexed familiy of objects of
-    $\cat{C}$;
-  \item Morphisms $(A, X) \to (B, Y)$ are pairs $(f, \partial f)$
-    where $f : A \to B$ is a function and
-    $\partial f : \Pi_{x : A}.~\cat{C}(X(x), Y(f\,x))$ is an
-    $A$-indexed family of morphisms of $\cat{C}$.
-  \end{itemize}
-\end{definition}
-
-The key observation is that the composition of morphisms in Fam(C)
-matches the \emph{chain rule} for composition of
-derivatives. Therefore, in Fam(FinVect), if we have two morphisms
-$(f, \partial f)$ and $(g, \partial g)$ where the second components
-are the actual derivatives of the first components, then their
-composition's second component is the derivative of the
-composition. More formally:\bob{is this in Vákár's work?}
+Composition $f \circ g $ of morphisms
+$f : (Y, \partial Y) \to (Z, \partial Z)$ and
+$g : (X, \partial X) \to (Y, \partial Y)$ in this category is given by
+normal function composition on the set components, and
+$\partial (f \circ g)(x) = \partial f(f, x) \circ \partial g(x)$,
+where the latter composition is in $\cat{C}$. The fact that
+composition of morphisms in $\Fam(\cat{C})$ resembles the chain rule
+from calculus is essential to its use in modelling automatic
+differentiation. Indeed, if we let $\FinVect$ be the category of
+finite dimensional real vector spaces, then:
 
 \begin{proposition}
-  There is a faithful functor $F : \Man \to \Fam(\FinVect)$ that sends
-  a manifold $M$ to $(M, \lambda x. T_x(M))$, and each smooth function
+  \label{prop:embed-manifolds}
+  There is a faithful functor $\Man \to \Fam(\FinVect)$ that sends a
+  manifold $M$ to $(M, \lambda x. T_x(M))$, and each smooth function
   $f$ to $(f, f_*)$, the pair of $f$ and its forward derivative.
 \end{proposition}
 
-As similar result is given in \cite{cruttwell2022}, where Euclidean
+As similar result is given by \citet{cruttwell2022}, where Euclidean
 spaces $\RR^n$ and smooth functions are embedded into a category of
-lenses (the ``simply typed'' version of the $\Fam$ construction).
+lenses (the ``simply typed'' version of the $\Fam$ construction). As
+in \cite{vakar2021}, the idea is to formally separate functions on
+points and their forward/reverse tangent maps for the purposes of
+implementation of automatic differentiation. In the case of smooth
+maps, this process throws away information on higher derivatives by
+turning smooth maps into pairs of plain functions and linear
+functions. We conjecture at the end of this section that the analogous
+construction in our partially ordered setting does not.
 
-For \GPS, we have an analogous result:
+For \GPS we replace the category $\FinVect$ with $\LatGal$:
 
-\begin{lemma}
-  Faithful functor from L-poset to LatGal.
-\end{lemma}
+\begin{definition}
+  The category $\LatGal$ has bounded lattices as objects and Galois
+  connections as morphisms, with the right adjunct going in the
+  ``forward'' direction.
+\end{definition}
 
+We can get an analogous result to \propref{embed-manifolds} for L-posets:
 
+\begin{proposition}
+  There is a faithful functor $\Lposet \to \Fam(\LatGal)$ that maps an
+  L-poset $X$ to $(X, \lambda x. \downset{x})$ and stable functions
+  $f$ to $(f, \lambda x. (f_x, f^*_x))$.
+\end{proposition}
 
-\begin{lemma}
-  Fam(C) has all coproducts.
-\end{lemma}
+Despite its similarity, this proposition has a lesser status than
+\propref{embed-manifolds} because it is not clear that the category
+$\Lposet$ is in any way a canonical definition of approximable sets
+and functions with approximation derivatives. We could restrict
+$\Lposet$ to morphisms that preserve maximal elements and take
+L-posets $X$ to $(\mathrm{Max}(M), \lambda x. \downset{x})$. However,
+our current hypothesis is that $\Fam(\LatGal)$, where values and their
+approximations are separated by construction is the primary model of
+semantic \GPS. We now investigate the categorical properties of this
+category, with a view to modelling a higher-order total programming
+language.
 
-\begin{lemma}
-  Fam(C) has products when C does.
-\end{lemma}
+\subsection{Categorical Properties of $\Fam(\cat{C})$}
 
-More generally, get monoidal products.
+\subsubsection{Coproducts and Products}
 
-\subsection{\GPS in Fam(LatGal)}
+The categories $\Fam(\cat{C})$ are the free coproduct completions of
+categories $\cat{C}$, so they are guaranteed to have all coproducts:
 
-\begin{enumerate}
-\item The lifting monad
-\item Show some examples
-\end{enumerate}
+\begin{proposition}
+  For any $\cat{C}$, $\Fam(\cat{C}$ has all coproducts, which can be
+  given on objects by:
+  \begin{displaymath}
+    \coprod_i (X_i, \partial X_i) = (\coprod_i X_i, \lambda (i, x_i).\, \partial X_i(x))
+  \end{displaymath}
+  Coproducts in $\Fam(\cat{C})$ are \emph{extensive}
+  \cite{carboni-lack-walters93} (Proposition 2.4).
+\end{proposition}
+
+For $\Fam(\cat{C})$ to have finite products, we need $\cat{C}$ to have
+finite products:
+
+\begin{proposition}
+  If $\cat{C}$ has finite products, then so does $\Fam(\cat{C})$. On
+  objects, binary products can be defined by:
+  \begin{displaymath}
+    (X, \partial X) \times (Y, \partial Y) = (X \times Y, \lambda (x, y). \partial X(x) \times \partial Y(y))
+  \end{displaymath}
+  Since $\Fam(\cat{C})$ is extensive, products and coproducts always
+  distribute.
+\end{proposition}
+
+Using the infinitary coproducts and finite products, we can construct
+a wide range of other useful semantic models of datatypes in
+$\Fam(\cat{C})$. For example lists can be constructed as the coproduct
+\begin{displaymath}
+  \mathrm{List}\,X = \coprod_{n \in \mathbb{N}} X^n
+\end{displaymath}
+where $X^0 = 1$ (the terminal object) and $X^{n+1} = X \times X^n$.
+
+Our category of interest, $\Fam(\LatGal)$ has coproducts and finite
+products, because $\LatGal$ has products. As we shall see below, these
+are also coproducts, which is essential to obtaining cartesian
+closure.
+
+\subsubsection{Cartesian Closure}
+
+For cartesian closure of categories of families, we rely on the
+following theorem of \citet{nunes2023}, specialised from their setting
+with the general Grothendieck construction to $\Fam(\cat{C})$. This
+relies on the definition of \emph{biproducts}, which we discuss below
+in \secref{biproducts}.
+
+\begin{theorem}[\cite{nunes2023}]
+  \label{thm:fam-closed}
+  \AGDA.  If $\cat{C}$ has biproducts and all products, then
+  $\Fam(\cat{C})$ is cartesian closed\footnote{More precisely, if
+    $\cat{C}$ has coproducts then we have a monoidal product on
+    $\Fam(\cat{C})$ which is closed by this construction. When these
+    coproducts are in fact biproducts, we get cartesian closure.}. On
+  objects, the internal hom can be given by:
+  \begin{displaymath}
+    (X, \partial X) \to (Y, \partial Y) = (\Pi_{x : X}. \Sigma_{y : Y}. \cat{C}(\partial X(x), \partial Y(y)), \lambda f. \Pi_{x : X}. \partial Y(\pi_1(f\, x)))
+  \end{displaymath}
+\end{theorem}
+
+Before we explore the hypotheses of this theorem, we give some
+intuition on how it relates to differentiation. The Set-component of
+$(X, \partial X) \to (Y, \partial Y)$ consists of exactly the
+morphisms of $\Fam(\cat{C})$, rephrased into a single object. When
+$\cat{C} = \FinVect$, these are functions with an associated linear
+map at every point, and when $\cat{C} = \LatGal$, these are functions
+with an associated Galois connection at every point. A tangent to a
+function is then defined to be a mapping from points in the domain to
+tangents in the codomain along the function.
+
+Unfortunately, neither of the categories $\LatGal$ or $\FinVect$
+satisfy the hypotheses of this theorem, because neither of them have
+infinite products. We will consider ways to rectify this below
+\bob{fwd ref}.
+
+There is another construction of internal homs on $\Fam(\cat{C})$
+arising from the use of fibrations for categorical logical relations
+proofs, due to \citet{hermida99} (Corollary 4.12). If we assume that
+$\cat{C}$ is itself cartesian closed and has all products, then we
+could construct an internal hom as:
+\begin{displaymath}
+  (X, \partial X) \to (Y, \partial Y) = (X \to Y, \lambda f. \Pi_{x : X}.\,\partial X(x) \to \partial Y(f\,x))
+\end{displaymath}
+However, for the purposes of modelling differentiable programs, this
+is fatally flawed in that neither of $\LatGal$ nor $\FinVect$ are
+cartesian closed, and there is no way of making them so without losing
+the property of having biproducts. We will use Hermida's construction
+in our definability proof in \secref{definability}, where we use a
+logical relations argument to show that every morphism definable in
+the higher order language is also first-order definable.
+
+\subsubsection{CMon-Categories and Biproducts}
+\label{sec:biproducts}
+
+Loosely stated, biproducts are objects that are both products and
+coproducts. They can be defined in any category, as shown by
+\citet{karvonen18}, but for our purposes it will be more convenient to
+use the shorter definition in categories enriched in commutative
+monoids:
+\begin{definition}
+  A category $\cat{C}$ is enriched in $\CMon$, the category of
+  commutative monoids, if every homset $\cat{C}(X,Y)$ is a commutative
+  monoid with $(+,0)$ and composition is bilinear:
+  \begin{salign*}
+    f \comp \zero = f = \zero \comp f
+  \end{salign*}
+  \begin{salign*}
+    (f + g) \comp h &= (f \comp h) + (g \comp h) \\
+    h \comp (f + g) &= (h \comp f) + (h \comp g)
+  \end{salign*}
+\end{definition}
+In any $\CMon$-category we can define what it means to be the
+biproduct of two objects:
+\begin{definition}
+  In a $\CMon$-category a biproduct is an object $X \biprod Y$
+  together with morphisms
+
+  \begin{center}
+    \begin{tikzcd}
+      X \arrow[r, "\biinj_X", shift left] &
+      X \biprod Y \arrow[l, "\biproj_X", shift left] \arrow[r, "\biproj_Y"', shift right] &
+      Y \arrow[l, "\biinj_Y"', shift right]
+    \end{tikzcd}
+  \end{center}
+
+  \noindent satisfying
+
+  \vspace{-3mm}
+  \begin{minipage}[t]{0.45\textwidth}
+    \begin{center}
+      \begin{salign*}
+        \biproj_X \comp \biinj_X &= \id_X \\
+        \biproj_Y \comp \biinj_X &= \zero_{X,Y}
+      \end{salign*}
+    \end{center}
+  \end{minipage}%
+  \begin{minipage}[t]{0.45\textwidth}
+    \begin{center}
+      \begin{salign*}
+        \biproj_Y \comp \biinj_Y &= \id_Y \\
+        \biproj_X \comp \biinj_Y &= \zero_{Y,X}
+      \end{salign*}
+    \end{center}
+  \end{minipage}
+
+  \begin{salign*}
+    (\biinj_X \comp \biproj_X) + (\biinj_Y \comp \biproj_Y) &= \id_{X \biprod Y}
+  \end{salign*}
+\end{definition}
+As the name suggests, biproducts in a category are both products and
+coproducts:
+
+\begin{proposition}
+  \begin{enumerate}
+  \item A $\CMon$-category that has biproducts $X \oplus Y$ for all
+    $X$ and $Y$ also has products and coproducts with
+    $X \times Y = X + Y = X \oplus Y$.
+  \item A $\CMon$-category with (co)products also has biproducts.
+  \end{enumerate}
+\end{proposition}
+
+\begin{example}
+  The following categories are $\CMon$-enriched and have finite
+  products, and hence biproducts:
+  \begin{enumerate}
+  \item In $\FinVect$, morphisms are linear maps and so can be added
+    and have a zero map. Finite products are given by cartesian
+    products of the underlying sets, with the vector operations
+    defined pointwise.
+  \item In $\LatGal$, right adjoints are summed using meets and left
+    adjoints are summed using joins. The zero maps are given by the
+    constantly $\top$ and constrantly $\bot$ functions
+    respectively. Products are given by the cartesian product of the
+    underlying set.
+  \item The $\LatGal$ example splits into two separate categories
+    $\MeetSLat$ and $\JoinSLat$ of meet semi-lattices and join
+    semi-lattices respectively, with their respective homomorphisms as
+    the morphisms. As for $\LatGal$, these categories are
+    $\CMon$-enriched and have finite products, and so finite
+    biproducts.
+  \end{enumerate}
+\end{example}
+
+\subsubsection{Discrete Completeness}
+
+The second hypothesis of \thmref{fam-closed} is that the category
+$\cat{C}$ has all (i.e., infinite) products. This is required to
+gather together tangents for all of the points in the domain of the
+function. Unfortunately, neither $\FinVect$ nor $\LatGal$ is complete
+in this sense.
+
+In the case of $\FinVect$, the solution is to expand to the category
+of all vector spaces $\Vect$, where infinite direct products
+exist. Note that these infinite products are not biproducts because
+the vector space operations themselves are finitary. This is the
+solution that \cite{vakar2021} uses for the semantics of forward
+($\Fam(\Vect)$) and reverse ($\Fam(\Vect^\op)$) automatic
+differentiation for higher order programs. Since the forward and
+reverse derivatives of a smooth map intrinsically defined,
+\citet{vakar2021}'s correctness theorem can show that
+
+For $\LatGal$ we could expand to the category of complete lattices and
+Galois connections between them. From a classical mathematical point
+of view, this would give a model of \GPS that would likely be suitable
+for reasoning programs' behaviour and their forward and backward
+approximations. However, in terms of building an executable model
+inside the Agda proof assistant, and with an eye toward implementation
+strategies, we seek a more down-to-earth (i.e., predicative and
+constructive) solution. We will do this by separating the forward and
+backward parts of the Galois connections to act independently by
+moving to the product category $\MeetSLat \times
+\JoinSLat^\op$. Objects in this category consist of \emph{separate}
+meet- and join-semi-lattices and potentially unrelated forward
+meet-preserving and backward join-preserving maps. We first check that
+this category satisfies the hypotheses of \thmref{fam-closed}:
+
+\begin{proposition}
+  $\MeetSLat \times \JoinSLat^\op$ has biproducts and all products.
+\end{proposition}
+
+\begin{proof}
+  $\MeetSLat$ and $\JoinSLat$ are both $\CMon$-enriched and have
+  finite products, as noted above. The opposite of a category with
+  biproducts also has biproducts (by swapping the injections $i$ and
+  projections $p$), and products of categories with biproducts also
+  have biproducts pointwise. Hence $\MeetSLat \times \JoinSLat^\op$
+  has biproducts.
+
+  $\MeetSLat$ has all products, indeed all limits, because it is the
+  category of algebras for a Lawvere theory. Similarly, $\JoinSLat$
+  has all coproducts, indeed all colimits, for the same reason. Note
+  that these are very different constructions: elements of a product
+  of meet-semi-lattices consist of (possibly infinite) tuples of
+  elements, while elements of a coproduct of join-semilattices consist
+  of \emph{finite} formal joins of elements quotiented by the
+  join-semi-lattice equations. Since $\JoinSLat$ has all coproducts,
+  $\JoinSLat^\op$ has all products, and so
+  $\MeetSLat \times \JoinSLat^\op$ has all products, as required.
+\end{proof}
+
+\begin{corollary}
+  $\Fam(\MeetSLat \times \JoinSLat^\op)$ is cartesian closed and has
+  all coproducts.
+\end{corollary}
+
+This corollary means that, assuming a sensible intepretation of
+primitive types and operations, we can use
+$\Fam(\MeetSLat \times \JoinSLat^\op)$ to interpret the higher-order
+language we describe in the next section. We still regard the category
+$\Fam(\LatGal)$ as the reference model of approximable sets with
+forward and backward approximation maps; the category
+$\Fam(\MeetSLat \times \JoinSLat^\op)$ is a technical device to carry
+out the interpretation of higher-order programs. To get
+interpretations of first-order types and primitive operations, we can
+embed $\Fam(\LatGal)$ into $\Fam(\MeetSLat \times \JoinSLat^\op)$:
+
+\begin{proposition}
+  The functor
+  $F : \Fam(\LatGal) \to \Fam(\MeetSLat \times \JoinSLat^\op)$ defined
+  on objects as
+  $F(X, \partial X) = (X, \lambda x. (\partial X(x), \partial
+  X(x)))$. This functor is faithful and preserves coproducts and
+  finite products.
+\end{proposition}
+
+With this embedding functor, we can see that the interpretation of
+first-order types will be the same up to isormorphism in
+$\Fam(\LatGal)$ and $\Fam(\MeetSLat \times \JoinSLat^\op)$, as long as
+we interpret the base types as objects in $\Fam(\LatGal)$. At
+higher-order, however, the meet-semi-lattice and join-semi-lattice
+sides of the interpretation will diverge, and it is no longer clear
+that the interpretation of programs using higher-order functions
+internally will result in Galois connections. In \secref{definability}
+we will see that every program with first-order type (even if it uses
+higher-order functions internally) does in fact have an interpretation
+definable in $\Fam(\LatGal)$.
+
+% $\GLR(\Fam(\MeetSLat \times \JoinSLat^\op), F)$ fibred over
+% $\Fam(\MeetSLat \times \JoinSLat^\op)$ with a full and faithful functor $\Fam(\LatGal) \to \GLR(\Fam(\MeetSLat \times \JoinSLat^\op), F)$.
+
+\bob{In the conclusion, we have to admit to the possibility that
+  $\Fam(CLatGal)$ might be sensible. We could have also used
+  PShCMon(LatGal) and there is PShCMon(GraphLang) for
+  normalisation. We would have different problems with proving
+  correctness however.}
+
+\subsection{Semantic \GPS in $\Fam(\LatGal)$}
+\label{sec:semantic-gps}
+
+The above discussion has been somewhat abstract, so we now consider
+some examples in the category $\Fam(\LatGal)$ and how they relate to
+\GPS. We highlight how
+
+\subsubsection{Lifting Monad}
+
+\bob{Move the discussion in \texttt{first-order.tex} to here, but
+  construct the lifting monad in a more elementary way}
+
+\subsubsection{An Approximation Object and the Tagged Data Monad}
+
+\bob{flesh this out}
+
+The object $\mathbb{A} = (1, \lambda \_.\, \{\top,\bot\})$ represents
+a basic object for measuring approximations in terms of presence and
+absence. (If all we care about is presence or absence in our
+approximations, we could see this object as the analogue of the real
+numbers for normal differentiation.)
+
+This object is a commutative monoid in $\Fam(\LatGal)$, and so we can
+construct the writer monad $T(X) = \mathbb{A} \times X$ in
+$\Fam(\LatGal)$.
+
+On objects $X$ with trivial approximations, we have $L(X) \cong T(X)$,
+but for more structured objects we get usage information at every level.
+
+This is a bit like using the writer monad and Moggi's CBN translation
+as a basic way of doing provenance tracking, but here we can track
+backwards and forwards.
+
+\subsubsection{Approximating Numbers by Intervals}
+
+\bob{Describe how \exref{intervals-and-maxima-elements} fits into
+  $\Fam(\LatGal)$}
+
+\subsection{Summary}
+
+We have constructed the category
+$\Fam(\MeetSLat \times \JoinSLat^\op)$, which is a cartesian closed
+category with all coproducts, ienough to interpret the total
+higher-order language we define in the next section with primitive
+types and operations defined in $\Fam(\LatGal)$. However, we are not
+guaranteed by construction that at first-order type, the
+interpretations are in fact Galois connections. We will rectify this
+in \secref{definability} using a logical relations construction.
+
+As we did in \secref{approx-as-tangents}, we end the section with a
+conjecture relating our categories to Tangent categories.
+
+\begin{conjecture}
+  (1) The category $\Fam(\MeetSLat)$ is a Tangent category, with the
+  tangent bundle
+  $T(X, \partial X) = (\Sigma_{x : X}. \partial X(x), \lambda (x,
+  \delta x).\, \downset{\delta x})$. (2) The category $\Fam(\LatGal)$
+  is a reverse Tangent category with the analogous definition of
+  tangent bundle.
+\end{conjecture}
+
+Comparing this conjecture to the previous one, we can see that the
+difference between $\CM$, $\Lposet$ and $\Fam(\MeetSLat)$,
+$\Fam(\LatGal)$ is that the latter have a stronger separation of
+points from tangents, somewhat analogous to the situation with
+manifolds. Also note that, contrary to the $\Fam(\FinVect)$
+representation of manifolds and differentiable maps, (if this
+conjecture holds) we do not throw away information about higher
+derivatives. It is retained in the order structure of the tangent
+fibres.
