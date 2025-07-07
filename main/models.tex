@@ -1,0 +1,127 @@
+\section{Constructing Models of Total \GPS}
+\label{sec:models-of-total-gps}
+
+TODO:
+\begin{enumerate}
+\item Link to the discussion in the previous section
+\item Category of Families construction over a category $\cat{C}$:
+  \begin{enumerate}
+  \item Has (all) coproducts
+  \item Has products when $\cat{C}$ does, and is distributive and
+    stable.
+  \end{enumerate}
+\item Categories of interest: $\LatGal$, $\MeetSLat$, $\JoinSLat$ and
+  (for normal differentiation) $\FinVect$.
+\item Some functors between these models and from L-poset. Some
+  interesting objects in these categories.
+\item For higher-order models: we use a theorem of Vákár and Lucatelli
+  Nunes: if $\cat{C}$ has is cmon-enriched with biproducts and has all
+  (small) products, then $\Fam(\cat{C})$ is cartesian closed.
+\item We can construct a list object in $\Fam(\cat{C})$ when it has
+  products.
+\end{enumerate}
+
+
+
+
+We have seen that the idea of stability from domain theory can be seen
+as a bridging concept between smooth functions and their derivatives
+on one hand, and \GPS on the other. For the next part of our
+development, we want to transport a mathematical framework for
+automatic differentation from normal differentation to \GPS. We take
+the \emph{Combinatory Homomorphic Automatic Differentation} (CHAD)
+framework of Vákár \etal{} and apply it to \GPS. In this section we
+develop this framework for first-order programs only. In
+\autoref{sec:chad-higher-order}, we extend the framework to deal with
+the whole higher-order language we present in \autoref{sec:language}.
+
+\subsection{CMon-enriched and Biproduct Categories}
+
+As we noted above\bob{where?}, one commonality between tangent spaces
+and approximations is the ability to add tangents and to take the meet
+or join of two approximations. For our purposes, the suitable common
+abstraction is given by categories enriched in commutative monoids.
+
+\begin{definition}
+  \bob{CMon-categories}
+\end{definition}
+
+\begin{definition}
+  \bob{Biproducts}
+\end{definition}
+
+\begin{example}
+  FinVect
+\end{example}
+
+\begin{example}
+  $\LatGal$, the category of bounded lattices and Galois connections.
+\end{example}
+
+\subsection{Families}
+
+The basic idea behind the CHAD framework is to use Cmon-categories
+with biproducts as the representation of tangent objects. Tangent
+objects are associated with points formally by constructing a category
+where objects consist of a pair of a set (of points) and for each
+point a corresponding tangent object. This is exactly the
+\emph{families} construction that freely completes any category with
+all coproducts:
+
+\begin{definition}
+  \label{def:category-of-families}
+  For any category $\cat{C}$, the \emph{category of families over
+    $\cat{C}$}, $\Fam(\cat{C})$ has:
+  \begin{itemize}
+  \item Objects $(A, X)$, where $A$ is a set and
+    $X : A \to \Ob\cat{C}$ is an $A$-indexed familiy of objects of
+    $\cat{C}$;
+  \item Morphisms $(A, X) \to (B, Y)$ are pairs $(f, \partial f)$
+    where $f : A \to B$ is a function and
+    $\partial f : \Pi_{x : A}.~\cat{C}(X(x), Y(f\,x))$ is an
+    $A$-indexed family of morphisms of $\cat{C}$.
+  \end{itemize}
+\end{definition}
+
+The key observation is that the composition of morphisms in Fam(C)
+matches the \emph{chain rule} for composition of
+derivatives. Therefore, in Fam(FinVect), if we have two morphisms
+$(f, \partial f)$ and $(g, \partial g)$ where the second components
+are the actual derivatives of the first components, then their
+composition's second component is the derivative of the
+composition. More formally:\bob{is this in Vákár's work?}
+
+\begin{proposition}
+  There is a faithful functor $F : \Man \to \Fam(\FinVect)$ that sends
+  a manifold $M$ to $(M, \lambda x. T_x(M))$, and each smooth function
+  $f$ to $(f, f_*)$, the pair of $f$ and its forward derivative.
+\end{proposition}
+
+As similar result is given in \cite{cruttwell2022}, where Euclidean
+spaces $\RR^n$ and smooth functions are embedded into a category of
+lenses (the ``simply typed'' version of the $\Fam$ construction).
+
+For \GPS, we have an analogous result:
+
+\begin{lemma}
+  Faithful functor from L-poset to LatGal.
+\end{lemma}
+
+
+
+\begin{lemma}
+  Fam(C) has all coproducts.
+\end{lemma}
+
+\begin{lemma}
+  Fam(C) has products when C does.
+\end{lemma}
+
+More generally, get monoidal products.
+
+\subsection{\GPS in Fam(LatGal)}
+
+\begin{enumerate}
+\item The lifting monad
+\item Show some examples
+\end{enumerate}
