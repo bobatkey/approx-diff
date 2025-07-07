@@ -39,7 +39,7 @@ _+_ = HasCoproducts.coprod coproducts
 ------------------------------------------------------------------------------
 
 open import Data.Sum using (inj₁; inj₂)
-open import prop-setoid using (Setoid)
+open import prop-setoid using (Setoid; idS)
   renaming (⊗-setoid to _×ₛ_; +-setoid to _+ₛ_; 𝟙 to 𝟙ₛ; _⇒_ to _⇒s_; const to constₛ)
 open galois using (_⊕_; _⇒g_; _∘g_; _≃g_)
 import fam
@@ -83,8 +83,11 @@ import label
 
 BaseInterp : Model PFPC[ cat , terminal , products , 𝟚 ] Sig
 BaseInterp .Model.⟦sort⟧ number = simple[ nat.ℕₛ , galois.TWO ]
-BaseInterp .Model.⟦sort⟧ label = simple[ label.Label , galois.TWO ]
+BaseInterp .Model.⟦sort⟧ label = simple[ label.Label , galois.𝟙 ]
+BaseInterp .Model.⟦sort⟧ approx = simple[ 𝟙ₛ , galois.TWO ]
 BaseInterp .Model.⟦op⟧ zero = simplef[ nat.zero-m , galois.unit ]
 BaseInterp .Model.⟦op⟧ add = simplef[ nat.add , galois.conjunct ] C.∘ binary
-BaseInterp .Model.⟦op⟧ (lbl l) = simplef[ constₛ _ l , galois.unit ]
+BaseInterp .Model.⟦op⟧ (lbl l) = simplef[ constₛ _ l , galois.idg _ ]
 BaseInterp .Model.⟦rel⟧ equal-label = predicate label.equal-label C.∘ binary
+BaseInterp .Model.⟦op⟧ approx-unit = simplef[ idS _ , galois.unit ]
+BaseInterp .Model.⟦op⟧ approx-mult = simplef[ prop-setoid.to-𝟙 , galois.conjunct ] C.∘ binary

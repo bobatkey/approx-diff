@@ -8,12 +8,14 @@ open import Data.List using (List; []; _∷_)
 import label
 
 data sort : Set where
-  number label : sort
+  number label approx : sort
 
 data op : List sort → sort → Set where
   zero : op [] number
   add  : op (number ∷ number ∷ []) number
   lbl  : label.label → op [] label
+  approx-unit : op [] approx
+  approx-mult : op (approx ∷ approx ∷ []) approx
 
 data rel : List sort → Set where
   equal-label : rel (label ∷ label ∷ [])
