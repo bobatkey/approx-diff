@@ -7,42 +7,87 @@ We motivate our approach to \GPS by showing how to combine ideas from differenti
 
 % For what follows we do not need to know in detail what a manifold is, or exactly how smooth functions are defined. We only state some definitions in order to fix terminology and to justify our claim of a connection to manifolds and smooth functions. \bob{Need a good reference here.}
 
-The general study of differentiable functions takes place on \emph{manifolds}, which are topological spaces that ``locally'' look like a subset of the Euclidean space $\RR^n$. The spaces $\RR^n$ themselves are manifolds, but so are ``non-flat'' examples such as $n$-spheres and yet more exotic spaces. Every point $x$ in a manifold $M$ has an associated \emph{tangent vector space} $\tangents_x(M)$ and \emph{cotangent vector space} $\cotangents_x(M)$, the latter consisting of linear functions $\tangents_x(M) \linearto \RR$. The tangent and cotangent spaces are finite dimensional, so in the presence of a chosen basis they are canonically isomorphic. In the case when the manifold is $\RR^n$, then every tangent space is isomorphic to $\RR^n$ as well.
+The general study of differentiable functions takes place on
+\emph{manifolds}, topological spaces that ``locally'' behave like an
+open subset of the Euclidean space $\RR^n$. The spaces $\RR^n$
+themselves are manifolds, but so are ``non-flat'' examples such as
+$n$-spheres and yet more exotic spaces. Every point $x$ in a manifold
+$M$ has an associated \emph{tangent vector space} $\tangents_x(M)$
+consisting of linear approximations of curves on the manifold passing
+through $x$. Each point also has a \emph{cotangent vector space}
+$\cotangents_x(M) = \tangents_x(M) \linearto \RR$. The tangent and
+cotangent spaces are finite dimensional, so in the presence of a
+chosen basis they are canonically isomorphic. In the case when the
+manifold is $\RR^n$, then every tangent space is isomorphic to $\RR^n$
+as well.
 
 Smooth functions $f$ between manifolds $M$ and $N$ are functions on their points that are locally differentiable on $\RR^n$. Manifolds and smooth functions form a category $\Man$. Each smooth function induces maps of the (co)tangent spaces:
 \begin{itemize}
-\item The \emph{forward derivative} (tangent map or pushforward) $\pushf{f}_x$ is a linear map $\tangents_x(M) \linearto \tangents_{f(x)}(N)$. In the Euclidean case when $M = \RR^m$ and $N = \RR^n$, the tangent map can be represented by the Jacobian matrix of partial derivatives of $f$ at $x$.
-\item The \emph{backward derivative} (cotangent map, or pullback) $\pullf{f}_x$ is a linear map $\cotangents_{f(x)}(N) \linearto \cotangents_x(M)$. In the Euclidean case, the backward derivative is represented by the transpose of the Jacobian of $f$ at $x$.
+\item The \emph{forward derivative} (tangent map, pushforward) $\pushf{f}_x$ is a linear map $\tangents_x(M) \linearto \tangents_{f(x)}(N)$. In the Euclidean case when $M = \RR^m$ and $N = \RR^n$, the tangent map can be represented by the Jacobian matrix of partial derivatives of $f$ at $x$.
+\item The \emph{backward derivative} (cotangent map, pullback) $\pullf{f}_x$ is a linear map $\cotangents_{f(x)}(N) \linearto \cotangents_x(M)$. In the Euclidean case, the backward derivative is represented by the transpose of the Jacobian of $f$ at $x$.
 \end{itemize}
+
+\bob{mention chain rule here? and tangent spaces?}
 
 Computing the forward and backward derivatives of smooth functions $f$ has many applications of practical interest. For example, computation of the reverse derivative is of central interest in machine learning by gradient descent, the main technique used to train deep neural networks~\cite{rumelhart88,goodfellow16}.
 
 Derivatives can be computed numerically by computing $f$ on small perturbations of its input, or symbolically by examining a closed-form representation of $f$. However, a more common and practical technique is to use \emph{automatic differentiation}, where a program computing $f$ is instrumented to produce (a representation of) the forward and/or backward derivative as a side-effect of producing the output~\cite{linnainmaa76}. This has led to the area of differentiable programming, where programming languages and their implementations are specifically designed to admit efficient automatic differentation algorithms~\cite{jax2018github,abadi16,elliott17,sigal24}.
 
-\subsection{Stable Domain Theory as Differentiability}
+\subsection{Stable Functions as Differentiable Functions}
 
-Our thesis is that \GPS is a form of differentiable programming, where tangents are not linear approximations of functions but instead are qualitative approximations of elements in the sense of domain theory. Smooth functions in this setting are Berry's \emph{stable functions} \cite{berry79,berry82}. We now introduce these concepts and how they relate to \GPS.
+Our thesis is that \GPS is a generalised form of differentiable programming, where tangents are not linear approximations of curves but instead are qualitative information approximations of elements. Smooth functions in this setting are Berry's \emph{stable functions} \cite{berry79,berry82}. We now introduce these concepts and how they relate to \GPS.
 
 \subsubsection{Domains as a Qualitative Theory of Approximation}
 
-Domain theory is a method for defining the semantics of programs that handle infinite data (e.g., functions or infinite streams). \emph{Domains} are certain partially ordered sets where the ordering denotes a relationship of qualitative information content: if $x \sqsubseteq y$, then $y$ may contain more information than $x$. For example, if $x$ and $y$ are functions, then $y$ may be defined for more values in its domain than $x$. Infinite objects are understood in terms of their approximations in this sense, and domains are assumed to be closed under least upper bounds (lubs) of directed sets, meaning that any internally consistent collection of elements has a ``completion'' that contains all the information covered by the set. Programs are interpreted as monotone functions that preserve directed lubs. Monotonicity captures the idea that if the input gets more defined, then the output can get more defined. Preservation of lubs, or \emph{continuity}, states that a function interpreting a program cannot act inconsistently on approximations and their completion, which corresponds to the intuitive idea that a function that is computable cannot look at a non-finite amount of input to produce a finite output.
+Domain theory is a method for defining the semantics of programs that
+handle infinite data such as functions or infinite streams. Domains
+are certain partially ordered sets where the ordering denotes a
+relationship of qualitative information content: if $x \sqsubseteq y$,
+then $y$ may contain more information than $x$. For example, if $x$
+and $y$ are functions, then $y$ may be defined at more values than
+$x$. Infinite objects are understood in terms of their approximations
+in this sense, and domains are assumed to be closed under least upper
+bounds (lubs) of directed sets, meaning that any internally consistent
+collection of elements has a ``completion'' that contains all the
+information covered by the set. Programs are interpreted as monotone
+functions that preserve directed lubs. Monotonicity captures the idea
+that if the input gets more defined, then the output can get more
+defined. Preservation of lubs, or \emph{continuity}, states that a
+function interpreting a program cannot act inconsistently on
+approximations and their completion, which corresponds to the
+intuitive idea that a function that is computable cannot look at a
+non-finite amount of input to produce a finite output. \cite{abramsky-jung} is a comprehensive introduction to domain theory.
 
-For the purposes of \GPS, we are not interested in using approximations to model computation on infinite objects, but instead to use them for the related use of revealing how programs explore their inputs when producing parts of their output. Therefore, we ignore completeness properties of the partially ordered sets we consider.
+For the purposes of \GPS, we are not interested in using
+approximations to model computation on infinite objects, but instead
+for revealing how programs explore their inputs when producing parts
+of their output. Therefore, we ignore completeness properties of the
+partially ordered sets we consider\footnote{\bob{we might want to bring this back when considering general recursive programs. Are bidomains \cite{berry79} useful? they have two orderings. See also Laird's Bistable Biorders.}}.
 
 \subsubsection{Bounded Meets and Conditional Multiplicativity}
 \label{sec:bounded-meets-and-cm}
 
-When giving a denotational semantics for sequential programming languages, such as PCF, continuous functions are too permissive. Plotkin's Parallel OR (\exref{parallel-or}, below) is continuous but does not explore its input in a way consistent with a sequential implementation \cite{plotkin77lcf}. Continuous functions can explore their input in a ``random access'' way, which is incompatible with the central idea in \GPS that we should be able to identify a \emph{minimal} part of the input that leads to a part of the output.
+When giving a denotational semantics for sequential programming
+languages Scott-continuous functions are too permissive. Famously,
+\citet{plotkin77lcf}'s Parallel OR (\exref{parallel-or}, below) is
+continuous but does not explore its input in a way consistent with a
+sequential implementation. Continuous functions can explore their
+input in a non-deterministic way as long as the result is
+deterministic. This non-determinism results in functions that whose
+output cannot be assigned a unique minimal input that caused
+it. Therefore, continuous functions are incompatible with the central
+idea in \GPS that we should be able to identify a \emph{minimal} part
+of the input that leads to a part of the output.
 
-Stability is a property that can be required of monotone functions that was invented by \citet{berry79} in an attempt to capture sequentiality. This was not successful (see the $\mathrm{gustave}$ function in \exref{parallel-or}), but we will see now how it is closely related to problem of computing forward and backwards maps of approximations needed in \GPS. A textbook description of stable functions in the context of domain theory is given by \citet{amadio-curien} (Chapter 12). We start with a property that is weaker than stability, but is easier to motivate in connection with derivatives of smooth functions.
+\emph{Stability} is a property that can be required of monotone functions that was invented by \citet{berry79} in an attempt to capture sequentiality. This was not successful (see the $\mathrm{gustave}$ function in \exref{parallel-or}), but we will see now how it is closely related to problem of computing forward and backwards maps of approximations needed in \GPS. A textbook description of stable functions in the context of domain theory is given by \citet{amadio-curien} (Chapter 12). We start with a property that is weaker than stability, but is easier to motivate in connection with derivatives of smooth functions.
 
-In a partially ordered set $X$, for any $x \in X$ the set of elements below $x$, $\downset{x} = \{ x' \mid x' \sqsubseteq x \}$, is itself a partially ordered set. These approximations of $x$ we will think of as ``derivatives'' of $x$, and the whole set $\downset{x}$ as the ``tangent space''. Tangent spaces are vector spaces, since they are linear approximations to curves at that point. In the partially ordered setting, we take elements of $\downset{x}$ to be approximations of processes defined at $x$. As we can add tangents, we assume we can take meets of approximations in $\downset{x}$:
+In a partially ordered set $X$, for any $x \in X$ the set of elements below $x$, $\downset{x} = \{ x' \mid x' \sqsubseteq x \}$, is itself a partially ordered set. These approximations of $x$ we will think of as ``tangents'' at $x$, and the whole set $\downset{x}$ as the ``tangent space''\footnote{\bob{Is it possible to derive the tangent spaces by thinking about continuous functions passing through $x$?}}. Tangent spaces are vector spaces, so in the partially ordered setting we take elements of $\downset{x}$ to be approximations of processes defined at $x$. As we can add tangents, we assume we can take meets of approximations in $\downset{x}$:
 
 \begin{definition}
   A \emph{bounded meet poset} is a partially ordered set $X$ where for every $x \in X$, $\downset{x}$ is a meet semilattice, with $x$ as the top element.
 \end{definition}
 
-Smooth functions have a ``pushforward'' derivative that takes tangents at a point $x$ to tangents at the point $f(x)$ and is linear. In the partially ordered setting, we are going to take a function $f$'s pushforward derivative at $x$ to be its restriction to $\downset{x}$, taking approximations of the input to approximations of the output. Matching the linearity of the pushforward derivative smooth functions, we require that these restrictions preserve meets:
+For the approximation version of the forward derivative of $f$ at $x$, we take $f$'s restriction to $\downset{x}$, taking approximations of the input to approximations of the output. Matching the linearity of the forward derivative of smooth functions, we require that these restrictions preserve meets. This is exactly the definition of \emph{conditionally multiplicative} function from \citet{berry79}:
 
 \begin{definition}
   A \emph{conditionally multiplicative} (cm) function $f : X \to Y$ is
@@ -50,16 +95,25 @@ Smooth functions have a ``pushforward'' derivative that takes tangents at a poin
   $f_x : \downset{x} \to \downset{f(x)}$ preserves meets.
 \end{definition}
 
-\begin{lemma}
-  Morphisms of meet approximation spaces are closed under identities
-  and composition, forming a category. FIXME: with products?
-  functions? sums?
-\end{lemma}
+\begin{theorem}
+  Bounded meet lattices and conditionally multiplicatve functions form
+  a category $\CM$. This category has products, coproducts and
+  exponentials.
+\end{theorem}
+
+\begin{proof}
+  \AGDA. See \citet{amadio-curien} for the case when the posets are
+  also cpos. The crucial technical step, identified by
+  \citet{berry79}, is that the ordering on conditionally
+  multiplicative functions is not the extensional ordering
+  ($f \sqsubseteq g$ iff $\forall x. f(x) \subseteq g(x)$) but instead
+  the stable ordering $f \sqsubseteq g$ iff \bob{FIXME}.
+\end{proof}
 
 \begin{example}[Conditionally Multiplicative Functions]
-\label{ex:strict-short-circuit}
-  To see the effect of requiring preservation of bounded meets,
-  consider several ways of defining disjunction on the lifted booleans
+  \label{ex:strict-short-circuit}
+  To see the effect of conditional multiplicativity, consider several
+  ways of defining the OR on the lifted booleans
   $\mathbb{B}_\bot$. Two functions that are cm are the strict and
   left-short-circuiting ORs\footnote{The clauses in these examples are
     shorthand for the graph of the function. They are not to be
@@ -122,7 +176,57 @@ Smooth functions have a ``pushforward'' derivative that takes tangents at a poin
   Due to the way that the cases are defined, there is no way of constructing a pair of approximations for which preservation of their meet does not hold. In terms of derivatives, this makes sense in that we are only concerned about the intensional behaviour of a function at a point and its approximations. Parallel OR has two incompatible approximation behaviours at the point $(\mathsf{tt},\mathsf{tt})$. The $\mathrm{gustave}$ function does have consistent behaviour at each approximation for each point.
 \end{example}
 
-Conditional multiplicativity seems to be a reasonable analogue to functions with a well-defined notion of derivative. However, for \GPS we also require an analogue to the reverse derivative, where we map approximations backwards to give the least approximation of the input for a given approximation of the output. In the case of smooth functions, we are always guaranteed a reverse derivative but there is not always a best way to map approximations backwards for cm functions, as the following example shows.
+\begin{example}[Intervals and Maximal Elements]
+  \label{ex:intervals-and-maxima-elements}
+  The set of intervals
+  $\{ [l,u] \in \mathbb{R} \times \mathbb{R} \mid l \leq u \}$ ordered
+  by reverse inclusion forms a (Scott) domain
+  \cite{scott-outline}. The set of maximal elements is exactly
+  $\mathbb{R}$. This domain has been proposed as a model of
+  approximate real number computation \cite{escardo-real-pcf}. The
+  information approximation reading is intuitive: as intervals move up
+  the order they become tighter, containing more information about the
+  number they are approximating.
+
+  Given this reading, it makes sense to wonder if we can use interval
+  approximations as ``information tangents'' of real numbers, where
+  derivatives take approximating intervals to approximating
+  intervals. Since intervals form a Scott domain, they are bounded
+  complete and hence have bounded meets. However, the addition
+  function on intervals, $[l_1,u_1] + [l_2,u_2] = [l_1+l_2,u_1+u_2]$,
+  is not conditionally multiplicative, as can be easily checked.
+
+  A solution is to use the set of intervals with nominated points that
+  they are approximating: $\{[l,x,u] \mid l \leq x \leq u\}$. The
+  ordering now is that $[l_1,x_1,u_1] \sqsubseteq [l_2,x_2,u_2]$ iff
+  $x_1 = x_2$ and $l_1 \leq l_2$ and $u_2 \leq u_1$. Consequently, the
+  maximal elements are $[x,x,x]$, recovering $\mathbb{R}$ again, but
+  the approximations of each number all form independent sub-lattices.
+  Addition is defined as
+  $[l_1,x_1,u_1] + [l_2,x_2,u_2] = [(l_1+x_2) \sqcap
+  (l_2+x_1),x_1+x_2,(u_1+x_2)\sqcup(u_2+x_1)]$, which is conditionally
+  multiplicative. Note how this definition bears a resemblance to the
+  product rule for derivatives, with (in the lower end of the
+  interval) $\sqcap$ replacing $+$.
+
+  This example is important to us because it shows that (for total
+  programs) we are separately interested in the maximal elements and
+  their approximations, and that approximations of each maximal
+  element may have to be considered separately.
+
+  Relatedly, \citet{edalat-heckmann98} proposed a Scott domain of
+  formal balls on a metric space, where again the maximal elements are
+  the points of the original space. More generally,
+  \citet{continuous-lattice-book} (Section V-6) describes \emph{Domain
+    environments}, which are domains whose maximal elements are
+  exactly the points of a topological space. We are not aware of any
+  work linking domain environments in general to stable functions. It
+  would be interesting to see whether the situation for intervals,
+  where approximations must be relative to a nominated point, repeats
+  in general when considering conditionally multiplicative functions.
+\end{example}
+
+Given these examples, conditional multiplicativity seems to be a reasonable analogue to functions with a well-defined notion of derivative. However, for \GPS we also require an analogue to the reverse derivative, where we map approximations backwards to give the least approximation of the input for a given approximation of the output. In the case of smooth functions, we are always guaranteed a reverse derivative but there is not always a best way to map approximations backwards for cm functions, as the following example shows.
 
 \begin{example}[Is Conditional Multiplicativity Enough?]
   \label{ex:non-stable-function}
@@ -131,18 +235,23 @@ Conditional multiplicativity seems to be a reasonable analogue to functions with
   % that forces preservation of meets. A natural question is whether or
   % not we always have such a backwards map which we could use for
   % backwards propagation of approximations.
-  An example that is conditionally multiplicative, but does not admit a backards map of approximations (from \citet{amadio-curien} just before Lemma 12.2.3, originally due to Berry) is given by defining $\mathrm{unstable} : D \to \{\bot, \top\}$, where:
-  \begin{displaymath}
-    D = \bot \sqsubseteq \cdots \sqsubseteq n \sqsubseteq \cdots \sqsubseteq 1 \sqsubseteq 0
-  \end{displaymath}
-  as $\mathrm{unstable}(\bot) = \bot$ and $\mathrm{unstable}(n) = \top$. This is monotone, and preserves meets in every $\downset{x}$. However, there is no ``best'' (i.e., least) input that gives us any finite output.
+  An example that is conditionally multiplicative, but does not admit
+  a backards map of approximations (from \citet{amadio-curien} just
+  before Lemma 12.2.3, originally due to Berry) is given by defining
+  $\mathrm{unstable} : D \to \{\bot, \top\}$, where
+  $D = \bot \sqsubseteq \cdots \sqsubseteq n \sqsubseteq \cdots
+  \sqsubseteq 1 \sqsubseteq 0$, as $\mathrm{unstable}(\bot) = \bot$
+  and $\mathrm{unstable}(n) = \top$. This is monotone, and preserves
+  meets in every $\downset{x}$. However, there is no ``best'' (i.e.,
+  least) input that gives us any finite output.
 \end{example}
 
 \subsubsection{Stable functions and L-posets}
 
-In light of the preceeding example, we can give an alternative
-definition of a function that requires the existence of a reverse
-mapping directly, even without assuming that any meets exist:
+In light of the \exref{non-stable-function}, we consider
+\citet{berry79}'s definition of \emph{stable function} that requires
+the existence of a reverse mapping directly, even without assuming
+that any meets exist:
 
 \begin{definition}[Stable function]
   Let $f : X \to Y$ be a monotone function between posets $X$ and
@@ -158,21 +267,70 @@ mapping directly, even without assuming that any meets exist:
 \begin{example}
   \leavevmode\\[-3ex]
   \begin{enumerate}
-  \item The function $\mathrm{strictOr}$ is stable. For example, for the input-output pair $(\mathsf{tt},\mathsf{ff}) \mapsto \mathsf{tt}$, the minimal input that gives this output is exactly $(\mathsf{tt}, \mathsf{ff})$. If we take the approximation $\bot \leq \mathsf{tt}$ of the output, then the corresponding minimal input is $(\bot, \bot)$. The function $\mathrm{shortCircuitOR}$ is also stable. For the input-output pair $(\mathsf{tt},\mathsf{ff}) \mapsto \mathsf{tt}$, the minimal input that gives this input is $(\mathsf{tt},\bot)$, indicating that the presence of $\mathsf{ff}$ in the second argument was not necessary to produce this output. As with $\mathrm{strictOr}$, the minimal input required to produce the output $\bot \leq \mathsf{tt}$ is again $(\bot,\bot)$.
+  \item The function $\mathrm{strictOr}$ is stable. For example, for
+    the input-output pair
+    $(\mathsf{tt},\mathsf{ff}) \mapsto \mathsf{tt}$, the minimal input
+    that gives this output is exactly $(\mathsf{tt}, \mathsf{ff})$. If
+    we take the approximation $\bot \leq \mathsf{tt}$ of the output,
+    then the corresponding minimal input is $(\bot, \bot)$. The
+    function $\mathrm{shortCircuitOR}$ is also stable. For the
+    input-output pair $(\mathsf{tt},\mathsf{ff}) \mapsto \mathsf{tt}$,
+    the minimal input that gives this input is $(\mathsf{tt},\bot)$,
+    indicating that the presence of $\mathsf{ff}$ in the second
+    argument was not necessary to produce this output. As with
+    $\mathrm{strictOr}$, the minimal input required to produce the
+    output $\bot \leq \mathsf{tt}$ is again $(\bot,\bot)$.
 
-  \item The $\mathrm{parallelOR}$ function is not stable. For the input-output pair $(\mathsf{tt},\mathsf{tt}) \mapsto \mathsf{tt}$, there is no one minimal input that produces this output. We have both $\mathrm{parallelOR}(\mathsf{tt},\bot) = \mathsf{tt}$ and $\mathrm{parallelOR}(\bot,\mathsf{tt}) = \mathsf{tt}$, which are incomparable and their greatest lower bound $(\bot,\bot)$ gives the output $\bot$.
+  \item The $\mathrm{parallelOR}$ function is not stable. For the
+    input-output pair $(\mathsf{tt},\mathsf{tt}) \mapsto \mathsf{tt}$,
+    there is no one minimal input that produces this output. We have
+    both $\mathrm{parallelOR}(\mathsf{tt},\bot) = \mathsf{tt}$ and
+    $\mathrm{parallelOR}(\bot,\mathsf{tt}) = \mathsf{tt}$, which are
+    incomparable and their greatest lower bound $(\bot,\bot)$ gives
+    the output $\bot$.
 
-  \item The $\mathrm{gustave}$ function is stable. Despite there being no one minimal input that achieves the output $\top$, each of the minimal inputs that can achieve this output are pairwise incomparable, so for each specific input that gets output $\top$ there is a unique minimal input that achieves it (listed in the first three lines of the definition).
+  \item The $\mathrm{gustave}$ function is stable. Despite there being
+    no one minimal input that achieves the output $\top$, each of the
+    minimal inputs that can achieve this output are pairwise
+    incomparable, so for each specific input that gets output $\top$
+    there is a unique minimal input that achieves it (listed in the
+    first three lines of the definition).
 
-    In terms of \GPS the $\mathrm{gustave}$ function does not present a problem. For any particular run (i.e., input $\mapsto$ output pair), there is an unambiguous minimal input that achieves the output, no matter that it was not achieved by a sequential processing of the input.
+    In terms of \GPS the $\mathrm{gustave}$ function does not present
+    a problem. For any particular run (i.e., input $\mapsto$ output
+    pair), there is an unambiguous minimal input that achieves the
+    output, no matter that it was not achieved by a sequential
+    processing of the input.
 
-  \item As discussed above, $\mathrm{unstable}$ is not stable, but is conditionally multiplicative.
+  \item As discussed above, $\mathrm{unstable}$ is not stable, but is
+    conditionally multiplicative.
+
+  \item The addition function on intervals with nominated points in
+    \exref{intervals-and-maxima-elements} is stable. Given the input
+    $[l_1,x_1,u_1], [l_2,x_2,u_2]$ and an approximation
+    $[l,x_1+x_2,u]$ of the output, the minimal approximations of the
+    input are $[l-x_2,x_1,u-x_2], [l-x_1,x_2,u-x_1]$. We can read this
+    as saying if the output was the maximal element $x_1+x_2$ but we
+    only require the output to be in the range $[l,x_1+x_2,u]$, then
+    we can obtain intervals containing the input values that are
+    enough to obtain the desired output approximation \emph{assuming
+      that the other input is kept the same}. Note the analogy to
+    partial derivatives in multi-variable calculus, where the
+    derivative is computed in each variable independently.
   \end{enumerate}
 \end{example}
 
-The fact that these two functions' stability witnesses reveal information about how they depend on their input is what we will exploit in order to use the idea of stability for \GPS. It is interesting that sequentiality is not necessarily required in order to obtain backwards maps of approximations, as might be assumed by thinking about how to trace computations for provenance information.
+% The fact that these two functions' stability witnesses reveal
+% information about how they depend on their input is what we will
+% exploit in order to use the idea of stability for \GPS. It is
+% interesting that sequentiality is not necessarily required in order
+% to obtain backwards maps of approximations, as might be assumed by
+% thinking about how to trace computations for provenance information.
 
-Stability has an alternative definition in terms of Galois connections, which will be more useful for what follows. This characterisation is due to~\citet{taylor99}. We first formally define Galois connections, which we used informally in \exref{introduction-example}.
+Stability has an alternative definition in terms of Galois
+connections, which will be more useful for what follows. This
+characterisation is due to~\citet{taylor99}. We first define Galois
+connections, which we used informally in \exref{introduction-example}.
 
 \begin{definition}[Galois connection]
   \label{def:galois-connection}
@@ -180,7 +338,9 @@ Stability has an alternative definition in terms of Galois connections, which wi
 \end{definition}
 
 \begin{lemma}
-  A monotone function $f : X \to Y$ is stable if and only if for all $x \in X$, the restriction of $f_x : \downset{x} \to \downset{f(x)}$ has a left Galois adjoint.
+  A monotone function $f : X \to Y$ is stable if and only if for all
+  $x \in X$, the restriction of $f_x : \downset{x} \to \downset{f(x)}$
+  has a left Galois adjoint.
 \end{lemma}
 
 \begin{proof}
@@ -202,7 +362,10 @@ Stability has an alternative definition in terms of Galois connections, which wi
   then $f^*_x(y) \leq x'_0$.
 \end{proof}
 
-Even though stable functions can be defined on any partially ordered set, in light of the analogy with tangent spaces, it makes sense to require that meets, preserved by forward approximation maps, and joins, preserved by backwards approximation maps, exist:
+Even though stable functions can be defined on any partially ordered
+set, in light of the analogy with tangent spaces it makes sense to
+require that meets, preserved by forward approximation maps, and
+joins, preserved by backwards approximation maps, exist:
 
 \begin{definition}
   An \emph{L-poset} is a partially ordered set $X$ such that for every $x \in X$, the principal downset $\downset{x}$ is a bounded lattice (i.e., have all finite meets and joins).
@@ -219,26 +382,105 @@ preserving meets and joins:
 
 The converse to this lemma (that functions that preserve meets in their forward part have a left Galois adjoint) is not true, as was demonstrated by the non-stable function in \exref{non-stable-function}. In the case when the posets $\downset{x}$ are \emph{complete}, and $f_x$ preserves infinitary meets, then we are guaranteed a left Galois adjoint. In that example, the infinite set $\{0, 1, 2, \dots, n, n-1, \dots\}$ not including $\bot$ of approximations of $0$ does not have a greatest lower bound, so the order is not complete.
 
-We could have required that L-posets' principal downsets were complete lattices, which would mean that we would only need to require that forward approximation maps preserve all meets and we could compute the backwards map automatically. However, our goal is a computable theory for \GPS, analogous to automatic differentiation. Requiring completeness to compute backwards maps of approximations would require that complete joins are always computable, which will not be the case for approximations of functions.
+\begin{theorem}
+  L-posets and stable functions form a category with products and
+  coproducts.
+\end{theorem}
 
-\begin{proposition}
-  L-posets and stable functions form a category. \bob{and the main point is that composition of stability witnesses looks like a chain rule!}
-\end{proposition}
+The category of L-posets and stable functions is not cartesian
+closed. To make it so, we would need to require that the principal
+downsets $\downset{x}$ are \emph{complete}
+lattices. \citet{amadio-curien} (Theorem 12.FIXME) details the proof. Intuitively, to generate the best approximation of an input value for a function, we need to take the infimum over all possible input values.
 
-\bob{L-poset is has products and coproducts, but is not closed. To be closed would require each $\downset{x}$ to be a \emph{complete} lattice. However, this is tricky to implement as we need an infinitary operation to compute the reverse approximation map for function types. See \cite{amadio-curien} for the proof that bounded-complete lattices with stable functions form a cartesian closed category.}
+Our goal is to model a higher-order language suitable for writing
+queries on databases as in \exref{introduction-example}, so why should
+we not just take complete L-posets and stable functions as our model?
+We have two reasons for moving to a slightly different model in \secref{model}:
+
+\begin{enumerate}
+\item Even without completeness, in Bounded meet posets and L-posets,
+  values and their approximations live in the same set. However, in
+  the \emph{total} query language we wish to model in
+  \secref{language}, we are not directly interested in the behaviour
+  of programs on approximations as we would be for partial programs
+  with general recursion. (Moreover, in the light of
+  \exref{intervals-and-maxima-elements} it is not clear whether
+  approximations for partiality and approximations for stability ought
+  to be the same thing. \bob{fwd reference to discussion.}) In
+  \exref{intervals-and-maxima-elements}, maximal elements could be
+  taken to be the ``proper values''. One idea is to restrict to
+  conditionally multiplicative or stable functions that preserve
+  maximal elements. However, this idea fails at higher order:
+  functions that take maximal elements to maximal elements are not
+  themselves maximal elements. We could devise a category of L-posets
+  with totality predicates (which would pick out maximal elements at
+  first-order) and totality preserving functions, but we prefer a more
+  direct method of separating values proper from their approximations
+  using the \emph{Category of Families} construction we detail in the
+  next section.
+\item A more local reason is that we wish to formalise our
+  construction in the proof assistant Agda \cite{agda} in order to get
+  an \emph{executable} model of the language in
+  \secref{language}. Agda's type theory is both predicative and
+  constructive. Predicativity means that it does not have complete
+  lattices in the classical sense: for a type $X$ we can only get
+  suprema and infinma of families in a lower universe level than
+  $X$. This is not necessarily a problem, as \citet{dejong21} shows
+  how to develop a large amount of domain theory in a predicative
+  setting. However, due to constructivity the lifting construction
+  (due to \citet{escardo-knapp}) requires a proof of definedness to
+  extract a value. Since we are modelling a total language, we prefer
+  to have a model that computes directly.
+\end{enumerate}
+
+
+
+
+\bob{For future work: what is the connection between FamCPO(LatGal)
+  and Laird's bistable biorders, or Berry bidomains?}
+
+
+% We could have required that L-posets' principal downsets were complete lattices, which would mean that we would only need to require that forward approximation maps preserve all meets and we could compute the backwards map automatically. However, our goal is a computable theory for \GPS, analogous to automatic differentiation. Requiring completeness to compute backwards maps of approximations would require that complete joins are always computable, which will not be the case for approximations of functions.
+
+% \begin{proposition}
+%   L-posets and stable functions form a category. \bob{and the main point is that composition of stability witnesses looks like a chain rule!}
+% \end{proposition}
+
+% \bob{L-poset is has products and coproducts, but is not closed. To be closed would require each $\downset{x}$ to be a \emph{complete} lattice. However, this is tricky to implement as we need an infinitary operation to compute the reverse approximation map for function types. See \cite{amadio-curien} for the proof that bounded-complete lattices with stable functions form a cartesian closed category.}
 
 \subsection{Summary}
 \label{sec:diff-stab-summary}
 
-Let us summarise our analogy between differentiable functions between manifolds and stable functions between L-posets:
+We have seen that \citet{berry79}'s theory of stable functions between suitable partial orders can be seen as form of differentiability with forward and reverse derivatives. In the next section, we describe a model based on these ideas suitable for constructing executable models of total higher order languages.
 
-\begin{itemize}
-\item For \GPS, we assume that every value has an associated lattice of {\em approximations}. For differentiable programs, every point has an associated vector space of {\em tangents}.
-\item For \GPS, every program has an associated forward approximation map that takes approximations forward from the input to the output. This map {\em preserves meets}. For differentiable programs, every program has a forward derivative that takes tangents of the input to tangents of the output. The forward derivative map is {\em linear}, so it preserves addition of tangents and the zero tangent.
-\item For \GPS, every program has an associated backward approximation map that takes approximations of the output back to least approximations of the input. This map {\em preserves joins}. For differentiable programs, every program has a reverse derivative that takes tangents of the output to tangents of the input. This map is again {\em linear}.
-\item For \GPS, the forward and backward approximation maps are related by being a Galois connection. For differentiable programming, the forward and reverse derivatives are related by being each others' transpose.
-\end{itemize}
+We end this section with a conjecture. Although we have argued above
+that there is an analogy between stable functions and smooth
+functions, we have not stated any mathematical theorems substantiating
+this. \emph{Tangent Categories} \cite{tangent-categories} are a
+categorical axiomatisation of the properties of manifolds and smooth
+functions in terms of the presence of tangent bundles $TX$ for every
+object $X$, forward derivatives and additivity of tangents. They
+generalise Cartesian Differential Categories \cite{cdcs}, which are an
+axiomatisation of Euclidean spaces and smooth functions.
 
-\bob{Put a conjecture about Tangent Categories in somewhere}
+\begin{conjecture}
+  \label{con:tangent-stable-fns}
+  (1) Bounded meet posets and conditionally multiplicative functions
+  form a Tangent category where the tangent bundle
+  $TX = \{(x,x') \mid x' \leq x\}$ and addition of tangents is given
+  by meets. (2) L-posets and stable functions form a \emph{reverse
+    Tangent category} \cite{reverse-tangents}.
+\end{conjecture}
 
-Given this close connection between \GPS and differentiable programming, we can take structures intended for modelling automatic differentiation and use them to model \GPS. This will enable us to generalise and expand the scope of \GPS to act as a foundation for data provenance in a wide range of computational settings.
+% Let us summarise our analogy between differentiable functions between manifolds and stable functions between L-posets:
+
+% \begin{itemize}
+% \item For \GPS, we assume that every value has an associated lattice of {\em approximations}. For differentiable programs, every point has an associated vector space of {\em tangents}.
+% \item For \GPS, every program has an associated forward approximation map that takes approximations forward from the input to the output. This map {\em preserves meets}. For differentiable programs, every program has a forward derivative that takes tangents of the input to tangents of the output. The forward derivative map is {\em linear}, so it preserves addition of tangents and the zero tangent.
+% \item For \GPS, every program has an associated backward approximation map that takes approximations of the output back to least approximations of the input. This map {\em preserves joins}. For differentiable programs, every program has a reverse derivative that takes tangents of the output to tangents of the input. This map is again {\em linear}.
+% \item For \GPS, the forward and backward approximation maps are related by being a Galois connection. For differentiable programming, the forward and reverse derivatives are related by being each others' transpose.
+% \end{itemize}
+
+% \bob{Put a conjecture about Tangent Categories in somewhere}
+
+% Given this close connection between \GPS and differentiable programming, we can take structures intended for modelling automatic differentiation and use them to model \GPS. This will enable us to generalise and expand the scope of \GPS to act as a foundation for data provenance in a wide range of computational settings.
