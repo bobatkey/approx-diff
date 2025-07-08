@@ -276,8 +276,8 @@ shows.
 \begin{example}[Is Conditional Multiplicativity Enough?]
   \label{ex:non-stable-function}
   An example that is conditionally multiplicative, but does not admit
-  a backards map of approximations (from \citet{amadio-curien} just
-  before Lemma 12.2.3, originally due to Berry) is given by defining
+  a backards map of approximations (from \citet[just
+  before Lemma 12.2.3]{amadio-curien}, originally due to Berry) is given by defining
   $\mathrm{unstable} : D \to \{\bot \sqsubseteq \top\}$, where
   $D = \bot \sqsubseteq \cdots \sqsubseteq n \sqsubseteq \cdots
   \sqsubseteq 1 \sqsubseteq 0$, as $\mathrm{unstable}(\bot) = \bot$
@@ -443,7 +443,7 @@ The converse to this lemma (that functions that preserve meets in their forward 
 The category of L-posets and stable functions is not cartesian
 closed. To make it so, we would need to require that the principal
 downsets $\downset{x}$ are \emph{complete}
-lattices. \citet{amadio-curien} (Theorem 12.FIXME) details the
+lattices. \citet[Theorem 12.FIXME]{amadio-curien} details the
 proof. Intuitively, to generate the best approximation of an input
 value for a function, we need to take the infimum over all possible
 input values.
@@ -474,7 +474,7 @@ of \GPS?  We have two reasons for moving to a different model in
   maximal elements at first-order) and totality preserving functions,
   but we prefer a more direct method of separating values proper from
   their approximations using the \emph{Category of Families}
-  construction we detail in the next section.
+  construction we detail in \secref{models-of-total-gps:fam}.
 \item A more practical reason is that we wish to formalise our
   construction in the proof assistant Agda \cite{agda} in order to get
   an \emph{executable} model of the language in
