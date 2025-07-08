@@ -75,10 +75,10 @@ categories of partial orders and monotone maps:
   \item The category $\LatGal$ has bounded lattices as objects and
     Galois connections as morphisms, with the right adjunct going in
     the ``forward'' direction.
-  \item The category $\MeetSLat$ has meet-semi-lattices with top as
+  \item The category $\MeetSLat$ has meet-semilattices with top as
     objects and monotone finite meet preserving functions as
     morphisms.
-  \item The category $\JoinSLat$ has join-semi-lattices with bottom as
+  \item The category $\JoinSLat$ has join-semilattices with bottom as
     objects and monotone finite join preserving functions as
     morphisms.
   \end{enumerate}
@@ -293,8 +293,8 @@ coproducts:
     respectively. Products are given by the cartesian product of the
     underlying set.
   \item The $\LatGal$ example splits into two separate categories
-    $\MeetSLat$ and $\JoinSLat$ of meet semi-lattices and join
-    semi-lattices respectively, with their respective homomorphisms as
+    $\MeetSLat$ and $\JoinSLat$ of meet semilattices and join
+    semilattices respectively, with their respective homomorphisms as
     the morphisms. As for $\LatGal$, these categories are
     $\CMon$-enriched and have finite products, and so finite
     biproducts.
@@ -351,7 +351,7 @@ We will avoid the need for infinitary operations by separating the
 forward and backward parts of the Galois connections to act
 independently by moving to the product category
 $\MeetSLat \times \JoinSLat^\op$. Objects in this category consist of
-\emph{separate} meet- and join-semi-lattices and potentially unrelated
+\emph{separate} meet- and join-semilattices and potentially unrelated
 forward meet-preserving and backward join-preserving maps. We first
 check that this category satisfies the hypotheses of
 \thmref{fam-closed}:
@@ -372,10 +372,10 @@ check that this category satisfies the hypotheses of
   category of algebras for a Lawvere theory. Similarly, $\JoinSLat$
   has all coproducts, indeed all colimits, for the same reason. Note
   that these are very different constructions: elements of a product
-  of meet-semi-lattices consist of (possibly infinite) tuples of
+  of meet-semilattices consist of (possibly infinite) tuples of
   elements, while elements of a coproduct of join-semilattices consist
   of \emph{finite} formal joins of elements quotiented by the
-  join-semi-lattice equations. Since $\JoinSLat$ has all coproducts,
+  join-semilattice equations. Since $\JoinSLat$ has all coproducts,
   $\JoinSLat^\op$ has all products, and so
   $\MeetSLat \times \JoinSLat^\op$ has all products, as required.
 \end{proof}
@@ -409,7 +409,7 @@ With this embedding functor, we can see that the interpretation of
 first-order types will be the same up to isormorphism in
 $\Fam(\LatGal)$ and $\Fam(\MeetSLat \times \JoinSLat^\op)$, as long as
 we interpret the base types as objects in $\Fam(\LatGal)$. At
-higher-order, however, the meet-semi-lattice and join-semi-lattice
+higher-order, however, the meet-semilattice and join-semilattice
 sides of the interpretation will diverge, and it is no longer clear
 that the interpretation of programs using higher-order functions
 internally will result in Galois connections. In \secref{definability}
