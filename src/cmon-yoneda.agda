@@ -12,7 +12,7 @@ open import categories using (Category; IsProduct; IsTerminal)
 open import functor using ([_⇒_]; Functor; NatTrans; ≃-NatTrans; HasLimits)
 open import commutative-monoid using (CommutativeMonoid; _=[_]>_)
 open import cmon-enriched using (CMonEnriched; module cmon+product→biproduct)
-open import commutative-monoid-cat using (_⇒_; toSetoid)
+open import cmon using (_⇒_; toSetoid)
   renaming (cat to CMon; Obj to CMonObj
            ; limits to CMon-limits
            ; cmon-enriched to CMon-enriched

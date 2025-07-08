@@ -13,7 +13,7 @@ open import functor
          HasLimits; limits→limits')
 open import cmon-enriched using (CMonEnriched; lambda-ε; lambda-+; FunctorCat-cmon)
 open import commutative-monoid using (CommutativeMonoid)
-import commutative-monoid-cat
+import cmon
 
 record CMonCategory o m e : Set (suc o ⊔ suc m ⊔ suc e) where
   no-eta-equality
@@ -38,10 +38,10 @@ record CMonCategory o m e : Set (suc o ⊔ suc m ⊔ suc e) where
   opposite .cmon-enriched .CMonEnriched.comp-bilinear-ε₁ f = comp-bilinear-ε₂ f
   opposite .cmon-enriched .CMonEnriched.comp-bilinear-ε₂ f = comp-bilinear-ε₁ f
 
--- FIXME: move this to commutative-monoid-cat?
+-- FIXME: move this to cmon?
 CMon : ∀ o e → CMonCategory (suc o ⊔ suc e) (o ⊔ e) (o ⊔ e)
-CMon o e .CMonCategory.cat = commutative-monoid-cat.cat o e
-CMon o e .CMonCategory.cmon-enriched = commutative-monoid-cat.cmon-enriched
+CMon o e .CMonCategory.cat = cmon.cat o e
+CMon o e .CMonCategory.cmon-enriched = cmon.cmon-enriched
 
 record CMonFunctor {o₁ m₁ e₁ o₂ m₂ e₂}
          (𝒞 : CMonCategory o₁ m₁ e₁)
@@ -355,8 +355,8 @@ module presheaves {o m e} os (𝒞 : CMonCategory o m e) where
   open NatTrans
   open ≃-NatTrans
   open CommutativeMonoid
-  open commutative-monoid-cat.Obj
-  open commutative-monoid-cat._⇒_
+  open cmon.Obj
+  open cmon._⇒_
   open commutative-monoid._=[_]>_
   open prop-setoid._⇒_
   open prop-setoid._≃m_

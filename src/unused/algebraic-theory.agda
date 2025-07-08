@@ -1,6 +1,6 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
-module algebra where
+module algebraic-theory where
 
 open import Level using (suc; _⊔_)
 open import Data.List using (List; []; _∷_; _++_)
