@@ -1,7 +1,7 @@
 \section{CHAD at First-Order}
 \label{sec:first-order}
 
-Our denotational approach to \GPS is based on the CHAD (Combinatory Homomorphic Automatic Differentiation) work of Mattias Vákár and others~\cite{vákár22,nunes2023}. Before we go into details, we present a high-level overview of their approach and how we have applied it to \GPS.
+Our denotational approach to \GPS is based on the CHAD (Combinatory Homomorphic Automatic Differentiation) work of Mattias Vákár and others~\cite{vakar22,nunes2023}. Before we go into details, we present a high-level overview of their approach and how we have applied it to \GPS.
 
 The fundamental approach in CHAD is to consider Grothendieck constructions on indexed categories $T : \cat{C}^\op \to \Cat$. An object of the Grothendieck construction $\int T$, described in more detail in \secref{Grothendieck}, is a pair $(X \in \cat{C}, \partial X \in T(X))$, which we read as pairing a space $X$ of ``points'' from $\cat{C}$ with an associated bundle of tangent spaces. The maps from the ``base'' category $\cat{C}$ are used to interpret the programs we are modelling. The maps in the indexed category are the maps of tangents or approximations, being derivatives and Galois connections respectively.
 
@@ -214,7 +214,7 @@ given by:
 \subsection{Grothendieck Construction for Indexed Categories}
 \label{sec:Grothendieck}
 
-We now consider how to adapt the CHAD framework~\cite{vákár22,nunes2023} to interpret programs as functions
+We now consider how to adapt the CHAD framework~\cite{vakar22,nunes2023} to interpret programs as functions
 along with their forward and backward approximation maps. Since the appropriate lattice of approximation
 typically depends on the value being approximated, we will want to interpret a type $\tau$ as a pair $(X,
 \partial X)$ where $X$ provides the conventional interpretation as a set and $\partial X$ provides an
