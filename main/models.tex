@@ -1,4 +1,4 @@
-\section{Constructing Models of \GPS for a Total Language}
+\section{Models of \GPS for a Total Language}
 \label{sec:models-of-total-gps}
 
 The previous section concluded that L-posets and stable functions give
@@ -7,23 +7,22 @@ we noted a conceptual shortcoming of this model, for the purposes of
 modelling total computations, that proper values and their
 approximations live in the same category. In this section, we propose
 a model for total \GPS based on the \emph{Category of Families}
-construction. This construction, adn the more general Grothendieck
+construction. This construction, and the more general Grothendieck
 construction, has been previously used by V{\'a}k{\'a}r and
 collaborators \bob{CITE} to model automatic differentiation for
-higher-order programs on the reals. We rely on some of their results,
+higher-order programs on the reals. We reuse some of their results,
 and discuss the commonalities as we go.
 
 \subsection{The Category of Families Construction}
 
-As we explained in \secref{stab}, L-posets can be seen as partially
-ordered sets where every principal downset $\downset{x}$ is a bounded
-lattice. That is, for an element $x$, $\downset{x}$ is its lattice of
-approximations/tangents. The shortcoming of this setup is that proper
-values and their approximations live in the same set. We fix this by
-changing our model to one where we have sets $X$ of values, and for
-each $x \in X$, a bounded lattice $\partial X(x)$ of approximations of
-$x$. This construction is an instance of the general \emph{Category of
-  Families} construction:
+L-posets are partially ordered sets where every principal downset
+$\downset{x}$ is a bounded lattice of approximations/tangents. As we
+explained in \secref{stab}, the shortcoming of this setup is that
+proper values and their approximations live in the same set. We fix
+this by changing our model to one where we have sets $X$ of values,
+and for each $x \in X$, a bounded lattice $\partial X(x)$ of
+approximations of $x$. This construction is an instance of the general
+\emph{Category of Families} construction:
 
 \begin{definition}
   Let $\cat{C}$ be a category. The \emph{Category of Families} over
@@ -32,19 +31,23 @@ $x$. This construction is an instance of the general \emph{Category of
   $X$-indexed family of objects in $\cat{C}$. A morphism
   $f : (X, \partial X) \to (Y, \partial Y)$ consists of a pair of a
   function $f : X \to Y$ and a familiy of morphisms of $\cat{C}$,
-  $\partial f : (x : X) \to \cat{C}(\partial X(x), \partial Y(f\,x))$.
+  $\partial f : \Pi_{x : X}.\,\cat{C}(\partial X(x), \partial Y(f\,x))$.
 \end{definition}
 
-Composition $f \circ g $ of morphisms
+The reason for choosing the $\Fam$ construction is that composition in
+this category is an abstract version of the chain rule that we have
+seen in \remref{chain-rule}, \remref{chain-rule-cm}, and
+\remref{chain-rule-stable}. Composition $f \circ g $ of morphisms
 $f : (Y, \partial Y) \to (Z, \partial Z)$ and
 $g : (X, \partial X) \to (Y, \partial Y)$ in this category is given by
 normal function composition on the set components, and
 $\partial (f \circ g)(x) = \partial f(f, x) \circ \partial g(x)$,
-where the latter composition is in $\cat{C}$. The fact that
-composition of morphisms in $\Fam(\cat{C})$ resembles the chain rule
-from calculus is essential to its use in modelling automatic
-differentiation. Indeed, if we let $\FinVect$ be the category of
-finite dimensional real vector spaces, then:
+where the latter composition is in $\cat{C}$.
+
+The fact that morphisms in $\Fam(C)$ compose according to a chain rule
+means that the categories we have seen so far embed into $\Fam(C)$ for
+appropriate $C$. If we let $\FinVect$ be the category of finite
+dimensional real vector spaces, then:
 
 \begin{proposition}
   \label{prop:embed-manifolds}
@@ -64,12 +67,21 @@ turning smooth maps into pairs of plain functions and linear
 functions. We conjecture at the end of this section that the analogous
 construction in our partially ordered setting does not.
 
-For \GPS we replace the category $\FinVect$ with $\LatGal$:
+For the categories $\CM$ and $\Lposet$, we pick the appropriate
+categories of partial orders and monotone maps:
 
 \begin{definition}
-  The category $\LatGal$ has bounded lattices as objects and Galois
-  connections as morphisms, with the right adjunct going in the
-  ``forward'' direction.
+  \begin{enumerate}
+  \item The category $\LatGal$ has bounded lattices as objects and
+    Galois connections as morphisms, with the right adjunct going in
+    the ``forward'' direction.
+  \item The category $\MeetSLat$ has meet-semi-lattices with top as
+    objects and monotone finite meet preserving functions as
+    morphisms.
+  \item The category $\JoinSLat$ has join-semi-lattices with bottom as
+    objects and monotone finite join preserving functions as
+    morphisms.
+  \end{enumerate}
 \end{definition}
 
 We can get an analogous result to \propref{embed-manifolds} for L-posets:
@@ -78,20 +90,23 @@ We can get an analogous result to \propref{embed-manifolds} for L-posets:
   \label{prop:embed-stable}
   There is a faithful functor $\Lposet \to \Fam(\LatGal)$ that maps an
   L-poset $X$ to $(X, \lambda x. \downset{x})$ and stable functions
-  $f$ to $(f, \lambda x. (f_x, f^*_x))$.
+  $f$ to $(f, \lambda x. (f_x, f^*_x))$. Likewise, there is a faithful
+  functor $\CM \to \Fam(\MeetSLat)$.
 \end{proposition}
 
 Despite its similarity, this proposition has a lesser status than
 \propref{embed-manifolds} because it is not clear that the category
-$\Lposet$ is in any way a canonical definition of approximable sets
-and functions with approximation derivatives. We could restrict
-$\Lposet$ to morphisms that preserve maximal elements and take
-L-posets $X$ to $(\mathrm{Max}(M), \lambda x. \downset{x})$. However,
-our current hypothesis is that $\Fam(\LatGal)$, where values and their
-approximations are separated by construction is the primary model of
-semantic \GPS. We now investigate the categorical properties of this
-category, with a view to modelling a higher-order total programming
-language.
+$\Lposet$ (or $\CM$) is a canonical definition of approximable sets
+and functions with approximation derivatives, as we discussed at the
+end of \secref{stab}.
+% We could restrict $\Lposet$ to morphisms that preserve maximal
+% elements and take L-posets $X$ to
+% $(\mathrm{Max}(M), \lambda x. \downset{x})$.
+Our current hypothesis is that $\Fam(\LatGal)$, where values and their
+approximations are separated by construction, is the natural model of
+semantic \GPS in a total setting. We now investigate some categorical
+properties of this category, with a view to modelling a higher-order
+total programming language in \secref{language}.
 
 \subsection{Categorical Properties of $\Fam(\cat{C})$}
 
@@ -101,7 +116,7 @@ The categories $\Fam(\cat{C})$ are the free coproduct completions of
 categories $\cat{C}$, so they are guaranteed to have all coproducts:
 
 \begin{proposition}
-  For any $\cat{C}$, $\Fam(\cat{C}$ has all coproducts, which can be
+  For any $\cat{C}$, $\Fam(\cat{C})$ has all coproducts, which can be
   given on objects by:
   \begin{displaymath}
     \coprod_i (X_i, \partial X_i) = (\coprod_i X_i, \lambda (i, x_i).\, \partial X_i(x))
@@ -119,7 +134,7 @@ finite products:
   \begin{displaymath}
     (X, \partial X) \times (Y, \partial Y) = (X \times Y, \lambda (x, y). \partial X(x) \times \partial Y(y))
   \end{displaymath}
-  Since $\Fam(\cat{C})$ is extensive, products and coproducts always
+  Since $\Fam(\cat{C})$ is extensive, products and coproducts
   distribute.
 \end{proposition}
 
@@ -296,22 +311,30 @@ solution that \cite{vakar2021} uses for the semantics of forward
 ($\Fam(\Vect)$) and reverse ($\Fam(\Vect^\op)$) automatic
 differentiation for higher order programs. Since the forward and
 reverse derivatives of a smooth map intrinsically defined,
-\citet{vakar2021}'s correctness theorem can show that
+\citet{vakar2021}'s correctness theorem shows that, for programs with
+first-order type, the interpretation in $\Fam(\Vect)$ correctly yields
+the forward derivative of the defined function on the reals (and
+reverse derivative for $\Fam(\Vect^\op)$.
 
 For $\LatGal$ we could expand to the category of complete lattices and
 Galois connections between them. From a classical mathematical point
-of view, this would give a model of \GPS that would likely be suitable
-for reasoning programs' behaviour and their forward and backward
+of view, this would give a model of \GPS that would be suitable for
+reasoning about programs' behaviour and their forward and backward
 approximations. However, in terms of building an executable model
 inside the Agda proof assistant, and with an eye toward implementation
-strategies, we seek a more down-to-earth (i.e., predicative and
-constructive) solution. We will do this by separating the forward and
-backward parts of the Galois connections to act independently by
-moving to the product category $\MeetSLat \times
-\JoinSLat^\op$. Objects in this category consist of \emph{separate}
-meet- and join-semi-lattices and potentially unrelated forward
-meet-preserving and backward join-preserving maps. We first check that
-this category satisfies the hypotheses of \thmref{fam-closed}:
+strategies, we seek a finitary solution. (Note that the solution of
+moving to complete lattices is very different to moving to arbitrary
+dimension vector spaces: in the former we have infinitary operations,
+while the latter still has only finitary operations.)
+
+We will avoid the need for infinitary operations by separating the
+forward and backward parts of the Galois connections to act
+independently by moving to the product category
+$\MeetSLat \times \JoinSLat^\op$. Objects in this category consist of
+\emph{separate} meet- and join-semi-lattices and potentially unrelated
+forward meet-preserving and backward join-preserving maps. We first
+check that this category satisfies the hypotheses of
+\thmref{fam-closed}:
 
 \begin{proposition}
   $\MeetSLat \times \JoinSLat^\op$ has biproducts and all products.
