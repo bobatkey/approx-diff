@@ -463,18 +463,18 @@ of \GPS?  We have two reasons for moving to a different model in
   with general recursion. (Moreover, in the light of
   \exref{intervals-and-maxima-elements} it is not clear whether
   approximations for partiality and approximations for stability ought
-  to be the same thing. \bob{fwd reference to discussion.}) In
-  \exref{intervals-and-maxima-elements}, maximal elements could be
-  taken to be the ``proper values''. One idea is to restrict to
-  conditionally multiplicative or stable functions that preserve
-  maximal elements. However, this idea fails at higher order:
-  functions that take maximal elements to maximal elements are not
-  themselves maximal elements. We could devise a category of L-posets
-  with totality predicates (which would pick out maximal elements at
-  first-order) and totality preserving functions, but we prefer a more
-  direct method of separating values proper from their approximations
-  using the \emph{Category of Families} construction we detail in the
-  next section.
+  to be the same thing. We discuss this further in
+  \secref{conclusion}.) In \exref{intervals-and-maxima-elements},
+  maximal elements could be taken to be the ``proper values''. One
+  idea is to restrict to conditionally multiplicative or stable
+  functions that preserve maximal elements. However, this idea fails
+  at higher order: functions that take maximal elements to maximal
+  elements are not themselves maximal elements. We could devise a
+  category of L-posets with totality predicates (which would pick out
+  maximal elements at first-order) and totality preserving functions,
+  but we prefer a more direct method of separating values proper from
+  their approximations using the \emph{Category of Families}
+  construction we detail in the next section.
 \item A more practical reason is that we wish to formalise our
   construction in the proof assistant Agda \cite{agda} in order to get
   an \emph{executable} model of the language in
@@ -489,18 +489,6 @@ of \GPS?  We have two reasons for moving to a different model in
   extract a value. Since we are modelling a total language, we prefer
   to have a model that computes directly.
 \end{enumerate}
-
-\bob{For future work: what is the connection between FamCPO(LatGal)
-  and Laird's bistable biorders, or Berry bidomains?}
-
-
-% We could have required that L-posets' principal downsets were complete lattices, which would mean that we would only need to require that forward approximation maps preserve all meets and we could compute the backwards map automatically. However, our goal is a computable theory for \GPS, analogous to automatic differentiation. Requiring completeness to compute backwards maps of approximations would require that complete joins are always computable, which will not be the case for approximations of functions.
-
-% \begin{proposition}
-%   L-posets and stable functions form a category. \bob{and the main point is that composition of stability witnesses looks like a chain rule!}
-% \end{proposition}
-
-% \bob{L-poset is has products and coproducts, but is not closed. To be closed would require each $\downset{x}$ to be a \emph{complete} lattice. However, this is tricky to implement as we need an infinitary operation to compute the reverse approximation map for function types. See \cite{amadio-curien} for the proof that bounded-complete lattices with stable functions form a cartesian closed category.}
 
 \subsection{Summary}
 \label{sec:diff-stab-summary}

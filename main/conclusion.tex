@@ -8,3 +8,30 @@ regions contributing to a given classification decision. It might be possible to
 \GPS whilst still preserving useful round-tripping properties; if so this could be a basis for end-to-end
 explainability in systems that combine neural networks with traditional symbolic computation.
 
+\paragraph{More Approximation Domains.} The intervals example is
+interesting, but is it useful, and are there more examples like this?
+One route might be to follow \cite{edalat-heckmann98} and explore
+whether metric spaces (which already provide a native notion of
+approximation) can be embedded in $\Fam(\LatGal)$.
+
+\paragraph{Alternative Higher-order Models}
+
+1. $\Fam(\PSh_{\CMon}(\LatGal))$
+
+2. Concrete sheaves over $\Fam(\LatGal)$ analogous to Diffeological spaces?
+
+\paragraph{Categorical Models of Differentation}
+
+
+
+\paragraph{Recursion and Partiality.}
+1. Despite using stable domain theory as our starting point, we have ignored
+
+2. Conjecture that the category with $(X : Cpo, \partial X : X \to \CLatGal)$, where $\CLatGal$ is the category of complete lattices and galois connections is the right setting. Would need to investigate the connections with dI-domains, bidomains, and bistable bidomains (Laird).
+
+\paragraph{Implementation}
+
+Would be better to have an implementation that worked by translation,
+instead of interpreting directly as Agda functions. See work by
+Smeding and Vákár on translations. To formalise this, we'd need
+to... See also $\Fam(\PSh_{\CMon}(Syn))$?
