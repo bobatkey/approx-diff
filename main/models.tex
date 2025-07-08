@@ -14,6 +14,7 @@ higher-order programs on the reals. We reuse some of their results,
 and discuss the commonalities as we go.
 
 \subsection{The Category of Families Construction}
+\label{sec:models-of-total-gps:fam}
 
 L-posets are partially ordered sets where every principal downset
 $\downset{x}$ is a bounded lattice of approximations/tangents. As we
@@ -30,7 +31,7 @@ approximations of $x$. This construction is an instance of the general
   where $X$ is a set and $\partial X : X \to \cat{C}$ is an
   $X$-indexed family of objects in $\cat{C}$. A morphism
   $f : (X, \partial X) \to (Y, \partial Y)$ consists of a pair of a
-  function $f : X \to Y$ and a familiy of morphisms of $\cat{C}$,
+  function $f : X \to Y$ and a family of morphisms of $\cat{C}$,
   $\partial f : \Pi_{x : X}.\,\cat{C}(\partial X(x), \partial Y(f\,x))$.
 \end{definition}
 
@@ -59,7 +60,7 @@ dimensional real vector spaces, then:
 As similar result is given by \citet{cruttwell2022}, where Euclidean
 spaces $\RR^n$ and smooth functions are embedded into a category of
 lenses (the ``simply typed'' version of the $\Fam$ construction). As
-in \cite{vakar2021}, the idea is to formally separate functions on
+in \citet{vákár22}, the idea is to formally separate functions on
 points and their forward/reverse tangent maps for the purposes of
 implementation of automatic differentiation. In the case of smooth
 maps, this process throws away information on higher derivatives by
@@ -71,6 +72,7 @@ For the categories $\CM$ and $\Lposet$, we pick the appropriate
 categories of partial orders and monotone maps:
 
 \begin{definition}
+  \item
   \begin{enumerate}
   \item The category $\LatGal$ has bounded lattices as objects and
     Galois connections as morphisms, with the right adjunct going in
@@ -122,7 +124,7 @@ categories $\cat{C}$, so they are guaranteed to have all coproducts:
     \coprod_i (X_i, \partial X_i) = (\coprod_i X_i, \lambda (i, x_i).\, \partial X_i(x))
   \end{displaymath}
   Coproducts in $\Fam(\cat{C})$ are \emph{extensive}
-  \cite{carboni-lack-walters93} (Proposition 2.4).
+  \cite[Proposition 2.4]{carboni-lack-walters93}.
 \end{proposition}
 
 For $\Fam(\cat{C})$ to have finite products, we need $\cat{C}$ to have
