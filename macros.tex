@@ -19,6 +19,7 @@
 \newcommand*{\propref}[1]{Proposition~\ref{prop:#1}}
 \newcommand*{\thmref}[1]{Theorem~\ref{thm:#1}}
 \newcommand*{\secref}[1]{\S\ref{sec:#1}}
+\newcommand*{\remref}[1]{Remark~\ref{rem:#1}}
 
 % Syntax
 \newcommand*{\syn}[1]{\mathbf{#1}} % keywords
@@ -155,6 +156,9 @@
 \newcommand*{\CM}{\namedcat{CM}} % Bounded meet posets and conditionally multiplicative functions
 \newcommand*{\MeetSLat}{\namedcat{MeetSLat}}
 \newcommand*{\JoinSLat}{\namedcat{JoinSLat}}
-\newcommand*{\Lposet}{\namedcat{Lposet}}
+\newcommand*{\Lposet}{\namedcat{Stable}}
 
 \newcommand{\downset}[1]{\mathop{\downarrow}(#1)}
+
+\theoremstyle{acmdefinition}
+\newtheorem{remark}{Remark}
