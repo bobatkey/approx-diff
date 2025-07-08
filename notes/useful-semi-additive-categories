@@ -115,7 +115,7 @@ Up to isomorphism a finite-dimensional vector space over $F$ of dimension $n \in
 $(F^n, +, \mult)$ where $+$ and $\mult$ are defined component-wise.
 
 \begin{definition}[Category $\FinVect_F$]
-Define $\FinVect_F$ to be the category which has: \todo{Is there a less concrete formulation?}
+Define $\FinVect_F$ to be the category which has: \roly{Is there a less concrete formulation?}
 \begin{itemize}
 \item as objects $V, W$ all pairs of natural numbers $n$ and $n$-dimensional vector spaces $(F^n, +, \mult)$
 \item as morphisms $f: V \to W$ all functions $f$ satisfying $f(u + v) = f(u) + f(v)$ and $f(a \mult v) = a
