@@ -1,7 +1,7 @@
 \section{Approximations as Tangents}
 \label{sec:approx-as-tangents}
 
-We motivate our approach to \GPS by showing how to combine ideas from differential geometry and stable domain theory to reconstruct \GPS in a denotational setting. From this basis, we apply the CHAD framework of V{\'a}k{\'a}r \etal to obtain a denotational model of automatic differentiation that gives us an effective way to interpret programs as functions along with their forward and backwards approximation maps. \bob{and we did it in Agda, so we can run it}
+We motivate our approach to \GPS by showing how to combine ideas from differential geometry and stable domain theory to reconstruct \GPS in a denotational setting. From this basis, we apply the CHAD framework of V{\'a}k{\'a}r \etal to obtain a denotational model of automatic differentiation that gives us an effective way to interpret programs as functions along with their forward and backwards approximation maps.
 
 \subsection{Manifolds, Smooth Functions, and Automatic Differentiation}
 
@@ -72,7 +72,7 @@ defined. Preservation of lubs, or \emph{continuity}, states that a
 function interpreting a program cannot act inconsistently on
 approximations and their completion, which corresponds to the
 intuitive idea that a function that is computable cannot look at a
-non-finite amount of input to produce a finite output. \cite{abramsky-jung} is a comprehensive introduction to domain theory.
+non-finite amount of input to produce a finite output. \citet{abramsky-jung} provide a comprehensive introduction to domain theory.
 
 For the purposes of \GPS, we are not interested in using
 approximations to model computation on infinite objects, but instead
