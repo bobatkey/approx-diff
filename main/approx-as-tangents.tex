@@ -27,7 +27,23 @@ Smooth functions $f$ between manifolds $M$ and $N$ are functions on their points
 \item The \emph{backward derivative} (cotangent map, pullback) $\pullf{f}_x$ is a linear map $\cotangents_{f(x)}(N) \linearto \cotangents_x(M)$. In the Euclidean case, the backward derivative is represented by the transpose of the Jacobian of $f$ at $x$.
 \end{itemize}
 
-\bob{mention chain rule here? and tangent spaces?}
+\begin{remark}[Chain Rule]
+  \label{rem:chain-rule}
+  A useful property of derivative maps is that they compose according
+  to the chain rule. Suppose that $f : M \to N$ and $g : N \to K$ are
+  smooth functions. Then for any $x \in M$, we have:
+  \begin{itemize}
+  \item $\pushf{(g \circ f)}_x = \pushf{g}_{f(x)} \circ \pushf{f}_x : \tangents_x(M) \linearto \tangents_{g(f(x)}(K)$
+  \item $\pullf{(g \circ f)}_x = \pullf{f}_x \circ \pullf{g}_{f(x)} : \cotangents_{f(x)}(K) \linearto \cotangents_x(M)$
+  \end{itemize}
+  The chain rule has the practical effect that we can compute
+  derivative maps of $f$ and $g$ independently and compose them,
+  instead of the potentially more difficult task of computing the
+  derivative maps of $g \circ f$. As we shall see below, stable maps
+  also obey a chain rule, and this forms the basis of the general
+  categorical approach to differentiability that we describe in
+  \secref{models-of-total-gps}.
+\end{remark}
 
 Computing the forward and backward derivatives of smooth functions $f$ has many applications of practical interest. For example, computation of the reverse derivative is of central interest in machine learning by gradient descent, the main technique used to train deep neural networks~\cite{rumelhart88,goodfellow16}.
 
@@ -81,10 +97,15 @@ of the input that leads to a part of the output.
 
 \emph{Stability} is a property that can be required of monotone functions that was invented by \citet{berry79} in an attempt to capture sequentiality. This was not successful (see the $\mathrm{gustave}$ function in \exref{parallel-or}), but we will see now how it is closely related to problem of computing forward and backwards maps of approximations needed in \GPS. A textbook description of stable functions in the context of domain theory is given by \citet{amadio-curien} (Chapter 12). We start with a property that is weaker than stability, but is easier to motivate in connection with derivatives of smooth functions.
 
-In a partially ordered set $X$, for any $x \in X$ the set of elements below $x$, $\downset{x} = \{ x' \mid x' \sqsubseteq x \}$, is itself a partially ordered set. These approximations of $x$ we will think of as ``tangents'' at $x$, and the whole set $\downset{x}$ as the ``tangent space''\footnote{\bob{Is it possible to derive the tangent spaces by thinking about continuous functions passing through $x$?}}. Tangent spaces are vector spaces, so in the partially ordered setting we take elements of $\downset{x}$ to be approximations of processes defined at $x$. As we can add tangents, we assume we can take meets of approximations in $\downset{x}$:
+In a partially ordered set $X$, for any $x \in X$ the set of elements below $x$, $\downset{x} = \{ x' \mid x' \sqsubseteq x \}$, is itself a partially ordered set. These approximations of $x$ we will think of as ``tangents'' at $x$, and the whole set $\downset{x}$ as the ``tangent space''. Tangent spaces are vector spaces, so in the partially ordered setting we take elements of $\downset{x}$ to be approximations of processes defined at $x$. As we can add tangents, we assume we can take meets of approximations in $\downset{x}$:
+
+% \footnote{\bob{Is it possible to derive the tangent spaces by
+% thinking about continuous functions passing through $x$?}}
 
 \begin{definition}
-  A \emph{bounded meet poset} is a partially ordered set $X$ where for every $x \in X$, $\downset{x}$ is a meet semilattice, with $x$ as the top element.
+  A \emph{bounded meet poset} is a partially ordered set $X$ where for
+  every $x \in X$, $\downset{x}$ is a meet semilattice, with $x$ as
+  the top element.
 \end{definition}
 
 For the approximation version of the forward derivative of $f$ at $x$, we take $f$'s restriction to $\downset{x}$, taking approximations of the input to approximations of the output. Matching the linearity of the forward derivative of smooth functions, we require that these restrictions preserve meets. This is exactly the definition of \emph{conditionally multiplicative} function from \citet{berry79}:
@@ -97,18 +118,34 @@ For the approximation version of the forward derivative of $f$ at $x$, we take $
 
 \begin{theorem}
   Bounded meet lattices and conditionally multiplicatve functions form
-  a category $\CM$. This category has products, coproducts and
+  a category $\CM$. This category has products, coproducts, and
   exponentials.
 \end{theorem}
 
 \begin{proof}
-  \AGDA. See \citet{amadio-curien} for the case when the posets are
-  also cpos. The crucial technical step, identified by
-  \citet{berry79}, is that the ordering on conditionally
+  \AGDA. See \citet{amadio-curien} (FIXME: theorem reference) for the
+  case when the posets are also cpos. The crucial technical step,
+  identified by \citet{berry79}, is that the ordering on conditionally
   multiplicative functions is not the extensional ordering
-  ($f \sqsubseteq g$ iff $\forall x. f(x) \subseteq g(x)$) but instead
-  the stable ordering $f \sqsubseteq g$ iff \bob{FIXME}.
+  ($f \sqsubseteq_{\mathrm{ext}} g$ iff
+  $\forall x. f(x) \sqsubseteq g(x)$) but instead the stable ordering:
+  $f \sqsubseteq_{\mathrm{st}} g$ iff $f \sqsubseteq_{ext} g$ and
+  $\forall x, x'.\,x \sqsubseteq x' \Rightarrow f(x) = f(x') \land
+  g(x)$.
 \end{proof}
+
+\begin{remark}[Chain Rule]
+  \label{rem:cm-chain-rule}
+  It is almost a triviality at this point, but the crucial point is
+  that, for any cm functions $f : X \to Y$ and $g : Y \to Z$, the
+  restriction maps (``forward derivatives'') compose according to the
+  chain rule from \remref{chain-rule}:
+  \begin{displaymath}
+    (g \circ f)_x = g_{f(x)} \circ f_x
+  \end{displaymath}
+  We will see this phenomenon repeated in the definition of stable
+  functions below.
+\end{remark}
 
 \begin{example}[Conditionally Multiplicative Functions]
   \label{ex:strict-short-circuit}
@@ -226,19 +263,22 @@ For the approximation version of the forward derivative of $f$ at $x$, we take $
   in general when considering conditionally multiplicative functions.
 \end{example}
 
-Given these examples, conditional multiplicativity seems to be a reasonable analogue to functions with a well-defined notion of derivative. However, for \GPS we also require an analogue to the reverse derivative, where we map approximations backwards to give the least approximation of the input for a given approximation of the output. In the case of smooth functions, we are always guaranteed a reverse derivative but there is not always a best way to map approximations backwards for cm functions, as the following example shows.
+Given these examples, conditional multiplicativity seems to be a
+reasonable analogue to functions with a well-defined notion of
+derivative. For \GPS we also require an analogue to the reverse
+derivative, where we map approximations backwards to give the least
+approximation of the input for a given approximation of the output. In
+the case of smooth functions, we are always guaranteed a reverse
+derivative. However, there is not always a best way to map
+approximations backwards for cm functions, as the following example
+shows.
 
 \begin{example}[Is Conditional Multiplicativity Enough?]
   \label{ex:non-stable-function}
-  % In the preceeding examples, we demonstrated conditional
-  % multiplicativity by giving a backwards mapping of approximations
-  % that forces preservation of meets. A natural question is whether or
-  % not we always have such a backwards map which we could use for
-  % backwards propagation of approximations.
   An example that is conditionally multiplicative, but does not admit
   a backards map of approximations (from \citet{amadio-curien} just
   before Lemma 12.2.3, originally due to Berry) is given by defining
-  $\mathrm{unstable} : D \to \{\bot, \top\}$, where
+  $\mathrm{unstable} : D \to \{\bot \sqsubseteq \top\}$, where
   $D = \bot \sqsubseteq \cdots \sqsubseteq n \sqsubseteq \cdots
   \sqsubseteq 1 \sqsubseteq 0$, as $\mathrm{unstable}(\bot) = \bot$
   and $\mathrm{unstable}(n) = \top$. This is monotone, and preserves
@@ -249,8 +289,8 @@ Given these examples, conditional multiplicativity seems to be a reasonable anal
 \subsubsection{Stable functions and L-posets}
 \label{sec:stab}
 
-In light of the \exref{non-stable-function}, we consider
-\citet{berry79}'s definition of \emph{stable function} that requires
+In light of the \exref{non-stable-function}, we turn to
+\citet{berry78}'s definition of \emph{stable function} that requires
 the existence of a reverse mapping directly, even without assuming
 that any meets exist:
 
@@ -384,19 +424,35 @@ preserving meets and joins:
 The converse to this lemma (that functions that preserve meets in their forward part have a left Galois adjoint) is not true, as was demonstrated by the non-stable function in \exref{non-stable-function}. In the case when the posets $\downset{x}$ are \emph{complete}, and $f_x$ preserves infinitary meets, then we are guaranteed a left Galois adjoint. In that example, the infinite set $\{0, 1, 2, \dots, n, n-1, \dots\}$ not including $\bot$ of approximations of $0$ does not have a greatest lower bound, so the order is not complete.
 
 \begin{theorem}
-  L-posets and stable functions form a category with products and
-  coproducts.
+  L-posets and stable functions form a category $\Lposet$ with products
+  and coproducts.
 \end{theorem}
+
+\begin{remark}[Chain Rule]
+  As for the ``forward derivatives'' of conditionally multiplicative
+  functions, the forward and backwards parts of a stable function
+  compose according to the chain rule (c.f. \remref{chain-rule}):
+  \begin{itemize}
+  \item $(g \circ f)_x = g_{f(x)} \circ f_x : \downset{x} \linearto \downset{g(f(x))}$
+  \item $(g \circ f)^*_x = f*_x \circ g^*_{f(x)} : \downset{g(f(x))} \linearto \downset{x}$
+  \end{itemize}
+  We will use this property in \propref{embed-stable} to show that
+  $\Lposet$ embeds into our category of sets-with-approximation.
+\end{remark}
 
 The category of L-posets and stable functions is not cartesian
 closed. To make it so, we would need to require that the principal
 downsets $\downset{x}$ are \emph{complete}
-lattices. \citet{amadio-curien} (Theorem 12.FIXME) details the proof. Intuitively, to generate the best approximation of an input value for a function, we need to take the infimum over all possible input values.
+lattices. \citet{amadio-curien} (Theorem 12.FIXME) details the
+proof. Intuitively, to generate the best approximation of an input
+value for a function, we need to take the infimum over all possible
+input values.
 
 Our goal is to model a higher-order language suitable for writing
 queries on databases as in \exref{introduction-example}, so why should
-we not just take complete L-posets and stable functions as our model?
-We have two reasons for moving to a slightly different model in \secref{model}:
+we not just take complete L-posets and stable functions as our model
+of \GPS?  We have two reasons for moving to a different model in
+\secref{models-of-total-gps}:
 
 \begin{enumerate}
 \item Even without completeness, in Bounded meet posets and L-posets,
@@ -407,19 +463,19 @@ We have two reasons for moving to a slightly different model in \secref{model}:
   with general recursion. (Moreover, in the light of
   \exref{intervals-and-maxima-elements} it is not clear whether
   approximations for partiality and approximations for stability ought
-  to be the same thing. \bob{fwd reference to discussion.}) In
-  \exref{intervals-and-maxima-elements}, maximal elements could be
-  taken to be the ``proper values''. One idea is to restrict to
-  conditionally multiplicative or stable functions that preserve
-  maximal elements. However, this idea fails at higher order:
-  functions that take maximal elements to maximal elements are not
-  themselves maximal elements. We could devise a category of L-posets
-  with totality predicates (which would pick out maximal elements at
-  first-order) and totality preserving functions, but we prefer a more
-  direct method of separating values proper from their approximations
-  using the \emph{Category of Families} construction we detail in the
-  next section.
-\item A more local reason is that we wish to formalise our
+  to be the same thing. We discuss this further in
+  \secref{conclusion}.) In \exref{intervals-and-maxima-elements},
+  maximal elements could be taken to be the ``proper values''. One
+  idea is to restrict to conditionally multiplicative or stable
+  functions that preserve maximal elements. However, this idea fails
+  at higher order: functions that take maximal elements to maximal
+  elements are not themselves maximal elements. We could devise a
+  category of L-posets with totality predicates (which would pick out
+  maximal elements at first-order) and totality preserving functions,
+  but we prefer a more direct method of separating values proper from
+  their approximations using the \emph{Category of Families}
+  construction we detail in the next section.
+\item A more practical reason is that we wish to formalise our
   construction in the proof assistant Agda \cite{agda} in order to get
   an \emph{executable} model of the language in
   \secref{language}. Agda's type theory is both predicative and
@@ -434,25 +490,10 @@ We have two reasons for moving to a slightly different model in \secref{model}:
   to have a model that computes directly.
 \end{enumerate}
 
-
-
-
-\bob{For future work: what is the connection between FamCPO(LatGal)
-  and Laird's bistable biorders, or Berry bidomains?}
-
-
-% We could have required that L-posets' principal downsets were complete lattices, which would mean that we would only need to require that forward approximation maps preserve all meets and we could compute the backwards map automatically. However, our goal is a computable theory for \GPS, analogous to automatic differentiation. Requiring completeness to compute backwards maps of approximations would require that complete joins are always computable, which will not be the case for approximations of functions.
-
-% \begin{proposition}
-%   L-posets and stable functions form a category. \bob{and the main point is that composition of stability witnesses looks like a chain rule!}
-% \end{proposition}
-
-% \bob{L-poset is has products and coproducts, but is not closed. To be closed would require each $\downset{x}$ to be a \emph{complete} lattice. However, this is tricky to implement as we need an infinitary operation to compute the reverse approximation map for function types. See \cite{amadio-curien} for the proof that bounded-complete lattices with stable functions form a cartesian closed category.}
-
 \subsection{Summary}
 \label{sec:diff-stab-summary}
 
-We have seen that \citet{berry79}'s theory of stable functions between suitable partial orders can be seen as form of differentiability with forward and reverse derivatives. In the next section, we describe a model based on these ideas suitable for constructing executable models of total higher order languages.
+We have seen that \citet{berry78}'s theory of stable functions between suitable partial orders can be seen as form of differentiability with forward and reverse derivatives. In the next section, we describe a model based on these ideas suitable for constructing executable models of total higher order languages.
 
 We end this section with a conjecture. Although we have argued above
 that there is an analogy between stable functions and smooth
@@ -477,8 +518,7 @@ As well as codifying exactly what we mean by differentiable structure
 on partially ordered sets, proving this conjecture would also tell us
 what higher derivatives mean in this context as well, something that
 we have not considered above. We will extend this conjecture to our
-refined model of partially ordered approximations in
-\secref{model-summary}.
+refined model of lattice approximated sets in \secref{model-summary}.
 
 % Let us summarise our analogy between differentiable functions between manifolds and stable functions between L-posets:
 
@@ -488,7 +528,3 @@ refined model of partially ordered approximations in
 % \item For \GPS, every program has an associated backward approximation map that takes approximations of the output back to least approximations of the input. This map {\em preserves joins}. For differentiable programs, every program has a reverse derivative that takes tangents of the output to tangents of the input. This map is again {\em linear}.
 % \item For \GPS, the forward and backward approximation maps are related by being a Galois connection. For differentiable programming, the forward and reverse derivatives are related by being each others' transpose.
 % \end{itemize}
-
-% \bob{Put a conjecture about Tangent Categories in somewhere}
-
-% Given this close connection between \GPS and differentiable programming, we can take structures intended for modelling automatic differentiation and use them to model \GPS. This will enable us to generalise and expand the scope of \GPS to act as a foundation for data provenance in a wide range of computational settings.
