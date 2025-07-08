@@ -135,7 +135,7 @@ For the approximation version of the forward derivative of $f$ at $x$, we take $
 \end{proof}
 
 \begin{remark}[Chain Rule]
-  \label{rem:cm-chain-rule}
+  \label{rem:chain-rule-cm}
   It is almost a triviality at this point, but the crucial point is
   that, for any cm functions $f : X \to Y$ and $g : Y \to Z$, the
   restriction maps (``forward derivatives'') compose according to the
@@ -276,7 +276,7 @@ shows.
 \begin{example}[Is Conditional Multiplicativity Enough?]
   \label{ex:non-stable-function}
   An example that is conditionally multiplicative, but does not admit
-  a backards map of approximations (from \citet[just
+  a backwards map of approximations (from \citet[just
   before Lemma 12.2.3]{amadio-curien}, originally due to Berry) is given by defining
   $\mathrm{unstable} : D \to \{\bot \sqsubseteq \top\}$, where
   $D = \bot \sqsubseteq \cdots \sqsubseteq n \sqsubseteq \cdots
@@ -429,6 +429,7 @@ The converse to this lemma (that functions that preserve meets in their forward 
 \end{theorem}
 
 \begin{remark}[Chain Rule]
+  \label{rem:chain-rule-stable}
   As for the ``forward derivatives'' of conditionally multiplicative
   functions, the forward and backwards parts of a stable function
   compose according to the chain rule (c.f. \remref{chain-rule}):
