@@ -4,6 +4,14 @@
 
 \newcommand{\AGDA}{\textit{(Formalised in Agda)}}
 
+\makeatletter
+\@ifclasswith{acmart}{anonymous}{
+  \newcommand{\anonymise}[2]{#2}
+}{
+  \newcommand{\anonymise}[2]{#1}
+}
+\makeatother
+
 \newcommand*{\etal}{{\it et al.}\xspace}
 
 \newcommand{\bob}[1]{\textcolor{purple}{\textbf{BOB:} #1}}
