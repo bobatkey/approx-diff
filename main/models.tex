@@ -187,21 +187,25 @@ satisfy the hypotheses of this theorem, because neither of them have
 infinite products. We will consider ways to rectify this below
 \bob{fwd ref}.
 
-There is another construction of internal homs on $\Fam(\cat{C})$
-arising from the use of fibrations for categorical logical relations
-proofs, due to \citet{hermida99} (Corollary 4.12). If we assume that
-$\cat{C}$ is itself cartesian closed and has all products, then we
-could construct an internal hom as:
-\begin{displaymath}
-  (X, \partial X) \to (Y, \partial Y) = (X \to Y, \lambda f. \Pi_{x : X}.\,\partial X(x) \to \partial Y(f\,x))
-\end{displaymath}
-However, for the purposes of modelling differentiable programs, this
-is fatally flawed in that neither of $\LatGal$ nor $\FinVect$ are
-cartesian closed, and there is no way of making them so without losing
-the property of having biproducts. We will use Hermida's construction
-in our definability proof in \secref{definability}, where we use a
-logical relations argument to show that every morphism definable in
-the higher order language is also first-order definable.
+\begin{remark}
+  \label{rem:hermida-exponentials}
+  There is another construction of internal homs on $\Fam(\cat{C})$
+  arising from the use of fibrations for categorical logical relations
+  proofs, due to \citet{hermida99} (Corollary 4.12). If we assume that
+  $\cat{C}$ is itself cartesian closed and has all products, then we
+  could construct an internal hom as:
+  \begin{displaymath}
+    (X, \partial X) \to (Y, \partial Y) = (X \to Y, \lambda f. \Pi_{x : X}.\,\partial X(x) \to \partial Y(f\,x))
+  \end{displaymath}
+  However, for the purposes of modelling differentiable programs, this
+  is fatally flawed in that neither of $\LatGal$ nor $\FinVect$ are
+  cartesian closed, and there is no way of making them so without
+  losing the property of having biproducts. We will use Hermida's
+  construction in our definability proof in \secref{definability},
+  where we use a logical relations argument to show that every
+  morphism definable in the higher order language is also first-order
+  definable.
+\end{remark}
 
 \subsubsection{CMon-Categories and Biproducts}
 \label{sec:biproducts}
@@ -260,16 +264,17 @@ biproduct of two objects:
   \begin{salign*}
     (\biinj_X \comp \biproj_X) + (\biinj_Y \comp \biproj_Y) &= \id_{X \biprod Y}
   \end{salign*}
+  A zero object is an object that is both initial and terminal.
 \end{definition}
 As the name suggests, biproducts in a category are both products and
 coproducts:
-
 \begin{proposition}
   \begin{enumerate}
   \item A $\CMon$-category that has biproducts $X \oplus Y$ for all
     $X$ and $Y$ also has products and coproducts with
     $X \times Y = X + Y = X \oplus Y$.
-  \item A $\CMon$-category with (co)products also has biproducts.
+  \item A $\CMon$-category with (co)products also has biproducts, and
+    any initial or terminal object is a zero object.
   \end{enumerate}
 \end{proposition}
 
@@ -294,6 +299,19 @@ coproducts:
     biproducts.
   \end{enumerate}
 \end{example}
+
+The following proposition shows why the alternative construction of
+exponentials in $\Fam(C)$ described in \remref{hermida-exponentials}
+is not suitable:
+\begin{proposition}
+  A $\CMon$-category that is cartesian closed has trivial homsets:
+  $\cat{C}(X,Y) \cong 1$.
+\end{proposition}
+
+\begin{proof}
+  $\cat{C}(X, Y) \cong \cat{C}(0 + X,Y) \cong \cat{C}(0 \times X,Y)
+  \cong \cat{C}(0,X \to Y) \cong 1$.
+\end{proof}
 
 \subsubsection{Discrete Completeness}
 
