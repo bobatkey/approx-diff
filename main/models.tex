@@ -30,7 +30,7 @@ approximations of $x$. This construction is an instance of the general
   where $X$ is a set and $\partial X : X \to \cat{C}$ is an
   $X$-indexed family of objects in $\cat{C}$. A morphism
   $f : (X, \partial X) \to (Y, \partial Y)$ consists of a pair of a
-  function $f : X \to Y$ and a familiy of morphisms of $\cat{C}$,
+  function $f : X \to Y$ and a family of morphisms of $\cat{C}$,
   $\partial f : \Pi_{x : X}.\,\cat{C}(\partial X(x), \partial Y(f\,x))$.
 \end{definition}
 
@@ -59,7 +59,7 @@ dimensional real vector spaces, then:
 As similar result is given by \citet{cruttwell2022}, where Euclidean
 spaces $\RR^n$ and smooth functions are embedded into a category of
 lenses (the ``simply typed'' version of the $\Fam$ construction). As
-in \cite{vakar2021}, the idea is to formally separate functions on
+in \citet{vákár22}, the idea is to formally separate functions on
 points and their forward/reverse tangent maps for the purposes of
 implementation of automatic differentiation. In the case of smooth
 maps, this process throws away information on higher derivatives by
@@ -71,6 +71,7 @@ For the categories $\CM$ and $\Lposet$, we pick the appropriate
 categories of partial orders and monotone maps:
 
 \begin{definition}
+  \item
   \begin{enumerate}
   \item The category $\LatGal$ has bounded lattices as objects and
     Galois connections as morphisms, with the right adjunct going in
