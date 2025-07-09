@@ -141,7 +141,7 @@ open Fam⟨M×Jop⟩ using ()
 Fam⟨M×Jop⟩-terminal : HasTerminal Fam⟨M×Jop⟩-cat
 Fam⟨M×Jop⟩-terminal = Fam⟨M×Jop⟩.terminal M×Jop-terminal
 
-open import families-exponentials 0ℓ 0ℓ
+open import fam-exponentials 0ℓ 0ℓ
   M×Jop
   M×Jop-cmon-enriched
   M×Jop-biproducts
@@ -173,19 +173,19 @@ Fam⟨LatGal⟩-bool =
     (Fam⟨LatGal⟩-terminal .HasTerminal.witness)
     (Fam⟨LatGal⟩-terminal .HasTerminal.witness)
 
-open import families-functor using (FamF)
+open import fam-functor using (FamF)
 
 Fam⟨𝓖⟩ : Functor Fam⟨LatGal⟩.cat Fam⟨M×Jop⟩.cat
 Fam⟨𝓖⟩ = FamF 0ℓ 0ℓ 𝓖
 
 Fam⟨𝓖⟩-preserves-products =
-  families-functor.preserve-products 0ℓ 0ℓ 𝓖 galois.products M×Jop-products (λ {X} {Y} → 𝓖-preserve-products {X} {Y})
+  fam-functor.preserve-products 0ℓ 0ℓ 𝓖 galois.products M×Jop-products (λ {X} {Y} → 𝓖-preserve-products {X} {Y})
 
 Fam⟨𝓖⟩-preserves-coproducts =
-  families-functor.preserve-coproducts 0ℓ 0ℓ 𝓖
+  fam-functor.preserve-coproducts 0ℓ 0ℓ 𝓖
 
 Fam⟨𝓖⟩-preserves-terminal =
-  families-functor.preserve-terminal 0ℓ 0ℓ 𝓖 galois.terminal M×Jop-terminal 𝓖-preserve-terminal
+  fam-functor.preserve-terminal 0ℓ 0ℓ 𝓖 galois.terminal M×Jop-terminal 𝓖-preserve-terminal
 
 Fam⟨𝓖⟩-preserves-bool : Fam⟨M×Jop⟩.Mor (Fam⟨𝓖⟩ .fobj Fam⟨LatGal⟩-bool) Fam⟨M×Jop⟩-bool
 Fam⟨𝓖⟩-preserves-bool =

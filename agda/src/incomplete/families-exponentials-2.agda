@@ -8,7 +8,7 @@
 -- January 1999): 83–109.
 -- https://doi.org/10.1016/S0022-4049(97)00129-1
 --
--- Unlike the construction in families-exponentials.agda, this one
+-- Unlike the construction in fam-exponentials.agda, this one
 -- requires 𝒞 to have small discrete limits and be cartesian closed
 -- itself. The other construction requires small discrete completeness
 -- and biproducts. It is not possible to have both biproducts and
@@ -32,7 +32,7 @@ open import indexed-family
 open import grothendieck using (module CategoryOfFamilies)
 open import setoid-cat using (Setoid-exponentials)
 
-module families-exponentials-2 {o m e} os
+module fam-exponentials-2 {o m e} os
   (𝒞 : Category o m e)
   (T  : HasTerminal 𝒞)
   (P  : HasProducts 𝒞)

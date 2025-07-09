@@ -11,7 +11,7 @@ import bounded-meet
 
 -- Proof from section 3 that Fam(C) is a cartesian closed if C has biproducts and all small products
 -- (Lucatelli Nunes and Vákár 2023)
-import families-exponentials
+import fam-exponentials
 
 -- Proofs from Correctness of the Higher-Order Interpretation:
 -- (1) a factorisation of the embedding of the first-order semantic domain into the higher-order one via a

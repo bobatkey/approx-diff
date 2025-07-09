@@ -27,7 +27,7 @@ open import grothendieck using (module CategoryOfFamilies)
 -- coproduct). If the coproducts are in fact biproducts, then Fam(𝒞)
 -- is cartesian closed.
 
-module families-exponentials {o m e} os es
+module fam-exponentials {o m e} os es
    (𝒞 : Category o m e)
    (CM𝒞 : CMonEnriched 𝒞)
    (BP : ∀ x y → Biproduct CM𝒞 x y)

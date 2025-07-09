@@ -15,7 +15,7 @@ open import finite-product-functor
   using (preserve-chosen-products; preserve-chosen-terminal; module preserve-chosen-products-consequences)
 open import indexed-family using (Fam; _⇒f_; _≃f_; changeCat)
 
-module families-functor where
+module fam-functor where
 
 module _ {o₁ m₁ e₁ o₂ m₂ e₂}
          {𝒞 : Category o₁ m₁ e₁}
