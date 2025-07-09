@@ -6,5 +6,5 @@ Compiled with Agda version 2.7.0.1
 
 ### Entry point
 
-- Compile `everything.agda` to check everything builds
+- From the folder containing `approx-diff.agda-lib`, compile `src/everything.agda`
 - See documentation in that file for relationship to results in paper
