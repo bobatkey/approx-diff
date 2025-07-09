@@ -42,15 +42,15 @@ open import Data.Sum using (inj₁; inj₂)
 open import prop-setoid using (Setoid; idS)
   renaming (⊗-setoid to _×ₛ_; +-setoid to _+ₛ_; 𝟙 to 𝟙ₛ; _⇒_ to _⇒s_; const to constₛ)
 open galois using (_⊕_; _⇒g_; _∘g_; _≃g_)
-import fam
+import indexed-family
 
 𝟚ₛ : Setoid 0ℓ 0ℓ
 𝟚ₛ = 𝟙ₛ +ₛ 𝟙ₛ
 
 open Fam⟨LatGal⟩.Mor
 open Fam⟨LatGal⟩.Obj
-open fam.Fam
-open fam._⇒f_
+open indexed-family.Fam
+open indexed-family._⇒f_
 open _⇒s_
 
 private

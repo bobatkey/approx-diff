@@ -8,7 +8,7 @@ open import prop-setoid
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_; ≃m-isEquivalence to ≈s-isEquivalence)
 open import categories
   using (Category; HasExponentials; HasProducts; HasCoproducts)
-open import fam
+open import indexed-family
   using (HasSetoidProducts; Fam;
          _⇒f_; _≃f_; ≃f-isEquivalence;
          idf; _∘f_; ∘f-cong; ≃f-assoc; ≃f-id-right; ≃f-id-left;

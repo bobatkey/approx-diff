@@ -11,7 +11,7 @@ open import functor using (HasLimits; op-colimit; limits→limits')
 import meet-semilattice-category
 import join-semilattice-category
 import grothendieck
-import fam
+import indexed-family
 
 ------------------------------------------------------------------------------
 -- Construct Meet × Join^op
@@ -145,7 +145,7 @@ open import families-exponentials 0ℓ 0ℓ
   M×Jop
   M×Jop-cmon-enriched
   M×Jop-biproducts
-  (fam.hasSetoidProducts 0ℓ 0ℓ M×Jop λ A → limits→limits' (M×Jop-limits _))
+  (indexed-family.hasSetoidProducts 0ℓ 0ℓ M×Jop λ A → limits→limits' (M×Jop-limits _))
   renaming ( exponentials to Fam⟨M×Jop⟩-exponentials
            ; products     to Fam⟨M×Jop⟩-products
            )

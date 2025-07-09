@@ -9,7 +9,6 @@ open import prop-setoid
   using (IsEquivalence; Setoid; 𝟙; +-setoid; ⊗-setoid; idS; _∘S_; module ≈-Reasoning;
          rel→Setoid; EquivOf-intro; rel-preserving-func)
   renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_)
-open import fam
 
 module setoid-cat where
 

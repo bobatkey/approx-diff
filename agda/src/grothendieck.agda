@@ -13,7 +13,7 @@ open import prop-setoid
 open import categories
   using (Category; HasTerminal; IsTerminal; HasCoproducts; HasProducts; HasStrongCoproducts; HasLists; setoid→category)
 open import setoid-cat using (Setoid-products)
-open import fam
+open import indexed-family
   using (Fam; _⇒f_; idf; _∘f_; ∘f-cong; _≃f_; ≃f-isEquivalence; ≃f-id-left; ≃f-assoc;
          _[_]; reindex-≈; reindex-≈-refl; reindex-≈-trans; reindex-id; reindex-comp; reindex-f;
          reindex-comp-≈; reindex-f-comp; reindex-f-cong; reindex-sq;

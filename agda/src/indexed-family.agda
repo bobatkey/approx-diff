@@ -1,6 +1,6 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
-module fam where
+module indexed-family where
 
 open import Level using (suc; _⊔_)
 open import prop using (⟪_⟫)
@@ -21,6 +21,7 @@ module _ {o m e os es} (A : Setoid os es) (𝒞 : Category o m e) where
 
   -- A family of elements indexed over a setoid (really a functor from
   -- the setoid-as-category)
+  -- FIXME: rename to distinguish from other functor we call Fam (Grothendieck construction for one of these)
   record Fam : Set (o ⊔ m ⊔ e ⊔ suc os ⊔ suc es) where
     no-eta-equality
     field

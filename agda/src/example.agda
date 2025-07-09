@@ -44,7 +44,7 @@ open import ho-model
 open import example-signature-interpretation
 open interp Sig BaseInterp
 
-import fam
+import indexed-family
 import join-semilattice-category
 import join-semilattice
 import preorder
@@ -65,7 +65,7 @@ input = 3 , (label.a , 56) , (label.b , 90) , (label.a , 1) , _
 back-slice : label.label → _
 back-slice l = ⟦ ex.query l ⟧tm .famf .transf (_ , input) .proj₂ .*→* .func .fun I .proj₂
   where
-    open fam._⇒f_
+    open indexed-family._⇒f_
     open join-semilattice-category._⇒_
     open join-semilattice._=>_
     open preorder._=>_

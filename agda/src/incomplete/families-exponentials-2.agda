@@ -28,7 +28,7 @@ open import prop-setoid using (Setoid; module ≈-Reasoning)
 open import functor
   using ( HasLimits; Limit; IsLimit; Functor; NatTrans; [_⇒_]
         ; module LimitFunctor)
-open import fam
+open import indexed-family
 open import grothendieck using (module CategoryOfFamilies)
 open import setoid-cat using (Setoid-exponentials)
 

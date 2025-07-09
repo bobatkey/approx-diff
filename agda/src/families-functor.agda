@@ -13,7 +13,7 @@ open import functor using (Functor; NatTrans)
 open import grothendieck using (module CategoryOfFamilies)
 open import finite-product-functor
   using (preserve-chosen-products; preserve-chosen-terminal; module preserve-chosen-products-consequences)
-open import fam using (Fam; _⇒f_; _≃f_; changeCat)
+open import indexed-family using (Fam; _⇒f_; _≃f_; changeCat)
 
 module families-functor where
 
