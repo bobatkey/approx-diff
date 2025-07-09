@@ -1,5 +1,7 @@
+/_latex/
+/_build/
 *~
 *.agdai
 *.pdf
-/_latex/
-/_build/
+*.zip
+*.DS_Store
