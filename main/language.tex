@@ -1,12 +1,21 @@
 \section{Higher-Order Language}
 \label{sec:language}
 
-We introduce a total higher-order functional language, over a set $\PrimTy$ of primitive types $\rho$ and sets
-$\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ of primitive operations $\phi$, equipped with sums, products, functions
-and a data type of lists. We omit a treatment of general inductive or coinductive types.
+To model Galois slicing semantically for higher-order programs, we define a simple total functional
+programming language, extending the simply-typed lambda calculus.
 
 \subsubsection{Syntax}
 \label{sec:language:syntax}
+
+The language includes base types $\rho$ drawn from a set $\PrimTy$, along with standard type formers for sums,
+products, functions and lists, and an additional lifting type constructor $\tyLift$ to allow approximation
+points to be added explicitly, as discussed in \secref{models-of-total-gps}. Terms include variables, the
+usual introduction and elimination forms, a monadic return and bind for lifted terms, and primitive operations
+$\phi$ of arity $n$ drawn from a family of sets $\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$.
+
+The language is intentionally minimal: it excludes general recursion, and general inductive or coinductive
+types, which will consider in future work (\secref{conclusion}). Typing judgments for terms are standard and
+shown in \figref{typing}, with the usual rules for products, sums, functions, lists and lifting.
 
 \input{fig/syntax}
 \input{fig/typing}
@@ -17,7 +26,7 @@ and a data type of lists. We omit a treatment of general inductive or coinductiv
 \input{fig/semantics}
 
 To give the semantics for the language defined in \figrefTwo{syntax}{typing}, we fix a bicartesian closed
-category $\Sem$ with finite products $(\times, 1)$, finite coproducts $(\coprod, 0)$ and exponentials
+category $\Sem$ with finite products $(\times, 1)$, finite coproducts $(+, 0)$ and exponentials
 $\internalHom{X}{Y}$, with evaluation morphisms $\eval_{X,Y}$ and currying isomorphisms $\lambda_{X,Y,Z}$,
 plus the following additional structure:
 \begin{enumerate}
