@@ -13,6 +13,8 @@ import bounded-meet
 -- (Lucatelli Nunes and Vákár 2023)
 import families-exponentials
 
--- Proof that every morphism definable in the higher-order language is definable in the first-order language
--- (using Grothendieck logical relations a la Hermida 1999)
+-- Proofs from Correctness of the Higher-Order Interpretation:
+-- (1) a factorisation of the embedding of the first-order semantic domain into the higher-order one via a
+--     category of Grothendieck Logical Relations (Hermida 1999)
+-- (2) every morphism definable in the higher-order language is definable in the first-order language
 import conservativity
