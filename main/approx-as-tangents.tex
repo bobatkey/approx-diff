@@ -75,8 +75,8 @@ approximations and their completion, which corresponds to the
 intuitive idea that a function that is computable cannot look at a
 non-finite amount of input to produce a finite output. \citet{abramsky-jung} provide a comprehensive introduction to domain theory.
 
-For the purposes of \GPS, we are not interested in using
-approximations to model computation on infinite objects, but instead
+For the purposes of \GPS, we are interested in using
+approximations not to model computation on infinite objects, but instead
 for revealing how programs explore their inputs when producing parts
 of their output. Therefore, we ignore completeness properties of the
 partially ordered sets we consider\footnote{\bob{we might want to bring this back when considering general recursive programs. Are bidomains \cite{berry79} useful? they have two orderings. See also Laird's Bistable Biorders.}}.
@@ -85,18 +85,18 @@ partially ordered sets we consider\footnote{\bob{we might want to bring this bac
 \label{sec:bounded-meets-and-cm}
 
 When giving a denotational semantics for sequential programming
-languages Scott-continuous functions are too permissive. Famously,
+languages, Scott-continuous functions are too permissive. Famously,
 \citet{plotkin77lcf}'s Parallel OR (\exref{parallel-or}, below) is
 continuous but does not explore its input in a way consistent with a
 sequential implementation. Continuous functions can explore their
 input in a non-deterministic way as long as the result is
 deterministic. This non-determinism results in functions that whose
-output cannot be assigned a unique minimal input that caused
+output cannot be assigned a unique minimal input that account for
 it. Therefore, continuous functions are incompatible with the central
 idea in \GPS that we should be able to identify a \emph{minimal} part
 of the input that leads to a part of the output.
 
-\emph{Stability} is a property that can be required of monotone functions that was invented by \citet{berry79} in an attempt to capture sequentiality. This was not successful (see the $\mathrm{gustave}$ function in \exref{parallel-or}), but we will see now how it is closely related to problem of computing forward and backwards maps of approximations needed in \GPS. A textbook description of stable functions in the context of domain theory is given by \citet[Chapter 12]{amadio-curien}. We start with a property that is weaker than stability, but is easier to motivate in connection with derivatives of smooth functions.
+\emph{Stability} is a property that can be required of monotone functions, and was invented by \citet{berry79} in an attempt to capture sequentiality. This was unsuccessful (see the $\mathrm{gustave}$ function in \exref{parallel-or}), but we will see now how it is closely related to the problem of computing forward and backwards maps of approximations needed in \GPS. A textbook description of stable functions in the context of domain theory is given by \citet[Chapter 12]{amadio-curien}. We start with a property that is weaker than stability, but is easier to motivate in connection with derivatives of smooth functions.
 
 In a partially ordered set $X$, for any $x \in X$ the set of elements below $x$, $\downset{x} = \{ x' \mid x' \sqsubseteq x \}$, is itself a partially ordered set. These approximations of $x$ we will think of as ``tangents'' at $x$, and the whole set $\downset{x}$ as the ``tangent space''. Tangent spaces are vector spaces, so in the partially ordered setting we take elements of $\downset{x}$ to be approximations of processes defined at $x$. As we can add tangents, we assume we can take meets of approximations in $\downset{x}$:
 
@@ -124,7 +124,7 @@ For the approximation version of the forward derivative of $f$ at $x$, we take $
 \end{theorem}
 
 \begin{proof}
-  \AGDA. See \citet{amadio-curien} (FIXME: theorem reference) for the
+  \AGDA. See \citet[Theorem 12.2.8]{amadio-curien} for the
   case when the posets are also cpos. The crucial technical step,
   identified by \citet{berry79}, is that the ordering on conditionally
   multiplicative functions is not the extensional ordering
