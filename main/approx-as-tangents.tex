@@ -34,8 +34,8 @@ Smooth functions $f$ between manifolds $M$ and $N$ are functions on their points
   to the chain rule. Suppose that $f : M \to N$ and $g : N \to K$ are
   smooth functions. Then for any $x \in M$, we have:
   \begin{itemize}
-  \item $\pushf{(g \circ f)}_x = \pushf{g}_{f(x)} \circ \pushf{f}_x : \tangents_x(M) \linearto \tangents_{g(f(x)}(K)$
-  \item $\pullf{(g \circ f)}_x = \pullf{f}_x \circ \pullf{g}_{f(x)} : \cotangents_{f(x)}(K) \linearto \cotangents_x(M)$
+  \item $\pushf{(g \circ f)}_x = \pushf{g}_{f(x)} \circ \pushf{f}_x : \tangents_x(M) \linearto \tangents_{g(f(x))}(K)$
+  \item $\pullf{(g \circ f)}_x = \pullf{f}_x \circ \pullf{g}_{f(x)} : \cotangents_{g(f(x))}(K) \linearto \cotangents_x(M)$
   \end{itemize}
   The chain rule has the practical effect that we can compute
   derivative maps of $f$ and $g$ independently and compose them,
@@ -186,7 +186,16 @@ For the approximation version of the forward derivative of $f$ at $x$, we take $
       \end{tikzpicture}
     }
   \end{displaymath}
-  In the poset $\mathbb{B}_\bot^2$, a typical poset of approximations of a fully defined element is shown to the right. For $\mathrm{strictOr}$, any approximation that isn't the fully defined input is mapped to $\bot$, while $\mathrm{shortCircuitOr}$ maps the partially defined $(\mathsf{tt},\bot)$ to $\mathsf{tt}$. Thus, even though these functions operate identically on fully defined inputs, they differ in their \emph{derivatives} on partially defined input, exposing how . That they are cm can be checked by examining their restrictions' behaviour. If we take the approximations $(\bot,\mathsf{ff})$ and $(\mathsf{tt},\bot)$, then their meet is $(\bot,\bot)$; $\mathrm{strictOr}$ maps all three elements to $\bot$, so is cm here since $\bot \wedge \bot = \bot$; and $\mathrm{shortCircuitOR}$ has $(\bot,\mathsf{ff}) \mapsto \bot$ and $(\mathsf{tt},\bot) \mapsto \mathsf{tt}$, the meet of which is $\bot = \mathrm{shortCircuitOR}(\bot,\bot)$. Other combinations can be checked similarly.
+  In the poset $\mathbb{B}_\bot^2$, a typical poset of approximations of a fully defined element is shown to
+  the right. For $\mathrm{strictOr}$, any approximation that isn't the fully defined input is mapped to
+  $\bot$, while $\mathrm{shortCircuitOr}$ maps the partially defined $(\mathsf{tt},\bot)$ to $\mathsf{tt}$.
+  Thus, even though these functions operate identically on fully defined inputs, they differ in their
+  \emph{derivatives} on partially defined input, exposing how they explore their arguments differently. That
+  they are cm can be checked by examining their restrictions' behaviour. If we take the approximations
+  $(\bot,\mathsf{ff})$ and $(\mathsf{tt},\bot)$, then their meet is $(\bot,\bot)$; $\mathrm{strictOr}$ maps
+  all three elements to $\bot$, so is cm here since $\bot \wedge \bot = \bot$; and $\mathrm{shortCircuitOR}$
+  has $(\bot,\mathsf{ff}) \mapsto \bot$ and $(\mathsf{tt},\bot) \mapsto \mathsf{tt}$, the meet of which is
+  $\bot = \mathrm{shortCircuitOR}(\bot,\bot)$. Other combinations can be checked similarly.
 \end{example}
 
 \begin{example}[A non-Conditionally Multiplicative Function]
