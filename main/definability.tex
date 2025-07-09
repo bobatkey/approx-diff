@@ -1,0 +1,57 @@
+\section{Correctness of the Higher-order Interpretation}
+\label{sec:definability}
+
+Introduction: what correctness properties we want; why we can't
+compute the left adjoints from the forward maps (no completeness).
+
+\begin{theorem}[\citet{fiore-simpson99}]
+  \label{thm:glr-definability}
+  Let $\cat{C}$ be an extensive bicartesian category, $\cat{D}$ be a
+  bicartesian closed category, and $F : \cat{C} \to \cat{D}$ a functor
+  preserving finite products and coproducts. Then there is a category
+  $\GLR(F)$ and functors $p : \GLR(F) \to \cat{D}$ and
+  $\hat{F} : \cat{C} \to \GLR(F)$, such that:
+  \begin{enumerate}
+  \item $\GLR(\cat{D},F)$ is bicartesian closed;
+  \item $F = p \circ \hat{F} : \cat{C} \to \cat{D}$;
+  \item The functor $p$ strictly preserves the bicartesian closed structure; and
+  \item The functor $\hat{F}$ is full and preserves the bicartesian structure.
+  \end{enumerate}
+\end{theorem}
+
+\begin{theorem}
+  \label{thm:language-definability}
+  For all $\Gamma \vdash M : \tau$, where $\Gamma$ and $\tau$ are
+  first-order, there exists a morphism
+  $g \in \Fam(\LatGal)(\sem{\Gamma}_{\mathit{fo}},
+  \sem{\tau}_{\mathit{fo}})$ such that
+  $\sem{\Gamma \vdash M : \tau} = F(g)$.
+\end{theorem}
+
+\begin{remark}
+  We have formalised \thmref{glr-definability} and
+  \thmref{language-definability} in Agda, except for the fact that
+  $\Fam(C)$ is extensive\footnote{For reviewers: we intend to fix this
+    before any final version.}. Our formalisation uses E-categories
+  (\cite{palmgren-wilander}) so we cannot state
+  \thmref{glr-definability} as given because the concept of strict
+  preservation does not make sense. Therefore, the formalised version
+  of \thmref{thm:language-definability} is ``up to isomorphism''.
+
+  We believe that this result also extends to the list type, since it
+  is constructed from an infinte coproduct, but have not yet checked
+  all the details.
+\end{remark}
+
+\begin{proof}
+  Instantiate \thmref{glr-definability} with
+  $F : \Fam(\LatGal) \to \Fam(\MeetSLat \times \JoinSLat^\op)$. By
+  \propref{XXX} we know that $F$ preserves finite products and
+  coproducts. $\Fam(\LatGal)$ has extensive coproducts because it is
+  the free coproduct completion. Thus we get the category $\GLR(F)$ in
+  which we can interpret the calculus with the property that this
+\end{proof}
+
+FIXME: another property we might want: The interpretations in
+$\Fam(\MeetSLat)$ and $\Fam(\MeetSLat \times \JoinSLat^\op)$ agree at
+first order.
