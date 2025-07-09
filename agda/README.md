@@ -2,7 +2,8 @@
 
 ## Notes
 
-Compiled with Agda version 2.7.0.1
+- Compiled with Agda version 2.7.0.1
+- `src/incomplete` and `src/unused` can be ignored
 
 ### Entry point
 
