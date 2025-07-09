@@ -84,13 +84,7 @@ open _≃m_
 ≃m-isEquivalence {A} {B} .IsEquivalence.sym e .eqfun x = B .≃-sym (e .eqfun x)
 ≃m-isEquivalence {A} {B} .IsEquivalence.trans e₁ e₂ .eqfun x = B .≃-trans (e₁ .eqfun x) (e₂ .eqfun x)
 
--- TODO:
---  1. Identities and Composition
---  2. Equality of morphisms, and category laws
---  3. Products
---  4. Coproducts
---  5. Function spaces
---  6. Lifted booleans, and the OR examples
+-- TODO: Lifted booleans, and the OR examples
 
 id : ∀ A → A => A
 id A .fun = λ z → z
