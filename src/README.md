@@ -1,14 +1,10 @@
-# Agda Formalisation to Accompany "Approximation as Differentiation"
+# Agda supplementary material to accompany "Approximation as Differentiation"
 
 ## Notes
 
-### Entry points
+Compiled with Agda version 2.7.0.1
 
-### Possibly unused?
--- algebraic theory
+### Entry point
 
-### Candidates for obsolescence
--- surface language
+Compile `everything.agda`
 
-### Incomplete but relevant
--- approx-numbers [incomplete]
