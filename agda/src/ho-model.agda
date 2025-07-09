@@ -10,7 +10,7 @@ open import cmon-enriched
 open import functor using (HasLimits; op-colimit; limits→limits')
 import meet-semilattice-category
 import join-semilattice-category
-import grothendieck
+import fam
 import indexed-family
 
 ------------------------------------------------------------------------------
@@ -130,7 +130,7 @@ module _ where
 ------------------------------------------------------------------------------
 -- Fam(Meet × Join^op)
 
-module Fam⟨M×Jop⟩ = grothendieck.CategoryOfFamilies 0ℓ 0ℓ M×Jop
+module Fam⟨M×Jop⟩ = fam.CategoryOfFamilies 0ℓ 0ℓ M×Jop
 
 open Fam⟨M×Jop⟩ using ()
   renaming ( cat to Fam⟨M×Jop⟩-cat
@@ -163,7 +163,7 @@ Fam⟨M×Jop⟩-bool =
 ------------------------------------------------------------------------------
 -- Functor from Fam⟨LatGal⟩ to Fam⟨M×Jop⟩
 
-module Fam⟨LatGal⟩ = grothendieck.CategoryOfFamilies 0ℓ 0ℓ galois.cat
+module Fam⟨LatGal⟩ = fam.CategoryOfFamilies 0ℓ 0ℓ galois.cat
 
 Fam⟨LatGal⟩-coproducts = Fam⟨LatGal⟩.coproducts
 Fam⟨LatGal⟩-terminal = Fam⟨LatGal⟩.terminal galois.terminal

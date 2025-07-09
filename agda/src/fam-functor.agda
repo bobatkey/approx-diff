@@ -10,7 +10,7 @@ open import prop-setoid
 open import categories using (Category; HasTerminal; HasCoproducts; HasProducts)
 open import setoid-cat using (SetoidCat; Setoid-coproducts; Setoid-products; Setoid-terminal)
 open import functor using (Functor; NatTrans)
-open import grothendieck using (module CategoryOfFamilies)
+open import fam using (module CategoryOfFamilies)
 open import finite-product-functor
   using (preserve-chosen-products; preserve-chosen-terminal; module preserve-chosen-products-consequences)
 open import indexed-family using (Fam; _⇒f_; _≃f_; changeCat)

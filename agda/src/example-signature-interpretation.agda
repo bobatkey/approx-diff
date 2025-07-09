@@ -4,12 +4,12 @@ module example-signature-interpretation where
 
 open import Level using (0ℓ; suc)
 open import categories using (Category; HasProducts; HasTerminal; HasCoproducts)
-import grothendieck
+import fam
 import galois
 
 ------------------------------------------------------------------------------
 -- Construct the category of first-order approximations
-module Fam⟨LatGal⟩ = grothendieck.CategoryOfFamilies 0ℓ 0ℓ galois.cat
+module Fam⟨LatGal⟩ = fam.CategoryOfFamilies 0ℓ 0ℓ galois.cat
 
 open Fam⟨LatGal⟩ using (simple[_,_]; simplef[_,_])
 

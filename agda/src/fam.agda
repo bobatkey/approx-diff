@@ -1,6 +1,6 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
-module grothendieck where
+module fam where
 
 open import Level using (_⊔_; suc; lift)
 open import Data.Unit using (⊤; tt)

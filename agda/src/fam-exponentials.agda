@@ -16,7 +16,7 @@ open import indexed-family
          reindex-comp; constantFam; constF; reindex-f; reindex-f-cong; reindex-f-id; reindex-sq; reindex-f-comp)
 open import cmon-enriched
   using (CMonEnriched; Biproduct; biproducts→products; biproducts→coproducts; copair-prod; in₁-natural; in₂-natural)
-open import grothendieck using (module CategoryOfFamilies)
+open import fam using (module CategoryOfFamilies)
 
 -- If 𝒞 has binary biproducts and Setoid-indexed products, then Fam(𝒞)
 -- has exponentials.
