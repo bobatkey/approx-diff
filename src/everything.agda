@@ -5,7 +5,8 @@ module everything where
 -- Examples from from section 1.1 of paper
 import example
 
--- Proof from section 1.1 that CM is bicartesian closed
+-- Proof from section 1.1 that CM (category of bounded meet semilattices and conditionally multiplicative
+-- functions) is bicartesian closed
 import bounded-meet
 
 -- Proof from section 3 that Fam(C) is a cartesian closed if C has biproducts and all small products
@@ -13,4 +14,5 @@ import bounded-meet
 import families-exponentials
 
 -- Proof that every morphism definable in the higher-order language is definable in the first-order language
+-- (using Grothendieck logical relations a la Hermida 1999)
 import conservativity
