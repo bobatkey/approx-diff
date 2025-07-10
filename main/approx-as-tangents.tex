@@ -79,7 +79,7 @@ For the purposes of \GPS, we are interested in using
 approximations not to model computation on infinite objects, but instead
 for revealing how programs explore their inputs when producing parts
 of their output. Therefore, we ignore completeness properties of the
-partially ordered sets we consider\footnote{\bob{we might want to bring this back when considering general recursive programs. Are bidomains \cite{berry79} useful? they have two orderings. See also Laird's Bistable Biorders.}}.
+partially ordered sets we consider\footnote{\bob{we might want to bring this back when considering general recursive programs. Are bidomains \cite{berry79} useful? they have two orderings. See also Laird's Bistable Biorders \cite{laird07}.}}.
 
 \subsubsection{Bounded Meets and Conditional Multiplicativity}
 \label{sec:bounded-meets-and-cm}
@@ -90,7 +90,7 @@ languages, Scott-continuous functions are too permissive. Famously,
 continuous but does not explore its input in a way consistent with a
 sequential implementation. Continuous functions can explore their
 input in a non-deterministic way as long as the result is
-deterministic. This non-determinism results in functions that whose
+deterministic. This non-determinism results in functions whose
 output cannot be assigned a unique minimal input that accounts for
 it. Therefore, continuous functions are incompatible with the central
 idea in \GPS that we should be able to identify a \emph{minimal} part
