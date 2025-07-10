@@ -7,15 +7,17 @@ programming language, extending the simply-typed lambda calculus.
 \subsection{Syntax}
 \label{sec:language:syntax}
 
-The language includes base types $\rho$ drawn from a set $\PrimTy$, along with standard type formers for sums,
-products, functions and lists, and an additional lifting type constructor $\tyLift$ to allow approximation
-points to be added explicitly, as discussed in \secref{models-of-total-gps}. Terms include variables, the
-usual introduction and elimination forms, a monadic return and bind for lifted terms, and primitive operations
-$\phi$ of arity $n$ drawn from a family of sets $\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$.
+The language is parameterised by a signature $\Sigma = (\PrimTy, \PrimOp)$ consisting of a set $\PrimTy$ of
+base types $\rho$ and a family of sets $\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ of primitive operations $\phi$ of
+arity $n$ over those base types. The syntax is defined in \figref{syntax}. Types includes base types $\rho$
+drawn from $\PrimTy$, along with standard type formers for sums, products, functions and lists, plus a type
+constructor $\tyLift$ to allow approximation points to be added explicitly, as discussed in
+\secref{models-of-total-gps}. Terms include variables, the usual introduction and elimination forms, a monadic
+return and bind for lifted terms, and primitive operations $\phi$.
 
 The language is intentionally minimal: it excludes general recursion, and general inductive or coinductive
-types, which will consider in future work (\secref{conclusion}). Typing judgments for terms are standard and
-shown in \figref{typing}, with the usual rules for products, sums, functions, lists and lifting.
+types, which we will consider in future work (\secref{conclusion}). Typing judgments for terms are standard
+and shown in \figref{typing}, with the usual rules for products, sums, functions, lists and lifting.
 
 \input{fig/syntax}
 \input{fig/typing}
@@ -47,12 +49,10 @@ $f_\cons: Z \times X \times Y \to Y$, a morphism $\fold(f_\nil,f_\cons): Z \time
 \subsubsection{Interpretation for higher-order \GPS}
 
 \paragraph{Base types and operations}
-Define a \emph{signature} to be a set $\PrimTy$ of primitive types $\rho$ and a family of sets
-$\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ of primitive operations $\phi$. A \emph{model} of a signature in a
-category $\cat{C}$ with finite products and a terminal object assigns to each base type $\rho \in \PrimTy$ an
-object $\sem{\rho}_{\PrimTy}$ in $\cat{C}$ and to each primitive operation $\phi \in
-\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ a morphism $\sem{\phi}_{\Op}: \sem{\rho_1}_{\PrimTy} \times \ldots \times
-\sem{\rho_n}_{\PrimTy} \to \sem{\rho}_{\PrimTy}$.
+A \emph{model} of a signature in a category $\cat{C}$ with finite products and a terminal object assigns to
+each base type $\rho \in \PrimTy$ an object $\sem{\rho}_{\PrimTy}$ in $\cat{C}$ and to each primitive
+operation $\phi \in \PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ a morphism $\sem{\phi}_{\Op}: \sem{\rho_1}_{\PrimTy}
+\times \ldots \times \sem{\rho_n}_{\PrimTy} \to \sem{\rho}_{\PrimTy}$.
 
 Given an interpretation of base types and operations in $\Fam(\LatGal)$, the category $\Fam(\MeetSLat \times
 \JoinSLat^\op)$ can implement $\Sem$. It is bicartesian closed (\corref{mslat-jslat-bcc}) and can model
