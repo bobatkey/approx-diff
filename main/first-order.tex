@@ -6,14 +6,6 @@
 \subsection{First-Order Galois Slicing via CHAD}
 \label{sec:fam:galois-slicing}
 
-The total category $\Fam(\LatGal)$ is then a suitable setting for interpreting first-order programs for \GPS.
-It has as objects $(X, \partial X)$, all pairs of a set $X$ and and for every $x \in X$, a bounded lattice
-$\partial X(x)$, and as morphisms $(X, \partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of a
-function $f: X \to Y$ and for every $x \in X$, a Galois connection $\partial f(x): \partial X(x) \to \partial
-Y(f(x))$. The reindexing along $f$ in the composition $(g, \partial g) \comp (f, \partial f) = (g \comp f,
-\reindex{\partial g}{f} \comp \partial f)$ selects the appropriate lattice of approximations and Galois
-connection at each point, using the baseline (unapproximated) function $f$.
-
 For a first-order language with a primitive type $\syn{nat}$ and primitive operations such as $+$, the
 language would provide a model of $\syn{nat}$ and its operations in $\Fam(\LatGal)$. For example, we might
 interpret $\syn{nat}$ as the object $(\Nat,n \mapsto \downset{n})$, where the family component assigns to
