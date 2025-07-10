@@ -26,6 +26,7 @@ B = coproducts+exp→booleans T C E
 
 open HasExponentials E renaming (exp to _⟦→⟧_)
 open PointedFPCat PFPC[ 𝒞 , T , P , HasBooleans.Bool B ]
+open HasCoproducts C renaming (coprod to _+_)
 open HasBooleans B
 open HasLists L renaming (list to ⟦list⟧; nil to ⟦nil⟧; cons to ⟦cons⟧; fold to ⟦fold⟧)
 
@@ -38,6 +39,7 @@ open Model Int
 ⟦ base σ ⟧ty = ⟦sort⟧ σ
 ⟦ τ₁ [×] τ₂ ⟧ty = ⟦ τ₁ ⟧ty × ⟦ τ₂ ⟧ty
 ⟦ τ₁ [→] τ₂ ⟧ty = ⟦ τ₁ ⟧ty ⟦→⟧ ⟦ τ₂ ⟧ty
+⟦ τ₁ [+] τ₂ ⟧ty = ⟦ τ₁ ⟧ty + ⟦ τ₂ ⟧ty
 ⟦ list τ ⟧ty = ⟦list⟧ ⟦ τ ⟧ty
 
 ⟦_⟧ctxt : ctxt → obj
@@ -48,6 +50,9 @@ open Model Int
 ⟦ zero ⟧var = p₂
 ⟦ succ x ⟧var = ⟦ x ⟧var ∘ p₁
 
+swap : ∀ {x y} → (x × y) ⇒ (y × x)
+swap = ⟨ p₂ , p₁ ⟩
+
 mutual
   ⟦_⟧tm : ∀ {Γ τ} → Γ ⊢ τ → ⟦ Γ ⟧ctxt ⇒ ⟦ τ ⟧ty
   ⟦ var x ⟧tm = ⟦ x ⟧var
@@ -55,6 +60,9 @@ mutual
   ⟦ true ⟧tm = True ∘ to-terminal
   ⟦ false ⟧tm = False ∘ to-terminal
   ⟦ if M then M₁ else M₂ ⟧tm = cond ⟦ M₁ ⟧tm ⟦ M₂ ⟧tm ∘ ⟨ id _ , ⟦ M ⟧tm ⟩
+  ⟦ inl M ⟧tm = in₁ ∘ ⟦ M ⟧tm
+  ⟦ inr M ⟧tm = in₂ ∘ ⟦ M ⟧tm
+  ⟦ case M M₁ M₂ ⟧tm = eval ∘ ⟨ copair (lambda (⟦ M₁ ⟧tm ∘ swap)) (lambda (⟦ M₂ ⟧tm ∘ swap)) ∘ ⟦ M ⟧tm , id _ ⟩
   ⟦ pair M N ⟧tm = ⟨ ⟦ M ⟧tm , ⟦ N ⟧tm ⟩
   ⟦ fst M ⟧tm = p₁ ∘ ⟦ M ⟧tm
   ⟦ snd M ⟧tm = p₂ ∘ ⟦ M ⟧tm

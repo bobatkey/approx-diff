@@ -36,6 +36,7 @@ module _ where
   𝒞⟦ bool ⟧ty = 𝟙 + 𝟙
   𝒞⟦ base s ⟧ty = 𝒞-Sig-model .Model.⟦sort⟧ s
   𝒞⟦ τ₁ [×] τ₂ ⟧ty = 𝒞⟦ τ₁ ⟧ty × 𝒞⟦ τ₂ ⟧ty
+  𝒞⟦ τ₁ [+] τ₂ ⟧ty = 𝒞⟦ τ₁ ⟧ty + 𝒞⟦ τ₂ ⟧ty
 
   𝒞⟦_⟧ctxt : ∀ {Γ} → first-order-ctxt Γ → obj
   𝒞⟦ emp ⟧ctxt = 𝟙
@@ -67,6 +68,7 @@ open import language-interpretation Sig 𝒟 𝒟T 𝒟P 𝒟CP 𝒟E 𝒟L 𝒟
 ⟦ bool ⟧-iso      = Bool-iso
 ⟦ base s ⟧-iso    = 𝒟.Iso-refl
 ⟦ τ₁ [×] τ₂ ⟧-iso = 𝒟.Iso-trans (𝒟.IsIso→Iso FP) (𝒟P.product-preserves-iso ⟦ τ₁ ⟧-iso ⟦ τ₂ ⟧-iso)
+⟦ τ₁ [+] τ₂ ⟧-iso = 𝒟.Iso-trans (𝒟.Iso-sym (𝒟.IsIso→Iso FC)) (𝒟CP.coproduct-preserve-iso ⟦ τ₁ ⟧-iso ⟦ τ₂ ⟧-iso)
 
 ⟦_⟧ctxt-iso : ∀ {Γ} (Γ-fo : first-order-ctxt Γ) → 𝒟.Iso (F .fobj 𝒞⟦ Γ-fo ⟧ctxt) 𝒟⟦ Γ ⟧ctxt
 ⟦ emp ⟧ctxt-iso   = 𝒟.IsIso→Iso FT

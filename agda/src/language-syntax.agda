@@ -12,7 +12,7 @@ open Signature Sig
 data type : Set ℓ where
   unit bool : type
   base : sort → type
-  _[×]_ _[→]_ : type → type → type
+  _[×]_ _[→]_ _[+]_ : type → type → type
   list : type → type
 
 infixr 35 _[→]_
@@ -22,8 +22,9 @@ data first-order : type → Set ℓ where
   bool  : first-order bool
   base  : ∀ s → first-order (base s)
   _[×]_ : ∀ {τ₁ τ₂} → first-order τ₁ → first-order τ₂ → first-order (τ₁ [×] τ₂)
+  _[+]_ : ∀ {τ₁ τ₂} → first-order τ₁ → first-order τ₂ → first-order (τ₁ [+] τ₂)
 
-infixl 40 _[×]_
+infixl 40 _[×]_ _[+]_
 
 data ctxt : Set ℓ where
   emp : ctxt
@@ -61,6 +62,11 @@ data _⊢_ : ctxt → type → Set ℓ where
   true false : ∀ {Γ} → Γ ⊢ bool
   if_then_else_ : ∀ {Γ τ} → Γ ⊢ bool → Γ ⊢ τ → Γ ⊢ τ → Γ ⊢ τ
 
+  -- sums
+  inl  : ∀ {Γ τ₁ τ₂} → Γ ⊢ τ₁ → Γ ⊢ τ₁ [+] τ₂
+  inr  : ∀ {Γ τ₁ τ₂} → Γ ⊢ τ₂ → Γ ⊢ τ₁ [+] τ₂
+  case : ∀ {Γ τ₁ τ₂ τ} → Γ ⊢ τ₁ [+] τ₂ → Γ , τ₁ ⊢ τ → Γ , τ₂ ⊢ τ → Γ ⊢ τ
+
   -- products
   pair : ∀ {Γ τ₁ τ₂} → Γ ⊢ τ₁ → Γ ⊢ τ₂ → Γ ⊢ τ₁ [×] τ₂
   fst  : ∀ {Γ τ₁ τ₂} → Γ ⊢ τ₁ [×] τ₂ → Γ ⊢ τ₁
@@ -96,6 +102,9 @@ mutual
   ρ * true = true
   ρ * false = false
   ρ * (if M then M₁ else M₂) = if (ρ * M) then (ρ * M₁) else (ρ * M₂)
+  ρ * inl M = inl (ρ * M)
+  ρ * inr M = inr (ρ * M)
+  ρ * case M N₁ N₂ = case (ρ * M) (ext ρ * N₁) (ext ρ * N₂)
   ρ * pair M N = pair (ρ * M) (ρ * N)
   ρ * fst M = fst (ρ * M)
   ρ * snd M = snd (ρ * M)
@@ -129,6 +138,7 @@ append-f : ∀ {Γ τ} → Γ ⊢ list τ [→] list τ [→] list τ
 append-f = lam (lam (fold (var zero) (cons (var (succ zero)) (var zero)) (var (succ zero))))
 
 -- The list monad
+{-
 ret : ∀ {Γ τ} → Γ ⊢ τ [→] list τ
 ret = lam (return (var zero))
 
@@ -137,3 +147,11 @@ bind = lam (lam (from (var (succ zero)) collect (app (var (succ zero)) (var zero
 
 guard : ∀ {Γ} → Γ ⊢ bool [→] list unit
 guard = lam (if (var zero) then (cons unit nil) else nil)
+-}
+
+-- Definition of a syntactically defined monad
+record SynMonad : Set ℓ where
+  field
+    Mon  : type → type
+    pure : ∀ {Γ τ} → Γ ⊢ τ [→] Mon τ
+    bind : ∀ {Γ σ τ} → Γ ⊢ Mon σ [→] (σ [→] Mon τ) [→] Mon τ
