@@ -440,19 +440,16 @@ interpreting first-order programs for \GPS. The above discussion has
 been somewhat abstract, so we now consider some examples in the
 category $\Fam(\LatGal)$ and how they relate to \GPS.
 
-\todo{Fix a notation for the forwards and backwards maps}
-
-Spelt out in full, it has as objects $(X, \partial X)$, all pairs of a
-set $X$ and and for every $x \in X$, a bounded lattice
-$\partial X(x)$, and as morphisms
-$(X, \partial X) \to (Y, \partial Y)$, all pairs $(f, \partial f)$ of
-a function $f: X \to Y$ and for every $x \in X$, a Galois connection
-$\partial f(x): \partial X(x) \to \partial Y(f(x))$. The reindexing
-along $f$ in the composition
-$(g, \partial g) \comp (f, \partial f) = (g \comp f, \reindex{\partial
-  g}{f} \comp \partial f)$ selects the appropriate lattice of
-approximations and Galois connection at each point, using the baseline
-(unapproximated) function $f$.
+Spelt out in full, $\Fam(\LatGal)$ has as objects $(X, \partial X)$,
+all pairs of a set $X$ and and for every $x \in X$, a bounded lattice
+$\partial X(x)$. Morphisms $(X, \partial X) \to (Y, \partial Y)$, are
+triples $(f, \partial f_f, \partial f_r)$ of functions $f : X \to Y$
+and families of monotone maps
+$\partial f_f : \Pi_{x : X}.\partial X(x) \multimap \partial Y(f\,x)$
+(``forward derivative'') and
+$\partial f_r : \Pi_{x : X}. \partial Y(f\,x) \multimap \partial X(x)$
+(``reverse derivative''), such that for all $x$,
+$\partial f_r(x) \dashv \partial f_f(x)$.
 
 \subsubsection{Unapproximated Functions}
 
@@ -556,41 +553,104 @@ $\mathrm{shortCircuitOr}$.
   is the powerset, which identifies for each $x$ which elements are
   indistinguishable from $x$ at this level of approximation. One would
   also presumably have to require additional conditions for this to
-  act like an equivalence relation, and to respect the lattice
-  structure\footnote{This additional structure is reminiscent of the
+  respect the lattice structure and be preserved by
+  morphisms\footnote{This additional structure is reminiscent of the
     additional structure on \emph{directed containers} defined by
     \citet{ahman-uustalu}. They require a map
     $\Pi_{x : X}.\partial X(x) \to X$ picking out a specific $X$
     ``jumped to'' by some change $\delta x : \partial X(x)$ at $x$. In
-    our proposed setup, we follow the approximation methodology of
-    \GPS by having a \emph{set} of things that could be taken instead
-    of the original $x$.}.
+    our proposed setup, we follow the approximation theme of \GPS by
+    having a \emph{set} of things that could be taken instead of the
+    original $x$. Objects of $\Fam(\LatGal)$ are ``directed'' in this
+    sense because the approximation map can pick out the element of
+    the original poset that was approximating $x$.}.
 \end{remark}
 
+The $\Lift$ monad provides a controllable way of adding
+presence/absence approximation points to composite data, and its monad
+structure makes explicit in the program structure exactly how such
+approximations are propagated through computations. The fact that
+there are different choices of this kind of approximation tracking
+provides freedom to the language implementor to decide what
+information is worth tracking. The Galois slicing implementations
+discussed in \citet{perera12a} and \citet{ricciotti17}, for example,
+bake-in an approximation point at every composite type constructor. We
+will see in \secref{cbn-translation} that this choice can be
+systematised in our setting by considering a monadic CBN translation
+to uniformly add $\Lift$ approximation points to composite data types.
 
-\subsubsection{An Approximation Object and the Tagged Data Monad}
+\subsubsection{An Approximation Object and the Tagging Monad}
 
-The object $\mathbb{A} = (1, \lambda \_.\, \{\top,\bot\})$ represents
-a basic object for measuring approximations in terms of presence and
-absence. (If all we care about is presence or absence in our
-approximations, we could see this object as the analogue of the real
-numbers for normal differentiation.)
+The $\Lift$ monad provides a way of tagging first-order data with
+presence and absence information. The object $\Lift(1)$, the lifting
+of the terminal object in $\Fam(\LatGal)$, yields an object that
+consists purely of presence/absence information:
+$\mathbb{A} = (1, \lambda\_.\,\{\top,\bot\})$. This object is the
+carrier of a commutative monoid in $\Fam(\LatGal)$, where the forward
+maps take the meet (both the inputs are required for the output to be
+present) and the backwards maps duplicate.% \bob{Is it also a comonoid?}
 
-This object is a commutative monoid in $\Fam(\LatGal)$, and so we can
-construct the writer monad $T(X) = \mathbb{A} \times X$ in
-$\Fam(\LatGal)$.
+Since $\mathbb{A}$ is a monoid, we can define the writer monad
+$T(X) = \mathbb{A} \times X$ in $\Fam(\LatGal)$ which ``tags'' $X$
+values with approximation information. This is similar to the $\Lift$
+monad in that it adds approximation information to an object. On
+discrete objects it agrees with the lifting:
+$T(\Disc(X)) \cong L(\Disc(X))$. However, on composite data, the two
+monads give different approximation lattices. Let $A$ and $B$ be sets.
+Then $T(T(\Disc(A)) \times T(T(\Disc(B))))$ has approximation lattices
+at $(a,b)$ that are always isomorphic to $\{\top,\bot\}^3$. The
+corresponding $\Lift(\Lift(\Disc(A)) \times \Lift(\Disc(B)))$ object's
+approximation lattice at $(a,b)$ is always isomorphic to
+$(\{\top,\bot\}^2)_\bot$.
+In terms of usage tracking, the object using the $\Lift$ monad is more
+appealing. The approximation lattice resulting from the use of the $T$
+monad contains apparently nonsensical elements corresponding to
+``using'' one or other components of the product \emph{without using
+  the product itself}. (This arises from the fact that we can project
+the $X$ out of $\mathbb{A} \times X$ without touching the
+$\mathbb{A}$.)
 
-On objects $X$ with trivial approximations, we have $\Lift(X) \cong T(X)$,
-but for more structured objects we get usage information at every level.
 
-This is a bit like using the writer monad and Moggi's CBN translation
-as a basic way of doing provenance tracking, but here we can track
-backwards and forwards.
+This example shows that we have to be careful about how we choose the
+interpretation of approximable sets in $\Fam(\LatGal)$, and again
+highlights the point we made in \remref{further-structure} that
+perhaps $\Fam(\LatGal)$ does not have quite enough structure to
+determine ``sensible'' approximation information. On the other hand,
+the use of the $T$ monad does have the advantage that the
+approximation lattices built from discrete sets, products, and
+coproducts, are always Boolean lattices, meaning that we can take
+complements of usage information. The ability to take boolean
+complements of approximations has been used by \citet{perera22} to
+compute \emph{related} outputs, as we discuss in
+\secref{related-work:galois-slicing}.
 
 \subsubsection{Approximating Numbers by Intervals}
 
-\bob{Describe how \exref{intervals-and-maxima-elements} fits into
-  $\Fam(\LatGal)$}
+So far, the approximation lattices we have looked at in
+$\Fam(\LatGal)$ have only consisted of those constructed from finite
+products and lifting, and only track binary usage/non-usage
+information. \exref{intervals-and-maxima-elements} shows how we can go
+beyond this to get more ``quantitative'' approximation
+information. Let the object of reals with interval approximations in
+$\Fam(\LatGal)$ be
+$(\mathbb{R}, \lambda x.\,\{[l,u] \mid l \leq x \leq u\} \cup
+\{\bot\})$ where the lattices of intervals are reverse ordered by
+inclusion with $\bot$ at the bottom. Then, following the examples in
+\exref{intervals-and-maxima-elements} and \exref{stable-functions}, we
+can define addition, negation, and scaling by $r \geq 0$:
+\begin{displaymath}
+  \begin{array}{lcl}
+    \mathrm{add}&=&(\begin{array}[t]{@{}l}
+      \lambda (x_1,x_2).\,x_1+x_2, \\
+      \lambda (x_1,x_2)\,([l_1,u_1],[l_2,u_2]).\,[(l_1+x_2) \sqcap (l_2+x_1),(u_1+x_2) \sqcup (u_2+x_1)] \\
+      \lambda (x_1,x_2)\,[l,u].\,([l-x_2,u-x_2],[l-x_1,u-x_1]))
+    \end{array}\\
+    \mathrm{neg}&=&(\lambda x.\,-x, \lambda x\,[l,u].\,[-u,-l], \lambda x\,[l,u].\,[-u,-l]) \\
+    \mathrm{scale}(r)&=&(\lambda x.\,rx, \lambda x\,[l,u].\,[rl,ru], \lambda x\,[l,u].\,\mathrm{if}\,r=0\,\mathrm{then}\,\bot\,\mathrm{else}\,[\frac{l}{r},\frac{u}{r}])
+  \end{array}
+\end{displaymath}
+Scaling by negative numbers is also possible with swapping of lower
+and upper bounds, as is multiplication.
 
 \subsection{Summary}
 
