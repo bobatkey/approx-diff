@@ -33,8 +33,8 @@ plus the following additional structure:
 \item a strong monad $(\Lift, \eta, \mu)$ with strength $\mathsf{st}_{X,Y}: X \times \Lift(Y) \to \Lift(X
 \times Y)$
 \item for each base type $\rho \in \PrimTy$, an object $\sem{\rho}_{\PrimTy}$
-\item for each primitive operation $\phi \in \PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism $\sem{\phi}:
-\sem{\rho_1} \times \ldots \times \sem{\rho_n} \to \sem{\rho}$
+\item for each primitive operation $\phi \in \PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism
+$\sem{\phi}_{\Op}: \sem{\rho_1} \times \ldots \times \sem{\rho_n} \to \sem{\rho}$
 \item an endofunctor $\List: \Sem \to \Sem$, plus for any object $X$, morphisms $\nil: 1 \to \List(X)$ and
 $\cons: X \times \List(X) \to \List(X)$, and for any objects $Y, Z$ and morphisms $f_\nil: Z \to Y$ and
 $f_\cons: Z \times X \times Y \to Y$, a morphism $\fold(f_\nil,f_\cons): Z \times \List(X) \to Y$.
