@@ -45,10 +45,10 @@ $\sem{\Gamma} \to \sem{\tau}$.
 
 \subsubsection{Interpretation for higher-order \GPS}
 
-\paragraph{Base types and operations}
-Given an interpretation of base types and operations in $\Fam(\LatGal)$, the category $\Fam(\MeetSLat \times
-\JoinSLat^\op)$ can implement $\Sem$. It is bicartesian closed (\corref{mslat-jslat-bcc}) and can model
-$\List(X)$ as an infinite coproduct (\secref{models-of-total-gps:coproducts-and-products}). An interpretation
-of base types and operations can be obtained from their interpretation in $\Fam(\LatGal)$ via the embedding
-...
-\roly{$\Lift$ monad.}
+Given a model $M$ of $\Sigma$ in $\Fam(\LatGal)$, the category $\Fam(\MeetSLat \times \JoinSLat^\op)$ can
+implement $\Sem$. It is bicartesian closed by \corref{mslat-jslat-bcc}, and can model $\List(X)$ as an
+infinite coproduct (\secref{models-of-total-gps:coproducts-and-products}). A model $H(M)$ of $\Sigma$ can be
+obtained via the embedding $\HoEmbed: \Fam(\LatGal) \to \Fam(\MeetSLat \times \JoinSLat^\op)$ given in
+\propref{ho-embedding}, because .... Finally $\LatGal$ has a lifting monad which is preserved by the 2-functor
+$\Fam: \Cat \to \Cat$ (\secref{first-order:lifting}). The correctness of this interpretation is considered in
+the next section.
