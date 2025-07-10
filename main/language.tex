@@ -46,6 +46,9 @@ $f_\cons: Z \times X \times Y \to Y$, a morphism $\fold(f_\nil,f_\cons): Z \time
 
 \subsubsection{Interpretation for higher-order \GPS}
 
-$\Fam(\MeetSLat \times \JoinSLat^\op)$ meets the requirements of $\Sem$: it is bicartesian closed
-(\corref{mslat-jslat-bcc}), can model $\List(X)$ as an infinite coproduct
-(\secref{models-of-total-gps:coproducts-and-products}), \roly{$\Lift$ monad, base types and operations.}
+Given an interpretation of base types and operations in $\Fam(\LatGal)$, the category $\Fam(\MeetSLat \times
+\JoinSLat^\op)$ can implement $\Sem$. It is bicartesian closed (\corref{mslat-jslat-bcc}) and can model
+$\List(X)$ as an infinite coproduct (\secref{models-of-total-gps:coproducts-and-products}). An interpretation
+of base types and operations can be obtained from their interpretation in $\Fam(\LatGal)$ via the embedding
+...
+\roly{$\Lift$ monad.}
