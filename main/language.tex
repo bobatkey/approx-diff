@@ -2,19 +2,18 @@
 \label{sec:language}
 
 To model Galois slicing semantically for higher-order programs, we define a simple total functional
-programming language over a signature of base types and primitive operations, extending the simply-typed
-lambda calculus.
+programming language, extending the simply-typed lambda calculus. The language is parameterised by a signature
+$\Sigma = (\PrimTy, \PrimOp)$ consisting of a set $\PrimTy$ of base types $\rho$ and a family of sets
+$\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ of primitive operations $\phi$ of arity $n$ over those base types.
 
 \subsection{Syntax}
 \label{sec:language:syntax}
 
-The language is parameterised by a signature $\Sigma = (\PrimTy, \PrimOp)$ consisting of a set $\PrimTy$ of
-base types $\rho$ and a family of sets $\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ of primitive operations $\phi$ of
-arity $n$ over those base types. The syntax is defined in \figref{syntax}. Types includes base types $\rho$
-drawn from $\PrimTy$, along with standard type formers for sums, products, functions and lists, plus a type
-constructor $\tyLift$ to allow approximation points to be added explicitly, as discussed in
-\secref{models-of-total-gps}. Terms include variables, the usual introduction and elimination forms, a monadic
-return and bind for lifted terms, and primitive operations $\phi$.
+The syntax is defined in \figref{syntax}. Types includes base types $\rho$ drawn from $\PrimTy$, along with
+standard type formers for sums, products, functions and lists, plus a type constructor $\tyLift$ to allow
+approximation points to be added explicitly, as discussed in \secref{models-of-total-gps}. Terms include
+variables, the usual introduction and elimination forms, a monadic return and bind for lifted terms, and
+primitive operations $\phi$.
 
 The language is intentionally minimal: it excludes general recursion, and general inductive or coinductive
 types, which we will consider in future work (\secref{conclusion}). Typing judgments for terms are standard
@@ -28,17 +27,17 @@ and shown in \figref{typing}, with the usual rules for products, sums, functions
 
 \input{fig/semantics}
 
-A model $M$ of $\Sigma$ can be given in any category $\cat{C}$ with finite products, and assigns to each base
-type $\rho \in \PrimTy$ an object $\sem{\rho}_{\PrimOp}$ in $\cat{C}$, and to each primitive operation $\phi
-\in \PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism $\sem{\phi}_{\Op}: \sem{\rho_1}_{\PrimTy} \times \ldots
+A model of $\Sigma$ can be given in any category $\cat{C}$ with finite products, and assigns to each base type
+$\rho \in \PrimTy$ an object $\sem{\rho}_{\PrimOp}$ in $\cat{C}$, and to each primitive operation $\phi \in
+\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism $\sem{\phi}_{\Op}: \sem{\rho_1}_{\PrimTy} \times \ldots
 \times \sem{\rho_n}_{\PrimTy} \to \sem{\rho}_{\PrimTy}$. A model of $\tyList$ can also be given in such a
 category, and consists of an endofunctor $\List: \cat{C} \to \cat{C}$, plus for any object $X$, morphisms
 $\nil: 1 \to \List(X)$ and $\cons: X \times \List(X) \to \List(X)$, and for any objects $Y, Z$ and morphisms
 $f_\nil: Z \to Y$ and $f_\cons: Z \times X \times Y \to Y$, a morphism $\fold(f_\nil,f_\cons): Z \times
 \List(X) \to Y$, with $\nil$, $\cons$ and $\fold$ satisfying the usual laws for lists.
 
-The semantics for the full language is then given in terms of an arbitrary bicartesian closed category $\Sem$,
-models of $\Sigma$ and $\tyList$ in $\Sem$, and a strong monad $(\Lift, \eta, \mu)$ with strength
+The semantics for the full language is then given in terms of an arbitrary bicartesian closed category $\Sem$
+providing models of $\Sigma$ and $\tyList$, as well as a strong monad $(\Lift, \eta, \mu)$ with strength
 $\mathsf{st}$ for interpreting $\tyLift$. \figref{semantics:types} gives the interpretations of types $\tau$
 and contexts $\Gamma$ as objects; \figref{semantics:terms} gives the interpretation of terms $\Gamma \vdash t:
 \tau$ as morphisms $\sem{\Gamma} \to \sem{\tau}$.
