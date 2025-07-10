@@ -1,6 +1,14 @@
 \section{Conclusion and Future Work}
 \label{sec:conclusion}
 
+We have presented a semantic version of \GPS, inspired by connections to differentiable programming and
+automatic differentation, and shown that it can be used to interpret an expressive higher-order language
+suitable for writing simple queries and data manipulation. Our model elucidates some of the decisions
+implicitly taken in previous works on \GPS (\secref{cbn-translation}), and reveals new applications such as
+approximation by intervals \secref{interval-approx}. Our categorical approach admits a modular construction of
+our model, and the use of general theorems, such as Fiore and Simpson's \thmref{glr-definability}, to prove
+properties of the interpretation.
+
 \paragraph{Quantitative slicing and XAI}  Explainable AI (XAI) techniques like Gradient-weighted Class
 Activation Mapping (Grad-CAM)~\cite{selvaraju20} use reverse-mode AD selectively to calculate \emph{heat maps}
 (or \emph{saliency maps}) that highlight input regions contributing to a given classification or other
@@ -9,39 +17,41 @@ original input image and lower elements represent ``slices'' of the image where 
 ablated to some degree (partly removed or blurred). This might allow for composing some of these techniques
 with Galois slicing, for use in hybrid systems such as physical simulations with ML-based parameterisations.
 
-\paragraph{More Approximation Domains.} The intervals example is
-interesting, but is it useful, and are there more examples like this?
-One route might be to follow \cite{edalat-heckmann98} and explore
-whether metric spaces (which already provide a native notion of
-approximation) can be embedded in $\Fam(\LatGal)$.
+\paragraph{Refinement of the model} As we discussed in \remref{further-structure}, there are possible ways
+that the model we have proposed here could be refined to both remove nonsensical elements of the model, and to
+augment the model with enough power to prove additional properties such as ``functions are insenstive to
+unused inputs''. We are also planning to explore more examples of approximation along the lines of the
+intervals example in \secref{interval-approx}. One route might be to follow \citet{edalat-heckmann98}'s
+embedding of metric spaces in Scott domains and explore whether metric spaces (which already provide a native
+notion of approximation) can be embedded in $\Fam(\LatGal)$.
 
-\paragraph{Alternative Higher-Order Models}
-
-1. $\Fam(\PSh_{\CMon}(\LatGal))$
-
-2. Concrete sheaves over $\Fam(\LatGal)$ analogous to Diffeological spaces?
-
-\paragraph{Categorical Models of Differentation}
-
-\paragraph{Recursion and Partiality.}
-1. Despite using stable domain theory as our starting point, we have ignored
-
-2. Conjecture that the category with $(X : \namedcat{Cpo}, \partial X : X \to \CLatGal)$, where $\CLatGal$ is the category of complete lattices and Galois connections is the right setting. Would need to investigate the connections with dI-domains, bidomains, and bistable bidomains \cite{laird07}.
-
-Are bidomains \cite{berry79} useful? they have two orderings. See also
-Laird's Bistable Biorders \cite{laird07}.
+\paragraph{Categorical Models of Differentation} We have already identified \conref{tangent-stable-fns} and
+\conref{tangent-fam} as potential connections to categorical models of differentation. It would also be
+interesting to discover any possible links to Differential Linear Logic
+\cite{ehrhard_differential_2006}. Differential Linear Logic and the Dialectica translation have been used to
+give an account of reverse differentiation by \citet{kerjean-pedrot2024} that is similar to the CHAD approach
+of \citet{vakar22}.
 
 \paragraph{General Inductive and Coinductive Types}
 
 Lists are the only recursive data type we provided in our source language, so important future work is
 supporting general inductive and coinductive types. \citet{nunes2023} support automatic differentiation for
 datatypes defined as the least or greatest fixed points of $\mu\nu$-polynomial functors; we could potentially
-adopt a similar approach. Full inductive types would allow us to embed an interpreter for untyped lambda
-calculus; combined with the CBN monadic translation described in \secref{cbn-translation} which uniformly inserts
+adopt a similar approach. Full inductive types would allow us to embed an interpreter for a small language;
+combined with the CBN monadic translation described in \secref{cbn-translation} which uniformly inserts
 approximation points, we should be able to obtain the program slicing behaviour of earlier \GPS work ``for
 free''. Coinductive types (e.g.~streams) present additional challenges, especially for defining
 join-preserving backward maps, but also open the door to slicing (finite prefixes of) infinite data sources,
 with some likely relationship to the problem of dealing with partial or non-terminating computations.
+
+\paragraph{Recursion and Partiality} This work has only examined the case for total programs. Even though we
+took stable domain theory as our starting point, we did not make any use of directed completeness or similar
+properties of domains. We expect that an account of recursion in an extension of the framework discussed so
+far would likely involve families of bounded lattices indexed by DCPOs, where the order of the DCPO would be
+reflected in embedding-projection relationships between the lattices. There are also other refinements of
+stable domain theory such as \citet{berry79}'s bidomains and \citet{laird07} bistable biorders that separate
+the extensional and stable orders on the same set, in a way that might be similar to
+\exref{intervals-and-maxima-elements}.
 
 \paragraph{Source-To-Source Translation Techniques}
 
