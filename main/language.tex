@@ -28,20 +28,17 @@ and shown in \figref{typing}, with the usual rules for products, sums, functions
 
 \input{fig/semantics}
 
-Models of $\Sigma$ can be given in any category $\cat{C}$ with finite products and a terminal object; such a
-model $M$ assigns to each base type $\rho \in \PrimTy$ an object $\sem{\rho}_{M}$ in $\cat{C}$, and to each
-primitive operation $\phi \in \PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism $\sem{\phi}_{M}:
-\sem{\rho_1}_{M} \times \ldots \times \sem{\rho_n}_{M} \to \sem{\rho}_{M}$.
+A model $M$ of $\Sigma$ can be given in any category $\cat{C}$ with finite products and a terminal object, and
+assigns to each base type $\rho \in \PrimTy$ an object $\sem{\rho}_{M}$ in $\cat{C}$, and to each primitive
+operation $\phi \in \PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism $\sem{\phi}_{M}: \sem{\rho_1}_{M} \times
+\ldots \times \sem{\rho_n}_{M} \to \sem{\rho}_{M}$. A model of $\tyList$ can also be given in $\cat{C}$ and
+consists of an endofunctor $\List: \cat{C} \to \cat{C}$, plus for any object $X$, morphisms $\nil: 1 \to
+\List(X)$ and $\cons: X \times \List(X) \to \List(X)$, and for any objects $Y, Z$ and morphisms $f_\nil: Z \to
+Y$ and $f_\cons: Z \times X \times Y \to Y$, a morphism $\fold(f_\nil,f_\cons): Z \times \List(X) \to Y$.
 
-To give the semantics for the full language, we fix a bicartesian closed category $\Sem$ plus a model $M$ of
-$\Sigma$ in $\Sem$, with the following additional structure:
-\begin{enumerate}
-\item a strong monad $(\Lift, \eta, \mu)$ with strength $\mathsf{st}_{X,Y}: X \times \Lift(Y) \to \Lift(X
-\times Y)$
-\item an endofunctor $\List: \Sem \to \Sem$, plus for any object $X$, morphisms $\nil: 1 \to \List(X)$ and
-$\cons: X \times \List(X) \to \List(X)$, and for any objects $Y, Z$ and morphisms $f_\nil: Z \to Y$ and
-$f_\cons: Z \times X \times Y \to Y$, a morphism $\fold(f_\nil,f_\cons): Z \times \List(X) \to Y$.
-\end{enumerate}
+To give the semantics for the full language, we fix a bicartesian closed category $\Sem$ with a strong monad
+$(\Lift, \eta, \mu)$ with strength $\mathsf{st}$, a model $M$ of $\Sigma$ in $\Sem$, and a model of $\tyList$
+in $\Sem$.
 
 \figref{semantics:types} gives the interpretations of types $\tau$ and contexts $\Gamma$ as objects of $\Sem$.
 \figref{semantics:terms} gives the interpretation of terms $\Gamma \vdash t: \tau$ as morphisms $\sem{\Gamma}
