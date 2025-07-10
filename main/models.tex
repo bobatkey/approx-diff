@@ -144,7 +144,7 @@ Using the infinitary coproducts and finite products, we can construct
 a wide range of other useful semantic models of datatypes in
 $\Fam(\cat{C})$. For example lists can be constructed as the coproduct
 \begin{displaymath}
-  \mathrm{List}\,X = \coprod_{n \in \mathbb{N}} X^n
+  \List(X) = \coprod_{n \in \mathbb{N}} X^n
 \end{displaymath}
 where $X^0 = 1$ (the terminal object) and $X^{n+1} = X \times X^n$.
 
@@ -455,7 +455,7 @@ This object is a commutative monoid in $\Fam(\LatGal)$, and so we can
 construct the writer monad $T(X) = \mathbb{A} \times X$ in
 $\Fam(\LatGal)$.
 
-On objects $X$ with trivial approximations, we have $L(X) \cong T(X)$,
+On objects $X$ with trivial approximations, we have $\Lift(X) \cong T(X)$,
 but for more structured objects we get usage information at every level.
 
 This is a bit like using the writer monad and Moggi's CBN translation
