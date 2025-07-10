@@ -35,7 +35,7 @@ $\cat{C}$, and to each primitive operation $\phi \in \PrimOp^\rho_{\rho_1,\ldots
 $\sem{\phi}_{\Op}: \sem{\rho_1}_{\PrimTy} \times \ldots \times \sem{\rho_n}_{\PrimTy} \to
 \sem{\rho}_{\PrimTy}$.
 
-Assuming that $\cat{C}$ is bicartesian closed and has a list object (\propref{lists}), then we can extend an
+Assuming that $\cat{C}$ is bicartesian closed and has a list object (\eqnref{lists}), then we can extend an
 interpretation of a signature $\Sigma$ to an interpretation of the whole language over
 $\Sigma$. \figref{semantics:types} and \figref{semantics:contexts} define the interpretation of types and
 contexts as objects of $\cat{C}$ respectively. Terms are interpreted as morphisms between the interpretations
@@ -99,32 +99,36 @@ behaviour on the query from \exref{introduction-example}.
   identity.
 \item To get interesting approximation information, we take
   $\sem{\mathsf{num}}_{\PrimTy} = \Lift(\Disc(\mathbb{R}))$, using the lifting monad from
-  \secref{models-of-total-gps:lifting-monad}, with $\sem{\mathrm{zero}}_{\PrimOp}$ and $\sem{\mathrm{add}}_{\PrimOp}$ defined from
-  the unlifted interpretations above and the monad structure. This interpretation recovers the behaviour given
-  in \exref{introduction-example}: running the reverse approximation map at the input $\mathsf{a}$ with the
-  top approximation maps indeed reveals that only the numbers in the rows tagged with that label in the input
-  are used, and likewise for $\mathsf{b}$.
+  \secref{models-of-total-gps:lifting}, with $\sem{\mathrm{zero}}_{\PrimOp}$ and
+  $\sem{\mathrm{add}}_{\PrimOp}$ defined from the unlifted interpretations above and the monad structure. This
+  interpretation recovers the behaviour given in \exref{introduction-example}: running the reverse
+  approximation map at the input $\mathsf{a}$ with the top approximation maps indeed reveals that only the
+  numbers in the rows tagged with that label in the input are used, and likewise for $\mathsf{b}$.
 \item More quantitative approximation information can be obtained by using the interval approximation
   interpretation from \exref{intervals-and-maxima-elements} and \secref{interval-approx}. We let
   $\sem{\mathsf{num}}_{\PrimTy} = \mathbb{R}_{\mathit{intv}}$ and interpret addition using the morphism given
   in \secref{interval-approx}.
 
-  Recall that $\mathrm{query}\,\mathsf{a}\,\mathit{db} = 1$, so in the reverse direction we can pick an interval containing $1$ to discover the largest (i.e. least in the order) intervals that will give rise to this output as \emph{independent} changes to the input. For example, if we pick $[-0.9,1]$ as the interval, then:
+  Recall that $\mathrm{query}\,\mathsf{a}\,\mathit{db} = 1$, so in the reverse direction we can pick an
+  interval containing $1$ to discover the largest (i.e. least in the order) intervals that will give rise to
+  this output as \emph{independent} changes to the input. For example, if we pick
+  $[\frac{9}{10},\frac{11}{10}]$ as the interval, then:
   \begin{displaymath}
-    (\partial\mathrm{query}\,\mathsf{a}\,\mathsf{db})_r([0.9,1.1]) = [(\cdot,[-0.1,0.1]),(\cdot,\bot),(\cdot,[0.9,1.1])]
+    (\partial\mathrm{query}\,\mathsf{a}\,\mathsf{db})_r([\frac{9}{10},\frac{11}{10}]) = [(\cdot,[-\frac{1}{10},\frac{1}{10}]),(\cdot,\bot),(\cdot,[\frac{9}{10},\frac{11}{10}])]
   \end{displaymath}
-  Indicating that, to achieve an output within $[0.9,1.1]$ for this query, either the first $\mathsf{a}$ row
-  could be in $[-0.1,0.1]$ or the second one could be in $[0.9,1.1]$.
+  Indicating that, to achieve an output within $[\frac{9}{10},\frac{11}{10}]$ for this query, either the first
+  $\mathsf{a}$ row could be in $[-\frac{1}{10},\frac{1}{10}]$ or the second one could be in
+  $[\frac{9}{10},\frac{11}{10}]$.
 \end{enumerate}
 
 \subsection{Systematic Insertion of Approximation via Moggi's CBN translation}
 \label{sec:cbn-translation}
 
 We can now carry out the systematic insertion of approximation points that we foreshadowed in
-\secref{models-of-total-gps:lifting-monad}, using \citet[\S 3.1]{notions-of-computation}'s monadic CBN translation. We use the $T$
-monad from \secref{tagging-monad} because it can be defined in terms of the language constructed we already
-have. This requires that we have a signature $\Sigma$ that includes a primitive type to be interpreted as the
-approximation object $\mathbb{A}$ and primitive operations to be interpreted as the monoid operations on this
-object.
+\secref{models-of-total-gps:lifting}, using \citet[\S 3.1]{notions-of-computation}'s monadic CBN
+translation. We use the $T$ monad from \secref{tagging-monad} because it can be defined in terms of the
+language constructed we already have. This requires that we have a signature $\Sigma$ that includes a
+primitive type to be interpreted as the approximation object $\mathbb{A}$ and primitive operations to be
+interpreted as the monoid operations on this object.
 
 TODO: describe the syntactic CBN translation; show an example on the query example.

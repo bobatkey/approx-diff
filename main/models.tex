@@ -148,9 +148,10 @@ finite products:
 Using the infinitary coproducts and finite products, we can construct
 a wide range of other useful semantic models of datatypes in
 $\Fam(\cat{C})$. For example, lists can be constructed as a coproduct
-\begin{displaymath}
+\begin{equation}
+  \label{eqn:lists}
   \List(X) = \coprod_{n \in \mathbb{N}} X^n
-\end{displaymath}
+\end{equation}
 where $X^0 = 1$ (the terminal object) and $X^{n+1} = X \times X^n$.
 
 Our category of interest, $\Fam(\LatGal)$ has coproducts and finite
@@ -413,8 +414,8 @@ embed $\Fam(\LatGal)$ into $\Fam(\MeetSLat \times \JoinSLat^\op)$:
   finite products.
 \end{proposition}
 
-With this embedding functor, we see in
-\propref{first-order-type-interp} that the interpretation of
+With this embedding functor, we will see in
+\lemref{first-order-agreement-types} that the interpretation of
 first-order types will be the same up to isomorphism in
 $\Fam(\LatGal)$ and $\Fam(\MeetSLat \times \JoinSLat^\op)$, as long as
 we interpret the base types as objects in $\Fam(\LatGal)$. At
@@ -558,7 +559,7 @@ $\mathrm{shortCircuitOr}$.
   respect the lattice structure and be preserved by
   morphisms\footnote{This additional structure is reminiscent of the
     additional structure on \emph{directed containers} defined by
-    \citet{ahman-uustalu}. They require a map
+    \citet{ahman-chapman-uustalu2012}. They require a map
     $\Pi_{x : X}.\partial X(x) \to X$ picking out a specific $X$
     ``jumped to'' by some change $\delta x : \partial X(x)$ at $x$. In
     our proposed setup, we follow the approximation theme of \GPS by
@@ -660,6 +661,7 @@ also possible with swapping of lower and upper bounds, as is
 multiplication.
 
 \subsection{Summary}
+\label{sec:models:summary}
 
 We have constructed the category
 $\Fam(\MeetSLat \times \JoinSLat^\op)$, which is a cartesian closed

@@ -28,13 +28,16 @@ approximation) can be embedded in $\Fam(\LatGal)$.
 
 2. Conjecture that the category with $(X : \namedcat{Cpo}, \partial X : X \to \CLatGal)$, where $\CLatGal$ is the category of complete lattices and Galois connections is the right setting. Would need to investigate the connections with dI-domains, bidomains, and bistable bidomains \cite{laird07}.
 
+Are bidomains \cite{berry79} useful? they have two orderings. See also
+Laird's Bistable Biorders \cite{laird07}.
+
 \paragraph{General Inductive and Coinductive Types}
 
 Lists are the only recursive data type we provided in our source language, so important future work is
 supporting general inductive and coinductive types. \citet{nunes2023} support automatic differentiation for
 datatypes defined as the least or greatest fixed points of $\mu\nu$-polynomial functors; we could potentially
 adopt a similar approach. Full inductive types would allow us to embed an interpreter for untyped lambda
-calculus; combined with the CBN monadic translation described in \secref{todo} which uniformly inserts
+calculus; combined with the CBN monadic translation described in \secref{cbn-translation} which uniformly inserts
 approximation points, we should be able to obtain the program slicing behaviour of earlier \GPS work ``for
 free''. Coinductive types (e.g.~streams) present additional challenges, especially for defining
 join-preserving backward maps, but also open the door to slicing (finite prefixes of) infinite data sources,
