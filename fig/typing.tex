@@ -148,25 +148,25 @@
     {
       \Gamma \vdash \tmFoldList{s_1}{s_2}{t} : \tau
     }
-    \and
-    \inferrule*
-    {
-      \Gamma \vdash t : \tau
-    }
-    {
-      \Gamma \vdash \tmReturn{t} : \tyLift\;\tau
-    }
-    \and
-    \inferrule*
-    {
-      \Gamma \vdash s : \tyLift\;\sigma
-      \\
-      \Gamma \vdash t : \sigma \tyFun \tyLift\;\tau
-    }
-    {
-      \Gamma \vdash \tmBind{s}{t} : \tyLift\;\tau
-    }
+    % \and
+    % \inferrule*
+    % {
+    %   \Gamma \vdash t : \tau
+    % }
+    % {
+    %   \Gamma \vdash \tmReturn{t} : \tyLift\;\tau
+    % }
+    % \and
+    % \inferrule*
+    % {
+    %   \Gamma \vdash s : \tyLift\;\sigma
+    %   \\
+    %   \Gamma \vdash t : \sigma \tyFun \tyLift\;\tau
+    % }
+    % {
+    %   \Gamma \vdash \tmBind{s}{t} : \tyLift\;\tau
+    % }
   \end{mathpar}
-\caption{Well-typed terms over $\Sigma$}
+\caption{Well-typed terms over a signature $\Sigma$}
 \label{fig:typing}
 \end{figure}

@@ -74,11 +74,10 @@ categories of partial orders and monotone maps:
 
 \begin{enumerate}
 \item The category $\LatGal$ has bounded lattices as objects and
-  Galois connections as morphisms, with the right adjunct going in
-  the ``forward'' direction. The category $\Fam(\LatGal)$ is our
-  preferred model for total functions with Galois sliicing. We
-  explore some specific examples in this category in
-  \secref{semantic-gps}.
+  Galois connections as morphisms, with the right adjoint going in the
+  ``forward'' direction. The category $\Fam(\LatGal)$ is our preferred
+  model for total functions with Galois sliicing. We explore some
+  specific examples in this category in \secref{semantic-gps}.
 \item The category $\MeetSLat$ has meet-semilattices with top as
   objects and monotone finite meet preserving functions as
   morphisms. The category $\Fam(\MeetSLat)$ provides a model of
@@ -108,9 +107,10 @@ end of \secref{stab}.
 % We could restrict $\Lposet$ to morphisms that preserve maximal
 % elements and take L-posets $X$ to
 % $(\mathrm{Max}(M), \lambda x. \downset{x})$.
-Our current hypothesis is that $\Fam(\LatGal)$, where values and their
-approximations are separated by construction, is the natural model of
-semantic \GPS in a total setting. We now investigate some categorical
+Our working hypothesis is that $\Fam(\LatGal)$, where values and their
+approximations are separated by construction, is a natural model of
+semantic \GPS in a total setting, though we note some shortcomings in
+\remref{further-structure}. We now investigate some categorical
 properties of this category, with a view to modelling a higher-order
 total programming language in \secref{language}.
 
@@ -452,6 +452,7 @@ $\partial f_r : \Pi_{x : X}. \partial Y(f\,x) \multimap \partial X(x)$
 $\partial f_r(x) \dashv \partial f_f(x)$.
 
 \subsubsection{Unapproximated Functions}
+\label{sec:unapproximated-functions}
 
 $\LatGal$ has a terminal (also zero) object $\mathbb{1}$, so there is
 a functor $\Disc : \Set \to \Fam(\LatGal)$ that maps a set $X$ to
@@ -581,6 +582,7 @@ systematised in our setting by considering a monadic CBN translation
 to uniformly add $\Lift$ approximation points to composite data types.
 
 \subsubsection{An Approximation Object and the Tagging Monad}
+\label{sec:tagging-monad}
 
 The $\Lift$ monad provides a way of tagging first-order data with
 presence and absence information. The object $\Lift(1)$, the lifting
@@ -626,6 +628,7 @@ compute \emph{related} outputs, as we discuss in
 \secref{related-work:galois-slicing}.
 
 \subsubsection{Approximating Numbers by Intervals}
+\label{sec:interval-approx}
 
 So far, the approximation lattices we have looked at in
 $\Fam(\LatGal)$ have only consisted of those constructed from finite
@@ -634,11 +637,12 @@ information. \exref{intervals-and-maxima-elements} shows how we can go
 beyond this to get more ``quantitative'' approximation
 information. Let the object of reals with interval approximations in
 $\Fam(\LatGal)$ be
-$(\mathbb{R}, \lambda x.\,\{[l,u] \mid l \leq x \leq u\} \cup
-\{\bot\})$ where the lattices of intervals are reverse ordered by
-inclusion with $\bot$ at the bottom. Then, following the examples in
-\exref{intervals-and-maxima-elements} and \exref{stable-functions}, we
-can define addition, negation, and scaling by $r \geq 0$:
+$\mathbb{R}_{\mathit{intv}} = (\mathbb{R}, \lambda x.\,\{[l,u] \mid l
+\leq x \leq u\} \cup \{\bot\})$ where the lattices of intervals are
+reverse ordered by inclusion with $\bot$ at the bottom. Then,
+following the examples in \exref{intervals-and-maxima-elements} and
+\exref{stable-functions}, we can define addition, negation, and
+scaling by $r \geq 0$:
 \begin{displaymath}
   \begin{array}{lcl}
     \mathrm{add}&=&(\begin{array}[t]{@{}l}
@@ -650,8 +654,10 @@ can define addition, negation, and scaling by $r \geq 0$:
     \mathrm{scale}(r)&=&(\lambda x.\,rx, \lambda x\,[l,u].\,[rl,ru], \lambda x\,[l,u].\,\mathrm{if}\,r=0\,\mathrm{then}\,\bot\,\mathrm{else}\,[\frac{l}{r},\frac{u}{r}])
   \end{array}
 \end{displaymath}
-Scaling by negative numbers is also possible with swapping of lower
-and upper bounds, as is multiplication.
+(we only define the forward and backward maps on intervals, their
+behaviour on $\bot$ is determined.)  Scaling by negative numbers is
+also possible with swapping of lower and upper bounds, as is
+multiplication.
 
 \subsection{Summary}
 

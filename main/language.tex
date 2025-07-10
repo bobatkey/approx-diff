@@ -10,14 +10,16 @@ $\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$ of primitive operations $\phi$ of arity $n
 \label{sec:language:syntax}
 
 The syntax is defined in \figref{syntax}. Types includes base types $\rho$ drawn from $\PrimTy$, along with
-standard type formers for sums, products, functions and lists, plus a type constructor $\tyLift$ to allow
-approximation points to be added explicitly, as discussed in \secref{models-of-total-gps}. Terms include
-variables, the usual introduction and elimination forms, a monadic return and bind for lifted terms, and
+standard type formers for sums, products, functions and lists% , plus a type constructor $\tyLift$ to allow
+% approximation points to be added explicitly, as discussed in \secref{models-of-total-gps}
+. Terms include
+variables, the usual introduction and elimination forms% , a monadic return and bind for lifted terms
+, and
 primitive operations $\phi$.
 
 The language is intentionally minimal: it excludes general recursion, and general inductive or coinductive
 types, which we will consider in future work (\secref{conclusion}). Typing judgments for terms are standard
-and shown in \figref{typing}, with the usual rules for products, sums, functions, lists and lifting.
+and shown in \figref{typing}, with the usual rules for products, sums, functions, and lists.
 
 \input{fig/syntax}
 \input{fig/typing}
@@ -27,29 +29,102 @@ and shown in \figref{typing}, with the usual rules for products, sums, functions
 
 \input{fig/semantics}
 
-A model of $\Sigma$ can be given in any category $\cat{C}$ with finite products, and assigns to each base type
-$\rho \in \PrimTy$ an object $\sem{\rho}_{\PrimOp}$ in $\cat{C}$, and to each primitive operation $\phi \in
-\PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism $\sem{\phi}_{\Op}: \sem{\rho_1}_{\PrimTy} \times \ldots
-\times \sem{\rho_n}_{\PrimTy} \to \sem{\rho}_{\PrimTy}$. A model of $\tyList$ can also be given in such a
-category, and consists of an endofunctor $\List: \cat{C} \to \cat{C}$, plus for any object $X$, morphisms
-$\nil: 1 \to \List(X)$ and $\cons: X \times \List(X) \to \List(X)$, and for any objects $Y, Z$ and morphisms
-$f_\nil: Z \to Y$ and $f_\cons: Z \times X \times Y \to Y$, a morphism $\fold(f_\nil,f_\cons): Z \times
-\List(X) \to Y$, with $\nil$, $\cons$ and $\fold$ satisfying the usual laws for lists.
+An interpretation of a signature $\Sigma = (\PrimTy, \PrimOp)$ can be given in any category $\cat{C}$ with
+finite products, and assigns to each base type $\rho \in \PrimTy$ an object $\sem{\rho}_{\PrimTy}$ in
+$\cat{C}$, and to each primitive operation $\phi \in \PrimOp^\rho_{\rho_1,\ldots,\rho_n}$, a morphism
+$\sem{\phi}_{\Op}: \sem{\rho_1}_{\PrimTy} \times \ldots \times \sem{\rho_n}_{\PrimTy} \to
+\sem{\rho}_{\PrimTy}$.
 
-The semantics for the full language is then given in terms of an arbitrary bicartesian closed category $\Sem$
-providing models of $\Sigma$ and $\tyList$, as well as a strong monad $(\Lift, \eta, \mu)$ with strength
-$\mathsf{st}$ for interpreting $\tyLift$. \figref{semantics:types} gives the interpretations of types $\tau$
-and contexts $\Gamma$ as objects; \figref{semantics:terms} gives the interpretation of terms $\Gamma \vdash t:
-\tau$ as morphisms $\sem{\Gamma} \to \sem{\tau}$.
+Assuming that $\cat{C}$ is bicartesian closed and has a list object (\propref{lists}), then we can extend an
+interpretation of a signature $\Sigma$ to an interpretation of the whole language over
+$\Sigma$. \figref{semantics:types} and \figref{semantics:contexts} define the interpretation of types and
+contexts as objects of $\cat{C}$ respectively. Terms are interpreted as morphisms between the interpretations
+of the context and type, as defined in \figref{semantics:terms}. We have used the notations $\pi_i$ for
+projections, $\prodM{f}{g}$ for pairing, $\coprodM{f}{g}$ for (parameterised) copairing, $!_x$ for morphisms
+to the terminal object, and $\lambda$ and $\eval$ for currying and evaluation for exponentials.
 
-\subsubsection{Interpretation for higher-order \GPS}
+For the first-order definability result in \secref{definability}, we will need another interpretation
+$\sem{-}_{\mathit{fo}}$ of the first-order types (those constructed from primitive types, sums, unit and
+products) in any bicartesian category. Such interpretations are preserved by finite coproduct and coproduct
+preserving functors:
 
-Given a model of $\Sigma$ in $\Fam(\LatGal)$, the category $\Fam(\MeetSLat \times \JoinSLat^\op)$ can
-implement $\Sem$. It is bicartesian closed by \corref{mslat-jslat-bcc}, and can model $\tyList$ using infinite
-coproducts (\secref{models-of-total-gps:coproducts-and-products}). The embedding $\HoEmbed: \Fam(\LatGal) \to
-\Fam(\MeetSLat \times \JoinSLat^\op)$ from \propref{ho-embedding} preserves finite products, and so can
-transport each $\sem{\rho}_{\PrimTy}$ and $\sem{\phi}_{\Op}$ into the higher-order setting to provide a model
-of $\Sigma$. Finally the lifting monad in $\Fam(\LatGal)$ (\secref{first-order:lifting}) is also preserved by
-$H$. \roly{don't think we actually show this}
+\begin{lemma}\label{lem:first-order-agreement-types}
+  If $\cat{C}$ and $\cat{D}$ are bicartesian and bicartesian closed categories with interpretations of the
+  signature $\Sigma$, $F : \cat{C} \to \cat{D}$ is a bicartesian functor, and
+  $F(\sem{\rho}_{\PrimTy}) \cong \sem{\rho}_{\PrimTy}$ for all $\rho$, then for all first-order types $\tau$,
+  $F(\sem{\tau}_{\mathit{fo}}) \cong \sem{\tau}$, and similar for contexts only containing first-order types.
+\end{lemma}
 
-The correctness of this interpretation is considered in the next section.
+\subsubsection{Interpretation for Higher-Order \GPS}
+
+Given the above, we can now interpret the language in any of the bicartesian closed categories with list
+objects we constructed in \secref{models-of-total-gps}. Specifically, we assume that we have an interpretation
+of our chosen signature in $\Fam(\LatGal)$. Signatures are first-order, so it does not matter that
+$\Fam(\LatGal)$ is not closed. Any such interpretation can be transported to
+$\Fam(\MeetSLat \times \JoinSLat^\op)$ along the functor $H$ from \propref{ho-embedding} because it preserves
+finite products. We can then interpret the whole language in $\Fam(\MeetSLat \times \JoinSLat^\op)$.
+
+Interpreting a whole program $\Gamma \vdash t : \tau$ yield morphisms in
+$\Fam(\MeetSLat \times \JoinSLat^\op)$ which, as in \secref{semantic-gps}, are triples
+$(f, \partial f_f, \partial f_r)$ of the underlying function and the forward and backward approximation
+maps. However, unlike in $\Fam(\LatGal)$ are not guaranteed that the forward and backward maps even operate on
+the same lattices, let alone form a Galois connection. \lemref{first-order-agreement-types} guarantees that
+the lattices agree, but the fact that the pair form a Galois connection is less trivial. We will prove this
+property in \secref{definability}.
+
+% Given a model of $\Sigma$ in $\Fam(\LatGal)$, the category $\Fam(\MeetSLat \times \JoinSLat^\op)$ can
+% implement $\Sem$. It is bicartesian closed by \corref{mslat-jslat-bcc}, and can model $\tyList$ using infinite
+% coproducts (\secref{models-of-total-gps:coproducts-and-products}). The embedding $\HoEmbed: \Fam(\LatGal) \to
+% \Fam(\MeetSLat \times \JoinSLat^\op)$ from \propref{ho-embedding} preserves finite products, and so can
+% transport each $\sem{\rho}_{\PrimTy}$ and $\sem{\phi}_{\Op}$ into the higher-order setting to provide a model
+% of $\Sigma$. Finally the lifting monad in $\Fam(\LatGal)$ (\secref{first-order:lifting}) is also preserved by
+% $H$. \roly{don't think we actually show this}
+
+% The correctness of this interpretation is considered in the next section.
+
+\subsection{Examples}
+
+Let the signature
+$\Sigma_{\mathsf{num}} = (\{\mathsf{num}\}, \{\mathrm{zero} : \tyUnit \to \mathsf{num}, \mathrm{add} :
+\mathsf{num} \times \mathsf{num} \to \mathsf{num}\})$. This signature suffices to write the simple query
+function in \exref{introduction-example}, where we interpret the $\mathrm{Label}$ type as the sum
+$\tyUnit \tySum \tyUnit$ and the labels $\mathsf{a}$ and $\mathsf{b}$ as $\tmInl{\tmUnit}$ and
+$\tmInr{\tmUnit}$. We consider several interpretations of $\Sigma_{\mathsf{num}}$ in $\Fam(\LatGal)$ and their
+behaviour on the query from \exref{introduction-example}.
+\begin{enumerate}
+\item If we take $\sem{\mathsf{num}}_{\PrimTy} = \Disc(\mathbb{R})$, with $\sem{\mathrm{zero}}_{\PrimOp}$ and
+  $\sem{\mathrm{add}}_{\PrimOp}$ the embeddings of the usual zero and addition functions via $\Disc$, then the
+  resulting interpretation contains no approximation information. The approximation lattices for all types are
+  always the trivial one-point lattice, and the forward and reverse approximation maps are necessarily the
+  identity.
+\item To get interesting approximation information, we take
+  $\sem{\mathsf{num}}_{\PrimTy} = \Lift(\Disc(\mathbb{R}))$, using the lifting monad from
+  \secref{models-of-total-gps:lifting-monad}, with $\sem{\mathrm{zero}}_{\PrimOp}$ and $\sem{\mathrm{add}}_{\PrimOp}$ defined from
+  the unlifted interpretations above and the monad structure. This interpretation recovers the behaviour given
+  in \exref{introduction-example}: running the reverse approximation map at the input $\mathsf{a}$ with the
+  top approximation maps indeed reveals that only the numbers in the rows tagged with that label in the input
+  are used, and likewise for $\mathsf{b}$.
+\item More quantitative approximation information can be obtained by using the interval approximation
+  interpretation from \exref{intervals-and-maxima-elements} and \secref{interval-approx}. We let
+  $\sem{\mathsf{num}}_{\PrimTy} = \mathbb{R}_{\mathit{intv}}$ and interpret addition using the morphism given
+  in \secref{interval-approx}.
+
+  Recall that $\mathrm{query}\,\mathsf{a}\,\mathit{db} = 1$, so in the reverse direction we can pick an interval containing $1$ to discover the largest (i.e. least in the order) intervals that will give rise to this output as \emph{independent} changes to the input. For example, if we pick $[-0.9,1]$ as the interval, then:
+  \begin{displaymath}
+    (\partial\mathrm{query}\,\mathsf{a}\,\mathsf{db})_r([0.9,1.1]) = [(\cdot,[-0.1,0.1]),(\cdot,\bot),(\cdot,[0.9,1.1])]
+  \end{displaymath}
+  Indicating that, to achieve an output within $[0.9,1.1]$ for this query, either the first $\mathsf{a}$ row
+  could be in $[-0.1,0.1]$ or the second one could be in $[0.9,1.1]$.
+\end{enumerate}
+
+\subsection{Systematic Insertion of Approximation via Moggi's CBN translation}
+\label{sec:cbn-translation}
+
+We can now carry out the systematic insertion of approximation points that we foreshadowed in
+\secref{models-of-total-gps:lifting-monad}, using \citet[\S 3.1]{notions-of-computation}'s monadic CBN translation. We use the $T$
+monad from \secref{tagging-monad} because it can be defined in terms of the language constructed we already
+have. This requires that we have a signature $\Sigma$ that includes a primitive type to be interpreted as the
+approximation object $\mathbb{A}$ and primitive operations to be interpreted as the monoid operations on this
+object.
+
+TODO: describe the syntactic CBN translation; show an example on the query example.
