@@ -29,7 +29,13 @@ approximation) can be embedded in $\Fam(\LatGal)$.
 
 \paragraph{Implementation}
 
-Would be better to have an implementation that worked by translation,
-instead of interpreting directly as Agda functions. See work by
-Smeding and Vákár on translations. To formalise this, we'd need
-to... See also $\Fam(\PSh_{\CMon}(\namedcat{Syn}))$?
+% To formalise this, we'd need to... See also $\Fam(\PSh_{\CMon}(\namedcat{Syn}))$?
+
+An interesting implementation technique, as an alternative the denotational approach presented here or the
+trace-based approaches used in earlier \GPS implementations, would be to develop a source-to-source
+transformation, in direct analogy with the CHAD approach to automatic differentiation
+\cite{vakar22,nunes2023}. In their approach, forward and reverse-mode AD are implemented as compositional
+transformations on source code, guided by a universal property: they arise as the unique structure-preserving
+functors from the source language to a suitably structured target language formalised as a Grothendieck
+construction. Adapting this to Galois slicing would allow slicing to ``compiled in'', avoiding the need for a
+custom interpreter and presenting opportunities for optimisation.
