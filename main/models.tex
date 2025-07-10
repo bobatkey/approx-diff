@@ -46,9 +46,10 @@ $\partial (f \circ g)(x) = \partial f(f, x) \circ \partial g(x)$,
 where the latter composition is in $\cat{C}$.
 
 The fact that morphisms in $\Fam(C)$ compose according to a chain rule
-means that the categories we have seen so far embed into $\Fam(C)$ for
-appropriate $C$. If we let $\FinVect$ be the category of finite
-dimensional real vector spaces, then:
+means that the categories we considered in \secref{approx-as-tangents}
+embed into $\Fam(C)$ for appropriate $C$. If we let $\FinVect$ be the
+category of finite dimensional real vector spaces and linear maps,
+then:
 
 \begin{proposition}
   \label{prop:embed-manifolds}
@@ -71,22 +72,25 @@ construction in our partially ordered setting does not.
 For the categories $\CM$ and $\Lposet$, we pick the appropriate
 categories of partial orders and monotone maps:
 
-\begin{definition}
-  \item
-  \begin{enumerate}
-  \item The category $\LatGal$ has bounded lattices as objects and
-    Galois connections as morphisms, with the right adjunct going in
-    the ``forward'' direction.
-  \item The category $\MeetSLat$ has meet-semilattices with top as
-    objects and finite meet preserving functions as
-    morphisms.
-  \item The category $\JoinSLat$ has join-semilattices with bottom as
-    objects and finite join preserving functions as
-    morphisms.
-  \end{enumerate}
-\end{definition}
+\begin{enumerate}
+\item The category $\LatGal$ has bounded lattices as objects and
+  Galois connections as morphisms, with the right adjunct going in
+  the ``forward'' direction. The category $\Fam(\LatGal)$ is our
+  preferred model for total functions with Galois sliicing. We
+  explore some specific examples in this category in
+  \secref{semantic-gps}.
+\item The category $\MeetSLat$ has meet-semilattices with top as
+  objects and monotone finite meet preserving functions as
+  morphisms. The category $\Fam(\MeetSLat)$ provides a model of
+  total functions with ``forward derivatives'' only.
+\item The category $\JoinSLat$ has join-semilattices with bottom as
+  objects and monotone finite join preserving functions as
+  morphisms. The category $\Fam(\JoinSLat^\op)$ provides a model of
+  total functions with ``backwards derivatives'' only.
+\end{enumerate}
 
-We can get an analogous result to \propref{embed-manifolds} for L-posets:
+We can get an analogous result to \propref{embed-manifolds} for
+L-posets and stable maps:
 
 \begin{proposition}
   \label{prop:embed-stable}
@@ -116,7 +120,7 @@ total programming language in \secref{language}.
 \label{sec:models-of-total-gps:coproducts-and-products}
 
 The categories $\Fam(\cat{C})$ are the free coproduct completions of
-categories $\cat{C}$, so they are guaranteed to have all coproducts:
+categories $\cat{C}$, so they have all coproducts:
 
 \begin{proposition}
   For any $\cat{C}$, $\Fam(\cat{C})$ has all coproducts, which can be
@@ -143,78 +147,82 @@ finite products:
 
 Using the infinitary coproducts and finite products, we can construct
 a wide range of other useful semantic models of datatypes in
-$\Fam(\cat{C})$. For example lists can be constructed as the coproduct
+$\Fam(\cat{C})$. For example, lists can be constructed as a coproduct
 \begin{displaymath}
   \List(X) = \coprod_{n \in \mathbb{N}} X^n
 \end{displaymath}
 where $X^0 = 1$ (the terminal object) and $X^{n+1} = X \times X^n$.
 
 Our category of interest, $\Fam(\LatGal)$ has coproducts and finite
-products, because $\LatGal$ has products. As we shall see below, these
-are also coproducts, which is essential to obtaining cartesian
-closure.
+products, because $\LatGal$ has products. Similarly for
+$\Fam(\MeetSLat)$. As we shall see below, the products in $\LatGal$
+(and $\MeetSLat$ and $\JoinSLat)$ are also coproducts, which is
+essential to obtaining cartesian closure.
 
 \subsubsection{Cartesian Closure}
 
-For cartesian closure of categories of families, we rely on the
-following theorem of \citet{nunes2023}, specialised from their setting
-with the general Grothendieck construction to $\Fam(\cat{C})$. This
-relies on the definition of \emph{biproducts}, which we discuss below
-in \secref{biproducts}.
+For cartesian closure of the categories $\Fam(C)$ that we are
+interested in, we rely on the following theorem of \citet{nunes2023},
+specialised from their setting with the general Grothendieck
+construction to $\Fam(\cat{C})$. This relies on the definition of
+\emph{biproducts}, which we discuss below in \secref{biproducts}.
 
 \begin{theorem}[\cite{nunes2023}]
   \label{thm:fam-closed}
-  \AGDA.  If $\cat{C}$ has biproducts and all products, then
-  $\Fam(\cat{C})$ is cartesian closed\footnote{More precisely, if
-    $\cat{C}$ has coproducts then we have a monoidal product on
-    $\Fam(\cat{C})$ which is closed by this construction. When these
-    coproducts are in fact biproducts, we get cartesian closure.}. On
-  objects, the internal hom can be given by:
+  \AGDA.  If $\cat{C}$ has biproducts (\defref{biproducts}) and all
+  products, then $\Fam(\cat{C})$ is cartesian closed\footnote{More
+    precisely, if $\cat{C}$ has coproducts then we have a monoidal
+    product on $\Fam(\cat{C})$ which is closed by this
+    construction. When these coproducts are in fact biproducts, we get
+    cartesian closure.}. On objects, the internal hom can be given by:
   \begin{displaymath}
     (X, \partial X) \to (Y, \partial Y) = (\Pi_{x : X}. \Sigma_{y : Y}. \cat{C}(\partial X(x), \partial Y(y)), \lambda f. \Pi_{x : X}. \partial Y(\pi_1(f\, x)))
   \end{displaymath}
 \end{theorem}
 
-Before we explore the hypotheses of this theorem, we give some
-intuition on how it relates to differentiation. The Set-component of
-$(X, \partial X) \to (Y, \partial Y)$ consists of exactly the
-morphisms of $\Fam(\cat{C})$, rephrased into a single object. When
-$\cat{C} = \FinVect$, these are functions with an associated linear
-map at every point, and when $\cat{C} = \LatGal$, these are functions
-with an associated Galois connection at every point. A tangent to a
-function is then defined to be a mapping from points in the domain to
-tangents in the codomain along the function.
+The $\Set$-component of $(X, \partial X) \to (Y, \partial Y)$ consists
+of exactly the morphisms of $\Fam(\cat{C})$, rephrased into a single
+object. When $\cat{C} = \FinVect$, these are functions with an
+associated linear map at every point, and when $\cat{C} = \LatGal$,
+these are functions with an associated Galois connection at every
+point. A tangent to a function is then defined to be a mapping from
+points in the domain to tangents in the codomain along the function.
 
-Unfortunately, neither of the categories $\LatGal$ or $\FinVect$
-satisfy the hypotheses of this theorem, because neither of them have
-infinite products. We will consider ways to rectify this below in
+The category $\MeetSLat$ satisfies the hypoetheses of
+\thmref{fam-closed}, so:
+\begin{corollary}
+  $\Fam(\MeetSLat)$ is cartesian closed and has all coproducts.
+\end{corollary}
+Unfortunately, neither of the $\LatGal$ or $\FinVect$ satisfy the
+hypotheses of this theorem, because neither of them have infinite
+products. We will consider ways to rectify this below in
 \secref{fixing-completeness}.
 
 \begin{remark}
   \label{rem:hermida-exponentials}
   There is another construction of internal homs on $\Fam(\cat{C})$
-  arising from the use of fibrations for categorical logical relations
-  proofs, due to \citet[Corollary 4.12]{hermida99}. If we assume that
-  $\cat{C}$ is itself cartesian closed and has all products, then we
-  could construct an internal hom as:
+  arising from the use of fibrations for categorical logical
+  relations, due to \citet[Corollary 4.12]{hermida99}. If we assume
+  that $\cat{C}$ is itself cartesian closed and has all products, then
+  we could construct an internal hom as:
   \begin{displaymath}
     (X, \partial X) \to (Y, \partial Y) = (X \to Y, \lambda f. \Pi_{x : X}.\,\partial X(x) \to \partial Y(f\,x))
   \end{displaymath}
   However, for the purposes of modelling differentiable programs, this
   is fatally flawed in that neither of $\LatGal$ nor $\FinVect$ are
   cartesian closed, and there is no way of making them so without
-  losing the property of having biproducts. We will use Hermida's
-  construction in our definability proof in \secref{definability},
-  where we use a logical relations argument to show that every
-  morphism definable in the higher order language is also first-order
-  definable.
+  losing the property of being able to conjunct or add tangents, as we
+  shall see below. We will implicitly use Hermida's construction in
+  our definability proof in \secref{definability}, where we use a
+  logical relations argument to show that every morphism definable in
+  the higher order language is also first-order definable.
 \end{remark}
 
 \subsubsection{CMon-Categories and Biproducts}
 \label{sec:biproducts}
 
 Loosely stated, biproducts are objects that are both products and
-coproducts. They can be defined in any category, as shown by
+coproducts. The concept can be defined in any category, as shown by
 \citet{karvonen20}, but for our purposes it will be more convenient to
 use the shorter definition in categories enriched in commutative
 monoids:
@@ -222,17 +230,18 @@ monoids:
   A category $\cat{C}$ is enriched in $\CMon$, the category of
   commutative monoids, if every homset $\cat{C}(X,Y)$ is a commutative
   monoid with $(+,0)$ and composition is bilinear:
-  \begin{salign*}
-    f \comp \zero = f = \zero \comp f
-  \end{salign*}
-  \begin{salign*}
-    (f + g) \comp h &= (f \comp h) + (g \comp h) \\
-    h \comp (f + g) &= (h \comp f) + (h \comp g)
-  \end{salign*}
+  \begin{displaymath}
+    f \comp \zero = 0 = \zero \comp f
+  \end{displaymath}
+  \begin{displaymath}
+    (f + g) \comp h = (f \comp h) + (g \comp h) \qquad
+    h \comp (f + g) = (h \comp f) + (h \comp g)
+  \end{displaymath}
 \end{definition}
 In any $\CMon$-category we can define what it means to be the
 biproduct of two objects:
 \begin{definition}
+  \label{def:biproducts}
   In a $\CMon$-category a biproduct is an object $X \biprod Y$
   together with morphisms
 
@@ -283,8 +292,8 @@ coproducts:
 \end{proposition}
 
 \begin{example}
-  The following categories are $\CMon$-enriched and have finite
-  products, and hence biproducts:
+  The following are $\CMon$-enriched and have finite products, and
+  hence biproducts:
   \begin{enumerate}
   \item In $\FinVect$, morphisms are linear maps and so can be added
     and have a zero map. Finite products are given by cartesian
@@ -294,28 +303,22 @@ coproducts:
     adjoints are summed using joins. The zero maps are given by the
     constantly $\top$ and constantly $\bot$ functions
     respectively. Products are given by the cartesian product of the
-    underlying set.
-  \item The $\LatGal$ example splits into two separate categories
-    $\MeetSLat$ and $\JoinSLat$ of meet semilattices and join
-    semilattices respectively, with their respective homomorphisms as
-    the morphisms. As with $\LatGal$, these categories are
-    $\CMon$-enriched and have finite products, and so finite
-    biproducts.
+    underlying set and the one-element lattice for the
+    terminal/initial/zero object.
+  \item $\MeetSLat$ and $\JoinSLat$ are both $\CMon$-enriched and have
+    finite products for similar reasons to $\LatGal$.
   \end{enumerate}
 \end{example}
 
-The following proposition shows why the alternative construction of
-exponentials in $\Fam(C)$ described in \remref{hermida-exponentials}
-is not suitable:
-\begin{proposition}
-  A $\CMon$-category that is cartesian closed has trivial homsets:
-  $\cat{C}(X,Y) \cong 1$.
-\end{proposition}
-
-\begin{proof}
-  $\cat{C}(X, Y) \cong \cat{C}(0 + X,Y) \cong \cat{C}(0 \times X,Y)
-  \cong \cat{C}(0,X \to Y) \cong 1$.
-\end{proof}
+\begin{remark}
+  Categories with zero objects cannot be cartesian closed without
+  being trivial in the sense of having exactly one morphism between
+  every pair of objects because
+  $\cat{C}(X, Y) \cong \cat{C}(1 \times X,Y) \cong \cat{C}(0 \times
+  X,Y) \cong \cat{C}(0,X \to Y) \cong 1$. Consequently, we cannot
+  apply the alternative construction of exponentials described in
+  \remref{hermida-exponentials}.
+\end{remark}
 
 \subsubsection{Discrete Completeness}
 \label{sec:fixing-completeness}
@@ -410,20 +413,18 @@ embed $\Fam(\LatGal)$ into $\Fam(\MeetSLat \times \JoinSLat^\op)$:
   finite products.
 \end{proposition}
 
-With this embedding functor, we can see that the interpretation of
+With this embedding functor, we see in
+\propref{first-order-type-interp} that the interpretation of
 first-order types will be the same up to isomorphism in
 $\Fam(\LatGal)$ and $\Fam(\MeetSLat \times \JoinSLat^\op)$, as long as
 we interpret the base types as objects in $\Fam(\LatGal)$. At
-higher-order, however, the meet-semilattice and join-semilattice
-sides of the interpretation will diverge, and it is no longer clear
-that the interpretation of programs using higher-order functions
-internally will result in Galois connections. In \secref{definability}
-we will see that every program with first-order type (even if it uses
+higher-order, however, the meet-semilattice and join-semilattice sides
+of the interpretation will diverge, and it is no longer clear that the
+interpretation of programs using higher-order functions internally
+will result in Galois connections. In \secref{definability} we will
+see that every program with first-order type (even if it uses
 higher-order functions internally) does in fact have an interpretation
 definable in $\Fam(\LatGal)$.
-
-% $\GLR(\Fam(\MeetSLat \times \JoinSLat^\op), F)$ fibred over
-% $\Fam(\MeetSLat \times \JoinSLat^\op)$ with a full and faithful functor $\Fam(\LatGal) \to \GLR(\Fam(\MeetSLat \times \JoinSLat^\op), F)$.
 
 % \bob{In the conclusion, we have to admit to the possibility that
 %   $\Fam(CLatGal)$ might be sensible. We could have also used
@@ -434,40 +435,222 @@ definable in $\Fam(\LatGal)$.
 \subsection{Semantic Galois Slicing in $\Fam(\LatGal)$}
 \label{sec:semantic-gps}
 
-The above discussion has been somewhat abstract, so we now consider
-some examples in the category $\Fam(\LatGal)$ and how they relate to
-\GPS. We highlight how
+Our thesis is that $\Fam(\LatGal)$ is a suitable setting for
+interpreting first-order programs for \GPS. The above discussion has
+been somewhat abstract, so we now consider some examples in the
+category $\Fam(\LatGal)$ and how they relate to \GPS.
+
+Spelt out in full, $\Fam(\LatGal)$ has as objects $(X, \partial X)$,
+all pairs of a set $X$ and and for every $x \in X$, a bounded lattice
+$\partial X(x)$. Morphisms $(X, \partial X) \to (Y, \partial Y)$, are
+triples $(f, \partial f_f, \partial f_r)$ of functions $f : X \to Y$
+and families of monotone maps
+$\partial f_f : \Pi_{x : X}.\partial X(x) \multimap \partial Y(f\,x)$
+(``forward derivative'') and
+$\partial f_r : \Pi_{x : X}. \partial Y(f\,x) \multimap \partial X(x)$
+(``reverse derivative''), such that for all $x$,
+$\partial f_r(x) \dashv \partial f_f(x)$.
+
+\subsubsection{Unapproximated Functions}
+
+$\LatGal$ has a terminal (also zero) object $\mathbb{1}$, so there is
+a functor $\Disc : \Set \to \Fam(\LatGal)$ that maps a set $X$ to
+$(X, \lambda x. \mathbb{1})$ and functions $f$ to morphisms
+$(f, \lambda\_.\,\mathrm{id}_{\mathbb{1}})$. This functor preserves
+products and coproducts. Therefore, we can take any sets and functions
+of interest for modelling primitive types and operations of a
+programming language and embed, albeit without any interesting
+approximation information.
 
 \subsubsection{Lifting Monad}
 
-\bob{Move the discussion in \texttt{first-order.tex} to here, but
-  construct the lifting monad in a more elementary way}
+The operation of adding a new bottom element to a bounded lattice
+forms part of a monad $L$ on $\LatGal$. This monad extends to a
+(strong) monad $\Lift$ on $\Fam(\LatGal)$ with
+$\Lift(X, \partial X) = (X, L \circ \partial X)$. The monad $\Lift$
+does not affect the points of the original object, but adds a new
+minimum approximation. This monad allows us to construct morphisms in
+$\Fam(\LatGal)$ that track information about how values are used
+similar to the examples of cm and stable functions we saw in
+\secref{approx-as-tangents}.
 
-\subsubsection{An Approximation Object and the Tagged Data Monad}
+\newcommand{\Bool}{\mathrm{Bool}}
 
-\bob{flesh this out}
-
-The object $\mathbb{A} = (1, \lambda \_.\, \{\top,\bot\})$ represents
-a basic object for measuring approximations in terms of presence and
-absence. (If all we care about is presence or absence in our
-approximations, we could see this object as the analogue of the real
-numbers for normal differentiation.)
-
-This object is a commutative monoid in $\Fam(\LatGal)$, and so we can
-construct the writer monad $T(X) = \mathbb{A} \times X$ in
+Let $\Bool = \Disc(\{\mathsf{tt},\mathsf{ff}\})$ be the
+(unapproximated) embedding of the booleans and
+$\mathrm{or} : \Bool \times \Bool \to \Bool$ be the (unapproximated)
+boolean or function. The, using a Moggi-style let notation
+\cite{notions-of-computation} for morphisms constructed using the
+Monad structure of $\Lift$, we can reproduce the functions
+$\mathrm{strictOr}$ and $\mathrm{shortCircuitOr}$ functions from
+\exref{strict-short-circuit} (we also assume an if-then-else operation
+on booleans, definable from the fact that $\Fam(\LatGal)$ has
+coproducts and $\Disc$ preserves them). Both of these expressions
+define morphisms $\Lift(\Bool) \times \Lift(\Bool) \to \Lift(\Bool)$
+in $\Fam(\LatGal)$:
+\begin{displaymath}
+  \begin{array}{lcl}
+    \mathrm{strictOr}(x,y)&=&\mathrm{let}\,b_1 \Leftarrow x\,\mathrm{in}\,\mathrm{let}\,b_2 \Leftarrow y\,\mathrm{in}\,\eta(\mathrm{or}(b_1,b_2)) \\
+    \mathrm{shortCircuitOr}(x,y)&=&\mathrm{let}\,b_1 \Leftarrow x\,\mathrm{in}\,\mathrm{if}\,b_1\,\mathrm{then}\,\eta(\mathsf{tt})\,\mathrm{else}\,y
+  \end{array}
+\end{displaymath}
+Examining the morphisms so defined in $\Fam(\LatGal)$, we can see
+that, in the $\Set$ component, they are both exactly the normal
+boolean-or operation. However, they have different approximation
+behaviour, reflecting the different ways that they examine their
+inputs. Let us write $\top,\bot$ for the elements of the approximation
+lattice at each point of $\Lift(\Bool)$, then applying the reverse
+derivative at the point $(\mathsf{tt},\mathsf{tt})$ to the tangent
+$\top$ reveals which of the inputs contributed to the output for each
+function:
+\begin{displaymath}
+  \begin{array}{lcl}
+    (\partial \mathrm{strictOr})_r(\mathsf{tt},\mathsf{tt})(\top) &=& (\top, \top)  \\
+    (\partial \mathrm{shortCircuitOr})_r(\mathsf{tt},\mathsf{tt})(\top) &=& (\top, \bot)
+  \end{array}
+\end{displaymath}
+In comparison to the categories $\CM$ and $\Lposet$ from
+\secref{approx-as-tangents}, we have retained the usage information in
+the forward and reverse tangents, but we also accurately model
+totality of the functions. That is, the constantly $\bot$ function is
+also present in both $\CM$ and $\Lposet$, but is not expressible in
 $\Fam(\LatGal)$.
 
-On objects $X$ with trivial approximations, we have $\Lift(X) \cong T(X)$,
-but for more structured objects we get usage information at every level.
+An analogue of the $\mathrm{parallelOr}$ function from
+\exref{parallel-or} is not definable in $\Fam(\LatGal)$. We would have
+to have
+$(\partial \mathrm{parallelOr})_f(\mathsf{tt},\mathsf{tt})(\top,\bot)
+= (\partial \mathrm{parallelOr})_f(\mathsf{tt},\mathsf{tt})(\bot,\top)
+= \top$ to reflect the desired property that either of the inputs
+being $\mathsf{tt}$ is enough to determine the output. We also must
+have
+$(\partial \mathrm{parallelOr})_f(\mathsf{tt},\mathsf{tt})(\bot,\bot)
+= \bot$, to reflect the fact that we will get no information in the
+output if we required that neither of the inputs is examined. However,
+this means that
+$(\partial \mathrm{parallelOr})_f(\mathsf{tt},\mathsf{tt})$ will not
+presere meets because $(\top,\bot) \sqcap (\bot,\top) = (\bot,\bot)$
+but $\top \neq \bot$.
 
-This is a bit like using the writer monad and Moggi's CBN translation
-as a basic way of doing provenance tracking, but here we can track
-backwards and forwards.
+An analogue of the $\mathrm{gustave}$ function from
+\exref{parallel-or} is definable in $\Fam(\LatGal)$, but not using the
+lifting monad structure as we could for $\mathrm{strictOr}$ and
+$\mathrm{shortCircuitOr}$.
+
+\begin{remark}
+  \label{rem:further-structure}
+  These examples highlight a potential criticism of $\Fam(\LatGal)$ as
+  a category for modelling \GPS. For $\mathrm{shortCircuitOr}$, we had
+  $(\partial \mathrm{shortCircuitOr})_r(\mathsf{tt},\mathsf{tt})(\top)
+  = (\top, \bot)$, indicating that the second argument was not needed
+  for computing the output. However, there is no way, in
+  $\Fam(\LatGal)$, of turning this into a rigorous statement that the
+  $\Set$-component of this morphism does not actually depend on its
+  second argument. We conjecture that this can be rectified by
+  requiring some kind of additional structure on each object
+  $(X, \partial X)$ consisting of a map
+  $\Pi_{x : X}.\partial X(x) \to \mathcal{P}(X)$, where $\mathcal{P}$
+  is the powerset, which identifies for each $x$ which elements are
+  indistinguishable from $x$ at this level of approximation. One would
+  also presumably have to require additional conditions for this to
+  respect the lattice structure and be preserved by
+  morphisms\footnote{This additional structure is reminiscent of the
+    additional structure on \emph{directed containers} defined by
+    \citet{ahman-uustalu}. They require a map
+    $\Pi_{x : X}.\partial X(x) \to X$ picking out a specific $X$
+    ``jumped to'' by some change $\delta x : \partial X(x)$ at $x$. In
+    our proposed setup, we follow the approximation theme of \GPS by
+    having a \emph{set} of things that could be taken instead of the
+    original $x$. Objects of $\Fam(\LatGal)$ are ``directed'' in this
+    sense because the approximation map can pick out the element of
+    the original poset that was approximating $x$.}.
+\end{remark}
+
+The $\Lift$ monad provides a controllable way of adding
+presence/absence approximation points to composite data, and its monad
+structure makes explicit in the program structure exactly how such
+approximations are propagated through computations. The fact that
+there are different choices of this kind of approximation tracking
+provides freedom to the language implementor to decide what
+information is worth tracking. The Galois slicing implementations
+discussed in \citet{perera12a} and \citet{ricciotti17}, for example,
+bake-in an approximation point at every composite type constructor. We
+will see in \secref{cbn-translation} that this choice can be
+systematised in our setting by considering a monadic CBN translation
+to uniformly add $\Lift$ approximation points to composite data types.
+
+\subsubsection{An Approximation Object and the Tagging Monad}
+
+The $\Lift$ monad provides a way of tagging first-order data with
+presence and absence information. The object $\Lift(1)$, the lifting
+of the terminal object in $\Fam(\LatGal)$, yields an object that
+consists purely of presence/absence information:
+$\mathbb{A} = (1, \lambda\_.\,\{\top,\bot\})$. This object is the
+carrier of a commutative monoid in $\Fam(\LatGal)$, where the forward
+maps take the meet (both the inputs are required for the output to be
+present) and the backwards maps duplicate.% \bob{Is it also a comonoid?}
+
+Since $\mathbb{A}$ is a monoid, we can define the writer monad
+$T(X) = \mathbb{A} \times X$ in $\Fam(\LatGal)$ which ``tags'' $X$
+values with approximation information. This is similar to the $\Lift$
+monad in that it adds approximation information to an object. On
+discrete objects it agrees with the lifting:
+$T(\Disc(X)) \cong L(\Disc(X))$. However, on composite data, the two
+monads give different approximation lattices. Let $A$ and $B$ be sets.
+Then $T(T(\Disc(A)) \times T(T(\Disc(B))))$ has approximation lattices
+at $(a,b)$ that are always isomorphic to $\{\top,\bot\}^3$. The
+corresponding $\Lift(\Lift(\Disc(A)) \times \Lift(\Disc(B)))$ object's
+approximation lattice at $(a,b)$ is always isomorphic to
+$(\{\top,\bot\}^2)_\bot$.
+In terms of usage tracking, the object using the $\Lift$ monad is more
+appealing. The approximation lattice resulting from the use of the $T$
+monad contains apparently nonsensical elements corresponding to
+``using'' one or other components of the product \emph{without using
+  the product itself}. (This arises from the fact that we can project
+the $X$ out of $\mathbb{A} \times X$ without touching the
+$\mathbb{A}$.)
+
+
+This example shows that we have to be careful about how we choose the
+interpretation of approximable sets in $\Fam(\LatGal)$, and again
+highlights the point we made in \remref{further-structure} that
+perhaps $\Fam(\LatGal)$ does not have quite enough structure to
+determine ``sensible'' approximation information. On the other hand,
+the use of the $T$ monad does have the advantage that the
+approximation lattices built from discrete sets, products, and
+coproducts, are always Boolean lattices, meaning that we can take
+complements of usage information. The ability to take boolean
+complements of approximations has been used by \citet{perera22} to
+compute \emph{related} outputs, as we discuss in
+\secref{related-work:galois-slicing}.
 
 \subsubsection{Approximating Numbers by Intervals}
 
-\bob{Describe how \exref{intervals-and-maxima-elements} fits into
-  $\Fam(\LatGal)$}
+So far, the approximation lattices we have looked at in
+$\Fam(\LatGal)$ have only consisted of those constructed from finite
+products and lifting, and only track binary usage/non-usage
+information. \exref{intervals-and-maxima-elements} shows how we can go
+beyond this to get more ``quantitative'' approximation
+information. Let the object of reals with interval approximations in
+$\Fam(\LatGal)$ be
+$(\mathbb{R}, \lambda x.\,\{[l,u] \mid l \leq x \leq u\} \cup
+\{\bot\})$ where the lattices of intervals are reverse ordered by
+inclusion with $\bot$ at the bottom. Then, following the examples in
+\exref{intervals-and-maxima-elements} and \exref{stable-functions}, we
+can define addition, negation, and scaling by $r \geq 0$:
+\begin{displaymath}
+  \begin{array}{lcl}
+    \mathrm{add}&=&(\begin{array}[t]{@{}l}
+      \lambda (x_1,x_2).\,x_1+x_2, \\
+      \lambda (x_1,x_2)\,([l_1,u_1],[l_2,u_2]).\,[(l_1+x_2) \sqcap (l_2+x_1),(u_1+x_2) \sqcup (u_2+x_1)] \\
+      \lambda (x_1,x_2)\,[l,u].\,([l-x_2,u-x_2],[l-x_1,u-x_1]))
+    \end{array}\\
+    \mathrm{neg}&=&(\lambda x.\,-x, \lambda x\,[l,u].\,[-u,-l], \lambda x\,[l,u].\,[-u,-l]) \\
+    \mathrm{scale}(r)&=&(\lambda x.\,rx, \lambda x\,[l,u].\,[rl,ru], \lambda x\,[l,u].\,\mathrm{if}\,r=0\,\mathrm{then}\,\bot\,\mathrm{else}\,[\frac{l}{r},\frac{u}{r}])
+  \end{array}
+\end{displaymath}
+Scaling by negative numbers is also possible with swapping of lower
+and upper bounds, as is multiplication.
 
 \subsection{Summary}
 
