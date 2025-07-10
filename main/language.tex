@@ -44,10 +44,12 @@ and contexts $\Gamma$ as objects; \figref{semantics:terms} gives the interpretat
 
 \subsubsection{Interpretation for higher-order \GPS}
 
-Given a model $M$ of $\Sigma$ in $\Fam(\LatGal)$, the category $\Fam(\MeetSLat \times \JoinSLat^\op)$ can
+Given a model of $\Sigma$ in $\Fam(\LatGal)$, the category $\Fam(\MeetSLat \times \JoinSLat^\op)$ can
 implement $\Sem$. It is bicartesian closed by \corref{mslat-jslat-bcc}, and can model $\tyList$ using infinite
 coproducts (\secref{models-of-total-gps:coproducts-and-products}). The embedding $\HoEmbed: \Fam(\LatGal) \to
-\Fam(\MeetSLat \times \JoinSLat^\op)$ from \propref{ho-embedding} preserves finite products, providing a model
-of $\Sigma$ where $\sem{\rho}^H_{\PrimTy} = H(\sem{\rho}_{\PrimTy})$. Finally the lifting monad in
-$\Fam(\LatGal)$ (\secref{first-order:lifting}) is also preserved by $H$. The correctness of this
-interpretation is considered in the next section.
+\Fam(\MeetSLat \times \JoinSLat^\op)$ from \propref{ho-embedding} preserves finite products, and so can
+transport each $\sem{\rho}_{\PrimTy}$ and $\sem{\phi}_{\Op}$ into the higher-order setting to provide a model
+of $\Sigma$. Finally the lifting monad in $\Fam(\LatGal)$ (\secref{first-order:lifting}) is also preserved by
+$H$. \roly{don't think we actually show this}
+
+The correctness of this interpretation is considered in the next section.
