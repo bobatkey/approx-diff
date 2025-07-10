@@ -3,6 +3,7 @@
 module approx-numbers where
 
 open import Level using (0ℓ; suc)
+open import Data.Unit using (tt)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import prop using (⊤; tt; ⊥; LiftS; liftS; _∧_; _,_; proj₁; proj₂)
 open import prop-setoid using (Setoid; IsEquivalence)
@@ -36,6 +37,8 @@ open Fam⟨LatGal⟩.products galois.products
 
 terminal : HasTerminal cat
 terminal = Fam⟨LatGal⟩.terminal galois.terminal
+
+𝟙 = terminal .HasTerminal.witness
 
 ------------------------------------------------------------------------------
 adjoint₁ : ∀ {x y z} → x ≤ y + z → x - y ≤ z
@@ -109,12 +112,11 @@ adjoint₁' {x} {y} {z} ϕ = begin
 -- Intervals, without bottom
 
 record Intv (q : ℚ) : Set where
-  no-eta-equality
   field
     lower : ℚ
     upper : ℚ
-    l≤q   : lower ≤ q
-    q≤u   : q ≤ upper
+    l≤q   : LiftS 0ℓ (lower ≤ q)
+    q≤u   : LiftS 0ℓ (q ≤ upper)
 open Intv
 
 _⊑_ : ∀ {q} → Intv q → Intv q → Prop
@@ -133,17 +135,19 @@ IntvPreorder q .Preorder.≤-isPreorder = ⊑I-isPreorder
 _⊓I_ : ∀ {q} → Intv q → Intv q → Intv q
 (x ⊓I y) .lower = x .lower ⊓ y .lower
 (x ⊓I y) .upper = x .upper ⊔ y .upper
-(x ⊓I y) .l≤q = ≤-trans (p⊓q≤p _ _) (x .l≤q)
-(x ⊓I y) .q≤u = ≤-trans (x .q≤u) (p≤p⊔q _ _)
+(x ⊓I y) .l≤q with x .l≤q
+... | liftS ϕ = liftS (≤-trans (p⊓q≤p _ _) ϕ)
+(x ⊓I y) .q≤u with x .q≤u
+... | liftS ϕ = liftS (≤-trans ϕ (p≤p⊔q _ _))
 
 ⊤I : ∀ {q} → Intv q
 ⊤I {q} .lower = q
 ⊤I {q} .upper = q
-⊤I {q} .l≤q = ≤-refl
-⊤I {q} .q≤u = ≤-refl
+⊤I {q} .l≤q = liftS ≤-refl
+⊤I {q} .q≤u = liftS ≤-refl
 
 ⊤I-isTop : ∀ {q} → IsTop (⊑I-isPreorder {q}) ⊤I
-⊤I-isTop .IsTop.≤-top {x} = liftS (x .l≤q) , liftS (x .q≤u)
+⊤I-isTop .IsTop.≤-top {x} = x .l≤q , x .q≤u
 
 ⊓I-isMeet : ∀ {q} → IsMeet (⊑I-isPreorder {q}) _⊓I_
 ⊓I-isMeet .IsMeet.π₁ = liftS (p⊓q≤p _ _) , liftS (p≤p⊔q _ _)
@@ -160,8 +164,12 @@ meets q .MeetSemilattice.⊤-isTop = ⊤I-isTop
 _⊔I_ : ∀ {q} → Intv q → Intv q → Intv q
 (x ⊔I y) .lower = x .lower ⊔ y .lower
 (x ⊔I y) .upper = x .upper ⊓ y .upper
-(x ⊔I y) .l≤q = ⊔-lub (x .l≤q) (y .l≤q)
-(x ⊔I y) .q≤u = ⊓-glb (x .q≤u) (y .q≤u)
+(x ⊔I y) .l≤q with x .l≤q
+... | liftS ϕ with y .l≤q
+... | liftS ψ = liftS (⊔-lub ϕ ψ)
+(x ⊔I y) .q≤u with (x .q≤u)
+... | liftS ϕ with (y .q≤u)
+... | liftS ψ = liftS (⊓-glb ϕ ψ)
 
 ⊔I-isJoin : ∀ {q} → IsJoin (⊑I-isPreorder {q}) _⊔I_
 ⊔I-isJoin .IsJoin.inl = liftS (p≤p⊔q _ _) , liftS (p⊓q≤p _ _)
@@ -175,18 +183,24 @@ _⊔I_ : ∀ {q} → Intv q → Intv q → Intv q
 add-right : ∀ q₁ q₂ → Intv q₁ → Intv q₂ → Intv (q₁ + q₂)
 add-right q₁ q₂ x y .lower = (q₂ + x .lower) ⊓ (q₁ + y .lower)
 add-right q₁ q₂ x y .upper = (q₂ + x .upper) ⊔ (q₁ + y .upper)
-add-right q₁ q₂ x y .l≤q = ≤-trans (p⊓q≤q (q₂ + x .lower) (q₁ + y .lower)) (+-mono-≤ (≤-refl {q₁}) (y .l≤q))
-add-right q₁ q₂ x y .q≤u = ≤-trans (+-mono-≤ (≤-refl {q₁}) (y .q≤u)) (p≤q⊔p (q₂ + x .upper) _)
+add-right q₁ q₂ x y .l≤q with y .l≤q
+... | liftS ϕ = liftS (≤-trans (p⊓q≤q (q₂ + x .lower) (q₁ + y .lower)) (+-mono-≤ (≤-refl {q₁}) ϕ))
+add-right q₁ q₂ x y .q≤u with (y .q≤u)
+... | liftS ϕ = liftS (≤-trans (+-mono-≤ (≤-refl {q₁}) ϕ) (p≤q⊔p (q₂ + x .upper) _))
 
 add-left : ∀ q₁ q₂ → Intv (q₁ + q₂) → Intv q₁ × Intv q₂
 add-left q₁ q₂ x .proj₁ .lower = x .lower - q₂
 add-left q₁ q₂ x .proj₁ .upper = x .upper - q₂
-add-left q₁ q₂ x .proj₁ .l≤q = adjoint₁ {x .lower} {q₂} {q₁} (≤-trans (x .l≤q) (≤-reflexive (+-comm q₁ q₂)))
-add-left q₁ q₂ x .proj₁ .q≤u = adjoint₂' {q₂} {q₁} {x .upper} (≤-trans (≤-reflexive (+-comm q₂ q₁)) (x .q≤u))
+add-left q₁ q₂ x .proj₁ .l≤q with (x .l≤q)
+... | liftS ϕ = liftS (adjoint₁ {x .lower} {q₂} {q₁} (≤-trans ϕ (≤-reflexive (+-comm q₁ q₂))))
+add-left q₁ q₂ x .proj₁ .q≤u with (x .q≤u)
+... | liftS ϕ = liftS (adjoint₂' {q₂} {q₁} {x .upper} (≤-trans (≤-reflexive (+-comm q₂ q₁)) ϕ))
 add-left q₁ q₂ x .proj₂ .lower = x .lower - q₁
 add-left q₁ q₂ x .proj₂ .upper = x .upper - q₁
-add-left q₁ q₂ x .proj₂ .l≤q = adjoint₁ {x .lower} {q₁} {q₂} (x .l≤q)
-add-left q₁ q₂ x .proj₂ .q≤u = adjoint₂' {q₁} {q₂} {x .upper} (x .q≤u)
+add-left q₁ q₂ x .proj₂ .l≤q with x .l≤q
+... | liftS ϕ = liftS (adjoint₁ {x .lower} {q₁} {q₂} ϕ)
+add-left q₁ q₂ x .proj₂ .q≤u with x .q≤u
+... | liftS ϕ = liftS (adjoint₂' {q₁} {q₂} {x .upper} ϕ)
 
 galois₁ : ∀ q₁ q₂ x y z →
           z ⊑ (add-right q₁ q₂ x y) → (add-left q₁ q₂ z .proj₁ ⊑ x) ∧ (add-left q₁ q₂ z .proj₂ ⊑ y)
@@ -268,8 +282,8 @@ open Setoid
 subst-Intv : ∀ q₁ q₂ → LiftS 0ℓ (q₁ ≡ q₂) → Intv q₁ → Intv q₂
 subst-Intv q₁ q₂ eq x .lower = x .lower
 subst-Intv q₁ q₂ eq x .upper = x .upper
-subst-Intv q₁ q₂ eq x .l≤q = {!!}
-subst-Intv q₁ q₂ eq x .q≤u = {!!}
+subst-Intv q₁ q₂ (liftS ≡-refl) x .l≤q = x .l≤q
+subst-Intv q₁ q₂ (liftS ≡-refl) x .q≤u = x .q≤u
 
 subst-Interval : ∀ q₁ q₂ → LiftS 0ℓ (q₁ ≡ q₂) → Interval q₁ ⇒g Interval q₂
 subst-Interval q₁ q₂ eq ._⇒g_.right ._=>_.fun bottom = bottom
@@ -314,6 +328,19 @@ add .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-ref
 add .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .left-eq .eqfun bottom = (tt , tt) , tt , tt
 add .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .left-eq .eqfun < x > = ((liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl) ,
                                                                                                 (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
+
+zero : 𝟙 C.⇒ ℚ-intv
+zero .idxf .prop-setoid._⇒_.func _ = 0ℚ
+zero .idxf .prop-setoid._⇒_.func-resp-≈ _ = liftS ≡-refl
+zero .famf .transf _ ._⇒g_.right ._=>_.fun _ = < record { lower = 0ℚ ; upper = 0ℚ ; l≤q = liftS ≤-refl ; q≤u = liftS ≤-refl } >
+zero .famf .transf _ ._⇒g_.right ._=>_.mono _ = liftS ≤-refl , liftS ≤-refl
+zero .famf .transf _ ._⇒g_.left ._=>_.fun _ = tt
+zero .famf .transf _ ._⇒g_.left ._=>_.mono _ = tt
+zero .famf .transf _ ._⇒g_.left⊣right {tt} {y} .proj₁ _ = tt
+zero .famf .transf _ ._⇒g_.left⊣right {tt} {bottom} .proj₂ _ = tt
+zero .famf .transf _ ._⇒g_.left⊣right {tt} {< x >} .proj₂ _ = x .l≤q , x .q≤u
+zero .famf .natural e .right-eq .eqfun _ = (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
+zero .famf .natural e .left-eq .eqfun _ = tt , tt
 
 {-
 ------------------------------------------------------------------------------

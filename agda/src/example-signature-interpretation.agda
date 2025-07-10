@@ -72,22 +72,38 @@ predicate {X} f .famf .transf x = predicate-transf X x (f .func x)
 predicate {X} f .famf .natural {x₁}{x₂} x₁≈x₂ =
   predicate-natural X {y₁ = f .func x₁} x₁≈x₂ (f .func-resp-≈ x₁≈x₂)
 
--- Helper for binary functions on simple families
+-- Helpers for binary functions on simple families
+binary2 : ∀ {X Y} → (X × (Y × 𝟙)) C.⇒ (X × Y)
+binary2 = P.pair P.p₁ (P.p₁ C.∘ P.p₂)
+
 binary : ∀ {X G} → (simple[ X , G ] × (simple[ X , G ] × 𝟙)) C.⇒ simple[ X ×ₛ X , G ⊕ G ]
-binary = simple-monoidal C.∘ P.pair P.p₁ (P.p₁ C.∘ P.p₂)
+binary = simple-monoidal C.∘ binary2
 
 open import example-signature
 open import signature
 import nat
 import label
 
-BaseInterp : Model PFPC[ cat , terminal , products , 𝟚 ] Sig
-BaseInterp .Model.⟦sort⟧ number = simple[ nat.ℕₛ , galois.TWO ]
-BaseInterp .Model.⟦sort⟧ label = simple[ label.Label , galois.𝟙 ]
-BaseInterp .Model.⟦sort⟧ approx = simple[ 𝟙ₛ , galois.TWO ]
-BaseInterp .Model.⟦op⟧ zero = simplef[ nat.zero-m , galois.unit ]
-BaseInterp .Model.⟦op⟧ add = simplef[ nat.add , galois.conjunct ] C.∘ binary
-BaseInterp .Model.⟦op⟧ (lbl l) = simplef[ constₛ _ l , galois.idg _ ]
-BaseInterp .Model.⟦rel⟧ equal-label = predicate label.equal-label C.∘ binary
-BaseInterp .Model.⟦op⟧ approx-unit = simplef[ idS _ , galois.unit ]
-BaseInterp .Model.⟦op⟧ approx-mult = simplef[ prop-setoid.to-𝟙 , galois.conjunct ] C.∘ binary
+BaseInterp1 : Model PFPC[ cat , terminal , products , 𝟚 ] Sig
+BaseInterp1 .Model.⟦sort⟧ number = simple[ nat.ℕₛ , galois.TWO ]
+BaseInterp1 .Model.⟦sort⟧ label = simple[ label.Label , galois.𝟙 ]
+BaseInterp1 .Model.⟦sort⟧ approx = simple[ 𝟙ₛ , galois.TWO ]
+BaseInterp1 .Model.⟦op⟧ zero = simplef[ nat.zero-m , galois.unit ]
+BaseInterp1 .Model.⟦op⟧ add = simplef[ nat.add , galois.conjunct ] C.∘ binary
+BaseInterp1 .Model.⟦op⟧ (lbl l) = simplef[ constₛ _ l , galois.idg _ ]
+BaseInterp1 .Model.⟦rel⟧ equal-label = predicate label.equal-label C.∘ binary
+BaseInterp1 .Model.⟦op⟧ approx-unit = simplef[ idS _ , galois.unit ]
+BaseInterp1 .Model.⟦op⟧ approx-mult = simplef[ prop-setoid.to-𝟙 , galois.conjunct ] C.∘ binary
+
+open import approx-numbers using (ℚ-intv; add; zero)
+
+BaseInterp2 : Model PFPC[ cat , terminal , products , 𝟚 ] Sig
+BaseInterp2 .Model.⟦sort⟧ number = ℚ-intv
+BaseInterp2 .Model.⟦sort⟧ label = simple[ label.Label , galois.𝟙 ]
+BaseInterp2 .Model.⟦sort⟧ approx = simple[ 𝟙ₛ , galois.TWO ]
+BaseInterp2 .Model.⟦op⟧ zero = approx-numbers.zero
+BaseInterp2 .Model.⟦op⟧ add = approx-numbers.add C.∘ binary2
+BaseInterp2 .Model.⟦op⟧ (lbl l) = simplef[ constₛ _ l , galois.idg _ ]
+BaseInterp2 .Model.⟦rel⟧ equal-label = predicate label.equal-label C.∘ binary
+BaseInterp2 .Model.⟦op⟧ approx-unit = simplef[ idS _ , galois.unit ]
+BaseInterp2 .Model.⟦op⟧ approx-mult = simplef[ prop-setoid.to-𝟙 , galois.conjunct ] C.∘ binary
