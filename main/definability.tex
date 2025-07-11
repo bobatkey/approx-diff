@@ -53,13 +53,12 @@ supplementary material\footnote{Our Agda development is complete
 
 \begin{theorem}
   \label{thm:language-definability}
-  For all $\Gamma \vdash M : \tau$, where $\Gamma$ and $\tau$ are
-  first-order, there exists a morphism
+  For all $\Gamma \vdash M : \tau$, with $\Gamma, \tau$ first-order,
+  there exists
   $g \in \Fam(\LatGal)(\sem{\Gamma}_{\mathit{fo}},
   \sem{\tau}_{\mathit{fo}})$ such that
   $H(g) = (\cong) \circ \sem{\Gamma \vdash M : \tau} \circ (\cong)$,
-  where the isomorphisms arise from
-  \lemref{first-order-agreement-types}.
+  with the isomorphisms from \lemref{first-order-agreement-types}.
 \end{theorem}
 
 \begin{proof}
@@ -84,12 +83,11 @@ supplementary material\footnote{Our Agda development is complete
 \end{proof}
 
 \begin{remark}
-  Note that even if we modified our base interpretation of semantic
-  \GPS along the lines of \remref{further-structure} to give a refined
-  version $\cat{G}$ of $\Fam(\LatGal)$, as long as there is a finite
-  product and coproduct preserving functor
-  $\cat{G} \to \Fam(\MeetSLat \times \JoinSLat^\op)$, then the
-  analogous result to \thmref{language-definability} still holds.
+  If we modified our base interpretation of semantic \GPS as suggested
+  in \remref{further-structure} to give a refined version $\cat{G}$ of
+  $\Fam(\LatGal)$, then if there is a finite bicartesian functor
+  $\cat{G} \to \Fam(\MeetSLat \times \JoinSLat^\op)$, an analogous
+  result to \thmref{language-definability} still holds.
 \end{remark}
 
 We can also use \thmref{glr-definability} to show that the
