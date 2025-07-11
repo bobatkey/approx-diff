@@ -21,7 +21,7 @@ At a high level, \GPS assumes that, for each possible value that may be input or
 
 \begin{example}
   \label{ex:introduction-example}
-  The following program is written in Haskell \cite{haskell} syntax, using a list comprehension to filter a list of pairs of labels and numbers to those numbers with a given label, and then computing the sum of the numbers:
+  The following program is written in Haskell syntax \cite{haskell}, using a list comprehension to filter a list of pairs of labels and numbers to those numbers with a given label, and then computing the sum of the numbers:
   \begin{displaymath}
     \begin{array}{l}
       \mathrm{query} :: \mathrm{Label} \to [(\mathrm{Label}, \mathrm{Int})] \to \mathrm{Int} \\
@@ -68,7 +68,7 @@ At a high level, \GPS assumes that, for each possible value that may be input or
       \draw (top) -- (bot);
     \end{tikzpicture}
   \end{center}
-  These are not the only choices of approximation lattices that we could have made. For the input, we have chosen a lattice that allows us to ``forget'' (approximate away) numbers in the input, but not any of the other data or the overall structure. However, other choices are also useful. Indeed, one of the aims of this work is to clarify how to choose an approximation structure appropriate for different tasks by use of type information. We elaborate on this further in \secref{models-of-total-gps}.
+  These are not the only choices of approximation lattices that we could have made. For the input, we have chosen a lattice that allows us to ``forget'' (approximate away) numbers in the input, but not the labels or the structure of the list itself. However, other choices are also useful. Indeed, one of the aims of this work is to clarify how to choose an approximation structure appropriate for different tasks by use of type information. We elaborate on this further in \secref{semantic-gps}.
 
   \GPS associates with each run of the program a Galois connection telling us how the inputs and outputs are related in that run. The backwards portion $\partial (\mathit{query}\,l)_r$ tells us, given an approximation of the output, what the least approximation of the input is needed to generate that output. In the case of the two runs considered in this example, if we say we are not interested in the output by feeding in the least approximation $\bot$, then we find that we only need the least approximation of the input:
   \begin{displaymath}
