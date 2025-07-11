@@ -103,10 +103,10 @@ not interfere.
 \begin{theorem}
   \label{thm:underlying-interp-equal} For all
   $\Gamma \vdash M : \tau$, where $\Gamma$ and $\tau$ are first-order,
-  the interpretation $\sem{\Gamma \vdash M : \tau}_{\Set}$ in $\Set$
-  and the interpretation
+  the underlying function in the interpretation
   $\sem{\Gamma \vdash M : \tau}_{\Fam(\MeetSLat \times
-    \JoinSLat^\op)}$ agree on their first components.
+    \JoinSLat^\op)}$ is equal to the interpretation
+  $\sem{\Gamma \vdash M : \tau}_{\Set}$ in $\Set$.
 \end{theorem}
 
 \begin{proof}
@@ -118,7 +118,6 @@ not interfere.
   $\Gamma \vdash M : \tau$, we obtain a $g$ such that
   $g = \sem{\Gamma \vdash M : \tau}_{\Fam(\MeetSLat \times
     \JoinSLat^\op)}$ and
-  $\pi_1(g) = \sem{\Gamma \vdash M : \tau}_\Set$. % Therefore,
-%  $\pi_1(\sem{\Gamma \vdash M : \tau}_{\Fam(\MeetSLat \times
-%    \JoinSLat^\op)}) = \sem{\Gamma \vdash M : \tau}_\Set$.
+  $\pi_1(g) = \sem{\Gamma \vdash M : \tau}_\Set$. Substituting $g$
+  yields the result.
 \end{proof}
