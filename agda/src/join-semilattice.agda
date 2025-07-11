@@ -439,27 +439,30 @@ module _ where
   open _≃m_
   open preorder._≃m_
 
+  -- The original preorder needn't have a bottom
+  L₀ : ∀ {A _∨_} → IsJoin (A .≤-isPreorder) _∨_ → JoinSemilattice (preorder.L A)
+  L₀ ∨-isJoin ._∨_ bottom bottom = bottom
+  L₀ ∨-isJoin ._∨_ < x > bottom = < x >
+  L₀ ∨-isJoin ._∨_ bottom < y > = < y >
+  L₀ {A} {_∨_} ∨-isJoin ._∨_ < x >  < y > = < x ∨ y >
+  L₀ ∨-isJoin .⊥ = bottom
+  L₀ ∨-isJoin .∨-isJoin .IsJoin.inl {bottom} {bottom} = tt
+  L₀ ∨-isJoin .∨-isJoin .IsJoin.inl {bottom} {< x >}  = tt
+  L₀ {A} ∨-isJoin .∨-isJoin .IsJoin.inl {< x >}  {bottom} = A .≤-refl
+  L₀ ∨-isJoin .∨-isJoin .IsJoin.inl {< x >}  {< y >}  = ∨-isJoin .IsJoin.inl
+  L₀ ∨-isJoin .∨-isJoin .IsJoin.inr {bottom} {bottom} = tt
+  L₀ {A} ∨-isJoin .∨-isJoin .IsJoin.inr {bottom} {< x >}  = A. ≤-refl
+  L₀ ∨-isJoin .∨-isJoin .IsJoin.inr {< x >}  {bottom} = tt
+  L₀ ∨-isJoin .∨-isJoin .IsJoin.inr {< x >}  {< y >}  = ∨-isJoin .IsJoin.inr
+  L₀ ∨-isJoin .∨-isJoin .IsJoin.[_,_] {bottom}{bottom}{bottom} m₁ m₂ = tt
+  L₀ ∨-isJoin .∨-isJoin .IsJoin.[_,_] {bottom}{bottom}{< z >}  m₁ m₂ = tt
+  L₀ ∨-isJoin .∨-isJoin .IsJoin.[_,_] {bottom}{< y >} {z}      m₁ m₂ = m₂
+  L₀ ∨-isJoin .∨-isJoin .IsJoin.[_,_] {< x >} {bottom}{z}      m₁ m₂ = m₁
+  L₀ ∨-isJoin .∨-isJoin .IsJoin.[_,_] {< x >} {< y >} {< z >}  m₁ m₂ = ∨-isJoin .IsJoin.[_,_] m₁ m₂
+  L₀ ∨-isJoin .⊥-isBottom .IsBottom.≤-bottom = tt
+
   L : ∀ {A} → JoinSemilattice A → JoinSemilattice (preorder.L A)
-  L X ._∨_ bottom bottom = bottom
-  L X ._∨_ < x >  bottom = < x >
-  L X ._∨_ bottom < y >  = < y >
-  L X ._∨_ < x >  < y >  = < X ._∨_ x y >
-  L X .⊥ = bottom
-  L X .∨-isJoin .IsJoin.inl {bottom} {bottom} = tt
-  L X .∨-isJoin .IsJoin.inl {bottom} {< x >}  = tt
-  L {A} X .∨-isJoin .IsJoin.inl {< x >}  {bottom} = A .≤-refl
-  L X .∨-isJoin .IsJoin.inl {< x >}  {< y >}  = X .∨-isJoin .IsJoin.inl
-  L X .∨-isJoin .IsJoin.inr {bottom} {bottom} = tt
-  L {A} X .∨-isJoin .IsJoin.inr {bottom} {< x >}  = A. ≤-refl
-  L X .∨-isJoin .IsJoin.inr {< x >}  {bottom} = tt
-  L X .∨-isJoin .IsJoin.inr {< x >}  {< y >}  = X .∨-isJoin .IsJoin.inr
-  L X .∨-isJoin .IsJoin.[_,_] {bottom}{bottom}{bottom} m₁ m₂ = tt
-  L X .∨-isJoin .IsJoin.[_,_] {bottom}{bottom}{< z >}  m₁ m₂ = tt
-  L X .∨-isJoin .IsJoin.[_,_] {bottom}{< y >} {z}      m₁ m₂ = m₂
-  L X .∨-isJoin .IsJoin.[_,_] {< x >} {bottom}{z}      m₁ m₂ = m₁
-  L X .∨-isJoin .IsJoin.[_,_] {< x >} {< y >} {< z >}  m₁ m₂ = X .∨-isJoin .IsJoin.[_,_] m₁ m₂
-  L X .⊥-isBottom .IsBottom.≤-bottom {bottom} = tt
-  L X .⊥-isBottom .IsBottom.≤-bottom {< x >} = tt
+  L X = L₀ (X .∨-isJoin)
 
   L-map : ∀ {A B}{X : JoinSemilattice A}{Y : JoinSemilattice B} → X => Y → L X => L Y
   L-map m .func .fun bottom = bottom
@@ -538,6 +541,7 @@ module _ where
     A .≤-refl , B .≤-refl
   L-costrength {A} .⊥-preserving = A .≤-refl , tt
 
+{-
   L-coassoc : ∀ {A}{X : JoinSemilattice A} → (L-map L-dup ∘ L-dup) ≃m (L-dup ∘ L-dup {X = X})
   L-coassoc .eqfunc .eqfun bottom .proj₁ = tt
   L-coassoc .eqfunc .eqfun bottom .proj₂ = tt
@@ -552,3 +556,4 @@ module _ where
   L-unit2 .eqfunc .eqfun bottom .proj₁ = tt
   L-unit2 .eqfunc .eqfun bottom .proj₂ = tt
   L-unit2 {A} .eqfunc .eqfun < x > = A .≃-refl
+-}
