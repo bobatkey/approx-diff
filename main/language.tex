@@ -91,20 +91,37 @@ $\Sigma_{\mathsf{num}} = (\{\mathsf{num}\}, \{\mathrm{zero} : \tyUnit \to \maths
 function in \exref{introduction-example}, where we interpret the $\mathrm{Label}$ type as the sum
 $\tyUnit \tySum \tyUnit$ and the labels $\mathsf{a}$ and $\mathsf{b}$ as $\tmInl{\tmUnit}$ and
 $\tmInr{\tmUnit}$. We consider several interpretations of $\Sigma_{\mathsf{num}}$ in $\Fam(\LatGal)$ and their
-behaviour on the selection-and-sum query from \exref{introduction-example}.
+behaviour on the selection-and-sum query from \exref{introduction-example}. First, we note the type of the
+reverse approximation map in this case. The type of the approximation maps depends on the input value. Our example input database was $\mathit{db} = [(\mathsf{a}, 0), (\mathsf{b}, 1), (\mathsf{a}, 1)]$, meaning that the type of the reverse approximation map for this database and any label $l$ is:
+\begin{displaymath}
+  \begin{array}{l}
+    (\partial \mathrm{query})_r(l, \mathit{db}) : \\
+    \quad \partial\sem{\mathsf{num}}(\mathrm{query}\,(l,\mathit{db})) \multimap \mathbb{1} \times (\mathbb{1} \times \partial\sem{\mathsf{num}}(0)) \times (\mathbb{1} \times \partial\sem{\mathsf{num}}(1)) \times (\mathbb{1} \times \partial\sem{\mathsf{num}}(1)) \times \mathbb{1}
+  \end{array}
+\end{displaymath}
+in the category $\JoinSLat$, where $\partial\sem{\mathsf{num}}(x)$ is the lattice of approximations of the
+number $x$ determined by our interpretation. In the codomain, the first four $\mathbb{1}$s correspond to the
+positions of labels in the input, which we are not approximating, and the final $\mathbb{1}$ is the terminator
+of the list. Note how, even if the $\partial\sem{\mathsf{num}}(x)$ does not depend on $x$ the type of the
+output is still dependent on the shape of the input list: type dependency is used in a fundamental way in our
+interpretation.
+
 \begin{enumerate}
 \item If we take $\sem{\mathsf{num}}_{\PrimTy} = \Disc(\mathbb{R})$, with $\sem{\mathrm{zero}}_{\PrimOp}$ and
   $\sem{\mathrm{add}}_{\PrimOp}$ the embeddings of the usual zero and addition functions via $\Disc$, then the
-  resulting interpretation contains no approximation information. The approximation lattices for all types are
-  always the trivial one-point lattice, and the forward and reverse approximation maps are necessarily the
-  identity.
-\item To get interesting approximation information, we take
-  $\sem{\mathsf{num}}_{\PrimTy} = \Lift(\Disc(\mathbb{R}))$, using the lifting monad from
+  resulting interpretation contains no approximation information. We have
+  $\partial\sem{\mathsf{num}}(x) = \mathbb{1}$ so the type of $(\partial \mathrm{query})_r$ is trivial.
+\item We take $\sem{\mathsf{num}}_{\PrimTy} = \Lift(\Disc(\mathbb{R}))$, using the lifting monad from
   \secref{models-of-total-gps:lifting}, with $\sem{\mathrm{zero}}_{\PrimOp}$ and
-  $\sem{\mathrm{add}}_{\PrimOp}$ defined from the unlifted interpretations above and the monad structure. This
-  interpretation recovers the behaviour given in \exref{introduction-example}: running the reverse
-  approximation map at the input $\mathsf{a}$ with the top approximation maps indeed reveals that only the
-  numbers in the rows tagged with that label in the input are used, and likewise for $\mathsf{b}$.
+  $\sem{\mathrm{add}}_{\PrimOp}$ defined from the unlifted interpretations above and the monad structure. The
+  type of the reverse map now becomes:
+  \begin{displaymath}
+    (\partial \mathrm{query})_r(l, \mathit{db}) : \{\top,\bot\} \multimap \mathbb{1} \times (\mathbb{1} \times \{\top,\bot\}) \times (\mathbb{1} \times \{\top,\bot\}) \times (\mathbb{1} \times \{\top,\bot\}) \times \mathbb{1}
+  \end{displaymath}
+  where every position that corresponds to a number has been tagged with $\top$ for ``present'' and $\bot$ for
+  ``not present''. This interpretation recovers the behaviour given in \exref{introduction-example}: running
+  the reverse approximation map at the input $\mathsf{a}$ with the top approximation maps indeed reveals that
+  only the numbers in the rows tagged with that label in the input are used, and likewise for $\mathsf{b}$.
 \item More quantitative approximation information can be obtained by using the interval approximation
   interpretation from \exref{intervals-and-maxima-elements} and \secref{interval-approx}. We let
   $\sem{\mathsf{num}}_{\PrimTy} = \mathbb{R}_{\mathit{intv}}$ and interpret addition using the morphism given
@@ -115,11 +132,11 @@ behaviour on the selection-and-sum query from \exref{introduction-example}.
   this output as \emph{independent} changes to the input. For example, if we pick
   $[\frac{9}{10},\frac{11}{10}]$ as the interval, then:
   \begin{displaymath}
-    (\partial\mathrm{query}\,\mathsf{a}\,\mathsf{db})_r([\frac{9}{10},\frac{11}{10}]) = [(\cdot,[-\frac{1}{10},\frac{1}{10}]),(\cdot,\bot),(\cdot,[\frac{9}{10},\frac{11}{10}])]
+    (\partial\mathrm{query})_r(\mathsf{a},\mathsf{db})([\frac{9}{10},\frac{11}{10}]) = \cdot, (\cdot,[-\frac{1}{10},\frac{1}{10}]),(\cdot,\bot),(\cdot,[\frac{9}{10},\frac{11}{10}]), \cdot
   \end{displaymath}
   Indicating that, to achieve an output within $[\frac{9}{10},\frac{11}{10}]$ for this query, either the first
   $\mathsf{a}$ row could be in $[-\frac{1}{10},\frac{1}{10}]$ or the second one could be in
-  $[\frac{9}{10},\frac{11}{10}]$.
+  $[\frac{9}{10},\frac{11}{10}]$, and it does not matter what the number in the second entry was.
 \end{enumerate}
 
 We have tested these examples on our fully formalised Agda implementation. See the file \texttt{example.agda}
@@ -135,4 +152,25 @@ language constructs we already have. This requires that we have a signature $\Si
 primitive type to be interpreted as the approximation object $\mathbb{A}$ and primitive operations to be
 interpreted as the monoid operations on this object.
 
-TODO: describe the syntactic CBN translation; show an example on the query example.
+The monadic CBN translation is standard, and entirely determined by the translation on types, so we only
+define the type translation $\cbn{-}$ here:
+\begin{mathpar}
+  \cbn{\rho} = \rho
+
+  \cbn{\sigma \tySum \tau} = T(\cbn{\sigma}) \tySum T(\cbn{\tau})
+
+  \cbn{\tyUnit} = \tyUnit
+
+  \cbn{\sigma \tyProd \tau} = T(\cbn{\sigma}) \tyProd T(\cbn{\tau})
+
+  \cbn{\sigma \tyFun \tau} = T(\cbn{\sigma}) \tyFun T(\cbn{\tau})
+
+  \cbn{\tyList\;\tau} = \tyList\,(T(\cbn{\tau}))
+\end{mathpar}
+Thus, the CBN translation on types inserts a use of the monad $T(X) = \mathbb{A} \times X$ at the point ``just
+underneath'' every type former. In this case, we are describing the type of data annotated at every
+level. Note that our lists here are still ``strict'', an alternative approach would be to consider ``lazy''
+lists that wrap the tail of every node in a $T$ as well.
+
+We illustrate the effect of the CBN translation on the query example from
+\exref{introduction-example}. Applying $\cbn{-}$ to the type of the database
