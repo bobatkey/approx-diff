@@ -55,17 +55,12 @@
   \sem{\tmFun{x}{t}} &= \lambda(\sem{t})
   \\
   \sem{\tmApp{s}{t}} &= \eval \comp \prodM{\sem{s}}{\sem{t}}
-%  \\
-%  \sem{\tmRoll{t}} &= \inMap_{\sem{\sigma}} \comp \sem{t}
-%  \textit{ where }\tau = \mu\alpha.\sigma
   \\
   \sem{\tmNil} &= \nil \comp {!_{\sem{\Gamma}}}
   \\
   \sem{\tmCons{s}{t}} &= \cons \comp \prodM{\sem{s}}{\sem{t}}
   \\
   \sem{\tmFoldList{t_1}{t_2}{s}} &= \fold(\sem{t_1},\sem{t_2}) \comp \prodM{\id}{\sem{s}}
-%  \\
-%  \sem{\tmFold{s}{t}} &= \eval \comp \prodM{\phi \comp \sem{s}}{\sem{t}}
   % \\
   % \sem{\tmReturn{t}} &= \eta_{\sem{\sigma}} \comp \sem{t}
   % \tag*{($\Gamma \vdash t: \sigma$)}
@@ -76,5 +71,5 @@
   \caption{Terms as morphisms}
   \label{fig:semantics:terms}
 \end{subfigure}
-\caption{Interpretation of types, contexts and terms in category $\Sem$}
+\caption{Interpretation of types, contexts and terms} % in category $\Sem$
 \end{figure}
