@@ -1,8 +1,26 @@
 \section{Correctness of the Higher-Order Interpretation}
 \label{sec:definability}
 
-Introduction: what correctness properties we want; why we can't
-compute the left adjoints from the forward maps (no completeness).
+As we noted at the end of \secref{language:gps-interpretation}, our
+interpretation of the higher-order language is in the category
+$\Fam(\MeetSLat \times \JoinSLat^\op)$, so it is not a priori evident
+that we get a Galois connection from the interpretation of a program
+with first-order type (that may use higher-order functions
+internally). \citet{vakar22} and \citet{nunes2023} construct custom
+instances of categorical sconing arguments to prove correctness of
+their higher-order interpretation with respect to normal
+differentiation. Instead of doing this, we make use of a general
+\emph{syntax free} theorem due to \citet{fiore-simpson99}. The proof
+of this depends on the construction of a Grothendieck Logical Relation
+over the extensive topology on the category $\cat{C}$, but the
+statement of the theorem does not rely on this. We have formalised
+this proof in Agda (see \texttt{conservativity.agda} in the
+supplementary material\footnote{Our Agda development is complete
+  except for a proof that $\Fam(C)$ has extensive coproducts. We plan
+  to complete this part of the proof before any final
+  version. Moreover, this result does not yet apply to infinitary
+  coproducts, though we believe it is a relatively minor extension to
+  the proof to do so.}).
 
 \begin{theorem}[\citet{fiore-simpson99}]
   \label{thm:glr-definability}
@@ -19,39 +37,88 @@ compute the left adjoints from the forward maps (no completeness).
   \end{enumerate}
 \end{theorem}
 
+\begin{remark}
+  Compared to the exact result stated at the end of
+  \citet{fiore-simpson99}'s paper, we have made two modifications,
+  justified by our Agda proof. First, we generalise to the case where
+  $\cat{C}$ is not cartesian closed, and the functor $F$ does not
+  preserve exponentials. Examination of the proof reveals that if this
+  is the case, then $\hat{F}$ also preserves exponentials, but it is
+  not needed for the result stated. Second, Fiore and Simpson restrict
+  to the case when $\cat{C}$ is small to be able to construct
+  Grothendieck sheaves on this category. We use Agda's universe
+  hierarchy to simply construct ``large'' sheaves at the the
+  appropriate universe level.
+\end{remark}
+
 \begin{theorem}
   \label{thm:language-definability}
   For all $\Gamma \vdash M : \tau$, where $\Gamma$ and $\tau$ are
   first-order, there exists a morphism
   $g \in \Fam(\LatGal)(\sem{\Gamma}_{\mathit{fo}},
   \sem{\tau}_{\mathit{fo}})$ such that
-  $\sem{\Gamma \vdash M : \tau} = \HoEmbed(g)$.
+  $H(g) = (\cong) \circ \sem{\Gamma \vdash M : \tau} \circ (\cong)$,
+  where the isomorphisms arise from
+  \lemref{first-order-agreement-types}.
 \end{theorem}
-
-\begin{remark}
-  We have formalised \thmref{glr-definability} and
-  \thmref{language-definability} in Agda, except for the fact that
-  $\Fam(C)$ is extensive\footnote{For reviewers: we intend to fix this
-    before any final version.}. Our formalisation uses E-categories
-  \cite{palmgren-wilander} so we cannot state
-  \thmref{glr-definability} as given because the concept of strict
-  preservation does not make sense. Therefore, the formalised version
-  of \thmref{language-definability} is ``up to isomorphism''.
-
-  We believe that this result also extends to the list type, since it
-  is constructed from an infinite coproduct, but have not yet checked
-  all the details.
-\end{remark}
 
 \begin{proof}
   Instantiate \thmref{glr-definability} with
-  $F : \Fam(\LatGal) \to \Fam(\MeetSLat \times \JoinSLat^\op)$. By
-  \propref{ho-embedding} we know that $F$ preserves finite products and
-  coproducts. $\Fam(\LatGal)$ has extensive coproducts because it is
-  the free coproduct completion. Thus we get the category $\GLR(F)$ in
-  which we can interpret the calculus with the property that this
+  $\HoEmbed : \Fam(\LatGal) \to \Fam(\MeetSLat \times
+  \JoinSLat^\op)$. By \propref{ho-embedding} we know that $F$
+  preserves finite products and coproducts. The fullness of
+  $\hat{\HoEmbed}$ means that for any morphism
+  $f : \hat{\HoEmbed}(\sem{\Gamma}_{\mathit{fo}}) \to
+  \hat{H}(\sem{\tau}_{\mathit{fo}})$ in $\GLR(\HoEmbed)$ there exists
+  a $g : \sem{\Gamma}_{\mathit{fo}} \to \sem{\tau}_{\mathit{fo}}$ in
+  $\Fam(\LatGal)$ such that $H(g) = f$. Since $\GLR(\HoEmbed)$ has
+  enough structure, we can interpret the term $M$ in it to get a
+  morphism
+  $\sem{\Gamma \vdash M : \tau}_{\GLR(\HoEmbed)} : \sem{\Gamma} \to
+  \sem{\tau}$ in $\GLR(\HoEmbed)$. Applying
+  \lemref{first-order-agreement-types} and the fact that the
+  strictness of $p$ means that
+  $p(\sem{\Gamma \vdash M : \tau}_{\GLR(\HoEmbed)}) = \sem{\Gamma
+    \vdash M : \tau}_{\Fam(\MeetSLat \times \JoinSLat^\op)}$ yields
+  the result.
 \end{proof}
 
-FIXME: another property we might want: The interpretations in
-$\Fam(\MeetSLat)$ and $\Fam(\MeetSLat \times \JoinSLat^\op)$ agree at
-first order.
+\begin{remark}
+  Note that even if we modified our base interpretation of semantic
+  \GPS along the lines of \remref{further-structure} to give a refined
+  version $\cat{G}$ of $\Fam(\LatGal)$, as long as there is a finite
+  product and coproduct preserving functor
+  $\cat{G} \to \Fam(\MeetSLat \times \JoinSLat^\op)$, then the
+  analogous result to \thmref{language-definability} still holds.
+\end{remark}
+
+We can also use \thmref{glr-definability} to show that the
+interpretation of the language in the category $\Set$ agrees with the
+higher-order interpretation in $\Fam(\MeetSLat \times \JoinSLat^\op)$
+on the underlying function at first order. This shows that the
+higher-order interpretation does what we expect in the underlying
+interpretation of terms, and that the approximation information does
+not interfere.
+
+\begin{theorem}
+  \label{thm:underlying-interp-equal} For all
+  $\Gamma \vdash M : \tau$, where $\Gamma$ and $\tau$ are first-order,
+  the interpretation $\sem{\Gamma \vdash M : \tau}_{\Set}$ in $\Set$
+  and the interpretation
+  $\sem{\Gamma \vdash M : \tau}_{\Fam(\MeetSLat \times
+    \JoinSLat^\op)}$ agree on their first components.
+\end{theorem}
+
+\begin{proof}
+  Instantiate \thmref{glr-definability} with the functor
+  $\langle \mathrm{Id} , \pi_1 \rangle : \Fam(\MeetSLat \times
+  \JoinSLat^\op) \to \Fam(\MeetSLat \times \JoinSLat^\op) \times \Set$
+  that is the identity in the first component and projects out the
+  underlying function in the second. We get, for each
+  $\Gamma \vdash M : \tau$, a $g$ such that
+  $g = \sem{\Gamma \vdash M : \tau}_{\Fam(\MeetSLat \times
+    \JoinSLat^\op)}$ and
+  $\pi_1(g) = \sem{\Gamma \vdash M : \tau}_\Set$. Therefore,
+  $\pi_1(\sem{\Gamma \vdash M : \tau}_{\Fam(\MeetSLat \times
+    \JoinSLat^\op)}) = \sem{\Gamma \vdash M : \tau}_\Set$.
+\end{proof}

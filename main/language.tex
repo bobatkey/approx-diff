@@ -56,6 +56,7 @@ preserving functors:
 \end{lemma}
 
 \subsubsection{Interpretation for Higher-Order \GPS}
+\label{sec:language:gps-interpretation}
 
 Given the above, we can now interpret the language in any of the bicartesian closed categories with list
 objects we constructed in \secref{models-of-total-gps}. Specifically, we assume that we have an interpretation
@@ -90,7 +91,7 @@ $\Sigma_{\mathsf{num}} = (\{\mathsf{num}\}, \{\mathrm{zero} : \tyUnit \to \maths
 function in \exref{introduction-example}, where we interpret the $\mathrm{Label}$ type as the sum
 $\tyUnit \tySum \tyUnit$ and the labels $\mathsf{a}$ and $\mathsf{b}$ as $\tmInl{\tmUnit}$ and
 $\tmInr{\tmUnit}$. We consider several interpretations of $\Sigma_{\mathsf{num}}$ in $\Fam(\LatGal)$ and their
-behaviour on the query from \exref{introduction-example}.
+behaviour on the selection-and-sum query from \exref{introduction-example}.
 \begin{enumerate}
 \item If we take $\sem{\mathsf{num}}_{\PrimTy} = \Disc(\mathbb{R})$, with $\sem{\mathrm{zero}}_{\PrimOp}$ and
   $\sem{\mathrm{add}}_{\PrimOp}$ the embeddings of the usual zero and addition functions via $\Disc$, then the
@@ -120,6 +121,9 @@ behaviour on the query from \exref{introduction-example}.
   $\mathsf{a}$ row could be in $[-\frac{1}{10},\frac{1}{10}]$ or the second one could be in
   $[\frac{9}{10},\frac{11}{10}]$.
 \end{enumerate}
+
+We have tested these examples on our fully formalised Agda implementation. See the file \texttt{example.agda}
+in the supplementary material for details.
 
 \subsection{Systematic Insertion of Approximation via Moggi's CBN translation}
 \label{sec:cbn-translation}
