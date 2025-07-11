@@ -2,7 +2,7 @@
 
 module everything where
 
--- Examples from from section 1.1 of paper
+-- Examples from from section 1.1 and section 4.3 of paper
 import example
 
 -- Proof from section 1.1 that CM (category of bounded meet semilattices and conditionally multiplicative
