@@ -6,7 +6,7 @@ To audit any computational process, we need robust and well-founded notions of \
 Existing approaches to program slicing are often tied to particular programming languages or implementations.
 In this paper we develop a general categorical approach to program slicing, focusing on a particular technique
 called \GPS, where the set of slices of a given value form a lattice of approximations and the forward and
-backward slicing procedures generate Galois connections between these lattices. Our main insight is that this
+backward slicing procedures generate Galois connections between these lattices. Our main contribution is that this
 approach can be seen as a generalised form of differentiable programming, with slices of elements playing the
 role of tangents. Our categorical approach should provide a suitable setting for exploring data provenance for
 a variety of programming languages, and is easily configured to use alternative approximation strategies,
@@ -103,15 +103,22 @@ Given this close connection between \GPS and differentiable programming, we can 
 
 \subsection{Outline and Contributions}
 
-Our primary contribution in this article is to elucidate \GPS by relating it to differentiable programming and automatic differentiation. In doing so, we aim to expand the applicability of program slicing, and to potentially transfer efficient automatic differentiation implementation techniques from automatic differentiation to program slicing and provenance tracking.
+%Our primary contribution in this article is to elucidate \GPS by relating it to differentiable programming and automatic differentiation. In doing so, we aim to expand the applicability of program slicing, and to potentially transfer efficient automatic differentiation implementation techniques from automatic differentiation to program slicing and provenance tracking.
 
-\todo{Rewrite this to match the actual contents}
+\GPS, as any program slicing technique, essentially rests on an analysis of how programs intensionally explore their input, in addition to their extensional behaviour. Such analysis has been carried out over many years in Domain Theory. In \secref{approx-as-tangents}, we use ideas from \citet{berry79}'s \emph{stable domain theory} and develop an analogy between stable functions and smooth functions from mathematical analysis, where stable functions provide a kind of semantic provenance analysis. In \secref{models-of-total-gps}, we abstract from stable functions using V{\'a}k{\'a}r \etal{}'s CHAD framework \cite{vakar22,nunes2023} to build models of a higher-order language that automatically compute slices. We apply this to a concrete higher-order language in \secref{language} and demonstrate the use of the model on variations of \exref{introduction-example}, highlighting the flexibility of our approach. In particular, we show how type structure can be used to control the approximation lattices associated with data points, something that was ``hard coded'' in previous presentations of \GPS. We prove two correctness properties in \secref{definability}, relating the higher-order interpretations to first-order ones, proving the crucial Galois connection property. \secref{related-work} and \secref{conclusion} discuss additional related and future work.
 
-\begin{enumerate}[leftmargin=\enummargin]
-\item We explain how the CHAD framework of Vákár et al. can be adapted to give a general categorical framework for \GPS.
-\item Using our adapted CHAD framework, we can explain how type structure can be used to control the approximation lattices associated with data points, something that was ``hard coded'' in previous presentations of \GPS.
-\item With the benefit of our abstract setting, we can relate \GPS to other parts of denotational semantics. In particular, we show that there is a close connection with Stable Domain Theory, a proposed solution to capturing sequentiality by recording more intensional information about programs' sensitivity to approximations.
-% \item We also relate \GPS to categorical treatments of differentiability via Tangent Categories \note{Bob: not sure about this.}
-\end{enumerate}
+% \begin{enumerate}[leftmargin=\enummargin]
+% \item We explain how the CHAD framework of Vákár et al. can be adapted to give a general categorical framework for \GPS.
+% \item Using our adapted CHAD framework, we can explain how type structure can be used to control the approximation lattices associated with data points, something that was ``hard coded'' in previous presentations of \GPS.
+% \item With the benefit of our abstract setting, we can relate \GPS to other parts of denotational semantics. In particular, we show that there is a close connection with Stable Domain Theory, a proposed solution to capturing sequentiality by recording more intensional information about programs' sensitivity to approximations.
+% \end{enumerate}
 
-We have \anonymise{\href{https://github.com/bobatkey/approx-diff}{formalised this work in Agda}}{formalised this work in Agda}. Not only does this mean that the constructions and proofs have been checked, but also the construction is executable and can be run on small examples. We are also planning to use Agda's JavaScript backend to produce a demo.
+We have formalised our major results in Agda, resulting in an executable implementation built directly from the categorical constructions that we have used to compute the examples in \secref{language:examples}. Please consult the file \texttt{everything.agda} in the supplementary material.
+
+
+% \begin{enumerate}
+% \item We explain how the CHAD framework of Vákár et al. can be adapted to give a general categorical framework for \GPS.
+% \item Using our adapted CHAD framework, we can explain how type structure can be used to control the approximation lattices associated with data points, something that was ``hard coded'' in previous presentations of \GPS.
+% \item With the benefit of our abstract setting, we can relate \GPS to other parts of denotational semantics. In particular, we show that there is a close connection with Stable Domain Theory, a proposed solution to capturing sequentiality by recording more intensional information about programs' sensitivity to approximations.
+
+% We have \anonymise{\href{https://github.com/bobatkey/approx-diff}{formalised this work in Agda}}{formalised this work in Agda}. Not only does this mean that the constructions and proofs have been checked, but also the construction is executable and can be run on small examples. We are also planning to use Agda's JavaScript backend to produce a demo.
