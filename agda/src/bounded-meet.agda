@@ -4,9 +4,10 @@ open import Level using (suc; 0ℓ)
 
 module bounded-meet where
 
-open import prop using (proj₁; proj₂; _∧_; _,_; LiftS; liftS; ⊥)
+open import prop using (proj₁; proj₂; _∧_; _,_; LiftS; liftS; ⊥; tt)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import basics using (IsPreorder)
+open import preorder using (LCarrier; _≤L_; ≤L-isPreorder; bottom; <_>)
 open import prop-setoid using (IsEquivalence)
 open import categories using (Category; HasProducts; HasExponentials; HasCoproducts)
 
@@ -36,6 +37,7 @@ module _ {A : Set} {_≤_ : A → A → Prop} (≤-isPreorder : IsPreorder _≤_
     field
       meet    : A
       is-meet : IsMeetOf x y meet
+    open IsMeetOf is-meet public
 
 -- FIXME: might make sense to rephrase as preservation of “pullbacks”.
 
@@ -436,3 +438,104 @@ exponentials .HasExponentials.eval-lambda {X}{Y}{Z} f .eqfun (x , y) =
   Z .BoundedMeet.≃-refl
 exponentials .HasExponentials.lambda-ext {X}{Y}{Z} f .eqfun x =
   ≃st-ext (record { eqfun = λ y → Z .BoundedMeet.≃-refl })
+
+------------------------------------------------------------------------------
+{-
+open import functor using (Functor)
+open import setoid-cat using (SetoidCat)
+
+Flat : Functor (SetoidCat 0ℓ 0ℓ) cat
+Flat = {!!}
+
+Approx : Functor cat (SetoidCat 0ℓ 0ℓ)
+Approx = {!!}
+-}
+
+------------------------------------------------------------------------------
+-- Lifting monad
+
+Lift : BoundedMeet → BoundedMeet
+Lift X .Carrier = LCarrier (X .Carrier)
+Lift X ._≤_ = _≤L_ (X .≤-isPreorder)
+Lift X .≤-isPreorder = ≤L-isPreorder (X .≤-isPreorder)
+Lift X .bounded-∧ {bottom} {y} _ _ .meet = bottom
+Lift X .bounded-∧ {bottom} {y} _ _ .is-meet .lower₁ = tt
+Lift X .bounded-∧ {bottom} {y} _ _ .is-meet .lower₂ = tt
+Lift X .bounded-∧ {bottom} {y} _ _ .is-meet .greatest {bottom} tt tt = tt
+Lift X .bounded-∧ {< x >} {bottom} _ _ .meet = bottom
+Lift X .bounded-∧ {< x >} {bottom} _ _ .is-meet .lower₁ = tt
+Lift X .bounded-∧ {< x >} {bottom} _ _ .is-meet .lower₂ = tt
+Lift X .bounded-∧ {< x >} {bottom} _ _ .is-meet .greatest {bottom} tt tt = tt
+Lift X .bounded-∧ {< x₁ >} {< x₂ >} {< x >} x₁≤x x₂≤x .meet = < X .bounded-∧ x₁≤x x₂≤x .meet >
+Lift X .bounded-∧ {< x₁ >} {< x₂ >} {< x >} x₁≤x x₂≤x .is-meet .lower₁ = X .bounded-∧ _ _ .lower₁
+Lift X .bounded-∧ {< x₁ >} {< x₂ >} {< x >} x₁≤x x₂≤x .is-meet .lower₂ = X .bounded-∧ _ _ .lower₂
+Lift X .bounded-∧ {< x₁ >} {< x₂ >} {< x >} x₁≤x x₂≤x .is-meet .greatest {bottom} tt tt = tt
+Lift X .bounded-∧ {< x₁ >} {< x₂ >} {< x >} x₁≤x x₂≤x .is-meet .greatest {< z >} = X .bounded-∧ _ _ .greatest
+
+Lift-unit : ∀ {X} → X => Lift X
+Lift-unit .fun = <_>
+Lift-unit .mono x₁≤x₂ = x₁≤x₂
+Lift-unit .cm {x₁} {x₂} {x} {x₁∧x₂} x₁≤x x₂≤x x₁∧x₂-ismeet .lower₁ = x₁∧x₂-ismeet .lower₁
+Lift-unit .cm {x₁} {x₂} {x} {x₁∧x₂} x₁≤x x₂≤x x₁∧x₂-ismeet .lower₂ = x₁∧x₂-ismeet .lower₂
+Lift-unit .cm {x₁} {x₂} {x} {x₁∧x₂} x₁≤x x₂≤x x₁∧x₂-ismeet .greatest {bottom} = _
+Lift-unit .cm {x₁} {x₂} {x} {x₁∧x₂} x₁≤x x₂≤x x₁∧x₂-ismeet .greatest {< z >} = x₁∧x₂-ismeet .greatest
+
+Lift-mono : ∀ {X Y} → X => Y → Lift X => Lift Y
+Lift-mono f .fun bottom = bottom
+Lift-mono f .fun < x > = < f .fun x >
+Lift-mono f .mono {bottom} {_}      _     = tt
+Lift-mono f .mono {< x₁ >} {< x₂ >} x₁≤x₂ = f .mono x₁≤x₂
+Lift-mono f .cm {bottom} {bottom} {bottom} {bottom} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₁ }
+Lift-mono f .cm {bottom} {bottom} {< x >} {bottom} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₁ }
+Lift-mono f .cm {bottom} {< x₁ >} {< x >} {bottom} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₁ }
+Lift-mono f .cm {< x₁ >} {bottom} {< x >} {bottom} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₂ }
+Lift-mono {X} f .cm {< x₁ >} {< x₂ >} {< x >} {bottom} ϕ ψ is-meet with is-meet .greatest {< X .bounded-∧ ϕ ψ .meet >} (X .bounded-∧ _ _ .lower₁) (X .bounded-∧ _ _ .lower₂)
+... | ()
+Lift-mono f .cm {< x₁ >} {< x₂ >} {< x >} {< x₃ >} ϕ ψ is-meet .lower₁ = f .mono (is-meet .lower₁)
+Lift-mono f .cm {< x₁ >} {< x₂ >} {< x >} {< x₃ >} ϕ ψ is-meet .lower₂ = f .mono (is-meet .lower₂)
+Lift-mono f .cm {< x₁ >} {< x₂ >} {< x >} {< x₃ >} ϕ ψ is-meet .greatest {bottom} = _
+Lift-mono f .cm {< x₁ >} {< x₂ >} {< x >} {< x₃ >} ϕ ψ is-meet .greatest {< _ >} =
+  f .cm ϕ ψ (record { lower₁ = is-meet .lower₁; lower₂ = is-meet .lower₂; greatest = λ {z} → is-meet .greatest }) .greatest
+
+Lift-join : ∀ {X} → Lift (Lift X) => Lift X
+Lift-join .fun bottom = bottom
+Lift-join .fun < bottom > = bottom
+Lift-join .fun < < x > > = < x >
+Lift-join .mono {bottom} {_} _ = _
+Lift-join .mono {< bottom >} {< x₂ >} _ = _
+Lift-join .mono {< < x₁ > >} {< < x₂ > >} x₁≤x₂ = x₁≤x₂
+Lift-join .cm {bottom} {bottom} {bottom} {bottom} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₁ }
+Lift-join .cm {bottom} {bottom} {< x >} {bottom} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₁ }
+Lift-join .cm {bottom} {< x₁ >} {< x >} {bottom} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₁ }
+Lift-join .cm {< x₁ >} {bottom} {< x >} {bottom} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₂ }
+Lift-join .cm {< bottom >} {< bottom >} {< bottom >} {bottom} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₁ }
+Lift-join .cm {< bottom >} {< bottom >} {< bottom >} {< bottom >} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₁ }
+Lift-join .cm {< bottom >} {< bottom >} {< < x > >} {bottom} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₁ }
+Lift-join .cm {< bottom >} {< bottom >} {< < x > >} {< bottom >} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₁ }
+Lift-join .cm {< bottom >} {< < x₁ > >} {< < x > >} {bottom} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₁ }
+Lift-join .cm {< bottom >} {< < x₁ > >} {< < x > >} {< bottom >} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₁ }
+Lift-join .cm {< < x₁ > >} {< bottom >} {< < x > >} {bottom} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₂ }
+Lift-join .cm {< < x₁ > >} {< bottom >} {< < x > >} {< bottom >} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₂ }
+Lift-join {X} .cm {< < x₁ > >} {< < x₂ > >} {< < x > >} {bottom} ϕ ψ is-meet with is-meet .greatest {< < X .bounded-∧ ϕ ψ .meet > >} (X .bounded-∧ _ _ .lower₁) (X .bounded-∧ _ _ .lower₂)
+... | ()
+Lift-join {X} .cm {< < x₁ > >} {< < x₂ > >} {< < x > >} {< bottom >} ϕ ψ is-meet with is-meet .greatest {< < X .bounded-∧ ϕ ψ .meet > >} (X .bounded-∧ _ _ .lower₁) (X .bounded-∧ _ _ .lower₂)
+... | ()
+Lift-join .cm {< < x₁ > >} {< < x₂ > >} {< < x > >} {< < x₃ > >} ϕ ψ is-meet .lower₁ = is-meet .lower₁
+Lift-join .cm {< < x₁ > >} {< < x₂ > >} {< < x > >} {< < x₃ > >} ϕ ψ is-meet .lower₂ = is-meet .lower₂
+Lift-join .cm {< < x₁ > >} {< < x₂ > >} {< < x > >} {< < x₃ > >} ϕ ψ is-meet .greatest {bottom} = _
+Lift-join .cm {< < x₁ > >} {< < x₂ > >} {< < x > >} {< < x₃ > >} ϕ ψ is-meet .greatest {< z >} = is-meet .greatest
+
+Lift-strong : ∀ {X Y} → (Lift X [×] Y) => Lift (X [×] Y)
+Lift-strong .fun (bottom , y) = bottom
+Lift-strong .fun (< x > , y) = < x , y >
+Lift-strong .mono {bottom , y₁} {x₂ , y₂}     (ϕ , ψ) = tt
+Lift-strong .mono {< x₁ > , y₁} {< x₂ > , y₂} (ϕ , ψ) = ϕ , ψ
+Lift-strong .cm {bottom , y₁} {bottom , y₂} {bottom , y} {bottom , y₁∧y₂} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₁ }
+Lift-strong .cm {bottom , y₁} {x₂ , y₂} {< x > , y} {bottom , y₁∧y₂} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₁ }
+Lift-strong .cm {< x₁ > , y₁} {bottom , y₂} {< x > , y} {bottom , y₁∧y₂} ϕ ψ is-meet = record { lower₁ = tt ; lower₂ = tt ; greatest = λ {z} z₁ z₂ → z₂ }
+Lift-strong {X} {Y} .cm {< x₁ > , y₁} {< x₂ > , y₂} {< x > , y} {bottom , y₁∧y₂} (ϕ , _) (ψ , _) is-meet with is-meet .greatest (X .bounded-∧ _ _ .lower₁ , is-meet .lower₁ .proj₂) (X .bounded-∧ ϕ ψ .lower₂ , is-meet .lower₂ .proj₂)
+... | ()
+Lift-strong .cm {< x₁ > , y₁} {< x₂ > , y₂} {< x > , y} {< x₃ > , y₁∧y₂} ϕ ψ is-meet .lower₁ = is-meet .lower₁
+Lift-strong .cm {< x₁ > , y₁} {< x₂ > , y₂} {< x > , y} {< x₃ > , y₁∧y₂} ϕ ψ is-meet .lower₂ = is-meet .lower₂
+Lift-strong .cm {< x₁ > , y₁} {< x₂ > , y₂} {< x > , y} {< x₃ > , y₁∧y₂} ϕ ψ is-meet .greatest {bottom} = _
+Lift-strong .cm {< x₁ > , y₁} {< x₂ > , y₂} {< x > , y} {< x₃ > , y₁∧y₂} ϕ ψ is-meet .greatest {< _ >} = is-meet .greatest
