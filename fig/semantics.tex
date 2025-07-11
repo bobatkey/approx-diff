@@ -1,5 +1,6 @@
 \begin{figure}
-  \begin{subfigure}[t]{0.47\linewidth}
+  \begin{subfigure}[t]{0.55\linewidth}
+    \begin{minipage}{0.55\linewidth}
     \small
     \begin{align*}
       \sem{\rho} &= \sem{\rho}_{\PrimTy}
@@ -7,7 +8,11 @@
       \sem{\sigma \tySum \tau} &= \textstyle {\sem{\sigma}} + {\sem{\tau}}
       \\
       \sem{\tyUnit} &= 1
-      \\
+    \end{align*}
+  \end{minipage}
+    \begin{minipage}{0.4\linewidth}
+    \small
+    \begin{align*}
       \sem{\sigma \tyProd \tau} &= \sem{\sigma} \times \sem{\tau}
       \\
       \sem{\sigma \tyFun \tau} &= \internalHom{\sem{\sigma}}{\sem{\tau}}
@@ -16,10 +21,11 @@
       % \\
       % \sem{\tyLift\;\tau} &= \Lift(\sem{\tau})
     \end{align*}
+    \end{minipage}
     \caption{Interpretation of Types}
     \label{fig:semantics:types}
   \end{subfigure}
-  \begin{subfigure}[t]{0.47\linewidth}
+  \begin{subfigure}[t]{0.4\linewidth}
     \small
     \begin{align*}
       \sem{\emptyCxt} &= 1
