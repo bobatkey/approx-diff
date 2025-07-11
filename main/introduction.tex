@@ -32,7 +32,7 @@ At a high level, \GPS assumes that, for each possible value that may be input or
 
   Now suppose that for a given run of the program, we are interested in which of the numerical parts of the input are used to compute the output for the query parameters $l = \mathsf{a}$ and $l = \mathsf{b}$. We can use \GPS to do this. We arrange for the approximations of the input to form the following lattice, where the actual piece of data is at the top and information lost by approximation is represented by $\bot$s:
   \begin{center}
-    \begin{tikzpicture}
+    \begin{tikzpicture}[node distance=0.75cm]
       \node (top) at (0,0) {$[(\mathsf{a}, 0), (\mathsf{b}, 1), (\mathsf{a}, 1)]$};
       % row 2
       \node [below of=top] (ioi) {$[(\mathsf{a}, 0), (\mathsf{b}, \bot), (\mathsf{a}, 1)]$};
@@ -62,7 +62,7 @@ At a high level, \GPS assumes that, for each possible value that may be input or
   \end{center}
   In both runs of the program, the output approximation lattice looks like this, where $1$ is the actual data point that was returned, and $\bot$ indicates that we are approximating this piece of data away:
   \begin{center}
-    \begin{tikzpicture}
+    \begin{tikzpicture}[node distance=0.75cm]
       \node (top) at (0,0) {$1$};
       \node [below of=top] (bot) {$\bot$};
       \draw (top) -- (bot);
