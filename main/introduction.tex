@@ -90,7 +90,7 @@ At a high level, \GPS assumes that, for each possible value that may be input or
 
 \subsection{Galois Slicing and Automatic Differentiation}
 
-Previous work on \GPS uses a special operational semantics to generate a trace of each execution, and then uses that trace to compute the Galois connections described above, by re-running forwards or backwards over the trace. It would be useful to have a denotational account of \GPS as well, especially if we could provide a semantics where the backwards analysis is baked in, rather than provided by a separately defined ``backwards evaluation'' operation. As it happens there is a close analogy between \GPS and \emph{automatic differentiation} for differentiable programs~\cite{siskind08,elliott18,vakar22}, which points to a way to develop such an approach. We have already hinted at this in the description above, but let us now make it explicit.
+Previous work on \GPS used a special operational semantics to generate a trace of each execution, and then uses that trace to compute the Galois connections described above, by re-running forwards or backwards over the trace. It would be useful to have a denotational account of \GPS as well, especially if we could provide a semantics where the backwards analysis is baked in, rather than provided by a separately defined ``backwards evaluation'' operation. Our thesis, developed in \secref{approx-as-tangents} and \secref{models-of-total-gps} is that there is a close analogy between \GPS and \emph{automatic differentiation} for differentiable programs~\cite{siskind08,elliott18,vakar22}, which points to a way to develop such an approach. We have already hinted at this in the description above, but let us now make it explicit.
 
 \begin{itemize}[leftmargin=\enummargin]
 \item For \GPS, we assume that every value has an associated lattice of {\em approximations}. For differentiable programs, every point has an associated vector space of {\em tangents}.
@@ -99,7 +99,7 @@ Previous work on \GPS uses a special operational semantics to generate a trace o
 \item For \GPS, the forward and backward approximation maps are related by being a Galois connection. For differentiable programming, the forward and reverse derivatives are related by being each others' transpose.
 \end{itemize}
 
-Given this close connection between \GPS and differentiable programming, we can take structures intended for modelling automatic differentiation and use them to model \GPS. This will enable us to generalise and expand the scope of \GPS to act as a foundation for data provenance in a wide range of computational settings.
+Given this close connection between \GPS and differentiable programming, we can take structures intended for modelling automatic differentiation, such as V{\'a}k{\'a}r's CHAD framework and use them to model \GPS. This will enable us to generalise and expand the scope of \GPS to act as a foundation for data provenance in a wider range of computational settings.
 
 \subsection{Outline and Contributions}
 
