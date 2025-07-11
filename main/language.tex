@@ -153,19 +153,30 @@ interpreted as the monoid operations on this object.
 
 The monadic CBN translation is standard, and entirely determined by the translation on types, so we only
 define the type translation $\cbn{-}$ here:
-\begin{mathpar}
-  \cbn{\rho} = \rho
-
-  \cbn{\sigma \tySum \tau} = T(\cbn{\sigma}) \tySum T(\cbn{\tau})
-
-  \cbn{\tyUnit} = \tyUnit
-
-  \cbn{\sigma \tyProd \tau} = T(\cbn{\sigma}) \tyProd T(\cbn{\tau})
-
-  \cbn{\sigma \tyFun \tau} = T(\cbn{\sigma}) \tyFun T(\cbn{\tau})
-
-  \cbn{\tyList\;\tau} = \tyList\,(T(\cbn{\tau}))
-\end{mathpar}
+%\begin{mathpar}
+%  \cbn{\rho} = \rho
+%
+%  \cbn{\sigma \tySum \tau} = T(\cbn{\sigma}) \tySum T(\cbn{\tau})
+%
+%  \cbn{\tyUnit} = \tyUnit
+%
+%  \cbn{\sigma \tyProd \tau} = T(\cbn{\sigma}) \tyProd T(\cbn{\tau})
+%
+%  \cbn{\sigma \tyFun \tau} = T(\cbn{\sigma}) \tyFun T(\cbn{\tau})
+%
+%  \cbn{\tyList\;\tau} = \tyList\,(T(\cbn{\tau}))
+%\end{mathpar}
+\[
+\renewcommand{\arraystretch}{1.1}
+\begin{array}{r@{\;=\;}l@{\qquad}r@{\;=\;}l@{\qquad}r@{\;=\;}l}
+\cbn{\rho} & \rho &
+\cbn{\sigma \tySum \tau} & T(\cbn{\sigma}) \tySum T(\cbn{\tau}) &
+\cbn{\sigma \tyProd \tau} & T(\cbn{\sigma}) \tyProd T(\cbn{\tau}) \\
+\cbn{\tyUnit} & \tyUnit &
+\cbn{\sigma \tyFun \tau} & T(\cbn{\sigma}) \tyFun T(\cbn{\tau}) &
+\cbn{\tyList\;\tau} & \tyList\,(T(\cbn{\tau}))
+\end{array}
+\]
 Thus, the CBN translation on types inserts a use of the monad $T(X) = \mathbb{A} \times X$ at the point ``just
 underneath'' every type former. In this case, we are describing the type of data annotated at every
 level. Note that our lists here are still ``strict'', an alternative approach would be to consider ``lazy''
