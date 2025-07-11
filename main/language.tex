@@ -120,27 +120,24 @@ interpretation.
   \end{displaymath}
   where every position that corresponds to a number has been tagged with $\top$ for ``present'' and $\bot$ for
   ``not present''. This interpretation recovers the behaviour given in \exref{introduction-example}: running
-  the reverse approximation map at the input $\mathsf{a}$ with the top approximation maps indeed reveals that
-  only the numbers in the rows tagged with that label in the input are used, and likewise for $\mathsf{b}$.
-\item More quantitative approximation information can be obtained by using the interval approximation
-  interpretation from \exref{intervals-and-maxima-elements} and \secref{interval-approx}. We let
+  the reverse approximation map at the input ``$\mathsf{a}$'' at approximation $\top$ reveals that only the
+  numbers in the rows tagged with ``$\mathsf{a}$'' in the input are used, and likewise for ``$\mathsf{b}$''.
+\item Quantitative approximation information with non-trivial dependency can be obtained by using the interval
+  approximation interpretation from \exref{intervals-and-maxima-elements} and \secref{interval-approx}. We let
   $\sem{\mathsf{num}}_{\PrimTy} = \mathbb{R}_{\mathit{intv}}$ and interpret addition using the morphism given
-  in \secref{interval-approx}.
-
-  Recall that $\mathrm{query}\,\mathsf{a}\,\mathit{db} = 1$, so in the reverse direction we can pick an
-  interval containing $1$ to discover the largest (i.e. least in the order) intervals that will give rise to
-  this output as \emph{independent} changes to the input. For example, if we pick
-  $[\frac{9}{10},\frac{11}{10}]$ as the interval, then:
+  in \secref{interval-approx}. Recall that $\mathrm{query}\,(\mathsf{a},\mathit{db}) = 1$, so in the reverse
+  direction we must choose an interval containing $1$ to discover the largest (i.e. least in the order)
+  intervals that will give rise to this output as \emph{independent} changes to the input. For example, if we
+  pick $[\frac{9}{10},\frac{11}{10}]$ as the interval, then:
   \begin{displaymath}
     (\partial\mathrm{query})_r(\mathsf{a},\mathsf{db})([\frac{9}{10},\frac{11}{10}]) = \cdot, (\cdot,[-\frac{1}{10},\frac{1}{10}]),(\cdot,\bot),(\cdot,[\frac{9}{10},\frac{11}{10}]), \cdot
   \end{displaymath}
-  Indicating that, to achieve an output within $[\frac{9}{10},\frac{11}{10}]$ for this query, either the first
-  $\mathsf{a}$ row could be in $[-\frac{1}{10},\frac{1}{10}]$ or the second one could be in
-  $[\frac{9}{10},\frac{11}{10}]$, and it does not matter what the number in the second entry was.
+  Thus, to achieve an output within $[\frac{9}{10},\frac{11}{10}]$, either the first ``$\mathsf{a}$'' row
+  could be in $[-\frac{1}{10},\frac{1}{10}]$ or the second one could be in $[\frac{9}{10},\frac{11}{10}]$, and
+  the number in the ``$\mathsf{b}$'' row is not relevant.
 \end{enumerate}
 
-We have tested these examples on our fully formalised Agda implementation. See the file \texttt{example.agda}
-in the supplementary material for details.
+We have tested these examples on our Agda implementation. See the file \texttt{example.agda}.
 
 \subsection{Systematic Insertion of Approximation via Moggi's CBN translation}
 \label{sec:cbn-translation}
