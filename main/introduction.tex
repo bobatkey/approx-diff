@@ -6,11 +6,11 @@ To audit any computational process, we need robust and well-founded notions of \
 Existing approaches to program slicing are often tied to particular programming languages or implementations.
 In this paper we develop a general categorical approach to program slicing, focusing on a particular technique
 called \GPS, where the set of slices of a given value form a lattice of approximations and the forward and
-backward slicing procedures generate Galois connections between these lattices. Our main contribution is that this
-approach can be seen as a generalised form of differentiable programming, with slices of elements playing the
-role of tangents. Our categorical approach should provide a suitable setting for exploring data provenance for
-a variety of programming languages, and is easily configured to use alternative approximation strategies,
-including quantitative forms of slicing.
+backward slicing procedures generate Galois connections between these lattices. Our main contribution is that
+this approach can be seen as a generalised form of automatic differentiation, with slices of values playing
+the role of tangents. Our categorical approach should provide a suitable setting for enabling ``automatic''
+data provenance for a variety of programming languages, and is easily configured to use alternative
+approximation strategies, including quantitative forms of slicing.
 
 \subsection{Galois Program Slicing}
 \label{sec:introduction:galois-slicing}
