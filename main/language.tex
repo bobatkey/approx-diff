@@ -105,6 +105,7 @@ positions of labels in the input, which we are not approximating, and the final 
 of the list. Note how, even if the $\partial\sem{\mathsf{num}}(x)$ does not depend on $x$ the type of the
 output is still dependent on the shape of the input list: type dependency is used in a fundamental way in our
 interpretation.
+\newcommand{\TWO}{\mathbb{2}}
 
 \begin{enumerate}
 \item If we take $\sem{\mathsf{num}}_{\PrimTy} = \Disc(\mathbb{R})$, with $\sem{\mathrm{zero}}_{\PrimOp}$ and
@@ -114,10 +115,10 @@ interpretation.
 \item We take $\sem{\mathsf{num}}_{\PrimTy} = \Lift(\Disc(\mathbb{R}))$, using the lifting monad from
   \secref{models-of-total-gps:lifting}, with $\sem{\mathrm{zero}}_{\PrimOp}$ and
   $\sem{\mathrm{add}}_{\PrimOp}$ defined from the unlifted interpretations above and the monad structure. The
-  type of the reverse map now becomes:
-  \begin{displaymath}
-    (\partial \mathrm{query})_r(l, \mathit{db}) : \{\top,\bot\} \multimap \mathbb{1} \times (\mathbb{1} \times \{\top,\bot\}) \times (\mathbb{1} \times \{\top,\bot\}) \times (\mathbb{1} \times \{\top,\bot\}) \times \mathbb{1}
-  \end{displaymath}
+  type of the reverse map now becomes, where $\TWO = \{\top.\bot\}$:
+  \begin{equation}\label{eqn:reverse-query-approx-1}
+    (\partial \mathrm{query})_r(l, \mathit{db}) : \TWO \multimap \mathbb{1} \times (\mathbb{1} \times \TWO) \times (\mathbb{1} \times \TWO) \times (\mathbb{1} \times \TWO) \times \mathbb{1}
+  \end{equation}
   where every position that corresponds to a number has been tagged with $\top$ for ``present'' and $\bot$ for
   ``not present''. This interpretation recovers the behaviour given in \exref{introduction-example}: running
   the reverse approximation map at the input ``$\mathsf{a}$'' at approximation $\top$ reveals that only the
@@ -169,5 +170,23 @@ underneath'' every type former. In this case, we are describing the type of data
 level. Note that our lists here are still ``strict'', an alternative approach would be to consider ``lazy''
 lists that wrap the tail of every node in a $T$ as well.
 
+\newcommand{\Element}{(\TWO \times \TWO)}
+
 We illustrate the effect of the CBN translation on the query example from
-\exref{introduction-example}. Applying $\cbn{-}$ to the type of the database
+\exref{introduction-example}. Applying $\cbn{-}$ to the type of $\mathrm{query}$ yields:
+\begin{displaymath}
+  T(\mathrm{Label}) \times T(\tyList(T(T(\mathrm{Label}) \tyProd T(\mathsf{num})))) \to T(\mathsf{num})
+\end{displaymath}
+Thus, every substructure of the input and output has been annotated with usage information. Under
+interpretation in $\Fam(\MeetSLat \times \JoinSLat^\op)$, the type of the reverse approximation map as a
+morphism in $\JoinSLat$ at the input $\mathit{db}$ is now (suppressing some ``$\times \mathbb{1}$'' for
+readability):
+\begin{displaymath}
+  (\partial \mathrm{query})_r(l, \mathit{db}) : \TWO \multimap \TWO \times (\TWO \times \Element \times \Element \times \Element)
+\end{displaymath}
+Comparing to the type in (\ref{eqn:reverse-query-approx-1}), we now gain much more fine-grained information on
+which parts of the input are used. When $l = \mathsf{a}$, we have
+$(\partial \mathrm{query})_r(\mathsf{a},\mathit{db})(\top) = (\top, (\top, (\top, \top), (\top, \bot), (\top,
+\top)))$, indicating that the execution of this query had examined everything except the number in the second
+entry of the database. With the previous interpretation, we did not have confirmation that the labels in each
+row were actually required.
