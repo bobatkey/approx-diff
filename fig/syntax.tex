@@ -98,14 +98,14 @@
     \text{application}
     \\
     && \mid &
-    \tmNil
+    \tmNil \mid \tmCons{s}{t}
     &
-    \text{nil}
-    \\
-    && \mid &
-    \tmCons{s}{t}
-    &
-    \text{cons}
+    \text{nil \& cons}
+    % \\
+    % && \mid &
+    % \tmCons{s}{t}
+    % &
+    % \text{cons}
     \\
     && \mid &
     \tmFoldList{s_1}{s_2}{t}
