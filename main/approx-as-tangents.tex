@@ -398,7 +398,7 @@ connections, which we used informally in \exref{introduction-example}.
   If $f$ is stable, then define a left adjoint
   $f^*_x : \downset{f(x)} \to \downset{x}$ by setting $f^*_x(y)$ to be
   the minimal $x_0$ required by stability. This is monotone: if
-  $y \leq y'$, then we know that $y \leq y' \leq f(f^*_x(y'))$ by
+  $y \leq y'$, then we know that $y \leq y' \leq f(f^*_x(y'))$ by the
   definition of $f^*_x$, so $f^*_x(y) \leq f^*_x(y')$ by minimality of
   $f^*_x(y)$. For the adjointness, let $x' \leq x$ and $y \leq
   f(x)$. Then if $f^*_x(y) \leq x'$, we have
@@ -491,7 +491,7 @@ of \GPS?  We have two reasons for moving to a different model in
   \secref{language}. Agda's type theory is both predicative and
   constructive. Predicativity means that it does not have complete
   lattices in the classical sense: for a type $X$ we can only get
-  suprema and infinma of families in a lower universe level than
+  suprema and infima of families in a lower universe level than
   $X$. This is not necessarily a problem, as \citet{dejong21} show how
   to develop a large amount of domain theory in a predicative
   setting. However, due to constructivity the lifting construction
