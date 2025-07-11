@@ -69,7 +69,7 @@ open L hiding (_,_)
 
 open import Relation.Binary.PropositionalEquality using (_≡_) renaming (refl to ≡-refl)
 
--- Example with lifted numbers
+-- Example with lifted numbers (Example (2) in Section 4.3)
 module example1 where
   open import ho-model
   open import example-signature-interpretation
@@ -96,7 +96,7 @@ module example1 where
   test2 : back-slice label.b ≡ ((· , ⊥) , (· , ⊤) , (· , ⊥) , _)
   test2 = ≡-refl
 
--- Example with interval-approximated numbers
+-- Example with interval-approximated numbers (Example (3) in Section 4.3)
 module example2 where
   open import ho-model
   open import example-signature-interpretation
