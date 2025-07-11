@@ -17,7 +17,7 @@
 
 \begin{document}
 
-\title{Approximation as Differentiation}
+\title{Galois Slicing as Differentiation}
 
 \author{Robert Atkey}
 \email{robert.atkey@strath.ac.uk}
@@ -42,7 +42,18 @@
 }
 
 \begin{abstract}
-\todo{abstract needed}
+  \GPS is a technique for program slicing for provenance, developed by
+  Perera and collaborators. \GPS aims to explain program executions by
+  demonstrating how to track approximations of the input and output
+  forwards and backwards along a particular execution. In this paper,
+  we explore a analogy between \GPS and differentiable programming,
+  seeing the implementation of \GPS as a kind of automatic
+  differentiation. Using the CHAD approach to automatic differentation
+  due to V{\'a}k{\'a} and collaborators, we reformulate \GPS via a
+  categorical semantics. In doing so, we are able to explore
+  extensions of the \GPS idea to quantitative interval analysis, and
+  to clarify the implicit choices made in existing \GPS
+  instantiations.
 \end{abstract}
 \maketitle
 
