@@ -1,7 +1,7 @@
 \section{Related Work}
 \label{sec:related-work}
 
-\subsection{Stable Domain Theory}
+\paragraph{Stable Domain Theory}
 
 Stable Domain Theory was originally proposed by \citet{berry79} as a refinement of domain theory aimed at
 capturing the intensional behaviour of sequential programs, and elaborated on subsequently by \citet{berry82}
@@ -21,7 +21,7 @@ provides the semantic underpinning for the reverse maps used in Galois slicing~\
 builds on these ideas by interpreting Galois slicing as a form of differentiable programming, using the
 machinery of CHAD to present Galois slicing in a denotational style.
 
-\subsection{Automatic Differentiation}
+\paragraph{Automatic Differentiation}
 
 Automatic differentiation (AD), discussed in \secref{approx-as-tangents:autodiff}, is the idea of computing
 derivatives of functions expressed as programs by systematically applying the chain rule. The observation that
@@ -46,7 +46,7 @@ the design of systems that generalise AD% beyond real analysis
 , including the application to data provenance
 and slicing explored in this paper.
 
-\subsection{\GPS}
+\paragraph{\GPS}
 \label{sec:related-work:galois-slicing}
 
 Galois slicing was introduced by \citet{perera12a} as an operational approach to program slicing for pure
@@ -71,7 +71,7 @@ revisited this approach using \emph{dynamic dependence graphs} to decouple the d
 information from the analyses that make use of it, and observing that to compute the conjugate analysis one
 can just use the opposite graph.
 
-\subsection{Tangent Categories}
+\paragraph{Tangent Categories and Differential Linear Logic}
 
 \emph{Tangent categories}, due originally to \citet{rosický84} and developed by \citet{cockett14,cockett18},
 provide an abstract categorical framework for reasoning about differentiation, inspired by the structure of
@@ -81,16 +81,13 @@ satisfying axioms analogous to the chain rule and linearity of differentiation. 
 Cartesian differential categories \cite{cdcs}, which model differentiation over cartesian closed categories
 using a syntactic derivative operator. Reverse Tangent categories \cite{reverse-tangents} further axiomatise
 the existence of reverse derivatives. In \conref{tangent-stable-fns} and \conref{tangent-fam}, we have
-conjectured that the categories we have identified in this paper as models of \GPS are Tangent categories. As
-well as providing some substantiation to the claim that \GPS is a form of differentiation, this would also
-clarify the role of higher derivatives in \GPS, which we conjecture are related to \emph{program
-  differencing}.
+conjectured that the categories we have identified in this paper as models of \GPS are Tangent
+categories. This would clarify the role of higher derivatives in \GPS, which we conjecture are related to
+\emph{program differencing}. There are likely links to Differential Linear Logic
+\cite{ehrhard_differential_2006}. Differential Linear Logic and the Dialectica translation have been used to
+model reverse differentiation by \citet{kerjean-pedrot2024}.
 
-% \subsection{Differential Linear Logic}
 
-% Differential Linear Logic \cite{dill} is an extension of Linear Logic with a derivative operator that acts
-% like
-
-% \subsection{Lens Categories}
+% \paragraph{Lens Categories}
 
 % \cite{spivak19}
