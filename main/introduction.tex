@@ -92,7 +92,7 @@ At a high level, \GPS assumes that, for each possible value that may be input or
 
 Previous work on \GPS used a special operational semantics to generate a trace of each execution, and then separately used that trace to compute the Galois connection described above, by re-running forwards or backwards over the trace. It would be useful to have a denotational account of \GPS as well, especially if we could provide a semantics where the backwards analysis is baked in, rather than provided by a separately defined ``backwards evaluation'' operation. As it happens there is a close analogy between \GPS and \emph{automatic differentiation} for differentiable programs~\cite{siskind08,elliott18,vakar22}, which points to a way to develop such an approach. We have already hinted at this in the description above, but let us now make it explicit.
 
-\begin{itemize}
+\begin{itemize}[leftmargin=\enummargin]
 \item For \GPS, we assume that every value has an associated lattice of {\em approximations}. For differentiable programs, every point has an associated vector space of {\em tangents}.
 \item For \GPS, every program has an associated forward approximation map that takes approximations forward from the input to the output. This map {\em preserves meets}. For differentiable programs, every program has a forward derivative that takes tangents of the input to tangents of the output. The forward derivative map is {\em linear}, so it preserves addition of tangents and the zero tangent.
 \item For \GPS, every program has an associated backward approximation map that takes approximations of the output back to least approximations of the input. This map {\em preserves joins}. For differentiable programs, every program has a reverse derivative that takes tangents of the output to tangents of the input. This map is again {\em linear}.
@@ -107,7 +107,7 @@ Our primary contribution in this article is to elucidate \GPS by relating it to 
 
 \todo{Rewrite this to match the actual contents}
 
-\begin{enumerate}
+\begin{enumerate}[leftmargin=\enummargin]
 \item We explain how the CHAD framework of Vákár et al. can be adapted to give a general categorical framework for \GPS.
 \item Using our adapted CHAD framework, we can explain how type structure can be used to control the approximation lattices associated with data points, something that was ``hard coded'' in previous presentations of \GPS.
 \item With the benefit of our abstract setting, we can relate \GPS to other parts of denotational semantics. In particular, we show that there is a close connection with Stable Domain Theory, a proposed solution to capturing sequentiality by recording more intensional information about programs' sensitivity to approximations.
