@@ -47,4 +47,17 @@ record _⇒c_ (X Y : Obj) : Set where
     -- situation is symmetric, so names here just refer to direction relative to X ⇒c Y
     right : X .carrier preorder.=> Y .carrier
     left : Y .carrier preorder.=> X .carrier
-    left⊣right : ∀ {x y} → (y Y.# (right .fun x)) ⇔ (left .fun y) X.# x
+    conjugate : ∀ {x y} → y Y.# right .fun x ⇔ left .fun y X.# x
+
+open _⇒c_
+
+-- sanity check: if conjugates exist they are unique
+uniqueness : ∀ {X Y} (f g : X ⇒c Y) → f .right ≃m g .right → f .left ≃m g .left
+uniqueness f g right≃right ._≃m_.eqfun y = let q = g .conjugate in {!   !}
+
+module _ where
+  open preorder._=>_
+
+  -- f .left and g .left exhibit the same disjointness behaviour
+  lemma : ∀ {X Y} (let module X = Obj X) (f g : X ⇒c Y) {x y} → x X.# f .left .fun y ⇔ x X.# g .left .fun y
+  lemma = {!   !}
