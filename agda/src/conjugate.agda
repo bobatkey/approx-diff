@@ -4,6 +4,7 @@ module conjugate where
 
 open import Level
 open import prop hiding (_∨_; ⊥; _∧_)
+open import prop-setoid using (IsEquivalence)
 open import preorder
 open import meet-semilattice
   using (MeetSemilattice)
@@ -39,10 +40,6 @@ record _⇒c_ (X Y : Obj) : Set where
   private
     module X = Obj X
     module Y = Obj Y
-    module XM = MeetSemilattice (X .meets)
-    module YM = MeetSemilattice (Y .meets)
-    module XJ = JoinSemilattice (X .joins)
-    module YJ = JoinSemilattice (Y .joins)
   field
     -- situation is symmetric, so names here just refer to direction relative to X ⇒c Y
     right : X .carrier preorder.=> Y .carrier
@@ -54,16 +51,17 @@ open _⇒c_
 -- sanity check: if conjugates exist they are unique
 module _ {X Y} (f g : X ⇒c Y) (right≃right : f .right ≃m g .right) where
   open preorder._=>_
+  open _≃m_
 
   uniqueness : f .left ≃m g .left
-  uniqueness ._≃m_.eqfun y = let q = g .conjugate in {!   !}
+  uniqueness .eqfun y = let q = g .conjugate in {!   !}
 
   module X = Obj X
   module Y = Obj Y
 
   blah : ∀ {x y} → y Y.# g .right .fun x ⇔ y Y.# f .right .fun x
-  blah .proj₁ y#gx = {!   !}
-  blah .proj₂ y#fx = {!   !}
+  blah .proj₁ y#gx = Y .≃-trans (Y .≃-sym (∧-cong Y (Y .≃-refl) (Y .≃-sym (right≃right .eqfun _)))) y#gx
+  blah .proj₂ y#fx = Y .≃-trans (∧-cong Y (Y .≃-refl) (Y .≃-sym (right≃right .eqfun _))) y#fx
 
   -- f .left and g .left exhibit the same disjointness behaviour
   lemma : ∀ {x y} → f .left .fun y X.# x ⇔ g .left .fun y X.# x
