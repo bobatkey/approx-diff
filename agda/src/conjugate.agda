@@ -59,7 +59,12 @@ module _ {X Y} (f g : X ⇒c Y) (right≃right : f .right ≃m g .right) where
   uniqueness ._≃m_.eqfun y = let q = g .conjugate in {!   !}
 
   module X = Obj X
+  module Y = Obj Y
+
+  blah : ∀ {x y} → y Y.# g .right .fun x ⇔ y Y.# f .right .fun x
+  blah .proj₁ y#gx = {!   !}
+  blah .proj₂ y#fx = {!   !}
 
   -- f .left and g .left exhibit the same disjointness behaviour
-  lemma : ∀ {x y} → x X.# f .left .fun y ⇔ x X.# g .left .fun y
-  lemma {X} = {!   !}
+  lemma : ∀ {x y} → f .left .fun y X.# x ⇔ g .left .fun y X.# x
+  lemma = trans-⇔ (sym-⇔ (trans-⇔ blah (f .conjugate))) (g .conjugate)
