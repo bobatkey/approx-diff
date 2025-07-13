@@ -12,7 +12,7 @@ open import join-semilattice
   using (JoinSemilattice)
   renaming (_=>_ to _=>J_)
 
--- Category of bounded lattices and conjugate maps between them.
+-- Category of bounded lattices and Tarski conjugates between them.
 
 record Obj : Set (suc 0ℓ) where
   no-eta-equality
@@ -52,12 +52,14 @@ record _⇒c_ (X Y : Obj) : Set where
 open _⇒c_
 
 -- sanity check: if conjugates exist they are unique
-uniqueness : ∀ {X Y} (f g : X ⇒c Y) → f .right ≃m g .right → f .left ≃m g .left
-uniqueness f g right≃right ._≃m_.eqfun y = let q = g .conjugate in {!   !}
-
-module _ where
+module _ {X Y} (f g : X ⇒c Y) (right≃right : f .right ≃m g .right) where
   open preorder._=>_
 
+  uniqueness : f .left ≃m g .left
+  uniqueness ._≃m_.eqfun y = let q = g .conjugate in {!   !}
+
+  module X = Obj X
+
   -- f .left and g .left exhibit the same disjointness behaviour
-  lemma : ∀ {X Y} (let module X = Obj X) (f g : X ⇒c Y) {x y} → x X.# f .left .fun y ⇔ x X.# g .left .fun y
-  lemma = {!   !}
+  lemma : ∀ {x y} → x X.# f .left .fun y ⇔ x X.# g .left .fun y
+  lemma {X} = {!   !}
