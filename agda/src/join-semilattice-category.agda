@@ -214,4 +214,4 @@ TWO .carrier .Preorder.≤-isPreorder = two.≤-isPreorder
 TWO .joins .JoinSemilattice._∨_ = two._⊔_
 TWO .joins .JoinSemilattice.⊥ = two.O
 TWO .joins .JoinSemilattice.∨-isJoin = two.⊔-isJoin
-TWO .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom {x} = two.O-bot {x}
+TWO .joins .JoinSemilattice.⊥-isBottom = two.O-isBottom
