@@ -26,15 +26,20 @@ module ex where
   open L
 
   -- writer monad over the approximation object
-  L : type → type
-  L τ = base approx [×] τ
+  Tag : type → type
+  Tag τ = base approx [×] τ
 
-  L-pure : ∀ {Γ τ} → Γ ⊢ τ [→] L τ
-  L-pure = lam (pair (bop approx-unit []) (var zero))
+  Tag-pure : ∀ {Γ τ} → Γ ⊢ τ [→] Tag τ
+  Tag-pure = lam (pair (bop approx-unit []) (var zero))
 
-  L-bind : ∀ {Γ σ τ} → Γ ⊢ L σ [→] (σ [→] L τ) [→] L τ
-  L-bind = lam (lam (pair (bop approx-mult (fst (var (succ zero)) ∷ fst (app (var zero) (snd (var (succ zero)))) ∷ []))
+  Tag-bind : ∀ {Γ σ τ} → Γ ⊢ Tag σ [→] (σ [→] Tag τ) [→] Tag τ
+  Tag-bind = lam (lam (pair (bop approx-mult (fst (var (succ zero)) ∷ fst (app (var zero) (snd (var (succ zero)))) ∷ []))
                           (snd (app (var zero) (snd (var (succ zero)))))))
+
+  Tag-monad : SynMonad
+  Tag-monad .SynMonad.Mon = Tag
+  Tag-monad .SynMonad.pure = Tag-pure
+  Tag-monad .SynMonad.bind = Tag-bind
 
   -- Summation function
   sum : ∀ {Γ} → Γ ⊢ list (base number) [→] base number
@@ -51,6 +56,11 @@ module ex where
                 (from var zero collect
                  when fst (var zero) ≟ (` l) ；
                  return (snd (var zero)))
+
+  open import cbn-translation Sig Tag-monad
+
+  cbn-query : label.label → emp , Tag (list (Tag (Tag (base label) [×] Tag (base number)))) ⊢ Tag (base number)
+  cbn-query l = ⟪ query l ⟫tm
 
 import indexed-family
 import join-semilattice-category
@@ -146,3 +156,30 @@ module example2 where
 
   test3 : extract-interval (back-slice .proj₂ .proj₂ .proj₁ .proj₂) ≡ just (+ 9 / 10 , + 11 / 10)
   test3 = ≡-refl
+
+------------------------------------------------------------------------------
+-- Example using CBN lifting
+module cbn-example where
+  open import ho-model
+  open import example-signature-interpretation
+  open interp Sig BaseInterp0
+  open ex using (Tag; cbn-query)
+
+  input : ⟦ Tag (list (Tag (Tag (base label) [×] Tag (base number)))) ⟧ty .idx .Carrier
+  input = _ , 3 , (_ , (_ , label.a) , (_ , 0)) , (_ , (_ , label.b) , (_ , 1)) , (_ , (_ , label.a) , (_ , 1)) , _
+
+  back-slice : label.label → _
+  back-slice l = ⟦ ex.cbn-query l ⟧tm .famf .transf (_ , input) .proj₂ .*→* .func .fun (⊤ , ·) .proj₂
+    where
+      open indexed-family._⇒f_
+      open join-semilattice-category._⇒_
+      open join-semilattice._=>_
+      open preorder._=>_
+
+  open import Relation.Binary.PropositionalEquality using (_≡_) renaming (refl to ≡-refl)
+
+  test1 : back-slice label.a ≡ (⊤ , (⊤ , (⊤ , ·) , ⊤ , ·) , (⊤ , (⊤ , ·) , ⊥ , ·) , (⊤ , (⊤ , ·) , ⊤ , ·) , ·)
+  test1 = ≡-refl
+
+  test2 : back-slice label.b ≡ (⊤ , (⊤ , (⊤ , ·) , ⊥ , ·) , (⊤ , (⊤ , ·) , ⊤ , ·) , (⊤ , (⊤ , ·) , ⊥ , ·) , ·)
+  test2 = ≡-refl

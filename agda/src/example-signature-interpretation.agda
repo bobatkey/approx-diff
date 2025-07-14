@@ -84,6 +84,17 @@ open import signature
 import nat
 import label
 
+BaseInterp0 : Model PFPC[ cat , terminal , products , 𝟚 ] Sig
+BaseInterp0 .Model.⟦sort⟧ number = simple[ nat.ℕₛ , galois.𝟙 ]
+BaseInterp0 .Model.⟦sort⟧ label = simple[ label.Label , galois.𝟙 ]
+BaseInterp0 .Model.⟦sort⟧ approx = simple[ 𝟙ₛ , galois.TWO ]
+BaseInterp0 .Model.⟦op⟧ zero = simplef[ nat.zero-m , galois.idg _ ]
+BaseInterp0 .Model.⟦op⟧ add = simplef[ nat.add , galois.to-𝟙 _ ] C.∘ binary
+BaseInterp0 .Model.⟦op⟧ (lbl l) = simplef[ constₛ _ l , galois.idg _ ]
+BaseInterp0 .Model.⟦rel⟧ equal-label = predicate label.equal-label C.∘ binary
+BaseInterp0 .Model.⟦op⟧ approx-unit = simplef[ idS _ , galois.unit ]
+BaseInterp0 .Model.⟦op⟧ approx-mult = simplef[ prop-setoid.to-𝟙 , galois.conjunct ] C.∘ binary
+
 BaseInterp1 : Model PFPC[ cat , terminal , products , 𝟚 ] Sig
 BaseInterp1 .Model.⟦sort⟧ number = simple[ nat.ℕₛ , galois.TWO ]
 BaseInterp1 .Model.⟦sort⟧ label = simple[ label.Label , galois.𝟙 ]
