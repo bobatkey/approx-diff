@@ -8,7 +8,8 @@ open import categories
   using (Category; HasBooleans; HasProducts; HasCoproducts; HasExponentials;
          HasTerminal; IsTerminal; IsProduct; coproducts+exp→booleans; setoid→category)
 open import functor
-  using (Functor; _∘F_; opF; _∘H_; ∘H-cong; id; _∘_; NatTrans; ≃-NatTrans; ≃-isEquivalence; interchange; NT-id-left;
+  using (Functor; _∘F_; opF; _∘H_; ∘H-cong; id; _∘_; NatTrans; ≃-NatTrans; ≃-isEquivalence;
+         interchange; H-id; NT-id-left;
          HasColimits)
 open import prop-setoid using (module ≈-Reasoning; IsEquivalence; Setoid)
 open import setoid-cat using (SetoidCat)
@@ -85,8 +86,8 @@ G .fmor-cong f₁≈f₂ = ∘H-cong (𝒟よ .fmor-cong f₁≈f₂) (≃-isEqu
 G .fmor-id = begin
     𝒟よ .fmor (𝒟.id _) ∘H id _
   ≈⟨ ∘H-cong (𝒟よ .fmor-id) (≃-isEquivalence .IsEquivalence.refl) ⟩
-    id _ ∘H id _
-  ≈⟨ record { transf-eq = λ x₁ → record { func-eq = λ e → lift (𝒟.≈-trans 𝒟.id-right (e .lower)) } } ⟩ -- FIXME: put this in functor.agda
+    id (𝒟よ .fobj _) ∘H id (opF F)
+  ≈⟨ H-id ⟩
     PSh⟨𝒞⟩.id _
   ∎ where open ≈-Reasoning PSh⟨𝒞⟩.isEquiv
 G .fmor-comp f g = begin

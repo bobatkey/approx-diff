@@ -369,6 +369,15 @@ module _ {o₁ m₁ e₁ o₂ m₂ e₂ o₃ m₃ e₃}
     module 𝒟 = Category 𝒟
     module ℰ = Category ℰ
 
+  H-id : ∀ {F : Functor 𝒟 ℰ} {G : Functor 𝒞 𝒟} →
+         ≃-NatTrans (id F ∘H id G) (id (F ∘F G))
+  H-id {F} {G} .transf-eq x = begin
+      ℰ.id _ ℰ.∘ F .fmor (𝒟.id _) ≈⟨ ℰ.id-left ⟩
+      F .fmor (𝒟.id _)             ≈⟨ F .fmor-id ⟩
+      ℰ.id _
+    ∎
+    where open ≈-Reasoning ℰ.isEquiv
+
   interchange : ∀ {F₁ G₁ H₁ : Functor 𝒟 ℰ}
                   {F₂ G₂ H₂ : Functor 𝒞 𝒟}
                 (α₁ : NatTrans G₁ H₁) (β₁ : NatTrans F₁ G₁)
