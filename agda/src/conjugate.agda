@@ -53,9 +53,6 @@ module _ {X Y} (f g : X ⇒c Y) (right≃right : f .right ≃m g .right) where
   open preorder._=>_
   open _≃m_
 
-  uniqueness : f .left ≃m g .left
-  uniqueness .eqfun y = let q = g .conjugate in {!   !}
-
   module X = Obj X
   module Y = Obj Y
 
@@ -66,3 +63,6 @@ module _ {X Y} (f g : X ⇒c Y) (right≃right : f .right ≃m g .right) where
   -- f .left and g .left exhibit the same disjointness behaviour
   lemma : ∀ {x y} → f .left .fun y X.# x ⇔ g .left .fun y X.# x
   lemma = trans-⇔ (sym-⇔ (trans-⇔ blah (f .conjugate))) (g .conjugate)
+
+  uniqueness : f .left ≃m g .left
+  uniqueness .eqfun y = {!   !}
