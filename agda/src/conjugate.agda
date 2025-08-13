@@ -29,6 +29,9 @@ record Obj : Set (suc 0ℓ) where
   _#_ : carrier .Preorder.Carrier -> carrier .Preorder.Carrier -> Prop
   x # y = x ∧ y ≃ ⊥
 
+  blib : ∀ x y → (∀ z → x # z ⇔ y # z) -> x ≃ y
+  blib x y = {!   !}
+
 open Obj
 
 record _⇒c_ (X Y : Obj) : Set where
@@ -65,4 +68,4 @@ module _ {X Y} (f g : X ⇒c Y) (right≃right : f .right ≃m g .right) where
   lemma = trans-⇔ (sym-⇔ (trans-⇔ blah (f .conjugate))) (g .conjugate)
 
   uniqueness : f .left ≃m g .left
-  uniqueness .eqfun y = {!   !}
+  uniqueness .eqfun y = blib X (f .left .fun y) (g .left .fun y) λ z → lemma {x = z} {y}
