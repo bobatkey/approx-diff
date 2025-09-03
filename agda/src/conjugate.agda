@@ -30,7 +30,7 @@ record Obj : Set (suc 0ℓ) where
   x # y = x ∧ y ≃ ⊥
 
   blib : ∀ x y → (∀ z → x # z ⇔ y # z) -> x ≃ y
-  blib x y = {!   !}
+  blib x y f = {!   !}
 
 open Obj
 
