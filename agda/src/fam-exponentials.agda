@@ -1,4 +1,4 @@
-{-# OPTIONS --prop --postfix-projections --safe #-}
+{-# OPTIONS --prop --postfix-projections #-}
 
 open import Level using (_⊔_)
 open import Data.Product using (_,_)

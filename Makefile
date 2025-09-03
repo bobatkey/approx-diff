@@ -27,4 +27,4 @@ clean:
 
 js:
 	pushd agda && \
-	agda --js --compile-dir=_js_build src/example.agda --js-verify
+	/usr/local/bin/agda --js --js-es6 --compile-dir=_js_build src/example.agda --js-verify

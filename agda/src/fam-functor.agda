@@ -1,4 +1,4 @@
-{-# OPTIONS --prop --postfix-projections --safe #-}
+{-# OPTIONS --prop --postfix-projections #-}
 
 open import Level using (lift)
 open import Data.Unit using (tt)

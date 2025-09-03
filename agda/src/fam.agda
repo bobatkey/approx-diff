@@ -1,4 +1,4 @@
-{-# OPTIONS --prop --postfix-projections --safe #-}
+{-# OPTIONS --prop --postfix-projections #-}
 
 module fam where
 
@@ -724,6 +724,7 @@ module CategoryOfFamilies {o m e} os es (𝒞 : Category o m e) where
     open HasProducts P
 
     ListFam : (X : Obj) → Fam (prop-setoid.ListS (X .idx)) 𝒞
+    {-# TERMINATING #-}
     ListFam X .fm [] = T .witness
     ListFam X .fm (x ∷ xs) = prod (X .fam .fm x) (ListFam X .fm xs)
     ListFam X .subst {[]} {[]} tt = id _

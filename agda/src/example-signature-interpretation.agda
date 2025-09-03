@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --prop --safe #-}
+{-# OPTIONS --postfix-projections --prop #-}
 
 module example-signature-interpretation where
 

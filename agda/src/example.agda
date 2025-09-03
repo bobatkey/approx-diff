@@ -1,4 +1,4 @@
-{-# OPTIONS --prop --postfix-projections --safe #-}
+{-# OPTIONS --prop --postfix-projections #-}
 
 module example where
 
