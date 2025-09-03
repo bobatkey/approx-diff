@@ -24,3 +24,7 @@ clean:
 	rm -rf _latex
 	rm -f main.pdf
 	rm -f notes.pdf
+
+js:
+	pushd agda && \
+	agda --js --compile-dir=_js_build src/example.agda --js-verify

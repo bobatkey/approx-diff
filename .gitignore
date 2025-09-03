@@ -1,5 +1,6 @@
 /_latex/
-/_build/
+agda/_build/
+agda/_js_build/
 *~
 *.agdai
 *.pdf
