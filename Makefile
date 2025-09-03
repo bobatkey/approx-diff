@@ -27,4 +27,7 @@ clean:
 
 js:
 	pushd agda && \
-	agda --js --compile-dir=_js_build src/example.agda
+		agda --js --js-es6 --compile-dir=_js_build src/example.agda
+	npx esbuild agda/_js_build/jAgda.example.mjs \
+  		--bundle --format=esm --platform=node \
+  		--outfile=agda/example-bundle.mjs
