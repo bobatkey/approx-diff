@@ -1,25 +1,16 @@
-POPL 2026 Paper #1034 Reviews and Comments
-===========================================================================
-Paper #1034 Galois Slicing as Automatic Differentiation
+# Review #1034A
 
-
-Review #1034A
-===========================================================================
-
-Overall merit
--------------
+## Overall merit
 B. OK paper, but I will not champion it
 
-Reviewer expertise
-------------------
+## Reviewer expertise
 Z. Outsider
 
-Paper summary
--------------
+## Paper summary
 This paper proposes a novel theoretical framework that unifies Galois slicing (a program slicing technique) with automatic differentiation (AD) through categorical semantics. By leveraging the CHAD (Combinatory Homomorphic Automatic Differentiation) framework and stable domain theory, the authors formalize Galois slicing as a form of AD, where forward and backward slices correspond to forward/backward derivatives. The paper establishes a categorical model, proves the correctness of higher-order interpretations via Grothendieck logical relations, and demonstrates cross-language extensibility through a higher-order functional language with type systems and operational semantics. Key contributions include the theoretical re-foundation of program slicing via AD analogies and practical case studies.
 
-Comments for authors
---------------------
+## Comments for authors
+
 ### Favorite Points
 
 - The analogy between Galois connections and differential mappings is very interesting. It bridges program analysis with well-established AD theory, offering a fresh perspective on slicing.
@@ -38,28 +29,21 @@ Comments for authors
 
 - The paper focuses on "total functions" but does not address partiality or recursion in slicing correctness proofs, which are critical for real-world programs.
 
-Specific questions to be addressed in the author response
----------------------------------------------------------
-Q1. Could the authors provide a high-level "roadmap" linking each theoretical component (e.g., Galois connection, CHAD) to its slicing/AD counterpart? This would improve accessibility.
-
-Q2. Is there any plan to implement this framework in a practical AD tool and compare slicing accuracy/performance with baseline methods?
+## Specific questions to be addressed in the author response
+1. Could the authors provide a high-level "roadmap" linking each theoretical component (e.g., Galois connection, CHAD) to its slicing/AD counterpart? This would improve accessibility.
+2. Is there any plan to implement this framework in a practical AD tool and compare slicing accuracy/performance with baseline methods?
 
 
+# Review #1034B
 
-Review #1034B
-===========================================================================
-
-Overall merit
--------------
+## Overall merit
 D. Reject
 
-Reviewer expertise
-------------------
+## Reviewer expertise
 X. Expert
 
-Paper summary
--------------
-## CONTENTS
+## Paper summary
+### Contents
 
 This paper discusses Galois slicing, a notion introduced by Perera et al, for tracking approximations of the input and the output and points to an analogy with forward and backward derivatives in differentiable programming.
 
@@ -72,10 +56,9 @@ Unfortunately, this result does not extend to $\mathrm{Fam}(\mathbf{LatGal})$, s
 
 Section 4 reviews the simply typed $\lambda$-calculus with products and coproducts, extended with the list constructor and the fold combinator, together with its standard categorical interpretation (Figure 3). Section 5 then shows how to recover, from $\mathrm{Fam}(\mathbf{MeetSLat} \times \mathbf{JoinSLat}^{op})$, a denotation of first-order terms into $\mathrm{Fam}(\mathbf{LatGal})$.
 
+### Overall evaluation
 
-## OVERALL EVALUATION
-
-### Strengths
+#### Strengths
 
 1. The paper establishes a nontrivial result, showing how a category of Galois connections $\mathrm{Fam}(\mathbf{LatGal})$ can be used to provide denotations of first-order functional programs, even though the category is not (known to be?) cartesian closed.
 
@@ -85,7 +68,7 @@ Section 4 reviews the simply typed $\lambda$-calculus with products and coproduc
 
 4. Many of the results have been formalised in Agda, with the corresponding code made available in the supplementary material (though the present reviewer did not have the opportunity to verify it).
 
-### Weaknesses
+#### Weaknesses
 
 1. The paper is rather dispersive, with many digressions and asides, which makes it difficult for the reader to keep track of the main goal. As far as I understand, the core new contribution is the use of the free coproduct completion of a category of Galois connections to provide denotations of first-order simply typed terms, even though the category is not (known to be?)  cartesian closed.
 
@@ -103,12 +86,11 @@ Moreover, this analogy is not new: it is for example the starting point for diff
 Even more strikingly, Crubillé has established a precise result (*Probabilistic Stable Functions on Discrete Cones are Power Series*, LICS 2018), showing that in the category of probabilistic coherence spaces, stable functions correspond exactly to smooth functions over positive, discrete cones.
 I regret that the submitted paper does not discuss the existing literature. I understand, however, that this body of work has grown rapidly in recent years, making it difficult to have a complete picture.
 
-### Conclusion
+#### Conclusion
 
 In conclusion, I believe that, both in terms of presentation and content, this paper does not meet the standards required for a large-venue conference.
 
-Specific questions to be addressed in the author response
----------------------------------------------------------
+## Specific questions to be addressed in the author response
 - The paper mentions that we cannot prove that $\mathrm{Fam}(\mathbf{LatGal})$ is cartesian closed using Theorem 3.6, as this category does not have infinite products.
 Do we have any counterexamples showing that $\mathrm{Fam}(\mathbf{LatGal})$ is not cartesian closed, or is it simply unknown whether it is CCC?
 
@@ -116,43 +98,25 @@ Do we have any counterexamples showing that $\mathrm{Fam}(\mathbf{LatGal})$ is n
 Could a more precise reference (chapter, section, or page) be provided?
 
 
+# Review #1034C
 
-Review #1034C
-===========================================================================
-
-Overall merit
--------------
+## Overall merit
 B. OK paper, but I will not champion it
 
-Reviewer expertise
-------------------
+## Reviewer expertise
 X. Expert
 
-Paper summary
--------------
+## Paper summary
 This submission presents a semantic framework that reinterprets \emph{Galois slicing} (a program slicing technique based on Galois connections) as an \emph{AD-style} program transformation. The central idea is the instantiating of the existing CHAD framework to obtain a categorical semantics in which slices of program values play the role of derivatives or tangent values.
 
-Comments for authors
---------------------
+## Comments for authors
 The paper is clearly written, and the application of CHAD in this setting is commendable. However, the contribution remains largely interpretative. Leveraging CHAD to obtain a new instance of program transformation is conceptually natural and not, in itself, theoretically novel. The core categorical construction is imported from CHAD. Most of the other key properties were already known in the literature.
 
 On the practical side, the evaluation could benefit from examples going beyond toy examples, with some substantive case studies or applications to substantial/relevant programs. The work would be considerably strengthened by a clearer articulation of its motivation and by demonstrating compelling use-cases, case studies, or implementations in (almost) realistic settings.
 
-Specific questions to be addressed in the author response
----------------------------------------------------------
-\textbf{1}
-That is a natural question, but could already have been addressed in the paper: Could the setting be extended into a source-to-source transformation, generating code that computes slices alongside normal evaluation?
-
-
-
- \textbf{2}
-  The paper hints at ``quantitative slicing'' (intervals, graded provenance). Could the authors provide more end-to-end examples where such richer approximations yield insight unavailable in classical Galois slicing? Could the authors explain better how this approach compares to existing provenance mechanisms?
-
-\textbf{3}
- I am not sure this was treated exhaustively, but could the authors tell us more about what the computational overhead is of carrying slices alongside values?
-
-\textbf{4}
-Could the authors say more on how the framework compare, qualitatively or quantitatively, with existing slicing/provenance techniques in such domains?
-
-\textbf{5}
-I wonder if the work on partiality and CHAD helps in your setting?
+## Specific questions to be addressed in the author response
+1. That is a natural question, but could already have been addressed in the paper: Could the setting be extended into a source-to-source transformation, generating code that computes slices alongside normal evaluation?
+2. The paper hints at ``quantitative slicing'' (intervals, graded provenance). Could the authors provide more end-to-end examples where such richer approximations yield insight unavailable in classical Galois slicing? Could the authors explain better how this approach compares to existing provenance mechanisms?
+3. I am not sure this was treated exhaustively, but could the authors tell us more about what the computational overhead is of carrying slices alongside values?
+4. Could the authors say more on how the framework compare, qualitatively or quantitatively, with existing slicing/provenance techniques in such domains?
+5. I wonder if the work on partiality and CHAD helps in your setting?
