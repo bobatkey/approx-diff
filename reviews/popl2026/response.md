@@ -92,7 +92,7 @@ For example, if one was only interested in forward slicing with the approximatio
 
 Q4. _How does the framework compare, qualitatively or quantitatively, with existing slicing/provenance techniques ?_
 
-We plan to do a detailed comparison in future work.
+We briefly mentioned some qualitative differences with existing slicing/provenance techniques in Section 6. We plan to do a detailed comparison in future work.
 
 Q5. _Does the work on partiality and CHAD help in your setting?_
 
