@@ -54,7 +54,7 @@ We believe it is the case that $\mathrm{Fam}(\mathbf{LatGal})$ is not cartesian 
 
 Q2. _Could a more precise reference be given for Taylor's characterization of stability in terms of Galois connections?_
 
-FIXME
+We don't have Taylor's book at hand to find the reference at the moment, but the results are part of Taylor's unpublished work on stable domain theory and its categorical generalisations at this url: https://www.paultaylor.eu/stable/ . Specifically, Theorem 1.11 in the manuscript "Quantitative Domains, Groupoids and Linear Logic" ( https://www.paultaylor.eu/stable/quadgl.pdf ).
 
 ## Reviewer C
 
