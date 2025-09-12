@@ -20,7 +20,7 @@ This is disappointing, and we hope that the addition of more examples in a futur
 
 C2. _Paper lacks empirical validation or comparisons with existing slicing tools_.
 
-This is true, and is something that we plan to address in future work.
+This is true, we will add more examples comparing to existing Galois slicing implementations, and comparison with other tools is something that we plan to address more deeply in future work.
 
 C3. _Paper does not address partiality or recursion_.
 
@@ -28,7 +28,7 @@ This is true, and is something we plan to address in future work. Nevertheless, 
 
 Q1. _Could the authors provide a high-level "roadmap" linking each theoretical component (e.g., Galois connection, CHAD) to its slicing/AD counterpart? This would improve accessibility._
 
-We can certainly make the connections clearer in a future version, but for now:
+We will make the connections clearer in a future version, but for now:
 
 - Galois connections are the counterpart of forward and reverse tangent maps of real smooth functions. The relationship of being a Galois connection replaces the fact that the forward and reverse maps are linear transposes of each other.
 
@@ -36,11 +36,11 @@ We can certainly make the connections clearer in a future version, but for now:
 
 - Unlike in normal differential geometry, we have no direct analogue of the real numbers. The approximation object in Section 3.3.3 is the closest, but does not account for the the interval approximation example in Section 3.3.4.
 
-- CHAD is an approach to organising the implementation and semantics of AD. CHAD interprets a typed language with a real number type into the total category of some indexed category. The idea is that the indexing category represents the original functions, and the indexed category represents the tangent maps. In the CHAD work, two interpretations are considered, one which is "syntactic" and so provides a source-to-source translation, and one which is "semantic" and interprets a term as a formal pairing of its functional meaning and its family of tangent maps. The former is interpreted in the latter, and the latter is proved correct with respect to actual derivatives via a special purpose sconing argument similar to our Theorem 5.2. In our submission, we go directly to the semantic interpretation but replace tangents with approximations and tangent maps with Galois connections. Because we formulated our results in Agda, the semantic variant is actually executable and was used for our examples, so we didn't prioritise a source-to-source version. Moreover, we replace the specialised sconing / logical relations argument with a use of the Fiore and Simpson result, which is admittedly less elementary but highlights what is actually required for the correctness proof more clearly. Note that our approach also applies when $\mathrm{Fam}(\mathbf{LatGal})$ is replaced by $\mathbf{Man}$ and $\mathrm{Fam}(\mathbf{MeetSLat} \times \mathbf{JoinSLat}^{op})$ is replaced by $\mathrm{Fam}(\mathbf{Vect})$, recovering the original CHAD result with less work.
+- CHAD is an approach to organising the implementation and semantics of AD. CHAD interprets a typed language with a real number type into the total category of some indexed category. The idea is that the indexing category represents the original functions, and the indexed category represents the tangent maps. In the CHAD work, two interpretations are considered, one which is "syntactic" and so provides a source-to-source translation, and one which is "semantic" and interprets a term as a formal pairing of its functional meaning and its family of tangent maps. The former is interpreted in the latter, and the latter is proved correct with respect to actual derivatives via a special purpose sconing argument similar to our Theorem 5.2. In our submission, we go directly to the semantic interpretation but replace tangents with approximations and tangent maps with Galois connections. Because we formulated our results in Agda, the semantic variant is actually executable and was used for our examples, so we didn't prioritise a source-to-source version. Moreover, we replace the specialised sconing / logical relations argument with a use of the Fiore and Simpson result, which is admittedly less elementary but highlights what is actually required for the correctness proof more clearly. Note that our approach also applies when $\mathrm{Fam}(\mathbf{LatGal})$ is replaced by $\mathbf{Man}$ and $\mathrm{Fam}(\mathbf{MeetSLat} \times \mathbf{JoinSLat}^{op})$ is replaced by $\mathrm{Fam}(\mathbf{Vect})$, recovering the original CHAD result with less work and at a higher level of abstraction.
 
 Q2. _Is there any plan to implement this framework in a practical AD tool and compare slicing accuracy/performance with baseline methods?_
 
-We do not know if existing AD tools are appropriate as a basis for implementation, because they are often specialised to real number differentiation, but we certainly plan to implement our ideas in a more practical tool to evaluate its performance. It may be possible to give a generic CHAD implementation that covers both.
+We do not know if existing AD tools are appropriate as a basis for implementation, because they are often specialised to real number differentiation, but we certainly plan to implement our ideas in a more practical tool than Agda to evaluate its performance. It may be possible to give a generic CHAD implementation that covers both.
 
 ## Reviewer B
 
@@ -58,7 +58,7 @@ We think there are two parts to the reviewer's objection:
 
 C3. _The paper does not discuss the existing literature on differential linear logic or probabilistic coherence spaces_.
 
-We admit that we should have done a more detailed survey of the literature on Differential Linear Logic and how it relates to our setting, especially given the common factor of stability. A difference with DiLL is in the treatment of partiality and non-determinism. The Ehrhard survey referenced by the reviewer highlights these as key parts of DiLL, but, we do not wish to admit either of these in our model for all functions -- they only apply to tangent maps. This, as well the fact that approximations for us are not "real data", was part of our motivation for moving from stable functions to the families construction.
+We admit that we should have done a more detailed survey of the literature on Differential Linear Logic and how it relates to our setting, especially given the common factor of Stability. A difference with DiLL is in the treatment of partiality and non-determinism. The Ehrhard survey referenced by the reviewer highlights these as key parts of DiLL, but, we do not wish to admit either of these in our model for all functions -- they only apply to tangent maps. This, as well the fact that approximations for us are not "real data", was part of our motivation for moving from stable functions to the families construction.
 
 Q1. _Do we have any counterexamples showing that $\mathrm{Fam}(\mathbf{LatGal})$ is not cartesian closed?_
 
@@ -96,4 +96,4 @@ We briefly mentioned some qualitative differences with existing slicing/provenan
 
 Q5. _Does the work on partiality and CHAD help in your setting?_
 
-Most likely, yes.
+Most likely, yes, for languages with general recursion.
