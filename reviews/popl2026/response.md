@@ -54,7 +54,7 @@ We think there are two parts to the reviewer's objection:
 
 1. Is it correct that we appropriate "differentiation" and other words from real analysis in our setting? This is debatable, and certainly one could argue that absent any kind of definition of derivative as a limit, or use of linearity, that one should not use the word. Our argument is based on the similarity of structures (e.g., existence of tangent maps, meet preservation instead of linearity) outlined in Section 1.2, and on the conjectures about Tangent categories. The conjectures about Tangent categories (which in fact we have now proved for the forward case, the reverse case's definition is much more involved) extend the connection to the higher-order derivative case, but otherwise do not really say much more than that.
 
-2. Whether or not this is a kind of automatic differentiation. Our argument here is based on the fact that we are proposing an interpretation of programs that computes forward and backwards maps of associated data along the main computation. By the CHAD approach, this is exactly what first-order AD does, and so we think that our identification as a generalised form is valid.
+2. Whether or not this is a kind of automatic differentiation. Our argument here is based on the fact that we are proposing an interpretation of programs that computes forward and backwards maps of associated data along the main computation. Under the CHAD approach, this is exactly what first-order AD does, and so we think that the characterisation of our approach as a generalised form of AD valid.
 
 C3. _The paper does not discuss the existing literature on differential linear logic or probabilistic coherence spaces_.
 
