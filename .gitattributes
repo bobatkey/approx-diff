@@ -7,6 +7,7 @@ notes.tex export-ignore
 notes/ export-ignore
 old/ export-ignore
 reviews/ export-ignore
+Makefile export-ignore
 README.md export-ignore
 *.pdf export-ignore
 *.sh export-ignore
