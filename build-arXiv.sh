@@ -1,11 +1,9 @@
 #!/bin/bash
 set -xe
 
-NAME=arXiv.zip
-ARCHIVE="./$NAME"
+NAME=arXiv
 
 make
 
-zip -r - . > $ARCHIVE
-zip -d $ARCHIVE \*.{DS_Store,gitignore}
-zip -d $ARCHIVE *.pdf .git *.sh
+git archive --format=zip HEAD -o "$NAME.zip"
+zip -d "$NAME.zip" *.pdf .git *.sh agda
