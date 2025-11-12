@@ -1,7 +1,12 @@
 # won't be included into `git archive`
 .gitignore     export-ignore
 .gitattributes export-ignore
-agda/ export-ignore
 _latex/ export-ignore
+agda/ export-ignore
+notes.tex export-ignore
+notes/ export-ignore
+old/ export-ignore
+reviews/ export-ignore
+README.md export-ignore
 *.pdf export-ignore
 *.sh export-ignore
