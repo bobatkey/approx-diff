@@ -1,4 +1,6 @@
 # won't be included into `git archive`
+.gitignore     export-ignore
+.gitattributes export-ignore
 agda/ export-ignore
 _latex/ export-ignore
 *.pdf export-ignore
