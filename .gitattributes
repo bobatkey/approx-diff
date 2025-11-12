@@ -1,0 +1,5 @@
+# won't be included into `git archive`
+agda/ export-ignore
+_latex/ export-ignore
+*.pdf export-ignore
+*.sh export-ignore
