@@ -41,15 +41,26 @@ record _⇒c_ (X Y : Obj) : Set where
   private
     module X = Obj X
     module Y = Obj Y
+    module XJ = JoinSemilattice (X .joins)
+    module YJ = JoinSemilattice (Y .joins)
   field
     -- situation is symmetric, so names here just refer to direction relative to X ⇒c Y
     right : X .carrier preorder.=> Y .carrier
     left : Y .carrier preorder.=> X .carrier
     conjugate : ∀ {x y} → y Y.# right .fun x ⇔ left .fun y X.# x
 
+  -- both halves preserves joins
+  left-∨ : Y .joins =>J X .joins
+  left-∨ .func = left
+  left-∨ .∨-preserving = {!   !} -- conjugate .proj₁ YJ.[ conjugate .proj₂ XJ.inl ∨ conjugate .proj₂ XJ.inr ]
+  left-∨ .⊥-preserving = {!   !} -- conjugate .proj₁ YJ.≤-bottom
+
 open _⇒c_
 
 record _≃c_ {X Y : Obj} (f g : X ⇒c Y) : Prop where
+  open preorder._=>_
+  open _=>J_
+
   field
     right-eq : f .right ≃m g .right
     left-eq : f .left ≃m g .left
