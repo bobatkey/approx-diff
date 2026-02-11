@@ -34,7 +34,6 @@ open Obj
 
 record _⇒c_ (X Y : Obj) : Set where
   no-eta-equality
-  open _=>M_
   open _=>J_
   open preorder._=>_
 
@@ -49,11 +48,16 @@ record _⇒c_ (X Y : Obj) : Set where
     left : Y .carrier preorder.=> X .carrier
     conjugate : ∀ {x y} → y Y.# right .fun x ⇔ left .fun y X.# x
 
-  -- both halves preserves joins
+  -- both preserve joins
+  right-∨ : X .joins =>J Y .joins
+  right-∨ .func = right
+  right-∨ .∨-preserving = {!   !}
+  right-∨ .⊥-preserving = {!   !}
+
   left-∨ : Y .joins =>J X .joins
   left-∨ .func = left
-  left-∨ .∨-preserving = {!   !} -- conjugate .proj₁ YJ.[ conjugate .proj₂ XJ.inl ∨ conjugate .proj₂ XJ.inr ]
-  left-∨ .⊥-preserving = {!   !} -- conjugate .proj₁ YJ.≤-bottom
+  left-∨ .∨-preserving = {!   !} 
+  left-∨ .⊥-preserving = {!   !} 
 
 open _⇒c_
 
