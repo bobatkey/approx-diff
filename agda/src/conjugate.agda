@@ -47,3 +47,31 @@ record _⇒c_ (X Y : Obj) : Set where
     conjugate : ∀ {x y} → y Y.# right .fun x ⇔ left .fun y X.# x
 
 open _⇒c_
+
+record _≃c_ {X Y : Obj} (f g : X ⇒c Y) : Prop where
+  field
+    right-eq : f .right ≃m g .right
+    left-eq : f .left ≃m g .left
+
+open _≃c_
+
+open IsEquivalence
+open preorder using (≃m-isEquivalence)
+
+≃g-isEquivalence : ∀ {X Y} → IsEquivalence (_≃c_ {X} {Y})
+≃g-isEquivalence .refl .right-eq = ≃m-isEquivalence .refl
+≃g-isEquivalence .refl .left-eq = ≃m-isEquivalence .refl
+≃g-isEquivalence .sym e .right-eq = ≃m-isEquivalence .sym (e .right-eq)
+≃g-isEquivalence .sym e .left-eq = ≃m-isEquivalence .sym (e .left-eq)
+≃g-isEquivalence .trans e₁ e₂ .right-eq = ≃m-isEquivalence .trans (e₁ .right-eq) (e₂ .right-eq)
+≃g-isEquivalence .trans e₁ e₂ .left-eq = ≃m-isEquivalence .trans (e₁ .left-eq) (e₂ .left-eq)
+
+idc : (X : Obj) → X ⇒c X
+idc X .right = id
+idc X .left = id
+idc X .conjugate = refl-⇔
+
+_∘c_ : ∀ {X Y Z : Obj} → Y ⇒c Z → X ⇒c Y → X ⇒c Z
+(f ∘c g) .right = f .right ∘ g .right
+(f ∘c g) .left = g .left ∘ f .left
+(f ∘c g) .conjugate = trans-⇔ (f .conjugate) (g .conjugate)
