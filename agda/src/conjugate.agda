@@ -6,6 +6,7 @@ open import Level
 open import prop hiding (_∨_; ⊥; _∧_)
 open import prop-setoid using (IsEquivalence)
 open import preorder
+open import categories
 open import meet-semilattice
   using (MeetSemilattice)
   renaming (_=>_ to _=>M_)
@@ -58,13 +59,13 @@ open _≃c_
 open IsEquivalence
 open preorder using (≃m-isEquivalence)
 
-≃g-isEquivalence : ∀ {X Y} → IsEquivalence (_≃c_ {X} {Y})
-≃g-isEquivalence .refl .right-eq = ≃m-isEquivalence .refl
-≃g-isEquivalence .refl .left-eq = ≃m-isEquivalence .refl
-≃g-isEquivalence .sym e .right-eq = ≃m-isEquivalence .sym (e .right-eq)
-≃g-isEquivalence .sym e .left-eq = ≃m-isEquivalence .sym (e .left-eq)
-≃g-isEquivalence .trans e₁ e₂ .right-eq = ≃m-isEquivalence .trans (e₁ .right-eq) (e₂ .right-eq)
-≃g-isEquivalence .trans e₁ e₂ .left-eq = ≃m-isEquivalence .trans (e₁ .left-eq) (e₂ .left-eq)
+≃c-isEquivalence : ∀ {X Y} → IsEquivalence (_≃c_ {X} {Y})
+≃c-isEquivalence .refl .right-eq = ≃m-isEquivalence .refl
+≃c-isEquivalence .refl .left-eq = ≃m-isEquivalence .refl
+≃c-isEquivalence .sym e .right-eq = ≃m-isEquivalence .sym (e .right-eq)
+≃c-isEquivalence .sym e .left-eq = ≃m-isEquivalence .sym (e .left-eq)
+≃c-isEquivalence .trans e₁ e₂ .right-eq = ≃m-isEquivalence .trans (e₁ .right-eq) (e₂ .right-eq)
+≃c-isEquivalence .trans e₁ e₂ .left-eq = ≃m-isEquivalence .trans (e₁ .left-eq) (e₂ .left-eq)
 
 idc : (X : Obj) → X ⇒c X
 idc X .right = id
@@ -75,3 +76,23 @@ _∘c_ : ∀ {X Y Z : Obj} → Y ⇒c Z → X ⇒c Y → X ⇒c Z
 (f ∘c g) .right = f .right ∘ g .right
 (f ∘c g) .left = g .left ∘ f .left
 (f ∘c g) .conjugate = trans-⇔ (f .conjugate) (g .conjugate)
+
+∘c-cong : ∀ {X Y Z}{f₁ f₂ : Y ⇒c Z}{g₁ g₂ : X ⇒c Y} → f₁ ≃c f₂ → g₁ ≃c g₂ → (f₁ ∘c g₁) ≃c (f₂ ∘c g₂)
+∘c-cong f₁≈f₂ g₁≈g₂ .right-eq = ∘-cong (f₁≈f₂ .right-eq) (g₁≈g₂ .right-eq)
+∘c-cong f₁≈f₂ g₁≈g₂ .left-eq = ∘-cong (g₁≈g₂ .left-eq) (f₁≈f₂ .left-eq)
+
+cat : Category (suc 0ℓ) 0ℓ 0ℓ
+cat .Category.obj = Obj
+cat .Category._⇒_ = _⇒c_
+cat .Category._≈_ = _≃c_
+cat .Category.isEquiv = ≃c-isEquivalence
+cat .Category.id = idc
+cat .Category._∘_ = _∘c_
+cat .Category.∘-cong = ∘c-cong
+cat .Category.id-left .right-eq = id-left
+cat .Category.id-left .left-eq = id-right
+cat .Category.id-right .right-eq = id-right
+cat .Category.id-right .left-eq = id-left
+cat .Category.assoc f g h .right-eq = assoc (f .right) (g .right) (h .right)
+cat .Category.assoc f g h .left-eq =
+  ≃m-isEquivalence .sym (assoc (h .left) (g .left) (f .left))
