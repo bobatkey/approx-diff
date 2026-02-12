@@ -28,7 +28,13 @@ record Obj : Set (suc 0ℓ) where
   open JoinSemilattice joins renaming (idem to ∨-idem; interchange to ∨-interchange) public
 
   _#_ : carrier .Preorder.Carrier -> carrier .Preorder.Carrier -> Prop
-  x # y = x ∧ y ≃ ⊥
+  x # y = (x ∧ y) ≤ ⊥
+
+  #-join-elim₁ : ∀ {x y z} → x # (y ∨ z) → x # y
+  #-join-elim₁ = ≤-trans (∧-mono ≤-refl inl)
+
+  #-join-elim₂ : ∀ {x y z} → x # (y ∨ z) → x # z
+  #-join-elim₂ = ≤-trans (∧-mono ≤-refl inr)
 
 open Obj
 
@@ -48,9 +54,9 @@ record _⇒c_ (X Y : Obj) : Set where
     left : Y .carrier preorder.=> X .carrier
     conjugate : ∀ {x y} → y Y.# right .fun x ⇔ left .fun y X.# x
 
-  -- Both preserve joins? 
+  -- Both preserve joins?
   -- No: I think we only have "subadditivity", i.e. sub-join preservation:
-  --    f(x ∨ x') ≤ f(x) ∨ f(x') 
+  --    f(x ∨ x') ≤ f(x) ∨ f(x')
   -- without enough additional structure for "separation by disjointness" to obtain:
   --    (∀z . z ∧ x = ⊥ ⇔ z ∧ y = ⊥) ⟹ x ≃ y.
   right-∨ : X .joins =>J Y .joins
@@ -60,8 +66,8 @@ record _⇒c_ (X Y : Obj) : Set where
 
   left-∨ : Y .joins =>J X .joins
   left-∨ .func = left
-  left-∨ .∨-preserving = {!   !} 
-  left-∨ .⊥-preserving = {!   !} 
+  left-∨ .∨-preserving = {!   !}
+  left-∨ .⊥-preserving = {!   !}
 
 open _⇒c_
 
