@@ -31,6 +31,9 @@ record Obj : Set (suc 0ℓ) where
   _#_ : carrier .Preorder.Carrier -> carrier .Preorder.Carrier -> Prop
   x # y = (x ∧ y) ≤ ⊥
 
+  #-sym : ∀ {x y} → x # y → y # x
+  #-sym = {!   !}
+
   -- annihilator map preserves ≤ automatically, and reflects it as an additional assumption
   #-mono : ∀ {x y} → x ≤ y → ∀ z → y # z → x # z
   #-mono x≤y z = ≤-trans (∧-mono x≤y ≤-refl)
@@ -58,7 +61,17 @@ record _⇒c_ (X Y : Obj) : Set where
 
   right-∨ : X .joins =>J Y .joins
   right-∨ .func = right
-  right-∨ .∨-preserving = {!   !}
+  right-∨ .∨-preserving {x} {x'} = Y .#-reflect suffices
+    where
+    suffices : ∀ (y : Y .Carrier) → right .fun (x XJ.∨ x') Y.# y → (right .fun x YJ.∨ right .fun x') Y.# y
+    suffices y fx∨x'#y = {!   !}
+      where
+      gy#x∨x' : left .fun y X.# (x XJ.∨ x')
+      gy#x∨x' = conjugate .proj₁ (Y.#-sym fx∨x'#y)
+      gy#x : left .fun y X.# x
+      gy#x = X.#-sym (X.#-mono (inl X) (left .fun y) (X.#-sym gy#x∨x'))
+      gy#x' : left .fun y X.# x'
+      gy#x' = X.#-sym (X.#-mono (inr X) (left .fun y) (X.#-sym gy#x∨x'))
   right-∨ .⊥-preserving = {!   !}
 
   left-∨ : Y .joins =>J X .joins
