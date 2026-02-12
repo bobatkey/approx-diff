@@ -344,11 +344,11 @@ module _ where
   TWO .meets .MeetSemilattice._∧_ = two._⊓_
   TWO .meets .MeetSemilattice.⊤ = I
   TWO .meets .MeetSemilattice.∧-isMeet = two.⊓-isMeet
-  TWO .meets .MeetSemilattice.⊤-isTop .IsTop.≤-top = two.I-top
+  TWO .meets .MeetSemilattice.⊤-isTop = two.I-isTop
   TWO .joins .JoinSemilattice._∨_ = two._⊔_
   TWO .joins .JoinSemilattice.⊥ = O
   TWO .joins .JoinSemilattice.∨-isJoin = two.⊔-isJoin
-  TWO .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom {x} = two.O-bot {x}
+  TWO .joins .JoinSemilattice.⊥-isBottom = two.O-isBottom
 
   -- This is a monoid because every object in this category is a
   -- monoid by cmon-enrichment. FIXME: actually prove this gives a

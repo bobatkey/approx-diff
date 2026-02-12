@@ -166,4 +166,4 @@ TWO .carrier .Preorder.≤-isPreorder = two.≤-isPreorder
 TWO .meets .MeetSemilattice._∧_ = two._⊓_
 TWO .meets .MeetSemilattice.⊤ = two.I
 TWO .meets .MeetSemilattice.∧-isMeet = two.⊓-isMeet
-TWO .meets .MeetSemilattice.⊤-isTop .IsTop.≤-top = two.I-top
+TWO .meets .MeetSemilattice.⊤-isTop = two.I-isTop

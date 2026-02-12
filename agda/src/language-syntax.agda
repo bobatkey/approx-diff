@@ -44,6 +44,12 @@ data _∋_ : ctxt → type → Set ℓ where
 Ren : ctxt → ctxt → Set ℓ
 Ren Γ Γ' = ∀ {τ} → Γ ∋ τ → Γ' ∋ τ
 
+id-ren : ∀ Γ → Ren Γ Γ
+id-ren Γ x = x
+
+_∘ren_ : ∀ {Γ₁ Γ₂ Γ₃} → Ren Γ₂ Γ₃ → Ren Γ₁ Γ₂ → Ren Γ₁ Γ₃
+ρ₁ ∘ren ρ₂ = λ z → ρ₁ (ρ₂ z)
+
 -- Push a renaming under a context extension.
 ext : ∀ {Γ Γ' τ} → Ren Γ Γ' → Ren (Γ , τ) (Γ' , τ)
 ext ρ zero = zero
