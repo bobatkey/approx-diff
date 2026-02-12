@@ -14,7 +14,7 @@ open import join-semilattice
   using (JoinSemilattice)
   renaming (_=>_ to _=>J_)
 
--- Category of bounded lattices with "annihilator separation" (the annihilator map x ↦ { z | z # x } is
+-- Category of bounded lattices with "disjointness separation" (the annihilator map x ↦ { z | z # x } is
 -- injective) and Tarski conjugates between them.
 
 record Obj : Set (suc 0ℓ) where
@@ -31,12 +31,11 @@ record Obj : Set (suc 0ℓ) where
   _#_ : carrier .Preorder.Carrier -> carrier .Preorder.Carrier -> Prop
   x # y = (x ∧ y) ≤ ⊥
 
-  -- annihilator map preserves ≤ automatically
+  -- annihilator map preserves ≤ automatically, and reflects it as an additional assumption
   #-mono : ∀ {x y} → x ≤ y → ∀ z → y # z → x # z
   #-mono x≤y z = ≤-trans (∧-mono x≤y ≤-refl)
 
   field
-    -- and reflects it as an additional assumption
     #-reflect : ∀ {x y} → (∀ z → y # z → x # z) → y ≤ x
 
 open Obj
@@ -57,11 +56,6 @@ record _⇒c_ (X Y : Obj) : Set where
     left : Y .carrier preorder.=> X .carrier
     conjugate : ∀ {x y} → y Y.# right .fun x ⇔ left .fun y X.# x
 
-  -- Both preserve joins?
-  -- No: I think we only have "subadditivity", i.e. sub-join preservation:
-  --    f(x ∨ x') ≤ f(x) ∨ f(x')
-  -- without enough additional structure for "separation by disjointness" to obtain:
-  --    (∀z . z ∧ x = ⊥ ⇔ z ∧ y = ⊥) ⟹ x ≃ y.
   right-∨ : X .joins =>J Y .joins
   right-∨ .func = right
   right-∨ .∨-preserving = {!   !}
