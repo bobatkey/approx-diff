@@ -14,7 +14,8 @@ open import join-semilattice
   using (JoinSemilattice)
   renaming (_=>_ to _=>J_)
 
--- Category of bounded lattices and Tarski conjugates between them.
+-- Category of bounded lattices with "annihilator separation" (the annihilator map x ↦ { z | z # x } is
+-- injective) and Tarski conjugates between them.
 
 record Obj : Set (suc 0ℓ) where
   no-eta-equality
@@ -30,11 +31,13 @@ record Obj : Set (suc 0ℓ) where
   _#_ : carrier .Preorder.Carrier -> carrier .Preorder.Carrier -> Prop
   x # y = (x ∧ y) ≤ ⊥
 
-  #-join-elim₁ : ∀ {x y z} → x # (y ∨ z) → x # y
-  #-join-elim₁ = ≤-trans (∧-mono ≤-refl inl)
+  -- annihilator map preserves ≤ automatically
+  #-mono : ∀ {x y} → x ≤ y → ∀ z → y # z → x # z
+  #-mono x≤y z = ≤-trans (∧-mono x≤y ≤-refl)
 
-  #-join-elim₂ : ∀ {x y z} → x # (y ∨ z) → x # z
-  #-join-elim₂ = ≤-trans (∧-mono ≤-refl inr)
+  field
+    -- and reflects it as an additional assumption
+    #-reflect : ∀ {x y} → (∀ z → y # z → x # z) → y ≤ x
 
 open Obj
 
