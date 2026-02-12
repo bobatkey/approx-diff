@@ -48,7 +48,11 @@ record _⇒c_ (X Y : Obj) : Set where
     left : Y .carrier preorder.=> X .carrier
     conjugate : ∀ {x y} → y Y.# right .fun x ⇔ left .fun y X.# x
 
-  -- both preserve joins
+  -- Both preserve joins? 
+  -- No: I think we only have "subadditivity", i.e. sub-join preservation:
+  --    f(x ∨ x') ≤ f(x) ∨ f(x') 
+  -- without enough additional structure for "separation by disjointness" to obtain:
+  --    (∀z . z ∧ x = ⊥ ⇔ z ∧ y = ⊥) ⟹ x ≃ y.
   right-∨ : X .joins =>J Y .joins
   right-∨ .func = right
   right-∨ .∨-preserving = {!   !}
