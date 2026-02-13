@@ -67,6 +67,8 @@ record _⇒c_ (X Y : Obj) : Set where
     -- situation is symmetric, so names here just refer to direction relative to X ⇒c Y
     right : X .carrier preorder.=> Y .carrier
     left : Y .carrier preorder.=> X .carrier
+    -- since disjointness determines the order, really just another way of saying that left is adjoint to
+    -- (¬ ∘ right) or equivalently that right is adjoint to (¬ ∘ left)
     conjugate : ∀ {x y} → y Y.# right .fun x ⇔ left .fun y X.# x
 
   right-∨ : X .joins =>J Y .joins
