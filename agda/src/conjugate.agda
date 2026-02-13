@@ -19,7 +19,7 @@ open import join-semilattice
 -- To a bounded lattice, add distributivity and "disjointness separation" (the annihilator map Ann(x)
 -- := { z | z # x } is injective). The latter corresponds to Ann(x) being a principal ideal (Ann(x) = ↓(¬x))
 -- where ¬x is the unique pseudocomplement. This seems to be the minimum structure required for conjugates to
--- preserve joins.
+-- preserve joins; in particular we don't need double negation.
 
 record Obj : Set (suc 0ℓ) where
   no-eta-equality
@@ -36,7 +36,7 @@ record Obj : Set (suc 0ℓ) where
   x # y = (x ∧ y) ≤ ⊥
 
   #-sym : ∀ {x y} → x # y → y # x
-  #-sym = {!   !}
+  #-sym = ≤-trans ∧-comm
 
   -- annihilator map preserves ≤ automatically, and reflects ≤ as an additional assumption
   #-mono : ∀ {x y} → x ≤ y → ∀ z → y # z → x # z
