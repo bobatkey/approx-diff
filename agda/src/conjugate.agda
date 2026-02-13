@@ -16,8 +16,8 @@ open import join-semilattice
 
 -- Category of Heyting algebras (residuated lattices) and Tarski conjugates between them.
 -- FIXME: express using the standard definition of Heyting algebra (although I think this is equivalent).
--- To a bounded lattice, add distributivity and "disjointness separation" (the annihilator map Ann(x)
--- := { z | z # x } is injective). The latter corresponds to Ann(x) being a principal ideal (Ann(x) = ↓(¬x))
+-- To bounded lattices, Heyting algebras add distributivity and "disjointness separation" (the annihilator map
+-- Ann(x) := { z | z # x } is injective). The latter corresponds to Ann(x) being a principal ideal ↓(¬x)
 -- where ¬x is the unique pseudocomplement. This seems to be the minimum structure required for conjugates to
 -- preserve joins; in particular we don't need double negation.
 
@@ -48,7 +48,7 @@ record Obj : Set (suc 0ℓ) where
     ∨-∧-distrib : ∀ x y z → x ∨ (y ∧ z) ≤ (x ∨ y) ∧ (x ∨ z)
 
   #-distrib : ∀ {x y z} → x # y → x # z → x # (y ∨ z)
-  #-distrib = {!   !}
+  #-distrib x#y x#z = ≤-trans (∧-∨-distrib _ _ _) (≤-trans (∨-mono x#y x#z) (∨-idem .proj₁))
 
 open Obj
 
