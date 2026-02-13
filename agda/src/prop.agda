@@ -56,7 +56,7 @@ record Prf {ℓ} (P : Prop ℓ) : Set ℓ where
 open Prf
 
 module _ where
-  infix 4 _⇔_
+  infix 2 _⇔_
 
   _⇔_ : Prop → Prop → Prop
   P ⇔ Q = (P → Q) ∧ (Q → P)
