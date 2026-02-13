@@ -86,7 +86,10 @@ record _⇒c_ (X Y : Obj) : Set where
 
   left-∨ : Y .joins =>J X .joins
   left-∨ .func = left
-  left-∨ .∨-preserving = {!   !}
+  left-∨ .∨-preserving {y} {y'} = X .#-reflect suffices
+    where
+    suffices : ∀ x → left .fun (y YJ.∨ y') X.∧ x X.≤ XJ.⊥ → (left .fun y XJ.∨ left .fun y') X.∧ x X.≤ XJ.⊥
+    suffices = {!   !}
   left-∨ .⊥-preserving = X .#-reflect λ _ _ -> π₁ X
 
 open _⇒c_
