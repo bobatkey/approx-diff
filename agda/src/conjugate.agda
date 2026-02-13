@@ -88,8 +88,14 @@ record _⇒c_ (X Y : Obj) : Set where
   left-∨ .func = left
   left-∨ .∨-preserving {y} {y'} = X .#-reflect suffices
     where
-    suffices : ∀ x → left .fun (y YJ.∨ y') X.∧ x X.≤ XJ.⊥ → (left .fun y XJ.∨ left .fun y') X.∧ x X.≤ XJ.⊥
-    suffices = {!   !}
+    suffices : ∀ x → left .fun (y YJ.∨ y') X.# x → (left .fun y XJ.∨ left .fun y') X.# x
+    suffices x gy∨y'#x =
+      X.#-sym (X.#-distrib
+        (X.#-sym (conjugate .proj₁ (Y.#-mono (inl Y) (right .fun x) fx#y∨y')))
+        (X.#-sym (conjugate .proj₁ (Y.#-mono (inr Y) (right .fun x) fx#y∨y'))))
+      where
+      fx#y∨y' : (y YJ.∨ y') Y.# right .fun x
+      fx#y∨y' = conjugate .proj₂ gy∨y'#x
   left-∨ .⊥-preserving = X .#-reflect λ _ _ -> π₁ X
 
 open _⇒c_
