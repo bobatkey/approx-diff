@@ -64,7 +64,7 @@ record _⇒c_ (X Y : Obj) : Set where
   right-∨ .∨-preserving {x} {x'} = Y .#-reflect suffices
     where
     suffices : ∀ (y : Y .Carrier) → right .fun (x XJ.∨ x') Y.# y → (right .fun x YJ.∨ right .fun x') Y.# y
-    suffices y fx∨x'#y = {!   !}
+    suffices y fx∨x'#y = Y.#-sym y#fx∨x'
       where
       gy#x∨x' : left .fun y X.# (x XJ.∨ x')
       gy#x∨x' = conjugate .proj₁ (Y.#-sym fx∨x'#y)
@@ -72,6 +72,13 @@ record _⇒c_ (X Y : Obj) : Set where
       gy#x = X.#-sym (X.#-mono (inl X) (left .fun y) (X.#-sym gy#x∨x'))
       gy#x' : left .fun y X.# x'
       gy#x' = X.#-sym (X.#-mono (inr X) (left .fun y) (X.#-sym gy#x∨x'))
+      y#fx : y Y.# right .fun x
+      y#fx = conjugate .proj₂ gy#x
+      y#fx' : y Y.# right .fun x'
+      y#fx' = conjugate .proj₂ gy#x'
+      y#fx∨x' : y Y.# (right .fun x YJ.∨ right .fun x')
+      y#fx∨x' = {!   !}
+
   right-∨ .⊥-preserving = {!   !}
 
   left-∨ : Y .joins =>J X .joins
