@@ -22,6 +22,8 @@ record Preorder : Set (suc 0ℓ) where
   open IsEquivalence isEquivalence
     renaming (refl to ≃-refl; sym to ≃-sym; trans to ≃-trans) public
 
+  infix 4 _≤_
+
 module _ where
   open Preorder
 

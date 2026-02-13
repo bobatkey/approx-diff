@@ -14,8 +14,12 @@ open import join-semilattice
   using (JoinSemilattice)
   renaming (_=>_ to _=>J_)
 
--- Category of bounded lattices with "disjointness separation" (the annihilator map x ↦ { z | z # x } is
--- injective) and Tarski conjugates between them.
+-- Category of Heyting algebras (residuated lattices) and Tarski conjugates between them.
+-- FIXME: express using the standard definition of Heyting algebra (although I think this is equivalent).
+-- To a bounded lattice, add distributivity and "disjointness separation" (the annihilator map Ann(x)
+-- := { z | z # x } is injective). The latter corresponds to Ann(x) being a principal ideal (Ann(x) = ↓(¬x))
+-- where ¬x is the unique pseudocomplement. This seems to be the minimum structure required for conjugates to
+-- preserve joins.
 
 record Obj : Set (suc 0ℓ) where
   no-eta-equality
@@ -34,12 +38,14 @@ record Obj : Set (suc 0ℓ) where
   #-sym : ∀ {x y} → x # y → y # x
   #-sym = {!   !}
 
-  -- annihilator map preserves ≤ automatically, and reflects it as an additional assumption
+  -- annihilator map preserves ≤ automatically, and reflects ≤ as an additional assumption
   #-mono : ∀ {x y} → x ≤ y → ∀ z → y # z → x # z
   #-mono x≤y z = ≤-trans (∧-mono x≤y ≤-refl)
 
   field
     #-reflect : ∀ {x y} → (∀ z → y # z → x # z) → y ≤ x
+    ∧-∨-distrib : ∀ x y z → x ∧ (y ∨ z) ≤ (x ∧ y) ∨ (x ∧ z)
+    ∨-∧-distrib : ∀ x y z → x ∨ (y ∧ z) ≤ (x ∨ y) ∧ (x ∨ z)
 
 open Obj
 
