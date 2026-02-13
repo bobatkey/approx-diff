@@ -62,6 +62,7 @@ record _⇒c_ (X Y : Obj) : Set where
     module Y = Obj Y
     module XJ = JoinSemilattice (X .joins)
     module YJ = JoinSemilattice (Y .joins)
+    module YM = MeetSemilattice (Y .meets)
   field
     -- situation is symmetric, so names here just refer to direction relative to X ⇒c Y
     right : X .carrier preorder.=> Y .carrier
@@ -72,7 +73,7 @@ record _⇒c_ (X Y : Obj) : Set where
   right-∨ .func = right
   right-∨ .∨-preserving {x} {x'} = Y .#-reflect suffices
     where
-    suffices : ∀ (y : Y .Carrier) → right .fun (x XJ.∨ x') Y.# y → (right .fun x YJ.∨ right .fun x') Y.# y
+    suffices : ∀ y → right .fun (x XJ.∨ x') Y.# y → (right .fun x YJ.∨ right .fun x') Y.# y
     suffices y fx∨x'#y =
       Y.#-sym (Y.#-distrib
         (conjugate .proj₂ (X.#-sym (X.#-mono (inl X) (left .fun y) (X.#-sym gy#x∨x'))))
@@ -81,7 +82,7 @@ record _⇒c_ (X Y : Obj) : Set where
       gy#x∨x' : left .fun y X.# (x XJ.∨ x')
       gy#x∨x' = conjugate .proj₁ (Y.#-sym fx∨x'#y)
 
-  right-∨ .⊥-preserving = {!   !}
+  right-∨ .⊥-preserving = Y .#-reflect (λ _ _ -> π₁ Y)
 
   left-∨ : Y .joins =>J X .joins
   left-∨ .func = left
