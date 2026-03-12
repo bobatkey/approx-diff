@@ -38,6 +38,9 @@ record Obj : Set (suc 0ℓ) where
   #-sym : ∀ {x y} → x # y → y # x
   #-sym = ≤-trans ∧-comm
 
+  ⊥-# : ∀ {x} → ⊥ # x
+  ⊥-# = π₁
+
   -- annihilator map preserves ≤ automatically, and reflects ≤ as an additional assumption
   #-mono : ∀ {x y} → x ≤ y → ∀ z → y # z → x # z
   #-mono x≤y z = ≤-trans (∧-mono x≤y ≤-refl)
@@ -152,3 +155,19 @@ cat .Category.id-right .left-eq = id-left
 cat .Category.assoc f g h .right-eq = assoc (f .right) (g .right) (h .right)
 cat .Category.assoc f g h .left-eq =
   ≃m-isEquivalence .sym (assoc (h .left) (g .left) (f .left))
+
+-- CMon enrichment
+module _ {X Y : Obj} where
+  open _=>_
+  open preorder._=>_
+  open preorder._≃m_
+
+  private
+    module YJ = JoinSemilattice (Y .joins)
+    module XJ = JoinSemilattice (X .joins)
+
+  εm : X ⇒c Y
+  εm .right = join-semilattice.εm {X = X .joins} {Y = Y .joins} ._=>J_.func
+  εm .left = join-semilattice.εm {X = Y .joins} {Y = X .joins} ._=>J_.func
+  εm .conjugate .proj₁ _ = π₁ X
+  εm .conjugate .proj₂ _ = π₂ Y
