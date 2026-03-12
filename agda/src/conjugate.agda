@@ -171,3 +171,9 @@ module _ {X Y : Obj} where
   εm .left = join-semilattice.εm {X = Y .joins} {Y = X .joins} ._=>J_.func
   εm .conjugate .proj₁ _ = π₁ X
   εm .conjugate .proj₂ _ = π₂ Y
+
+  _+m_ : X ⇒c Y → X ⇒c Y → X ⇒c Y
+  (f +m g) .right = join-semilattice._+m_ (right-∨ f) (right-∨ g) ._=>J_.func
+  (f +m g) .left = join-semilattice._+m_ (left-∨ f) (left-∨ g) ._=>J_.func
+  (f +m g) .conjugate {x} {y} .proj₁ = {!   !}
+  (f +m g) .conjugate {x} {y} .proj₂ = {!   !}
