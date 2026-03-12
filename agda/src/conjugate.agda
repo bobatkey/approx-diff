@@ -292,8 +292,8 @@ module _ where
   products .p₂ .conjugate .proj₂ = proj₂
   products .pair f g .right = join-semilattice.⟨ right-∨ f , right-∨ g ⟩ ._=>J_.func
   products .pair f g .left = join-semilattice.[ left-∨ f , left-∨ g ] ._=>J_.func
-  products .pair f g .conjugate .proj₁ = {!   !}
-  products .pair f g .conjugate .proj₂ = {!   !}
+  products .pair {X} {Y} {Z} f g .conjugate {x} .proj₁ h = {!   !}
+  products .pair {X} {Y} {Z} f g .conjugate .proj₂ h = {!   !}
   products .pair-cong f₁≈f₂ g₁≈g₂ .right-eq =
     join-semilattice.⟨⟩-cong (right-∨-cong f₁≈f₂) (right-∨-cong g₁≈g₂) ._≃J_.eqfunc
   products .pair-cong f₁≈f₂ g₁≈g₂ .left-eq =
