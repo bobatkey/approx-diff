@@ -332,6 +332,21 @@ module _ where
   ⟨⟩-cong f₁≈f₂ g₁≈g₂ .eqfunc .eqfun x .proj₂ .proj₁ = f₁≈f₂ .eqfunc .eqfun x .proj₂
   ⟨⟩-cong f₁≈f₂ g₁≈g₂ .eqfunc .eqfun x .proj₂ .proj₂ = g₁≈g₂ .eqfunc .eqfun x .proj₂
 
+  pair-p₁ : ∀ {A B C}{X : JoinSemilattice A} {Y : JoinSemilattice B} {Z : JoinSemilattice C}
+            (f : X => Y) (g : X => Z) →
+            (project₁ ∘ ⟨ f , g ⟩) ≃m f
+  pair-p₁ {B = B} f g .eqfunc .eqfun x = B .≃-refl
+
+  pair-p₂ : ∀ {A B C}{X : JoinSemilattice A} {Y : JoinSemilattice B} {Z : JoinSemilattice C}
+            (f : X => Y) (g : X => Z) →
+            (project₂ ∘ ⟨ f , g ⟩) ≃m g
+  pair-p₂ {C = C} f g .eqfunc .eqfun x = C .≃-refl
+
+  pair-ext : ∀ {A B C}{X : JoinSemilattice A} {Y : JoinSemilattice B} {Z : JoinSemilattice C}
+             (f : X => (Y ⊕ Z)) →
+             ⟨ project₁ ∘ f , project₂ ∘ f ⟩ ≃m f
+  pair-ext {B = B} {C = C} f .eqfunc .eqfun x = (B × C) .≃-refl
+
   -- FIXME: deduce biproducts from cmon-enrichment
 
   -- Coproduct bits:

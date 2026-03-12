@@ -9,10 +9,10 @@ open import preorder hiding (𝟙)
 open import categories
 open import meet-semilattice
   using (MeetSemilattice)
-  renaming (_=>_ to _=>M_)
+  renaming (_=>_ to _=>M_; _⊕_ to _⊕M_)
 open import join-semilattice
   using (JoinSemilattice)
-  renaming (_=>_ to _=>J_; _≃m_ to _≃J_)
+  renaming (_=>_ to _=>J_; _≃m_ to _≃J_; _⊕_ to _⊕J_)
 open import cmon-enriched
 
 -- Category of Heyting algebras (residuated lattices) and Tarski conjugates between them.
@@ -256,3 +256,27 @@ module _ where
   terminal .is-terminal .to-terminal-ext {X} f .left-eq .eqfun _ =
     X .≤-bottom ,
     X .#-reflect (λ _ _ → π₁ X)
+
+------------------------------------------------------------------------------
+-- Products
+module _ where
+
+  open HasProducts
+  open import Data.Product using (proj₁; proj₂; _,_)
+  open JoinSemilattice
+  open MeetSemilattice
+  open _=>_
+  open preorder._≃m_
+
+  _⊕_ : Obj → Obj → Obj
+  (X ⊕ Y) .carrier = X .carrier × Y .carrier
+  (X ⊕ Y) .meets = X .meets ⊕M Y .meets
+  (X ⊕ Y) .joins = X .joins ⊕J Y .joins
+  (X ⊕ Y) .#-reflect h =
+    #-reflect X (λ a x'#a → proj₁ (h (a , Y .⊥) (x'#a , π₂ Y))) ,
+    #-reflect Y (λ b y'#b → proj₂ (h (X .⊥ , b) (π₂ X , y'#b)))
+  (X ⊕ Y) .∧-∨-distrib (x₁ , y₁) (x₂ , y₂) (x₃ , y₃) =
+    ∧-∨-distrib X x₁ x₂ x₃ , ∧-∨-distrib Y y₁ y₂ y₃
+  (X ⊕ Y) .∨-∧-distrib (x₁ , y₁) (x₂ , y₂) (x₃ , y₃) =
+    ∨-∧-distrib X x₁ x₂ x₃ , ∨-∧-distrib Y y₁ y₂ y₃
+
