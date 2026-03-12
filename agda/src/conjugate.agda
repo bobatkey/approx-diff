@@ -194,7 +194,14 @@ module _ {X Y : Obj} where
   +m-cong f₁≃f₂ g₁≃g₂ .right-eq = join-semilattice.+m-cong (right-∨-cong f₁≃f₂) (right-∨-cong g₁≃g₂) ._≃J_.eqfunc
   +m-cong f₁≃f₂ g₁≃g₂ .left-eq = join-semilattice.+m-cong (left-∨-cong f₁≃f₂) (left-∨-cong g₁≃g₂) ._≃J_.eqfunc
 
-------------------------------------------------------------------------------
+  +m-comm : ∀ {f g} → (f +m g) ≃c (g +m f)
+  +m-comm {f} {g} .right-eq = join-semilattice.+m-comm {f = right-∨ f} {right-∨ g} ._≃J_.eqfunc
+  +m-comm {f} {g} .left-eq = join-semilattice.+m-comm {f = left-∨ f} {left-∨ g} ._≃J_.eqfunc
+
+  +m-assoc : ∀ {f g h} → ((f +m g) +m h) ≃c (f +m (g +m h))
+  +m-assoc {f} {g} {h} .right-eq = join-semilattice.+m-assoc {f = right-∨ f} {g = right-∨ g} {h = right-∨ h} ._≃J_.eqfunc
+  +m-assoc {f} {g} {h} .left-eq = join-semilattice.+m-assoc {f = left-∨ f} {g = left-∨ g} {h = left-∨ h} ._≃J_.eqfunc
+
 -- Terminal object
 module _ where
   open IsTerminal
