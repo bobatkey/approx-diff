@@ -12,7 +12,7 @@ open import meet-semilattice
   renaming (_=>_ to _=>M_)
 open import join-semilattice
   using (JoinSemilattice)
-  renaming (_=>_ to _=>J_)
+  renaming (_=>_ to _=>J_; _≃m_ to _≃J_)
 
 -- Category of Heyting algebras (residuated lattices) and Tarski conjugates between them.
 -- FIXME: express using the standard definition of Heyting algebra (although I think this is equivalent).
@@ -113,6 +113,12 @@ record _≃c_ {X Y : Obj} (f g : X ⇒c Y) : Prop where
     right-eq : f .right ≃m g .right
     left-eq : f .left ≃m g .left
 
+  right-∨-cong : right-∨ f ≃J right-∨ g
+  right-∨-cong ._≃J_.eqfunc = right-eq
+
+  left-∨-cong : left-∨ f ≃J left-∨ g
+  left-∨-cong ._≃J_.eqfunc = left-eq
+
 open _≃c_
 
 open IsEquivalence
@@ -175,8 +181,18 @@ module _ {X Y : Obj} where
   _+m_ : X ⇒c Y → X ⇒c Y → X ⇒c Y
   (f +m g) .right = join-semilattice._+m_ (right-∨ f) (right-∨ g) ._=>J_.func
   (f +m g) .left = join-semilattice._+m_ (left-∨ f) (left-∨ g) ._=>J_.func
-  (f +m g) .conjugate {x} {y} .proj₁ = {!   !}
-  (f +m g) .conjugate {x} {y} .proj₂ = {!   !}
+  (f +m g) .conjugate {x} {y} .proj₁ h =
+    #-sym X (#-distrib X
+      (#-sym X (conjugate f .proj₁ (≤-trans Y (∧-mono Y (≤-refl Y) (inl Y)) h)))
+      (#-sym X (conjugate g .proj₁ (≤-trans Y (∧-mono Y (≤-refl Y) (inr Y)) h))))
+  (f +m g) .conjugate {x} {y} .proj₂ h =
+    #-distrib Y
+      (conjugate f .proj₂ (#-mono X (inl X) x h))
+      (conjugate g .proj₂ (#-mono X (inr X) x h))
+
+  +m-cong : ∀ {f₁ f₂ g₁ g₂ : X ⇒c Y} → f₁ ≃c f₂ → g₁ ≃c g₂ → (f₁ +m g₁) ≃c (f₂ +m g₂)
+  +m-cong f₁≃f₂ g₁≃g₂ .right-eq = join-semilattice.+m-cong (right-∨-cong f₁≃f₂) (right-∨-cong g₁≃g₂) ._≃J_.eqfunc
+  +m-cong f₁≃f₂ g₁≃g₂ .left-eq = join-semilattice.+m-cong (left-∨-cong f₁≃f₂) (left-∨-cong g₁≃g₂) ._≃J_.eqfunc
 
 ------------------------------------------------------------------------------
 -- Terminal object
