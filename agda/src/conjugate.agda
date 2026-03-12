@@ -280,3 +280,28 @@ module _ where
   (X ⊕ Y) .∨-∧-distrib (x₁ , y₁) (x₂ , y₂) (x₃ , y₃) =
     ∨-∧-distrib X x₁ x₂ x₃ , ∨-∧-distrib Y y₁ y₂ y₃
 
+  products : HasProducts cat
+  products .prod = _⊕_
+  products .p₁ {X} {Y} .right = join-semilattice.project₁ {X = X .joins} {Y = Y .joins} ._=>J_.func
+  products .p₁ {X} {Y} .left = join-semilattice.inject₁ {X = X .joins} {Y = Y .joins} ._=>J_.func
+  products .p₁ {X} {Y} .conjugate .proj₁ z#x = z#x , π₁ Y
+  products .p₁ .conjugate .proj₂ = proj₁
+  products .p₂ {X} {Y} .right = join-semilattice.project₂ {X = X .joins} {Y = Y .joins} ._=>J_.func
+  products .p₂ {X} {Y} .left = join-semilattice.inject₂ {X = X .joins} {Y = Y .joins} ._=>J_.func
+  products .p₂ {X} {Y} .conjugate .proj₁ z#y = π₁ X , z#y
+  products .p₂ .conjugate .proj₂ = proj₂
+  products .pair f g .right = join-semilattice.⟨ right-∨ f , right-∨ g ⟩ ._=>J_.func
+  products .pair f g .left = join-semilattice.[ left-∨ f , left-∨ g ] ._=>J_.func
+  products .pair f g .conjugate .proj₁ = {!   !}
+  products .pair f g .conjugate .proj₂ = {!   !}
+  products .pair-cong f₁≈f₂ g₁≈g₂ .right-eq =
+    join-semilattice.⟨⟩-cong (right-∨-cong f₁≈f₂) (right-∨-cong g₁≈g₂) ._≃J_.eqfunc
+  products .pair-cong f₁≈f₂ g₁≈g₂ .left-eq =
+    join-semilattice.[]-cong (left-∨-cong f₁≈f₂) (left-∨-cong g₁≈g₂) ._≃J_.eqfunc
+  products .pair-p₁ f g .right-eq = join-semilattice.pair-p₁ (right-∨ f) (right-∨ g) ._≃J_.eqfunc
+  products .pair-p₁ f g .left-eq = join-semilattice.inj₁-copair (left-∨ f) (left-∨ g) ._≃J_.eqfunc
+  products .pair-p₂ f g .right-eq = join-semilattice.pair-p₂ (right-∨ f) (right-∨ g) ._≃J_.eqfunc
+  products .pair-p₂ f g .left-eq = join-semilattice.inj₂-copair (left-∨ f) (left-∨ g) ._≃J_.eqfunc
+  products .pair-ext f .right-eq = join-semilattice.pair-ext (right-∨ f) ._≃J_.eqfunc
+  products .pair-ext f .left-eq = join-semilattice.copair-ext (left-∨ f) ._≃J_.eqfunc
+
