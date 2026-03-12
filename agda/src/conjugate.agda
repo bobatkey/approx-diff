@@ -5,7 +5,7 @@ module conjugate where
 open import Level
 open import prop hiding (_∨_; ⊥; _∧_)
 open import prop-setoid using (IsEquivalence)
-open import preorder
+open import preorder hiding (𝟙)
 open import categories
 open import meet-semilattice
   using (MeetSemilattice)
@@ -177,3 +177,32 @@ module _ {X Y : Obj} where
   (f +m g) .left = join-semilattice._+m_ (left-∨ f) (left-∨ g) ._=>J_.func
   (f +m g) .conjugate {x} {y} .proj₁ = {!   !}
   (f +m g) .conjugate {x} {y} .proj₂ = {!   !}
+
+------------------------------------------------------------------------------
+-- Terminal object
+module _ where
+  open IsTerminal
+  open HasTerminal
+  open preorder._≃m_
+
+  𝟙 : Obj
+  𝟙 .carrier = preorder.𝟙
+  𝟙 .meets = meet-semilattice.𝟙
+  𝟙 .joins = join-semilattice.𝟙
+  𝟙 .#-reflect _ = tt
+  𝟙 .∧-∨-distrib _ _ _ = tt
+  𝟙 .∨-∧-distrib _ _ _ = tt
+
+  to-𝟙 : ∀ X → X ⇒c 𝟙
+  to-𝟙 X .right = meet-semilattice.terminal {X = X .meets} ._=>M_.func
+  to-𝟙 X .left  = join-semilattice.initial  {X = X .joins} ._=>J_.func
+  to-𝟙 X .conjugate .proj₁ _ = π₁ X
+  to-𝟙 X .conjugate .proj₂ _ = tt
+
+  terminal : HasTerminal cat
+  terminal .witness = 𝟙
+  terminal .is-terminal .to-terminal = to-𝟙 _
+  terminal .is-terminal .to-terminal-ext {X} f .right-eq .eqfun _ = tt , tt
+  terminal .is-terminal .to-terminal-ext {X} f .left-eq .eqfun _ =
+    X .≤-bottom ,
+    X .#-reflect (λ _ _ → π₁ X)
