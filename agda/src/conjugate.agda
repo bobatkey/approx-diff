@@ -13,6 +13,7 @@ open import meet-semilattice
 open import join-semilattice
   using (JoinSemilattice)
   renaming (_=>_ to _=>J_; _≃m_ to _≃J_)
+open import cmon-enriched
 
 -- Category of Heyting algebras (residuated lattices) and Tarski conjugates between them.
 -- FIXME: express using the standard definition of Heyting algebra (although I think this is equivalent).
@@ -201,6 +202,32 @@ module _ {X Y : Obj} where
   +m-assoc : ∀ {f g h} → ((f +m g) +m h) ≃c (f +m (g +m h))
   +m-assoc {f} {g} {h} .right-eq = join-semilattice.+m-assoc {f = right-∨ f} {g = right-∨ g} {h = right-∨ h} ._≃J_.eqfunc
   +m-assoc {f} {g} {h} .left-eq = join-semilattice.+m-assoc {f = left-∨ f} {g = left-∨ g} {h = left-∨ h} ._≃J_.eqfunc
+
+  +m-lunit : ∀ {f} → (εm +m f) ≃c f
+  +m-lunit {f} .right-eq = join-semilattice.+m-lunit {f = right-∨ f} ._≃J_.eqfunc
+  +m-lunit {f} .left-eq = join-semilattice.+m-lunit {f = left-∨ f} ._≃J_.eqfunc
+
+module _ where
+  open import commutative-monoid
+  open CommutativeMonoid
+  open _=>_
+  open preorder._≃m_
+
+  cmon-enriched : CMonEnriched cat
+  cmon-enriched .CMonEnriched.homCM X Y .ε = εm
+  cmon-enriched .CMonEnriched.homCM X Y ._+_ = _+m_
+  cmon-enriched .CMonEnriched.homCM X Y .+-cong = +m-cong
+  cmon-enriched .CMonEnriched.homCM X Y .+-lunit = +m-lunit
+  cmon-enriched .CMonEnriched.homCM X Y .+-assoc = +m-assoc
+  cmon-enriched .CMonEnriched.homCM X Y .+-comm = +m-comm
+  cmon-enriched .CMonEnriched.comp-bilinear₁ {Z = Z} f₁ f₂ g .right-eq .eqfun x = Z .≃-refl
+  cmon-enriched .CMonEnriched.comp-bilinear₁ f₁ f₂ g .left-eq .eqfun x = _=>J_.∨-preserving-≃ (left-∨ g)
+  cmon-enriched .CMonEnriched.comp-bilinear₂ {Z = Z} f g₁ g₂ .right-eq .eqfun x = _=>J_.∨-preserving-≃ (right-∨ f)
+  cmon-enriched .CMonEnriched.comp-bilinear₂ {X = X} f g₁ g₂ .left-eq .eqfun x = X .≃-refl
+  cmon-enriched .CMonEnriched.comp-bilinear-ε₁ {Z = Z} f .right-eq .eqfun x = Z .≃-refl
+  cmon-enriched .CMonEnriched.comp-bilinear-ε₁ f .left-eq .eqfun x = _=>J_.⊥-preserving-≃ (left-∨ f)
+  cmon-enriched .CMonEnriched.comp-bilinear-ε₂ {Z = Z} f .right-eq .eqfun x = _=>J_.⊥-preserving-≃ (right-∨ f)
+  cmon-enriched .CMonEnriched.comp-bilinear-ε₂ {X = X} f .left-eq .eqfun x = X .≃-refl
 
 -- Terminal object
 module _ where
