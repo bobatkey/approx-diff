@@ -88,7 +88,7 @@ record _⇒c_ (X Y : Obj) : Set where
 --       where
 --       gy#x∨x' : left .fun y X.# (x XJ.∨ x')
 --       gy#x∨x' = conjugate .proj₁ (Y.#-sym fx∨x'#y)
-  right-∨ .⊥-preserving = Y .#-reflect (λ _ _ → Y .#-sym (conjugate .proj₂ (π₁ X)))
+  right-∨ .⊥-preserving = Y .#-reflect (λ _ _ → #-sym Y (conjugate .proj₂ (π₂ X)))
 
   left-∨ : Y .joins =>J X .joins
   left-∨ .func = left
@@ -103,7 +103,7 @@ record _⇒c_ (X Y : Obj) : Set where
 --       where
 --       fx#y∨y' : (y YJ.∨ y') Y.# right .fun x
 --       fx#y∨y' = conjugate .proj₂ gy∨y'#x
-  left-∨ .⊥-preserving = {!   !} -- X .#-reflect λ _ _ -> π₁ X
+  left-∨ .⊥-preserving = X. #-reflect (λ _ _ → conjugate .proj₁ (π₁ Y))
 
 open _⇒c_
 
