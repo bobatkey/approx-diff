@@ -85,7 +85,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_) renaming (refl t
 module example1-galois where
   open import ho-model
   open import example-signature-interpretation galois.cat galois.products galois.terminal galois.TWO galois.unit galois.conjunct
-  open interp Sig BaseInterp1
+  open Galois.interp Sig BaseInterp1
 
   input : ⟦ list (base label [×] base number) ⟧ty .idx .Carrier
   input = 3 , (label.a , 0) , (label.b , 1) , (label.a , 1) , _
@@ -112,7 +112,7 @@ module example1-galois where
 module example1-conjugate where
   open import ho-model
   open import example-signature-interpretation conjugate.cat conjugate.products conjugate.terminal conjugate.TWO conjugate.unit conjugate.conjunct
-  open interp Sig BaseInterp1
+  open Conjugate.interp Sig BaseInterp1
 
   input : ⟦ list (base label [×] base number) ⟧ty .idx .Carrier
   input = 3 , (label.a , 0) , (label.b , 1) , (label.a , 1) , _
@@ -147,7 +147,7 @@ module example2 where
   BaseInterp2 .Model.⟦op⟧ approx-unit = simplef[ idS _ , galois.unit ]
   BaseInterp2 .Model.⟦op⟧ approx-mult = simplef[ prop-setoid.to-𝟙 , galois.conjunct ] C.∘ binary
 
-  open interp Sig BaseInterp2
+  open Galois.interp Sig BaseInterp2
   open import Data.Nat hiding (_/_)
   open import Data.Rational renaming (_≤_ to _≤ℚ_; show to ℚ-show)
   open import Data.Integer hiding (_/_; show; -_)
@@ -199,7 +199,7 @@ module example2 where
 module cbn-example where
   open import ho-model
   open import example-signature-interpretation galois.cat galois.products galois.terminal galois.TWO galois.unit galois.conjunct
-  open interp Sig BaseInterp0
+  open Galois.interp Sig BaseInterp0
   open ex using (Tag; cbn-query)
 
   input : ⟦ Tag (list (Tag (Tag (base label) [×] Tag (base number)))) ⟧ty .idx .Carrier
