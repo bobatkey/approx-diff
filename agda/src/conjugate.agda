@@ -256,7 +256,7 @@ module _ where
   terminal .is-terminal .to-terminal-ext {X} f .right-eq .eqfun _ = tt , tt
   terminal .is-terminal .to-terminal-ext {X} f .left-eq .eqfun _ =
     X .≤-bottom ,
-    {!   !} -- X .#-reflect (λ _ _ → π₁ X)
+    X .#-reflect (λ _ _ → f .conjugate .proj₁ tt)
 
 -- Products
 module _ where
