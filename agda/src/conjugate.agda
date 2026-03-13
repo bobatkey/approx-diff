@@ -312,3 +312,30 @@ module _ where
   products .pair-p₂ f g .left-eq = join-semilattice.inj₂-copair (left-∨ f) (left-∨ g) ._≃J_.eqfunc
   products .pair-ext f .right-eq = join-semilattice.pair-ext (right-∨ f) ._≃J_.eqfunc
   products .pair-ext f .left-eq = join-semilattice.copair-ext (left-∨ f) ._≃J_.eqfunc
+
+  open HasProducts products
+
+  -- CMon-enrichment means every object is a monoid
+  conjunct : ∀ {X} → (X ⊕ X) ⇒c X
+  conjunct = HasProducts.p₁ products +m HasProducts.p₂ products
+
+  unit : ∀ {X} → 𝟙 ⇒c X
+  unit = εm
+
+  open import two using (Two; I; O)
+
+  TWO : Obj
+  TWO .carrier .Preorder.Carrier = Two
+  TWO .carrier .Preorder._≤_ = two._≤_
+  TWO .carrier .Preorder.≤-isPreorder = two.≤-isPreorder
+  TWO .meets .MeetSemilattice._∧_ = two._⊓_
+  TWO .meets .MeetSemilattice.⊤ = I
+  TWO .meets .MeetSemilattice.∧-isMeet = two.⊓-isMeet
+  TWO .meets .MeetSemilattice.⊤-isTop = two.I-isTop
+  TWO .joins .JoinSemilattice._∨_ = two._⊔_
+  TWO .joins .JoinSemilattice.⊥ = O
+  TWO .joins .JoinSemilattice.∨-isJoin = two.⊔-isJoin
+  TWO .joins .JoinSemilattice.⊥-isBottom = two.O-isBottom
+  TWO .#-reflect h = {!   !}
+  TWO .∧-∨-distrib x y z = {!   !}
+  TWO .∨-∧-distrib x y z = {!   !}
