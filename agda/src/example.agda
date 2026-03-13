@@ -8,6 +8,7 @@ open import every using (Every; []; _∷_)
 open import signature
 import language-syntax
 import label
+import galois
 
 open import example-signature
 
@@ -82,7 +83,7 @@ open import Relation.Binary.PropositionalEquality using (_≡_) renaming (refl t
 -- Example with lifted numbers (Example (2) in Section 4.3)
 module example1 where
   open import ho-model
-  open import example-signature-interpretation
+  open import example-signature-interpretation galois.cat galois.products galois.terminal galois.TWO galois.unit galois.conjunct
   open interp Sig BaseInterp1
 
   input : ⟦ list (base label [×] base number) ⟧ty .idx .Carrier
@@ -109,7 +110,23 @@ module example1 where
 -- Example with interval-approximated numbers (Example (3) in Section 4.3)
 module example2 where
   open import ho-model
-  open import example-signature-interpretation
+  open import example-signature-interpretation galois.cat galois.products galois.terminal galois.TWO galois.unit galois.conjunct
+  open import prop-setoid using (idS)
+    renaming (𝟙 to 𝟙ₛ; const to constₛ)
+  open import approx-numbers using (ℚ-intv; add; zero)
+  open import categories using (Category; HasProducts; HasTerminal)
+
+  BaseInterp2 : Model PFPC[ cat , terminal , products , 𝟚 ] Sig
+  BaseInterp2 .Model.⟦sort⟧ number = ℚ-intv
+  BaseInterp2 .Model.⟦sort⟧ label = simple[ label.Label , galois.𝟙 ]
+  BaseInterp2 .Model.⟦sort⟧ approx = simple[ 𝟙ₛ , galois.TWO ]
+  BaseInterp2 .Model.⟦op⟧ zero = approx-numbers.zero
+  BaseInterp2 .Model.⟦op⟧ add = approx-numbers.add C.∘ binary2
+  BaseInterp2 .Model.⟦op⟧ (lbl l) = simplef[ constₛ _ l , galois.cat .Category.id _ ]
+  BaseInterp2 .Model.⟦rel⟧ equal-label = predicate label.equal-label C.∘ binary
+  BaseInterp2 .Model.⟦op⟧ approx-unit = simplef[ idS _ , galois.unit ]
+  BaseInterp2 .Model.⟦op⟧ approx-mult = simplef[ prop-setoid.to-𝟙 , galois.conjunct ] C.∘ binary
+
   open interp Sig BaseInterp2
   open import Data.Nat hiding (_/_)
   open import Data.Rational renaming (_≤_ to _≤ℚ_; show to ℚ-show)
@@ -117,7 +134,7 @@ module example2 where
   open import preorder using (bottom; <_>; LCarrier)
   open import approx-numbers using (Intv; add-left)
   open import prop using (liftS)
-  open import Data.Product using (_×_; Σ)
+  open import Data.Product using (Σ) renaming (_×_ to _×ₜ_)
 
   input : ⟦ list (base label [×] base number) ⟧ty .idx .Carrier
   input = 3 , (label.a , 0ℚ) , (label.b , 1ℚ) , (label.a , 1ℚ) , _
@@ -132,7 +149,7 @@ module example2 where
 
   open import Data.Maybe
 
-  extract-interval : ∀ {q} → LCarrier (Intv q) → Maybe (ℚ × ℚ)
+  extract-interval : ∀ {q} → LCarrier (Intv q) → Maybe (ℚ ×ₜ ℚ)
   extract-interval bottom = nothing
   extract-interval < x > = just (x .lower , x .upper)
 
@@ -161,7 +178,7 @@ module example2 where
 -- Example using CBN lifting
 module cbn-example where
   open import ho-model
-  open import example-signature-interpretation
+  open import example-signature-interpretation galois.cat galois.products galois.terminal galois.TWO galois.unit galois.conjunct
   open interp Sig BaseInterp0
   open ex using (Tag; cbn-query)
 
