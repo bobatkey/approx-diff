@@ -53,6 +53,39 @@ M×Jop-products : HasProducts M×Jop
 M×Jop-products = biproducts→products _ M×Jop-biproducts
 
 ------------------------------------------------------------------------------
+-- Construct Join × Join^op
+
+J×Jop : Category (suc 0ℓ) 0ℓ 0ℓ
+J×Jop = product join-semilattice-category.cat (Category.opposite join-semilattice-category.cat)
+
+J×Jop-cmon-enriched : CMonEnriched J×Jop
+J×Jop-cmon-enriched =
+  product-cmon-enriched
+    join-semilattice-category.cmon-enriched
+    (op-cmon-enriched join-semilattice-category.cmon-enriched)
+
+J×Jop-limits : ∀ (𝒮 : Category 0ℓ 0ℓ 0ℓ) → HasLimits 𝒮 J×Jop
+J×Jop-limits 𝒮 D =
+  product-limit _ _ 𝒮 D
+    (join-semilattice-category.limits 𝒮 _)
+    (op-colimit _ (join-semilattice-category.colimits (Category.opposite 𝒮) _))
+
+J×Jop-terminal : HasTerminal J×Jop
+J×Jop-terminal =
+  product-terminal _ _ join-semilattice-category.terminal
+                       (op-initial→terminal join-semilattice-category.initial)
+
+J×Jop-biproducts : ∀ x y → cmon-enriched.Biproduct J×Jop-cmon-enriched x y
+J×Jop-biproducts =
+  cmon-enriched.cmon+products→biproducts J×Jop-cmon-enriched
+    (product-products _ _
+      join-semilattice-category.products
+      (op-coproducts→products join-semilattice-category.coproducts))
+
+J×Jop-products : HasProducts J×Jop
+J×Jop-products = biproducts→products _ J×Jop-biproducts
+
+------------------------------------------------------------------------------
 -- Functor from LatGal to Meet×Join^op, which preserves finite products
 
 import galois
@@ -80,6 +113,28 @@ open Functor
   record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } } ,
   record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }
 𝓖 .fmor-comp f g =
+  (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }) ,
+  (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } })
+
+------------------------------------------------------------------------------
+-- Similar functor from HeytConj to Join×Join^op
+
+import conjugate
+
+𝓒 : Functor conjugate.cat J×Jop
+𝓒 .fobj X =
+  record { carrier = X .conjugate.Obj.carrier ; joins = X .conjugate.Obj.joins } ,
+  record { carrier = X .conjugate.Obj.carrier ; joins = X .conjugate.Obj.joins }
+𝓒 .fmor f =
+  record { *→* = conjugate._⇒c_.right-∨ f } ,
+  record { *→* = conjugate._⇒c_.left-∨ f }
+𝓒 .fmor-cong f≃g =
+  record { f≃f = record { eqfunc = f≃g .conjugate._≃c_.right-eq } } ,
+  record { f≃f = record { eqfunc = f≃g .conjugate._≃c_.left-eq } }
+𝓒 .fmor-id {X} =
+  record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } } ,
+  record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }
+𝓒 .fmor-comp f g =
   (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }) ,
   (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } })
 
@@ -123,6 +178,49 @@ module _ where
     (X .π₁ , Y .π₂) ,
     (X .⟨_∧_⟩ (X .≤-refl) (X .≤-top) , Y .⟨_∧_⟩ (Y .≤-top) (Y .≤-refl))
   𝓖-preserve-products {X} {Y} .inverse∘f≈id .proj₂ .f≃f .eqfunc .eqfun (x , y) =
+    (X .[_∨_] (X .[_∨_] (X .≤-refl) (X .≤-bottom)) (X .≤-bottom) ,
+     Y .[_∨_] (Y .≤-bottom) (Y .[_∨_] (Y .≤-bottom) (Y .≤-refl))) ,
+    (X .≤-trans (X .inl) (X .inl) , Y .≤-trans (Y .inr) (Y .inr))
+
+module _ where
+
+  private
+    module J×Jop = Category J×Jop
+
+  import join-semilattice
+  open J×Jop.IsIso
+  open import prop using (tt; proj₁; proj₂)
+
+  𝓒-preserve-terminal : preserve-chosen-terminal 𝓒 conjugate.terminal J×Jop-terminal
+  𝓒-preserve-terminal .inverse =
+    record { *→* = join-semilattice.terminal } ,
+    record { *→* = join-semilattice.initial }
+  𝓒-preserve-terminal .f∘inverse≈id =
+    HasTerminal.to-terminal-unique J×Jop-terminal _ _
+  𝓒-preserve-terminal .inverse∘f≈id =
+    record { f≃f = record { eqfunc = record { eqfun = λ x → tt , tt } } } ,
+    record { f≃f = record { eqfunc = record { eqfun = λ x → tt , tt } } }
+
+  open join-semilattice-category._⇒_
+  open join-semilattice-category._≃m_
+  open join-semilattice._≃m_
+  open preorder._≃m_
+  open conjugate.Obj
+
+  𝓒-preserve-products : preserve-chosen-products 𝓒 conjugate.products (biproducts→products _ J×Jop-biproducts)
+  𝓒-preserve-products .inverse .proj₁ .*→* = join-semilattice.id
+  𝓒-preserve-products .inverse .proj₂ .*→* = join-semilattice.id
+  𝓒-preserve-products {X} {Y} .f∘inverse≈id .proj₁ .f≃f .eqfunc .eqfun (x , y) =
+    (X .[_∨_] (X .≤-refl) (X .≤-bottom) , Y .[_∨_] (Y .≤-bottom) (Y .≤-refl)) ,
+    (X .inl , Y .inr)
+  𝓒-preserve-products {X} {Y} .f∘inverse≈id .proj₂ .f≃f .eqfunc .eqfun (x , y) =
+    (X .[_∨_] (X .[_∨_] (X .≤-refl) (X .≤-bottom)) (X .≤-bottom) ,
+     Y .[_∨_] (Y .≤-bottom) (Y .[_∨_] (Y .≤-bottom) (Y .≤-refl))) ,
+    (X .≤-trans (X .inl) (X .inl) , Y .≤-trans (Y .inr) (Y .inr))
+  𝓒-preserve-products {X} {Y} .inverse∘f≈id .proj₁ .f≃f .eqfunc .eqfun (x , y) =
+    (X .[_∨_] (X .≤-refl) (X .≤-bottom) , Y .[_∨_] (Y .≤-bottom) (Y .≤-refl)) ,
+    (X .inl , Y .inr)
+  𝓒-preserve-products {X} {Y} .inverse∘f≈id .proj₂ .f≃f .eqfunc .eqfun (x , y) =
     (X .[_∨_] (X .[_∨_] (X .≤-refl) (X .≤-bottom)) (X .≤-bottom) ,
      Y .[_∨_] (Y .≤-bottom) (Y .[_∨_] (Y .≤-bottom) (Y .≤-refl))) ,
     (X .≤-trans (X .inl) (X .inl) , Y .≤-trans (Y .inr) (Y .inr))
