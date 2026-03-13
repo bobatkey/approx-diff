@@ -199,7 +199,13 @@ module _ (𝒮 : Category 0ℓ 0ℓ 0ℓ) where
   Π D .carrier .Preorder.≤-isPreorder .IsPreorder.refl s = D .fobj s .≤-refl
   Π D .carrier .Preorder.≤-isPreorder .IsPreorder.trans α≤β β≤γ s = D .fobj s .≤-trans (α≤β s) (β≤γ s)
   Π D .joins .JoinSemilattice._∨_ α₁ α₂ .Π-func s = D .fobj s ._∨_ (α₁ .Π-func s) (α₂ .Π-func s)
-  Π D .joins .JoinSemilattice._∨_ α₁ α₂ .Π-natural {s₁}{s₂} f = {!!}
+  Π D .joins .JoinSemilattice._∨_ α₁ α₂ .Π-natural {s₁}{s₂} f =
+    S₂ .≤-trans (Df .∨-preserving)
+      (S₂ .[_∨_] (S₂ .≤-trans (proj₁ (α₁ .Π-natural f)) (S₂ .inl))
+                  (S₂ .≤-trans (proj₁ (α₂ .Π-natural f)) (S₂ .inr))) ,
+    S₂ .[_∨_] (S₂ .≤-trans (proj₂ (α₁ .Π-natural f)) (Df .mono (D .fobj s₁ .inl)))
+              (S₂ .≤-trans (proj₂ (α₂ .Π-natural f)) (Df .mono (D .fobj s₁ .inr)))
+    where S₂ = D .fobj s₂; Df = D .fmor f
   Π D .joins .JoinSemilattice.⊥ .Π-func s = D .fobj s .⊥
   Π D .joins .JoinSemilattice.⊥ .Π-natural {s₁}{s₂} f = D .fmor f .⊥-preserving , D .fobj s₂ .≤-bottom
   Π D .joins .JoinSemilattice.∨-isJoin .IsJoin.inl s = D .fobj s .inl
