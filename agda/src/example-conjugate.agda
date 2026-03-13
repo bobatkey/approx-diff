@@ -40,14 +40,7 @@ module example1 where
   input : ⟦ list (base label [×] base number) ⟧ty .idx .Carrier
   input = 3 , (label.a , 0) , (label.b , 1) , (label.a , 1) , _
 
-  back-slice : label.label → _
-  back-slice l = ⟦ example.ex.query l ⟧tm .famf .transf (_ , input) .proj₂ .*→* .func .fun ⊤ .proj₂
-    where
-      open indexed-family._⇒f_
-      open join-semilattice-category._⇒_
-      open join-semilattice._=>_
-      open preorder._=>_
-
+  -- back-slice behaves the same as in the Galois examples, but forward-slice does not
   forward-slice : _ → _
   forward-slice supply = ⟦ example.ex.query label.a ⟧tm .famf .transf (_ , input) .proj₁ .*→* .func .fun (· , supply)
     where
@@ -56,7 +49,7 @@ module example1 where
       open join-semilattice._=>_
       open preorder._=>_
 
-  -- Output depends on 1st label
+  -- Output depends on 1st label (would be ⊥ in the Galois example)
   test-fwd1 : forward-slice ((· , ⊤) , (· , ⊥) , (· , ⊥) , _) ≡ ⊤
   test-fwd1 = ≡-refl
 
@@ -64,6 +57,6 @@ module example1 where
   test-fwd2 : forward-slice ((· , ⊥) , (· , ⊤) , (· , ⊥) , _) ≡ ⊥
   test-fwd2 = ≡-refl
 
-  -- Output depends on 3rd label
+  -- Output depends on 3rd label (would be ⊥ in the Galois example)
   test-fwd3 : forward-slice ((· , ⊥) , (· , ⊥) , (· , ⊤) , _) ≡ ⊤
   test-fwd3 = ≡-refl
