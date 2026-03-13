@@ -213,6 +213,24 @@ module _ (𝒮 : Category 0ℓ 0ℓ 0ℓ) where
   Π D .joins .JoinSemilattice.∨-isJoin .IsJoin.[_,_] α≤β α≤γ s = D .fobj s .[_∨_] (α≤β s) (α≤γ s)
   Π D .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom s = D .fobj s .≤-bottom
 
+  limits : HasLimits 𝒮 cat
+  limits D .Limit.apex = Π D
+  limits D .Limit.cone .transf x .*→* ._=>J_.func .fun α = α .Π-func x
+  limits D .Limit.cone .transf x .*→* ._=>J_.func .mono α₁≤α₂ = α₁≤α₂ x
+  limits D .Limit.cone .transf x .*→* ._=>J_.∨-preserving = D .fobj x .≤-refl
+  limits D .Limit.cone .transf x .*→* ._=>J_.⊥-preserving = D .fobj x .≤-refl
+  limits D .Limit.cone .natural {x} {y} f .f≃f .eqfunc .eqfun α = α .Π-natural f
+  limits D .Limit.isLimit .IsLimit.lambda X α .*→* ._=>J_.func .fun x .Π-func s = α .transf s .fun x
+  limits D .Limit.isLimit .IsLimit.lambda X α .*→* ._=>J_.func .fun x .Π-natural f = α .natural f .eqfun x
+  limits D .Limit.isLimit .IsLimit.lambda X α .*→* ._=>J_.func .mono x₁≤x₂ s = α .transf s .mono x₁≤x₂
+  limits D .Limit.isLimit .IsLimit.lambda X α .*→* ._=>J_.∨-preserving s = α .transf s .∨-preserving
+  limits D .Limit.isLimit .IsLimit.lambda X α .*→* ._=>J_.⊥-preserving s = α .transf s .⊥-preserving
+  limits D .Limit.isLimit .IsLimit.lambda-cong α≃β .f≃f .eqfunc .eqfun x .proj₁ s = α≃β .transf-eq s .eqfun x .proj₁
+  limits D .Limit.isLimit .IsLimit.lambda-cong α≃β .f≃f .eqfunc .eqfun x .proj₂ s = α≃β .transf-eq s .eqfun x .proj₂
+  limits D .Limit.isLimit .IsLimit.lambda-eval {X} α .transf-eq s .f≃f .eqfunc .eqfun x = D .fobj s .≃-refl
+  limits D .Limit.isLimit .IsLimit.lambda-ext {X} f .f≃f .eqfunc .eqfun x .proj₁ s = D .fobj s .≤-refl
+  limits D .Limit.isLimit .IsLimit.lambda-ext {X} f .f≃f .eqfunc .eqfun x .proj₂ s = D .fobj s .≤-refl
+
 coproducts : HasCoproducts cat
 coproducts .HasCoproducts.coprod X Y .carrier = X .carrier × Y .carrier
 coproducts .HasCoproducts.coprod X Y .joins = X .joins ⊕J Y .joins
