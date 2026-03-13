@@ -3,7 +3,7 @@
 module conjugate where
 
 open import Level
-open import prop hiding (_∨_; ⊥; _∧_)
+open import prop hiding (_∨_; ⊥) renaming (_∧_ to _∧ₚ_)
 open import prop-setoid using (IsEquivalence)
 open import preorder hiding (𝟙)
 open import categories
@@ -279,6 +279,10 @@ module _ where
   (X ⊕ Y) .∨-∧-distrib (x₁ , y₁) (x₂ , y₂) (x₃ , y₃) =
     ∨-∧-distrib X x₁ x₂ x₃ , ∨-∧-distrib Y y₁ y₂ y₃
 
+  ⊕-# : ∀ {X Y} {x₁ x₂ y₁ y₂} → _#_ (X ⊕ Y) (x₁ , y₁) (x₂ , y₂) ⇔ _#_ X x₁ x₂ ∧ₚ _#_ Y y₁ y₂
+  ⊕-# .proj₁ p = p
+  ⊕-# .proj₂ p = p
+
   products : HasProducts cat
   products .prod = _⊕_
   products .p₁ {X} {Y} .right = join-semilattice.project₁ {X = X .joins} {Y = Y .joins} ._=>J_.func
@@ -291,8 +295,13 @@ module _ where
   products .p₂ .conjugate .proj₂ = proj₂
   products .pair f g .right = join-semilattice.⟨ right-∨ f , right-∨ g ⟩ ._=>J_.func
   products .pair f g .left = join-semilattice.[ left-∨ f , left-∨ g ] ._=>J_.func
-  products .pair {X} {Y} {Z} f g .conjugate {x} .proj₁ h = {!   !}
-  products .pair {X} {Y} {Z} f g .conjugate .proj₂ h = {!   !}
+  products .pair {X} {Y} {Z} f g .conjugate {x} {y₁ , y₂} .proj₁ h =
+    #-sym X (#-distrib X
+      (#-sym X (conjugate f .proj₁ (proj₁ (⊕-# {X = Y} {Y = Z} .proj₁ h))))
+      (#-sym X (conjugate g .proj₁ (proj₂ (⊕-# {X = Y} {Y = Z} .proj₁ h)))))
+  products .pair {X} {Y} {Z} f g .conjugate {x} {y₁ , y₂} .proj₂ h =
+    ⊕-# {X = Y} {Y = Z} .proj₂
+      (conjugate f .proj₂ (#-mono X (inl X) x h), conjugate g .proj₂ (#-mono X (inr X) x h))
   products .pair-cong f₁≈f₂ g₁≈g₂ .right-eq =
     join-semilattice.⟨⟩-cong (right-∨-cong f₁≈f₂) (right-∨-cong g₁≈g₂) ._≃J_.eqfunc
   products .pair-cong f₁≈f₂ g₁≈g₂ .left-eq =
@@ -303,4 +312,3 @@ module _ where
   products .pair-p₂ f g .left-eq = join-semilattice.inj₂-copair (left-∨ f) (left-∨ g) ._≃J_.eqfunc
   products .pair-ext f .right-eq = join-semilattice.pair-ext (right-∨ f) ._≃J_.eqfunc
   products .pair-ext f .left-eq = join-semilattice.copair-ext (left-∨ f) ._≃J_.eqfunc
-
