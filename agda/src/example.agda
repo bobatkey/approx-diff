@@ -61,4 +61,3 @@ module ex where
 
   cbn-query : label.label → emp , Tag (list (Tag (Tag (base label) [×] Tag (base number)))) ⊢ Tag (base number)
   cbn-query l = ⟪ query l ⟫tm
-

@@ -47,3 +47,23 @@ module example1 where
       open join-semilattice-category._⇒_
       open join-semilattice._=>_
       open preorder._=>_
+
+  forward-slice : _ → _
+  forward-slice supply = ⟦ example.ex.query label.a ⟧tm .famf .transf (_ , input) .proj₁ .*→* .func .fun (· , supply)
+    where
+      open indexed-family._⇒f_
+      open join-semilattice-category._⇒_
+      open join-semilattice._=>_
+      open preorder._=>_
+
+  -- Output depends on 1st label
+  test-fwd1 : forward-slice ((· , ⊤) , (· , ⊥) , (· , ⊥) , _) ≡ ⊤
+  test-fwd1 = ≡-refl
+
+  -- Output doesn't depend on 2nd label
+  test-fwd2 : forward-slice ((· , ⊥) , (· , ⊤) , (· , ⊥) , _) ≡ ⊥
+  test-fwd2 = ≡-refl
+
+  -- Output depends on 3rd label
+  test-fwd3 : forward-slice ((· , ⊥) , (· , ⊥) , (· , ⊤) , _) ≡ ⊤
+  test-fwd3 = ≡-refl
