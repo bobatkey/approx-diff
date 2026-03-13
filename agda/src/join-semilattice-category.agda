@@ -3,7 +3,7 @@
 module join-semilattice-category where
 
 open import Level using (suc; 0ℓ)
-open import prop using (proj₁; proj₂; LiftS; liftS)
+open import prop using (proj₁; proj₂; _,_; LiftS; liftS)
 open import prop-setoid using (IsEquivalence; module ≈-Reasoning)
 open import basics using (IsPreorder; IsBottom; IsJoin)
 open import preorder using (Preorder; _=>_; _×_) renaming (_≃m_ to _≃P_)
@@ -14,8 +14,8 @@ open import join-semilattice
   renaming (_=>_ to _=>J_; _≃m_ to _≃J_; id to idJ; _∘_ to _∘J_;
             _⊕_ to _⊕J_;
             ≃m-isEquivalence to ≃J-isEquivalence)
-open import categories using (Category; HasCoproducts; HasTerminal; HasInitial)
-open import functor using (IsColimit; Colimit; HasColimits; Functor; NatTrans; ≃-NatTrans)
+open import categories using (Category; HasProducts; HasCoproducts; HasTerminal; HasInitial)
+open import functor using (IsColimit; Colimit; HasColimits; IsLimit; Limit; HasLimits; Functor; NatTrans; ≃-NatTrans)
 import two
 
 record Obj : Set (suc 0ℓ) where
@@ -184,6 +184,29 @@ module _ (𝒮 : Category 0ℓ 0ℓ 0ℓ) where
   colimits D .Colimit.isColimit .IsColimit.colambda-coeval X α .transf-eq s .f≃f .eqfunc .eqfun x = X .≃-refl
   colimits D .Colimit.isColimit .IsColimit.colambda-ext X f .f≃f .eqfunc .eqfun = colambda-ext D X f
 
+  ------------------------------------------------------------------------------
+  -- Limits
+
+  record Π-Carrier (D : Functor 𝒮 cat) : Set where
+    field
+      Π-func    : (x : 𝒮.obj) → D .fobj x .Carrier
+      Π-natural : ∀ {x₁ x₂} (f : x₁ 𝒮.⇒ x₂) → _≃_ (D .fobj x₂) (D .fmor f .fun (Π-func x₁)) (Π-func x₂)
+  open Π-Carrier
+
+  Π : Functor 𝒮 cat → Obj
+  Π D .carrier .Preorder.Carrier = Π-Carrier D
+  Π D .carrier .Preorder._≤_ α₁ α₂ = ∀ s → D .fobj s ._≤_ (α₁ .Π-func s) (α₂ .Π-func s)
+  Π D .carrier .Preorder.≤-isPreorder .IsPreorder.refl s = D .fobj s .≤-refl
+  Π D .carrier .Preorder.≤-isPreorder .IsPreorder.trans α≤β β≤γ s = D .fobj s .≤-trans (α≤β s) (β≤γ s)
+  Π D .joins .JoinSemilattice._∨_ α₁ α₂ .Π-func s = D .fobj s ._∨_ (α₁ .Π-func s) (α₂ .Π-func s)
+  Π D .joins .JoinSemilattice._∨_ α₁ α₂ .Π-natural {s₁}{s₂} f = {!!}
+  Π D .joins .JoinSemilattice.⊥ .Π-func s = D .fobj s .⊥
+  Π D .joins .JoinSemilattice.⊥ .Π-natural {s₁}{s₂} f = D .fmor f .⊥-preserving , D .fobj s₂ .≤-bottom
+  Π D .joins .JoinSemilattice.∨-isJoin .IsJoin.inl s = D .fobj s .inl
+  Π D .joins .JoinSemilattice.∨-isJoin .IsJoin.inr s = D .fobj s .inr
+  Π D .joins .JoinSemilattice.∨-isJoin .IsJoin.[_,_] α≤β α≤γ s = D .fobj s .[_∨_] (α≤β s) (α≤γ s)
+  Π D .joins .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom s = D .fobj s .≤-bottom
+
 coproducts : HasCoproducts cat
 coproducts .HasCoproducts.coprod X Y .carrier = X .carrier × Y .carrier
 coproducts .HasCoproducts.coprod X Y .joins = X .joins ⊕J Y .joins
@@ -195,7 +218,16 @@ coproducts .HasCoproducts.copair-in₁ f g .f≃f = join-semilattice.inj₁-copa
 coproducts .HasCoproducts.copair-in₂ f g .f≃f = join-semilattice.inj₂-copair (f .*→*) (g .*→*)
 coproducts .HasCoproducts.copair-ext f .f≃f = join-semilattice.copair-ext (f .*→*)
 
--- FIXME: could do products directly too
+products : HasProducts cat
+products .HasProducts.prod X Y .carrier = X .carrier × Y .carrier
+products .HasProducts.prod X Y .joins = X .joins ⊕J Y .joins
+products .HasProducts.p₁ .*→* = join-semilattice.project₁
+products .HasProducts.p₂ .*→* = join-semilattice.project₂
+products .HasProducts.pair f g .*→* = join-semilattice.⟨ (f .*→*) , (g .*→*) ⟩
+products .HasProducts.pair-cong eq₁ eq₂ .f≃f = join-semilattice.⟨⟩-cong (eq₁ .f≃f) (eq₂ .f≃f)
+products .HasProducts.pair-p₁ f g .f≃f = join-semilattice.pair-p₁ (f .*→*) (g .*→*)
+products .HasProducts.pair-p₂ f g .f≃f = join-semilattice.pair-p₂ (f .*→*) (g .*→*)
+products .HasProducts.pair-ext f .f≃f = join-semilattice.pair-ext (f .*→*)
 
 initial : HasInitial cat
 initial .HasInitial.witness = record { joins = 𝟙 }

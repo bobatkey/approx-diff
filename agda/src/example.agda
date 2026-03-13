@@ -9,6 +9,7 @@ open import signature
 import language-syntax
 import label
 import galois
+import conjugate
 
 open import example-signature
 
@@ -81,7 +82,7 @@ open L hiding (_,_)
 open import Relation.Binary.PropositionalEquality using (_≡_) renaming (refl to ≡-refl)
 
 -- Example with lifted numbers (Example (2) in Section 4.3)
-module example1 where
+module example1-galois where
   open import ho-model
   open import example-signature-interpretation galois.cat galois.products galois.terminal galois.TWO galois.unit galois.conjunct
   open interp Sig BaseInterp1
@@ -106,6 +107,25 @@ module example1 where
   -- Querying for the 'b' label uses the 2nd number
   test2 : back-slice label.b ≡ ((· , ⊥) , (· , ⊤) , (· , ⊥) , _)
   test2 = ≡-refl
+
+-- Same example using conjugate category
+module example1-conjugate where
+  open import ho-model
+  open import example-signature-interpretation conjugate.cat conjugate.products conjugate.terminal conjugate.TWO conjugate.unit conjugate.conjunct
+  open interp Sig BaseInterp1
+
+  input : ⟦ list (base label [×] base number) ⟧ty .idx .Carrier
+  input = 3 , (label.a , 0) , (label.b , 1) , (label.a , 1) , _
+
+  back-slice : label.label → _
+  back-slice l = ⟦ ex.query l ⟧tm .famf .transf (_ , input) .proj₂ .*→* .func .fun ⊤ .proj₂
+    where
+      open indexed-family._⇒f_
+      open join-semilattice-category._⇒_
+      open join-semilattice._=>_
+      open preorder._=>_
+
+  open import Relation.Binary.PropositionalEquality using (_≡_) renaming (refl to ≡-refl)
 
 -- Example with interval-approximated numbers (Example (3) in Section 4.3)
 module example2 where
