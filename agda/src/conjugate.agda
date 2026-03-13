@@ -77,32 +77,24 @@ record _⇒c_ (X Y : Obj) : Set where
 
   right-∨ : X .joins =>J Y .joins
   right-∨ .func = right
-  right-∨ .∨-preserving {x} {x'} = {!   !}
--- Y .#-reflect suffices
---     where
---     suffices : ∀ y → right .fun (x XJ.∨ x') Y.# y → (right .fun x YJ.∨ right .fun x') Y.# y
---     suffices y fx∨x'#y =
---       Y.#-sym (Y.#-distrib
---         (conjugate .proj₂ (X.#-sym (X.#-mono (inl X) (left .fun y) (X.#-sym gy#x∨x'))))
---         (conjugate .proj₂ (X.#-sym (X.#-mono (inr X) (left .fun y) (X.#-sym gy#x∨x')))))
---       where
---       gy#x∨x' : left .fun y X.# (x XJ.∨ x')
---       gy#x∨x' = conjugate .proj₁ (Y.#-sym fx∨x'#y)
+  right-∨ .∨-preserving {x} {x'} = Y .#-reflect suffices
+       where
+       suffices : ∀ y → (right .fun x YJ.∨ right .fun x') Y.# y → right .fun (x XJ.∨ x') Y.# y
+       suffices y fx∨fx'#y =
+         #-sym Y (conjugate .proj₂ (#-distrib X
+           (conjugate .proj₁ (#-sym Y (#-mono Y (inl Y) y fx∨fx'#y)))
+           (conjugate .proj₁ (#-sym Y (#-mono Y (inr Y) y fx∨fx'#y)))))
   right-∨ .⊥-preserving = Y .#-reflect (λ _ _ → #-sym Y (conjugate .proj₂ (π₂ X)))
 
   left-∨ : Y .joins =>J X .joins
   left-∨ .func = left
-  left-∨ .∨-preserving {y} {y'} = {!   !}
--- X .#-reflect suffices
---     where
---     suffices : ∀ x → left .fun (y YJ.∨ y') X.# x → (left .fun y XJ.∨ left .fun y') X.# x
---     suffices x gy∨y'#x =
---       X.#-sym (X.#-distrib
---         (X.#-sym (conjugate .proj₁ (Y.#-mono (inl Y) (right .fun x) fx#y∨y')))
---         (X.#-sym (conjugate .proj₁ (Y.#-mono (inr Y) (right .fun x) fx#y∨y'))))
---       where
---       fx#y∨y' : (y YJ.∨ y') Y.# right .fun x
---       fx#y∨y' = conjugate .proj₂ gy∨y'#x
+  left-∨ .∨-preserving {y} {y'} = X .#-reflect suffices
+       where
+       suffices : ∀ x → (left .fun y XJ.∨ left .fun y') X.# x → left .fun (y YJ.∨ y') X.# x
+       suffices x gy∨gy'#x =
+         conjugate .proj₁ (#-sym Y (#-distrib Y
+           (#-sym Y (conjugate .proj₂ (#-mono X (inl X) x gy∨gy'#x)))
+           (#-sym Y (conjugate .proj₂ (#-mono X (inr X) x gy∨gy'#x)))))
   left-∨ .⊥-preserving = X. #-reflect (λ _ _ → conjugate .proj₁ (π₁ Y))
 
 open _⇒c_
@@ -337,17 +329,14 @@ module _ where
   TWO .joins .JoinSemilattice.⊥ = O
   TWO .joins .JoinSemilattice.∨-isJoin = two.⊔-isJoin
   TWO .joins .JoinSemilattice.⊥-isBottom = two.O-isBottom
-  TWO .#-reflect {O} {O} h = tt
-  TWO .#-reflect {O} {I} h = tt
+  TWO .#-reflect {O} h = tt
   TWO .#-reflect {I} {O} h = h I tt
   TWO .#-reflect {I} {I} h = tt
-  TWO .∧-∨-distrib O O _ = tt
-  TWO .∧-∨-distrib O I _ = tt
+  TWO .∧-∨-distrib O _ _ = tt
   TWO .∧-∨-distrib I O O = tt
   TWO .∧-∨-distrib I O I = tt
   TWO .∧-∨-distrib I I _ = tt
   TWO .∨-∧-distrib O O _ = tt
   TWO .∨-∧-distrib O I O = tt
   TWO .∨-∧-distrib O I I = tt
-  TWO .∨-∧-distrib I O _ = tt
-  TWO .∨-∧-distrib I I _ = tt
+  TWO .∨-∧-distrib I _ _ = tt
