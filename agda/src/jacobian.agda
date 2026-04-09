@@ -118,7 +118,7 @@ module _ where
   matrix f j i = proj j (f .fun (e i))
 
   proj-tabulate : ∀ {n} (g : Fin n → Two) (i : Fin n) → proj i (tabulate {n} g) ≃ g i
-  proj-tabulate {suc n} g zero    = ≃-refl
+  proj-tabulate {suc n} g zero = ≃-refl
   proj-tabulate {suc n} g (suc i) = proj-tabulate {n} (λ i → g (suc i)) i
 
   ⋅-e : ∀ {n} (u : Bool^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) ≃ proj j u
