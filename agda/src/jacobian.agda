@@ -235,3 +235,12 @@ module _ where
     Bool^ n .≤-trans (galois.Obj.∧-mono (Bool^ n) (Bool^ n .≤-refl) (f .*→*J .join-semilattice._=>_.⊥-preserving))
                      (galois.Obj.π₂ (Bool^ n))
   to-conj {suc m} {n} f .conjugate._⇒c_.conjugate .proj₂ = {!!}
+
+  -- Galois embedding: (adjoint f, transpose f) forms a Galois connection.
+  -- right (meet-preserving, m → n) uses the adjoint of transpose f.
+  -- left (join-preserving, n → m) is transpose f.
+  -- Adjunction: y ≤ right(x) ⇔ left(y) ≤ x, i.e. y ≤ adjoint(transpose f)(x) ⇔ transpose(f)(y) ≤ x.
+  to-gal : ∀ {m n} → Bool^-join m ⇒J Bool^-join n → galois._⇒g_ (Bool^ m) (Bool^ n)
+  to-gal {m} {n} f .galois._⇒g_.right = adjoint {n} {m} (transpose {m} {n} f) .*→*M .funcM
+  to-gal {m} {n} f .galois._⇒g_.left  = transpose {m} {n} f .*→*J .funcJ
+  to-gal {m} {n} f .galois._⇒g_.left⊣right = {!!}
