@@ -87,8 +87,8 @@ import conjugate
 
 Bool^-conj : ℕ → conjugate.Obj
 Bool^-conj n .conjugate.Obj.carrier = Bool^ n .carrier
-Bool^-conj n .conjugate.Obj.meets   = Bool^-meets n
-Bool^-conj n .conjugate.Obj.joins   = Bool^ n .joins
+Bool^-conj n .conjugate.Obj.meets = Bool^-meets n
+Bool^-conj n .conjugate.Obj.joins = Bool^ n .joins
 Bool^-conj n .conjugate.Obj.#-reflect   = {!!}
 Bool^-conj n .conjugate.Obj.∧-∨-distrib = {!!}
 Bool^-conj n .conjugate.Obj.∨-∧-distrib = {!!}
@@ -98,8 +98,8 @@ import galois
 
 Bool^-gal : ℕ → galois.Obj
 Bool^-gal n .galois.Obj.carrier = Bool^ n .carrier
-Bool^-gal n .galois.Obj.meets   = Bool^-meets n
-Bool^-gal n .galois.Obj.joins   = Bool^ n .joins
+Bool^-gal n .galois.Obj.meets = Bool^-meets n
+Bool^-gal n .galois.Obj.joins = Bool^ n .joins
 
 -- Morphisms: join-semilattice morphisms Bool^m → Bool^n.
 -- Every such map is determined by its values on basis vectors, i.e. by an n×m Bool matrix.
