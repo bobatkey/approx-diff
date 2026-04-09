@@ -6,25 +6,31 @@ open import Level using (0ℓ)
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Fin using (Fin; zero; suc)
 open import Data.Product using (_,_)
-open import two using (Two; I; O; _⊓_; _⊔_; ⊔-upper₂; ≤-isPreorder)
+open import two using (Two; I; O; _⊓_; _⊔_; ⊔-upper₂; ≤-isPreorder; ⊓-isMeet; I-isTop)
 open import basics using (IsPreorder)
 open IsPreorder ≤-isPreorder using (_≃_; ≃-refl; ≃-trans)
 import join-semilattice-category
+import meet-semilattice-category
+import meet-semilattice
+import galois
 
-open join-semilattice-category using (Obj; TWO; products; terminal)
-open import categories using (HasProducts; HasTerminal)
+-- Objects: Bool^n as a bounded lattice, the n-fold product of TWO.
+-- FIXME: using galois.Obj as a stand-in for BoundedLattice, which we don't have yet.
 
--- Objects: Bool^n, the n-fold product of TWO in the category of join semilattices.
+Bool^ : ℕ → galois.Obj
+Bool^ zero    = galois.𝟙
+Bool^ (suc n) = galois._⊕_ galois.TWO (Bool^ n)
 
-private
-  module P = HasProducts products
-  module T = HasTerminal terminal
+-- Join-semilattice and meet-semilattice views.
+Bool^-join : ℕ → join-semilattice-category.Obj
+Bool^-join n .join-semilattice-category.Obj.carrier = Bool^ n .galois.Obj.carrier
+Bool^-join n .join-semilattice-category.Obj.joins   = Bool^ n .galois.Obj.joins
 
-Bool^ : ℕ → Obj
-Bool^ zero = T.witness
-Bool^ (suc n) = P.prod TWO (Bool^ n)
+Bool^-meet : ℕ → meet-semilattice-category.Obj
+Bool^-meet n .meet-semilattice-category.Obj.carrier = Bool^ n .galois.Obj.carrier
+Bool^-meet n .meet-semilattice-category.Obj.meets   = Bool^ n .galois.Obj.meets
 
-open Obj hiding (_≃_; ≃-refl; ≃-sym; ≃-trans)
+open galois.Obj hiding (_≃_; ≃-refl; ≃-sym; ≃-trans)
 
 -- Basis vectors, projection and tabulation for Bool^n.
 
@@ -75,27 +81,31 @@ module _ where
 ¬ {zero}  _       = tt
 ¬ {suc n} (a , u) = two.¬ a , ¬ {n} u
 
+-- ¬ is antitone (reverses ≤).
+¬-anti : ∀ {a b : Two} → two._≤_ a b → two._≤_ (two.¬ b) (two.¬ a)
+¬-anti {O} {O} _ = tt
+¬-anti {O} {I} _ = tt
+¬-anti {I} {I} _ = tt
+
+¬-anti^ : ∀ {n} {v w : Bool^ n .Carrier} → Bool^ n ._≤_ v w → Bool^ n ._≤_ (¬ {n} w) (¬ {n} v)
+¬-anti^ {zero}  _           = tt
+¬-anti^ {suc n} (a≤b , v≤w) = ¬-anti a≤b , ¬-anti^ {n} v≤w
+
 -- Co-dot product (De Morgan dual of ⋅).
 _⊡_ : ∀ {n} → Bool^ n .Carrier → Bool^ n .Carrier → Two
 _⊡_ {n} u v = two.¬ (_⋅_ {n} (¬ {n} u) (¬ {n} v))
 
--- Bool^n also has meets (pointwise ⊓ with top I), making it a bounded lattice.
--- This is shared by the conjugate and galois embeddings.
-import meet-semilattice
-open import two using (⊓-isMeet; I-isTop)
+-- ⊡ is monotone in its second argument (via De Morgan from ⋅-mono).
+⊡-mono : ∀ {n} (u : Bool^ n .Carrier) {v w : Bool^ n .Carrier} →
+         Bool^ n ._≤_ v w → two._≤_ (_⊡_ {n} u v) (_⊡_ {n} u w)
+⊡-mono {n} u v≤w = ¬-anti (⋅-mono {n} (¬ {n} u) (¬-anti^ {n} v≤w))
 
-Bool^-meets : ∀ n → meet-semilattice.MeetSemilattice (Bool^ n .carrier)
-Bool^-meets zero    = meet-semilattice.𝟙
-Bool^-meets (suc n) = meet-semilattice._⊕_
-  (record { _∧_ = _⊓_; ⊤ = I; ∧-isMeet = ⊓-isMeet; ⊤-isTop = I-isTop })
-  (Bool^-meets n)
-
--- Bool^n as a HeytConj object (Heyting algebra).
+-- Bool^n as a conjugate.Obj (Heyting algebra).
 import conjugate
 
 Bool^-conj : ℕ → conjugate.Obj
 Bool^-conj n .conjugate.Obj.carrier = Bool^ n .carrier
-Bool^-conj n .conjugate.Obj.meets = Bool^-meets n
+Bool^-conj n .conjugate.Obj.meets = Bool^ n .meets
 Bool^-conj n .conjugate.Obj.joins = Bool^ n .joins
 Bool^-conj zero .conjugate.Obj.#-reflect _ = tt
 Bool^-conj (suc n) .conjugate.Obj.#-reflect {x₁ , x₂} {y₁ , y₂} h =
@@ -111,21 +121,6 @@ Bool^-conj zero .conjugate.Obj.∨-∧-distrib _ _ _ = tt
 Bool^-conj (suc n) .conjugate.Obj.∨-∧-distrib (x₁ , x₂) (y₁ , y₂) (z₁ , z₂) =
   conjugate.Obj.∨-∧-distrib conjugate.TWO x₁ y₁ z₁ ,
   conjugate.Obj.∨-∧-distrib (Bool^-conj n) x₂ y₂ z₂
-
--- Bool^n as a LatGal object (bounded lattice).
-import galois
-
-Bool^-gal : ℕ → galois.Obj
-Bool^-gal n .galois.Obj.carrier = Bool^ n .carrier
-Bool^-gal n .galois.Obj.meets = Bool^-meets n
-Bool^-gal n .galois.Obj.joins = Bool^ n .joins
-
--- Bool^n as a meet-semilattice-category object (for the adjoint).
-import meet-semilattice-category
-
-Bool^-meet : ℕ → meet-semilattice-category.Obj
-Bool^-meet n .meet-semilattice-category.Obj.carrier = Bool^ n .carrier
-Bool^-meet n .meet-semilattice-category.Obj.meets   = Bool^-meets n
 
 -- Morphisms: join-semilattice morphisms Bool^m → Bool^n.
 -- Every such map is determined by its values on basis vectors, i.e. by an n×m Bool matrix.
@@ -146,7 +141,7 @@ module _ where
     -- tabulate is a join-semilattice isomorphism from (Fin m → Two) to Bool^m
     -- (with proj as inverse). We only need the forward direction here.
     tabulate-mono : ∀ {m} (g h : Fin m → Two) →
-                   (∀ i → two._≤_ (g i) (h i)) → Bool^ m ._≤_ (tabulate {m} g) (tabulate {m} h)
+                    (∀ i → two._≤_ (g i) (h i)) → Bool^ m ._≤_ (tabulate {m} g) (tabulate {m} h)
     tabulate-mono {zero}  g h p = tt
     tabulate-mono {suc m} g h p = p zero , tabulate-mono {m} _ _ (λ i → p (suc i))
 
@@ -163,9 +158,10 @@ module _ where
     proj-tabulate {suc n} g zero = ≃-refl
     proj-tabulate {suc n} g (suc i) = proj-tabulate {n} (λ i → g (suc i)) i
 
-  transpose : ∀ {m n} → Bool^ m ⇒J Bool^ n → Bool^ n ⇒J Bool^ m
+  transpose : ∀ {m n} → Bool^-join m ⇒J Bool^-join n → Bool^-join n ⇒J Bool^-join m
   transpose {m} {n} f .*→*J .funcJ .funP v = tabulate {m} (λ i → _⋅_ {n} (fun f (e i)) v)
-  transpose {m} {n} f .*→*J .funcJ .preorder._=>_.mono v≤w = tabulate-mono {m} _ _ (λ i → ⋅-mono {n} (fun f (e i)) v≤w)
+  transpose {m} {n} f .*→*J .funcJ .preorder._=>_.mono v≤w =
+    tabulate-mono {m} _ _ (λ i → ⋅-mono {n} (fun f (e i)) v≤w)
   transpose {m} {n} f .*→*J .join-semilattice._=>_.∨-preserving {v} {w} =
     Bool^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-∨ {n} (fun f (e i)) v w))
                      (tabulate-∨ {m} _ _)
@@ -173,15 +169,16 @@ module _ where
     Bool^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-⊥ {n} (fun f (e i))))
                      (tabulate-⊥ {m})
 
-  adjoint : ∀ {m n} → Bool^ m ⇒J Bool^ n → Bool^-meet n ⇒M Bool^-meet m
+  adjoint : ∀ {m n} → Bool^-join m ⇒J Bool^-join n → Bool^-meet n ⇒M Bool^-meet m
   adjoint {m} {n} f .*→*M .funcM .funP v = tabulate {m} (λ i → _⊡_ {n} (¬ {n} (fun f (e i))) v)
-  adjoint {m} {n} f .*→*M .funcM .preorder._=>_.mono = {!!}
+  adjoint {m} {n} f .*→*M .funcM .preorder._=>_.mono v≤w =
+    tabulate-mono {m} _ _ (λ i → ⊡-mono {n} (¬ {n} (fun f (e i))) v≤w)
   adjoint {m} {n} f .*→*M .meet-semilattice._=>_.∧-preserving = {!!}
   adjoint {m} {n} f .*→*M .meet-semilattice._=>_.⊤-preserving = {!!}
 
   -- Sanity-check: transpose corresponds to transposing the implied matrix.
   private
-    matrix : ∀ {m n} → Bool^ m ⇒J Bool^ n → Fin n → Fin m → Two
+    matrix : ∀ {m n} → Bool^-join m ⇒J Bool^-join n → Fin n → Fin m → Two
     matrix f j i = proj j (fun f (e i))
 
     ⋅-e : ∀ {n} (u : Bool^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) ≃ proj j u
@@ -190,7 +187,7 @@ module _ where
     ⋅-e {suc n} (O , u) (suc j) = ⋅-e {n} u j
     ⋅-e {suc n} (I , u) (suc j) = ⋅-e {n} u j
 
-    transpose-matrix : ∀ m n (f : Bool^ m ⇒J Bool^ n) (i : Fin m) (j : Fin n) →
+    transpose-matrix : ∀ m n (f : Bool^-join m ⇒J Bool^-join n) (i : Fin m) (j : Fin n) →
                       matrix {n} {m} (transpose {m} {n} f) i j ≃ matrix {m} {n} f j i
     transpose-matrix m n f i j =
       ≃-trans (proj-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) (e j)) i)
