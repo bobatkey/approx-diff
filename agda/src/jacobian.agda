@@ -49,8 +49,19 @@ _⋅_ : ∀ {n} → Bool^ n .Carrier → Bool^ n .Carrier → Two
 _⋅_ {zero}  _ _ = O
 _⋅_ {suc n} (a , u) (b , v) = (a ⊓ b) ⊔ _⋅_ {n} u v
 
--- Morphisms: a join-semilattice morphism Bool^m → Bool^n.
--- Every such map is Bool-linear (determined by its values on basis vectors), so equivalent to an n×m Bool matrix.
+-- Dot is linear in its second argument.
+open import prop using (tt)
+
+⋅-⊥ : ∀ {n} (u : Bool^ n .Carrier) → two._≤_ (_⋅_ {n} u (Bool^ n .⊥)) O
+⋅-⊥ {zero}  _       = tt
+⋅-⊥ {suc n} (O , u) = ⋅-⊥ {n} u
+⋅-⊥ {suc n} (I , u) = ⋅-⊥ {n} u
+
+⋅-∨ : ∀ {n} (u v w : Bool^ n .Carrier)
+    → two._≤_ (_⋅_ {n} u (Bool^ n ._∨_ v w)) ((_⋅_ {n} u v) ⊔ (_⋅_ {n} u w))
+⋅-∨ {zero}  _       _       _       = {!!}
+⋅-∨ {suc n} (a , u) (b , v) (c , w) = {!!}
+
 _⇒J_ : ℕ → ℕ → Set
 m ⇒J n = Bool^ m ⇒ Bool^ n
   where open join-semilattice-category using (_⇒_)
