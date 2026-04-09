@@ -38,7 +38,7 @@ proj zero (b , _)  = b
 proj (suc i) (_ , v) = proj i v
 
 open import Data.Unit using (tt)
-open import prop using (tt; _,_)
+open import prop using (tt; _,_; _∧_)
 
 -- Bool^n representation of a function.
 tabulate : ∀ {n} → (Fin n → Two) → Bool^ n .Carrier
@@ -100,8 +100,7 @@ module _ where
 
     tabulate-⋅-mono : ∀ {m} {n} (g : Fin m → Bool^ n .Carrier) {v w : Bool^ n .Carrier}
                     → Bool^ n ._≤_ v w
-                    → Bool^ m ._≤_ (tabulate {m} (λ i → _⋅_ {n} (g i) v))
-                                    (tabulate {m} (λ i → _⋅_ {n} (g i) w))
+                    → Bool^ m ._≤_ (tabulate {m} (λ i → _⋅_ {n} (g i) v)) (tabulate {m} (λ i → _⋅_ {n} (g i) w))
     tabulate-⋅-mono {zero}  {n} g v≤w = tt
     tabulate-⋅-mono {suc m} {n} g v≤w = ⋅-mono {n} (g zero) v≤w , tabulate-⋅-mono {m} {n} (λ i → g (suc i)) v≤w
 
@@ -117,6 +116,18 @@ module _ where
   matrix : ∀ {m n} → m ⇒J n → Fin n → Fin m → Two
   matrix f j i = proj j (f .fun (e i))
 
-  transpose-matrix : ∀ m n (f : m ⇒J n) (i : Fin m) (j : Fin n) →
-                     matrix {n} {m} (transpose {m} {n} f) i j ≡ matrix {m} {n} f j i
-  transpose-matrix m n f i j = {!!}
+  proj-tabulate : ∀ {n} (g : Fin n → Two) (i : Fin n) → proj i (tabulate {n} g) ≡ g i
+  proj-tabulate {suc n} g zero = ≡-refl
+  proj-tabulate {suc n} g (suc i) = proj-tabulate {n} (λ i → g (suc i)) i
+
+  ⋅-e : ∀ {n} (u : Bool^ n .Carrier) (j : Fin n)
+      → two._≤_ (_⋅_ {n} u (e j)) (proj j u) ∧ two._≤_ (proj j u) (_⋅_ {n} u (e j))
+  ⋅-e {suc n} (O , u) zero = ⋅-⊥ {n} u , tt
+  ⋅-e {suc n} (I , u) zero = tt , tt
+  ⋅-e {suc n} (O , u) (suc j) = ⋅-e {n} u j
+  ⋅-e {suc n} (I , u) (suc j) = ⋅-e {n} u j
+
+  transpose-matrix : ∀ m n (f : m ⇒J n) (i : Fin m) (j : Fin n)
+                   → two._≤_ (matrix {n} {m} (transpose {m} {n} f) i j) (matrix {m} {n} f j i)
+                     ∧ two._≤_ (matrix {m} {n} f j i) (matrix {n} {m} (transpose {m} {n} f) i j)
+  transpose-matrix m n f i j rewrite proj-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) (e j)) i = ⋅-e {n} (f .fun (e i)) j
