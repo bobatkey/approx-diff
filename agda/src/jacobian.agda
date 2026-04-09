@@ -89,37 +89,41 @@ module _ where
   open preorder._=>_
 
   private
+    -- tabulate and proj witness a join-semilattice isomorphism between (Fin m → Two) and Bool^m. We only need
+    -- the tabulate direction here.
     tabulate-mono : ∀ {m} (g h : Fin m → Two)
                → (∀ i → two._≤_ (g i) (h i))
                → Bool^ m ._≤_ (tabulate {m} g) (tabulate {m} h)
     tabulate-mono {zero}  g h p = tt
     tabulate-mono {suc m} g h p = p zero , tabulate-mono {m} _ _ (λ i → p (suc i))
 
-    tabulate-⋅-⊥ : ∀ {m} {n} (g : Fin m → Bool^ n .Carrier) →
-                   Bool^ m ._≤_ (tabulate {m} (λ i → _⋅_ {n} (g i) (Bool^ n .⊥))) (Bool^ m .⊥)
-    tabulate-⋅-⊥ {zero} {n} g = tt
-    tabulate-⋅-⊥ {suc m} {n} g = ⋅-⊥ {n} (g zero) , tabulate-⋅-⊥ {m} {n} (λ i → g (suc i))
+    tabulate-⊥ : ∀ {m} → Bool^ m ._≤_ (tabulate {m} (λ _ → O)) (Bool^ m .⊥)
+    tabulate-⊥ {zero}  = tt
+    tabulate-⊥ {suc m} = tt , tabulate-⊥ {m}
 
-    tabulate-⋅-∨ : ∀ {m} {n} (g : Fin m → Bool^ n .Carrier) (v w : Bool^ n .Carrier) →
-                   Bool^ m ._≤_ (tabulate {m} (λ i → _⋅_ {n} (g i) (Bool^ n ._∨_ v w)))
-                                (Bool^ m ._∨_ (tabulate {m} (λ i → _⋅_ {n} (g i) v)) (tabulate {m} (λ i → _⋅_ {n} (g i) w)))
-    tabulate-⋅-∨ {zero} {n} g v w = tt
-    tabulate-⋅-∨ {suc m} {n} g v w = ⋅-∨ {n} (g zero) v w , tabulate-⋅-∨ {m} {n} (λ i → g (suc i)) v w
+    tabulate-∨ : ∀ {m} (g h : Fin m → Two) →
+                 Bool^ m ._≤_ (tabulate {m} (λ i → g i ⊔ h i)) (Bool^ m ._∨_ (tabulate {m} g) (tabulate {m} h))
+    tabulate-∨ {zero}  g h = tt
+    tabulate-∨ {suc m} g h = two.≤-refl , tabulate-∨ {m} (λ i → g (suc i)) (λ i → h (suc i))
+
+    proj-tabulate : ∀ {n} (g : Fin n → Two) (i : Fin n) → proj i (tabulate {n} g) ≃ g i
+    proj-tabulate {suc n} g zero = ≃-refl
+    proj-tabulate {suc n} g (suc i) = proj-tabulate {n} (λ i → g (suc i)) i
 
   transpose : ∀ {m n} → m ⇒J n → n ⇒J m
   transpose {m} {n} f .*→* .func .fun v = tabulate {m} (λ i → _⋅_ {n} (f .fun (e i)) v)
   transpose {m} {n} f .*→* .func .mono v≤w = tabulate-mono {m} _ _ (λ i → ⋅-mono {n} (f .fun (e i)) v≤w)
-  transpose {m} {n} f .*→* .∨-preserving {v} {w} = tabulate-⋅-∨ {m} {n} (λ i → f .fun (e i)) v w
-  transpose {m} {n} f .*→* .⊥-preserving = tabulate-⋅-⊥ {m} {n} (λ i → f .fun (e i))
+  transpose {m} {n} f .*→* .∨-preserving {v} {w} =
+    Bool^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-∨ {n} (f .fun (e i)) v w))
+                     (tabulate-∨ {m} _ _)
+  transpose {m} {n} f .*→* .⊥-preserving =
+    Bool^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-⊥ {n} (f .fun (e i))))
+                     (tabulate-⊥ {m})
 
   -- Sanity-check that this is actually matrix transposition.
 
   matrix : ∀ {m n} → m ⇒J n → Fin n → Fin m → Two
   matrix f j i = proj j (f .fun (e i))
-
-  proj-tabulate : ∀ {n} (g : Fin n → Two) (i : Fin n) → proj i (tabulate {n} g) ≃ g i
-  proj-tabulate {suc n} g zero = ≃-refl
-  proj-tabulate {suc n} g (suc i) = proj-tabulate {n} (λ i → g (suc i)) i
 
   ⋅-e : ∀ {n} (u : Bool^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) ≃ proj j u
   ⋅-e {suc n} (O , u) zero = ⋅-⊥ {n} u , tt
