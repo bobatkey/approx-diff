@@ -38,6 +38,7 @@ proj zero (b , _)  = b
 proj (suc i) (_ , v) = proj i v
 
 open import Data.Unit using (tt)
+open import prop using (tt; _,_)
 
 -- Bool^n representation of a function.
 tabulate : ∀ {n} → (Fin n → Two) → Bool^ n .Carrier
@@ -45,25 +46,32 @@ tabulate {zero} _ = tt
 tabulate {suc n} f = f zero , tabulate {n} (λ i → f (suc i))
 
 -- Dot product of two Bool^n, i.e. whether there exists a position where both are I.
-_⋅_ : ∀ {n} → Bool^ n .Carrier → Bool^ n .Carrier → Two
-_⋅_ {zero}  _ _ = O
-_⋅_ {suc n} (a , u) (b , v) = (a ⊓ b) ⊔ _⋅_ {n} u v
+module _ where
+  _⋅_ : ∀ {n} → Bool^ n .Carrier → Bool^ n .Carrier → Two
+  _⋅_ {zero}  _ _ = O
+  _⋅_ {suc n} (a , u) (b , v) = (a ⊓ b) ⊔ _⋅_ {n} u v
 
--- Dot is linear in its second argument.
-open import prop using (tt; _,_)
+  -- Dot is linear and monotone in its second argument.
 
-⋅-⊥ : ∀ {n} (u : Bool^ n .Carrier) → two._≤_ (_⋅_ {n} u (Bool^ n .⊥)) O
-⋅-⊥ {zero}  _ = tt
-⋅-⊥ {suc n} (O , v) = ⋅-⊥ {n} v
-⋅-⊥ {suc n} (I , v) = ⋅-⊥ {n} v
+  ⋅-⊥ : ∀ {n} (u : Bool^ n .Carrier) → two._≤_ (_⋅_ {n} u (Bool^ n .⊥)) O
+  ⋅-⊥ {zero}  _ = tt
+  ⋅-⊥ {suc n} (O , v) = ⋅-⊥ {n} v
+  ⋅-⊥ {suc n} (I , v) = ⋅-⊥ {n} v
 
-⋅-∨ : ∀ {n} (u v w : Bool^ n .Carrier)
-    → two._≤_ (_⋅_ {n} u (Bool^ n ._∨_ v w)) ((_⋅_ {n} u v) ⊔ (_⋅_ {n} u w))
-⋅-∨ {zero} _ _ _ = tt
-⋅-∨ {suc n} (O , u) (_ , v) (_ , w) = ⋅-∨ {n} u v w
-⋅-∨ {suc n} (I , u) (O , v) (O , w) = ⋅-∨ {n} u v w
-⋅-∨ {suc n} (I , u) (O , v) (I , w) = ⊔-upper₂
-⋅-∨ {suc n} (I , u) (I , v) (_ , w) = tt
+  ⋅-∨ : ∀ {n} (u v w : Bool^ n .Carrier)
+      → two._≤_ (_⋅_ {n} u (Bool^ n ._∨_ v w)) ((_⋅_ {n} u v) ⊔ (_⋅_ {n} u w))
+  ⋅-∨ {zero} _ _ _ = tt
+  ⋅-∨ {suc n} (O , u) (_ , v) (_ , w) = ⋅-∨ {n} u v w
+  ⋅-∨ {suc n} (I , u) (O , v) (O , w) = ⋅-∨ {n} u v w
+  ⋅-∨ {suc n} (I , u) (O , v) (I , w) = ⊔-upper₂
+  ⋅-∨ {suc n} (I , u) (I , v) (_ , w) = tt
+
+  ⋅-mono : ∀ {n} (u : Bool^ n .Carrier) {v w : Bool^ n .Carrier}
+         → Bool^ n ._≤_ v w → two._≤_ (_⋅_ {n} u v) (_⋅_ {n} u w)
+  ⋅-mono {zero}  _ _ = tt
+  ⋅-mono {suc n} (O , u) {_ , v} {_ , w} (_ , v≤w) = ⋅-mono {n} u v≤w
+  ⋅-mono {suc n} (I , u) {O , v} {_ , w} (_   , v≤w) = two.≤-trans (⋅-mono {n} u v≤w) ⊔-upper₂
+  ⋅-mono {suc n} (I , u) {I , v} {I , w} (_   , v≤w) = tt
 
 _⇒J_ : ℕ → ℕ → Set
 m ⇒J n = Bool^ m ⇒ Bool^ n
@@ -90,9 +98,16 @@ module _ where
     tabulate-⋅-∨ {zero} {n} g v w = tt
     tabulate-⋅-∨ {suc m} {n} g v w = ⋅-∨ {n} (g zero) v w , tabulate-⋅-∨ {m} {n} (λ i → g (suc i)) v w
 
+    tabulate-⋅-mono : ∀ {m} {n} (g : Fin m → Bool^ n .Carrier) {v w : Bool^ n .Carrier}
+                    → Bool^ n ._≤_ v w
+                    → Bool^ m ._≤_ (tabulate {m} (λ i → _⋅_ {n} (g i) v))
+                                    (tabulate {m} (λ i → _⋅_ {n} (g i) w))
+    tabulate-⋅-mono {zero}  {n} g v≤w = tt
+    tabulate-⋅-mono {suc m} {n} g v≤w = ⋅-mono {n} (g zero) v≤w , tabulate-⋅-mono {m} {n} (λ i → g (suc i)) v≤w
+
   transpose : ∀ {m n} → m ⇒J n → n ⇒J m
   transpose {m} {n} f .*→* .func .fun v = tabulate {m} (λ i → _⋅_ {n} (f .fun (e i)) v)
-  transpose {m} {n} f .*→* .func .mono = {!!}
+  transpose {m} {n} f .*→* .func .mono v≤w = tabulate-⋅-mono {m} {n} (λ i → f .fun (e i)) v≤w
   transpose {m} {n} f .*→* .∨-preserving {v} {w} = tabulate-⋅-∨ {m} {n} (λ i → f .fun (e i)) v w
   transpose {m} {n} f .*→* .⊥-preserving = tabulate-⋅-⊥ {m} {n} (λ i → f .fun (e i))
 
