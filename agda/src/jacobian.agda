@@ -26,7 +26,7 @@ Bool^ (suc n) = P.prod TWO (Bool^ n)
 
 open Obj hiding (_≃_; ≃-refl; ≃-sym; ≃-trans)
 
--- Basis vectors, projection, and tabulation for Bool^n.
+-- Basis vectors, projection and tabulation for Bool^n.
 
 e : ∀ {n} → Fin n → Bool^ n .Carrier
 e {suc n} zero = I , Bool^ n .⊥
@@ -49,8 +49,7 @@ module _ where
   _⋅_ {zero}  _ _ = O
   _⋅_ {suc n} (a , u) (b , v) = (a ⊓ b) ⊔ _⋅_ {n} u v
 
-  -- Dot is join-preserving and monotone in its second argument.
-
+  -- ⋅ is join-preserving and monotone in its second argument.
   ⋅-⊥ : ∀ {n} (u : Bool^ n .Carrier) → two._≤_ (_⋅_ {n} u (Bool^ n .⊥)) O
   ⋅-⊥ {zero}  _ = tt
   ⋅-⊥ {suc n} (O , v) = ⋅-⊥ {n} v
@@ -82,7 +81,7 @@ Bool^-meets (suc n) = meet-semilattice._⊕_
   (record { _∧_ = _⊓_; ⊤ = I; ∧-isMeet = ⊓-isMeet; ⊤-isTop = I-isTop })
   (Bool^-meets n)
 
--- Bool^n as a conjugate.Obj (Heyting algebra).
+-- Bool^n as a HeytConj object (Heyting algebra).
 import conjugate
 
 Bool^-conj : ℕ → conjugate.Obj
@@ -104,7 +103,7 @@ Bool^-conj (suc n) .conjugate.Obj.∨-∧-distrib (x₁ , x₂) (y₁ , y₂) (z
   conjugate.Obj.∨-∧-distrib conjugate.TWO x₁ y₁ z₁ ,
   conjugate.Obj.∨-∧-distrib (Bool^-conj n) x₂ y₂ z₂
 
--- Bool^n as a galois.Obj: a bounded lattice (no extra axioms needed).
+-- Bool^n as a LatGal object (bounded lattice).
 import galois
 
 Bool^-gal : ℕ → galois.Obj
