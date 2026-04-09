@@ -82,14 +82,19 @@ Bool^-meets (suc n) = meet-semilattice._⊕_
   (record { _∧_ = _⊓_; ⊤ = I; ∧-isMeet = ⊓-isMeet; ⊤-isTop = I-isTop })
   (Bool^-meets n)
 
--- Bool^n as a conjugate.Obj: a Heyting algebra (bounded distributive lattice with #-reflect).
+-- Bool^n as a conjugate.Obj (Heyting algebra).
 import conjugate
 
 Bool^-conj : ℕ → conjugate.Obj
 Bool^-conj n .conjugate.Obj.carrier = Bool^ n .carrier
 Bool^-conj n .conjugate.Obj.meets = Bool^-meets n
 Bool^-conj n .conjugate.Obj.joins = Bool^ n .joins
-Bool^-conj n .conjugate.Obj.#-reflect = {!!}
+Bool^-conj zero .conjugate.Obj.#-reflect _ = tt
+Bool^-conj (suc n) .conjugate.Obj.#-reflect {x₁ , x₂} {y₁ , y₂} h =
+  conjugate.Obj.#-reflect conjugate.TWO (λ z₁ y#z →
+    proj₁ (h (z₁ , Bool^ n .⊥) (y#z , conjugate.Obj.π₂ (Bool^-conj n)))) ,
+  conjugate.Obj.#-reflect (Bool^-conj n) (λ z₂ y#z →
+    proj₂ (h (O , z₂) (conjugate.Obj.π₂ conjugate.TWO , y#z)))
 Bool^-conj zero .conjugate.Obj.∧-∨-distrib _ _ _ = tt
 Bool^-conj (suc n) .conjugate.Obj.∧-∨-distrib (x₁ , x₂) (y₁ , y₂) (z₁ , z₂) =
   conjugate.Obj.∧-∨-distrib conjugate.TWO x₁ y₁ z₁ ,
