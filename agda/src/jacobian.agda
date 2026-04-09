@@ -35,7 +35,7 @@ e {suc n} (suc i) = O , e i
 
 proj : ∀ {n} → Fin n → Bool^ n .Carrier → Two
 proj zero (b , _)  = b
-proj (suc i) (_ , bs) = proj i bs
+proj (suc i) (_ , v) = proj i v
 
 open import Data.Unit using (tt)
 
@@ -47,7 +47,7 @@ tabulate {suc n} f = f zero , tabulate {n} (λ i → f (suc i))
 -- Dot product of two Bool^n, i.e. whether there exists a position where both are I.
 _⋅_ : ∀ {n} → Bool^ n .Carrier → Bool^ n .Carrier → Two
 _⋅_ {zero}  _ _ = O
-_⋅_ {suc n} (a , as) (b , bs) = (a ⊓ b) ⊔ _⋅_ {n} as bs
+_⋅_ {suc n} (a , u) (b , v) = (a ⊓ b) ⊔ _⋅_ {n} u v
 
 -- Morphisms: a join-semilattice morphism Bool^m → Bool^n.
 -- Every such map is Bool-linear (determined by its values on basis vectors), so equivalent to an n×m Bool matrix.
