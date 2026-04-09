@@ -14,7 +14,7 @@ import join-semilattice-category
 open join-semilattice-category using (Obj; TWO; products; terminal)
 open import categories using (HasProducts; HasTerminal)
 
--- Objects: Bool^n, the n-fold product of TWO in the category of join-semilattices.
+-- Objects: Bool^n, the n-fold product of TWO in the category of join semilattices.
 
 private
   module P = HasProducts products
@@ -26,7 +26,8 @@ Bool^ (suc n) = P.prod TWO (Bool^ n)
 
 open Obj hiding (_≃_; ≃-refl; ≃-sym; ≃-trans)
 
--- Standard basis vectors e_i: I at position i, O everywhere else.
+-- Basis vectors, projection, and tabulation for Bool^n.
+
 e : ∀ {n} → Fin n → Bool^ n .Carrier
 e {suc n} zero = I , Bool^ n .⊥
 e {suc n} (suc i) = O , e i
@@ -38,18 +39,17 @@ proj (suc i) (_ , v) = proj i v
 open import Data.Unit using (tt)
 open import prop using (tt; _,_; _∧_; proj₁; proj₂)
 
--- Bool^n representation of a function.
 tabulate : ∀ {n} → (Fin n → Two) → Bool^ n .Carrier
 tabulate {zero} _ = tt
 tabulate {suc n} f = f zero , tabulate {n} (λ i → f (suc i))
 
--- Dot product of two Bool^n, i.e. whether there exists a position where both are I.
+-- Dot product: u ⋅ v = (u₀ ⊓ v₀) ⊔ ... ⊔ (uₙ ⊓ vₙ).
 module _ where
   _⋅_ : ∀ {n} → Bool^ n .Carrier → Bool^ n .Carrier → Two
   _⋅_ {zero}  _ _ = O
   _⋅_ {suc n} (a , u) (b , v) = (a ⊓ b) ⊔ _⋅_ {n} u v
 
-  -- Dot is linear and monotone in its second argument.
+  -- Dot is join-preserving and monotone in its second argument.
 
   ⋅-⊥ : ∀ {n} (u : Bool^ n .Carrier) → two._≤_ (_⋅_ {n} u (Bool^ n .⊥)) O
   ⋅-⊥ {zero}  _ = tt
@@ -71,11 +71,13 @@ module _ where
   ⋅-mono {suc n} (I , u) {O , v} {_ , w} (_   , v≤w) = two.≤-trans (⋅-mono {n} u v≤w) ⊔-upper₂
   ⋅-mono {suc n} (I , u) {I , v} {I , w} (_   , v≤w) = tt
 
+-- Morphisms: join-semilattice morphisms Bool^m → Bool^n.
+-- Every such map is determined by its values on basis vectors, i.e. by an n×m Bool matrix.
 _⇒J_ : ℕ → ℕ → Set
 m ⇒J n = Bool^ m ⇒ Bool^ n
   where open join-semilattice-category using (_⇒_)
 
--- Transpose f^T : Bool^n ⇒ Bool^m, defined by f^T(v)_i = f(e_i) ⋅ v.
+-- Transpose: given f : m ⇒J n, define f^T : n ⇒J m by f^T(v)_i = f(e_i) ⋅ v.
 module _ where
   open join-semilattice-category using (_⇒_)
   open join-semilattice-category._⇒_
@@ -85,7 +87,8 @@ module _ where
   open preorder._=>_
 
   private
-    -- Bool^m is isomorphic to Fin m → Two, via tabulate and proj. We only need the tabulate direction here.
+    -- tabulate is a join-semilattice isomorphism from (Fin m → Two) to Bool^m
+    -- (with proj as inverse). We only need the forward direction here.
     tabulate-mono : ∀ {m} (g h : Fin m → Two) →
                    (∀ i → two._≤_ (g i) (h i)) → Bool^ m ._≤_ (tabulate {m} g) (tabulate {m} h)
     tabulate-mono {zero}  g h p = tt
@@ -104,7 +107,6 @@ module _ where
     proj-tabulate {suc n} g zero = ≃-refl
     proj-tabulate {suc n} g (suc i) = proj-tabulate {n} (λ i → g (suc i)) i
 
--- Morphisms: join-semilattice morphisms Bool^m → Bool^n.
   transpose : ∀ {m n} → m ⇒J n → n ⇒J m
   transpose {m} {n} f .*→* .func .fun v = tabulate {m} (λ i → _⋅_ {n} (f .fun (e i)) v)
   transpose {m} {n} f .*→* .func .mono v≤w = tabulate-mono {m} _ _ (λ i → ⋅-mono {n} (f .fun (e i)) v≤w)
@@ -115,10 +117,8 @@ module _ where
     Bool^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-⊥ {n} (f .fun (e i))))
                      (tabulate-⊥ {m})
 
-  -- Sanity-check that this is actually matrix transposition.
+  -- Sanity-check: transpose corresponds to transposing the implied matrix.
   private
-    -- Every join-preserving map between Bool vectors is Bool-linear (determined by its values on basis vectors),
-    -- so equivalent to an n×m Bool matrix.
     matrix : ∀ {m n} → m ⇒J n → Fin n → Fin m → Two
     matrix f j i = proj j (f .fun (e i))
 
