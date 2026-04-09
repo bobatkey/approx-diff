@@ -111,8 +111,7 @@ _⊡_ {n} u v = two.¬ (_⋅_ {n} (¬ {n} u) (¬ {n} v))
 ⊡-∧ {suc n} (O , u) (O , v) (_ , w) = tt
 ⊡-∧ {suc n} (O , u) (I , v) (O , w) = two.⊓-lower₂
 ⊡-∧ {suc n} (O , u) (I , v) (I , w) = ⊡-∧ {n} u v w
-⊡-∧ {suc n} (I , u) (_ , v) (O , w) = ⊡-∧ {n} u v w
-⊡-∧ {suc n} (I , u) (_ , v) (I , w) = ⊡-∧ {n} u v w
+⊡-∧ {suc n} (I , u) (_ , v) (_ , w) = ⊡-∧ {n} u v w
 
 -- ⊡ with ⊤ is I (via De Morgan from ⋅-⊥).
 ⊡-⊤ : ∀ {n} (u : Bool^ n .Carrier) → two._≤_ I (_⊡_ {n} u (Bool^ n .⊤))
