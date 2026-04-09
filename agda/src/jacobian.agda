@@ -31,10 +31,6 @@ e : ∀ {n} → Fin n → Bool^ n .Carrier
 e {suc n} zero = I , Bool^ n .⊥
 e {suc n} (suc i) = O , e i
 
--- Morphisms: join-semilattice morphisms Bool^m → Bool^n.
--- Every such map is Bool-linear (determined by its values on basis vectors), so equivalent to an n×m Bool matrix.
--- The transpose (giving the backward/J^op component) will be derived.
-
 proj : ∀ {n} → Fin n → Bool^ n .Carrier → Two
 proj zero (b , _)  = b
 proj (suc i) (_ , v) = proj i v
@@ -89,8 +85,8 @@ module _ where
   open preorder._=>_
 
   private
-    -- tabulate and proj witness a join-semilattice isomorphism between (Fin m → Two) and Bool^m. We only need
-    -- the tabulate direction here.
+    -- Bool^m is isomorphic to Fin m → Two, witnessed by tabulate and project. We only need the tabulate
+    -- direction here.
     tabulate-mono : ∀ {m} (g h : Fin m → Two)
                → (∀ i → two._≤_ (g i) (h i))
                → Bool^ m ._≤_ (tabulate {m} g) (tabulate {m} h)
@@ -110,6 +106,7 @@ module _ where
     proj-tabulate {suc n} g zero = ≃-refl
     proj-tabulate {suc n} g (suc i) = proj-tabulate {n} (λ i → g (suc i)) i
 
+-- Morphisms: join-semilattice morphisms Bool^m → Bool^n.
   transpose : ∀ {m n} → m ⇒J n → n ⇒J m
   transpose {m} {n} f .*→* .func .fun v = tabulate {m} (λ i → _⋅_ {n} (f .fun (e i)) v)
   transpose {m} {n} f .*→* .func .mono v≤w = tabulate-mono {m} _ _ (λ i → ⋅-mono {n} (f .fun (e i)) v≤w)
@@ -121,18 +118,20 @@ module _ where
                      (tabulate-⊥ {m})
 
   -- Sanity-check that this is actually matrix transposition.
+  private
+    -- Every join-preserving map between Bool vectors is Bool-linear (determined by its values on basis vectors),
+    -- so equivalent to an n×m Bool matrix.
+    matrix : ∀ {m n} → m ⇒J n → Fin n → Fin m → Two
+    matrix f j i = proj j (f .fun (e i))
 
-  matrix : ∀ {m n} → m ⇒J n → Fin n → Fin m → Two
-  matrix f j i = proj j (f .fun (e i))
+    ⋅-e : ∀ {n} (u : Bool^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) ≃ proj j u
+    ⋅-e {suc n} (O , u) zero = ⋅-⊥ {n} u , tt
+    ⋅-e {suc n} (I , u) zero = tt , tt
+    ⋅-e {suc n} (O , u) (suc j) = ⋅-e {n} u j
+    ⋅-e {suc n} (I , u) (suc j) = ⋅-e {n} u j
 
-  ⋅-e : ∀ {n} (u : Bool^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) ≃ proj j u
-  ⋅-e {suc n} (O , u) zero = ⋅-⊥ {n} u , tt
-  ⋅-e {suc n} (I , u) zero = tt , tt
-  ⋅-e {suc n} (O , u) (suc j) = ⋅-e {n} u j
-  ⋅-e {suc n} (I , u) (suc j) = ⋅-e {n} u j
-
-  transpose-matrix : ∀ m n (f : m ⇒J n) (i : Fin m) (j : Fin n) →
-                     matrix {n} {m} (transpose {m} {n} f) i j ≃ matrix {m} {n} f j i
-  transpose-matrix m n f i j =
-    ≃-trans (proj-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) (e j)) i)
-            (⋅-e {n} (f .fun (e i)) j)
+    transpose-matrix : ∀ m n (f : m ⇒J n) (i : Fin m) (j : Fin n) →
+                      matrix {n} {m} (transpose {m} {n} f) i j ≃ matrix {m} {n} f j i
+    transpose-matrix m n f i j =
+      ≃-trans (proj-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) (e j)) i)
+              (⋅-e {n} (f .fun (e i)) j)
