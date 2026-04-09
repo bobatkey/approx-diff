@@ -81,7 +81,6 @@ module _ where
 ¬ {zero}  _       = tt
 ¬ {suc n} (a , u) = two.¬ a , ¬ {n} u
 
--- ¬ is antitone (reverses ≤).
 ¬-anti : ∀ {a b : Two} → two._≤_ a b → two._≤_ (two.¬ b) (two.¬ a)
 ¬-anti {O} {O} _ = tt
 ¬-anti {O} {I} _ = tt
@@ -99,6 +98,15 @@ _⊡_ {n} u v = two.¬ (_⋅_ {n} (¬ {n} u) (¬ {n} v))
 ⊡-mono : ∀ {n} (u : Bool^ n .Carrier) {v w : Bool^ n .Carrier} →
          Bool^ n ._≤_ v w → two._≤_ (_⊡_ {n} u v) (_⊡_ {n} u w)
 ⊡-mono {n} u v≤w = ¬-anti (⋅-mono {n} (¬ {n} u) (¬-anti^ {n} v≤w))
+
+-- ¬ swaps ⊤ and ⊥.
+¬-⊤ : ∀ {n} → Bool^ n ._≤_ (¬ {n} (Bool^ n .⊤)) (Bool^ n .⊥)
+¬-⊤ {zero}  = tt
+¬-⊤ {suc n} = tt , ¬-⊤ {n}
+
+-- ⊡ with ⊤ is I (via De Morgan from ⋅-⊥).
+⊡-⊤ : ∀ {n} (u : Bool^ n .Carrier) → two._≤_ I (_⊡_ {n} u (Bool^ n .⊤))
+⊡-⊤ {n} u = ¬-anti (two.≤-trans (⋅-mono {n} (¬ {n} u) (¬-⊤ {n})) (⋅-⊥ {n} (¬ {n} u)))
 
 -- Bool^n as a conjugate.Obj (Heyting algebra).
 import conjugate
@@ -149,6 +157,10 @@ module _ where
     tabulate-⊥ {zero}  = tt
     tabulate-⊥ {suc m} = tt , tabulate-⊥ {m}
 
+    tabulate-⊤ : ∀ {m} → Bool^ m ._≤_ (Bool^ m .⊤) (tabulate {m} (λ _ → I))
+    tabulate-⊤ {zero}  = tt
+    tabulate-⊤ {suc m} = tt , tabulate-⊤ {m}
+
     tabulate-∨ : ∀ {m} (g h : Fin m → Two) →
                  Bool^ m ._≤_ (tabulate {m} (λ i → g i ⊔ h i)) (Bool^ m ._∨_ (tabulate {m} g) (tabulate {m} h))
     tabulate-∨ {zero}  g h = tt
@@ -174,7 +186,9 @@ module _ where
   adjoint {m} {n} f .*→*M .funcM .preorder._=>_.mono v≤w =
     tabulate-mono {m} _ _ (λ i → ⊡-mono {n} (¬ {n} (fun f (e i))) v≤w)
   adjoint {m} {n} f .*→*M .meet-semilattice._=>_.∧-preserving = {!!}
-  adjoint {m} {n} f .*→*M .meet-semilattice._=>_.⊤-preserving = {!!}
+  adjoint {m} {n} f .*→*M .meet-semilattice._=>_.⊤-preserving =
+    Bool^ m .≤-trans (tabulate-⊤ {m})
+                     (tabulate-mono {m} _ _ (λ i → ⊡-⊤ {n} (¬ {n} (fun f (e i)))))
 
   -- Sanity-check: transpose corresponds to transposing the implied matrix.
   private
