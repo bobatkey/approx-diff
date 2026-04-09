@@ -225,19 +225,19 @@ module _ where
 
     -- FIXME: analogous De Morgan dual statement for adjoint.
 
-  -- Conjugate embedding: (f, transpose f) forms a conjugate pair.
-  to-conj : ∀ {m n} → Bool^-join m ⇒J Bool^-join n → conjugate._⇒c_ (Bool^-conj m) (Bool^-conj n)
-  to-conj {m} {n} f .conjugate._⇒c_.right = f .*→*J .funcJ
-  to-conj {m} {n} f .conjugate._⇒c_.left  = transpose {m} {n} f .*→*J .funcJ
-  to-conj {zero}  {n} f .conjugate._⇒c_.conjugate .proj₁ _ = tt
-  to-conj {suc m} {n} f .conjugate._⇒c_.conjugate .proj₁ = {!!}
-  to-conj {zero}  {n} f .conjugate._⇒c_.conjugate .proj₂ _ =
-    Bool^ n .≤-trans (galois.Obj.∧-mono (Bool^ n) (Bool^ n .≤-refl) (f .*→*J .join-semilattice._=>_.⊥-preserving))
-                     (galois.Obj.π₂ (Bool^ n))
-  to-conj {suc m} {n} f .conjugate._⇒c_.conjugate .proj₂ = {!!}
+  -- Conjugate embedding: (transpose f, f) forms a conjugate pair Bool^n ⇒c Bool^m.
+  to-conj : ∀ {m n} → Bool^-join m ⇒J Bool^-join n → conjugate._⇒c_ (Bool^-conj n) (Bool^-conj m)
+  to-conj {m} {n} f .conjugate._⇒c_.right = transpose {m} {n} f .*→*J .funcJ
+  to-conj {m} {n} f .conjugate._⇒c_.left  = f .*→*J .funcJ
+  to-conj {m} {n} f .conjugate._⇒c_.conjugate .proj₁ = {!!}
+  to-conj {m} {n} f .conjugate._⇒c_.conjugate .proj₂ = {!!}
 
   -- Galois embedding: (adjoint f, f) forms a Galois connection.
   to-gal : ∀ {m n} → Bool^-join m ⇒J Bool^-join n → galois._⇒g_ (Bool^ n) (Bool^ m)
   to-gal {m} {n} f .galois._⇒g_.right = adjoint {m} {n} f .*→*M .funcM
   to-gal {m} {n} f .galois._⇒g_.left  = f .*→*J .funcJ
-  to-gal {m} {n} f .galois._⇒g_.left⊣right = {!!}
+  to-gal {zero}  {n} f .galois._⇒g_.left⊣right .proj₁ _ =
+    Bool^ n .≤-trans (f .*→*J .join-semilattice._=>_.⊥-preserving) (Bool^ n .≤-bottom)
+  to-gal {suc m} {n} f .galois._⇒g_.left⊣right .proj₁ = {!!}
+  to-gal {zero}  {n} f .galois._⇒g_.left⊣right .proj₂ _ = tt
+  to-gal {suc m} {n} f .galois._⇒g_.left⊣right .proj₂ = {!!}
