@@ -89,6 +89,12 @@ module _ where
   open preorder._=>_
 
   private
+    tabulate-mono : ∀ {m} (g h : Fin m → Two)
+               → (∀ i → two._≤_ (g i) (h i))
+               → Bool^ m ._≤_ (tabulate {m} g) (tabulate {m} h)
+    tabulate-mono {zero}  g h p = tt
+    tabulate-mono {suc m} g h p = p zero , tabulate-mono {m} _ _ (λ i → p (suc i))
+
     tabulate-⋅-⊥ : ∀ {m} {n} (g : Fin m → Bool^ n .Carrier) →
                    Bool^ m ._≤_ (tabulate {m} (λ i → _⋅_ {n} (g i) (Bool^ n .⊥))) (Bool^ m .⊥)
     tabulate-⋅-⊥ {zero} {n} g = tt
@@ -100,15 +106,9 @@ module _ where
     tabulate-⋅-∨ {zero} {n} g v w = tt
     tabulate-⋅-∨ {suc m} {n} g v w = ⋅-∨ {n} (g zero) v w , tabulate-⋅-∨ {m} {n} (λ i → g (suc i)) v w
 
-    tabulate-⋅-mono : ∀ {m} {n} (g : Fin m → Bool^ n .Carrier) {v w : Bool^ n .Carrier}
-                    → Bool^ n ._≤_ v w
-                    → Bool^ m ._≤_ (tabulate {m} (λ i → _⋅_ {n} (g i) v)) (tabulate {m} (λ i → _⋅_ {n} (g i) w))
-    tabulate-⋅-mono {zero}  {n} g v≤w = tt
-    tabulate-⋅-mono {suc m} {n} g v≤w = ⋅-mono {n} (g zero) v≤w , tabulate-⋅-mono {m} {n} (λ i → g (suc i)) v≤w
-
   transpose : ∀ {m n} → m ⇒J n → n ⇒J m
   transpose {m} {n} f .*→* .func .fun v = tabulate {m} (λ i → _⋅_ {n} (f .fun (e i)) v)
-  transpose {m} {n} f .*→* .func .mono v≤w = tabulate-⋅-mono {m} {n} (λ i → f .fun (e i)) v≤w
+  transpose {m} {n} f .*→* .func .mono v≤w = tabulate-mono {m} _ _ (λ i → ⋅-mono {n} (f .fun (e i)) v≤w)
   transpose {m} {n} f .*→* .∨-preserving {v} {w} = tabulate-⋅-∨ {m} {n} (λ i → f .fun (e i)) v w
   transpose {m} {n} f .*→* .⊥-preserving = tabulate-⋅-⊥ {m} {n} (λ i → f .fun (e i))
 
