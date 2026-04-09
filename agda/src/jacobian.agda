@@ -70,6 +70,15 @@ module _ where
   ⋅-mono {suc n} (I , u) {O , v} {_ , w} (_   , v≤w) = two.≤-trans (⋅-mono {n} u v≤w) ⊔-upper₂
   ⋅-mono {suc n} (I , u) {I , v} {I , w} (_   , v≤w) = tt
 
+-- Pointwise negation on Bool^n.
+¬ : ∀ {n} → Bool^ n .Carrier → Bool^ n .Carrier
+¬ {zero}  _       = tt
+¬ {suc n} (a , u) = two.¬ a , ¬ {n} u
+
+-- Co-dot product (De Morgan dual of ⋅).
+_⊡_ : ∀ {n} → Bool^ n .Carrier → Bool^ n .Carrier → Two
+_⊡_ {n} u v = two.¬ (_⋅_ {n} (¬ {n} u) (¬ {n} v))
+
 -- Bool^n also has meets (pointwise ⊓ with top I), making it a bounded lattice.
 -- This is shared by the conjugate and galois embeddings.
 import meet-semilattice
