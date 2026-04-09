@@ -6,7 +6,7 @@ open import Level using (0ℓ)
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Fin using (Fin; zero; suc)
 open import Data.Product using (_,_)
-open import two using (Two; I; O; _⊓_; _⊔_)
+open import two using (Two; I; O; _⊓_; _⊔_; ⊔-upper₂)
 import join-semilattice-category
 
 open join-semilattice-category using (Obj; TWO; products; terminal)
@@ -53,14 +53,17 @@ _⋅_ {suc n} (a , u) (b , v) = (a ⊓ b) ⊔ _⋅_ {n} u v
 open import prop using (tt)
 
 ⋅-⊥ : ∀ {n} (u : Bool^ n .Carrier) → two._≤_ (_⋅_ {n} u (Bool^ n .⊥)) O
-⋅-⊥ {zero}  _       = tt
-⋅-⊥ {suc n} (O , u) = ⋅-⊥ {n} u
-⋅-⊥ {suc n} (I , u) = ⋅-⊥ {n} u
+⋅-⊥ {zero}  _ = tt
+⋅-⊥ {suc n} (O , v) = ⋅-⊥ {n} v
+⋅-⊥ {suc n} (I , v) = ⋅-⊥ {n} v
 
 ⋅-∨ : ∀ {n} (u v w : Bool^ n .Carrier)
     → two._≤_ (_⋅_ {n} u (Bool^ n ._∨_ v w)) ((_⋅_ {n} u v) ⊔ (_⋅_ {n} u w))
-⋅-∨ {zero}  _       _       _       = {!!}
-⋅-∨ {suc n} (a , u) (b , v) (c , w) = {!!}
+⋅-∨ {zero} _ _ _ = tt
+⋅-∨ {suc n} (O , u) (_ , v) (_ , w) = ⋅-∨ {n} u v w
+⋅-∨ {suc n} (I , u) (O , v) (O , w) = ⋅-∨ {n} u v w
+⋅-∨ {suc n} (I , u) (O , v) (I , w) = ⊔-upper₂
+⋅-∨ {suc n} (I , u) (I , v) (_ , w) = tt
 
 _⇒J_ : ℕ → ℕ → Set
 m ⇒J n = Bool^ m ⇒ Bool^ n
