@@ -122,13 +122,13 @@ module _ where
   proj-tabulate {suc n} g (suc i) = proj-tabulate {n} (λ i → g (suc i)) i
 
   ⋅-e : ∀ {n} (u : Bool^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) ≃ proj j u
-  ⋅-e {suc n} (O , u) zero    = ⋅-⊥ {n} u , tt
-  ⋅-e {suc n} (I , u) zero    = tt , tt
+  ⋅-e {suc n} (O , u) zero = ⋅-⊥ {n} u , tt
+  ⋅-e {suc n} (I , u) zero = tt , tt
   ⋅-e {suc n} (O , u) (suc j) = ⋅-e {n} u j
   ⋅-e {suc n} (I , u) (suc j) = ⋅-e {n} u j
 
-  transpose-matrix : ∀ m n (f : m ⇒J n) (i : Fin m) (j : Fin n)
-                   → matrix {n} {m} (transpose {m} {n} f) i j ≃ matrix {m} {n} f j i
+  transpose-matrix : ∀ m n (f : m ⇒J n) (i : Fin m) (j : Fin n) →
+                     matrix {n} {m} (transpose {m} {n} f) i j ≃ matrix {m} {n} f j i
   transpose-matrix m n f i j =
     ≃-trans (proj-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) (e j)) i)
             (⋅-e {n} (f .fun (e i)) j)
