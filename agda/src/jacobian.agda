@@ -71,6 +71,36 @@ module _ where
   ⋅-mono {suc n} (I , u) {O , v} {_ , w} (_   , v≤w) = two.≤-trans (⋅-mono {n} u v≤w) ⊔-upper₂
   ⋅-mono {suc n} (I , u) {I , v} {I , w} (_   , v≤w) = tt
 
+-- Bool^n also has meets (pointwise ⊓ with top I), making it a bounded lattice.
+-- This is shared by the conjugate and galois embeddings.
+import meet-semilattice
+open import two using (⊓-isMeet; I-isTop)
+
+Bool^-meets : ∀ n → meet-semilattice.MeetSemilattice (Bool^ n .carrier)
+Bool^-meets zero    = meet-semilattice.𝟙
+Bool^-meets (suc n) = meet-semilattice._⊕_
+  (record { _∧_ = _⊓_; ⊤ = I; ∧-isMeet = ⊓-isMeet; ⊤-isTop = I-isTop })
+  (Bool^-meets n)
+
+-- Bool^n as a conjugate.Obj: a Heyting algebra (bounded distributive lattice with #-reflect).
+import conjugate
+
+Bool^-conj : ℕ → conjugate.Obj
+Bool^-conj n .conjugate.Obj.carrier = Bool^ n .carrier
+Bool^-conj n .conjugate.Obj.meets   = Bool^-meets n
+Bool^-conj n .conjugate.Obj.joins   = Bool^ n .joins
+Bool^-conj n .conjugate.Obj.#-reflect   = {!!}
+Bool^-conj n .conjugate.Obj.∧-∨-distrib = {!!}
+Bool^-conj n .conjugate.Obj.∨-∧-distrib = {!!}
+
+-- Bool^n as a galois.Obj: a bounded lattice (no extra axioms needed).
+import galois
+
+Bool^-gal : ℕ → galois.Obj
+Bool^-gal n .galois.Obj.carrier = Bool^ n .carrier
+Bool^-gal n .galois.Obj.meets   = Bool^-meets n
+Bool^-gal n .galois.Obj.joins   = Bool^ n .joins
+
 -- Morphisms: join-semilattice morphisms Bool^m → Bool^n.
 -- Every such map is determined by its values on basis vectors, i.e. by an n×m Bool matrix.
 _⇒J_ : ℕ → ℕ → Set
