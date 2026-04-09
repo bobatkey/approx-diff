@@ -120,20 +120,27 @@ Bool^-gal n .galois.Obj.carrier = Bool^ n .carrier
 Bool^-gal n .galois.Obj.meets = Bool^-meets n
 Bool^-gal n .galois.Obj.joins = Bool^ n .joins
 
+-- Bool^n as a meet-semilattice-category object (for the adjoint).
+import meet-semilattice-category
+
+Bool^-meet : ℕ → meet-semilattice-category.Obj
+Bool^-meet n .meet-semilattice-category.Obj.carrier = Bool^ n .carrier
+Bool^-meet n .meet-semilattice-category.Obj.meets   = Bool^-meets n
+
 -- Morphisms: join-semilattice morphisms Bool^m → Bool^n.
 -- Every such map is determined by its values on basis vectors, i.e. by an n×m Bool matrix.
-_⇒J_ : ℕ → ℕ → Set
-m ⇒J n = Bool^ m ⇒ Bool^ n
-  where open join-semilattice-category using (_⇒_)
-
--- Transpose: given f : m ⇒J n, define f^T : n ⇒J m by f^T(v)_i = f(e_i) ⋅ v.
+-- Transpose (conjugate backward): f^T(v)_i = f(e_i) ⋅ v (join-preserving, using dot).
+-- Adjoint (galois backward):      f*(v)_i = ¬f(e_i) ⊡ v (meet-preserving, using co-dot on negated matrix).
 module _ where
-  open join-semilattice-category using (_⇒_)
-  open join-semilattice-category._⇒_
+  open join-semilattice-category using () renaming (_⇒_ to _⇒J_)
+  open meet-semilattice-category using () renaming (_⇒_ to _⇒M_)
+  open join-semilattice-category._⇒_ using (fun) renaming (*→* to *→*J)
+  open meet-semilattice-category._⇒_ renaming (*→* to *→*M; fun to funM)
   import join-semilattice
-  open join-semilattice._=>_
+  open join-semilattice._=>_ renaming (func to funcJ)
+  open meet-semilattice._=>_ renaming (func to funcM)
   open import preorder using (_=>_)
-  open preorder._=>_
+  open preorder._=>_ using () renaming (fun to funP)
 
   private
     -- tabulate is a join-semilattice isomorphism from (Fin m → Two) to Bool^m
@@ -156,20 +163,26 @@ module _ where
     proj-tabulate {suc n} g zero = ≃-refl
     proj-tabulate {suc n} g (suc i) = proj-tabulate {n} (λ i → g (suc i)) i
 
-  transpose : ∀ {m n} → m ⇒J n → n ⇒J m
-  transpose {m} {n} f .*→* .func .fun v = tabulate {m} (λ i → _⋅_ {n} (f .fun (e i)) v)
-  transpose {m} {n} f .*→* .func .mono v≤w = tabulate-mono {m} _ _ (λ i → ⋅-mono {n} (f .fun (e i)) v≤w)
-  transpose {m} {n} f .*→* .∨-preserving {v} {w} =
-    Bool^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-∨ {n} (f .fun (e i)) v w))
+  transpose : ∀ {m n} → Bool^ m ⇒J Bool^ n → Bool^ n ⇒J Bool^ m
+  transpose {m} {n} f .*→*J .funcJ .funP v = tabulate {m} (λ i → _⋅_ {n} (fun f (e i)) v)
+  transpose {m} {n} f .*→*J .funcJ .preorder._=>_.mono v≤w = tabulate-mono {m} _ _ (λ i → ⋅-mono {n} (fun f (e i)) v≤w)
+  transpose {m} {n} f .*→*J .join-semilattice._=>_.∨-preserving {v} {w} =
+    Bool^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-∨ {n} (fun f (e i)) v w))
                      (tabulate-∨ {m} _ _)
-  transpose {m} {n} f .*→* .⊥-preserving =
-    Bool^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-⊥ {n} (f .fun (e i))))
+  transpose {m} {n} f .*→*J .join-semilattice._=>_.⊥-preserving =
+    Bool^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-⊥ {n} (fun f (e i))))
                      (tabulate-⊥ {m})
+
+  adjoint : ∀ {m n} → Bool^ m ⇒J Bool^ n → Bool^-meet n ⇒M Bool^-meet m
+  adjoint {m} {n} f .*→*M .funcM .funP v = tabulate {m} (λ i → _⊡_ {n} (¬ {n} (fun f (e i))) v)
+  adjoint {m} {n} f .*→*M .funcM .preorder._=>_.mono = {!!}
+  adjoint {m} {n} f .*→*M .meet-semilattice._=>_.∧-preserving = {!!}
+  adjoint {m} {n} f .*→*M .meet-semilattice._=>_.⊤-preserving = {!!}
 
   -- Sanity-check: transpose corresponds to transposing the implied matrix.
   private
-    matrix : ∀ {m n} → m ⇒J n → Fin n → Fin m → Two
-    matrix f j i = proj j (f .fun (e i))
+    matrix : ∀ {m n} → Bool^ m ⇒J Bool^ n → Fin n → Fin m → Two
+    matrix f j i = proj j (fun f (e i))
 
     ⋅-e : ∀ {n} (u : Bool^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) ≃ proj j u
     ⋅-e {suc n} (O , u) zero = ⋅-⊥ {n} u , tt
@@ -177,8 +190,8 @@ module _ where
     ⋅-e {suc n} (O , u) (suc j) = ⋅-e {n} u j
     ⋅-e {suc n} (I , u) (suc j) = ⋅-e {n} u j
 
-    transpose-matrix : ∀ m n (f : m ⇒J n) (i : Fin m) (j : Fin n) →
+    transpose-matrix : ∀ m n (f : Bool^ m ⇒J Bool^ n) (i : Fin m) (j : Fin n) →
                       matrix {n} {m} (transpose {m} {n} f) i j ≃ matrix {m} {n} f j i
     transpose-matrix m n f i j =
-      ≃-trans (proj-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) (e j)) i)
-              (⋅-e {n} (f .fun (e i)) j)
+      ≃-trans (proj-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) (e j)) i)
+              (⋅-e {n} (fun f (e i)) j)
