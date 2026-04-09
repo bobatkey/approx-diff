@@ -89,9 +89,15 @@ Bool^-conj : ℕ → conjugate.Obj
 Bool^-conj n .conjugate.Obj.carrier = Bool^ n .carrier
 Bool^-conj n .conjugate.Obj.meets = Bool^-meets n
 Bool^-conj n .conjugate.Obj.joins = Bool^ n .joins
-Bool^-conj n .conjugate.Obj.#-reflect   = {!!}
-Bool^-conj n .conjugate.Obj.∧-∨-distrib = {!!}
-Bool^-conj n .conjugate.Obj.∨-∧-distrib = {!!}
+Bool^-conj n .conjugate.Obj.#-reflect = {!!}
+Bool^-conj zero .conjugate.Obj.∧-∨-distrib _ _ _ = tt
+Bool^-conj (suc n) .conjugate.Obj.∧-∨-distrib (x₁ , x₂) (y₁ , y₂) (z₁ , z₂) =
+  conjugate.Obj.∧-∨-distrib conjugate.TWO x₁ y₁ z₁ ,
+  conjugate.Obj.∧-∨-distrib (Bool^-conj n) x₂ y₂ z₂
+Bool^-conj zero .conjugate.Obj.∨-∧-distrib _ _ _ = tt
+Bool^-conj (suc n) .conjugate.Obj.∨-∧-distrib (x₁ , x₂) (y₁ , y₂) (z₁ , z₂) =
+  conjugate.Obj.∨-∧-distrib conjugate.TWO x₁ y₁ z₁ ,
+  conjugate.Obj.∨-∧-distrib (Bool^-conj n) x₂ y₂ z₂
 
 -- Bool^n as a galois.Obj: a bounded lattice (no extra axioms needed).
 import galois
