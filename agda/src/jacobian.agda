@@ -50,7 +50,7 @@ _⋅_ {zero}  _ _ = O
 _⋅_ {suc n} (a , u) (b , v) = (a ⊓ b) ⊔ _⋅_ {n} u v
 
 -- Dot is linear in its second argument.
-open import prop using (tt)
+open import prop using (tt; _,_)
 
 ⋅-⊥ : ∀ {n} (u : Bool^ n .Carrier) → two._≤_ (_⋅_ {n} u (Bool^ n .⊥)) O
 ⋅-⊥ {zero}  _ = tt
@@ -69,16 +69,23 @@ _⇒J_ : ℕ → ℕ → Set
 m ⇒J n = Bool^ m ⇒ Bool^ n
   where open join-semilattice-category using (_⇒_)
 
--- Transpose f^T : Bool^n ⇒ Bool^m = f^T(v)_i = f(e_i) ⋅ v, given f : Bool^m ⇒ Bool^n.
-open join-semilattice-category using (_⇒_)
-open join-semilattice-category._⇒_
-import join-semilattice
-open join-semilattice._=>_
-open import preorder using (_=>_)
-open preorder._=>_
+-- Transpose f^T : Bool^n ⇒ Bool^m, defined by f^T(v)_i = f(e_i) ⋅ v.
+module _ where
+  open join-semilattice-category using (_⇒_)
+  open join-semilattice-category._⇒_
+  import join-semilattice
+  open join-semilattice._=>_
+  open import preorder using (_=>_)
+  open preorder._=>_
 
-transpose : ∀ {m n} → m ⇒J n → n ⇒J m
-transpose {m} {n} f .*→* .func .fun v = tabulate {m} (λ i → _⋅_ {n} (f .fun (e i)) v)
-transpose {m} {n} f .*→* .func .mono = {!!}
-transpose {m} {n} f .*→* .∨-preserving = {!!}
-transpose {m} {n} f .*→* .⊥-preserving = {!!}
+  private
+    ⊥-lem : ∀ {m} {n} (g : Fin m → Bool^ n .Carrier)
+          → Bool^ m ._≤_ (tabulate {m} (λ i → _⋅_ {n} (g i) (Bool^ n .⊥))) (Bool^ m .⊥)
+    ⊥-lem {zero}  {n} g = tt
+    ⊥-lem {suc m} {n} g = ⋅-⊥ {n} (g zero) , ⊥-lem {m} {n} (λ i → g (suc i))
+
+  transpose : ∀ {m n} → m ⇒J n → n ⇒J m
+  transpose {m} {n} f .*→* .func .fun v = tabulate {m} (λ i → _⋅_ {n} (f .fun (e i)) v)
+  transpose {m} {n} f .*→* .func .mono = {!!}
+  transpose {m} {n} f .*→* .∨-preserving = {!!}
+  transpose {m} {n} f .*→* .⊥-preserving = ⊥-lem {m} {n} (λ i → f .fun (e i))
