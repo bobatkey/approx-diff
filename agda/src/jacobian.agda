@@ -79,13 +79,13 @@ module _ where
   open preorder._=>_
 
   private
-    ⊥-lem : ∀ {m} {n} (g : Fin m → Bool^ n .Carrier)
-          → Bool^ m ._≤_ (tabulate {m} (λ i → _⋅_ {n} (g i) (Bool^ n .⊥))) (Bool^ m .⊥)
-    ⊥-lem {zero}  {n} g = tt
-    ⊥-lem {suc m} {n} g = ⋅-⊥ {n} (g zero) , ⊥-lem {m} {n} (λ i → g (suc i))
+    tabulate-⋅-⊥ : ∀ {m} {n} (g : Fin m → Bool^ n .Carrier) →
+                   Bool^ m ._≤_ (tabulate {m} (λ i → _⋅_ {n} (g i) (Bool^ n .⊥))) (Bool^ m .⊥)
+    tabulate-⋅-⊥ {zero} {n} g = tt
+    tabulate-⋅-⊥ {suc m} {n} g = ⋅-⊥ {n} (g zero) , tabulate-⋅-⊥ {m} {n} (λ i → g (suc i))
 
   transpose : ∀ {m n} → m ⇒J n → n ⇒J m
   transpose {m} {n} f .*→* .func .fun v = tabulate {m} (λ i → _⋅_ {n} (f .fun (e i)) v)
   transpose {m} {n} f .*→* .func .mono = {!!}
   transpose {m} {n} f .*→* .∨-preserving = {!!}
-  transpose {m} {n} f .*→* .⊥-preserving = ⊥-lem {m} {n} (λ i → f .fun (e i))
+  transpose {m} {n} f .*→* .⊥-preserving = tabulate-⋅-⊥ {m} {n} (λ i → f .fun (e i))
