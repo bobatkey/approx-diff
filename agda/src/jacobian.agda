@@ -99,10 +99,39 @@ _⊡_ {n} u v = two.¬ (_⋅_ {n} (¬ {n} u) (¬ {n} v))
          Bool^ n ._≤_ v w → two._≤_ (_⊡_ {n} u v) (_⊡_ {n} u w)
 ⊡-mono {n} u v≤w = ¬-anti (⋅-mono {n} (¬ {n} u) (¬-anti^ {n} v≤w))
 
+-- De Morgan: ¬(v ∧ w) ≥ ¬v ∨ ¬w (the direction we need for ⊡-∧).
+¬-∧-∨ : ∀ {n} (v w : Bool^ n .Carrier) →
+        Bool^ n ._≤_ (Bool^ n ._∨_ (¬ {n} v) (¬ {n} w)) (¬ {n} (galois.Obj._∧_ (Bool^ n) v w))
+¬-∧-∨ {zero}  _ _ = tt
+¬-∧-∨ {suc n} (O , v) (_ , w) = tt , ¬-∧-∨ {n} v w
+¬-∧-∨ {suc n} (I , v) (O , w) = tt , ¬-∧-∨ {n} v w
+¬-∧-∨ {suc n} (I , v) (I , w) = tt , ¬-∧-∨ {n} v w
+
 -- ¬ swaps ⊤ and ⊥.
 ¬-⊤ : ∀ {n} → Bool^ n ._≤_ (¬ {n} (Bool^ n .⊤)) (Bool^ n .⊥)
 ¬-⊤ {zero}  = tt
 ¬-⊤ {suc n} = tt , ¬-⊤ {n}
+
+-- De Morgan (other direction): ¬(v ∧ w) ≤ ¬v ∨ ¬w.
+¬-∧-∨' : ∀ {n} (v w : Bool^ n .Carrier) →
+         Bool^ n ._≤_ (¬ {n} (galois.Obj._∧_ (Bool^ n) v w)) (Bool^ n ._∨_ (¬ {n} v) (¬ {n} w))
+¬-∧-∨' {zero}  _ _ = tt
+¬-∧-∨' {suc n} (O , v) (_ , w) = tt , ¬-∧-∨' {n} v w
+¬-∧-∨' {suc n} (I , v) (O , w) = tt , ¬-∧-∨' {n} v w
+¬-∧-∨' {suc n} (I , v) (I , w) = tt , ¬-∧-∨' {n} v w
+
+-- ⊡ preserves ∧ in its second argument. Easier to prove directly than via De Morgan from ⋅-∨.
+⊡-∧ : ∀ {n} (u v w : Bool^ n .Carrier) →
+      two._≤_ ((_⊡_ {n} u v) ⊓ (_⊡_ {n} u w)) (_⊡_ {n} u (galois.Obj._∧_ (Bool^ n) v w))
+⊡-∧ {zero}  _ _ _ = tt
+⊡-∧ {suc n} (O , u) (O , v) (O , w) = tt
+⊡-∧ {suc n} (O , u) (O , v) (I , w) = tt
+⊡-∧ {suc n} (O , u) (I , v) (O , w) = two.⊓-lower₂
+⊡-∧ {suc n} (O , u) (I , v) (I , w) = ⊡-∧ {n} u v w
+⊡-∧ {suc n} (I , u) (O , v) (O , w) = ⊡-∧ {n} u v w
+⊡-∧ {suc n} (I , u) (O , v) (I , w) = ⊡-∧ {n} u v w
+⊡-∧ {suc n} (I , u) (I , v) (O , w) = ⊡-∧ {n} u v w
+⊡-∧ {suc n} (I , u) (I , v) (I , w) = ⊡-∧ {n} u v w
 
 -- ⊡ with ⊤ is I (via De Morgan from ⋅-⊥).
 ⊡-⊤ : ∀ {n} (u : Bool^ n .Carrier) → two._≤_ I (_⊡_ {n} u (Bool^ n .⊤))
@@ -166,6 +195,11 @@ module _ where
     tabulate-∨ {zero}  g h = tt
     tabulate-∨ {suc m} g h = two.≤-refl , tabulate-∨ {m} (λ i → g (suc i)) (λ i → h (suc i))
 
+    tabulate-∧ : ∀ {m} (g h : Fin m → Two) →
+                 Bool^ m ._≤_ (galois.Obj._∧_ (Bool^ m) (tabulate {m} g) (tabulate {m} h)) (tabulate {m} (λ i → g i ⊓ h i))
+    tabulate-∧ {zero}  g h = tt
+    tabulate-∧ {suc m} g h = two.≤-refl , tabulate-∧ {m} (λ i → g (suc i)) (λ i → h (suc i))
+
     proj-tabulate : ∀ {n} (g : Fin n → Two) (i : Fin n) → proj i (tabulate {n} g) ≃ g i
     proj-tabulate {suc n} g zero = ≃-refl
     proj-tabulate {suc n} g (suc i) = proj-tabulate {n} (λ i → g (suc i)) i
@@ -185,7 +219,9 @@ module _ where
   adjoint {m} {n} f .*→*M .funcM .funP v = tabulate {m} (λ i → _⊡_ {n} (¬ {n} (fun f (e i))) v)
   adjoint {m} {n} f .*→*M .funcM .preorder._=>_.mono v≤w =
     tabulate-mono {m} _ _ (λ i → ⊡-mono {n} (¬ {n} (fun f (e i))) v≤w)
-  adjoint {m} {n} f .*→*M .meet-semilattice._=>_.∧-preserving = {!!}
+  adjoint {m} {n} f .*→*M .meet-semilattice._=>_.∧-preserving {v} {w} =
+    Bool^ m .≤-trans (tabulate-∧ {m} _ _)
+                     (tabulate-mono {m} _ _ (λ i → ⊡-∧ {n} (¬ {n} (fun f (e i))) v w))
   adjoint {m} {n} f .*→*M .meet-semilattice._=>_.⊤-preserving =
     Bool^ m .≤-trans (tabulate-⊤ {m})
                      (tabulate-mono {m} _ _ (λ i → ⊡-⊤ {n} (¬ {n} (fun f (e i)))))
