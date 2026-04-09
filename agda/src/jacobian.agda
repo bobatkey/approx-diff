@@ -56,16 +56,16 @@ module _ where
   ⋅-⊥ {suc n} (O , v) = ⋅-⊥ {n} v
   ⋅-⊥ {suc n} (I , v) = ⋅-⊥ {n} v
 
-  ⋅-∨ : ∀ {n} (u v w : Bool^ n .Carrier)
-      → two._≤_ (_⋅_ {n} u (Bool^ n ._∨_ v w)) ((_⋅_ {n} u v) ⊔ (_⋅_ {n} u w))
+  ⋅-∨ : ∀ {n} (u v w : Bool^ n .Carrier) →
+        two._≤_ (_⋅_ {n} u (Bool^ n ._∨_ v w)) ((_⋅_ {n} u v) ⊔ (_⋅_ {n} u w))
   ⋅-∨ {zero} _ _ _ = tt
   ⋅-∨ {suc n} (O , u) (_ , v) (_ , w) = ⋅-∨ {n} u v w
   ⋅-∨ {suc n} (I , u) (O , v) (O , w) = ⋅-∨ {n} u v w
   ⋅-∨ {suc n} (I , u) (O , v) (I , w) = ⊔-upper₂
   ⋅-∨ {suc n} (I , u) (I , v) (_ , w) = tt
 
-  ⋅-mono : ∀ {n} (u : Bool^ n .Carrier) {v w : Bool^ n .Carrier}
-         → Bool^ n ._≤_ v w → two._≤_ (_⋅_ {n} u v) (_⋅_ {n} u w)
+  ⋅-mono : ∀ {n} (u : Bool^ n .Carrier) {v w : Bool^ n .Carrier} →
+           Bool^ n ._≤_ v w → two._≤_ (_⋅_ {n} u v) (_⋅_ {n} u w)
   ⋅-mono {zero}  _ _ = tt
   ⋅-mono {suc n} (O , u) {_ , v} {_ , w} (_ , v≤w) = ⋅-mono {n} u v≤w
   ⋅-mono {suc n} (I , u) {O , v} {_ , w} (_   , v≤w) = two.≤-trans (⋅-mono {n} u v≤w) ⊔-upper₂
@@ -85,11 +85,9 @@ module _ where
   open preorder._=>_
 
   private
-    -- Bool^m is isomorphic to Fin m → Two, witnessed by tabulate and project. We only need the tabulate
-    -- direction here.
-    tabulate-mono : ∀ {m} (g h : Fin m → Two)
-               → (∀ i → two._≤_ (g i) (h i))
-               → Bool^ m ._≤_ (tabulate {m} g) (tabulate {m} h)
+    -- Bool^m is isomorphic to Fin m → Two, via tabulate and proj. We only need the tabulate direction here.
+    tabulate-mono : ∀ {m} (g h : Fin m → Two) →
+                   (∀ i → two._≤_ (g i) (h i)) → Bool^ m ._≤_ (tabulate {m} g) (tabulate {m} h)
     tabulate-mono {zero}  g h p = tt
     tabulate-mono {suc m} g h p = p zero , tabulate-mono {m} _ _ (λ i → p (suc i))
 
