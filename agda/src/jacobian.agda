@@ -229,7 +229,9 @@ module _ where
   to-conj : ∀ {m n} → Bool^-join m ⇒J Bool^-join n → conjugate._⇒c_ (Bool^-conj m) (Bool^-conj n)
   to-conj {m} {n} f .conjugate._⇒c_.right = f .*→*J .funcJ
   to-conj {m} {n} f .conjugate._⇒c_.left  = transpose {m} {n} f .*→*J .funcJ
-  to-conj {zero}  {n} f .conjugate._⇒c_.conjugate .proj₁ = {!!}
+  to-conj {zero}  {n} f .conjugate._⇒c_.conjugate .proj₁ _ = tt
   to-conj {suc m} {n} f .conjugate._⇒c_.conjugate .proj₁ = {!!}
-  to-conj {zero}  {n} f .conjugate._⇒c_.conjugate .proj₂ = {!!}
+  to-conj {zero}  {n} f .conjugate._⇒c_.conjugate .proj₂ _ =
+    Bool^ n .≤-trans (galois.Obj.∧-mono (Bool^ n) (Bool^ n .≤-refl) (f .*→*J .join-semilattice._=>_.⊥-preserving))
+                     (galois.Obj.π₂ (Bool^ n))
   to-conj {suc m} {n} f .conjugate._⇒c_.conjugate .proj₂ = {!!}
