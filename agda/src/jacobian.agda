@@ -99,39 +99,20 @@ _⊡_ {n} u v = two.¬ (_⋅_ {n} (¬ {n} u) (¬ {n} v))
          Bool^ n ._≤_ v w → two._≤_ (_⊡_ {n} u v) (_⊡_ {n} u w)
 ⊡-mono {n} u v≤w = ¬-anti (⋅-mono {n} (¬ {n} u) (¬-anti^ {n} v≤w))
 
--- De Morgan: ¬(v ∧ w) ≥ ¬v ∨ ¬w (the direction we need for ⊡-∧).
-¬-∧-∨ : ∀ {n} (v w : Bool^ n .Carrier) →
-        Bool^ n ._≤_ (Bool^ n ._∨_ (¬ {n} v) (¬ {n} w)) (¬ {n} (galois.Obj._∧_ (Bool^ n) v w))
-¬-∧-∨ {zero}  _ _ = tt
-¬-∧-∨ {suc n} (O , v) (_ , w) = tt , ¬-∧-∨ {n} v w
-¬-∧-∨ {suc n} (I , v) (O , w) = tt , ¬-∧-∨ {n} v w
-¬-∧-∨ {suc n} (I , v) (I , w) = tt , ¬-∧-∨ {n} v w
-
 -- ¬ swaps ⊤ and ⊥.
 ¬-⊤ : ∀ {n} → Bool^ n ._≤_ (¬ {n} (Bool^ n .⊤)) (Bool^ n .⊥)
 ¬-⊤ {zero}  = tt
 ¬-⊤ {suc n} = tt , ¬-⊤ {n}
 
--- De Morgan (other direction): ¬(v ∧ w) ≤ ¬v ∨ ¬w.
-¬-∧-∨' : ∀ {n} (v w : Bool^ n .Carrier) →
-         Bool^ n ._≤_ (¬ {n} (galois.Obj._∧_ (Bool^ n) v w)) (Bool^ n ._∨_ (¬ {n} v) (¬ {n} w))
-¬-∧-∨' {zero}  _ _ = tt
-¬-∧-∨' {suc n} (O , v) (_ , w) = tt , ¬-∧-∨' {n} v w
-¬-∧-∨' {suc n} (I , v) (O , w) = tt , ¬-∧-∨' {n} v w
-¬-∧-∨' {suc n} (I , v) (I , w) = tt , ¬-∧-∨' {n} v w
-
--- ⊡ preserves ∧ in its second argument. Easier to prove directly than via De Morgan from ⋅-∨.
+-- ⊡ preserves ∧ in its second argument.
 ⊡-∧ : ∀ {n} (u v w : Bool^ n .Carrier) →
       two._≤_ ((_⊡_ {n} u v) ⊓ (_⊡_ {n} u w)) (_⊡_ {n} u (galois.Obj._∧_ (Bool^ n) v w))
 ⊡-∧ {zero}  _ _ _ = tt
-⊡-∧ {suc n} (O , u) (O , v) (O , w) = tt
-⊡-∧ {suc n} (O , u) (O , v) (I , w) = tt
+⊡-∧ {suc n} (O , u) (O , v) (_ , w) = tt
 ⊡-∧ {suc n} (O , u) (I , v) (O , w) = two.⊓-lower₂
 ⊡-∧ {suc n} (O , u) (I , v) (I , w) = ⊡-∧ {n} u v w
-⊡-∧ {suc n} (I , u) (O , v) (O , w) = ⊡-∧ {n} u v w
-⊡-∧ {suc n} (I , u) (O , v) (I , w) = ⊡-∧ {n} u v w
-⊡-∧ {suc n} (I , u) (I , v) (O , w) = ⊡-∧ {n} u v w
-⊡-∧ {suc n} (I , u) (I , v) (I , w) = ⊡-∧ {n} u v w
+⊡-∧ {suc n} (I , u) (_ , v) (O , w) = ⊡-∧ {n} u v w
+⊡-∧ {suc n} (I , u) (_ , v) (I , w) = ⊡-∧ {n} u v w
 
 -- ⊡ with ⊤ is I (via De Morgan from ⋅-⊥).
 ⊡-⊤ : ∀ {n} (u : Bool^ n .Carrier) → two._≤_ I (_⊡_ {n} u (Bool^ n .⊤))
