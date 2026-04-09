@@ -6,7 +6,9 @@ open import Level using (0ℓ)
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Fin using (Fin; zero; suc)
 open import Data.Product using (_,_)
-open import two using (Two; I; O; _⊓_; _⊔_; ⊔-upper₂)
+open import two using (Two; I; O; _⊓_; _⊔_; ⊔-upper₂; ≤-isPreorder)
+open import basics using (IsPreorder)
+open IsPreorder ≤-isPreorder using (_≃_; ≃-refl; ≃-trans)
 import join-semilattice-category
 
 open join-semilattice-category using (Obj; TWO; products; terminal)
@@ -22,7 +24,7 @@ Bool^ : ℕ → Obj
 Bool^ zero = T.witness
 Bool^ (suc n) = P.prod TWO (Bool^ n)
 
-open Obj
+open Obj hiding (_≃_; ≃-refl; ≃-sym; ≃-trans)
 
 -- Standard basis vectors e_i: I at position i, O everywhere else.
 e : ∀ {n} → Fin n → Bool^ n .Carrier
@@ -111,31 +113,22 @@ module _ where
   transpose {m} {n} f .*→* .⊥-preserving = tabulate-⋅-⊥ {m} {n} (λ i → f .fun (e i))
 
   -- Sanity-check that this is actually matrix transposition.
-  open import Relation.Binary.PropositionalEquality using (_≡_) renaming (refl to ≡-refl)
 
   matrix : ∀ {m n} → m ⇒J n → Fin n → Fin m → Two
   matrix f j i = proj j (f .fun (e i))
 
-  proj-tabulate : ∀ {n} (g : Fin n → Two) (i : Fin n) → proj i (tabulate {n} g) ≡ g i
-  proj-tabulate {suc n} g zero = ≡-refl
+  proj-tabulate : ∀ {n} (g : Fin n → Two) (i : Fin n) → proj i (tabulate {n} g) ≃ g i
+  proj-tabulate {suc n} g zero    = ≃-refl
   proj-tabulate {suc n} g (suc i) = proj-tabulate {n} (λ i → g (suc i)) i
 
-  ⋅-e : ∀ {n} (u : Bool^ n .Carrier) (j : Fin n)
-      → two._≤_ (_⋅_ {n} u (e j)) (proj j u) ∧ two._≤_ (proj j u) (_⋅_ {n} u (e j))
-  ⋅-e {suc n} (O , u) zero = ⋅-⊥ {n} u , tt
-  ⋅-e {suc n} (I , u) zero = tt , tt
+  ⋅-e : ∀ {n} (u : Bool^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) ≃ proj j u
+  ⋅-e {suc n} (O , u) zero    = ⋅-⊥ {n} u , tt
+  ⋅-e {suc n} (I , u) zero    = tt , tt
   ⋅-e {suc n} (O , u) (suc j) = ⋅-e {n} u j
   ⋅-e {suc n} (I , u) (suc j) = ⋅-e {n} u j
 
-  private
-    ≡-to-≃ : ∀ {x y : Two} → x ≡ y → two._≤_ x y ∧ two._≤_ y x
-    ≡-to-≃ ≡-refl = two.≤-refl , two.≤-refl
-
   transpose-matrix : ∀ m n (f : m ⇒J n) (i : Fin m) (j : Fin n)
-                   → two._≤_ (matrix {n} {m} (transpose {m} {n} f) i j) (matrix {m} {n} f j i)
-                     ∧ two._≤_ (matrix {m} {n} f j i) (matrix {n} {m} (transpose {m} {n} f) i j)
+                   → matrix {n} {m} (transpose {m} {n} f) i j ≃ matrix {m} {n} f j i
   transpose-matrix m n f i j =
-    let step₁ = ≡-to-≃ (proj-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) (e j)) i)
-        step₂ = ⋅-e {n} (f .fun (e i)) j
-    in  two.≤-trans (proj₁ step₁) (proj₁ step₂) ,
-        two.≤-trans (proj₂ step₂) (proj₂ step₁)
+    ≃-trans (proj-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) (e j)) i)
+            (⋅-e {n} (f .fun (e i)) j)
