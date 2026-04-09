@@ -38,7 +38,7 @@ proj zero (b , _)  = b
 proj (suc i) (_ , v) = proj i v
 
 open import Data.Unit using (tt)
-open import prop using (tt; _,_; _∧_)
+open import prop using (tt; _,_; _∧_; proj₁; proj₂)
 
 -- Bool^n representation of a function.
 tabulate : ∀ {n} → (Fin n → Two) → Bool^ n .Carrier
@@ -127,7 +127,15 @@ module _ where
   ⋅-e {suc n} (O , u) (suc j) = ⋅-e {n} u j
   ⋅-e {suc n} (I , u) (suc j) = ⋅-e {n} u j
 
+  private
+    ≡-to-≃ : ∀ {x y : Two} → x ≡ y → two._≤_ x y ∧ two._≤_ y x
+    ≡-to-≃ ≡-refl = two.≤-refl , two.≤-refl
+
   transpose-matrix : ∀ m n (f : m ⇒J n) (i : Fin m) (j : Fin n)
                    → two._≤_ (matrix {n} {m} (transpose {m} {n} f) i j) (matrix {m} {n} f j i)
                      ∧ two._≤_ (matrix {m} {n} f j i) (matrix {n} {m} (transpose {m} {n} f) i j)
-  transpose-matrix m n f i j rewrite proj-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) (e j)) i = ⋅-e {n} (f .fun (e i)) j
+  transpose-matrix m n f i j =
+    let step₁ = ≡-to-≃ (proj-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) (e j)) i)
+        step₂ = ⋅-e {n} (f .fun (e i)) j
+    in  two.≤-trans (proj₁ step₁) (proj₁ step₂) ,
+        two.≤-trans (proj₂ step₂) (proj₂ step₁)
