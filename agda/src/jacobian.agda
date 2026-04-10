@@ -344,8 +344,13 @@ module _ where
     proj-mono {m} y (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x) .proj₂ per-i
     where
       per-i : (i : Fin m) → two._≤_ (proj i y) (proj i (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x))
-      per-i i = two.≤-trans
-                  (⊡-adj n (proj i y) (fun f (e i)) x .proj₁
-                    (Two^ n .≤-trans (⋁-upper (Two^-join n) m _ i)
-                    (Two^ n .≤-trans (f-basis f y .proj₂) fy≤x)))
-                  (proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (fun f (e k))) x) i .proj₂)
+      per-i i =
+        let open basics.≤-Reasoning two.≤-isPreorder in
+        begin
+          proj i y
+        ≤⟨ ⊡-adj n (proj i y) (fun f (e i)) x .proj₁
+             (Two^ n .≤-trans (⋁-upper (Two^-join n) m _ i) (Two^ n .≤-trans (f-basis f y .proj₂) fy≤x)) ⟩
+          _⊡_ {n} (¬ {n} (fun f (e i))) x
+        ≤⟨ proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (fun f (e k))) x) i .proj₂ ⟩
+          proj i (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x)
+        ∎
