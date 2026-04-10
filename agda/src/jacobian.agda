@@ -50,12 +50,36 @@ tabulate {zero} _ = tt
 tabulate {suc n} f = f zero , tabulate {n} (λ i → f (suc i))
 
 -- n-ary join in a join semilattice.
-module _ where
+module _ (J : join-semilattice-category.Obj) where
   open join-semilattice-category.Obj
 
-  ⋁ : (J : join-semilattice-category.Obj) → ∀ n → (Fin n → J .Carrier) → J .Carrier
-  ⋁ J zero _ = J .⊥
-  ⋁ J (suc n) g = J ._∨_ (g zero) (⋁ J n (λ i → g (suc i)))
+  ⋁ : ∀ n → (Fin n → J .Carrier) → J .Carrier
+  ⋁ zero _ = J .⊥
+  ⋁ (suc n) f = J ._∨_ (f zero) (⋁ n (λ i → f (suc i)))
+
+  ⋁-upper : ∀ n (f : Fin n → J .Carrier) (i : Fin n) → J ._≤_ (f i) (⋁ n f)
+  ⋁-upper (suc n) f zero = J .inl
+  ⋁-upper (suc n) f (suc i) = J .≤-trans (⋁-upper n (λ j → f (suc j)) i) (J .inr)
+
+  ⋁-lub : ∀ n (f : Fin n → J .Carrier) (x : J .Carrier) → (∀ i → J ._≤_ (f i) x) → J ._≤_ (⋁ n f) x
+  ⋁-lub zero f x p = J .≤-bottom
+  ⋁-lub (suc n) f x p = J .[_∨_] (p zero) (⋁-lub n (λ i → f (suc i)) x (λ i → p (suc i)))
+
+-- Alternative: define J ^ n as an object of join-semilattice-category (iterated product),
+-- and ⋁ as a join-semilattice morphism J ^ n ⇒ J.
+module _ (J : join-semilattice-category.Obj) where
+  open join-semilattice-category using (_⇒_; initial; cat)
+  open import categories using (HasInitial; Category; HasCoproducts)
+  open join-semilattice-category using (coproducts)
+
+  ^ʲ : ℕ → join-semilattice-category.Obj
+  ^ʲ zero = HasInitial.witness initial
+  ^ʲ (suc n) = HasCoproducts.coprod coproducts J (^ʲ n)
+
+  -- n-fold binary ∨
+  ⋁ʲ : (n : ℕ) → (^ʲ n) ⇒ J
+  ⋁ʲ zero    = HasInitial.from-initial initial
+  ⋁ʲ (suc n) = HasCoproducts.copair coproducts (Category.id cat J) (⋁ʲ n)
 
 -- Dot product: u ⋅ v = (u₀ ⊓ v₀) ⊔ ... ⊔ (uₙ ⊓ vₙ).
 module _ where
@@ -199,6 +223,11 @@ module _ where
                     (∀ i → two._≤_ (g i) (h i)) → Two^ m ._≤_ (tabulate {m} g) (tabulate {m} h)
     tabulate-mono {zero}  g h p = tt
     tabulate-mono {suc m} g h p = p zero , tabulate-mono {m} _ _ (λ i → p (suc i))
+
+    proj-mono : ∀ {m} (v w : Two^ m .Carrier) → Two^ m ._≤_ v w →
+                (i : Fin m) → two._≤_ (proj i v) (proj i w)
+    proj-mono {suc m} (_ , v) (_ , w) (h , _) zero    = h
+    proj-mono {suc m} (_ , v) (_ , w) (_ , t) (suc i) = proj-mono {m} v w t i
 
     tabulate-⊥ : ∀ {m} → Two^ m ._≤_ (tabulate {m} (λ _ → O)) (Two^ m .⊥)
     tabulate-⊥ {zero}  = tt
