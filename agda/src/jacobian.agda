@@ -259,8 +259,6 @@ module _ where
                     (⋁ (Two^-join n) m (λ i → _·⊓_ {n} (proj i y) (fun f (e i))))
   f-basis {zero}  {n} f y .proj₁ = f .*→*J .join-semilattice._=>_.⊥-preserving
   f-basis {zero}  {n} f y .proj₂ = Two^ n .≤-bottom
-  -- Strategy for suc case: use ∨-preserving to split f(y₀, y') = f(y₀, ⊥) ∨ f(O, y'),
-  -- then handle head via case analysis on y₀, and tail via IH (f-basis on f-tail).
   f-basis {suc m} {n} f (y₀ , y') .proj₁ =
     Two^ n .≤-trans
       (f .*→*J .funcJ .preorder._=>_.mono {x₂ = Two^ (suc m) ._∨_ (y₀ , Two^ m .⊥) (O , y')} (two.⊔-upper₁ , Two^ m .inr))
@@ -271,7 +269,11 @@ module _ where
       head-proof O = Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.⊥-preserving) (Two^ n .≤-bottom)
       head-proof I = ·⊓-I {n} (fun f (I , Two^ m .⊥)) .proj₂
   f-basis {suc m} {n} f (y₀ , y') .proj₂ =
-    Two^ n .[_∨_] (head-proof y₀) (tail-proof)
+    Two^ n .[_∨_]
+      (head-proof y₀)
+      (Two^ n .≤-trans
+        (f-basis (f-tail f) y' .proj₂)
+        (f .*→*J .funcJ .preorder._=>_.mono {(O , y')} {(y₀ , y')} (tt , Two^ m .≤-refl {y'})))
     where
       head-proof : ∀ y₀ → Two^ n ._≤_ (_·⊓_ {n} y₀ (fun f (I , Two^ m .⊥))) (fun f (y₀ , y'))
       head-proof O = Two^ n .≤-trans (·⊓-O {n} (fun f (I , Two^ m .⊥)) .proj₁) (Two^ n .≤-bottom)
@@ -279,12 +281,6 @@ module _ where
         Two^ n .≤-trans
           (·⊓-I {n} (fun f (I , Two^ m .⊥)) .proj₁)
           (f .*→*J .funcJ .preorder._=>_.mono {(I , Two^ m .⊥)} {(I , y')} (tt , Two^ m .≤-bottom))
-      tail-proof : Two^ n ._≤_
-                     (⋁ (Two^-join n) m (λ i → _·⊓_ {n} (proj i y') (fun f (O , e i))))
-                     (fun f (y₀ , y'))
-      tail-proof = Two^ n .≤-trans
-                     (f-basis (f-tail f) y' .proj₂)
-                     (f .*→*J .funcJ .preorder._=>_.mono {(O , y')} {(y₀ , y')} (tt , Two^ m .≤-refl {y'}))
 
   -- Sanity-check: transpose corresponds to transposing the implied matrix.
   private
