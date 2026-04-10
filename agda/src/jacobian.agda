@@ -8,7 +8,7 @@ open import Data.Fin using (Fin; zero; suc)
 open import Data.Product using (_,_)
 open import two using (Two; I; O; _⊓_; _⊔_; ⊔-upper₂; ≤-isPreorder; ⊓-isMeet; I-isTop)
 open import basics using (IsPreorder; IsTop)
-open IsPreorder ≤-isPreorder using (_≃_; ≃-refl; ≃-trans)
+open IsPreorder ≤-isPreorder using () renaming (_≃_ to _≃t_; ≃-refl to ≃t-refl; ≃-trans to ≃t-trans)
 import join-semilattice-category
 import meet-semilattice-category
 import meet-semilattice
@@ -30,7 +30,7 @@ Two^-meet : ℕ → meet-semilattice-category.Obj
 Two^-meet n .meet-semilattice-category.Obj.carrier = Two^ n .galois.Obj.carrier
 Two^-meet n .meet-semilattice-category.Obj.meets = Two^ n .galois.Obj.meets
 
-open galois.Obj hiding (_≃_; ≃-refl; ≃-sym; ≃-trans)
+open galois.Obj
 
 -- Basis vectors, projection and tabulation for Two^n.
 
@@ -48,6 +48,14 @@ open import prop using (tt; _,_; _∧_; proj₁; proj₂)
 tabulate : ∀ {n} → (Fin n → Two) → Two^ n .Carrier
 tabulate {zero} _ = tt
 tabulate {suc n} f = f zero , tabulate {n} (λ i → f (suc i))
+
+-- n-ary join in a join semilattice.
+module _ where
+  open join-semilattice-category.Obj
+
+  ⋁ : (J : join-semilattice-category.Obj) → ∀ n → (Fin n → J .Carrier) → J .Carrier
+  ⋁ J zero _ = J .⊥
+  ⋁ J (suc n) g = J ._∨_ (g zero) (⋁ J n (λ i → g (suc i)))
 
 -- Dot product: u ⋅ v = (u₀ ⊓ v₀) ⊔ ... ⊔ (uₙ ⊓ vₙ).
 module _ where
@@ -201,8 +209,8 @@ module _ where
     tabulate-∧ {zero}  g h = tt
     tabulate-∧ {suc m} g h = two.≤-refl , tabulate-∧ {m} (λ i → g (suc i)) (λ i → h (suc i))
 
-    proj-tabulate : ∀ {n} (g : Fin n → Two) (i : Fin n) → proj i (tabulate {n} g) ≃ g i
-    proj-tabulate {suc n} g zero = ≃-refl
+    proj-tabulate : ∀ {n} (g : Fin n → Two) (i : Fin n) → proj i (tabulate {n} g) ≃t g i
+    proj-tabulate {suc n} g zero = ≃t-refl
     proj-tabulate {suc n} g (suc i) = proj-tabulate {n} (λ i → g (suc i)) i
 
   transpose : ∀ {m n} → Two^-join m ⇒J Two^-join n → Two^-join n ⇒J Two^-join m
@@ -227,21 +235,45 @@ module _ where
     Two^ m .≤-trans (tabulate-⊤ {m})
                      (tabulate-mono {m} _ _ (λ i → ⊡-⊤ {n} (¬ {n} (fun f (e i)))))
 
+  -- Restrict f to its "tail": f-tail(z) = f(O, z).
+  f-tail : ∀ {m n} → Two^-join (suc m) ⇒J Two^-join n → Two^-join m ⇒J Two^-join n
+  f-tail {m} {n} f .*→*J .funcJ .funP v = fun f (O , v)
+  f-tail {m} {n} f .*→*J .funcJ .preorder._=>_.mono v≤v' =
+    f .*→*J .funcJ .preorder._=>_.mono (tt , v≤v')
+  f-tail {m} {n} f .*→*J .join-semilattice._=>_.∨-preserving =
+    f .*→*J .join-semilattice._=>_.∨-preserving
+  f-tail {m} {n} f .*→*J .join-semilattice._=>_.⊥-preserving = f .*→*J .join-semilattice._=>_.⊥-preserving
+
+  -- Join-preserving maps f : Two^m → Two^n are determined by their values on basis vectors:
+  -- f(y) equals the join of f(e_i) scaled by y[i].
+  f-basis : ∀ {m n} (f : Two^-join m ⇒J Two^-join n) (y : Two^ m .Carrier) → _≃_ (Two^ n) (fun f y)
+                    (⋁ (Two^-join n) m (λ i → _·⊓_ {n} (proj i y) (fun f (e i))))
+  f-basis {zero}  {n} f y .proj₁ = f .*→*J .join-semilattice._=>_.⊥-preserving
+  f-basis {zero}  {n} f y .proj₂ = Two^ n .≤-bottom
+  -- Strategy for suc case: use ∨-preserving to split f(y₀, y') = f(y₀, ⊥) ∨ f(O, y'),
+  -- then handle head via case analysis on y₀, and tail via IH (f-basis on f-tail).
+  f-basis {suc m} {n} f (y₀ , y') .proj₁ =
+    -- Step 1: (y₀ , y') ≤ (y₀, ⊥) ∨ (O, y'); apply f's mono, then ∨-preserving.
+    Two^ n .≤-trans
+      (f .*→*J .funcJ .preorder._=>_.mono {(y₀ , y')} {Two^ (suc m) ._∨_ (y₀ , Two^ m .⊥) (O , y')} {!!})
+      (Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.∨-preserving {(y₀ , Two^ m .⊥)} {(O , y')}) {!!})
+  f-basis {suc m} {n} f (y₀ , y') .proj₂ = {!!}
+
   -- Sanity-check: transpose corresponds to transposing the implied matrix.
   private
     matrix : ∀ {m n} → Two^-join m ⇒J Two^-join n → Fin n → Fin m → Two
     matrix f j i = proj j (fun f (e i))
 
-    ⋅-e : ∀ {n} (u : Two^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) ≃ proj j u
+    ⋅-e : ∀ {n} (u : Two^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) ≃t proj j u
     ⋅-e {suc n} (O , u) zero = ⋅-⊥ {n} u , tt
     ⋅-e {suc n} (I , u) zero = tt , tt
     ⋅-e {suc n} (O , u) (suc j) = ⋅-e {n} u j
     ⋅-e {suc n} (I , u) (suc j) = ⋅-e {n} u j
 
     transpose-matrix : ∀ m n (f : Two^-join m ⇒J Two^-join n) (i : Fin m) (j : Fin n) →
-                      matrix {n} {m} (transpose {m} {n} f) i j ≃ matrix {m} {n} f j i
+                      matrix {n} {m} (transpose {m} {n} f) i j ≃t matrix {m} {n} f j i
     transpose-matrix m n f i j =
-      ≃-trans (proj-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) (e j)) i)
+      ≃t-trans (proj-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) (e j)) i)
               (⋅-e {n} (fun f (e i)) j)
 
     -- FIXME: analogous De Morgan dual statement for adjoint.
