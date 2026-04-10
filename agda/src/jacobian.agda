@@ -121,6 +121,10 @@ _·⊓_ {suc n} a (b , u) = (a ⊓ b) , _·⊓_ {n} a u
 ·⊓-I {zero}  _       = tt
 ·⊓-I {suc n} (_ , u) = two.≤-refl , ·⊓-I {n} u
 
+·⊓-I' : ∀ {n} (u : Two^ n .Carrier) → Two^ n ._≤_ (_·⊓_ {n} I u) u
+·⊓-I' {zero}  _       = tt
+·⊓-I' {suc n} (_ , u) = two.≤-refl , ·⊓-I' {n} u
+
 -- Pointwise lifting of meet/implication adjunction.
 ⊡-adj₁ : ∀ n (a : Two) (u v : Two^ n .Carrier) →
          Two^ n ._≤_ (_·⊓_ {n} a u) v → two._≤_ a (_⊡_ {n} (¬ {n} u) v)
@@ -270,7 +274,21 @@ module _ where
       head-proof : ∀ y₀ → Two^ n ._≤_ (fun f (y₀ , Two^ m .⊥)) (_·⊓_ {n} y₀ (fun f (I , Two^ m .⊥)))
       head-proof O = Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.⊥-preserving) (Two^ n .≤-bottom)
       head-proof I = ·⊓-I {n} (fun f (I , Two^ m .⊥))
-  f-basis {suc m} {n} f (y₀ , y') .proj₂ = {!!}
+  f-basis {suc m} {n} f (y₀ , y') .proj₂ =
+    Two^ n .[_∨_] (head-proof y₀) (tail-proof)
+    where
+      head-proof : ∀ y₀ → Two^ n ._≤_ (_·⊓_ {n} y₀ (fun f (I , Two^ m .⊥))) (fun f (y₀ , y'))
+      head-proof O = Two^ n .≤-trans (·⊓-O {n} (fun f (I , Two^ m .⊥))) (Two^ n .≤-bottom)
+      head-proof I =
+        Two^ n .≤-trans
+          (·⊓-I' {n} (fun f (I , Two^ m .⊥)))
+          (f .*→*J .funcJ .preorder._=>_.mono {(I , Two^ m .⊥)} {(I , y')} (tt , Two^ m .≤-bottom))
+      tail-proof : Two^ n ._≤_
+                     (⋁ (Two^-join n) m (λ i → _·⊓_ {n} (proj i y') (fun f (O , e i))))
+                     (fun f (y₀ , y'))
+      tail-proof = Two^ n .≤-trans
+                     (f-basis (f-tail f) y' .proj₂)
+                     (f .*→*J .funcJ .preorder._=>_.mono {(O , y')} {(y₀ , y')} (tt , Two^ m .≤-refl {y'}))
 
   -- Sanity-check: transpose corresponds to transposing the implied matrix.
   private
