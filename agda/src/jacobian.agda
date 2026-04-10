@@ -99,6 +99,19 @@ _⊡_ {n} u v = two.¬ (_⋅_ {n} (¬ {n} u) (¬ {n} v))
          Bool^ n ._≤_ v w → two._≤_ (_⊡_ {n} u v) (_⊡_ {n} u w)
 ⊡-mono {n} u v≤w = ¬-anti (⋅-mono {n} (¬ {n} u) (¬-anti^ {n} v≤w))
 
+-- Boolean adjunction at Two level: a ⊓ b ≤ c ⇔ a ≤ ¬b ⊔ c.
+⊓-→-adj₁ : ∀ {a b c : Two} → two._≤_ (a ⊓ b) c → two._≤_ a (two.¬ b ⊔ c)
+⊓-→-adj₁ {O} {_} {_} _ = tt
+⊓-→-adj₁ {I} {O} {_} _ = tt
+⊓-→-adj₁ {I} {I} {O} ()
+⊓-→-adj₁ {I} {I} {I} _ = tt
+
+⊓-→-adj₂ : ∀ {a b c : Two} → two._≤_ a (two.¬ b ⊔ c) → two._≤_ (a ⊓ b) c
+⊓-→-adj₂ {O} {_} {_} _ = tt
+⊓-→-adj₂ {I} {O} {_} _ = tt
+⊓-→-adj₂ {I} {I} {O} ()
+⊓-→-adj₂ {I} {I} {I} _ = tt
+
 -- ¬ swaps ⊤ and ⊥.
 ¬-⊤ : ∀ {n} → Bool^ n ._≤_ (¬ {n} (Bool^ n .⊤)) (Bool^ n .⊥)
 ¬-⊤ {zero}  = tt
