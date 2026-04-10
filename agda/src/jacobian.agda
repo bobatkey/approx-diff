@@ -7,7 +7,7 @@ open import Data.Nat using (ℕ; zero; suc)
 open import Data.Fin using (Fin; zero; suc)
 open import Data.Product using (_,_)
 open import two using (Two; I; O; _⊓_; _⊔_; ⊔-upper₂; ≤-isPreorder; ⊓-isMeet; I-isTop)
-open import basics using (IsPreorder)
+open import basics using (IsPreorder; IsTop)
 open IsPreorder ≤-isPreorder using (_≃_; ≃-refl; ≃-trans)
 import join-semilattice-category
 import meet-semilattice-category
@@ -107,12 +107,12 @@ _·⊓_ {suc n} a (b , u) = (a ⊓ b) , _·⊓_ {n} a u
 -- Pointwise lifting of meet/implication adjunction.
 ⊡-adj₁ : ∀ n (a : Two) (u v : Two^ n .Carrier) →
          Two^ n ._≤_ (_·⊓_ {n} a u) v → two._≤_ a (_⊡_ {n} (¬ {n} u) v)
-⊡-adj₁ zero a u v p = {!!}
+⊡-adj₁ zero a u v p = I-isTop .IsTop.≤-top
 ⊡-adj₁ (suc n) a (u₀ , u) (v₀ , v) (h , t) = {!!}
 
 ⊡-adj₂ : ∀ n (a : Two) (u v : Two^ n .Carrier) →
          two._≤_ a (_⊡_ {n} (¬ {n} u) v) → Two^ n ._≤_ (_·⊓_ {n} a u) v
-⊡-adj₂ zero a u v p = {!!}
+⊡-adj₂ zero a u v p = tt
 ⊡-adj₂ (suc n) a (u₀ , u) (v₀ , v) h = {!!}
 
 ¬-⊤ : ∀ {n} → Two^ n ._≤_ (¬ {n} (Two^ n .⊤)) (Two^ n .⊥)
