@@ -333,19 +333,25 @@ module _ where
       fun f y
     ≤⟨ f-basis f y .proj₁ ⟩
       ⋁ (Two^-join n) m (λ i → _·⊓_ {n} (proj i y) (fun f (e i)))
-    ≤⟨ ⋁-lub (Two^-join n) m _ x
-         (λ i → ⊡-adj n (proj i y) (fun f (e i)) x .proj₂
-                  (two.≤-trans
-                    (proj-mono {m} y (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x) .proj₁ y≤adj i)
-                    (proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (fun f (e k))) x) i .proj₁))) ⟩
+    ≤⟨ ⋁-lub (Two^-join n) m _ x per-i ⟩
       x
     ∎
+    where
+      per-i : (i : Fin m) → Two^ n ._≤_ (_·⊓_ {n} (proj i y) (fun f (e i))) x
+      per-i i = ⊡-adj n (proj i y) (fun f (e i)) x .proj₂
+        (begin
+          proj i y
+        ≤⟨ proj-mono {m} y (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x) .proj₁ y≤adj i ⟩
+          proj i (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x)
+        ≤⟨ proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (fun f (e k))) x) i .proj₁ ⟩
+          _⊡_ {n} (¬ {n} (fun f (e i))) x
+        ∎)
+        where open basics.≤-Reasoning two.≤-isPreorder
   to-gal {m} {n} f .galois._⇒g_.left⊣right {x} {y} .proj₂ fy≤x =
     proj-mono {m} y (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x) .proj₂ per-i
     where
       per-i : (i : Fin m) → two._≤_ (proj i y) (proj i (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x))
       per-i i =
-        let open basics.≤-Reasoning two.≤-isPreorder in
         begin
           proj i y
         ≤⟨ ⊡-adj n (proj i y) (fun f (e i)) x .proj₁
@@ -354,3 +360,4 @@ module _ where
         ≤⟨ proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (fun f (e k))) x) i .proj₂ ⟩
           proj i (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x)
         ∎
+        where open basics.≤-Reasoning two.≤-isPreorder
