@@ -112,6 +112,15 @@ _·⊓_ : ∀ {n} → Two → Two^ n .Carrier → Two^ n .Carrier
 _·⊓_ {zero}  _ _       = tt
 _·⊓_ {suc n} a (b , u) = (a ⊓ b) , _·⊓_ {n} a u
 
+-- O scales to ⊥; I is the identity.
+·⊓-O : ∀ {n} (u : Two^ n .Carrier) → Two^ n ._≤_ (_·⊓_ {n} O u) (Two^ n .⊥)
+·⊓-O {zero}  _       = tt
+·⊓-O {suc n} (_ , u) = tt , ·⊓-O {n} u
+
+·⊓-I : ∀ {n} (u : Two^ n .Carrier) → Two^ n ._≤_ u (_·⊓_ {n} I u)
+·⊓-I {zero}  _       = tt
+·⊓-I {suc n} (_ , u) = two.≤-refl , ·⊓-I {n} u
+
 -- Pointwise lifting of meet/implication adjunction.
 ⊡-adj₁ : ∀ n (a : Two) (u v : Two^ n .Carrier) →
          Two^ n ._≤_ (_·⊓_ {n} a u) v → two._≤_ a (_⊡_ {n} (¬ {n} u) v)
@@ -253,10 +262,14 @@ module _ where
   -- Strategy for suc case: use ∨-preserving to split f(y₀, y') = f(y₀, ⊥) ∨ f(O, y'),
   -- then handle head via case analysis on y₀, and tail via IH (f-basis on f-tail).
   f-basis {suc m} {n} f (y₀ , y') .proj₁ =
-    -- Step 1: (y₀ , y') ≤ (y₀, ⊥) ∨ (O, y'); apply f's mono, then ∨-preserving.
     Two^ n .≤-trans
-      (f .*→*J .funcJ .preorder._=>_.mono {(y₀ , y')} {Two^ (suc m) ._∨_ (y₀ , Two^ m .⊥) (O , y')} (two.⊔-upper₁ , Two^ m .inr))
-      (Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.∨-preserving {(y₀ , Two^ m .⊥)} {(O , y')}) {!!})
+      (f .*→*J .funcJ .preorder._=>_.mono {x₂ = Two^ (suc m) ._∨_ (y₀ , Two^ m .⊥) (O , y')} (two.⊔-upper₁ , Two^ m .inr))
+      (Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.∨-preserving {(y₀ , Two^ m .⊥)} {(O , y')})
+        (∨-mono (Two^ n) (head-proof y₀) (f-basis (f-tail f) y' .proj₁)))
+    where
+      head-proof : ∀ y₀ → Two^ n ._≤_ (fun f (y₀ , Two^ m .⊥)) (_·⊓_ {n} y₀ (fun f (I , Two^ m .⊥)))
+      head-proof O = Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.⊥-preserving) (Two^ n .≤-bottom)
+      head-proof I = ·⊓-I {n} (fun f (I , Two^ m .⊥))
   f-basis {suc m} {n} f (y₀ , y') .proj₂ = {!!}
 
   -- Sanity-check: transpose corresponds to transposing the implied matrix.
