@@ -108,12 +108,18 @@ _·⊓_ {suc n} a (b , u) = (a ⊓ b) , _·⊓_ {n} a u
 ⊡-adj₁ : ∀ n (a : Two) (u v : Two^ n .Carrier) →
          Two^ n ._≤_ (_·⊓_ {n} a u) v → two._≤_ a (_⊡_ {n} (¬ {n} u) v)
 ⊡-adj₁ zero a u v p = I-isTop .IsTop.≤-top
-⊡-adj₁ (suc n) a (u₀ , u) (v₀ , v) (h , t) = {!!}
+⊡-adj₁ (suc n) O u v p = tt
+⊡-adj₁ (suc n) I (O , u) (_ , v) (h , t) = ⊡-adj₁ n I u v t
+⊡-adj₁ (suc n) I (I , _) (O , _) (() , _)
+⊡-adj₁ (suc n) I (I , u) (I , v) (_ , t) = ⊡-adj₁ n I u v t
 
 ⊡-adj₂ : ∀ n (a : Two) (u v : Two^ n .Carrier) →
          two._≤_ a (_⊡_ {n} (¬ {n} u) v) → Two^ n ._≤_ (_·⊓_ {n} a u) v
 ⊡-adj₂ zero a u v p = tt
-⊡-adj₂ (suc n) a (u₀ , u) (v₀ , v) h = {!!}
+⊡-adj₂ (suc n) O (u₀ , u) (v₀ , v) h = tt , ⊡-adj₂ n O u v tt
+⊡-adj₂ (suc n) I (O , u) (v₀ , v) h = tt , ⊡-adj₂ n I u v h
+⊡-adj₂ (suc n) I (I , u) (O , v) ()
+⊡-adj₂ (suc n) I (I , u) (I , v) h = tt , ⊡-adj₂ n I u v h
 
 ¬-⊤ : ∀ {n} → Two^ n ._≤_ (¬ {n} (Two^ n .⊤)) (Two^ n .⊥)
 ¬-⊤ {zero}  = tt
