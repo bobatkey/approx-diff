@@ -104,6 +104,17 @@ _·⊓_ : ∀ {n} → Two → Two^ n .Carrier → Two^ n .Carrier
 _·⊓_ {zero}  _ _       = tt
 _·⊓_ {suc n} a (b , u) = (a ⊓ b) , _·⊓_ {n} a u
 
+-- Pointwise lifting of meet/implication adjunction.
+⊡-adj₁ : ∀ n (a : Two) (u v : Two^ n .Carrier) →
+         Two^ n ._≤_ (_·⊓_ {n} a u) v → two._≤_ a (_⊡_ {n} (¬ {n} u) v)
+⊡-adj₁ zero a u v p = {!!}
+⊡-adj₁ (suc n) a (u₀ , u) (v₀ , v) (h , t) = {!!}
+
+⊡-adj₂ : ∀ n (a : Two) (u v : Two^ n .Carrier) →
+         two._≤_ a (_⊡_ {n} (¬ {n} u) v) → Two^ n ._≤_ (_·⊓_ {n} a u) v
+⊡-adj₂ zero a u v p = {!!}
+⊡-adj₂ (suc n) a (u₀ , u) (v₀ , v) h = {!!}
+
 ¬-⊤ : ∀ {n} → Two^ n ._≤_ (¬ {n} (Two^ n .⊤)) (Two^ n .⊥)
 ¬-⊤ {zero}  = tt
 ¬-⊤ {suc n} = tt , ¬-⊤ {n}
