@@ -161,18 +161,6 @@ _·⊓_ {suc n} a (b , u) = (a ⊓ b) , _·⊓_ {n} a u
 ⊡-⊤ : ∀ {n} (u : Two^ n .Carrier) → two._≤_ I (_⊡_ {n} u (Two^ n .⊤))
 ⊡-⊤ {n} u = ¬-anti (two.≤-trans (⋅-mono {n} (¬ {n} u) (¬-⊤ {n})) (⋅-⊥ {n} (¬ {n} u)))
 
--- Disjointness-to-order: a # b ⇔ a ≤ ¬b on Two^ n (Bool^n is a Boolean algebra).
-#-↔-≤ : ∀ {n} (u v : Two^ n .Carrier) →
-        Two^ n ._≤_ (galois.Obj._∧_ (Two^ n) u v) (Two^ n .⊥) ⇔ Two^ n ._≤_ u (¬ {n} v)
-#-↔-≤ {zero} _ _ .proj₁ _ = tt
-#-↔-≤ {suc n} (O , _) (_ , _) .proj₁ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₁ t
-#-↔-≤ {suc n} (I , _) (O , _) .proj₁ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₁ t
-#-↔-≤ {suc n} (I , _) (I , _) .proj₁ (() , _)
-#-↔-≤ {zero}  _ _ .proj₂ _ = tt
-#-↔-≤ {suc n} ( , _) (_ , _) .proj₂ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₂ t
-#-↔-≤ {suc n} (I , _) (O , _) .proj₂ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₂ t
-#-↔-≤ {suc n} (I , _) (I , _) .proj₂ (() , _)
-
 -- Two^n as a conjugate.Obj (Heyting algebra).
 import conjugate
 
@@ -194,6 +182,17 @@ Two^-conj zero .conjugate.Obj.∨-∧-distrib _ _ _ = tt
 Two^-conj (suc n) .conjugate.Obj.∨-∧-distrib (x₁ , x₂) (y₁ , y₂) (z₁ , z₂) =
   conjugate.Obj.∨-∧-distrib conjugate.TWO x₁ y₁ z₁ ,
   conjugate.Obj.∨-∧-distrib (Two^-conj n) x₂ y₂ z₂
+
+-- Disjointness-to-order: a # b ⇔ a ≤ ¬b on Two^ n (Two^n is a Boolean algebra).
+#-↔-≤ : ∀ {n} (u v : Two^ n .Carrier) → conjugate.Obj._#_ (Two^-conj n) u v ⇔ Two^ n ._≤_ u (¬ {n} v)
+#-↔-≤ {zero}  _       _       .proj₁ _ = tt
+#-↔-≤ {suc n} (O , _) (_ , _) .proj₁ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₁ t
+#-↔-≤ {suc n} (I , _) (O , _) .proj₁ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₁ t
+#-↔-≤ {suc n} (I , _) (I , _) .proj₁ (() , _)
+#-↔-≤ {zero}  _       _       .proj₂ _ = tt
+#-↔-≤ {suc n} (O , _) (_ , _) .proj₂ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₂ t
+#-↔-≤ {suc n} (I , _) (O , _) .proj₂ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₂ t
+#-↔-≤ {suc n} (I , _) (I , _) .proj₂ (() , _)
 
 -- Morphisms: join-semilattice morphisms Two^m → Two^n.
 -- Every such map is determined by its values on basis vectors, i.e. by an n × m Boolean matrix.
