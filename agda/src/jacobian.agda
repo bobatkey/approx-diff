@@ -43,7 +43,7 @@ proj zero (b , _)  = b
 proj (suc i) (_ , v) = proj i v
 
 open import Data.Unit using (tt)
-open import prop using (tt; _,_; _∧_; proj₁; proj₂)
+open import prop using (tt; _,_; _∧_; _⇔_; proj₁; proj₂)
 
 tabulate : ∀ {n} → (Fin n → Two) → Two^ n .Carrier
 tabulate {zero} _ = tt
@@ -104,7 +104,7 @@ module _ where
 ¬-anti {I} {I} _ = tt
 
 ¬-anti^ : ∀ {n} {v w : Two^ n .Carrier} → Two^ n ._≤_ v w → Two^ n ._≤_ (¬ {n} w) (¬ {n} v)
-¬-anti^ {zero}  _           = tt
+¬-anti^ {zero} _ = tt
 ¬-anti^ {suc n} (a≤b , v≤w) = ¬-anti a≤b , ¬-anti^ {n} v≤w
 
 -- Co-dot product (De Morgan dual of ⋅).
@@ -131,21 +131,18 @@ _·⊓_ {suc n} a (b , u) = (a ⊓ b) , _·⊓_ {n} a u
 ·⊓-I {suc n} (_ , u) = (two.≤-refl , ·⊓-I {n} u .proj₁) , (two.≤-refl , ·⊓-I {n} u .proj₂)
 
 -- Pointwise lifting of meet/implication adjunction.
-⊡-adj₁ : ∀ n (a : Two) (u v : Two^ n .Carrier) →
-         Two^ n ._≤_ (_·⊓_ {n} a u) v → two._≤_ a (_⊡_ {n} (¬ {n} u) v)
-⊡-adj₁ zero a u v p = I-isTop .IsTop.≤-top
-⊡-adj₁ (suc n) O u v p = tt
-⊡-adj₁ (suc n) I (O , u) (_ , v) (h , t) = ⊡-adj₁ n I u v t
-⊡-adj₁ (suc n) I (I , _) (O , _) (() , _)
-⊡-adj₁ (suc n) I (I , u) (I , v) (_ , t) = ⊡-adj₁ n I u v t
-
-⊡-adj₂ : ∀ n (a : Two) (u v : Two^ n .Carrier) →
-         two._≤_ a (_⊡_ {n} (¬ {n} u) v) → Two^ n ._≤_ (_·⊓_ {n} a u) v
-⊡-adj₂ zero a u v p = tt
-⊡-adj₂ (suc n) O (u₀ , u) (v₀ , v) h = tt , ⊡-adj₂ n O u v tt
-⊡-adj₂ (suc n) I (O , u) (v₀ , v) h = tt , ⊡-adj₂ n I u v h
-⊡-adj₂ (suc n) I (I , u) (O , v) ()
-⊡-adj₂ (suc n) I (I , u) (I , v) h = tt , ⊡-adj₂ n I u v h
+⊡-adj : ∀ n (a : Two) (u v : Two^ n .Carrier) →
+        Two^ n ._≤_ (_·⊓_ {n} a u) v ⇔ two._≤_ a (_⊡_ {n} (¬ {n} u) v)
+⊡-adj zero    a u v .proj₁ _ = I-isTop .IsTop.≤-top
+⊡-adj (suc n) O u v .proj₁ _ = tt
+⊡-adj (suc n) I (O , u) (_ , v) .proj₁ (h , t) = ⊡-adj n I u v .proj₁ t
+⊡-adj (suc n) I (I , _) (O , _) .proj₁ (() , _)
+⊡-adj (suc n) I (I , u) (I , v) .proj₁ (_ , t) = ⊡-adj n I u v .proj₁ t
+⊡-adj zero    a u v .proj₂ _ = tt
+⊡-adj (suc n) O (u₀ , u) (v₀ , v) .proj₂ h = tt , ⊡-adj n O u v .proj₂ tt
+⊡-adj (suc n) I (O , u) (v₀ , v) .proj₂ h = tt , ⊡-adj n I u v .proj₂ h
+⊡-adj (suc n) I (I , u) (O , v) .proj₂ ()
+⊡-adj (suc n) I (I , u) (I , v) .proj₂ h = tt , ⊡-adj n I u v .proj₂ h
 
 ¬-⊤ : ∀ {n} → Two^ n ._≤_ (¬ {n} (Two^ n .⊤)) (Two^ n .⊥)
 ¬-⊤ {zero}  = tt
@@ -209,10 +206,14 @@ module _ where
     tabulate-mono {zero}  g h p = tt
     tabulate-mono {suc m} g h p = p zero , tabulate-mono {m} _ _ (λ i → p (suc i))
 
-    proj-mono : ∀ {m} (v w : Two^ m .Carrier) → Two^ m ._≤_ v w →
-                (i : Fin m) → two._≤_ (proj i v) (proj i w)
-    proj-mono {suc m} (_ , v) (_ , w) (h , _) zero    = h
-    proj-mono {suc m} (_ , v) (_ , w) (_ , t) (suc i) = proj-mono {m} v w t i
+    -- Two^ m ._≤_ v w ⇔ ∀ i. two._≤_ (proj i v) (proj i w).
+    proj-mono : ∀ {m} (v w : Two^ m .Carrier) →
+                Two^ m ._≤_ v w ⇔ (∀ (i : Fin m) → two._≤_ (proj i v) (proj i w))
+    proj-mono {zero}  _ _ .proj₁ _ ()
+    proj-mono {zero}  _ _ .proj₂ _ = tt
+    proj-mono {suc m} (_ , v) (_ , w) .proj₁ (h , _) zero    = h
+    proj-mono {suc m} (_ , v) (_ , w) .proj₁ (_ , t) (suc i) = proj-mono {m} v w .proj₁ t i
+    proj-mono {suc m} (_ , v) (_ , w) .proj₂ p = p zero , proj-mono {m} v w .proj₂ (λ i → p (suc i))
 
     tabulate-⊥ : ∀ {m} → Two^ m ._≤_ (tabulate {m} (λ _ → O)) (Two^ m .⊥)
     tabulate-⊥ {zero}  = tt
@@ -333,9 +334,9 @@ module _ where
     ≤⟨ f-basis f y .proj₁ ⟩
       ⋁ (Two^-join n) m (λ i → _·⊓_ {n} (proj i y) (fun f (e i)))
     ≤⟨ ⋁-lub (Two^-join n) m _ x
-         (λ i → ⊡-adj₂ n (proj i y) (fun f (e i)) x
+         (λ i → ⊡-adj n (proj i y) (fun f (e i)) x .proj₂
                   (two.≤-trans
-                    (proj-mono y _ y≤adj i)
+                    (proj-mono {m} y (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x) .proj₁ y≤adj i)
                     (proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (fun f (e k))) x) i .proj₁))) ⟩
       x
     ∎

@@ -364,16 +364,16 @@ module _ where
 module _ where
   open import two using (Two; I; O; _⊓_; _⊔_)
 
+  open import prop using (_⇔_)
+
   -- For each y ∈ Two, (- ⊓ y) ⊣ (¬y ⊔ -) is a LatGal endomorphism on Two.
   -- FIXME: add a notation for Boolean implication?
-  ⊓⊣→₁ : ∀ {x y z : Two} → two._≤_ (x ⊓ y) z → two._≤_ x (two.¬ y ⊔ z)
-  ⊓⊣→₁ {O} {_} {_} _ = tt
-  ⊓⊣→₁ {I} {O} {_} _ = tt
-  ⊓⊣→₁ {I} {I} {O} ()
-  ⊓⊣→₁ {I} {I} {I} _ = tt
-
-  ⊓⊣→₂ : ∀ {x y z : Two} → two._≤_ x (two.¬ y ⊔ z) → two._≤_ (x ⊓ y) z
-  ⊓⊣→₂ {O} {_} {_} _ = tt
-  ⊓⊣→₂ {I} {O} {_} _ = tt
-  ⊓⊣→₂ {I} {I} {O} ()
-  ⊓⊣→₂ {I} {I} {I} _ = tt
+  ⊓⊣→ : ∀ {x y z : Two} → two._≤_ (x ⊓ y) z ⇔ two._≤_ x (two.¬ y ⊔ z)
+  ⊓⊣→ {O} {_} {_} .proj₁ _ = tt
+  ⊓⊣→ {I} {O} {_} .proj₁ _ = tt
+  ⊓⊣→ {I} {I} {O} .proj₁ ()
+  ⊓⊣→ {I} {I} {I} .proj₁ _ = tt
+  ⊓⊣→ {O} {_} {_} .proj₂ _ = tt
+  ⊓⊣→ {I} {O} {_} .proj₂ _ = tt
+  ⊓⊣→ {I} {I} {O} .proj₂ ()
+  ⊓⊣→ {I} {I} {I} .proj₂ _ = tt
