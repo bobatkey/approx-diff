@@ -2,7 +2,7 @@
 
 module galois where
 
-open import Level
+open import Level hiding (_⊔_)
 open import Data.Product using (_,_; proj₁; proj₂)
 open import prop hiding (_∨_; ⊥; _∧_)
 open import basics
@@ -335,17 +335,17 @@ module _ where
 
 module _ where
 
-  open import two using (Two; I; O)
+  open import two using (Two; I; O; _⊓_; _⊔_)
 
   TWO : Obj
   TWO .carrier .Preorder.Carrier = Two
   TWO .carrier .Preorder._≤_ = two._≤_
   TWO .carrier .Preorder.≤-isPreorder = two.≤-isPreorder
-  TWO .meets .MeetSemilattice._∧_ = two._⊓_
+  TWO .meets .MeetSemilattice._∧_ = _⊓_
   TWO .meets .MeetSemilattice.⊤ = I
   TWO .meets .MeetSemilattice.∧-isMeet = two.⊓-isMeet
   TWO .meets .MeetSemilattice.⊤-isTop = two.I-isTop
-  TWO .joins .JoinSemilattice._∨_ = two._⊔_
+  TWO .joins .JoinSemilattice._∨_ = _⊔_
   TWO .joins .JoinSemilattice.⊥ = O
   TWO .joins .JoinSemilattice.∨-isJoin = two.⊔-isJoin
   TWO .joins .JoinSemilattice.⊥-isBottom = two.O-isBottom
@@ -360,3 +360,20 @@ module _ where
 
   unit : 𝟙 ⇒g TWO
   unit = εm
+
+module _ where
+  open import two using (Two; I; O; _⊓_; _⊔_)
+
+  -- For each y ∈ Two, (- ⊓ y) ⊣ (¬y ⊔ -) is a LatGal endomorphism on Two.
+  -- FIXME: add a notation for Boolean implication?
+  ⊓⊣→₁ : ∀ {x y z : Two} → two._≤_ (x ⊓ y) z → two._≤_ x (two.¬ y ⊔ z)
+  ⊓⊣→₁ {O} {_} {_} _ = tt
+  ⊓⊣→₁ {I} {O} {_} _ = tt
+  ⊓⊣→₁ {I} {I} {O} ()
+  ⊓⊣→₁ {I} {I} {I} _ = tt
+
+  ⊓⊣→₂ : ∀ {x y z : Two} → two._≤_ x (two.¬ y ⊔ z) → two._≤_ (x ⊓ y) z
+  ⊓⊣→₂ {O} {_} {_} _ = tt
+  ⊓⊣→₂ {I} {O} {_} _ = tt
+  ⊓⊣→₂ {I} {I} {O} ()
+  ⊓⊣→₂ {I} {I} {I} _ = tt
