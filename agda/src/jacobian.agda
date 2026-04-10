@@ -255,7 +255,7 @@ module _ where
   f-basis {suc m} {n} f (y₀ , y') .proj₁ =
     -- Step 1: (y₀ , y') ≤ (y₀, ⊥) ∨ (O, y'); apply f's mono, then ∨-preserving.
     Two^ n .≤-trans
-      (f .*→*J .funcJ .preorder._=>_.mono {(y₀ , y')} {Two^ (suc m) ._∨_ (y₀ , Two^ m .⊥) (O , y')} {!!})
+      (f .*→*J .funcJ .preorder._=>_.mono {(y₀ , y')} {Two^ (suc m) ._∨_ (y₀ , Two^ m .⊥) (O , y')} (two.⊔-upper₁ , Two^ m .inr))
       (Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.∨-preserving {(y₀ , Two^ m .⊥)} {(O , y')}) {!!})
   f-basis {suc m} {n} f (y₀ , y') .proj₂ = {!!}
 
