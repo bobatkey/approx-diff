@@ -123,7 +123,7 @@ module _ where
   ¬-anti^ {suc n} (a≤b , v≤w) = ¬-anti a≤b , ¬-anti^ {n} v≤w
 
   ¬-invol : ∀ {n} (u : Two^ n .Carrier) → _≃_ (Two^ n) u (¬ {n} (¬ {n} u))
-  ¬-invol {zero}  _       = tt , tt
+  ¬-invol {zero}  _ = tt , tt
   ¬-invol {suc n} (O , u) = (tt , ¬-invol {n} u .proj₁) , (tt , ¬-invol {n} u .proj₂)
   ¬-invol {suc n} (I , u) = (tt , ¬-invol {n} u .proj₁) , (tt , ¬-invol {n} u .proj₂)
 
@@ -237,6 +237,14 @@ module _ where
     tabulate-mono {zero}  g h p = tt
     tabulate-mono {suc m} g h p = p zero , tabulate-mono {m} _ _ (λ i → p (suc i))
 
+    -- ¬ distributes over tabulate: ¬ (tabulate g) ≃ tabulate (λ i → two.¬ (g i)).
+    ¬-tabulate : ∀ {m} (g : Fin m → Two) →
+                 _≃_ (Two^ m) (¬ {m} (tabulate {m} g)) (tabulate {m} (λ i → two.¬ (g i)))
+    ¬-tabulate {zero}  _ = tt , tt
+    ¬-tabulate {suc m} g =
+      (two.≤-refl , ¬-tabulate {m} (λ i → g (suc i)) .proj₁) ,
+      (two.≤-refl , ¬-tabulate {m} (λ i → g (suc i)) .proj₂)
+
     -- Two^ m ._≤_ v w ⇔ ∀ i. two._≤_ (proj i v) (proj i w).
     proj-mono : ∀ {m} (v w : Two^ m .Carrier) →
                 Two^ m ._≤_ v w ⇔ (∀ (i : Fin m) → two._≤_ (proj i v) (proj i w))
@@ -345,13 +353,24 @@ module _ where
       ≃t-trans (proj-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) (e j)) i)
               (⋅-e {n} (fun f (e i)) j)
 
-    -- FIXME: analogous De Morgan dual statement for adjoint.
-
-  -- De Morgan identity connecting transpose and adjoint: ¬(transpose f x) ≃ adjoint f (¬x).
+  -- (adjoint f) and (transpose f) are De Morgan dual.
   ¬transpose≃adjoint¬ : ∀ {m n} (f : Two^-join m ⇒J Two^-join n) (x : Two^ n .Carrier) →
                        _≃_ (Two^ m) (¬ {m} (fun (transpose {m} {n} f) x))
                                     (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun (¬ {n} x))
-  ¬transpose≃adjoint¬ {m} {n} f x = {!!}
+  ¬transpose≃adjoint¬ {m} {n} f x .proj₁ =
+    Two^ m .≤-trans (¬-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) x) .proj₁)
+                    (tabulate-mono {m} _ _ per-i)
+    where
+      per-i : (i : Fin m) → two._≤_ (two.¬ (_⋅_ {n} (fun f (e i)) x))
+                                    (_⊡_ {n} (¬ {n} (fun f (e i))) (¬ {n} x))
+      per-i i = ¬-anti (⋅-mono {n} (¬-invol {n} (fun f (e i)) .proj₂) (¬-invol {n} x .proj₂))
+  ¬transpose≃adjoint¬ {m} {n} f x .proj₂ =
+    Two^ m .≤-trans (tabulate-mono {m} _ _ per-i)
+                    (¬-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) x) .proj₂)
+    where
+      per-i : (i : Fin m) → two._≤_ (_⊡_ {n} (¬ {n} (fun f (e i))) (¬ {n} x))
+                                    (two.¬ (_⋅_ {n} (fun f (e i)) x))
+      per-i i = ¬-anti (⋅-mono {n} (¬-invol {n} (fun f (e i)) .proj₁) (¬-invol {n} x .proj₁))
 
   -- Conjugate embedding: (transpose f, f) forms a conjugate pair Two^n ⇒c Two^m.
   to-conj : ∀ {m n} → Two^-join m ⇒J Two^-join n → conjugate._⇒c_ (Two^-conj n) (Two^-conj m)
