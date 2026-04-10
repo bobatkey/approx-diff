@@ -358,26 +358,17 @@ module _ where
                        _≃_ (Two^ m) (¬ {m} (fun (transpose {m} {n} f) x))
                                     (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun (¬ {n} x))
   ¬transpose≃adjoint¬ {m} {n} f x .proj₁ =
-    Two^ m .≤-trans (¬-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) x) .proj₁)
-                    (tabulate-mono {m} _ _ per-i)
+    Two^ m .≤-trans (¬-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) x) .proj₁) (tabulate-mono {m} _ _ per-i)
     where
       per-i : (i : Fin m) → two._≤_ (two.¬ (_⋅_ {n} (fun f (e i)) x))
                                     (_⊡_ {n} (¬ {n} (fun f (e i))) (¬ {n} x))
       per-i i = ¬-anti (⋅-mono {n} (¬-invol {n} (fun f (e i)) .proj₂) (¬-invol {n} x .proj₂))
   ¬transpose≃adjoint¬ {m} {n} f x .proj₂ =
-    Two^ m .≤-trans (tabulate-mono {m} _ _ per-i)
-                    (¬-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) x) .proj₂)
+    Two^ m .≤-trans (tabulate-mono {m} _ _ per-i) (¬-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) x) .proj₂)
     where
       per-i : (i : Fin m) → two._≤_ (_⊡_ {n} (¬ {n} (fun f (e i))) (¬ {n} x))
                                     (two.¬ (_⋅_ {n} (fun f (e i)) x))
       per-i i = ¬-anti (⋅-mono {n} (¬-invol {n} (fun f (e i)) .proj₁) (¬-invol {n} x .proj₁))
-
-  -- Conjugate embedding: (transpose f, f) forms a conjugate pair Two^n ⇒c Two^m.
-  to-conj : ∀ {m n} → Two^-join m ⇒J Two^-join n → conjugate._⇒c_ (Two^-conj n) (Two^-conj m)
-  to-conj {m} {n} f .conjugate._⇒c_.right = transpose {m} {n} f .*→*J .funcJ
-  to-conj {m} {n} f .conjugate._⇒c_.left  = f .*→*J .funcJ
-  to-conj {m} {n} f .conjugate._⇒c_.conjugate .proj₁ = {!!}
-  to-conj {m} {n} f .conjugate._⇒c_.conjugate .proj₂ = {!!}
 
   -- Galois embedding: (adjoint f, f) forms a Galois connection.
   to-gal : ∀ {m n} → Two^-join m ⇒J Two^-join n → galois._⇒g_ (Two^ n) (Two^ m)
@@ -417,3 +408,20 @@ module _ where
           proj i (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x)
         ∎
         where open basics.≤-Reasoning two.≤-isPreorder
+
+  -- Conjugate embedding: (transpose f, f) forms a conjugate pair Two^n ⇒c Two^m.
+  -- Derive from to-gal via De Morgan duality.
+  to-conj : ∀ {m n} → Two^-join m ⇒J Two^-join n → conjugate._⇒c_ (Two^-conj n) (Two^-conj m)
+  to-conj {m} {n} f .conjugate._⇒c_.right = transpose {m} {n} f .*→*J .funcJ
+  to-conj {m} {n} f .conjugate._⇒c_.left  = f .*→*J .funcJ
+  to-conj {m} {n} f .conjugate._⇒c_.conjugate {x} {y} .proj₁ y#tr =
+    #-↔-≤ {n} (fun f y) x .proj₂
+      (to-gal {m} {n} f .galois._⇒g_.left⊣right {¬ {n} x} {y} .proj₁
+        (Two^ m .≤-trans
+          (#-↔-≤ {m} y (fun (transpose {m} {n} f) x) .proj₁ y#tr)
+          (¬transpose≃adjoint¬ f x .proj₁)))
+  to-conj {m} {n} f .conjugate._⇒c_.conjugate {x} {y} .proj₂ fy#x =
+    #-↔-≤ {m} y (fun (transpose {m} {n} f) x) .proj₂
+      (Two^ m .≤-trans
+        (to-gal {m} {n} f .galois._⇒g_.left⊣right {¬ {n} x} {y} .proj₂ (#-↔-≤ {n} (fun f y) x .proj₁ fy#x))
+        (¬transpose≃adjoint¬ f x .proj₂))
