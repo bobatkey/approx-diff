@@ -161,6 +161,18 @@ _·⊓_ {suc n} a (b , u) = (a ⊓ b) , _·⊓_ {n} a u
 ⊡-⊤ : ∀ {n} (u : Two^ n .Carrier) → two._≤_ I (_⊡_ {n} u (Two^ n .⊤))
 ⊡-⊤ {n} u = ¬-anti (two.≤-trans (⋅-mono {n} (¬ {n} u) (¬-⊤ {n})) (⋅-⊥ {n} (¬ {n} u)))
 
+-- Disjointness-to-order: a # b ⇔ a ≤ ¬b on Two^ n (Bool^n is a Boolean algebra).
+#-↔-≤ : ∀ {n} (u v : Two^ n .Carrier) →
+        Two^ n ._≤_ (galois.Obj._∧_ (Two^ n) u v) (Two^ n .⊥) ⇔ Two^ n ._≤_ u (¬ {n} v)
+#-↔-≤ {zero} _ _ .proj₁ _ = tt
+#-↔-≤ {suc n} (O , _) (_ , _) .proj₁ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₁ t
+#-↔-≤ {suc n} (I , _) (O , _) .proj₁ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₁ t
+#-↔-≤ {suc n} (I , _) (I , _) .proj₁ (() , _)
+#-↔-≤ {zero}  _ _ .proj₂ _ = tt
+#-↔-≤ {suc n} ( , _) (_ , _) .proj₂ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₂ t
+#-↔-≤ {suc n} (I , _) (O , _) .proj₂ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₂ t
+#-↔-≤ {suc n} (I , _) (I , _) .proj₂ (() , _)
+
 -- Two^n as a conjugate.Obj (Heyting algebra).
 import conjugate
 
@@ -315,6 +327,12 @@ module _ where
               (⋅-e {n} (fun f (e i)) j)
 
     -- FIXME: analogous De Morgan dual statement for adjoint.
+
+  -- De Morgan identity connecting transpose and adjoint: ¬(transpose f x) ≃ adjoint f (¬x).
+  ¬transpose≃adjoint¬ : ∀ {m n} (f : Two^-join m ⇒J Two^-join n) (x : Two^ n .Carrier) →
+                       _≃_ (Two^ m) (¬ {m} (fun (transpose {m} {n} f) x))
+                                    (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun (¬ {n} x))
+  ¬transpose≃adjoint¬ {m} {n} f x = {!!}
 
   -- Conjugate embedding: (transpose f, f) forms a conjugate pair Two^n ⇒c Two^m.
   to-conj : ∀ {m n} → Two^-join m ⇒J Two^-join n → conjugate._⇒c_ (Two^-conj n) (Two^-conj m)
