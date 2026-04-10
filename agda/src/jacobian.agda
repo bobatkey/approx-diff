@@ -49,7 +49,8 @@ tabulate : ∀ {n} → (Fin n → Two) → Two^ n .Carrier
 tabulate {zero} _ = tt
 tabulate {suc n} f = f zero , tabulate {n} (λ i → f (suc i))
 
--- n-ary join in a join semilattice.
+-- Join of a finite family of join semilattices (so neither binary IsJoin nor arbitrary IsBigJoin). Be nicer
+-- to define in terms of the iterated product, but the function representation is convenient for now.
 module _ (J : join-semilattice-category.Obj) where
   open join-semilattice-category.Obj
 
@@ -64,22 +65,6 @@ module _ (J : join-semilattice-category.Obj) where
   ⋁-lub : ∀ n (f : Fin n → J .Carrier) (x : J .Carrier) → (∀ i → J ._≤_ (f i) x) → J ._≤_ (⋁ n f) x
   ⋁-lub zero f x p = J .≤-bottom
   ⋁-lub (suc n) f x p = J .[_∨_] (p zero) (⋁-lub n (λ i → f (suc i)) x (λ i → p (suc i)))
-
--- Alternative: define J ^ n as an object of join-semilattice-category (iterated product),
--- and ⋁ as a join-semilattice morphism J ^ n ⇒ J.
-module _ (J : join-semilattice-category.Obj) where
-  open join-semilattice-category using (_⇒_; initial; cat)
-  open import categories using (HasInitial; Category; HasCoproducts)
-  open join-semilattice-category using (coproducts)
-
-  ^ʲ : ℕ → join-semilattice-category.Obj
-  ^ʲ zero = HasInitial.witness initial
-  ^ʲ (suc n) = HasCoproducts.coprod coproducts J (^ʲ n)
-
-  -- n-fold binary ∨
-  ⋁ʲ : (n : ℕ) → (^ʲ n) ⇒ J
-  ⋁ʲ zero    = HasInitial.from-initial initial
-  ⋁ʲ (suc n) = HasCoproducts.copair coproducts (Category.id cat J) (⋁ʲ n)
 
 -- Dot product: u ⋅ v = (u₀ ⊓ v₀) ⊔ ... ⊔ (uₙ ⊓ vₙ).
 module _ where
@@ -341,8 +326,17 @@ module _ where
   to-gal : ∀ {m n} → Two^-join m ⇒J Two^-join n → galois._⇒g_ (Two^ n) (Two^ m)
   to-gal {m} {n} f .galois._⇒g_.right = adjoint {m} {n} f .*→*M .funcM
   to-gal {m} {n} f .galois._⇒g_.left  = f .*→*J .funcJ
-  to-gal {zero}  {n} f .galois._⇒g_.left⊣right .proj₁ _ =
-    Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.⊥-preserving) (Two^ n .≤-bottom)
-  to-gal {suc m} {n} f .galois._⇒g_.left⊣right .proj₁ = {!!}
-  to-gal {zero}  {n} f .galois._⇒g_.left⊣right .proj₂ _ = tt
-  to-gal {suc m} {n} f .galois._⇒g_.left⊣right .proj₂ = {!!}
+  to-gal {m} {n} f .galois._⇒g_.left⊣right {x} {y} .proj₁ y≤adj =
+    let open basics.≤-Reasoning (Two^ n .galois.Obj.≤-isPreorder) in
+    begin
+      fun f y
+    ≤⟨ f-basis f y .proj₁ ⟩
+      ⋁ (Two^-join n) m (λ i → _·⊓_ {n} (proj i y) (fun f (e i)))
+    ≤⟨ ⋁-lub (Two^-join n) m _ x
+         (λ i → ⊡-adj₂ n (proj i y) (fun f (e i)) x
+                  (two.≤-trans
+                    (proj-mono y _ y≤adj i)
+                    (proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (fun f (e k))) x) i .proj₁))) ⟩
+      x
+    ∎
+  to-gal {m} {n} f .galois._⇒g_.left⊣right .proj₂ = {!!}
