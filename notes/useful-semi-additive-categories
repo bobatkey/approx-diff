@@ -33,16 +33,15 @@ i.e.~$x \le_{\meet} y \iff x \le_{\join} y$.
 then follow.
 
 \begin{definition}[Galois connection]
-Suppose $X$ and $Y$ are posets. A \emph{Galois connection} $f \adj g: X$ to $Y$ is a pair of monotone
-functions $f: X \to Y$ and $g: Y \to X$ satisfying $y \leq f(x) \iff g(y) \leq x$ for any $x \in X$ and $y \in
+Suppose $X$ and $Y$ are posets. A \emph{Galois connection} $f \adj g: X \to Y$ is a pair of monotone
+functions $f: Y \to X$ and $g: X \to Y$ satisfying $y \leq g(x) \iff f(y) \leq x$ for any $x \in X$ and $y \in
 Y$.
 \end{definition}
 
 \noindent The notation is justified because a Galois connection $f \adj g: X \to Y$ is an adjunction between
-poset categories, with monotone $f$ and $g$ regarded as functors; $f$ is usually referred to as the
-\emph{upper} (right) adjoint and $g$ as the \emph{lower} (left) adjoint. Galois connections compose
-component-wise, with $\id_X \adj \id_X: X \to X$ as the unit for composition. Thus we can define the following
-category.
+poset categories, with monotone $f$ and $g$ regarded as functors; $f$ is the (lower) \emph{left} adjoint and
+$g$ is the (upper) \emph{right} adjoint. Galois connections compose component-wise, with $\id_X \adj \id_X:
+X \to X$ as the unit for composition. Thus we can define the following category.
 
 \begin{definition}[Category $\LatGal$]
 Define the category $\LatGal$ which has:
@@ -52,19 +51,19 @@ Define the category $\LatGal$ which has:
 \end{itemize}
 \end{definition}
 
-\noindent Right adjoints preserves limits and left adjoints preserves colimits, so for any $f \adj g: X \to Y$
-in $\LatGal$, $f$ and $g$ preserve the meet-semilattice structure of $X$ and join-semilattice structure of $Y$
-respectively. Moreover since $(X, \top, \meet)$ is a commutative monoid, and thus a $\CMon$-enriched (poset)
-category, for any $X, Y$ there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y} = \const(\top_Y): X
-\to Y$ and also (idempotent) addition of homomorphisms $f +_{\meet} g: X \to Y$ given pointwise by $\meet$.
-Dually, there is a zero join-semilattice homomorphism $0^{\join}_{X,Y} = \const(\bot_Y): X \to Y$ and
-idempotent addition of homomorphisms $f +_{\join} g: X \to Y$ given pointwise by $\join$. Thus $\LatGal$ is
-itself $\CMon$-enriched (in fact $\SemiLat$-enriched), with the hom-object $\LatGal(X,Y)$ forming a bounded
-semilattice with:
+\noindent Left adjoints preserve colimits and right adjoints preserve limits, so for any $f \adj g: X \to Y$
+in $\LatGal$, $f$ preserves the join-semilattice structure of $Y$ and $g$ preserves the meet-semilattice
+structure of $X$. Moreover since $(X, \top, \meet)$ is a commutative monoid, and thus a $\CMon$-enriched
+(poset) category, for any $X, Y$ there is a zero meet-semilattice homomorphism $0^{\meet}_{X,Y} =
+\const(\top_Y): X \to Y$ and also (idempotent) addition of homomorphisms $h +_{\meet} h': X \to Y$ given
+pointwise by $\meet$. Dually, there is a zero join-semilattice homomorphism $0^{\join}_{Y,X} =
+\const(\bot_X): Y \to X$ and idempotent addition of homomorphisms $h +_{\join} h': Y \to X$ given pointwise
+by $\join$. Thus $\LatGal$ is itself $\CMon$-enriched (in fact $\SemiLat$-enriched), with the hom-object
+$\LatGal(X,Y)$ forming a bounded semilattice with:
 \begin{itemize}
-\item zero morphism $0_{X,Y}$ given by the Galois connection $\const(\top_Y) \adj \const(\bot_X): X \to Y$
-\item component-wise idempotent addition of morphisms $(f \adj g) + (f' \adj g') = (f +_{\meet} f') \adj (g
-+_{\join} g'): X \to Y$.
+\item zero morphism $0_{X,Y}$ given by the Galois connection $\const(\bot_X) \adj \const(\top_Y): X \to Y$
+\item component-wise idempotent addition of morphisms $(f \adj g) + (f' \adj g') = (f +_{\join} f') \adj (g
++_{\meet} g'): X \to Y$.
 \end{itemize}
 
 \noindent and biadditivity of composition also arising component-wise. Moreover, writing $X \times Y$ for the
@@ -77,22 +76,59 @@ biproducts, with the trivial 1-point lattice as zero object and binary biproduct
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
 \begin{align*}
-   \biproj_X = \proj_1 \adj \prodM{\id_X}{\const(\bot_Y)}: X \biprod Y \to X \\
-   \biproj_Y = \proj_2 \adj \prodM{\const(\bot_X)}{\id_Y}: X \biprod Y \to Y
+   \biproj_X = \prodM{\id_X}{\const(\bot_Y)} \adj \proj_1: X \biprod Y \to X \\
+   \biproj_Y = \prodM{\const(\bot_X)}{\id_Y} \adj \proj_2: X \biprod Y \to Y
 \end{align*}
 \end{center}
 \end{minipage}%
 \begin{minipage}[t]{0.45\textwidth}
 \begin{center}
 \begin{align*}
-   \biinj_X = \prodM{\id_X}{\const(\top_Y)} \adj \pi_1: X \to X \biprod Y \\
-   \biinj_Y = \prodM{\const(\top_X)}{\id_Y} \adj \pi_2: Y \to X \biprod Y
+   \biinj_X = \pi_1 \adj \prodM{\id_X}{\const(\top_Y)}: X \to X \biprod Y \\
+   \biinj_Y = \pi_2 \adj \prodM{\const(\top_X)}{\id_Y}: Y \to X \biprod Y
 \end{align*}
 \end{center}
 \end{minipage}
 \vspace{2mm}
 
 \noindent with product and coproduct of Galois connections computed component-wise.
+
+\subsubsection{Category of Heyting algebras and conjugate pairs}
+\label{sec:categories-with-biproducts:heytconj}
+
+A second way of reversing the direction of a $\join$-preserving map uses \emph{conjugate pairs}, an idea
+going back to Jónsson and Tarski. Whereas a Galois connection links two directions by the order $\le$, a
+conjugate pair links them by the \emph{disjointness} relation
+$a \disj b \iff a \meet b \le \bot$.
+
+\begin{definition}[Conjugate pair]
+Suppose $X$ and $Y$ are bounded lattices. A \emph{conjugate pair} $f \mathrel{{\sim}} g : X \to Y$ is a pair of
+monotone functions $f : X \to Y$ and $g : Y \to X$ satisfying
+\begin{salign*}
+   y \disj_Y f(x) \iff g(y) \disj_X x
+\end{salign*}
+\noindent for every $x \in X$ and $y \in Y$.
+\end{definition}
+
+\noindent Both components of a conjugate pair are automatically $\join$-preserving (and send $\bot$ to
+$\bot$), provided the underlying lattice has enough structure for disjointness to determine order --- concretely,
+it suffices that each $X$ be a \emph{Heyting algebra} (a distributive lattice with an implication
+operation), because then $a \le b \iff \neg b \disj a$ via the pseudocomplement $\neg b$. Conjugate pairs
+compose componentwise (with the second components composed in the opposite order), and the identity
+$\id_X \mathrel{{\sim}} \id_X$ is a conjugate pair, so the following is a category.
+
+\begin{definition}[Category $\HeytConj$]
+Define the category $\HeytConj$ which has:
+\begin{itemize}
+\item as objects all Heyting algebras;
+\item as morphisms from $X$ to $Y$ all conjugate pairs $f \mathrel{{\sim}} g : X \to Y$.
+\end{itemize}
+\end{definition}
+
+\noindent Like $\LatGal$, $\HeytConj$ is $\CMon$-enriched (in fact $\SemiLat$-enriched): the zero morphism
+$0_{X,Y}$ is the constant-$\bot$ pair, and addition of morphisms is componentwise pointwise $\join$. Unlike
+$\LatGal$, in $\HeytConj$ both components preserve joins, so the category carries a dagger. We return to this
+point in \secref{boolean-jacobians:embeddings}.
 
 \subsubsection{Category of finite-dimensional vector spaces}
 \label{sec:categories-with-biproducts:fdvect}

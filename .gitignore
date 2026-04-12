@@ -2,6 +2,9 @@
 /_build/
 *~
 *.agdai
+*.aux
+*.log
+*.out
 *.pdf
 *.zip
 *.DS_Store

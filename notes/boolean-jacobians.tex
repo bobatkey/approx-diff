@@ -1,0 +1,205 @@
+\subsection{Boolean Jacobians}
+\label{sec:boolean-jacobians}
+
+Throughout let $\Two = \{\bot, \top\}$ be the two-element Boolean algebra, viewed as a join semilattice via
+its join $\join$ and bottom $\bot$. Write $\SemiLat$ for the category of (join) semilattices and
+$\join$-preserving maps; it is $\CMon$-enriched and has biproducts. (Dually, $\SemiLat$ may be read as the
+category of meet semilattices and $\meet$-preserving maps; the two readings give isomorphic categories and
+we move freely between them where helpful.)
+
+\subsubsection{Overview}
+\label{sec:boolean-jacobians:overview}
+
+We study a ``Bool-linear'' subcategory of $\SemiLat$ whose objects are the finite powers $\Two^n$ of the
+two-element join semilattice. Given a $\join$-preserving map $f$ in this category, we consider two
+canonical companions going in the opposite direction: the \emph{transpose} $f^{\!\top}$ (also
+$\join$-preserving) and the \emph{right adjoint} $f^*$ (meet-preserving, with $f \adj f^*$). The pair
+$(f, f^{\!\top})$ is the Boolean analogue of the forward/reverse-mode Jacobian pair in AD, related by the
+dagger operation. The right adjoint $f^*$ is a separate, order-theoretic construction with no AD analogue;
+in the Boolean setting it is related to $f^{\!\top}$ by De Morgan duality.
+
+\begin{itemize}
+\item Objects are finite Boolean vector spaces $\Two^n$, arising as iterated biproducts
+(\secref{boolean-jacobians:vectors}).
+\item Morphisms $\Two^m \to \Two^n$ are $n \times m$ Boolean matrices, equivalently, $\join$-preserving maps
+determined by their values on basis vectors; composition is matrix multiplication in the
+$(\join, \meet)$-semiring (\secref{boolean-jacobians:matrices}).
+\item Every morphism has a transpose, making this a dagger semi-additive category
+(\secref{boolean-jacobians:transpose}).
+\item The transpose embeds the category contravariantly into $\HeytConj$ as conjugate pairs; the right
+adjoint embeds it contravariantly into $\LatGal$ as Galois connections; these two embeddings are De Morgan
+duals of each other (\secref{boolean-jacobians:embeddings}, \secref{boolean-jacobians:de-morgan}).
+\item Under the analogy between this setting and $\FinVect_\RR$, the transpose $f^{\!\top}$ corresponds to
+the forward-mode Jacobian $\pushf{\phi}_x$ and the primitive $f$ plays the role of the reverse-mode
+$\pullf{\phi}_x$; the Galois connection's adjunction structure is a genuinely different analysis with no
+direct real-AD analogue (\secref{boolean-jacobians:ad}).
+\end{itemize}
+
+\subsubsection{Boolean vectors as iterated biproducts}
+\label{sec:boolean-jacobians:vectors}
+
+Define $\Two^n$ inductively as the $n$-fold biproduct of $\Two$ in $\SemiLat$: $\Two^0$ is the zero object
+and $\Two^{n+1} = \Two \biprod \Two^n$. Its carrier is the set of length-$n$ vectors of Boolean values, with
+pointwise $\join$ and $\bot$. The carrier additionally inherits pointwise $\meet$ and $\top$ from $\Two$, so
+each $\Two^n$ carries the richer structure of a Boolean algebra, not merely a join semilattice --- although
+$\SemiLat$ morphisms are only required to preserve joins.
+
+\subsubsection{Morphisms as Boolean matrices}
+\label{sec:boolean-jacobians:matrices}
+
+Because $\SemiLat$ is $\CMon$-enriched with biproducts, homs between biproduct objects admit a canonical
+\emph{matrix representation}: a morphism $f: \Two^m \to \Two^n$ is determined by the $n \times m$ family of
+morphisms
+\begin{salign*}
+   M_f[i,j] = \biproj_i \comp f \comp \biinj_j : \Two \to \Two
+\end{salign*}
+\noindent where $\biinj_j: \Two \to \Two^m$ and $\biproj_i: \Two^n \to \Two$ are the biproduct
+injections/projections. Since $\SemiLat(\Two, \Two)$ has exactly two morphisms (the identity and the zero
+morphism), each entry $M_f[i,j]$ can be identified with an element of $\Two$, and $f$ corresponds to a
+genuine $n \times m$ Boolean matrix.
+
+Conversely, \emph{every} morphism $f: \Two^m \to \Two^n$ in $\SemiLat$ is determined by its values on the
+``standard basis vectors'' $e_j = \biinj_j(\top): \Two^m$: concretely,
+\begin{salign*}
+   f(v) = \bigjoin_{j : v_j = \top} f(e_j)
+\end{salign*}
+\noindent This is a consequence of $f$ being $\join$-preserving together with the biproduct decomposition
+$v = \bigjoin_j v_j \scalarmeet e_j$ (where $v_j \scalarmeet e_j$ is the ``scaled basis vector'' that equals
+$e_j$ if $v_j = \top$ and $\bot$ otherwise). Thus $\SemiLat$ restricted to powers of $\Two$ is equivalent
+to a category of Boolean matrices, with composition given by the usual matrix product in the
+$(\join, \meet)$-semiring.
+
+Concretely, $M_f$ is exactly the \emph{dependency relation} between the two index sets: $M_f[i,j] = \top$
+iff position $i$ in the codomain is ``live'' in $f(e_j)$, i.e.\ iff position $i$ in the codomain depends on
+position $j$ in the domain. Matrix composition then matches reachability: $(M_g \comp M_f)[i,k] = \top$ iff
+there is some intermediate position $j$ with $M_g[i,j] = \top$ and $M_f[j,k] = \top$, which is the usual
+``$\join$ over chains of $\meet$s'' semiring product.
+
+\subsubsection{Transpose}
+\label{sec:boolean-jacobians:transpose}
+
+Since $\SemiLat$ is semi-additive, every morphism between biproducts has a \emph{transpose}. For
+$f: \Two^m \to \Two^n$ with matrix $M_f$, the transpose $f^{\!\top}: \Two^n \to \Two^m$ has matrix
+$(M_{f^{\!\top}})[j,i] = M_f[i,j]$. Concretely,
+\begin{salign*}
+   f^{\!\top}(w)_j = \bigjoin_{i} M_f[i,j] \meet w_i
+\end{salign*}
+\noindent The transpose is itself a morphism in $\SemiLat$: it is $\join$-preserving in its argument, just
+like $f$.
+
+\subsubsection{Two embeddings: $\HeytConj$ and $\LatGal$}
+\label{sec:boolean-jacobians:embeddings}
+
+We now treat $f: \Two^m \to \Two^n$ as the \emph{backward} direction of an analysis --- the map that
+propagates output information back to input information (see \secref{boolean-jacobians:ad} for why this is
+the appropriate reading). Accordingly, when we embed $f$ into $\HeytConj$ or $\LatGal$, the target
+category's arrow points in the \emph{forward} direction $\Two^n \to \Two^m$, opposite to $f$. This choice
+is what makes both embeddings \emph{contravariant} on morphisms: had we instead taken $f$ itself as the
+forward direction, the embeddings would be covariant.
+
+The two embeddings then pair $f$ with a companion going the forward direction, in two different ways:
+
+\begin{enumerate}
+\item \emph{Conjugate pair.} The transpose $f^{\!\top}$ pairs with $f$ to form a conjugate pair in
+$\HeytConj$ (\secref{categories-with-biproducts:heytconj}): both maps are $\join$-preserving, linked by
+the disjointness condition
+\begin{salign*}
+   y \disj f^{\!\top}(x) \iff f(y) \disj x
+\end{salign*}
+\noindent Each $\Two^n$ is a Boolean, hence Heyting, algebra, so this assignment gives an embedding of a
+subcategory of $\SemiLat$ into $\HeytConj$.
+
+\item \emph{Galois connection.} The right adjoint $f^*: \Two^n \to \Two^m$ (meet-preserving) pairs with $f$
+to form a Galois connection in $\LatGal$ (\secref{categories-with-biproducts:latgal}), with adjunction
+\begin{salign*}
+   y \le f^*(x) \iff f(y) \le x
+\end{salign*}
+\noindent Concretely, $f^*(x)_i = \bigmeet_j (M_f[i,j] \to x_j)$, where $a \to b = \neg a \join b$ is
+Boolean implication. In the target arrow $\Two^n \to \Two^m$, $f$ is the left adjoint and $f^*$ the right
+adjoint.
+\end{enumerate}
+
+\subsubsection{De Morgan duality and the derivation of the conjugate embedding}
+\label{sec:boolean-jacobians:de-morgan}
+
+The two backward maps are De Morgan duals:
+\begin{salign*}
+   \neg\,f^{\!\top}(x) = f^*(\neg x)
+\end{salign*}
+\noindent This is the Boolean-algebra identity relating the transpose (in the $(\join, \meet)$-semiring) to
+the adjoint (in the dual $(\meet, \join)$-semiring), exploiting that $\Two^n$ is a Boolean algebra so that
+$\neg$ is an involution.
+
+Combined with the Boolean-algebra fact that $a \disj b \iff a \le \neg b$, we obtain the following chain:
+\begin{salign*}
+   y \disj f^{\!\top}(x)
+   & \iff y \le \neg\,f^{\!\top}(x) \\
+   & \iff y \le f^*(\neg x) \\
+   & \iff f(y) \le \neg x \\
+   & \iff f(y) \disj x
+\end{salign*}
+\noindent where the middle step is the Galois adjunction instantiated at $\neg x$. This exhibits the
+conjugate embedding as a derived construction: the existence of a Galois connection $(f^*, f)$ together
+with the Boolean structure on $\Two^n$ automatically yields the conjugate pair $(f^{\!\top}, f)$.
+
+This is specific to the Boolean case. In a general Heyting algebra the equivalence $a \disj b \iff a \le
+\neg b$ still holds (taking $\neg$ as the pseudo-complement), but the De Morgan identity $\neg f^{\!\top}
+\simeq f^* \comp \neg$ relies on double-negation $\neg\neg = \id$, which is Boolean-specific. So in the
+Boolean setting the conjugate and Galois perspectives on Jacobians are two faces of the same structure,
+bridged by $\neg$.
+
+\subsubsection{Connection to forward- and reverse-mode AD}
+\label{sec:boolean-jacobians:ad}
+
+Recall from \secref{auto-diff} that for a differentiable $\phi: \RR^p \to \RR^q$, forward mode applies the
+Jacobian $\pushf{\phi}_x: \RR^p \linearto \RR^q$ to a tangent, and reverse mode applies its transpose
+$\pullf{\phi}_x: \RR^q \linearto \RR^p$ to a cotangent. Both are $\RR$-linear maps in $\FinVect_\RR$.
+Composition of derivatives is composition of linear maps in either direction, and the transpose is the
+operation that flips the direction while preserving linearity: it is the dagger on the $\CMon$-enriched
+biproduct category $\FinVect_\RR$.
+
+The Boolean story is structurally identical at the level of linear algebra. The role of $\FinVect_\RR$ is
+played by the Bool-linear subcategory of $\SemiLat$, with biproducts $\Two^n$ and morphisms given by Boolean
+matrices, and with the dagger given by matrix transposition. A morphism $g: \Two^p \to \Two^q$ is the
+Boolean analogue of a linear map $\RR^p \to \RR^q$, and its transpose $g^{\!\top}: \Two^q \to \Two^p$ is the
+Boolean analogue of the linear transpose; both are join-preserving in the same algebraic sense, just as
+$\pushf{\phi}_x$ and $\pullf{\phi}_x$ are both $\RR$-linear.
+
+Care is needed in lining up directions. In the preceding subsections, our primitive $f$ lives in
+$\SemiLat$, and both embeddings of \secref{boolean-jacobians:embeddings} are \emph{contravariant} on
+morphisms: $f: \Two^m \to \Two^n$ becomes part of an arrow $\Two^n \to \Two^m$ in $\HeytConj$ or $\LatGal$.
+Reading the target category's arrow as the primal ``forward'' direction of a program, this means the
+Jacobian proper --- the forward-mode linear map --- is not $f$ itself but its transpose
+$f^{\!\top}: \Two^n \to \Two^m$: here $n$ indexes the inputs and $m$ indexes the outputs of that program. The primitive $f: \Two^m \to \Two^n$, going from outputs to inputs, is
+the Boolean analogue of the \emph{reverse-mode} map $\pullf{\phi}_x$. Transposition is involutive, so this
+is only a choice of labelling: the dagger pair $(f, f^{\!\top})$ captures exactly the same content as
+$(\pullf{\phi}_x, \pushf{\phi}_x)$, with the transpose flipping direction while preserving linearity.
+
+The conjugate embedding is therefore the AD analogue in the standard sense: both sides use the dagger
+(matrix transpose) to relate the two directions, and both directions live in the same linear / Bool-linear
+category. The Galois embedding is a genuinely different analysis. The right adjoint
+$f^*: \Two^n \to \Two^m$ is \emph{not} Bool-linear in the same sense: it is $\meet$-preserving rather than
+$\join$-preserving, and lives in the \emph{dual} semi-additive structure where $\meet$ plays the role of
+addition. Concretely, reading $f^*$ in the standard sense gives the ``sufficiency'' interpretation (``is
+every input that output $i$ depends on present?''), a universally quantified condition in a different
+semiring.
+
+More subtly, it is not just $f^*$ that is foreign to AD but the entire adjunction structure. The Galois
+connection pairs $f$ with $f^*$ via $f \adj f^*$, and this adjunction has no analogue in $\FinVect_\RR$: the
+reverse-mode map $\pullf{\phi}_x$ has no order-theoretic right adjoint, because $\RR$ is a field rather than
+a lattice, and is related to $\pushf{\phi}_x$ only by transposition, not by adjunction. So while $f$ as a
+linear map does correspond to $\pullf{\phi}_x$ under the dagger/conjugate analogy, $f$'s additional role as
+the left adjoint of a Galois connection --- and the companion map $f^*$ that role brings with it --- is a
+feature of the Boolean (or more generally, bounded lattice) setting with no AD counterpart.
+
+The analogy is therefore:
+
+\begin{center}
+\begin{tabular}{ll}
+ \textbf{Real AD} ($\FinVect_\RR$) & \textbf{Boolean AD} (Bool-linear subcategory of $\SemiLat$) \\
+ Linear map $\pushf{\phi}_x: \RR^p \linearto \RR^q$ (forward mode) & $\join$-preserving $f^{\!\top}: \Two^n \to \Two^m$ \\
+ Linear transpose $\pullf{\phi}_x: \RR^q \linearto \RR^p$ (reverse mode) & Primitive $f: \Two^m \to \Two^n$ \\
+ Matrix multiplication (chain rule) & Composition in the $(\join, \meet)$-semiring \\
+ Dagger on $\FinVect_\RR$ via inner product & Dagger on the Bool-linear subcategory via $\bigjoin / \meet$ \\
+\end{tabular}
+\end{center}
