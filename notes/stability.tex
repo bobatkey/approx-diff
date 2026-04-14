@@ -119,11 +119,11 @@ describing a computational process must explore its input in a way
 that allows identification of minimal parts of the input that are
 needed for chosen approximations of the output.
 
-Stability was invented by Berry \cite{berry79} in an attempt to capture
+Stability was invented by \citet{berry79} in an attempt to capture
 sequentiality, and were also instrumental in the discovery of Linear
-Logic via Coherence Spaces \cite{girard}. A textbook description of
-stable functions in the context of domain theory is given by Amadio
-and Curien \cite{amadio-curien} (Chapter 12). Here, we are not
+Logic via Coherence Spaces~\citep{girard}. A textbook description of
+stable functions in the context of domain theory is given by
+\citet[Chapter 12]{amadio-curien}. Here, we are not
 concerned with completeness properties considered in domain theory, so
 we start with only partially ordered sets. Stable functions can be
 defined as a certain subset of the set of monotone functions between
@@ -188,7 +188,7 @@ two partially ordered sets:
 \end{example}
 
 \begin{example}[Functions that are not stable]
-  A function that is not stable is Plotkin's Parallel OR \cite{lcf77},
+  A function that is not stable is \citeauthor{lcf77}'s Parallel OR~\citeyearpar{lcf77},
   which short-circuits in both arguments, returning $\mathsf{tt}$ if
   either argment is $\mathsf{tt}$, even if the other argument is not
   defined:
