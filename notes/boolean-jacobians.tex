@@ -10,29 +10,24 @@ join reading notationally throughout.
 \subsubsection{Overview}
 \label{sec:boolean-jacobians:overview}
 
-We study a ``Bool-linear'' subcategory of $\SemiLat$ whose objects are the finite powers $\Two^n$ of the
-two-element join semilattice. Given a $\join$-preserving map $f$ in this category, we consider two
-canonical companions going in the opposite direction: the \emph{transpose} $f^{\!\top}$ (also
-$\join$-preserving) and the \emph{right adjoint} $f^*$ (meet-preserving, with $f \adj f^*$). The pair
-$(f, f^{\!\top})$ is the Boolean analogue of the forward/reverse-mode Jacobian pair in AD, related by the
-dagger operation. The right adjoint $f^*$ is a separate, order-theoretic construction with no AD analogue;
-in the Boolean setting it is related to $f^{\!\top}$ by De Morgan duality.
+We study a ``Bool-linear'' subcategory of $\SemiLat$:
 
 \begin{itemize}
 \item Objects are finite Boolean vector spaces $\Two^n$, arising as iterated biproducts
 (\secref{boolean-jacobians:vectors}).
-\item Morphisms $\Two^m \to \Two^n$ are $n \times m$ Boolean matrices, equivalently, $\join$-preserving maps
-determined by their values on basis vectors; composition is matrix multiplication in the
-$(\join, \meet)$-semiring (\secref{boolean-jacobians:matrices}).
-\item Every morphism has a transpose, making this a dagger semi-additive category
-(\secref{boolean-jacobians:transpose}).
+\item Morphisms $f: \Two^m \to \Two^n$ are $n \times m$ Boolean matrices; composition is matrix multiplication
+in the $(\join, \meet)$-semiring (\secref{boolean-jacobians:matrices}).
+\item Every morphism has a \emph{transpose} $f^{\!\top}: \Two^n \to \Two^m$ (also $\join$-preserving) and a
+\emph{right adjoint} $f^*: \Two^n \to \Two^m$ (meet-preserving, with $f \adj f^*$); in the Boolean setting,
+these are De Morgan duals of each other (\secref{boolean-jacobians:transpose},
+\secref{boolean-jacobians:de-morgan}).
 \item The transpose embeds the category contravariantly into $\HeytConj$ as conjugate pairs; the right
-adjoint embeds it contravariantly into $\LatGal$ as Galois connections; these two embeddings are De Morgan
-duals of each other (\secref{boolean-jacobians:embeddings}, \secref{boolean-jacobians:de-morgan}).
-\item Under the analogy between this setting and $\FinVect_\RR$, the transpose $f^{\!\top}$ corresponds to
-the forward-mode Jacobian $\pushf{\phi}_x$ and the primitive $f$ plays the role of the reverse-mode
-$\pullf{\phi}_x$; the Galois connection's adjunction structure is a genuinely different analysis with no
-direct real-AD analogue (\secref{boolean-jacobians:ad}).
+adjoint embeds it contravariantly into $\LatGal$ as Galois connections
+(\secref{boolean-jacobians:embeddings}).
+\item The dagger pair $(f, f^{\!\top})$ is the Boolean analogue of the forward/reverse-mode Jacobian pair in
+AD: the transpose $f^{\!\top}$ corresponds to the forward-mode Jacobian $\pushf{\phi}_x$ and the primitive
+$f$ plays the role of the reverse-mode $\pullf{\phi}_x$. The Galois connection's adjunction structure is a
+genuinely different analysis with no direct real-AD analogue (\secref{boolean-jacobians:ad}).
 \end{itemize}
 
 \subsubsection{Boolean vectors as iterated biproducts}
@@ -97,7 +92,7 @@ category's arrow points in the \emph{forward} direction $\Two^n \to \Two^m$, opp
 is what makes both embeddings \emph{contravariant} on morphisms: had we instead taken $f$ itself as the
 forward direction, the embeddings would be covariant.
 
-The two embeddings then pair $f$ with a companion going the forward direction, in two different ways:
+The two embeddings then pair $f$ with a forward-direction counterpart, in two different ways:
 
 \begin{enumerate}
 \item \emph{Conjugate pair.} The transpose $f^{\!\top}$ pairs with $f$ to form a conjugate pair in
@@ -189,7 +184,7 @@ connection pairs $f$ with $f^*$ via $f \adj f^*$, and this adjunction has no ana
 reverse-mode map $\pullf{\phi}_x$ has no order-theoretic right adjoint, because $\RR$ is a field rather than
 a lattice, and is related to $\pushf{\phi}_x$ only by transposition, not by adjunction. So while $f$ as a
 linear map does correspond to $\pullf{\phi}_x$ under the dagger/conjugate analogy, $f$'s additional role as
-the left adjoint of a Galois connection --- and the companion map $f^*$ that role brings with it --- is a
+the left adjoint of a Galois connection --- and the map $f^*$ that role brings with it --- is a
 feature of the Boolean (or more generally, bounded lattice) setting with no AD counterpart.
 
 The analogy is therefore:

@@ -102,7 +102,7 @@ conjugate pair links them by the \emph{disjointness} relation
 $a \disj b \iff a \meet b \le \bot$.
 
 \begin{definition}[Conjugate pair]
-Suppose $X$ and $Y$ are bounded lattices. A \emph{conjugate pair} $f \mathrel{{\sim}} g : X \to Y$ is a pair of
+Suppose $X$ and $Y$ are bounded lattices. A \emph{conjugate pair} $(f, g) : X \to Y$ is a pair of
 monotone functions $f : X \to Y$ and $g : Y \to X$ satisfying
 \begin{salign*}
    y \disj_Y f(x) \iff g(y) \disj_X x
@@ -115,13 +115,13 @@ $\bot$), provided the underlying lattice has enough structure for disjointness t
 it suffices that each $X$ be a \emph{Heyting algebra} (a distributive lattice with an implication
 operation), because then $a \le b \iff \neg b \disj a$ via the pseudocomplement $\neg b$. Conjugate pairs
 compose componentwise (with the second components composed in the opposite order), and the identity
-$\id_X \mathrel{{\sim}} \id_X$ is a conjugate pair, so the following is a category.
+$(\id_X, \id_X)$ is a conjugate pair, so the following is a category.
 
 \begin{definition}[Category $\HeytConj$]
 Define the category $\HeytConj$ which has:
 \begin{itemize}
 \item as objects all Heyting algebras;
-\item as morphisms from $X$ to $Y$ all conjugate pairs $f \mathrel{{\sim}} g : X \to Y$.
+\item as morphisms from $X$ to $Y$ all conjugate pairs $(f, g) : X \to Y$.
 \end{itemize}
 \end{definition}
 
