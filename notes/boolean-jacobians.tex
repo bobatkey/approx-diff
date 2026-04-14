@@ -51,16 +51,17 @@ injections/projections. Since $\SemiLat(\Two, \Two)$ has exactly two morphisms (
 morphism), each entry $M_f[i,j]$ can be identified with an element of $\Two$, and $f$ corresponds to an $n
 \times m$ matrix of $\Two$-values.
 
-Conversely, every morphism $f: \Two^m \to \Two^n$ in $\SemiLat$ is determined by its values on the ``standard
-basis vectors'' $e_j = \biinj_j(\top): \Two^m$: concretely,
+Equivalently, $f$ is determined by its values on the ``standard basis vectors'' $e_j = \biinj_j(\top):
+\Two^m$, since $M_f[i,j]$ is precisely the $i$-th coordinate of $f(e_j)$. Concretely,
 \begin{salign*}
    f(v) = \bigjoin_{j : v_j = \top} f(e_j)
 \end{salign*}
-\noindent This is a consequence of $f$ being $\join$-preserving together with the biproduct decomposition
-$v = \bigjoin_j v_j \scalarmeet e_j$ (where $v_j \scalarmeet e_j$ is the ``scaled basis vector'' that equals
-$e_j$ if $v_j = \top$ and $\bot$ otherwise). Thus $\SemiLat$ restricted to powers of $\Two$ is equivalent
-to a category of Boolean matrices, with composition given by the usual matrix product in the
-$(\join, \meet)$-semiring.
+\noindent which follows from $f$ being $\join$-preserving together with the biproduct decomposition $v =
+\bigjoin_j v_j \scalarmeet e_j$ (where $v_j \scalarmeet e_j$ equals $e_j$ if $v_j = \top$ and $\bot$
+otherwise). Conversely, any $m$-tuple $(y_1, \ldots, y_m) \in (\Two^n)^m$ arises as $(f(e_1), \ldots,
+f(e_m))$ for a unique such $f$, giving the isomorphism $\SemiLat(\Two^m, \Two^n) \cong (\Two^n)^m$. Thus
+$\SemiLat$ restricted to powers of $\Two$ is equivalent to a category of Boolean matrices, with composition
+given by the usual matrix product in the $(\join, \meet)$-semiring.
 
 Concretely, $M_f$ is exactly the \emph{dependency relation} between the two index sets: $M_f[i,j] = \top$
 iff position $i$ in the codomain is ``live'' in $f(e_j)$, i.e.\ iff position $i$ in the codomain depends on
