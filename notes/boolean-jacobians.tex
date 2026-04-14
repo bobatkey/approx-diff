@@ -52,22 +52,35 @@ morphism), each entry $M_f[i,j]$ can be identified with an element of $\Two$, an
 \times m$ matrix of $\Two$-values.
 
 Equivalently, $f$ is determined by its values on the ``standard basis vectors'' $e_j = \biinj_j(\top):
-\Two^m$, since $M_f[i,j]$ is precisely the $i$-th coordinate of $f(e_j)$. Concretely,
+\Two^m$, since $M_f[i,j]$ is precisely the $i$-th coordinate of $f(e_j)$. This reflects a more general fact:
+for any $Y$ in $\SemiLat$, there is an isomorphism
 \begin{salign*}
-   f(v) = \bigjoin_{j : v_j = \top} f(e_j)
+   \SemiLat(\Two^m, Y) \cong |Y|^m
 \end{salign*}
-\noindent which follows from $f$ being $\join$-preserving together with the biproduct decomposition $v =
-\bigjoin_j v_j \scalarmeet e_j$ (where $v_j \scalarmeet e_j$ equals $e_j$ if $v_j = \top$ and $\bot$
-otherwise). Conversely, any $m$-tuple $(y_1, \ldots, y_m) \in (\Two^n)^m$ arises as $(f(e_1), \ldots,
-f(e_m))$ for a unique such $f$, giving the isomorphism $\SemiLat(\Two^m, \Two^n) \cong (\Two^n)^m$. Thus
-$\SemiLat$ restricted to powers of $\Two$ is equivalent to a category of Boolean matrices, with composition
-given by the usual matrix product in the $(\join, \meet)$-semiring.
+\noindent (with $|Y|$ the carrier of $Y$), sending $f$ to $(f(e_1), \ldots, f(e_m))$. The isomorphism
+follows from two steps: the universal property of the coproduct, $\SemiLat(\Two^m, Y) \cong
+\prod_j \SemiLat(\Two, Y)$, and the observation that a $\join$-preserving map $\Two \to Y$ must send $\bot$
+to $\bot$ and is otherwise determined by its value on $\top$, giving $\SemiLat(\Two, Y) \cong |Y|$ via
+evaluation at $\top$. Concretely, writing $J(v) = \{j : v_j = \top\}$ for the set of indices at which $v$
+is $\top$, we have
+\begin{salign*}
+   f(v) = \bigjoin_{j \in J(v)} f(e_j)
+\end{salign*}
+\noindent i.e.~the join of $f(e_j)$ over just those positions where $v$ is ``live''. This follows from $f$
+being $\join$-preserving together with the biproduct decomposition $v = \bigjoin_j v_j \scalarmeet e_j$ (where
+$v_j \scalarmeet e_j$ equals $e_j$ if $v_j = \top$ and $\bot$ otherwise). Specialising to $Y = \Two^n$ gives
+$\SemiLat(\Two^m, \Two^n) \cong (\Two^n)^m$, i.e.\ $n \times m$ Boolean matrices, with composition given by
+the usual matrix product in the $(\join, \meet)$-semiring.
 
 Concretely, $M_f$ is exactly the \emph{dependency relation} between the two index sets: $M_f[i,j] = \top$
 iff position $i$ in the codomain is ``live'' in $f(e_j)$, i.e.\ iff position $i$ in the codomain depends on
-position $j$ in the domain. Matrix composition then matches reachability: $(M_g \comp M_f)[i,k] = \top$ iff
-there is some intermediate position $j$ with $M_g[i,j] = \top$ and $M_f[j,k] = \top$, which is the usual
-``$\join$ over chains of $\meet$s'' semiring product.
+position $j$ in the domain. Matrix composition then matches reachability:
+\begin{salign*}
+   (M_g \comp M_f)[i,k] = \bigjoin_j M_g[i,j] \meet M_f[j,k]
+\end{salign*}
+\noindent is the $(\join, \meet)$-semiring matrix product, which evaluates to $\top$ iff there is some
+intermediate position $j$ with both $M_g[i,j] = \top$ and $M_f[j,k] = \top$, i.e.~iff there is a chain $k \to
+j \to i$ witnessing that $i$ depends on $k$ via $j$.
 
 \subsubsection{Transpose}
 \label{sec:boolean-jacobians:transpose}
