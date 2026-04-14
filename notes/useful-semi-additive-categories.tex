@@ -111,12 +111,20 @@ monotone functions $f : X \to Y$ and $g : Y \to X$ satisfying
 
 \noindent In a general bounded lattice, a conjugate pair is an independent notion, not reducible to a
 Galois connection. But if each underlying lattice is a \emph{Heyting algebra} (a distributive lattice with a
-pseudocomplement $\neg$), then disjointness determines the order via $a \disj b \iff a \le \neg b$, and a
-conjugate pair becomes an alternative presentation of a Galois connection: $(f, g)$ is a conjugate pair iff
-$f \adj (\neg \comp g)$ (equivalently, $(\neg \comp f) \adj g$) is a Galois connection. So over Heyting algebras a conjugate pair is
-``a Galois connection with a pseudocomplement inserted on one side''; this is also why both components are
-forced to preserve joins (composition with $\neg$ swaps the meet-preserving right adjoint into a
-join-preserving map).
+pseudocomplement $\neg$), then disjointness determines the order via $a \disj b \iff a \le \neg b$, which
+brings conjugate pairs and Galois connections into alignment. Since $(f, g)$ is a conjugate pair iff $(g,
+f)$ is (with source and target swapped), there are two faithful functors $\HeytConj \to \LatGal$, related by
+this symmetry:
+\begin{itemize}
+\item a covariant one sending $(f, g) : X \to Y$ to the Galois connection $g \adj (\neg \comp f \comp \neg)
+: X \to Y$, and
+\item a contravariant one sending $(f, g) : X \to Y$ to $f \adj (\neg \comp g \comp \neg) : Y \to X$.
+\end{itemize}
+\noindent This is why both components of a conjugate pair are forced to preserve joins: conjugation by
+$\neg$ converts a meet-preserving map into a join-preserving one. Neither functor is full in general,
+because a meet-preserving map need not have the form $\neg \comp f \comp \neg$ for any join-preserving $f$. Restricted to the full subcategory of $\HeytConj$ on \emph{Boolean}
+algebras (where $\neg\neg = \id$), both functors become full, and conjugate pairs and Galois connections are
+equivalent categorical presentations.
 
 Conjugate pairs compose componentwise (with the second components composed in the opposite order), and
 $(\id_X, \id_X)$ is a conjugate pair, so the following is a category.
