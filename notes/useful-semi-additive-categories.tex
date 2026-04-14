@@ -97,9 +97,8 @@ biproducts, with the trivial 1-point lattice as zero object and binary biproduct
 \label{sec:categories-with-biproducts:heytconj}
 
 A second way of reversing the direction of a $\join$-preserving map uses \emph{conjugate pairs}, an idea
-going back to \citet{jonsson51}. Whereas a Galois connection links two directions by the order $\le$, a
-conjugate pair links them by the \emph{disjointness} relation
-$a \disj b \iff a \meet b \le \bot$.
+going back to \citet{jonsson51}. Conjugate pairs are defined over bounded lattices using the
+\emph{disjointness} relation $a \disj b \iff a \meet b \le \bot$.
 
 \begin{definition}[Conjugate pair]
 Suppose $X$ and $Y$ are bounded lattices. A \emph{conjugate pair} $(f, g) : X \to Y$ is a pair of
@@ -110,11 +109,16 @@ monotone functions $f : X \to Y$ and $g : Y \to X$ satisfying
 \noindent for every $x \in X$ and $y \in Y$.
 \end{definition}
 
-\noindent Both components of a conjugate pair are automatically $\join$-preserving (and send $\bot$ to
-$\bot$), provided the underlying lattice has enough structure for disjointness to determine order --- concretely,
-it suffices that each $X$ be a \emph{Heyting algebra} (a distributive lattice with an implication
-operation), because then $a \le b \iff \neg b \disj a$ via the pseudocomplement $\neg b$. Conjugate pairs
-compose componentwise (with the second components composed in the opposite order), and the identity
+\noindent In a general bounded lattice, a conjugate pair is an independent notion, not reducible to a
+Galois connection. But if each underlying lattice is a \emph{Heyting algebra} (a distributive lattice with a
+pseudocomplement $\neg$), then disjointness determines the order via $a \disj b \iff a \le \neg b$, and a
+conjugate pair becomes an alternative presentation of a Galois connection: $(f, g)$ is a conjugate pair iff
+$f \adj (\neg \comp g)$ (equivalently, $(\neg \comp f) \adj g$) is a Galois connection. So over Heyting algebras a conjugate pair is
+``a Galois connection with a pseudocomplement inserted on one side''; this is also why both components are
+forced to preserve joins (composition with $\neg$ swaps the meet-preserving right adjoint into a
+join-preserving map).
+
+Conjugate pairs compose componentwise (with the second components composed in the opposite order), and
 $(\id_X, \id_X)$ is a conjugate pair, so the following is a category.
 
 \begin{definition}[Category $\HeytConj$]
@@ -125,10 +129,10 @@ Define the category $\HeytConj$ which has:
 \end{itemize}
 \end{definition}
 
-\noindent Like $\LatGal$, $\HeytConj$ is $\CMon$-enriched (in fact $\SemiLat$-enriched): the zero morphism
-$0_{X,Y}$ is the constant-$\bot$ pair, and addition of morphisms is componentwise pointwise $\join$. Unlike
-$\LatGal$, in $\HeytConj$ both components preserve joins, so the category carries a dagger. We return to this
-point in \secref{boolean-jacobians:embeddings}.
+\noindent Like $\LatGal$, $\HeytConj$ is $\SemiLat$-enriched, with zero morphism $0_{X,Y}$ given by the
+constant-$\bot$ pair and addition of morphisms given componentwise by pointwise $\join$. Unlike $\LatGal$,
+in $\HeytConj$ both components preserve joins, so the category carries a dagger. We return to this point in
+\secref{boolean-jacobians:embeddings}.
 
 \subsubsection{Category of finite-dimensional vector spaces}
 \label{sec:categories-with-biproducts:fdvect}

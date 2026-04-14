@@ -1,16 +1,13 @@
 \subsection{Boolean Jacobians}
 \label{sec:boolean-jacobians}
 
-Let $\Two = (\{\bot, \top\}, \join, \bot, \meet, \top, \neg)$ be the two-element Boolean algebra. Write
-$\SemiLat$ for the category of idempotent commutative monoids and monoid homomorphisms; it is
-$\CMon$-enriched and has biproducts. $\SemiLat$ admits two forgetful functors to $\Poset$, according to
-whether the monoid operation is read as a join or a meet; the two readings give dual posets. We adopt the
-join reading notationally throughout.
+Let $\Two = (\{\bot, \top\}, \join, \bot, \meet, \top, \neg)$ be the two-element Boolean algebra. Throughout
+this section we adopt the join-semilattice reading of $\SemiLat$ (\secref{cmon}).
 
 \subsubsection{Overview}
 \label{sec:boolean-jacobians:overview}
 
-We study a ``Bool-linear'' subcategory of $\SemiLat$:
+Consider the following subcategory $\FinVect_\Two$ of $\SemiLat$:
 
 \begin{itemize}
 \item Objects are finite Boolean vector spaces $\Two^n$, arising as iterated biproducts
@@ -29,6 +26,8 @@ AD: the transpose $f^{\!\top}$ corresponds to the forward-mode Jacobian $\pushf{
 $f$ plays the role of the reverse-mode $\pullf{\phi}_x$. The Galois connection's adjunction structure is a
 genuinely different analysis with no direct real-AD analogue (\secref{boolean-jacobians:ad}).
 \end{itemize}
+
+\noindent The notation $\FinVect_\Two$ is a mild abuse, since $\Two$ is a semiring rather than a field.
 
 \subsubsection{Boolean vectors as iterated biproducts}
 \label{sec:boolean-jacobians:vectors}
@@ -154,7 +153,7 @@ operation that flips the direction while preserving linearity: it is the dagger 
 biproduct category $\FinVect_\RR$.
 
 The Boolean story is structurally identical at the level of linear algebra. The role of $\FinVect_\RR$ is
-played by the Bool-linear subcategory of $\SemiLat$, with biproducts $\Two^n$ and morphisms given by Boolean
+played by $\FinVect_\Two$, with biproducts $\Two^n$ and morphisms given by Boolean
 matrices, and with the dagger given by matrix transposition. A morphism $g: \Two^p \to \Two^q$ is the
 Boolean analogue of a linear map $\RR^p \to \RR^q$, and its transpose $g^{\!\top}: \Two^q \to \Two^p$ is the
 Boolean analogue of the linear transpose; both are join-preserving in the same algebraic sense, just as
@@ -171,9 +170,9 @@ is only a choice of labelling: the dagger pair $(f, f^{\!\top})$ captures exactl
 $(\pullf{\phi}_x, \pushf{\phi}_x)$, with the transpose flipping direction while preserving linearity.
 
 The conjugate embedding is therefore the AD analogue in the standard sense: both sides use the dagger
-(matrix transpose) to relate the two directions, and both directions live in the same linear / Bool-linear
-category. The Galois embedding is a genuinely different analysis. The right adjoint
-$f^*: \Two^n \to \Two^m$ is \emph{not} Bool-linear in the same sense: it is $\meet$-preserving rather than
+(matrix transpose) to relate the two directions, and both directions live in the same linear category
+($\FinVect_\RR$ or $\FinVect_\Two$). The Galois embedding is a genuinely different analysis. The right
+adjoint $f^*: \Two^n \to \Two^m$ is not a morphism of $\FinVect_\Two$: it is $\meet$-preserving rather than
 $\join$-preserving, and lives in the \emph{dual} semi-additive structure where $\meet$ plays the role of
 addition. Concretely, reading $f^*$ in the standard sense gives the ``sufficiency'' interpretation (``is
 every input that output $i$ depends on present?''), a universally quantified condition in a different
@@ -191,10 +190,10 @@ The analogy is therefore:
 
 \begin{center}
 \begin{tabular}{ll}
- \textbf{Real AD} ($\FinVect_\RR$) & \textbf{Boolean AD} (Bool-linear subcategory of $\SemiLat$) \\
+ \textbf{Real AD} ($\FinVect_\RR$) & \textbf{Boolean AD} ($\FinVect_\Two$) \\
  Linear map $\pushf{\phi}_x: \RR^p \linearto \RR^q$ (forward mode) & $\join$-preserving $f^{\!\top}: \Two^n \to \Two^m$ \\
  Linear transpose $\pullf{\phi}_x: \RR^q \linearto \RR^p$ (reverse mode) & Primitive $f: \Two^m \to \Two^n$ \\
  Matrix multiplication (chain rule) & Composition in the $(\join, \meet)$-semiring \\
- Dagger on $\FinVect_\RR$ via inner product & Dagger on the Bool-linear subcategory via $\bigjoin / \meet$ \\
+ Dagger on $\FinVect_\RR$ via inner product & Dagger on $\FinVect_\Two$ via $\bigjoin / \meet$ \\
 \end{tabular}
 \end{center}
