@@ -230,7 +230,7 @@ module _ where
   open join-semilattice-category using () renaming (_⇒_ to _⇒J_)
   open meet-semilattice-category using () renaming (_⇒_ to _⇒M_)
   open join-semilattice-category._⇒_ using (fun) renaming (*→* to *→*J)
-  open meet-semilattice-category._⇒_ renaming (*→* to *→*M; fun to funM)
+  open meet-semilattice-category._⇒_ renaming (*→* to *→*M)
   import join-semilattice
   open join-semilattice using () renaming (_=>_ to _=>J_)
   open meet-semilattice using () renaming (_=>_ to _=>M_)
@@ -389,7 +389,7 @@ module _ where
                                     (adjoint {m} {n} f .*→*M ._=>M_.func ._=>_.fun (¬ {n} v))
   ¬transpose≃adjoint¬ {m} {n} f v =
     begin
-      ¬ {m} (fun (transpose {m} {n} f) v)
+      ¬ {m} (transpose {m} {n} f .fun v)
     ≈⟨ ¬-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) v) ⟩
       tabulate {m} (λ i → two.¬ (_⋅_ {n} (f .fun (e i)) v))
     ≈⟨ tabulate-cong {m} per-i-≃ ⟩
@@ -447,10 +447,10 @@ module _ where
     #-↔-≤ {n} (f .fun y) x .proj₂
       (to-gal {m} {n} f ._⇒g_.left⊣right {¬ {n} x} {y} .proj₁
         (Two^ m .≤-trans
-          (#-↔-≤ {m} y (fun (transpose {m} {n} f) x) .proj₁ y#tr)
+          (#-↔-≤ {m} y (transpose {m} {n} f .fun x) .proj₁ y#tr)
           (¬transpose≃adjoint¬ f x .proj₁)))
   to-conj {m} {n} f ._⇒c_.conjugate {x} {y} .proj₂ fy#x =
-    #-↔-≤ {m} y (fun (transpose {m} {n} f) x) .proj₂
+    #-↔-≤ {m} y (transpose {m} {n} f .fun x) .proj₂
       (Two^ m .≤-trans
         (to-gal {m} {n} f ._⇒g_.left⊣right {¬ {n} x} {y} .proj₂ (#-↔-≤ {n} (f .fun y) x .proj₁ fy#x))
         (¬transpose≃adjoint¬ f x .proj₂))
