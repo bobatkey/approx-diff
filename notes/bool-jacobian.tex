@@ -6,41 +6,32 @@ following subcategory $\FinVect_\Two$ of $\SemiLat$ (with its join-semilattice r
 
 \begin{itemize}
 \item Objects are finite Boolean vector spaces $\Two^n$, arising as iterated biproducts; $\Two^0$ is the zero
-object and $\Two^{n+1} = \Two \biprod \Two^n$. Its carrier is the set of length-$n$ vectors of Boolean values,
-with pointwise $\join$ and $\bot$. The carrier additionally inherits pointwise $\meet$ and $\top$ from $\Two$,
-so has the richer structure of a Boolean algebra, not merely a join semilattice.
+object and $\Two^{n+1} = \Two \biprod \Two^n$. The carriers are sets of length-$n$ vectors of Boolean values,
+with pointwise $\join$ and $\bot$; they inherits pointwise $\meet$ and $\top$ from $\Two$, so have the richer
+structure of a Boolean algebra, not merely a join semilattice.
 \item Morphisms $f: \Two^m \to \Two^n$ are $n \times m$ Boolean matrices; composition is matrix multiplication
-in the $(\join, \meet)$-semiring (\secref{boolean-jacobians:matrices}).
+in the $(\Two, \join, \meet)$-semiring.
 \item Every morphism has a \emph{transpose} $f^{\!\top}: \Two^n \to \Two^m$ (also $\join$-preserving) and a
-\emph{right adjoint} $f_*: \Two^n \to \Two^m$ (meet-preserving, with $f \adj f_*$); these are De Morgan
-duals of each other (\secref{boolean-jacobians:transpose}, \secref{boolean-jacobians:de-morgan}).
-\item The transpose embeds the category contravariantly into $\HeytConj$ as conjugate pairs; the right
-adjoint embeds it contravariantly into $\LatGal$ as Galois connections
-(\secref{boolean-jacobians:embeddings}).
-\item The conjugate pair $(f, f^{\!\top})$ is the Boolean analogue of the forward/reverse-mode Jacobian pair
-in AD: the transpose $f^{\!\top}$ corresponds to the forward-mode Jacobian $\pushf{\phi}_x$ and the given $f$
-plays the role of the reverse-mode $\pullf{\phi}_x$. The adjoint map $f_*$ seems to be a different analysis
-with no direct real-AD analogue (\secref{boolean-jacobians:ad}).
+\emph{right adjoint} $f_*: \Two^n \to \Two^m$ ($\meet$-preserving); these are De Morgan duals of each other.
 \end{itemize}
 
-\noindent The notation $\FinVect_\Two$ is a mild abuse, since $\Two$ is a semiring rather than a field.
-
-\subsubsection{Boolean vectors as iterated biproducts}
-\label{sec:boolean-jacobians:vectors}
+\noindent The transpose embeds the category contravariantly into $\HeytConj$ as conjugate pairs; the right
+adjoint embeds it contravariantly into $\LatGal$ as Galois connections. The notation $\FinVect_\Two$ is a mild
+abuse, since $\Two$ is a semiring rather than a field.
 
 \subsubsection{Morphisms as Boolean matrices}
 \label{sec:boolean-jacobians:matrices}
 
 (See \cite[Chapter 8]{Maclane1971-MACCFT} for discussion.) Because $\SemiLat$ is $\CMon$-enriched with
-biproducts, homs between biproduct objects admit a canonical \emph{matrix representation}: a morphism $f:
+biproducts, homs objects between biproducts admit a canonical \emph{matrix representation}: a morphism $f:
 \Two^m \to \Two^n$ is determined by the $n \times m$ family of morphisms
 \begin{salign*}
    M_f[i,j] = \biproj_i \comp f \comp \biinj_j : \Two \to \Two
 \end{salign*}
 \noindent where $\biinj_j: \Two \to \Two^m$ and $\biproj_i: \Two^n \to \Two$ are the biproduct
-injections/projections. Since $\SemiLat(\Two, \Two)$ has exactly two morphisms (the identity and the zero
-morphism), each entry $M_f[i,j]$ can be identified with an element of $\Two$, and $f$ corresponds to an $n
-\times m$ matrix of $\Two$-values.
+injections/projections. Since $\SemiLat(\Two, \Two)$ has exactly two morphisms (the identity and the zero),
+each entry $M_f[i,j]$ can be identified with an element of $\Two$, and so $f$ corresponds to an $n \times m$
+matrix of $\Two$-values.
 
 Equivalently, $f$ is determined by its values on the ``standard basis vectors'' $e_j = \biinj_j(\top):
 \Two^m$, since $M_f[i,j]$ is precisely the $i$-th coordinate of $f(e_j)$. This reflects a more general fact:
@@ -48,25 +39,25 @@ for any $Y$ in $\SemiLat$, there is an isomorphism
 \begin{salign*}
    \SemiLat(\Two^m, Y) \cong |Y|^m
 \end{salign*}
-\noindent (with $|Y|$ the carrier of $Y$), sending $f$ to $(f(e_1), \ldots, f(e_m))$. The isomorphism
-follows from two steps: the universal property of the coproduct, $\SemiLat(\Two^m, Y) \cong
-\prod_j \SemiLat(\Two, Y)$, and the observation that a $\join$-preserving map $\Two \to Y$ must send $\bot$
-to $\bot$ and is otherwise determined by its value on $\top$, giving $\SemiLat(\Two, Y) \cong |Y|$ via
-evaluation at $\top$. Concretely, writing $J(v) = \{j : v_j = \top\}$ for the set of indices at which $v$
-is $\top$, we have
+\noindent (with $|Y|$ the carrier of $Y$), sending $f$ to $(f(e_1), \ldots, f(e_m))$. The isomorphism follows
+from two steps: the universal property of the coproduct, $\SemiLat(\Two^m, Y) \cong \prod_j \SemiLat(\Two,
+Y)$, and the observation that a $\join$-preserving map $\Two \to Y$ must send $\bot$ to $\bot$ and is
+otherwise determined by its value on $\top$, giving $\SemiLat(\Two, Y) \cong |Y|$ via evaluation at $\top$.
+Specialising to $Y = \Two^n$ gives $\SemiLat(\Two^m, \Two^n) \cong |\Two^n|^m$, i.e.\ $n \times m$ Boolean
+matrices.
+
+Concretely, writing $J(v) = \{j : v_j = \top\}$ for the set of indices at which $v$ is $\top$, we have
 \begin{salign*}
    f(v) = \bigjoin_{j \in J(v)} f(e_j)
 \end{salign*}
 \noindent i.e.~the join of $f(e_j)$ over just those positions where $v$ is ``live''. This follows from $f$
-being $\join$-preserving together with the biproduct decomposition $v = \bigjoin_j v_j \scalarmeet e_j$ (where
-$v_j \scalarmeet e_j$ equals $e_j$ if $v_j = \top$ and $\bot$ otherwise). Specialising to $Y = \Two^n$ gives
-$\SemiLat(\Two^m, \Two^n) \cong (\Two^n)^m$, i.e.\ $n \times m$ Boolean matrices, with composition given by
-the usual matrix product in the $(\join, \meet)$-semiring.
-
-We can think of $M_f$ as exactly the \emph{dependency relation} between the two index sets: $M_f[i,j] = \top$
-iff position $i$ in the codomain is ``live'' in $f(e_j)$, i.e.\ iff position $i$ in the codomain depends on
-position $j$ in the domain. Matrix composition, defined as usual in terms of the dot product (inner product)
-in the $(\Two, \join, \meet)$-semiring:
+being $\join$-preserving together with the biproduct decomposition $v = \bigjoin_j v_j \cdot e_j$, where
+$\cdot$ denotes multiplication of the vector $e_j$ by the scalar $v_j$; then clearly $v_j \cdot e_j$ equals
+$e_j$ if $v_j = \top$ and the everywhere-$\bot$ vector otherwise. We can think of $M_f$ as exactly the
+\emph{dependency relation} between the two index sets: $M_f[i,j] = \top$ iff position $i$ in the codomain is
+``live'' in $f(e_j)$, i.e.\ iff position $i$ in the codomain depends on position $j$ in the domain. Matrix
+composition, defined as usual in terms of the dot product (inner product) in the $(\Two, \join,
+\meet)$-semiring:
 \begin{salign*}
    (M_g \comp M_f)[i,k] = \bigjoin_j M_g[i,j] \meet M_f[j,k]
 \end{salign*}
@@ -81,41 +72,35 @@ Since $\SemiLat$ is semi-additive, every morphism between biproducts has a \emph
 $f: \Two^m \to \Two^n$ with matrix $M_f$, the transpose $f^{\!\top}: \Two^n \to \Two^m$ has matrix
 $(M_{f^{\!\top}})[j,i] = M_f[i,j]$. Concretely,
 \begin{salign*}
-   f^{\!\top}(w)_j = \bigjoin_{i} M_f[i,j] \meet w_i
+   f^{\!\top}(v)_j = \bigjoin_{i} M_f[i,j] \meet v_i
 \end{salign*}
 \noindent The transpose is itself a morphism in $\SemiLat$: it is $\join$-preserving in its argument, just
 like $f$.
 
-\subsubsection{Two embeddings: $\HeytConj$ and $\LatGal$}
+\subsubsection{Two embeddings}
 \label{sec:boolean-jacobians:embeddings}
 
-We now treat $f: \Two^m \to \Two^n$ as the \emph{backward} direction of an analysis --- the map that
-propagates output information back to input information (see \secref{boolean-jacobians:ad} for why this is
-the appropriate reading). Accordingly, when we embed $f$ into $\HeytConj$ or $\LatGal$, the target
-category's arrow points in the \emph{forward} direction $\Two^n \to \Two^m$, opposite to $f$. This choice
-is what makes both embeddings \emph{contravariant} on morphisms: had we instead taken $f$ itself as the
-forward direction, the embeddings would be covariant.
-
-The two embeddings then pair $f$ with a forward-direction counterpart, in two different ways:
+We now treat $f: \Two^m \to \Two^n$ as the \emph{backward} direction of an analysis --- a map that propagates
+output demand back to input demand, and consider two contravariant embeddings: into $\HeytConj$ (a subcategory
+of $\LatGal$), and into $\LatGal$ directly. The two embeddings pair $f$ with a forward-direction counterpart
+in two different ways:
 
 \begin{enumerate}
-\item \emph{Conjugate pair.} The transpose $f^{\!\top}$ pairs with $f$ to form a conjugate pair in
-$\HeytConj$ (\secref{categories-with-biproducts:heytconj}): both maps are $\join$-preserving, linked by
+\item \emph{Conjugate pair.} The transpose $f^{\!\top}$ pairs with $f$ to form a conjugate pair $(f^{\!\top},
+f)$ in $\HeytConj$ (\secref{categories-with-biproducts:heytconj}): both maps are $\join$-preserving, linked by
 the disjointness condition
 \begin{salign*}
    y \disj f^{\!\top}(x) \iff f(y) \disj x
 \end{salign*}
-\noindent Each $\Two^n$ is a Boolean, hence Heyting, algebra, so this assignment gives an embedding of a
-subcategory of $\SemiLat$ into $\HeytConj$.
 
-\item \emph{Galois connection.} The right adjoint $f_*: \Two^n \to \Two^m$ (meet-preserving) pairs with $f$
-to form a Galois connection in $\LatGal$ (\secref{categories-with-biproducts:latgal}), with adjunction
+\item \emph{Galois connection.} The right adjoint $f_*: \Two^n \to \Two^m$ (meet-preserving) pairs with $f$ to
+form a Galois connection $f \dashv f_*$ in $\LatGal$ (\secref{categories-with-biproducts:latgal}), with
+adjointness condition
 \begin{salign*}
    y \le f_*(x) \iff f(y) \le x
 \end{salign*}
 \noindent Concretely, $f_*(x)_i = \bigmeet_j (M_f[i,j] \to x_j)$, where $a \to b = \neg a \join b$ is
-Boolean implication. In the target arrow $\Two^n \to \Two^m$, $f$ is the left adjoint and $f_*$ the right
-adjoint.
+Boolean implication.
 \end{enumerate}
 
 \subsubsection{De Morgan duality and the derivation of the conjugate embedding}
