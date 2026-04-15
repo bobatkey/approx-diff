@@ -270,30 +270,30 @@ module _ where
       (two.≤-refl , ¬-tabulate {m} (λ i → g (suc i)) .proj₂)
 
   transpose : ∀ {m n} → Two^J m ⇒J Two^J n → Two^J n ⇒J Two^J m
-  transpose {m} {n} f .*→*J .funcJ .funP v = tabulate {m} (λ i → _⋅_ {n} (fun f (e i)) v)
+  transpose {m} {n} f .*→*J .funcJ .funP v = tabulate {m} (λ i → _⋅_ {n} (f .fun (e i)) v)
   transpose {m} {n} f .*→*J .funcJ .preorder._=>_.mono v≤w =
     tabulate-mono {m} _ _ (λ i → ⋅-mono {n} (Two^ n .≤-refl) v≤w)
   transpose {m} {n} f .*→*J .join-semilattice._=>_.∨-preserving {v} {w} =
-    Two^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-∨ {n} (fun f (e i)) v w))
+    Two^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-∨ {n} (f .fun (e i)) v w))
                     (tabulate-∨ {m} _ _)
   transpose {m} {n} f .*→*J .join-semilattice._=>_.⊥-preserving =
-    Two^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-⊥ {n} (fun f (e i))))
+    Two^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-⊥ {n} (f .fun (e i))))
                     (tabulate-⊥ {m})
 
   adjoint : ∀ {m n} → Two^J m ⇒J Two^J n → Two^M n ⇒M Two^M m
-  adjoint {m} {n} f .*→*M .funcM .funP v = tabulate {m} (λ i → _⊡_ {n} (¬ {n} (fun f (e i))) v)
+  adjoint {m} {n} f .*→*M .funcM .funP v = tabulate {m} (λ i → _⊡_ {n} (¬ {n} (f .fun (e i))) v)
   adjoint {m} {n} f .*→*M .funcM .preorder._=>_.mono v≤w =
-    tabulate-mono {m} _ _ (λ i → ⊡-mono {n} (¬ {n} (fun f (e i))) v≤w)
+    tabulate-mono {m} _ _ (λ i → ⊡-mono {n} (¬ {n} (f .fun (e i))) v≤w)
   adjoint {m} {n} f .*→*M .meet-semilattice._=>_.∧-preserving {v} {w} =
     Two^ m .≤-trans (tabulate-∧ {m} _ _)
-                     (tabulate-mono {m} _ _ (λ i → ⊡-∧ {n} (¬ {n} (fun f (e i))) v w))
+                    (tabulate-mono {m} _ _ (λ i → ⊡-∧ {n} (¬ {n} (f .fun (e i))) v w))
   adjoint {m} {n} f .*→*M .meet-semilattice._=>_.⊤-preserving =
     Two^ m .≤-trans (tabulate-⊤ {m})
-                     (tabulate-mono {m} _ _ (λ i → ⊡-⊤ {n} (¬ {n} (fun f (e i)))))
+                    (tabulate-mono {m} _ _ (λ i → ⊡-⊤ {n} (¬ {n} (f .fun (e i)))))
 
   -- Restrict f to its "tail": f-tail(z) = f(O, z).
   f-tail : ∀ {m n} → Two^J (suc m) ⇒J Two^J n → Two^J m ⇒J Two^J n
-  f-tail {m} {n} f .*→*J .funcJ .funP v = fun f (O , v)
+  f-tail {m} {n} f .*→*J .funcJ .funP v = f .fun (O , v)
   f-tail {m} {n} f .*→*J .funcJ .preorder._=>_.mono v≤v' =
     f .*→*J .funcJ .preorder._=>_.mono (tt , v≤v')
   f-tail {m} {n} f .*→*J .join-semilattice._=>_.∨-preserving =
@@ -302,8 +302,8 @@ module _ where
 
   -- Join-preserving maps f : Two^m → Two^n are determined by their values on basis vectors:
   -- f(y) equals the join of f(e_i) scaled by y[i].
-  f-basis : ∀ {m n} (f : Two^J m ⇒J Two^J n) (y : Two^ m .Carrier) → _≃_ (Two^ n) (fun f y)
-                    (⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj i y) (fun f (e i))))
+  f-basis : ∀ {m n} (f : Two^J m ⇒J Two^J n) (y : Two^ m .Carrier) → _≃_ (Two^ n) (f .fun y)
+            (⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj i y) (f .fun (e i))))
   f-basis {zero}  {n} f y .proj₁ = f .*→*J .join-semilattice._=>_.⊥-preserving
   f-basis {zero}  {n} f y .proj₂ = Two^ n .≤-bottom
   f-basis {suc m} {n} f (y₀ , y') .proj₁ =
@@ -312,9 +312,9 @@ module _ where
       (Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.∨-preserving {(y₀ , Two^ m .⊥)} {(O , y')})
         (∨-mono (Two^ n) (head-proof y₀) (f-basis (f-tail f) y' .proj₁)))
     where
-      head-proof : ∀ y₀ → Two^ n ._≤_ (fun f (y₀ , Two^ m .⊥)) (_·⊓_ {n} y₀ (fun f (I , Two^ m .⊥)))
+      head-proof : ∀ y₀ → Two^ n ._≤_ (f .fun (y₀ , Two^ m .⊥)) (_·⊓_ {n} y₀ (f .fun (I , Two^ m .⊥)))
       head-proof O = Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.⊥-preserving) (Two^ n .≤-bottom)
-      head-proof I = ·⊓-I {n} (fun f (I , Two^ m .⊥)) .proj₂
+      head-proof I = ·⊓-I {n} (f .fun (I , Two^ m .⊥)) .proj₂
   f-basis {suc m} {n} f (y₀ , y') .proj₂ =
     Two^ n .[_∨_]
       (head-proof y₀)
@@ -322,17 +322,17 @@ module _ where
         (f-basis (f-tail f) y' .proj₂)
         (f .*→*J .funcJ .preorder._=>_.mono {(O , y')} {(y₀ , y')} (tt , Two^ m .≤-refl {y'})))
     where
-      head-proof : ∀ y₀ → Two^ n ._≤_ (_·⊓_ {n} y₀ (fun f (I , Two^ m .⊥))) (fun f (y₀ , y'))
-      head-proof O = Two^ n .≤-trans (·⊓-O {n} (fun f (I , Two^ m .⊥)) .proj₁) (Two^ n .≤-bottom)
+      head-proof : ∀ y₀ → Two^ n ._≤_ (_·⊓_ {n} y₀ (f .fun (I , Two^ m .⊥))) (f .fun (y₀ , y'))
+      head-proof O = Two^ n .≤-trans (·⊓-O {n} (f .fun (I , Two^ m .⊥)) .proj₁) (Two^ n .≤-bottom)
       head-proof I =
         Two^ n .≤-trans
-          (·⊓-I {n} (fun f (I , Two^ m .⊥)) .proj₁)
+          (·⊓-I {n} (f .fun (I , Two^ m .⊥)) .proj₁)
           (f .*→*J .funcJ .preorder._=>_.mono {(I , Two^ m .⊥)} {(I , y')} (tt , Two^ m .≤-bottom))
 
   -- Sanity-check: transpose corresponds to transposing the implied matrix.
   private
     matrix : ∀ {m n} → Two^J m ⇒J Two^J n → Fin n → Fin m → Two
-    matrix f j i = proj j (fun f (e i))
+    matrix f j i = proj j (f .fun (e i))
 
     ⋅-e : ∀ {n} (u : Two^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) ≃t proj j u
     ⋅-e {suc n} (O , u) zero = ⋅-⊥ {n} u , tt
