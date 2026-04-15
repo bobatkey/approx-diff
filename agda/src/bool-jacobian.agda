@@ -144,11 +144,11 @@ module _ where
   ¬-involutive {suc n} (I , u) = (tt , ¬-involutive {n} u .proj₁) , (tt , ¬-involutive {n} u .proj₂)
 
   #-↔-≤ : ∀ {n} (u v : Two^ n .Carrier) → conjugate.Obj._#_ (Two^ n) u v ⇔ Two^ n ._≤_ u (¬ {n} v)
-  #-↔-≤ {zero}  _       _       .proj₁ _ = tt
+  #-↔-≤ {zero} _ _ .proj₁ _ = tt
   #-↔-≤ {suc n} (O , _) (_ , _) .proj₁ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₁ t
   #-↔-≤ {suc n} (I , _) (O , _) .proj₁ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₁ t
   #-↔-≤ {suc n} (I , _) (I , _) .proj₁ (() , _)
-  #-↔-≤ {zero}  _       _       .proj₂ _ = tt
+  #-↔-≤ {zero} _ _ .proj₂ _ = tt
   #-↔-≤ {suc n} (O , _) (_ , _) .proj₂ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₂ t
   #-↔-≤ {suc n} (I , _) (O , _) .proj₂ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₂ t
   #-↔-≤ {suc n} (I , _) (I , _) .proj₂ (() , _)
@@ -206,9 +206,9 @@ module _ where
 ·⊓u⊣u→ (suc n) I (I , u) (I , v) .proj₂ h = tt , ·⊓u⊣u→ n I u v .proj₂ h
 
 -- Morphisms: join-semilattice morphisms Two^m → Two^n.
--- Every such map is determined by its values on basis vectors, i.e. by an n × m Boolean matrix.
--- Transpose (conjugate backward): f^T(v)_i = f(e_i) ⋅ v (join-preserving, using dot).
--- Adjoint (galois backward):      f*(v)_i = ¬f(e_i) ⊡ v (meet-preserving, using co-dot on negated matrix).
+-- Every such map determined by its values on basis vectors, i.e. by an n × m Boolean matrix.
+-- Transpose (conjugate forward): f^T(v)_i = f(e_i) ⋅ v (join-preserving, using dot).
+-- Adjoint (galois forward): f_*(v)_i = ¬f(e_i) ⊡ v (meet-preserving, using co-dot on negated matrix).
 module _ where
   open join-semilattice-category using () renaming (_⇒_ to _⇒J_)
   open meet-semilattice-category using () renaming (_⇒_ to _⇒M_)

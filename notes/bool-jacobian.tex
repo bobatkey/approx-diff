@@ -15,14 +15,14 @@ Consider the following subcategory $\FinVect_\Two$ of $\SemiLat$:
 \item Morphisms $f: \Two^m \to \Two^n$ are $n \times m$ Boolean matrices; composition is matrix multiplication
 in the $(\join, \meet)$-semiring (\secref{boolean-jacobians:matrices}).
 \item Every morphism has a \emph{transpose} $f^{\!\top}: \Two^n \to \Two^m$ (also $\join$-preserving) and a
-\emph{right adjoint} $f^*: \Two^n \to \Two^m$ (meet-preserving, with $f \adj f^*$); these are De Morgan
+\emph{right adjoint} $f_*: \Two^n \to \Two^m$ (meet-preserving, with $f \adj f_*$); these are De Morgan
 duals of each other (\secref{boolean-jacobians:transpose}, \secref{boolean-jacobians:de-morgan}).
 \item The transpose embeds the category contravariantly into $\HeytConj$ as conjugate pairs; the right
 adjoint embeds it contravariantly into $\LatGal$ as Galois connections
 (\secref{boolean-jacobians:embeddings}).
 \item The conjugate pair $(f, f^{\!\top})$ is the Boolean analogue of the forward/reverse-mode Jacobian pair
 in AD: the transpose $f^{\!\top}$ corresponds to the forward-mode Jacobian $\pushf{\phi}_x$ and the given $f$
-plays the role of the reverse-mode $\pullf{\phi}_x$. The adjoint map $f^*$ seems to be a different analysis
+plays the role of the reverse-mode $\pullf{\phi}_x$. The adjoint map $f_*$ seems to be a different analysis
 with no direct real-AD analogue (\secref{boolean-jacobians:ad}).
 \end{itemize}
 
@@ -117,13 +117,13 @@ the disjointness condition
 \noindent Each $\Two^n$ is a Boolean, hence Heyting, algebra, so this assignment gives an embedding of a
 subcategory of $\SemiLat$ into $\HeytConj$.
 
-\item \emph{Galois connection.} The right adjoint $f^*: \Two^n \to \Two^m$ (meet-preserving) pairs with $f$
+\item \emph{Galois connection.} The right adjoint $f_*: \Two^n \to \Two^m$ (meet-preserving) pairs with $f$
 to form a Galois connection in $\LatGal$ (\secref{categories-with-biproducts:latgal}), with adjunction
 \begin{salign*}
-   y \le f^*(x) \iff f(y) \le x
+   y \le f_*(x) \iff f(y) \le x
 \end{salign*}
-\noindent Concretely, $f^*(x)_i = \bigmeet_j (M_f[i,j] \to x_j)$, where $a \to b = \neg a \join b$ is
-Boolean implication. In the target arrow $\Two^n \to \Two^m$, $f$ is the left adjoint and $f^*$ the right
+\noindent Concretely, $f_*(x)_i = \bigmeet_j (M_f[i,j] \to x_j)$, where $a \to b = \neg a \join b$ is
+Boolean implication. In the target arrow $\Two^n \to \Two^m$, $f$ is the left adjoint and $f_*$ the right
 adjoint.
 \end{enumerate}
 
@@ -132,7 +132,7 @@ adjoint.
 
 The two backward maps are De Morgan duals:
 \begin{salign*}
-   \neg\,f^{\!\top}(x) = f^*(\neg x)
+   \neg\,f^{\!\top}(x) = f_*(\neg x)
 \end{salign*}
 \noindent This is the Boolean-algebra identity relating the transpose (in the $(\join, \meet)$-semiring) to
 the adjoint (in the dual $(\meet, \join)$-semiring), exploiting that $\Two^n$ is a Boolean algebra so that
@@ -142,17 +142,17 @@ Combined with the Boolean-algebra fact that $a \disj b \iff a \le \neg b$, we ob
 \begin{salign*}
    y \disj f^{\!\top}(x)
    & \iff y \le \neg\,f^{\!\top}(x) \\
-   & \iff y \le f^*(\neg x) \\
+   & \iff y \le f_*(\neg x) \\
    & \iff f(y) \le \neg x \\
    & \iff f(y) \disj x
 \end{salign*}
 \noindent where the middle step is the Galois adjunction instantiated at $\neg x$. This exhibits the
-conjugate embedding as a derived construction: the existence of a Galois connection $(f^*, f)$ together
+conjugate embedding as a derived construction: the existence of a Galois connection $(f_*, f)$ together
 with the Boolean structure on $\Two^n$ automatically yields the conjugate pair $(f^{\!\top}, f)$.
 
 This is specific to the Boolean case. In a general Heyting algebra the equivalence $a \disj b \iff a \le
 \neg b$ still holds (taking $\neg$ as the pseudo-complement), but the De Morgan identity $\neg f^{\!\top}
-\simeq f^* \comp \neg$ relies on double-negation $\neg\neg = \id$, which is Boolean-specific. So in the
+\simeq f_* \comp \neg$ relies on double-negation $\neg\neg = \id$, which is Boolean-specific. So in the
 Boolean setting the conjugate and Galois perspectives on Jacobians are two faces of the same structure,
 bridged by $\neg$.
 
@@ -186,18 +186,18 @@ $(\pullf{\phi}_x, \pushf{\phi}_x)$, with the transpose flipping direction while 
 The conjugate embedding is therefore the AD analogue in the standard sense: both sides use the dagger
 (matrix transpose) to relate the two directions, and both directions live in the same linear category
 ($\FinVect_\RR$ or $\FinVect_\Two$). The Galois embedding is a genuinely different analysis. The right
-adjoint $f^*: \Two^n \to \Two^m$ is not a morphism of $\FinVect_\Two$: it is $\meet$-preserving rather than
+adjoint $f_*: \Two^n \to \Two^m$ is not a morphism of $\FinVect_\Two$: it is $\meet$-preserving rather than
 $\join$-preserving, and lives in the \emph{dual} semi-additive structure where $\meet$ plays the role of
-addition. Concretely, reading $f^*$ in the standard sense gives the ``sufficiency'' interpretation (``is
+addition. Concretely, reading $f_*$ in the standard sense gives the ``sufficiency'' interpretation (``is
 every input that output $i$ depends on present?''), a universally quantified condition in a different
 semiring.
 
-More subtly, it is not just $f^*$ that is foreign to AD but the entire adjunction structure. The Galois
-connection pairs $f$ with $f^*$ via $f \adj f^*$, and this adjunction has no analogue in $\FinVect_\RR$: the
+More subtly, it is not just $f_*$ that is foreign to AD but the entire adjunction structure. The Galois
+connection pairs $f$ with $f_*$ via $f \adj f_*$, and this adjunction has no analogue in $\FinVect_\RR$: the
 reverse-mode map $\pullf{\phi}_x$ has no order-theoretic right adjoint, because $\RR$ is a field rather than
 a lattice, and is related to $\pushf{\phi}_x$ only by transposition, not by adjunction. So while $f$ as a
 linear map does correspond to $\pullf{\phi}_x$ under the dagger/conjugate analogy, $f$'s additional role as
-the left adjoint of a Galois connection --- and the map $f^*$ that role brings with it --- is a
+the left adjoint of a Galois connection --- and the map $f_*$ that role brings with it --- is a
 feature of the Boolean (or more generally, bounded lattice) setting with no AD counterpart.
 
 The analogy is therefore:
