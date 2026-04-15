@@ -13,14 +13,22 @@ import join-semilattice-category
 import meet-semilattice-category
 import meet-semilattice
 import galois
+import conjugate
 
-open galois.Obj
+open conjugate.Obj
 
--- Objects: Two^n as a bounded lattice, the n-fold product of TWO.
--- FIXME: using galois.Obj as a stand-in for BoundedLattice, which we don't have yet.
-Two^ : ℕ → galois.Obj
-Two^ zero    = galois.𝟙
-Two^ (suc n) = galois._⊕_ galois.TWO (Two^ n)
+-- Objects: Two^n as iterated biproduct of TWO in HeytConj. Taking the biproduct in HeytConj rather than
+-- LatGal means the Heyting-algebra structure propagates through biproducts for free, so Two^n is automatically
+-- Heyting.
+Two^ : ℕ → conjugate.Obj
+Two^ zero = conjugate.𝟙
+Two^ (suc n) = conjugate._⊕_ conjugate.TWO (Two^ n)
+
+-- Forgetful map to galois.Obj.
+Two^-gal : ℕ → galois.Obj
+Two^-gal n .galois.Obj.carrier = Two^ n .carrier
+Two^-gal n .galois.Obj.meets = Two^ n .meets
+Two^-gal n .galois.Obj.joins = Two^ n .joins
 
 -- Join-semilattice and meet-semilattice views.
 Two^J : ℕ → join-semilattice-category.Obj
@@ -74,19 +82,19 @@ module _ where
   ⋅-comm {suc n} (I , u) (O , v) = ⋅-comm {n} u v
   ⋅-comm {suc n} (I , u) (I , v) = tt
 
-  -- Bilinear (join-preserving in each argument); but commutative, so only need one half.
-  ⋅-⊥ᵣ : ∀ {n} (u : Two^ n .Carrier) → two._≤_ (_⋅_ {n} u (Two^ n .⊥)) O
-  ⋅-⊥ᵣ {zero} _ = tt
-  ⋅-⊥ᵣ {suc n} (O , v) = ⋅-⊥ᵣ {n} v
-  ⋅-⊥ᵣ {suc n} (I , v) = ⋅-⊥ᵣ {n} v
+  -- Bilinear (join-preserving in each argument), but one side is enough.
+  ⋅-⊥ : ∀ {n} (u : Two^ n .Carrier) → two._≤_ (_⋅_ {n} u (Two^ n .⊥)) O
+  ⋅-⊥ {zero} _ = tt
+  ⋅-⊥ {suc n} (O , v) = ⋅-⊥ {n} v
+  ⋅-⊥ {suc n} (I , v) = ⋅-⊥ {n} v
 
-  ⋅-∨ᵣ : ∀ {n} (u v w : Two^ n .Carrier) →
+  ⋅-∨ : ∀ {n} (u v w : Two^ n .Carrier) →
         two._≤_ (_⋅_ {n} u (Two^ n ._∨_ v w)) ((_⋅_ {n} u v) ⊔ (_⋅_ {n} u w))
-  ⋅-∨ᵣ {zero} _ _ _ = tt
-  ⋅-∨ᵣ {suc n} (O , u) (_ , v) (_ , w) = ⋅-∨ᵣ {n} u v w
-  ⋅-∨ᵣ {suc n} (I , u) (O , v) (O , w) = ⋅-∨ᵣ {n} u v w
-  ⋅-∨ᵣ {suc n} (I , u) (O , v) (I , w) = ⊔-upper₂
-  ⋅-∨ᵣ {suc n} (I , u) (I , v) (_ , w) = tt
+  ⋅-∨ {zero} _ _ _ = tt
+  ⋅-∨ {suc n} (O , u) (_ , v) (_ , w) = ⋅-∨ {n} u v w
+  ⋅-∨ {suc n} (I , u) (O , v) (O , w) = ⋅-∨ {n} u v w
+  ⋅-∨ {suc n} (I , u) (O , v) (I , w) = ⊔-upper₂
+  ⋅-∨ {suc n} (I , u) (I , v) (_ , w) = tt
 
   private
     ⋅-monoᵣ : ∀ {n} (u : Two^ n .Carrier) {v w : Two^ n .Carrier} →
@@ -111,7 +119,7 @@ module _ where
       _⋅_ {n} u' v'
     ∎ where open basics.≤-Reasoning two.≤-isPreorder
 
--- Two^n is itself Boolean, so we have negation (defined pointwise).
+-- Two^n is itself Boolean, with negation defined componentwise.
 module _ where
   ¬ : ∀ {n} → Two^ n .Carrier → Two^ n .Carrier
   ¬ {zero} _ = tt
@@ -174,7 +182,7 @@ module _ where
 
 -- ⊡ preserves ∧ in its second argument.
 ⊡-∧ : ∀ {n} (u v w : Two^ n .Carrier) →
-      two._≤_ ((_⊡_ {n} u v) ⊓ (_⊡_ {n} u w)) (_⊡_ {n} u (galois.Obj._∧_ (Two^ n) v w))
+      two._≤_ ((_⊡_ {n} u v) ⊓ (_⊡_ {n} u w)) (_⊡_ {n} u (conjugate.Obj._∧_ (Two^ n) v w))
 ⊡-∧ {zero}  _ _ _ = tt
 ⊡-∧ {suc n} (O , u) (O , v) (_ , w) = tt
 ⊡-∧ {suc n} (O , u) (I , v) (O , w) = two.⊓-lower₂
@@ -183,32 +191,10 @@ module _ where
 
 -- ⊡ with ⊤ is I (via De Morgan from ⋅-⊥).
 ⊡-⊤ : ∀ {n} (u : Two^ n .Carrier) → two._≤_ I (_⊡_ {n} u (Two^ n .⊤))
-⊡-⊤ {n} u = ¬-anti (two.≤-trans (⋅-mono {n} (Two^ n .≤-refl) (¬-⊤ {n})) (⋅-⊥ᵣ {n} (¬ {n} u)))
-
--- Two^n as a conjugate.Obj (Heyting algebra).
-import conjugate
-
-Two^-conj : ℕ → conjugate.Obj
-Two^-conj n .conjugate.Obj.carrier = Two^ n .carrier
-Two^-conj n .conjugate.Obj.meets = Two^ n .meets
-Two^-conj n .conjugate.Obj.joins = Two^ n .joins
-Two^-conj zero .conjugate.Obj.#-reflect _ = tt
-Two^-conj (suc n) .conjugate.Obj.#-reflect {x₁ , x₂} {y₁ , y₂} h =
-  conjugate.Obj.#-reflect conjugate.TWO (λ z₁ y#z →
-    proj₁ (h (z₁ , Two^ n .⊥) (y#z , conjugate.Obj.π₂ (Two^-conj n)))) ,
-  conjugate.Obj.#-reflect (Two^-conj n) (λ z₂ y#z →
-    proj₂ (h (O , z₂) (conjugate.Obj.π₂ conjugate.TWO , y#z)))
-Two^-conj zero .conjugate.Obj.∧-∨-distrib _ _ _ = tt
-Two^-conj (suc n) .conjugate.Obj.∧-∨-distrib (x₁ , x₂) (y₁ , y₂) (z₁ , z₂) =
-  conjugate.Obj.∧-∨-distrib conjugate.TWO x₁ y₁ z₁ ,
-  conjugate.Obj.∧-∨-distrib (Two^-conj n) x₂ y₂ z₂
-Two^-conj zero .conjugate.Obj.∨-∧-distrib _ _ _ = tt
-Two^-conj (suc n) .conjugate.Obj.∨-∧-distrib (x₁ , x₂) (y₁ , y₂) (z₁ , z₂) =
-  conjugate.Obj.∨-∧-distrib conjugate.TWO x₁ y₁ z₁ ,
-  conjugate.Obj.∨-∧-distrib (Two^-conj n) x₂ y₂ z₂
+⊡-⊤ {n} u = ¬-anti (two.≤-trans (⋅-mono {n} (Two^ n .≤-refl) (¬-⊤ {n})) (⋅-⊥ {n} (¬ {n} u)))
 
 -- Holds in any Boolean algebra.
-#-↔-≤ : ∀ {n} (u v : Two^ n .Carrier) → conjugate.Obj._#_ (Two^-conj n) u v ⇔ Two^ n ._≤_ u (¬ {n} v)
+#-↔-≤ : ∀ {n} (u v : Two^ n .Carrier) → conjugate.Obj._#_ (Two^ n) u v ⇔ Two^ n ._≤_ u (¬ {n} v)
 #-↔-≤ {zero}  _       _       .proj₁ _ = tt
 #-↔-≤ {suc n} (O , _) (_ , _) .proj₁ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₁ t
 #-↔-≤ {suc n} (I , _) (O , _) .proj₁ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₁ t
@@ -258,7 +244,7 @@ module _ where
     tabulate-∨ {suc m} g h = two.≤-refl , tabulate-∨ {m} (λ i → g (suc i)) (λ i → h (suc i))
 
     tabulate-∧ : ∀ {m} (g h : Fin m → Two) →
-                 Two^ m ._≤_ (galois.Obj._∧_ (Two^ m) (tabulate {m} g) (tabulate {m} h)) (tabulate {m} (λ i → g i ⊓ h i))
+                 Two^ m ._≤_ (conjugate.Obj._∧_ (Two^ m) (tabulate {m} g) (tabulate {m} h)) (tabulate {m} (λ i → g i ⊓ h i))
     tabulate-∧ {zero}  g h = tt
     tabulate-∧ {suc m} g h = two.≤-refl , tabulate-∧ {m} (λ i → g (suc i)) (λ i → h (suc i))
 
@@ -288,10 +274,10 @@ module _ where
   transpose {m} {n} f .*→*J .funcJ .preorder._=>_.mono v≤w =
     tabulate-mono {m} _ _ (λ i → ⋅-mono {n} (Two^ n .≤-refl) v≤w)
   transpose {m} {n} f .*→*J .join-semilattice._=>_.∨-preserving {v} {w} =
-    Two^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-∨ᵣ {n} (fun f (e i)) v w))
+    Two^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-∨ {n} (fun f (e i)) v w))
                     (tabulate-∨ {m} _ _)
   transpose {m} {n} f .*→*J .join-semilattice._=>_.⊥-preserving =
-    Two^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-⊥ᵣ {n} (fun f (e i))))
+    Two^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-⊥ {n} (fun f (e i))))
                     (tabulate-⊥ {m})
 
   adjoint : ∀ {m n} → Two^J m ⇒J Two^J n → Two^M n ⇒M Two^M m
@@ -349,7 +335,7 @@ module _ where
     matrix f j i = proj j (fun f (e i))
 
     ⋅-e : ∀ {n} (u : Two^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) ≃t proj j u
-    ⋅-e {suc n} (O , u) zero = ⋅-⊥ᵣ {n} u , tt
+    ⋅-e {suc n} (O , u) zero = ⋅-⊥ {n} u , tt
     ⋅-e {suc n} (I , u) zero = tt , tt
     ⋅-e {suc n} (O , u) (suc j) = ⋅-e {n} u j
     ⋅-e {suc n} (I , u) (suc j) = ⋅-e {n} u j
@@ -378,11 +364,11 @@ module _ where
       per-i i = ¬-anti (⋅-mono {n} (¬-involutive {n} (fun f (e i)) .proj₁) (¬-involutive {n} x .proj₁))
 
   -- Galois embedding: (adjoint f, f) forms a Galois connection.
-  to-gal : ∀ {m n} → Two^J m ⇒J Two^J n → galois._⇒g_ (Two^ n) (Two^ m)
+  to-gal : ∀ {m n} → Two^J m ⇒J Two^J n → galois._⇒g_ (Two^-gal n) (Two^-gal m)
   to-gal {m} {n} f .galois._⇒g_.right = adjoint {m} {n} f .*→*M .funcM
   to-gal {m} {n} f .galois._⇒g_.left  = f .*→*J .funcJ
   to-gal {m} {n} f .galois._⇒g_.left⊣right {x} {y} .proj₁ y≤adj =
-    let open basics.≤-Reasoning (Two^ n .galois.Obj.≤-isPreorder) in
+    let open basics.≤-Reasoning (Two^ n .conjugate.Obj.≤-isPreorder) in
     begin
       fun f y
     ≤⟨ f-basis f y .proj₁ ⟩
@@ -418,7 +404,7 @@ module _ where
 
   -- Conjugate embedding: (transpose f, f) forms a conjugate pair Two^n ⇒c Two^m.
   -- Derive from to-gal via De Morgan duality.
-  to-conj : ∀ {m n} → Two^J m ⇒J Two^J n → conjugate._⇒c_ (Two^-conj n) (Two^-conj m)
+  to-conj : ∀ {m n} → Two^J m ⇒J Two^J n → conjugate._⇒c_ (Two^ n) (Two^ m)
   to-conj {m} {n} f .conjugate._⇒c_.right = transpose {m} {n} f .*→*J .funcJ
   to-conj {m} {n} f .conjugate._⇒c_.left  = f .*→*J .funcJ
   to-conj {m} {n} f .conjugate._⇒c_.conjugate {x} {y} .proj₁ y#tr =
