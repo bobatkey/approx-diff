@@ -67,9 +67,16 @@ module _ where
   _⋅_ {zero} _ _ = O
   _⋅_ {suc n} (a , u) (b , v) = (a ⊓ b) ⊔ _⋅_ {n} u v
 
-  -- ⋅ is join-preserving.
+  ⋅-comm : ∀ {n} (u v : Two^ n .Carrier) → two._≤_ (_⋅_ {n} u v) (_⋅_ {n} v u)
+  ⋅-comm {zero}  _ _ = tt
+  ⋅-comm {suc n} (O , u) (O , v) = ⋅-comm {n} u v
+  ⋅-comm {suc n} (O , u) (I , v) = ⋅-comm {n} u v
+  ⋅-comm {suc n} (I , u) (O , v) = ⋅-comm {n} u v
+  ⋅-comm {suc n} (I , u) (I , v) = tt
+
+  -- Bilinear (join-preserving in each argument); commutative so we only need one half.
   ⋅-⊥ : ∀ {n} (u : Two^ n .Carrier) → two._≤_ (_⋅_ {n} u (Two^ n .⊥)) O
-  ⋅-⊥ {zero}  _ = tt
+  ⋅-⊥ {zero} _ = tt
   ⋅-⊥ {suc n} (O , v) = ⋅-⊥ {n} v
   ⋅-⊥ {suc n} (I , v) = ⋅-⊥ {n} v
 
@@ -82,30 +89,23 @@ module _ where
   ⋅-∨ {suc n} (I , u) (I , v) (_ , w) = tt
 
   private
-    ⋅-mono-r : ∀ {n} (u : Two^ n .Carrier) {v w : Two^ n .Carrier} →
+    ⋅-monoᵣ : ∀ {n} (u : Two^ n .Carrier) {v w : Two^ n .Carrier} →
                Two^ n ._≤_ v w → two._≤_ (_⋅_ {n} u v) (_⋅_ {n} u w)
-    ⋅-mono-r {zero} _ _ = tt
-    ⋅-mono-r {suc n} (O , u) {_ , v} {_ , w} (_ , v≤w) = ⋅-mono-r {n} u v≤w
-    ⋅-mono-r {suc n} (I , u) {O , v} {_ , w} (_ , v≤w) = two.≤-trans (⋅-mono-r {n} u v≤w) ⊔-upper₂
-    ⋅-mono-r {suc n} (I , u) {I , v} {I , w} (_ , v≤w) = tt
-
-  ⋅-comm : ∀ {n} (u v : Two^ n .Carrier) → two._≤_ (_⋅_ {n} u v) (_⋅_ {n} v u)
-  ⋅-comm {zero}  _ _ = tt
-  ⋅-comm {suc n} (O , u) (O , v) = ⋅-comm {n} u v
-  ⋅-comm {suc n} (O , u) (I , v) = ⋅-comm {n} u v
-  ⋅-comm {suc n} (I , u) (O , v) = ⋅-comm {n} u v
-  ⋅-comm {suc n} (I , u) (I , v) = tt
+    ⋅-monoᵣ {zero} _ _ = tt
+    ⋅-monoᵣ {suc n} (O , u) {_ , v} {_ , w} (_ , v≤w) = ⋅-monoᵣ {n} u v≤w
+    ⋅-monoᵣ {suc n} (I , u) {O , v} {_ , w} (_ , v≤w) = two.≤-trans (⋅-monoᵣ {n} u v≤w) ⊔-upper₂
+    ⋅-monoᵣ {suc n} (I , u) {I , v} {I , w} (_ , v≤w) = tt
 
   ⋅-mono : ∀ {n} {u u' v v' : Two^ n .Carrier} →
            Two^ n ._≤_ u u' → Two^ n ._≤_ v v' → two._≤_ (_⋅_ {n} u v) (_⋅_ {n} u' v')
   ⋅-mono {n} {u} {u'} {v} {v'} u≤u' v≤v' =
     begin
       _⋅_ {n} u v
-    ≤⟨ ⋅-mono-r {n} u v≤v' ⟩
+    ≤⟨ ⋅-monoᵣ {n} u v≤v' ⟩
       _⋅_ {n} u v'
     ≤⟨ ⋅-comm {n} u v' ⟩
       _⋅_ {n} v' u
-    ≤⟨ ⋅-mono-r {n} v' u≤u' ⟩
+    ≤⟨ ⋅-monoᵣ {n} v' u≤u' ⟩
       _⋅_ {n} v' u'
     ≤⟨ ⋅-comm {n} v' u' ⟩
       _⋅_ {n} u' v'
@@ -140,18 +140,18 @@ _⊡_ {n} u v = two.¬ (_⋅_ {n} (¬ {n} u) (¬ {n} v))
          Two^ n ._≤_ v w → two._≤_ (_⊡_ {n} u v) (_⊡_ {n} u w)
 ⊡-mono {n} u v≤w = ¬-anti (⋅-mono {n} (Two^ n .≤-refl) (¬-anti^ {n} v≤w))
 
--- Scalar product, with O and I as annihilator and identity.
+-- Scalar product, with O as annihilator and I as identity.
 module _ where
   _·⊓_ : ∀ {n} → Two → Two^ n .Carrier → Two^ n .Carrier
-  _·⊓_ {zero}  _ _       = tt
+  _·⊓_ {zero} _ _ = tt
   _·⊓_ {suc n} a (b , u) = (a ⊓ b) , _·⊓_ {n} a u
 
   ·⊓-O : ∀ {n} (u : Two^ n .Carrier) → _≃_ (Two^ n) (_·⊓_ {n} O u) (Two^ n .⊥)
-  ·⊓-O {zero}  _ = tt , tt
+  ·⊓-O {zero} _ = tt , tt
   ·⊓-O {suc n} (_ , u) = (tt , ·⊓-O {n} u .proj₁) , (tt , ·⊓-O {n} u .proj₂)
 
   ·⊓-I : ∀ {n} (u : Two^ n .Carrier) → _≃_ (Two^ n) (_·⊓_ {n} I u) u
-  ·⊓-I {zero}  _ = tt , tt
+  ·⊓-I {zero} _ = tt , tt
   ·⊓-I {suc n} (_ , u) = (two.≤-refl , ·⊓-I {n} u .proj₁) , (two.≤-refl , ·⊓-I {n} u .proj₂)
 
 -- Pointwise lifting of meet/implication adjunction.
