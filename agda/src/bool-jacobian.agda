@@ -111,10 +111,10 @@ module _ where
       _⋅_ {n} u' v'
     ∎ where open basics.≤-Reasoning two.≤-isPreorder
 
--- Pointwise negation on Two^n.
+-- Two^n is itself Boolean, so we have negation (defined pointwise).
 module _ where
   ¬ : ∀ {n} → Two^ n .Carrier → Two^ n .Carrier
-  ¬ {zero}  _ = tt
+  ¬ {zero} _ = tt
   ¬ {suc n} (a , u) = two.¬ a , ¬ {n} u
 
   ¬-anti : ∀ {a b : Two} → two._≤_ a b → two._≤_ (two.¬ b) (two.¬ a)
@@ -126,10 +126,10 @@ module _ where
   ¬-anti^ {zero} _ = tt
   ¬-anti^ {suc n} (a≤b , v≤w) = ¬-anti a≤b , ¬-anti^ {n} v≤w
 
-  ¬-invol : ∀ {n} (u : Two^ n .Carrier) → _≃_ (Two^ n) u (¬ {n} (¬ {n} u))
-  ¬-invol {zero}  _ = tt , tt
-  ¬-invol {suc n} (O , u) = (tt , ¬-invol {n} u .proj₁) , (tt , ¬-invol {n} u .proj₂)
-  ¬-invol {suc n} (I , u) = (tt , ¬-invol {n} u .proj₁) , (tt , ¬-invol {n} u .proj₂)
+  ¬-involutive : ∀ {n} (u : Two^ n .Carrier) → _≃_ (Two^ n) u (¬ {n} (¬ {n} u))
+  ¬-involutive {zero}  _ = tt , tt
+  ¬-involutive {suc n} (O , u) = (tt , ¬-involutive {n} u .proj₁) , (tt , ¬-involutive {n} u .proj₂)
+  ¬-involutive {suc n} (I , u) = (tt , ¬-involutive {n} u .proj₁) , (tt , ¬-involutive {n} u .proj₂)
 
 -- Co-dot product (De Morgan dual of ⋅).
 _⊡_ : ∀ {n} → Two^ n .Carrier → Two^ n .Carrier → Two
@@ -369,13 +369,13 @@ module _ where
     where
       per-i : (i : Fin m) → two._≤_ (two.¬ (_⋅_ {n} (fun f (e i)) x))
                                     (_⊡_ {n} (¬ {n} (fun f (e i))) (¬ {n} x))
-      per-i i = ¬-anti (⋅-mono {n} (¬-invol {n} (fun f (e i)) .proj₂) (¬-invol {n} x .proj₂))
+      per-i i = ¬-anti (⋅-mono {n} (¬-involutive {n} (fun f (e i)) .proj₂) (¬-involutive {n} x .proj₂))
   ¬transpose≃adjoint¬ {m} {n} f x .proj₂ =
     Two^ m .≤-trans (tabulate-mono {m} _ _ per-i) (¬-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) x) .proj₂)
     where
       per-i : (i : Fin m) → two._≤_ (_⊡_ {n} (¬ {n} (fun f (e i))) (¬ {n} x))
                                     (two.¬ (_⋅_ {n} (fun f (e i)) x))
-      per-i i = ¬-anti (⋅-mono {n} (¬-invol {n} (fun f (e i)) .proj₁) (¬-invol {n} x .proj₁))
+      per-i i = ¬-anti (⋅-mono {n} (¬-involutive {n} (fun f (e i)) .proj₁) (¬-involutive {n} x .proj₁))
 
   -- Galois embedding: (adjoint f, f) forms a Galois connection.
   to-gal : ∀ {m n} → Two^J m ⇒J Two^J n → galois._⇒g_ (Two^ n) (Two^ m)
