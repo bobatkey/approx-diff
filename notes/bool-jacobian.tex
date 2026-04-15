@@ -159,55 +159,14 @@ bridged by $\neg$.
 \subsubsection{Connection to forward- and reverse-mode AD}
 \label{sec:boolean-jacobians:ad}
 
-Recall from \secref{auto-diff} that for a differentiable $\phi: \RR^p \to \RR^q$, forward mode applies the
-Jacobian $\pushf{\phi}_x: \RR^p \linearto \RR^q$ to a tangent, and reverse mode applies its transpose
-$\pullf{\phi}_x: \RR^q \linearto \RR^p$ to a cotangent. Both are $\RR$-linear maps in $\FinVect_\RR$.
-Composition of derivatives is composition of linear maps in either direction, and the transpose is the
-operation that flips the direction while preserving linearity: it is the dagger on the $\CMon$-enriched
-biproduct category $\FinVect_\RR$.
-
-The Boolean story is structurally identical at the level of linear algebra. The role of $\FinVect_\RR$ is
-played by $\FinVect_\Two$, with biproducts $\Two^n$ and morphisms given by Boolean
-matrices, and with the dagger given by matrix transposition. A morphism $g: \Two^p \to \Two^q$ is the
-Boolean analogue of a linear map $\RR^p \to \RR^q$, and its transpose $g^{\!\top}: \Two^q \to \Two^p$ is the
-Boolean analogue of the linear transpose; both are join-preserving in the same algebraic sense, just as
-$\pushf{\phi}_x$ and $\pullf{\phi}_x$ are both $\RR$-linear.
-
-Care is needed in lining up directions. In the preceding subsections, our given $f$ lives in
-$\SemiLat$, and both embeddings of \secref{boolean-jacobians:embeddings} are \emph{contravariant} on
-morphisms: $f: \Two^m \to \Two^n$ becomes part of an arrow $\Two^n \to \Two^m$ in $\HeytConj$ or $\LatGal$.
-Reading the target category's arrow as the primal ``forward'' direction of a program, this means the
-Jacobian proper --- the forward-mode linear map --- is not $f$ itself but its transpose
-$f^{\!\top}: \Two^n \to \Two^m$: here $n$ indexes the inputs and $m$ indexes the outputs of that program. The given $f: \Two^m \to \Two^n$, going from outputs to inputs, is
-the Boolean analogue of the \emph{reverse-mode} map $\pullf{\phi}_x$. Transposition is involutive, so this
-is only a choice of labelling: the conjugate pair $(f, f^{\!\top})$ captures exactly the same content as
-$(\pullf{\phi}_x, \pushf{\phi}_x)$, with the transpose flipping direction while preserving linearity.
-
-The conjugate embedding is therefore the AD analogue in the standard sense: both sides use the dagger
-(matrix transpose) to relate the two directions, and both directions live in the same linear category
-($\FinVect_\RR$ or $\FinVect_\Two$). The Galois embedding is a genuinely different analysis. The right
-adjoint $f_*: \Two^n \to \Two^m$ is not a morphism of $\FinVect_\Two$: it is $\meet$-preserving rather than
-$\join$-preserving, and lives in the \emph{dual} semi-additive structure where $\meet$ plays the role of
-addition. Concretely, reading $f_*$ in the standard sense gives the ``sufficiency'' interpretation (``is
-every input that output $i$ depends on present?''), a universally quantified condition in a different
-semiring.
-
-More subtly, it is not just $f_*$ that is foreign to AD but the entire adjunction structure. The Galois
-connection pairs $f$ with $f_*$ via $f \adj f_*$, and this adjunction has no analogue in $\FinVect_\RR$: the
-reverse-mode map $\pullf{\phi}_x$ has no order-theoretic right adjoint, because $\RR$ is a field rather than
-a lattice, and is related to $\pushf{\phi}_x$ only by transposition, not by adjunction. So while $f$ as a
-linear map does correspond to $\pullf{\phi}_x$ under the dagger/conjugate analogy, $f$'s additional role as
-the left adjoint of a Galois connection --- and the map $f_*$ that role brings with it --- is a
-feature of the Boolean (or more generally, bounded lattice) setting with no AD counterpart.
-
-The analogy is therefore:
-
 \begin{center}
+\small
 \begin{tabular}{ll}
- \textbf{Real AD} ($\FinVect_\RR$) & \textbf{Boolean AD} ($\FinVect_\Two$) \\
- Linear map $\pushf{\phi}_x: \RR^p \linearto \RR^q$ (forward mode) & $\join$-preserving $f^{\!\top}: \Two^n \to \Two^m$ \\
- Linear transpose $\pullf{\phi}_x: \RR^q \linearto \RR^p$ (reverse mode) & Given $f: \Two^m \to \Two^n$ \\
- Matrix multiplication (chain rule) & Composition in the $(\join, \meet)$-semiring \\
- Dagger on $\FinVect_\RR$ via inner product & Dagger on $\FinVect_\Two$ via $\bigjoin / \meet$ \\
+ \textbf{Real-number AD in $\FinVect_\RR$} & \textbf{Boolean AD in $\FinVect_\Two$} \\
+ Linear map $\pushf{\phi}_x: \RR^m \linearto \RR^n$ (forward mode) & $\join$-preserving transpose $f^{\!\top}: \Two^m \to \Two^n$ (demanded by) \\
+ Linear transpose $\pullf{\phi}_x: \RR^n \linearto \RR^m$ (reverse mode) & Given $\join$-preserving $f: \Two^n
+ \to \Two^m$ (demands) \\
+ Matrix multiplication in $(\RR, +, \cdot)$ semiring & Matrix multiplication in $(\Two, \join,
+ \meet)$ semiring
 \end{tabular}
 \end{center}
