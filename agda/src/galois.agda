@@ -366,7 +366,7 @@ module _ where
 
   open import prop using (_⇔_)
 
-  -- For each y ∈ Two, (- ⊓ y) ⊣ (¬y ⊔ -) is a LatGal endomorphism on Two.
+  -- For a fixed y ∈ Two, (- ⊓ y) ⊣ (¬y ⊔ -) is a Galois connection Two → Two.
   -- FIXME: add a notation for Boolean implication?
   ⊓⊣→ : ∀ {x y z : Two} → two._≤_ (x ⊓ y) z ⇔ two._≤_ x (two.¬ y ⊔ z)
   ⊓⊣→ {O} {_} {_} .proj₁ _ = tt
