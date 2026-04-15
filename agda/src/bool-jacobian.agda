@@ -99,8 +99,17 @@ module _ where
   ⋅-mono : ∀ {n} {u u' v v' : Two^ n .Carrier} →
            Two^ n ._≤_ u u' → Two^ n ._≤_ v v' → two._≤_ (_⋅_ {n} u v) (_⋅_ {n} u' v')
   ⋅-mono {n} {u} {u'} {v} {v'} u≤u' v≤v' =
-    two.≤-trans (⋅-mono-r {n} u v≤v')
-      (two.≤-trans (⋅-comm {n} u v') (two.≤-trans (⋅-mono-r {n} v' u≤u') (⋅-comm {n} v' u')))
+    begin
+      _⋅_ {n} u v
+    ≤⟨ ⋅-mono-r {n} u v≤v' ⟩
+      _⋅_ {n} u v'
+    ≤⟨ ⋅-comm {n} u v' ⟩
+      _⋅_ {n} v' u
+    ≤⟨ ⋅-mono-r {n} v' u≤u' ⟩
+      _⋅_ {n} v' u'
+    ≤⟨ ⋅-comm {n} v' u' ⟩
+      _⋅_ {n} u' v'
+    ∎ where open basics.≤-Reasoning two.≤-isPreorder
 
 -- Pointwise negation on Two^n.
 module _ where
