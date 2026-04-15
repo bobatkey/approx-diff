@@ -48,6 +48,7 @@ proj (suc i) (_ , v) = proj i v
 
 open import Data.Unit using (tt)
 open import prop using (tt; _,_; _∧_; _⇔_; proj₁; proj₂)
+open import prop-setoid using (module ≈-Reasoning)
 
 -- Join of a finite family of join semilattices (so neither binary IsJoin nor arbitrary IsBigJoin). Be nicer
 -- to define in terms of the iterated product, but the function representation is convenient for now.
@@ -297,6 +298,36 @@ module _ where
     Two^ m .≤-trans (tabulate-⊤ {m})
                     (tabulate-mono {m} _ _ (λ i → ⊡-⊤ {n} (¬ {n} (f .fun (e i)))))
 
+  f-cong : ∀ {m n} (f : Two^J m ⇒J Two^J n) {v w : Two^ m .Carrier} →
+           _≃_ (Two^ m) v w → _≃_ (Two^ n) (f .fun v) (f .fun w)
+  f-cong f v≃w .proj₁ = f .*→*J .funcJ .preorder._=>_.mono (v≃w .proj₁)
+  f-cong f v≃w .proj₂ = f .*→*J .funcJ .preorder._=>_.mono (v≃w .proj₂)
+
+  -- Join-preserving maps commute with scalar multiplication: f(a ·⊓ v) ≃ a ·⊓ f(v). Follows from the two
+  -- boundary cases ·⊓-O (a = O, uses f preserves ⊥) and ·⊓-I (a = I, uses identity).
+  ·⊓-preserving : ∀ {m n} (f : Two^J m ⇒J Two^J n) (a : Two) (v : Two^ m .Carrier) →
+                  _≃_ (Two^ n) (f .fun (_·⊓_ {m} a v)) (_·⊓_ {n} a (f .fun v))
+  ·⊓-preserving {m} {n} f O v =
+    let open ≈-Reasoning (IsPreorder.isEquivalence (Two^ n .conjugate.Obj.≤-isPreorder)) in
+    begin
+      f .fun (_·⊓_ {m} O v)
+    ≈⟨ f-cong f (·⊓-O {m} v) ⟩
+      f .fun (Two^ m .⊥)
+    ≈⟨ join-semilattice._=>_.⊥-preserving-≃ (f .*→*J) ⟩
+      Two^ n .⊥
+    ≈˘⟨ ·⊓-O {n} (f .fun v) ⟩
+      _·⊓_ {n} O (f .fun v)
+    ∎
+  ·⊓-preserving {m} {n} f I v =
+    let open ≈-Reasoning (IsPreorder.isEquivalence (Two^ n .conjugate.Obj.≤-isPreorder)) in
+    begin
+      f .fun (_·⊓_ {m} I v)
+    ≈⟨ f-cong f (·⊓-I {m} v) ⟩
+      f .fun v
+    ≈˘⟨ ·⊓-I {n} (f .fun v) ⟩
+      _·⊓_ {n} I (f .fun v)
+    ∎
+
   -- Project f to "tail" of its input (precomposition with biproduct injection).
   private
     on-tail : ∀ {m n} → Two^J (suc m) ⇒J Two^J n → Two^J m ⇒J Two^J n
@@ -315,30 +346,51 @@ module _ where
   -- i.e. f can be formulated as a join of atomic "slices"!
   basis-decomp : ∀ {m n} (f : Two^J m ⇒J Two^J n) (v : Two^ m .Carrier) →
                  _≃_ (Two^ n) (f .fun v) (⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj i v) (f .fun (e i))))
-  basis-decomp {zero} {n} f v .proj₁ = f .*→*J .join-semilattice._=>_.⊥-preserving
+  basis-decomp {zero} {n} f v .proj₁ = f-⊥
+    where f-⊥ = f .*→*J .join-semilattice._=>_.⊥-preserving
   basis-decomp {zero} {n} f v .proj₂ = Two^ n .≤-bottom
   basis-decomp {suc m} {n} f (v₀ , v') .proj₁ =
-    Two^ n .≤-trans
-      (f .*→*J .funcJ .preorder._=>_.mono {x₂ = Two^ (suc m) ._∨_ (v₀ , Two^ m .⊥) (O , v')} (two.⊔-upper₁ , Two^ m .inr))
-      (Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.∨-preserving {v₀ , Two^ m .⊥} {O , v'})
-        (∨-mono (Two^ n) (head v₀) (basis-decomp (on-tail f) v' .proj₁)))
+    let open basics.≤-Reasoning (Two^ n .conjugate.Obj.≤-isPreorder)
+        f-mono = f .*→*J .funcJ .preorder._=>_.mono
+        f-∨ = f .*→*J .join-semilattice._=>_.∨-preserving
+    in begin
+      f .fun (v₀ , v')
+    ≤⟨ f-mono {x₂ = Two^ (suc m) ._∨_ (v₀ , Two^ m .⊥) (O , v')} (two.⊔-upper₁ , Two^ m .inr) ⟩
+      f .fun (Two^ (suc m) ._∨_ (v₀ , Two^ m .⊥) (O , v'))
+    ≤⟨ f-∨ {v₀ , Two^ m .⊥} {O , v'} ⟩
+      Two^ n ._∨_ (f .fun (v₀ , Two^ m .⊥)) (f .fun (O , v'))
+    ≤⟨ ∨-mono (Two^ n) (head v₀) (basis-decomp (on-tail f) v' .proj₁) ⟩
+      ⋁ (Two^J n) (suc m) (λ i → _·⊓_ {n} (proj i (v₀ , v')) (f .fun (e i)))
+    ∎
     where
       head : ∀ v₀ → Two^ n ._≤_ (f .fun (v₀ , Two^ m .⊥)) (_·⊓_ {n} v₀ (f .fun (I , Two^ m .⊥)))
       head O = Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.⊥-preserving) (Two^ n .≤-bottom)
       head I = ·⊓-I {n} (f .fun (I , Two^ m .⊥)) .proj₂
   basis-decomp {suc m} {n} f (v₀ , v') .proj₂ =
-    Two^ n .[_∨_]
+    let open basics.≤-Reasoning (Two^ n .conjugate.Obj.≤-isPreorder)
+        f-mono = f .*→*J .funcJ .preorder._=>_.mono
+    in Two^ n .[_∨_]
       (head v₀)
-      (Two^ n .≤-trans
-        (basis-decomp (on-tail f) v' .proj₂)
-        (f .*→*J .funcJ .preorder._=>_.mono {O , v'} {v₀ , v'} (tt , Two^ m .≤-refl {v'})))
+      (begin
+        ⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj (suc i) (v₀ , v')) (f .fun (e (suc i))))
+      ≤⟨ basis-decomp (on-tail f) v' .proj₂ ⟩
+        f .fun (O , v')
+      ≤⟨ f-mono {O , v'} {v₀ , v'} (tt , Two^ m .≤-refl {v'}) ⟩
+        f .fun (v₀ , v')
+      ∎)
     where
       head : ∀ v₀ → Two^ n ._≤_ (_·⊓_ {n} v₀ (f .fun (I , Two^ m .⊥))) (f .fun (v₀ , v'))
       head O = Two^ n .≤-trans (·⊓-O {n} (f .fun (I , Two^ m .⊥)) .proj₁) (Two^ n .≤-bottom)
       head I =
-        Two^ n .≤-trans
-          (·⊓-I {n} (f .fun (I , Two^ m .⊥)) .proj₁)
-          (f .*→*J .funcJ .preorder._=>_.mono {I , Two^ m .⊥} {I , v'} (tt , Two^ m .≤-bottom))
+        let open basics.≤-Reasoning (Two^ n .conjugate.Obj.≤-isPreorder)
+            f-mono = f .*→*J .funcJ .preorder._=>_.mono
+        in begin
+          _·⊓_ {n} I (f .fun (I , Two^ m .⊥))
+        ≤⟨ ·⊓-I {n} (f .fun (I , Two^ m .⊥)) .proj₁ ⟩
+          f .fun (I , Two^ m .⊥)
+        ≤⟨ f-mono {I , Two^ m .⊥} {I , v'} (tt , Two^ m .≤-bottom) ⟩
+          f .fun (I , v')
+        ∎
 
   -- Sanity-check: transpose corresponds to transposing the implied matrix.
   private
