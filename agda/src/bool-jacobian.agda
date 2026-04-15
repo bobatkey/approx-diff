@@ -8,7 +8,6 @@ open import Data.Fin using (Fin; zero; suc)
 open import Data.Product using (_,_)
 open import two using (Two; I; O; _⊓_; _⊔_; ⊔-upper₂; ≤-isPreorder; ⊓-isMeet; I-isTop)
 open import basics using (IsPreorder; IsTop)
-open IsPreorder ≤-isPreorder using () renaming (_≃_ to _≃t_; ≃-refl to ≃t-refl; ≃-trans to ≃t-trans)
 import join-semilattice-category
 import meet-semilattice-category
 import meet-semilattice
@@ -258,8 +257,8 @@ module _ where
     proj-mono {suc m} (_ , v) (_ , w) .proj₁ (_ , t) (suc i) = proj-mono {m} v w .proj₁ t i
     proj-mono {suc m} (_ , v) (_ , w) .proj₂ p = p zero , proj-mono {m} v w .proj₂ (λ i → p (suc i))
 
-    proj-tabulate : ∀ {n} (g : Fin n → Two) (i : Fin n) → proj i (tabulate {n} g) ≃t g i
-    proj-tabulate {suc n} g zero = ≃t-refl
+    proj-tabulate : ∀ {n} (g : Fin n → Two) (i : Fin n) → proj i (tabulate {n} g) two.≃ g i
+    proj-tabulate {suc n} g zero = two.≃-refl
     proj-tabulate {suc n} g (suc i) = proj-tabulate {n} (λ i → g (suc i)) i
 
     ¬-tabulate : ∀ {m} (g : Fin m → Two) →
@@ -291,14 +290,15 @@ module _ where
     Two^ m .≤-trans (tabulate-⊤ {m})
                     (tabulate-mono {m} _ _ (λ i → ⊡-⊤ {n} (¬ {n} (f .fun (e i)))))
 
-  -- Restrict f to its "tail": f-tail(z) = f(O, z).
-  f-tail : ∀ {m n} → Two^J (suc m) ⇒J Two^J n → Two^J m ⇒J Two^J n
-  f-tail {m} {n} f .*→*J .funcJ .funP v = f .fun (O , v)
-  f-tail {m} {n} f .*→*J .funcJ .preorder._=>_.mono v≤v' =
-    f .*→*J .funcJ .preorder._=>_.mono (tt , v≤v')
-  f-tail {m} {n} f .*→*J .join-semilattice._=>_.∨-preserving =
-    f .*→*J .join-semilattice._=>_.∨-preserving
-  f-tail {m} {n} f .*→*J .join-semilattice._=>_.⊥-preserving = f .*→*J .join-semilattice._=>_.⊥-preserving
+  -- Project f to "tail" of its input (precomposition with biproduct injection).
+  private
+    on-tail : ∀ {m n} → Two^J (suc m) ⇒J Two^J n → Two^J m ⇒J Two^J n
+    on-tail {m} {n} f .*→*J .funcJ .funP v = f .fun (O , v)
+    on-tail {m} {n} f .*→*J .funcJ .preorder._=>_.mono v≤v' =
+      f .*→*J .funcJ .preorder._=>_.mono (tt , v≤v')
+    on-tail {m} {n} f .*→*J .join-semilattice._=>_.∨-preserving =
+      f .*→*J .join-semilattice._=>_.∨-preserving
+    on-tail {m} {n} f .*→*J .join-semilattice._=>_.⊥-preserving = f .*→*J .join-semilattice._=>_.⊥-preserving
 
   -- Join-preserving maps f : Two^m → Two^n are determined by their values on basis vectors:
   -- f(v) = join of v_i ·⊓ f(e_i).
@@ -310,7 +310,7 @@ module _ where
     Two^ n .≤-trans
       (f .*→*J .funcJ .preorder._=>_.mono {x₂ = Two^ (suc m) ._∨_ (v₀ , Two^ m .⊥) (O , v')} (two.⊔-upper₁ , Two^ m .inr))
       (Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.∨-preserving {v₀ , Two^ m .⊥} {O , v'})
-        (∨-mono (Two^ n) (head v₀) (basis-decomp (f-tail f) v' .proj₁)))
+        (∨-mono (Two^ n) (head v₀) (basis-decomp (on-tail f) v' .proj₁)))
     where
       head : ∀ v₀ → Two^ n ._≤_ (f .fun (v₀ , Two^ m .⊥)) (_·⊓_ {n} v₀ (f .fun (I , Two^ m .⊥)))
       head O = Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.⊥-preserving) (Two^ n .≤-bottom)
@@ -319,7 +319,7 @@ module _ where
     Two^ n .[_∨_]
       (head v₀)
       (Two^ n .≤-trans
-        (basis-decomp (f-tail f) v' .proj₂)
+        (basis-decomp (on-tail f) v' .proj₂)
         (f .*→*J .funcJ .preorder._=>_.mono {O , v'} {v₀ , v'} (tt , Two^ m .≤-refl {v'})))
     where
       head : ∀ v₀ → Two^ n ._≤_ (_·⊓_ {n} v₀ (f .fun (I , Two^ m .⊥))) (f .fun (v₀ , v'))
@@ -334,16 +334,16 @@ module _ where
     matrix : ∀ {m n} → Two^J m ⇒J Two^J n → Fin n → Fin m → Two
     matrix f j i = proj j (f .fun (e i))
 
-    ⋅-e : ∀ {n} (u : Two^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) ≃t proj j u
+    ⋅-e : ∀ {n} (u : Two^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) two.≃ proj j u
     ⋅-e {suc n} (O , u) zero = ⋅-⊥ {n} u , tt
     ⋅-e {suc n} (I , u) zero = tt , tt
     ⋅-e {suc n} (O , u) (suc j) = ⋅-e {n} u j
     ⋅-e {suc n} (I , u) (suc j) = ⋅-e {n} u j
 
     transpose-matrix : ∀ m n (f : Two^J m ⇒J Two^J n) (i : Fin m) (j : Fin n) →
-                      matrix {n} {m} (transpose {m} {n} f) i j ≃t matrix {m} {n} f j i
+                      matrix {n} {m} (transpose {m} {n} f) i j two.≃ matrix {m} {n} f j i
     transpose-matrix m n f i j =
-      ≃t-trans (proj-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) (e j)) i)
+      two.≃-trans (proj-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) (e j)) i)
               (⋅-e {n} (fun f (e i)) j)
 
   -- (adjoint f) and (transpose f) are De Morgan dual.

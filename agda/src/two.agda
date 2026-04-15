@@ -31,7 +31,7 @@ I ≤ I = ⊤
 ≤-isPreorder .IsPreorder.refl = ≤-refl
 ≤-isPreorder .IsPreorder.trans = ≤-trans
 
-open IsPreorder ≤-isPreorder
+open IsPreorder ≤-isPreorder public
 
 ------------------------------------------------------------------------------
 I-isTop : IsTop ≤-isPreorder I
