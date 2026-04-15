@@ -1,17 +1,14 @@
 \subsection{Boolean Jacobians}
 \label{sec:boolean-jacobians}
 
-Let $\Two = (\{\bot, \top\}, \join, \bot, \meet, \top, \neg)$ be the two-element Boolean algebra. Throughout
-this section we adopt the join-semilattice reading of $\SemiLat$ (\secref{cmon}).
-
-\subsubsection{Overview}
-\label{sec:boolean-jacobians:overview}
-
-Consider the following subcategory $\FinVect_\Two$ of $\SemiLat$:
+Let $\Two = (\{\bot, \top\}, \join, \bot, \meet, \top, \neg)$ be the two-element Boolean algebra. Consider the
+following subcategory $\FinVect_\Two$ of $\SemiLat$ (with its join-semilattice reading, \secref{cmon}):
 
 \begin{itemize}
-\item Objects are finite Boolean vector spaces $\Two^n$, arising as iterated biproducts
-(\secref{boolean-jacobians:vectors}).
+\item Objects are finite Boolean vector spaces $\Two^n$, arising as iterated biproducts; $\Two^0$ is the zero
+object and $\Two^{n+1} = \Two \biprod \Two^n$. Its carrier is the set of length-$n$ vectors of Boolean values,
+with pointwise $\join$ and $\bot$. The carrier additionally inherits pointwise $\meet$ and $\top$ from $\Two$,
+so has the richer structure of a Boolean algebra, not merely a join semilattice.
 \item Morphisms $f: \Two^m \to \Two^n$ are $n \times m$ Boolean matrices; composition is matrix multiplication
 in the $(\join, \meet)$-semiring (\secref{boolean-jacobians:matrices}).
 \item Every morphism has a \emph{transpose} $f^{\!\top}: \Two^n \to \Two^m$ (also $\join$-preserving) and a
@@ -30,12 +27,6 @@ with no direct real-AD analogue (\secref{boolean-jacobians:ad}).
 
 \subsubsection{Boolean vectors as iterated biproducts}
 \label{sec:boolean-jacobians:vectors}
-
-Define $\Two^n$ inductively as the $n$-fold biproduct of $\Two$ in $\SemiLat$: $\Two^0$ is the zero object and
-$\Two^{n+1} = \Two \biprod \Two^n$. Its carrier is the set of length-$n$ vectors of Boolean values, with
-pointwise $\join$ and $\bot$. The carrier additionally inherits pointwise $\meet$ and $\top$ from $\Two$, so
-each $\Two^n$ carries the richer structure of a Boolean algebra, not merely a join semilattice, although
-$\SemiLat$ morphisms are only required to preserve joins.
 
 \subsubsection{Morphisms as Boolean matrices}
 \label{sec:boolean-jacobians:matrices}
