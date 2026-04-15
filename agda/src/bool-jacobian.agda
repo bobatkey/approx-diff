@@ -60,10 +60,11 @@ module _ (J : join-semilattice-category.Obj) where
   ⋁-lub zero f x p = J .≤-bottom
   ⋁-lub (suc n) f x p = J .[_∨_] (p zero) (⋁-lub n (λ i → f (suc i)) x (λ i → p (suc i)))
 
--- Dot product: u ⋅ v = (u₀ ⊓ v₀) ⊔ ... ⊔ (uₙ ⊓ vₙ).
+-- Dot product (sum of products of entries of equal-length vectors):
+--   u ⋅ v = (u₀ ⊓ v₀) ⊔ ... ⊔ (uₙ ⊓ vₙ)
 module _ where
   _⋅_ : ∀ {n} → Two^ n .Carrier → Two^ n .Carrier → Two
-  _⋅_ {zero}  _ _ = O
+  _⋅_ {zero} _ _ = O
   _⋅_ {suc n} (a , u) (b , v) = (a ⊓ b) ⊔ _⋅_ {n} u v
 
   -- ⋅ is join-preserving.
@@ -83,7 +84,7 @@ module _ where
   private
     ⋅-mono-r : ∀ {n} (u : Two^ n .Carrier) {v w : Two^ n .Carrier} →
                Two^ n ._≤_ v w → two._≤_ (_⋅_ {n} u v) (_⋅_ {n} u w)
-    ⋅-mono-r {zero}  _ _ = tt
+    ⋅-mono-r {zero} _ _ = tt
     ⋅-mono-r {suc n} (O , u) {_ , v} {_ , w} (_ , v≤w) = ⋅-mono-r {n} u v≤w
     ⋅-mono-r {suc n} (I , u) {O , v} {_ , w} (_ , v≤w) = two.≤-trans (⋅-mono-r {n} u v≤w) ⊔-upper₂
     ⋅-mono-r {suc n} (I , u) {I , v} {I , w} (_ , v≤w) = tt
