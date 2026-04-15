@@ -364,27 +364,44 @@ module _ where
     matrix f j i = proj j (f .fun (e i))
 
     transpose-matrix : ∀ m n (f : Two^J m ⇒J Two^J n) (i : Fin m) (j : Fin n) →
-                      matrix {n} {m} (transpose {m} {n} f) i j two.≃ matrix {m} {n} f j i
+                       matrix {n} {m} (transpose {m} {n} f) i j two.≃ matrix {m} {n} f j i
     transpose-matrix m n f i j =
       two.≃-trans (proj-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) (e j)) i)
                   (⋅-e {n} (f .fun (e i)) j)
 
+  -- Congruence helpers for ⋅, two.¬, and tabulate, derived from monotonicity lemmas.
+  ⋅-cong : ∀ {n} {u u' v v' : Two^ n .Carrier} →
+           _≃_ (Two^ n) u u' → _≃_ (Two^ n) v v' → two._≃_ (_⋅_ {n} u v) (_⋅_ {n} u' v')
+  ⋅-cong {n} u≃u' v≃v' .proj₁ = ⋅-mono {n} (u≃u' .proj₁) (v≃v' .proj₁)
+  ⋅-cong {n} u≃u' v≃v' .proj₂ = ⋅-mono {n} (u≃u' .proj₂) (v≃v' .proj₂)
+
+  two-¬-cong : ∀ {a b} → two._≃_ a b → two._≃_ (two.¬ a) (two.¬ b)
+  two-¬-cong a≃b .proj₁ = ¬-anti (a≃b .proj₂)
+  two-¬-cong a≃b .proj₂ = ¬-anti (a≃b .proj₁)
+
+  tabulate-cong : ∀ {m} {g h : Fin m → Two} →
+                  (∀ i → two._≃_ (g i) (h i)) → _≃_ (Two^ m) (tabulate {m} g) (tabulate {m} h)
+  tabulate-cong {m} g≃h .proj₁ = tabulate-mono {m} _ _ (λ i → g≃h i .proj₁)
+  tabulate-cong {m} g≃h .proj₂ = tabulate-mono {m} _ _ (λ i → g≃h i .proj₂)
+
   -- (adjoint f) and (transpose f) are De Morgan dual.
+  --   ¬(f(e_i) · v) = ¬(¬¬(f(e_i)) · ¬¬v) = (¬f(e_i)) ⊡ (¬v)   (last step is by def of ⊡)
   ¬transpose≃adjoint¬ : ∀ {m n} (f : Two^J m ⇒J Two^J n) (v : Two^ n .Carrier) →
                        _≃_ (Two^ m) (¬ {m} (fun (transpose {m} {n} f) v))
                                     (adjoint {m} {n} f .*→*M ._=>M_.func ._=>_.fun (¬ {n} v))
-  ¬transpose≃adjoint¬ {m} {n} f v .proj₁ =
-    Two^ m .≤-trans (¬-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) v) .proj₁) (tabulate-mono {m} _ _ per-i)
+  ¬transpose≃adjoint¬ {m} {n} f v =
+    begin
+      ¬ {m} (fun (transpose {m} {n} f) v)
+    ≈⟨ ¬-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) v) ⟩
+      tabulate {m} (λ i → two.¬ (_⋅_ {n} (f .fun (e i)) v))
+    ≈⟨ tabulate-cong {m} per-i-≃ ⟩
+      tabulate {m} (λ i → _⊡_ {n} (¬ {n} (f .fun (e i))) (¬ {n} v))
+    ∎
     where
-      per-i : (i : Fin m) → two._≤_ (two.¬ (_⋅_ {n} (f .fun (e i)) v))
-                                    (_⊡_ {n} (¬ {n} (f .fun (e i))) (¬ {n} v))
-      per-i i = ¬-anti (⋅-mono {n} (¬-involutive {n} (f .fun (e i)) .proj₂) (¬-involutive {n} v .proj₂))
-  ¬transpose≃adjoint¬ {m} {n} f v .proj₂ =
-    Two^ m .≤-trans (tabulate-mono {m} _ _ per-i) (¬-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) v) .proj₂)
-    where
-      per-i : (i : Fin m) → two._≤_ (_⊡_ {n} (¬ {n} (f .fun (e i))) (¬ {n} v))
-                                    (two.¬ (_⋅_ {n} (f .fun (e i)) v))
-      per-i i = ¬-anti (⋅-mono {n} (¬-involutive {n} (f .fun (e i)) .proj₁) (¬-involutive {n} v .proj₁))
+      open ≈-Reasoning (IsPreorder.isEquivalence (Two^ m .conjugate.Obj.≤-isPreorder))
+      per-i-≃ : ∀ i → two._≃_ (two.¬ (_⋅_ {n} (f .fun (e i)) v))
+                              (_⊡_ {n} (¬ {n} (f .fun (e i))) (¬ {n} v))
+      per-i-≃ i = two-¬-cong (⋅-cong {n} (¬-involutive {n} (f .fun (e i))) (¬-involutive {n} v))
 
   -- (adjoint f, f) is a Galois connection.
   to-gal : ∀ {m n} → Two^J m ⇒J Two^J n → _⇒g_ (Two^-gal n) (Two^-gal m)
