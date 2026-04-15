@@ -124,6 +124,10 @@ module _ where
   ¬ {zero} _ = tt
   ¬ {suc n} (a , u) = two.¬ a , ¬ {n} u
 
+  ¬-⊤ : ∀ {n} → Two^ n ._≤_ (¬ {n} (Two^ n .⊤)) (Two^ n .⊥)
+  ¬-⊤ {zero}  = tt
+  ¬-⊤ {suc n} = tt , ¬-⊤ {n}
+
   ¬-anti : ∀ {a b : Two} → two._≤_ a b → two._≤_ (two.¬ b) (two.¬ a)
   ¬-anti {O} {O} _ = tt
   ¬-anti {O} {I} _ = tt
@@ -176,10 +180,6 @@ module _ where
 ·⊓u⊣u→ (suc n) I (O , u) (v₀ , v) .proj₂ h = tt , ·⊓u⊣u→ n I u v .proj₂ h
 ·⊓u⊣u→ (suc n) I (I , u) (O , v) .proj₂ ()
 ·⊓u⊣u→ (suc n) I (I , u) (I , v) .proj₂ h = tt , ·⊓u⊣u→ n I u v .proj₂ h
-
-¬-⊤ : ∀ {n} → Two^ n ._≤_ (¬ {n} (Two^ n .⊤)) (Two^ n .⊥)
-¬-⊤ {zero}  = tt
-¬-⊤ {suc n} = tt , ¬-⊤ {n}
 
 -- ⊡ preserves ∧ in its second argument.
 ⊡-∧ : ∀ {n} (u v w : Two^ n .Carrier) →
