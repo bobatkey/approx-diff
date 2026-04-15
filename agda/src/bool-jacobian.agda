@@ -14,26 +14,24 @@ import meet-semilattice-category
 import meet-semilattice
 import galois
 
+open galois.Obj
+
 -- Objects: Two^n as a bounded lattice, the n-fold product of TWO.
 -- FIXME: using galois.Obj as a stand-in for BoundedLattice, which we don't have yet.
-
 Two^ : ℕ → galois.Obj
 Two^ zero    = galois.𝟙
 Two^ (suc n) = galois._⊕_ galois.TWO (Two^ n)
 
 -- Join-semilattice and meet-semilattice views.
-Two^-join : ℕ → join-semilattice-category.Obj
-Two^-join n .join-semilattice-category.Obj.carrier = Two^ n .galois.Obj.carrier
-Two^-join n .join-semilattice-category.Obj.joins = Two^ n .galois.Obj.joins
+Two^J : ℕ → join-semilattice-category.Obj
+Two^J n .join-semilattice-category.Obj.carrier = Two^ n .carrier
+Two^J n .join-semilattice-category.Obj.joins = Two^ n .joins
 
-Two^-meet : ℕ → meet-semilattice-category.Obj
-Two^-meet n .meet-semilattice-category.Obj.carrier = Two^ n .galois.Obj.carrier
-Two^-meet n .meet-semilattice-category.Obj.meets = Two^ n .galois.Obj.meets
-
-open galois.Obj
+Two^M : ℕ → meet-semilattice-category.Obj
+Two^M n .meet-semilattice-category.Obj.carrier = Two^ n .carrier
+Two^M n .meet-semilattice-category.Obj.meets = Two^ n .meets
 
 -- Basis vectors, projection and tabulation for Two^n.
-
 e : ∀ {n} → Fin n → Two^ n .Carrier
 e {suc n} zero = I , Two^ n .⊥
 e {suc n} (suc i) = O , e i
@@ -276,7 +274,7 @@ module _ where
     proj-tabulate {suc n} g zero = ≃t-refl
     proj-tabulate {suc n} g (suc i) = proj-tabulate {n} (λ i → g (suc i)) i
 
-  transpose : ∀ {m n} → Two^-join m ⇒J Two^-join n → Two^-join n ⇒J Two^-join m
+  transpose : ∀ {m n} → Two^J m ⇒J Two^J n → Two^J n ⇒J Two^J m
   transpose {m} {n} f .*→*J .funcJ .funP v = tabulate {m} (λ i → _⋅_ {n} (fun f (e i)) v)
   transpose {m} {n} f .*→*J .funcJ .preorder._=>_.mono v≤w =
     tabulate-mono {m} _ _ (λ i → ⋅-mono {n} (Two^ n .≤-refl) v≤w)
@@ -287,7 +285,7 @@ module _ where
     Two^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-⊥ {n} (fun f (e i))))
                      (tabulate-⊥ {m})
 
-  adjoint : ∀ {m n} → Two^-join m ⇒J Two^-join n → Two^-meet n ⇒M Two^-meet m
+  adjoint : ∀ {m n} → Two^J m ⇒J Two^J n → Two^M n ⇒M Two^M m
   adjoint {m} {n} f .*→*M .funcM .funP v = tabulate {m} (λ i → _⊡_ {n} (¬ {n} (fun f (e i))) v)
   adjoint {m} {n} f .*→*M .funcM .preorder._=>_.mono v≤w =
     tabulate-mono {m} _ _ (λ i → ⊡-mono {n} (¬ {n} (fun f (e i))) v≤w)
@@ -299,7 +297,7 @@ module _ where
                      (tabulate-mono {m} _ _ (λ i → ⊡-⊤ {n} (¬ {n} (fun f (e i)))))
 
   -- Restrict f to its "tail": f-tail(z) = f(O, z).
-  f-tail : ∀ {m n} → Two^-join (suc m) ⇒J Two^-join n → Two^-join m ⇒J Two^-join n
+  f-tail : ∀ {m n} → Two^J (suc m) ⇒J Two^J n → Two^J m ⇒J Two^J n
   f-tail {m} {n} f .*→*J .funcJ .funP v = fun f (O , v)
   f-tail {m} {n} f .*→*J .funcJ .preorder._=>_.mono v≤v' =
     f .*→*J .funcJ .preorder._=>_.mono (tt , v≤v')
@@ -309,8 +307,8 @@ module _ where
 
   -- Join-preserving maps f : Two^m → Two^n are determined by their values on basis vectors:
   -- f(y) equals the join of f(e_i) scaled by y[i].
-  f-basis : ∀ {m n} (f : Two^-join m ⇒J Two^-join n) (y : Two^ m .Carrier) → _≃_ (Two^ n) (fun f y)
-                    (⋁ (Two^-join n) m (λ i → _·⊓_ {n} (proj i y) (fun f (e i))))
+  f-basis : ∀ {m n} (f : Two^J m ⇒J Two^J n) (y : Two^ m .Carrier) → _≃_ (Two^ n) (fun f y)
+                    (⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj i y) (fun f (e i))))
   f-basis {zero}  {n} f y .proj₁ = f .*→*J .join-semilattice._=>_.⊥-preserving
   f-basis {zero}  {n} f y .proj₂ = Two^ n .≤-bottom
   f-basis {suc m} {n} f (y₀ , y') .proj₁ =
@@ -338,7 +336,7 @@ module _ where
 
   -- Sanity-check: transpose corresponds to transposing the implied matrix.
   private
-    matrix : ∀ {m n} → Two^-join m ⇒J Two^-join n → Fin n → Fin m → Two
+    matrix : ∀ {m n} → Two^J m ⇒J Two^J n → Fin n → Fin m → Two
     matrix f j i = proj j (fun f (e i))
 
     ⋅-e : ∀ {n} (u : Two^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) ≃t proj j u
@@ -347,14 +345,14 @@ module _ where
     ⋅-e {suc n} (O , u) (suc j) = ⋅-e {n} u j
     ⋅-e {suc n} (I , u) (suc j) = ⋅-e {n} u j
 
-    transpose-matrix : ∀ m n (f : Two^-join m ⇒J Two^-join n) (i : Fin m) (j : Fin n) →
+    transpose-matrix : ∀ m n (f : Two^J m ⇒J Two^J n) (i : Fin m) (j : Fin n) →
                       matrix {n} {m} (transpose {m} {n} f) i j ≃t matrix {m} {n} f j i
     transpose-matrix m n f i j =
       ≃t-trans (proj-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) (e j)) i)
               (⋅-e {n} (fun f (e i)) j)
 
   -- (adjoint f) and (transpose f) are De Morgan dual.
-  ¬transpose≃adjoint¬ : ∀ {m n} (f : Two^-join m ⇒J Two^-join n) (x : Two^ n .Carrier) →
+  ¬transpose≃adjoint¬ : ∀ {m n} (f : Two^J m ⇒J Two^J n) (x : Two^ n .Carrier) →
                        _≃_ (Two^ m) (¬ {m} (fun (transpose {m} {n} f) x))
                                     (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun (¬ {n} x))
   ¬transpose≃adjoint¬ {m} {n} f x .proj₁ =
@@ -371,7 +369,7 @@ module _ where
       per-i i = ¬-anti (⋅-mono {n} (¬-invol {n} (fun f (e i)) .proj₁) (¬-invol {n} x .proj₁))
 
   -- Galois embedding: (adjoint f, f) forms a Galois connection.
-  to-gal : ∀ {m n} → Two^-join m ⇒J Two^-join n → galois._⇒g_ (Two^ n) (Two^ m)
+  to-gal : ∀ {m n} → Two^J m ⇒J Two^J n → galois._⇒g_ (Two^ n) (Two^ m)
   to-gal {m} {n} f .galois._⇒g_.right = adjoint {m} {n} f .*→*M .funcM
   to-gal {m} {n} f .galois._⇒g_.left  = f .*→*J .funcJ
   to-gal {m} {n} f .galois._⇒g_.left⊣right {x} {y} .proj₁ y≤adj =
@@ -379,8 +377,8 @@ module _ where
     begin
       fun f y
     ≤⟨ f-basis f y .proj₁ ⟩
-      ⋁ (Two^-join n) m (λ i → _·⊓_ {n} (proj i y) (fun f (e i)))
-    ≤⟨ ⋁-lub (Two^-join n) m _ x per-i ⟩
+      ⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj i y) (fun f (e i)))
+    ≤⟨ ⋁-lub (Two^J n) m _ x per-i ⟩
       x
     ∎
     where
@@ -402,7 +400,7 @@ module _ where
         begin
           proj i y
         ≤⟨ ⊡-adj n (proj i y) (fun f (e i)) x .proj₁
-             (Two^ n .≤-trans (⋁-upper (Two^-join n) m _ i) (Two^ n .≤-trans (f-basis f y .proj₂) fy≤x)) ⟩
+             (Two^ n .≤-trans (⋁-upper (Two^J n) m _ i) (Two^ n .≤-trans (f-basis f y .proj₂) fy≤x)) ⟩
           _⊡_ {n} (¬ {n} (fun f (e i))) x
         ≤⟨ proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (fun f (e k))) x) i .proj₂ ⟩
           proj i (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x)
@@ -411,7 +409,7 @@ module _ where
 
   -- Conjugate embedding: (transpose f, f) forms a conjugate pair Two^n ⇒c Two^m.
   -- Derive from to-gal via De Morgan duality.
-  to-conj : ∀ {m n} → Two^-join m ⇒J Two^-join n → conjugate._⇒c_ (Two^-conj n) (Two^-conj m)
+  to-conj : ∀ {m n} → Two^J m ⇒J Two^J n → conjugate._⇒c_ (Two^-conj n) (Two^-conj m)
   to-conj {m} {n} f .conjugate._⇒c_.right = transpose {m} {n} f .*→*J .funcJ
   to-conj {m} {n} f .conjugate._⇒c_.left  = f .*→*J .funcJ
   to-conj {m} {n} f .conjugate._⇒c_.conjugate {x} {y} .proj₁ y#tr =
