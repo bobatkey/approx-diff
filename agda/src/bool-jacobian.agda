@@ -124,6 +124,7 @@ module _ where
   ¬ {zero} _ = tt
   ¬ {suc n} (a , u) = two.¬ a , ¬ {n} u
 
+  -- FIXME: these hold in any Boolean algebra.
   ¬-⊤ : ∀ {n} → Two^ n ._≤_ (¬ {n} (Two^ n .⊤)) (Two^ n .⊥)
   ¬-⊤ {zero}  = tt
   ¬-⊤ {suc n} = tt , ¬-⊤ {n}
@@ -141,6 +142,16 @@ module _ where
   ¬-involutive {zero} _ = tt , tt
   ¬-involutive {suc n} (O , u) = (tt , ¬-involutive {n} u .proj₁) , (tt , ¬-involutive {n} u .proj₂)
   ¬-involutive {suc n} (I , u) = (tt , ¬-involutive {n} u .proj₁) , (tt , ¬-involutive {n} u .proj₂)
+
+  #-↔-≤ : ∀ {n} (u v : Two^ n .Carrier) → conjugate.Obj._#_ (Two^ n) u v ⇔ Two^ n ._≤_ u (¬ {n} v)
+  #-↔-≤ {zero}  _       _       .proj₁ _ = tt
+  #-↔-≤ {suc n} (O , _) (_ , _) .proj₁ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₁ t
+  #-↔-≤ {suc n} (I , _) (O , _) .proj₁ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₁ t
+  #-↔-≤ {suc n} (I , _) (I , _) .proj₁ (() , _)
+  #-↔-≤ {zero}  _       _       .proj₂ _ = tt
+  #-↔-≤ {suc n} (O , _) (_ , _) .proj₂ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₂ t
+  #-↔-≤ {suc n} (I , _) (O , _) .proj₂ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₂ t
+  #-↔-≤ {suc n} (I , _) (I , _) .proj₂ (() , _)
 
 -- De Morgan dual of ⋅ (i.e. ⋅ in the dual semiring).
 --   u ⊡ v = (u₀ ⊔ v₀) ⊓ ... ⊓ (uₙ ⊔ vₙ)
@@ -193,17 +204,6 @@ module _ where
 ·⊓u⊣u→ (suc n) I (O , u) (v₀ , v) .proj₂ h = tt , ·⊓u⊣u→ n I u v .proj₂ h
 ·⊓u⊣u→ (suc n) I (I , u) (O , v) .proj₂ ()
 ·⊓u⊣u→ (suc n) I (I , u) (I , v) .proj₂ h = tt , ·⊓u⊣u→ n I u v .proj₂ h
-
--- Holds in any Boolean algebra.
-#-↔-≤ : ∀ {n} (u v : Two^ n .Carrier) → conjugate.Obj._#_ (Two^ n) u v ⇔ Two^ n ._≤_ u (¬ {n} v)
-#-↔-≤ {zero}  _       _       .proj₁ _ = tt
-#-↔-≤ {suc n} (O , _) (_ , _) .proj₁ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₁ t
-#-↔-≤ {suc n} (I , _) (O , _) .proj₁ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₁ t
-#-↔-≤ {suc n} (I , _) (I , _) .proj₁ (() , _)
-#-↔-≤ {zero}  _       _       .proj₂ _ = tt
-#-↔-≤ {suc n} (O , _) (_ , _) .proj₂ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₂ t
-#-↔-≤ {suc n} (I , _) (O , _) .proj₂ (_ , t) = tt , #-↔-≤ {n} _ _ .proj₂ t
-#-↔-≤ {suc n} (I , _) (I , _) .proj₂ (() , _)
 
 -- Morphisms: join-semilattice morphisms Two^m → Two^n.
 -- Every such map is determined by its values on basis vectors, i.e. by an n × m Boolean matrix.
