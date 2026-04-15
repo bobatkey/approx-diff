@@ -37,6 +37,7 @@ Two^M : ℕ → meet-semilattice-category.Obj
 Two^M n .meet-semilattice-category.Obj.carrier = Two^ n .carrier
 Two^M n .meet-semilattice-category.Obj.meets = Two^ n .meets
 
+
 -- Standard basis vectors
 e : ∀ {n} → Fin n → Two^ n .Carrier
 e {suc n} zero = I , Two^ n .⊥
@@ -222,10 +223,11 @@ module _ where
   open join-semilattice-category._⇒_ using (fun) renaming (*→* to *→*J)
   open meet-semilattice-category._⇒_ renaming (*→* to *→*M; fun to funM)
   import join-semilattice
-  open join-semilattice._=>_ renaming (func to funcJ)
-  open meet-semilattice._=>_ renaming (func to funcM)
+  open join-semilattice using () renaming (_=>_ to _=>J_)
+  open meet-semilattice using () renaming (_=>_ to _=>M_)
   open import preorder using (_=>_)
-  open preorder._=>_ using () renaming (fun to funP; resp-≃ to respP-≃)
+  open galois using (_⇒g_)
+  open conjugate using (_⇒c_)
 
   private
     -- (tabulate, proj) is a Boolean algebra isomorphism from (Fin m → Two) to Two^m.
@@ -277,8 +279,8 @@ module _ where
       (two.≤-refl , ¬-tabulate {m} (λ i → g (suc i)) .proj₂)
 
   transpose : ∀ {m n} → Two^J m ⇒J Two^J n → Two^J n ⇒J Two^J m
-  transpose {m} {n} f .*→*J .funcJ .funP v = tabulate {m} (λ i → _⋅_ {n} (f .fun (e i)) v)
-  transpose {m} {n} f .*→*J .funcJ .preorder._=>_.mono v≤w =
+  transpose {m} {n} f .*→*J ._=>J_.func ._=>_.fun v = tabulate {m} (λ i → _⋅_ {n} (f .fun (e i)) v)
+  transpose {m} {n} f .*→*J ._=>J_.func ._=>_.mono v≤w =
     tabulate-mono {m} _ _ (λ i → ⋅-mono {n} (Two^ n .≤-refl) v≤w)
   transpose {m} {n} f .*→*J .join-semilattice._=>_.∨-preserving {v} {w} =
     Two^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-∨ {n} (f .fun (e i)) v w))
@@ -288,8 +290,8 @@ module _ where
                     (tabulate-⊥ {m})
 
   adjoint : ∀ {m n} → Two^J m ⇒J Two^J n → Two^M n ⇒M Two^M m
-  adjoint {m} {n} f .*→*M .funcM .funP v = tabulate {m} (λ i → _⊡_ {n} (¬ {n} (f .fun (e i))) v)
-  adjoint {m} {n} f .*→*M .funcM .preorder._=>_.mono v≤w =
+  adjoint {m} {n} f .*→*M ._=>M_.func ._=>_.fun v = tabulate {m} (λ i → _⊡_ {n} (¬ {n} (f .fun (e i))) v)
+  adjoint {m} {n} f .*→*M ._=>M_.func ._=>_.mono v≤w =
     tabulate-mono {m} _ _ (λ i → ⊡-mono {n} (¬ {n} (f .fun (e i))) v≤w)
   adjoint {m} {n} f .*→*M .meet-semilattice._=>_.∧-preserving {v} {w} =
     Two^ m .≤-trans (tabulate-∧ {m} _ _)
@@ -306,7 +308,7 @@ module _ where
     let open ≈-Reasoning (IsPreorder.isEquivalence (Two^ n .conjugate.Obj.≤-isPreorder)) in
     begin
       f .fun (_·⊓_ {m} O v)
-    ≈⟨ respP-≃ (f .*→*J .funcJ) (·⊓-O {m} v) ⟩
+    ≈⟨ _=>_.resp-≃ (f .*→*J ._=>J_.func) (·⊓-O {m} v) ⟩
       f .fun (Two^ m .⊥)
     ≈⟨ join-semilattice._=>_.⊥-preserving-≃ (f .*→*J) ⟩
       Two^ n .⊥
@@ -317,7 +319,7 @@ module _ where
     let open ≈-Reasoning (IsPreorder.isEquivalence (Two^ n .conjugate.Obj.≤-isPreorder)) in
     begin
       f .fun (_·⊓_ {m} I v)
-    ≈⟨ respP-≃ (f .*→*J .funcJ) (·⊓-I {m} v) ⟩
+    ≈⟨ _=>_.resp-≃ (f .*→*J ._=>J_.func) (·⊓-I {m} v) ⟩
       f .fun v
     ≈˘⟨ ·⊓-I {n} (f .fun v) ⟩
       _·⊓_ {n} I (f .fun v)
@@ -326,9 +328,9 @@ module _ where
   -- Project f to "tail" of its input (precomposition with biproduct injection).
   private
     on-tail : ∀ {m n} → Two^J (suc m) ⇒J Two^J n → Two^J m ⇒J Two^J n
-    on-tail {m} {n} f .*→*J .funcJ .funP v = f .fun (O , v)
-    on-tail {m} {n} f .*→*J .funcJ .preorder._=>_.mono v≤v' =
-      f .*→*J .funcJ .preorder._=>_.mono (tt , v≤v')
+    on-tail {m} {n} f .*→*J ._=>J_.func ._=>_.fun v = f .fun (O , v)
+    on-tail {m} {n} f .*→*J ._=>J_.func ._=>_.mono v≤v' =
+      f .*→*J ._=>J_.func ._=>_.mono (tt , v≤v')
     on-tail {m} {n} f .*→*J .join-semilattice._=>_.∨-preserving =
       f .*→*J .join-semilattice._=>_.∨-preserving
     on-tail {m} {n} f .*→*J .join-semilattice._=>_.⊥-preserving = f .*→*J .join-semilattice._=>_.⊥-preserving
@@ -346,7 +348,7 @@ module _ where
   basis-decomp {zero} {n} f v .proj₂ = Two^ n .≤-bottom
   basis-decomp {suc m} {n} f (v₀ , v') .proj₁ =
     let open basics.≤-Reasoning (Two^ n .conjugate.Obj.≤-isPreorder)
-        f-mono = f .*→*J .funcJ .preorder._=>_.mono
+        f-mono = f .*→*J ._=>J_.func ._=>_.mono
         f-∨ = f .*→*J .join-semilattice._=>_.∨-preserving
     in begin
       f .fun (v₀ , v')
@@ -363,7 +365,7 @@ module _ where
       head I = ·⊓-I {n} (f .fun (I , Two^ m .⊥)) .proj₂
   basis-decomp {suc m} {n} f (v₀ , v') .proj₂ =
     let open basics.≤-Reasoning (Two^ n .conjugate.Obj.≤-isPreorder)
-        f-mono = f .*→*J .funcJ .preorder._=>_.mono
+        f-mono = f .*→*J ._=>J_.func ._=>_.mono
     in Two^ n .[_∨_]
       (head v₀)
       (begin
@@ -378,7 +380,7 @@ module _ where
       head O = Two^ n .≤-trans (·⊓-O {n} (f .fun (I , Two^ m .⊥)) .proj₁) (Two^ n .≤-bottom)
       head I =
         let open basics.≤-Reasoning (Two^ n .conjugate.Obj.≤-isPreorder)
-            f-mono = f .*→*J .funcJ .preorder._=>_.mono
+            f-mono = f .*→*J ._=>J_.func ._=>_.mono
         in begin
           _·⊓_ {n} I (f .fun (I , Two^ m .⊥))
         ≤⟨ ·⊓-I {n} (f .fun (I , Two^ m .⊥)) .proj₁ ⟩
@@ -401,7 +403,7 @@ module _ where
   -- (adjoint f) and (transpose f) are De Morgan dual.
   ¬transpose≃adjoint¬ : ∀ {m n} (f : Two^J m ⇒J Two^J n) (x : Two^ n .Carrier) →
                        _≃_ (Two^ m) (¬ {m} (fun (transpose {m} {n} f) x))
-                                    (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun (¬ {n} x))
+                                    (adjoint {m} {n} f .*→*M ._=>M_.func ._=>_.fun (¬ {n} x))
   ¬transpose≃adjoint¬ {m} {n} f x .proj₁ =
     Two^ m .≤-trans (¬-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) x) .proj₁) (tabulate-mono {m} _ _ per-i)
     where
@@ -416,10 +418,10 @@ module _ where
       per-i i = ¬-anti (⋅-mono {n} (¬-involutive {n} (fun f (e i)) .proj₁) (¬-involutive {n} x .proj₁))
 
   -- Galois embedding: (adjoint f, f) forms a Galois connection.
-  to-gal : ∀ {m n} → Two^J m ⇒J Two^J n → galois._⇒g_ (Two^-gal n) (Two^-gal m)
-  to-gal {m} {n} f .galois._⇒g_.right = adjoint {m} {n} f .*→*M .funcM
-  to-gal {m} {n} f .galois._⇒g_.left  = f .*→*J .funcJ
-  to-gal {m} {n} f .galois._⇒g_.left⊣right {x} {y} .proj₁ y≤adj =
+  to-gal : ∀ {m n} → Two^J m ⇒J Two^J n → _⇒g_ (Two^-gal n) (Two^-gal m)
+  to-gal {m} {n} f ._⇒g_.right = adjoint {m} {n} f .*→*M ._=>M_.func
+  to-gal {m} {n} f ._⇒g_.left  = f .*→*J ._=>J_.func
+  to-gal {m} {n} f ._⇒g_.left⊣right {x} {y} .proj₁ y≤adj =
     let open basics.≤-Reasoning (Two^ n .conjugate.Obj.≤-isPreorder) in
     begin
       fun f y
@@ -433,16 +435,16 @@ module _ where
       per-i i = ·⊓u⊣u→ n (proj i y) (fun f (e i)) x .proj₂
         (begin
           proj i y
-        ≤⟨ proj-mono {m} y (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x) .proj₁ y≤adj i ⟩
-          proj i (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x)
+        ≤⟨ proj-mono {m} y (adjoint {m} {n} f .*→*M ._=>M_.func ._=>_.fun x) .proj₁ y≤adj i ⟩
+          proj i (adjoint {m} {n} f .*→*M ._=>M_.func ._=>_.fun x)
         ≤⟨ proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (fun f (e k))) x) i .proj₁ ⟩
           _⊡_ {n} (¬ {n} (fun f (e i))) x
         ∎)
         where open basics.≤-Reasoning two.≤-isPreorder
-  to-gal {m} {n} f .galois._⇒g_.left⊣right {x} {y} .proj₂ fy≤x =
-    proj-mono {m} y (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x) .proj₂ per-i
+  to-gal {m} {n} f ._⇒g_.left⊣right {x} {y} .proj₂ fy≤x =
+    proj-mono {m} y (adjoint {m} {n} f .*→*M ._=>M_.func ._=>_.fun x) .proj₂ per-i
     where
-      per-i : (i : Fin m) → two._≤_ (proj i y) (proj i (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x))
+      per-i : (i : Fin m) → two._≤_ (proj i y) (proj i (adjoint {m} {n} f .*→*M ._=>M_.func ._=>_.fun x))
       per-i i =
         begin
           proj i y
@@ -450,23 +452,23 @@ module _ where
              (Two^ n .≤-trans (⋁-upper (Two^J n) m _ i) (Two^ n .≤-trans (basis-decomp f y .proj₂) fy≤x)) ⟩
           _⊡_ {n} (¬ {n} (fun f (e i))) x
         ≤⟨ proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (fun f (e k))) x) i .proj₂ ⟩
-          proj i (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x)
+          proj i (adjoint {m} {n} f .*→*M ._=>M_.func ._=>_.fun x)
         ∎
         where open basics.≤-Reasoning two.≤-isPreorder
 
   -- Conjugate embedding: (transpose f, f) forms a conjugate pair Two^n ⇒c Two^m.
   -- Derive from to-gal via De Morgan duality.
-  to-conj : ∀ {m n} → Two^J m ⇒J Two^J n → conjugate._⇒c_ (Two^ n) (Two^ m)
-  to-conj {m} {n} f .conjugate._⇒c_.right = transpose {m} {n} f .*→*J .funcJ
-  to-conj {m} {n} f .conjugate._⇒c_.left  = f .*→*J .funcJ
-  to-conj {m} {n} f .conjugate._⇒c_.conjugate {x} {y} .proj₁ y#tr =
+  to-conj : ∀ {m n} → Two^J m ⇒J Two^J n → _⇒c_ (Two^ n) (Two^ m)
+  to-conj {m} {n} f ._⇒c_.right = transpose {m} {n} f .*→*J ._=>J_.func
+  to-conj {m} {n} f ._⇒c_.left  = f .*→*J ._=>J_.func
+  to-conj {m} {n} f ._⇒c_.conjugate {x} {y} .proj₁ y#tr =
     #-↔-≤ {n} (fun f y) x .proj₂
-      (to-gal {m} {n} f .galois._⇒g_.left⊣right {¬ {n} x} {y} .proj₁
+      (to-gal {m} {n} f ._⇒g_.left⊣right {¬ {n} x} {y} .proj₁
         (Two^ m .≤-trans
           (#-↔-≤ {m} y (fun (transpose {m} {n} f) x) .proj₁ y#tr)
           (¬transpose≃adjoint¬ f x .proj₁)))
-  to-conj {m} {n} f .conjugate._⇒c_.conjugate {x} {y} .proj₂ fy#x =
+  to-conj {m} {n} f ._⇒c_.conjugate {x} {y} .proj₂ fy#x =
     #-↔-≤ {m} y (fun (transpose {m} {n} f) x) .proj₂
       (Two^ m .≤-trans
-        (to-gal {m} {n} f .galois._⇒g_.left⊣right {¬ {n} x} {y} .proj₂ (#-↔-≤ {n} (fun f y) x .proj₁ fy#x))
+        (to-gal {m} {n} f ._⇒g_.left⊣right {¬ {n} x} {y} .proj₂ (#-↔-≤ {n} (fun f y) x .proj₁ fy#x))
         (¬transpose≃adjoint¬ f x .proj₂))
