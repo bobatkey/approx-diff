@@ -103,7 +103,7 @@ adjointness condition
 Boolean implication.
 \end{enumerate}
 
-\subsubsection{De Morgan duality and the derivation of the conjugate embedding}
+\subsubsection{De Morgan duality}
 \label{sec:boolean-jacobians:de-morgan}
 
 The two backward maps are De Morgan duals:
@@ -120,15 +120,11 @@ the adjoint (in the dual $(\meet, \join)$-semiring). Combined with the Boolean-a
    & \iff f(y) \le \neg x \\
    & \iff f(y) \disj x
 \end{salign*}
-\noindent This exhibits the conjugate embedding as a derived construction: the existence of a Galois
-connection $(f_*, f)$ together with the Boolean structure on $\Two^n$ automatically yields the conjugate pair
-$(f^{\!\top}, f)$.
-
-This is specific to the Boolean case. In a general Heyting algebra the equivalence $a \disj b \iff a \le
-\neg b$ still holds (taking $\neg$ as the pseudo-complement), but the De Morgan identity $\neg f^{\!\top}
-\simeq f_* \comp \neg$ relies on double-negation $\neg\neg = \id$, which is Boolean-specific. So in the
-Boolean setting the conjugate and Galois perspectives on Jacobians are two faces of the same structure,
-bridged by $\neg$.
+\noindent This (and an analogous argument for the Galois connection) exhibits the conjugate and Galois
+embeddings as mutually derivable given the Boolean structure on $\Two^n$. This is specific to the Boolean
+case. In a general Heyting algebra the equivalence $a \disj b \iff a \le \neg b$ still holds (taking $\neg$ as
+the pseudo-complement), but the De Morgan identity $\neg f^{\!\top} = f_* \comp \neg$ relies on
+double-negation $\neg \comp \neg = \id$, which is Boolean-specific.
 
 \subsubsection{Connection to forward- and reverse-mode AD}
 \label{sec:boolean-jacobians:ad}
