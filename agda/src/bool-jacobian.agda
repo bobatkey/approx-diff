@@ -149,31 +149,33 @@ _⊡_ {n} u v = two.¬ (_⋅_ {n} (¬ {n} u) (¬ {n} v))
 
 -- Multiply a vector by a scalar, with O as annihilator and I as identity.
 module _ where
-  _⊙_ : ∀ {n} → Two → Two^ n .Carrier → Two^ n .Carrier
-  _⊙_ {zero} _ _ = tt
-  _⊙_ {suc n} a (b , u) = (a ⊓ b) , _⊙_ {n} a u
+  _·⊓_ : ∀ {n} → Two → Two^ n .Carrier → Two^ n .Carrier
+  _·⊓_ {zero} _ _ = tt
+  _·⊓_ {suc n} a (b , u) = (a ⊓ b) , _·⊓_ {n} a u
 
-  ⊙-O : ∀ {n} (u : Two^ n .Carrier) → _≃_ (Two^ n) (_⊙_ {n} O u) (Two^ n .⊥)
-  ⊙-O {zero} _ = tt , tt
-  ⊙-O {suc n} (_ , u) = (tt , ⊙-O {n} u .proj₁) , (tt , ⊙-O {n} u .proj₂)
+  ·⊓-O : ∀ {n} (u : Two^ n .Carrier) → _≃_ (Two^ n) (_·⊓_ {n} O u) (Two^ n .⊥)
+  ·⊓-O {zero} _ = tt , tt
+  ·⊓-O {suc n} (_ , u) = (tt , ·⊓-O {n} u .proj₁) , (tt , ·⊓-O {n} u .proj₂)
 
-  ⊙-I : ∀ {n} (u : Two^ n .Carrier) → _≃_ (Two^ n) (_⊙_ {n} I u) u
-  ⊙-I {zero} _ = tt , tt
-  ⊙-I {suc n} (_ , u) = (two.≤-refl , ⊙-I {n} u .proj₁) , (two.≤-refl , ⊙-I {n} u .proj₂)
+  ·⊓-I : ∀ {n} (u : Two^ n .Carrier) → _≃_ (Two^ n) (_·⊓_ {n} I u) u
+  ·⊓-I {zero} _ = tt , tt
+  ·⊓-I {suc n} (_ , u) = (two.≤-refl , ·⊓-I {n} u .proj₁) , (two.≤-refl , ·⊓-I {n} u .proj₂)
 
--- Pointwise lifting of meet/implication adjunction.
-⊡-adj : ∀ n (a : Two) (u v : Two^ n .Carrier) →
-        Two^ n ._≤_ (_⊙_ {n} a u) v ⇔ two._≤_ a (_⊡_ {n} (¬ {n} u) v)
-⊡-adj zero a u v .proj₁ _ = I-isTop .IsTop.≤-top
-⊡-adj (suc n) O u v .proj₁ _ = tt
-⊡-adj (suc n) I (O , u) (_ , v) .proj₁ (h , t) = ⊡-adj n I u v .proj₁ t
-⊡-adj (suc n) I (I , _) (O , _) .proj₁ (() , _)
-⊡-adj (suc n) I (I , u) (I , v) .proj₁ (_ , t) = ⊡-adj n I u v .proj₁ t
-⊡-adj zero a u v .proj₂ _ = tt
-⊡-adj (suc n) O (u₀ , u) (v₀ , v) .proj₂ h = tt , ⊡-adj n O u v .proj₂ tt
-⊡-adj (suc n) I (O , u) (v₀ , v) .proj₂ h = tt , ⊡-adj n I u v .proj₂ h
-⊡-adj (suc n) I (I , u) (O , v) .proj₂ ()
-⊡-adj (suc n) I (I , u) (I , v) .proj₂ h = tt , ⊡-adj n I u v .proj₂ h
+-- Write a → b for Boolean implication ¬a ⊔ b. On vectors this lifts (component-wise) to a "universally
+-- quantified" implication u → v = (¬u₀ ⊔ v₀) ⊓ ... ⊓ (¬uₙ ⊔ vₙ), i.e. ¬u ⊡ v. Analogously, in any Heyting
+-- algebra we have a Galois connection (- ⊓ a) ⊣ (a → _): Two → Two, which lifts similarly to an adjunction
+-- (- ·⊓ u) ⊣ (u → -): Two^n → Two.
+·⊓u⊣u→ : ∀ n (a : Two) (u v : Two^ n .Carrier) → Two^ n ._≤_ (_·⊓_ {n} a u) v ⇔ two._≤_ a (_⊡_ {n} (¬ {n} u) v)
+·⊓u⊣u→ zero a u v .proj₁ _ = I-isTop .IsTop.≤-top
+·⊓u⊣u→ (suc n) O u v .proj₁ _ = tt
+·⊓u⊣u→ (suc n) I (O , u) (_ , v) .proj₁ (h , t) = ·⊓u⊣u→ n I u v .proj₁ t
+·⊓u⊣u→ (suc n) I (I , _) (O , _) .proj₁ (() , _)
+·⊓u⊣u→ (suc n) I (I , u) (I , v) .proj₁ (_ , t) = ·⊓u⊣u→ n I u v .proj₁ t
+·⊓u⊣u→ zero a u v .proj₂ _ = tt
+·⊓u⊣u→ (suc n) O (u₀ , u) (v₀ , v) .proj₂ h = tt , ·⊓u⊣u→ n O u v .proj₂ tt
+·⊓u⊣u→ (suc n) I (O , u) (v₀ , v) .proj₂ h = tt , ·⊓u⊣u→ n I u v .proj₂ h
+·⊓u⊣u→ (suc n) I (I , u) (O , v) .proj₂ ()
+·⊓u⊣u→ (suc n) I (I , u) (I , v) .proj₂ h = tt , ·⊓u⊣u→ n I u v .proj₂ h
 
 ¬-⊤ : ∀ {n} → Two^ n ._≤_ (¬ {n} (Two^ n .⊤)) (Two^ n .⊥)
 ¬-⊤ {zero}  = tt
@@ -302,7 +304,7 @@ module _ where
   -- Join-preserving maps f : Two^m → Two^n are determined by their values on basis vectors:
   -- f(y) equals the join of f(e_i) scaled by y[i].
   f-basis : ∀ {m n} (f : Two^J m ⇒J Two^J n) (y : Two^ m .Carrier) → _≃_ (Two^ n) (fun f y)
-                    (⋁ (Two^J n) m (λ i → _⊙_ {n} (proj i y) (fun f (e i))))
+                    (⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj i y) (fun f (e i))))
   f-basis {zero}  {n} f y .proj₁ = f .*→*J .join-semilattice._=>_.⊥-preserving
   f-basis {zero}  {n} f y .proj₂ = Two^ n .≤-bottom
   f-basis {suc m} {n} f (y₀ , y') .proj₁ =
@@ -311,9 +313,9 @@ module _ where
       (Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.∨-preserving {(y₀ , Two^ m .⊥)} {(O , y')})
         (∨-mono (Two^ n) (head-proof y₀) (f-basis (f-tail f) y' .proj₁)))
     where
-      head-proof : ∀ y₀ → Two^ n ._≤_ (fun f (y₀ , Two^ m .⊥)) (_⊙_ {n} y₀ (fun f (I , Two^ m .⊥)))
+      head-proof : ∀ y₀ → Two^ n ._≤_ (fun f (y₀ , Two^ m .⊥)) (_·⊓_ {n} y₀ (fun f (I , Two^ m .⊥)))
       head-proof O = Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.⊥-preserving) (Two^ n .≤-bottom)
-      head-proof I = ⊙-I {n} (fun f (I , Two^ m .⊥)) .proj₂
+      head-proof I = ·⊓-I {n} (fun f (I , Two^ m .⊥)) .proj₂
   f-basis {suc m} {n} f (y₀ , y') .proj₂ =
     Two^ n .[_∨_]
       (head-proof y₀)
@@ -321,11 +323,11 @@ module _ where
         (f-basis (f-tail f) y' .proj₂)
         (f .*→*J .funcJ .preorder._=>_.mono {(O , y')} {(y₀ , y')} (tt , Two^ m .≤-refl {y'})))
     where
-      head-proof : ∀ y₀ → Two^ n ._≤_ (_⊙_ {n} y₀ (fun f (I , Two^ m .⊥))) (fun f (y₀ , y'))
-      head-proof O = Two^ n .≤-trans (⊙-O {n} (fun f (I , Two^ m .⊥)) .proj₁) (Two^ n .≤-bottom)
+      head-proof : ∀ y₀ → Two^ n ._≤_ (_·⊓_ {n} y₀ (fun f (I , Two^ m .⊥))) (fun f (y₀ , y'))
+      head-proof O = Two^ n .≤-trans (·⊓-O {n} (fun f (I , Two^ m .⊥)) .proj₁) (Two^ n .≤-bottom)
       head-proof I =
         Two^ n .≤-trans
-          (⊙-I {n} (fun f (I , Two^ m .⊥)) .proj₁)
+          (·⊓-I {n} (fun f (I , Two^ m .⊥)) .proj₁)
           (f .*→*J .funcJ .preorder._=>_.mono {(I , Two^ m .⊥)} {(I , y')} (tt , Two^ m .≤-bottom))
 
   -- Sanity-check: transpose corresponds to transposing the implied matrix.
@@ -371,13 +373,13 @@ module _ where
     begin
       fun f y
     ≤⟨ f-basis f y .proj₁ ⟩
-      ⋁ (Two^J n) m (λ i → _⊙_ {n} (proj i y) (fun f (e i)))
+      ⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj i y) (fun f (e i)))
     ≤⟨ ⋁-lub (Two^J n) m _ x per-i ⟩
       x
     ∎
     where
-      per-i : (i : Fin m) → Two^ n ._≤_ (_⊙_ {n} (proj i y) (fun f (e i))) x
-      per-i i = ⊡-adj n (proj i y) (fun f (e i)) x .proj₂
+      per-i : (i : Fin m) → Two^ n ._≤_ (_·⊓_ {n} (proj i y) (fun f (e i))) x
+      per-i i = ·⊓u⊣u→ n (proj i y) (fun f (e i)) x .proj₂
         (begin
           proj i y
         ≤⟨ proj-mono {m} y (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x) .proj₁ y≤adj i ⟩
@@ -393,7 +395,7 @@ module _ where
       per-i i =
         begin
           proj i y
-        ≤⟨ ⊡-adj n (proj i y) (fun f (e i)) x .proj₁
+        ≤⟨ ·⊓u⊣u→ n (proj i y) (fun f (e i)) x .proj₁
              (Two^ n .≤-trans (⋁-upper (Two^J n) m _ i) (Two^ n .≤-trans (f-basis f y .proj₂) fy≤x)) ⟩
           _⊡_ {n} (¬ {n} (fun f (e i))) x
         ≤⟨ proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (fun f (e k))) x) i .proj₂ ⟩

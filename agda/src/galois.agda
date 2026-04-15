@@ -368,12 +368,12 @@ module _ where
 
   -- For a fixed y ∈ Two, (- ⊓ y) ⊣ (¬y ⊔ -) is a Galois connection Two → Two.
   -- FIXME: add a notation for Boolean implication?
-  ⊓⊣→ : ∀ {x y z : Two} → two._≤_ (x ⊓ y) z ⇔ two._≤_ x (two.¬ y ⊔ z)
-  ⊓⊣→ {O} {_} {_} .proj₁ _ = tt
-  ⊓⊣→ {I} {O} {_} .proj₁ _ = tt
-  ⊓⊣→ {I} {I} {O} .proj₁ ()
-  ⊓⊣→ {I} {I} {I} .proj₁ _ = tt
-  ⊓⊣→ {O} {_} {_} .proj₂ _ = tt
-  ⊓⊣→ {I} {O} {_} .proj₂ _ = tt
-  ⊓⊣→ {I} {I} {O} .proj₂ ()
-  ⊓⊣→ {I} {I} {I} .proj₂ _ = tt
+  ⊓y⊣y→ : ∀ {x y z : Two} → two._≤_ (x ⊓ y) z ⇔ two._≤_ x (two.¬ y ⊔ z)
+  ⊓y⊣y→ {O} {_} {_} .proj₁ _ = tt
+  ⊓y⊣y→ {I} {O} {_} .proj₁ _ = tt
+  ⊓y⊣y→ {I} {I} {O} .proj₁ ()
+  ⊓y⊣y→ {I} {I} {I} .proj₁ _ = tt
+  ⊓y⊣y→ {O} {_} {_} .proj₂ _ = tt
+  ⊓y⊣y→ {I} {O} {_} .proj₂ _ = tt
+  ⊓y⊣y→ {I} {I} {O} .proj₂ ()
+  ⊓y⊣y→ {I} {I} {I} .proj₂ _ = tt
