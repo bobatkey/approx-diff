@@ -117,6 +117,13 @@ module _ where
       _⋅_ {n} u' v'
     ∎ where open basics.≤-Reasoning two.≤-isPreorder
 
+  -- Projection can be written as dot product with appropriate basis vector.
+  ⋅-e : ∀ {n} (v : Two^ n .Carrier) (j : Fin n) → _⋅_ {n} v (e j) two.≃ proj j v
+  ⋅-e {suc n} (O , v) zero = ⋅-⊥ {n} v , tt
+  ⋅-e {suc n} (I , v) zero = tt , tt
+  ⋅-e {suc n} (O , v) (suc j) = ⋅-e {n} v j
+  ⋅-e {suc n} (I , v) (suc j) = ⋅-e {n} v j
+
 -- Two^n is also Boolean, with negation defined componentwise.
 module _ where
   ¬ : ∀ {n} → Two^ n .Carrier → Two^ n .Carrier
@@ -301,11 +308,11 @@ module _ where
     on-tail {m} {n} f .*→*J .join-semilattice._=>_.⊥-preserving = f .*→*J .join-semilattice._=>_.⊥-preserving
 
   -- Join-preserving maps f : Two^m → Two^n are determined by their values on basis vectors:
-  -- f(v) = join of v_i ·⊓ f(e_i).
+  -- f(v) is the join of m atomic "slices" v_i ·⊓ f(e_i).
   basis-decomp : ∀ {m n} (f : Two^J m ⇒J Two^J n) (v : Two^ m .Carrier) →
                  _≃_ (Two^ n) (f .fun v) (⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj i v) (f .fun (e i))))
-  basis-decomp {zero}  {n} f v .proj₁ = f .*→*J .join-semilattice._=>_.⊥-preserving
-  basis-decomp {zero}  {n} f v .proj₂ = Two^ n .≤-bottom
+  basis-decomp {zero} {n} f v .proj₁ = f .*→*J .join-semilattice._=>_.⊥-preserving
+  basis-decomp {zero} {n} f v .proj₂ = Two^ n .≤-bottom
   basis-decomp {suc m} {n} f (v₀ , v') .proj₁ =
     Two^ n .≤-trans
       (f .*→*J .funcJ .preorder._=>_.mono {x₂ = Two^ (suc m) ._∨_ (v₀ , Two^ m .⊥) (O , v')} (two.⊔-upper₁ , Two^ m .inr))
@@ -333,12 +340,6 @@ module _ where
   private
     matrix : ∀ {m n} → Two^J m ⇒J Two^J n → Fin n → Fin m → Two
     matrix f j i = proj j (f .fun (e i))
-
-    ⋅-e : ∀ {n} (u : Two^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) two.≃ proj j u
-    ⋅-e {suc n} (O , u) zero = ⋅-⊥ {n} u , tt
-    ⋅-e {suc n} (I , u) zero = tt , tt
-    ⋅-e {suc n} (O , u) (suc j) = ⋅-e {n} u j
-    ⋅-e {suc n} (I , u) (suc j) = ⋅-e {n} u j
 
     transpose-matrix : ∀ m n (f : Two^J m ⇒J Two^J n) (i : Fin m) (j : Fin n) →
                       matrix {n} {m} (transpose {m} {n} f) i j two.≃ matrix {m} {n} f j i
