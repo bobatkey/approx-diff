@@ -308,7 +308,11 @@ module _ where
     on-tail {m} {n} f .*→*J .join-semilattice._=>_.⊥-preserving = f .*→*J .join-semilattice._=>_.⊥-preserving
 
   -- Join-preserving maps f : Two^m → Two^n are determined by their values on basis vectors:
-  -- f(v) is the join of m atomic "slices" v_i ·⊓ f(e_i).
+  --      f(v)
+  --    = f((v_1 ·⊓ e_1) ⊔ .. ⊔ (v_m ·⊓ e_m))       (decomposition of v via basis vectors)
+  --    = f(v_1 ·⊓ e_1) ⊔ .. ⊔ f(v_m ·⊓ e_m)        (f join-preserving)
+  --    = (v_1 ·⊓ f(e_1)) ⊔ .. ⊔ (v_m ·⊓ f(e_m))    (f compatible with scalar multiplication)
+  -- i.e. f can be formulated as a join of atomic "slices"!
   basis-decomp : ∀ {m n} (f : Two^J m ⇒J Two^J n) (v : Two^ m .Carrier) →
                  _≃_ (Two^ n) (f .fun v) (⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj i v) (f .fun (e i))))
   basis-decomp {zero} {n} f v .proj₁ = f .*→*J .join-semilattice._=>_.⊥-preserving
