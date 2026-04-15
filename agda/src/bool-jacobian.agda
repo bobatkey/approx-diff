@@ -300,28 +300,6 @@ module _ where
     Two^ m .≤-trans (tabulate-⊤ {m})
                     (tabulate-mono {m} _ _ (λ i → ⊡-⊤ {n} (¬ {n} (f .fun (e i)))))
 
-  -- Join-preserving maps commute with scalar multiplication.
-  ·⊓-preserving : ∀ {m n} (f : Two^J m ⇒J Two^J n) (a : Two) (v : Two^ m .Carrier) →
-                  _≃_ (Two^ n) (f .fun (_·⊓_ {m} a v)) (_·⊓_ {n} a (f .fun v))
-  ·⊓-preserving {m} {n} f O v =
-    begin
-      f .fun (_·⊓_ {m} O v)
-    ≈⟨ _=>_.resp-≃ (f .*→*J ._=>J_.func) (·⊓-O {m} v) ⟩
-      f .fun (Two^ m .⊥)
-    ≈⟨ join-semilattice._=>_.⊥-preserving-≃ (f .*→*J) ⟩
-      Two^ n .⊥
-    ≈˘⟨ ·⊓-O {n} (f .fun v) ⟩
-      _·⊓_ {n} O (f .fun v)
-    ∎ where open ≈-Reasoning (IsPreorder.isEquivalence (Two^ n .conjugate.Obj.≤-isPreorder))
-  ·⊓-preserving {m} {n} f I v =
-    begin
-      f .fun (_·⊓_ {m} I v)
-    ≈⟨ _=>_.resp-≃ (f .*→*J ._=>J_.func) (·⊓-I {m} v) ⟩
-      f .fun v
-    ≈˘⟨ ·⊓-I {n} (f .fun v) ⟩
-      _·⊓_ {n} I (f .fun v)
-    ∎ where open ≈-Reasoning (IsPreorder.isEquivalence (Two^ n .conjugate.Obj.≤-isPreorder))
-
   -- Project f to "tail" of its input (precomposition with biproduct injection).
   private
     on-tail : ∀ {m n} → Two^J (suc m) ⇒J Two^J n → Two^J m ⇒J Two^J n
@@ -344,19 +322,17 @@ module _ where
     where f-⊥ = f .*→*J .join-semilattice._=>_.⊥-preserving
   basis-decomp {zero} {n} f v .proj₂ = Two^ n .≤-bottom
   basis-decomp {suc m} {n} f (a , v) .proj₁ =
-    let open basics.≤-Reasoning (Two^ n .conjugate.Obj.≤-isPreorder)
-        f-mono = f .*→*J ._=>J_.func ._=>_.mono
-        f-∨ = f .*→*J .join-semilattice._=>_.∨-preserving
-    in begin
+    begin
       f .fun (a , v)
-    ≤⟨ f-mono {x₂ = Two^ (suc m) ._∨_ (a , Two^ m .⊥) (O , v)} (two.⊔-upper₁ , Two^ m .inr) ⟩
+    ≤⟨ f .*→*J ._=>J_.func ._=>_.mono {x₂ = Two^ (suc m) ._∨_ (a , Two^ m .⊥) (O , v)} (two.⊔-upper₁ , Two^ m .inr) ⟩
       f .fun (Two^ (suc m) ._∨_ (a , Two^ m .⊥) (O , v))
-    ≤⟨ f-∨ {a , Two^ m .⊥} {O , v} ⟩
+    ≤⟨ f .*→*J .join-semilattice._=>_.∨-preserving {a , Two^ m .⊥} {O , v} ⟩
       Two^ n ._∨_ (f .fun (a , Two^ m .⊥)) (f .fun (O , v))
     ≤⟨ ∨-mono (Two^ n) (head a) (basis-decomp (on-tail f) v .proj₁) ⟩
       ⋁ (Two^J n) (suc m) (λ i → _·⊓_ {n} (proj i (a , v)) (f .fun (e i)))
     ∎
     where
+      open basics.≤-Reasoning (Two^ n .conjugate.Obj.≤-isPreorder)
       head : ∀ a → Two^ n ._≤_ (f .fun (a , Two^ m .⊥)) (_·⊓_ {n} a (f .fun (I , Two^ m .⊥)))
       head O = Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.⊥-preserving) (Two^ n .≤-bottom)
       head I = ·⊓-I {n} (f .fun (I , Two^ m .⊥)) .proj₂
