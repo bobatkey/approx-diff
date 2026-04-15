@@ -111,10 +111,8 @@ The two backward maps are De Morgan duals:
    \neg\,f^{\!\top}(x) = f_*(\neg x)
 \end{salign*}
 \noindent This is the Boolean-algebra identity relating the transpose (in the $(\join, \meet)$-semiring) to
-the adjoint (in the dual $(\meet, \join)$-semiring), exploiting that $\Two^n$ is a Boolean algebra so that
-$\neg$ is an involution.
-
-Combined with the Boolean-algebra fact that $a \disj b \iff a \le \neg b$, we obtain the following chain:
+the adjoint (in the dual $(\meet, \join)$-semiring). Combined with the Boolean-algebra fact that $a \disj b
+\iff a \le \neg b$, we obtain the following chain:
 \begin{salign*}
    y \disj f^{\!\top}(x)
    & \iff y \le \neg\,f^{\!\top}(x) \\
@@ -122,9 +120,9 @@ Combined with the Boolean-algebra fact that $a \disj b \iff a \le \neg b$, we ob
    & \iff f(y) \le \neg x \\
    & \iff f(y) \disj x
 \end{salign*}
-\noindent where the middle step is the Galois adjunction instantiated at $\neg x$. This exhibits the
-conjugate embedding as a derived construction: the existence of a Galois connection $(f_*, f)$ together
-with the Boolean structure on $\Two^n$ automatically yields the conjugate pair $(f^{\!\top}, f)$.
+\noindent This exhibits the conjugate embedding as a derived construction: the existence of a Galois
+connection $(f_*, f)$ together with the Boolean structure on $\Two^n$ automatically yields the conjugate pair
+$(f^{\!\top}, f)$.
 
 This is specific to the Boolean case. In a general Heyting algebra the equivalence $a \disj b \iff a \le
 \neg b$ still holds (taking $\neg$ as the pseudo-complement), but the De Morgan identity $\neg f^{\!\top}
