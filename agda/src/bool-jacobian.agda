@@ -131,11 +131,11 @@ module _ where
   ¬-involutive {suc n} (O , u) = (tt , ¬-involutive {n} u .proj₁) , (tt , ¬-involutive {n} u .proj₂)
   ¬-involutive {suc n} (I , u) = (tt , ¬-involutive {n} u .proj₁) , (tt , ¬-involutive {n} u .proj₂)
 
--- Co-dot product (De Morgan dual of ⋅).
+-- "Co-dot" product (De Morgan dual of ⋅), or dot product in the dual semiring.
+--   u ⊡ v = (u₀ ⊔ v₀) ⊓ ... ⊓ (uₙ ⊔ vₙ)
 _⊡_ : ∀ {n} → Two^ n .Carrier → Two^ n .Carrier → Two
 _⊡_ {n} u v = two.¬ (_⋅_ {n} (¬ {n} u) (¬ {n} v))
 
--- ⊡ is monotone in its second argument (via De Morgan from ⋅-mono).
 ⊡-mono : ∀ {n} (u : Two^ n .Carrier) {v w : Two^ n .Carrier} →
          Two^ n ._≤_ v w → two._≤_ (_⊡_ {n} u v) (_⊡_ {n} u w)
 ⊡-mono {n} u v≤w = ¬-anti (⋅-mono {n} (Two^ n .≤-refl) (¬-anti^ {n} v≤w))
