@@ -1,6 +1,6 @@
 {-# OPTIONS --postfix-projections --prop --safe #-}
 
-module jacobian where
+module bool-jacobian where
 
 open import Level using (0ℓ)
 open import Data.Nat using (ℕ; zero; suc)
