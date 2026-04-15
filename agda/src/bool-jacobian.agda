@@ -221,32 +221,32 @@ module _ where
   open preorder._=>_ using () renaming (fun to funP)
 
   private
-    -- (tabulate, proj) is a join-semilattice isomorphism from (Fin m → Two) to Two^m.
+    -- (tabulate, proj) is a Boolean algebra isomorphism from (Fin m → Two) to Two^m.
     tabulate : ∀ {n} → (Fin n → Two) → Two^ n .Carrier
     tabulate {zero} _ = tt
     tabulate {suc n} f = f zero , tabulate {n} (λ i → f (suc i))
 
     tabulate-mono : ∀ {m} (g h : Fin m → Two) →
                     (∀ i → two._≤_ (g i) (h i)) → Two^ m ._≤_ (tabulate {m} g) (tabulate {m} h)
-    tabulate-mono {zero}  g h p = tt
+    tabulate-mono {zero} g h p = tt
     tabulate-mono {suc m} g h p = p zero , tabulate-mono {m} _ _ (λ i → p (suc i))
 
     tabulate-⊥ : ∀ {m} → Two^ m ._≤_ (tabulate {m} (λ _ → O)) (Two^ m .⊥)
-    tabulate-⊥ {zero}  = tt
+    tabulate-⊥ {zero} = tt
     tabulate-⊥ {suc m} = tt , tabulate-⊥ {m}
 
     tabulate-⊤ : ∀ {m} → Two^ m ._≤_ (Two^ m .⊤) (tabulate {m} (λ _ → I))
-    tabulate-⊤ {zero}  = tt
+    tabulate-⊤ {zero} = tt
     tabulate-⊤ {suc m} = tt , tabulate-⊤ {m}
 
     tabulate-∨ : ∀ {m} (g h : Fin m → Two) →
                  Two^ m ._≤_ (tabulate {m} (λ i → g i ⊔ h i)) (Two^ m ._∨_ (tabulate {m} g) (tabulate {m} h))
-    tabulate-∨ {zero}  g h = tt
+    tabulate-∨ {zero} g h = tt
     tabulate-∨ {suc m} g h = two.≤-refl , tabulate-∨ {m} (λ i → g (suc i)) (λ i → h (suc i))
 
     tabulate-∧ : ∀ {m} (g h : Fin m → Two) →
                  Two^ m ._≤_ (conjugate.Obj._∧_ (Two^ m) (tabulate {m} g) (tabulate {m} h)) (tabulate {m} (λ i → g i ⊓ h i))
-    tabulate-∧ {zero}  g h = tt
+    tabulate-∧ {zero} g h = tt
     tabulate-∧ {suc m} g h = two.≤-refl , tabulate-∧ {m} (λ i → g (suc i)) (λ i → h (suc i))
 
     -- ¬ distributes over tabulate: ¬ (tabulate g) ≃ tabulate (λ i → two.¬ (g i)).
