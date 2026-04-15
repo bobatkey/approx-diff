@@ -225,7 +225,7 @@ module _ where
   open join-semilattice._=>_ renaming (func to funcJ)
   open meet-semilattice._=>_ renaming (func to funcM)
   open import preorder using (_=>_)
-  open preorder._=>_ using () renaming (fun to funP)
+  open preorder._=>_ using () renaming (fun to funP; resp-≃ to respP-≃)
 
   private
     -- (tabulate, proj) is a Boolean algebra isomorphism from (Fin m → Two) to Two^m.
@@ -298,11 +298,6 @@ module _ where
     Two^ m .≤-trans (tabulate-⊤ {m})
                     (tabulate-mono {m} _ _ (λ i → ⊡-⊤ {n} (¬ {n} (f .fun (e i)))))
 
-  f-cong : ∀ {m n} (f : Two^J m ⇒J Two^J n) {v w : Two^ m .Carrier} →
-           _≃_ (Two^ m) v w → _≃_ (Two^ n) (f .fun v) (f .fun w)
-  f-cong f v≃w .proj₁ = f .*→*J .funcJ .preorder._=>_.mono (v≃w .proj₁)
-  f-cong f v≃w .proj₂ = f .*→*J .funcJ .preorder._=>_.mono (v≃w .proj₂)
-
   -- Join-preserving maps commute with scalar multiplication: f(a ·⊓ v) ≃ a ·⊓ f(v). Follows from the two
   -- boundary cases ·⊓-O (a = O, uses f preserves ⊥) and ·⊓-I (a = I, uses identity).
   ·⊓-preserving : ∀ {m n} (f : Two^J m ⇒J Two^J n) (a : Two) (v : Two^ m .Carrier) →
@@ -311,7 +306,7 @@ module _ where
     let open ≈-Reasoning (IsPreorder.isEquivalence (Two^ n .conjugate.Obj.≤-isPreorder)) in
     begin
       f .fun (_·⊓_ {m} O v)
-    ≈⟨ f-cong f (·⊓-O {m} v) ⟩
+    ≈⟨ respP-≃ (f .*→*J .funcJ) (·⊓-O {m} v) ⟩
       f .fun (Two^ m .⊥)
     ≈⟨ join-semilattice._=>_.⊥-preserving-≃ (f .*→*J) ⟩
       Two^ n .⊥
@@ -322,7 +317,7 @@ module _ where
     let open ≈-Reasoning (IsPreorder.isEquivalence (Two^ n .conjugate.Obj.≤-isPreorder)) in
     begin
       f .fun (_·⊓_ {m} I v)
-    ≈⟨ f-cong f (·⊓-I {m} v) ⟩
+    ≈⟨ respP-≃ (f .*→*J .funcJ) (·⊓-I {m} v) ⟩
       f .fun v
     ≈˘⟨ ·⊓-I {n} (f .fun v) ⟩
       _·⊓_ {n} I (f .fun v)
