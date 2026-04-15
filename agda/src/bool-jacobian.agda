@@ -315,7 +315,7 @@ module _ where
   --    = f((v_1 ·⊓ e_1) ⊔ .. ⊔ (v_m ·⊓ e_m))       (decomposition of v via basis vectors)
   --    = f(v_1 ·⊓ e_1) ⊔ .. ⊔ f(v_m ·⊓ e_m)        (f join-preserving)
   --    = (v_1 ·⊓ f(e_1)) ⊔ .. ⊔ (v_m ·⊓ f(e_m))    (f compatible with scalar multiplication)
-  -- i.e. f can be formulated as a join of atomic "slices"!
+  -- i.e. f can be formulated as a join of atomic "slices".
   basis-decomp : ∀ {m n} (f : Two^J m ⇒J Two^J n) (v : Two^ m .Carrier) →
                  _≃_ (Two^ n) (f .fun v) (⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj i v) (f .fun (e i))))
   basis-decomp {zero} {n} f v .proj₁ = f-⊥
@@ -336,27 +336,26 @@ module _ where
       head : ∀ a → Two^ n ._≤_ (f .fun (a , Two^ m .⊥)) (_·⊓_ {n} a (f .fun (I , Two^ m .⊥)))
       head O = Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.⊥-preserving) (Two^ n .≤-bottom)
       head I = ·⊓-I {n} (f .fun (I , Two^ m .⊥)) .proj₂
-  basis-decomp {suc m} {n} f (a , v') .proj₂ =
-    Two^ n .[_∨_]
-      (head a)
+  basis-decomp {suc m} {n} f (a , v) .proj₂ =
+    Two^ n .[_∨_] (head a)
       (begin
-        ⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj (suc i) (a , v')) (f .fun (e (suc i))))
-      ≤⟨ basis-decomp (on-tail f) v' .proj₂ ⟩
-        f .fun (O , v')
-      ≤⟨ f .*→*J ._=>J_.func ._=>_.mono {O , v'} {a , v'} (tt , Two^ m .≤-refl {v'}) ⟩
-        f .fun (a , v')
+        ⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj (suc i) (a , v)) (f .fun (e (suc i))))
+      ≤⟨ basis-decomp (on-tail f) v .proj₂ ⟩
+        f .fun (O , v)
+      ≤⟨ f .*→*J ._=>J_.func ._=>_.mono {O , v} {a , v} (tt , Two^ m .≤-refl {v}) ⟩
+        f .fun (a , v)
       ∎)
     where
       open basics.≤-Reasoning (Two^ n .conjugate.Obj.≤-isPreorder)
-      head : ∀ a → Two^ n ._≤_ (_·⊓_ {n} a (f .fun (I , Two^ m .⊥))) (f .fun (a , v'))
+      head : ∀ a → Two^ n ._≤_ (_·⊓_ {n} a (f .fun (I , Two^ m .⊥))) (f .fun (a , v))
       head O = Two^ n .≤-trans (·⊓-O {n} (f .fun (I , Two^ m .⊥)) .proj₁) (Two^ n .≤-bottom)
       head I =
         begin
           _·⊓_ {n} I (f .fun (I , Two^ m .⊥))
         ≤⟨ ·⊓-I {n} (f .fun (I , Two^ m .⊥)) .proj₁ ⟩
           f .fun (I , Two^ m .⊥)
-        ≤⟨ f .*→*J ._=>J_.func ._=>_.mono {I , Two^ m .⊥} {I , v'} (tt , Two^ m .≤-bottom) ⟩
-          f .fun (I , v')
+        ≤⟨ f .*→*J ._=>J_.func ._=>_.mono {I , Two^ m .⊥} {I , v} (tt , Two^ m .≤-bottom) ⟩
+          f .fun (I , v)
         ∎
 
   -- Sanity-check: transpose corresponds to transposing the implied matrix.
