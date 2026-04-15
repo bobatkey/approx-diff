@@ -249,14 +249,6 @@ module _ where
     tabulate-∧ {zero} g h = tt
     tabulate-∧ {suc m} g h = two.≤-refl , tabulate-∧ {m} (λ i → g (suc i)) (λ i → h (suc i))
 
-    -- ¬ distributes over tabulate: ¬ (tabulate g) ≃ tabulate (λ i → two.¬ (g i)).
-    ¬-tabulate : ∀ {m} (g : Fin m → Two) →
-                 _≃_ (Two^ m) (¬ {m} (tabulate {m} g)) (tabulate {m} (λ i → two.¬ (g i)))
-    ¬-tabulate {zero}  _ = tt , tt
-    ¬-tabulate {suc m} g =
-      (two.≤-refl , ¬-tabulate {m} (λ i → g (suc i)) .proj₁) ,
-      (two.≤-refl , ¬-tabulate {m} (λ i → g (suc i)) .proj₂)
-
     -- Two^ m ._≤_ v w ⇔ ∀ i. two._≤_ (proj i v) (proj i w).
     proj-mono : ∀ {m} (v w : Two^ m .Carrier) →
                 Two^ m ._≤_ v w ⇔ (∀ (i : Fin m) → two._≤_ (proj i v) (proj i w))
@@ -269,6 +261,13 @@ module _ where
     proj-tabulate : ∀ {n} (g : Fin n → Two) (i : Fin n) → proj i (tabulate {n} g) ≃t g i
     proj-tabulate {suc n} g zero = ≃t-refl
     proj-tabulate {suc n} g (suc i) = proj-tabulate {n} (λ i → g (suc i)) i
+
+    ¬-tabulate : ∀ {m} (g : Fin m → Two) →
+                 _≃_ (Two^ m) (¬ {m} (tabulate {m} g)) (tabulate {m} (λ i → two.¬ (g i)))
+    ¬-tabulate {zero}  _ = tt , tt
+    ¬-tabulate {suc m} g =
+      (two.≤-refl , ¬-tabulate {m} (λ i → g (suc i)) .proj₁) ,
+      (two.≤-refl , ¬-tabulate {m} (λ i → g (suc i)) .proj₂)
 
   transpose : ∀ {m n} → Two^J m ⇒J Two^J n → Two^J n ⇒J Two^J m
   transpose {m} {n} f .*→*J .funcJ .funP v = tabulate {m} (λ i → _⋅_ {n} (fun f (e i)) v)
