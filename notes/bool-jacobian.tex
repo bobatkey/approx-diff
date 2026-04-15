@@ -72,15 +72,16 @@ $v_j \scalarmeet e_j$ equals $e_j$ if $v_j = \top$ and $\bot$ otherwise). Specia
 $\SemiLat(\Two^m, \Two^n) \cong (\Two^n)^m$, i.e.\ $n \times m$ Boolean matrices, with composition given by
 the usual matrix product in the $(\join, \meet)$-semiring.
 
-Concretely, $M_f$ is exactly the \emph{dependency relation} between the two index sets: $M_f[i,j] = \top$
+We can think of $M_f$ as exactly the \emph{dependency relation} between the two index sets: $M_f[i,j] = \top$
 iff position $i$ in the codomain is ``live'' in $f(e_j)$, i.e.\ iff position $i$ in the codomain depends on
-position $j$ in the domain. Matrix composition then matches reachability:
+position $j$ in the domain. Matrix composition, defined as usual in terms of the dot product (inner product)
+in the $(\Two, \join, \meet)$-semiring:
 \begin{salign*}
    (M_g \comp M_f)[i,k] = \bigjoin_j M_g[i,j] \meet M_f[j,k]
 \end{salign*}
-\noindent is the $(\join, \meet)$-semiring matrix product, which evaluates to $\top$ iff there is some
-intermediate position $j$ with both $M_g[i,j] = \top$ and $M_f[j,k] = \top$, i.e.~iff there is a chain $k \to
-j \to i$ witnessing that $i$ depends on $k$ via $j$.
+\noindent then corresponds to \emph{reachability}, as it evaluates to $\top$ iff there is some intermediate
+position $j$ with both $M_g[i,j] = \top$ and $M_f[j,k] = \top$, i.e.~iff there is a chain $k \to j \to i$
+witnessing that $i$ depends on $k$ via $j$.
 
 \subsubsection{Transpose}
 \label{sec:boolean-jacobians:transpose}

@@ -18,8 +18,7 @@ import conjugate
 open conjugate.Obj
 
 -- Objects: Two^n as iterated biproduct of TWO in HeytConj. Taking the biproduct in HeytConj rather than
--- LatGal means the Heyting-algebra structure propagates through biproducts for free, so Two^n is automatically
--- Heyting.
+-- LatGal means Two^n is automatically Heyting.
 Two^ : ℕ → conjugate.Obj
 Two^ zero = conjugate.𝟙
 Two^ (suc n) = conjugate._⊕_ conjugate.TWO (Two^ n)
@@ -119,7 +118,7 @@ module _ where
       _⋅_ {n} u' v'
     ∎ where open basics.≤-Reasoning two.≤-isPreorder
 
--- Two^n is itself Boolean, with negation defined componentwise.
+-- Two^n is also Boolean, with negation defined componentwise.
 module _ where
   ¬ : ∀ {n} → Two^ n .Carrier → Two^ n .Carrier
   ¬ {zero} _ = tt
@@ -135,11 +134,11 @@ module _ where
   ¬-anti^ {suc n} (a≤b , v≤w) = ¬-anti a≤b , ¬-anti^ {n} v≤w
 
   ¬-involutive : ∀ {n} (u : Two^ n .Carrier) → _≃_ (Two^ n) u (¬ {n} (¬ {n} u))
-  ¬-involutive {zero}  _ = tt , tt
+  ¬-involutive {zero} _ = tt , tt
   ¬-involutive {suc n} (O , u) = (tt , ¬-involutive {n} u .proj₁) , (tt , ¬-involutive {n} u .proj₂)
   ¬-involutive {suc n} (I , u) = (tt , ¬-involutive {n} u .proj₁) , (tt , ¬-involutive {n} u .proj₂)
 
--- "Co-dot" product (De Morgan dual of ⋅), or dot product in the dual semiring.
+-- De Morgan dual of ⋅ (i.e. ⋅ in the dual semiring).
 --   u ⊡ v = (u₀ ⊔ v₀) ⊓ ... ⊓ (uₙ ⊔ vₙ)
 _⊡_ : ∀ {n} → Two^ n .Carrier → Two^ n .Carrier → Two
 _⊡_ {n} u v = two.¬ (_⋅_ {n} (¬ {n} u) (¬ {n} v))
