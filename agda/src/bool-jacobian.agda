@@ -301,33 +301,33 @@ module _ where
   f-tail {m} {n} f .*→*J .join-semilattice._=>_.⊥-preserving = f .*→*J .join-semilattice._=>_.⊥-preserving
 
   -- Join-preserving maps f : Two^m → Two^n are determined by their values on basis vectors:
-  -- f(y) equals the join of f(e_i) scaled by y[i].
-  f-basis : ∀ {m n} (f : Two^J m ⇒J Two^J n) (y : Two^ m .Carrier) → _≃_ (Two^ n) (f .fun y)
-            (⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj i y) (f .fun (e i))))
-  f-basis {zero}  {n} f y .proj₁ = f .*→*J .join-semilattice._=>_.⊥-preserving
-  f-basis {zero}  {n} f y .proj₂ = Two^ n .≤-bottom
-  f-basis {suc m} {n} f (y₀ , y') .proj₁ =
+  -- f(v) = join of v_i ·⊓ f(e_i).
+  basis-decomp : ∀ {m n} (f : Two^J m ⇒J Two^J n) (v : Two^ m .Carrier) →
+                 _≃_ (Two^ n) (f .fun v) (⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj i v) (f .fun (e i))))
+  basis-decomp {zero}  {n} f v .proj₁ = f .*→*J .join-semilattice._=>_.⊥-preserving
+  basis-decomp {zero}  {n} f v .proj₂ = Two^ n .≤-bottom
+  basis-decomp {suc m} {n} f (v₀ , v') .proj₁ =
     Two^ n .≤-trans
-      (f .*→*J .funcJ .preorder._=>_.mono {x₂ = Two^ (suc m) ._∨_ (y₀ , Two^ m .⊥) (O , y')} (two.⊔-upper₁ , Two^ m .inr))
-      (Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.∨-preserving {(y₀ , Two^ m .⊥)} {(O , y')})
-        (∨-mono (Two^ n) (head-proof y₀) (f-basis (f-tail f) y' .proj₁)))
+      (f .*→*J .funcJ .preorder._=>_.mono {x₂ = Two^ (suc m) ._∨_ (v₀ , Two^ m .⊥) (O , v')} (two.⊔-upper₁ , Two^ m .inr))
+      (Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.∨-preserving {v₀ , Two^ m .⊥} {O , v'})
+        (∨-mono (Two^ n) (head v₀) (basis-decomp (f-tail f) v' .proj₁)))
     where
-      head-proof : ∀ y₀ → Two^ n ._≤_ (f .fun (y₀ , Two^ m .⊥)) (_·⊓_ {n} y₀ (f .fun (I , Two^ m .⊥)))
-      head-proof O = Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.⊥-preserving) (Two^ n .≤-bottom)
-      head-proof I = ·⊓-I {n} (f .fun (I , Two^ m .⊥)) .proj₂
-  f-basis {suc m} {n} f (y₀ , y') .proj₂ =
+      head : ∀ v₀ → Two^ n ._≤_ (f .fun (v₀ , Two^ m .⊥)) (_·⊓_ {n} v₀ (f .fun (I , Two^ m .⊥)))
+      head O = Two^ n .≤-trans (f .*→*J .join-semilattice._=>_.⊥-preserving) (Two^ n .≤-bottom)
+      head I = ·⊓-I {n} (f .fun (I , Two^ m .⊥)) .proj₂
+  basis-decomp {suc m} {n} f (v₀ , v') .proj₂ =
     Two^ n .[_∨_]
-      (head-proof y₀)
+      (head v₀)
       (Two^ n .≤-trans
-        (f-basis (f-tail f) y' .proj₂)
-        (f .*→*J .funcJ .preorder._=>_.mono {(O , y')} {(y₀ , y')} (tt , Two^ m .≤-refl {y'})))
+        (basis-decomp (f-tail f) v' .proj₂)
+        (f .*→*J .funcJ .preorder._=>_.mono {O , v'} {v₀ , v'} (tt , Two^ m .≤-refl {v'})))
     where
-      head-proof : ∀ y₀ → Two^ n ._≤_ (_·⊓_ {n} y₀ (f .fun (I , Two^ m .⊥))) (f .fun (y₀ , y'))
-      head-proof O = Two^ n .≤-trans (·⊓-O {n} (f .fun (I , Two^ m .⊥)) .proj₁) (Two^ n .≤-bottom)
-      head-proof I =
+      head : ∀ v₀ → Two^ n ._≤_ (_·⊓_ {n} v₀ (f .fun (I , Two^ m .⊥))) (f .fun (v₀ , v'))
+      head O = Two^ n .≤-trans (·⊓-O {n} (f .fun (I , Two^ m .⊥)) .proj₁) (Two^ n .≤-bottom)
+      head I =
         Two^ n .≤-trans
           (·⊓-I {n} (f .fun (I , Two^ m .⊥)) .proj₁)
-          (f .*→*J .funcJ .preorder._=>_.mono {(I , Two^ m .⊥)} {(I , y')} (tt , Two^ m .≤-bottom))
+          (f .*→*J .funcJ .preorder._=>_.mono {I , Two^ m .⊥} {I , v'} (tt , Two^ m .≤-bottom))
 
   -- Sanity-check: transpose corresponds to transposing the implied matrix.
   private
@@ -371,7 +371,7 @@ module _ where
     let open basics.≤-Reasoning (Two^ n .conjugate.Obj.≤-isPreorder) in
     begin
       fun f y
-    ≤⟨ f-basis f y .proj₁ ⟩
+    ≤⟨ basis-decomp f y .proj₁ ⟩
       ⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj i y) (fun f (e i)))
     ≤⟨ ⋁-lub (Two^J n) m _ x per-i ⟩
       x
@@ -395,7 +395,7 @@ module _ where
         begin
           proj i y
         ≤⟨ ·⊓u⊣u→ n (proj i y) (fun f (e i)) x .proj₁
-             (Two^ n .≤-trans (⋁-upper (Two^J n) m _ i) (Two^ n .≤-trans (f-basis f y .proj₂) fy≤x)) ⟩
+             (Two^ n .≤-trans (⋁-upper (Two^J n) m _ i) (Two^ n .≤-trans (basis-decomp f y .proj₂) fy≤x)) ⟩
           _⊡_ {n} (¬ {n} (fun f (e i))) x
         ≤⟨ proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (fun f (e k))) x) i .proj₂ ⟩
           proj i (adjoint {m} {n} f .*→*M .funcM .preorder._=>_.fun x)
