@@ -162,9 +162,9 @@ module _ where
   ·⊓-I {suc n} (_ , u) = (two.≤-refl , ·⊓-I {n} u .proj₁) , (two.≤-refl , ·⊓-I {n} u .proj₂)
 
 -- Write a → b for Boolean implication ¬a ⊔ b. On vectors this lifts (component-wise) to a "universally
--- quantified" implication u → v = (¬u₀ ⊔ v₀) ⊓ ... ⊓ (¬uₙ ⊔ vₙ), i.e. ¬u ⊡ v. Analogously, in any Heyting
--- algebra we have a Galois connection (- ⊓ a) ⊣ (a → _): Two → Two, which lifts similarly to an adjunction
--- (- ·⊓ u) ⊣ (u → -): Two^n → Two.
+-- quantified" implication u → v = (¬u₀ ⊔ v₀) ⊓ ... ⊓ (¬uₙ ⊔ vₙ), i.e. ¬u ⊡ v = ¬(u · ¬v). Analogously, in any
+-- Heyting algebra we have a Galois connection (- ⊓ a) ⊣ (a → _): Two → Two, which lifts similarly to an
+-- adjunction (- ·⊓ u) ⊣ (u → -): Two^n → Two.
 ·⊓u⊣u→ : ∀ n (a : Two) (u v : Two^ n .Carrier) → Two^ n ._≤_ (_·⊓_ {n} a u) v ⇔ two._≤_ a (_⊡_ {n} (¬ {n} u) v)
 ·⊓u⊣u→ zero a u v .proj₁ _ = I-isTop .IsTop.≤-top
 ·⊓u⊣u→ (suc n) O u v .proj₁ _ = tt
