@@ -31,7 +31,7 @@ Two^M : ℕ → meet-semilattice-category.Obj
 Two^M n .meet-semilattice-category.Obj.carrier = Two^ n .carrier
 Two^M n .meet-semilattice-category.Obj.meets = Two^ n .meets
 
--- Basis vectors, projection and tabulation for Two^n.
+-- Standard basis vectors
 e : ∀ {n} → Fin n → Two^ n .Carrier
 e {suc n} zero = I , Two^ n .⊥
 e {suc n} (suc i) = O , e i
@@ -42,10 +42,6 @@ proj (suc i) (_ , v) = proj i v
 
 open import Data.Unit using (tt)
 open import prop using (tt; _,_; _∧_; _⇔_; proj₁; proj₂)
-
-tabulate : ∀ {n} → (Fin n → Two) → Two^ n .Carrier
-tabulate {zero} _ = tt
-tabulate {suc n} f = f zero , tabulate {n} (λ i → f (suc i))
 
 -- Join of a finite family of join semilattices (so neither binary IsJoin nor arbitrary IsBigJoin). Be nicer
 -- to define in terms of the iterated product, but the function representation is convenient for now.
@@ -228,29 +224,15 @@ module _ where
   open preorder._=>_ using () renaming (fun to funP)
 
   private
-    -- tabulate is a join-semilattice isomorphism from (Fin m → Two) to Two^m
-    -- (with proj as inverse). We only need the forward direction here.
+    -- (tabulate, proj) is a join-semilattice isomorphism from (Fin m → Two) to Two^m.
+    tabulate : ∀ {n} → (Fin n → Two) → Two^ n .Carrier
+    tabulate {zero} _ = tt
+    tabulate {suc n} f = f zero , tabulate {n} (λ i → f (suc i))
+
     tabulate-mono : ∀ {m} (g h : Fin m → Two) →
                     (∀ i → two._≤_ (g i) (h i)) → Two^ m ._≤_ (tabulate {m} g) (tabulate {m} h)
     tabulate-mono {zero}  g h p = tt
     tabulate-mono {suc m} g h p = p zero , tabulate-mono {m} _ _ (λ i → p (suc i))
-
-    -- ¬ distributes over tabulate: ¬ (tabulate g) ≃ tabulate (λ i → two.¬ (g i)).
-    ¬-tabulate : ∀ {m} (g : Fin m → Two) →
-                 _≃_ (Two^ m) (¬ {m} (tabulate {m} g)) (tabulate {m} (λ i → two.¬ (g i)))
-    ¬-tabulate {zero}  _ = tt , tt
-    ¬-tabulate {suc m} g =
-      (two.≤-refl , ¬-tabulate {m} (λ i → g (suc i)) .proj₁) ,
-      (two.≤-refl , ¬-tabulate {m} (λ i → g (suc i)) .proj₂)
-
-    -- Two^ m ._≤_ v w ⇔ ∀ i. two._≤_ (proj i v) (proj i w).
-    proj-mono : ∀ {m} (v w : Two^ m .Carrier) →
-                Two^ m ._≤_ v w ⇔ (∀ (i : Fin m) → two._≤_ (proj i v) (proj i w))
-    proj-mono {zero}  _ _ .proj₁ _ ()
-    proj-mono {zero}  _ _ .proj₂ _ = tt
-    proj-mono {suc m} (_ , v) (_ , w) .proj₁ (h , _) zero    = h
-    proj-mono {suc m} (_ , v) (_ , w) .proj₁ (_ , t) (suc i) = proj-mono {m} v w .proj₁ t i
-    proj-mono {suc m} (_ , v) (_ , w) .proj₂ p = p zero , proj-mono {m} v w .proj₂ (λ i → p (suc i))
 
     tabulate-⊥ : ∀ {m} → Two^ m ._≤_ (tabulate {m} (λ _ → O)) (Two^ m .⊥)
     tabulate-⊥ {zero}  = tt
@@ -269,6 +251,23 @@ module _ where
                  Two^ m ._≤_ (galois.Obj._∧_ (Two^ m) (tabulate {m} g) (tabulate {m} h)) (tabulate {m} (λ i → g i ⊓ h i))
     tabulate-∧ {zero}  g h = tt
     tabulate-∧ {suc m} g h = two.≤-refl , tabulate-∧ {m} (λ i → g (suc i)) (λ i → h (suc i))
+
+    -- ¬ distributes over tabulate: ¬ (tabulate g) ≃ tabulate (λ i → two.¬ (g i)).
+    ¬-tabulate : ∀ {m} (g : Fin m → Two) →
+                 _≃_ (Two^ m) (¬ {m} (tabulate {m} g)) (tabulate {m} (λ i → two.¬ (g i)))
+    ¬-tabulate {zero}  _ = tt , tt
+    ¬-tabulate {suc m} g =
+      (two.≤-refl , ¬-tabulate {m} (λ i → g (suc i)) .proj₁) ,
+      (two.≤-refl , ¬-tabulate {m} (λ i → g (suc i)) .proj₂)
+
+    -- Two^ m ._≤_ v w ⇔ ∀ i. two._≤_ (proj i v) (proj i w).
+    proj-mono : ∀ {m} (v w : Two^ m .Carrier) →
+                Two^ m ._≤_ v w ⇔ (∀ (i : Fin m) → two._≤_ (proj i v) (proj i w))
+    proj-mono {zero}  _ _ .proj₁ _ ()
+    proj-mono {zero}  _ _ .proj₂ _ = tt
+    proj-mono {suc m} (_ , v) (_ , w) .proj₁ (h , _) zero    = h
+    proj-mono {suc m} (_ , v) (_ , w) .proj₁ (_ , t) (suc i) = proj-mono {m} v w .proj₁ t i
+    proj-mono {suc m} (_ , v) (_ , w) .proj₂ p = p zero , proj-mono {m} v w .proj₂ (λ i → p (suc i))
 
     proj-tabulate : ∀ {n} (g : Fin n → Two) (i : Fin n) → proj i (tabulate {n} g) ≃t g i
     proj-tabulate {suc n} g zero = ≃t-refl
