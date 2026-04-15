@@ -305,7 +305,6 @@ module _ where
   ·⊓-preserving : ∀ {m n} (f : Two^J m ⇒J Two^J n) (a : Two) (v : Two^ m .Carrier) →
                   _≃_ (Two^ n) (f .fun (_·⊓_ {m} a v)) (_·⊓_ {n} a (f .fun v))
   ·⊓-preserving {m} {n} f O v =
-    let open ≈-Reasoning (IsPreorder.isEquivalence (Two^ n .conjugate.Obj.≤-isPreorder)) in
     begin
       f .fun (_·⊓_ {m} O v)
     ≈⟨ _=>_.resp-≃ (f .*→*J ._=>J_.func) (·⊓-O {m} v) ⟩
@@ -314,16 +313,15 @@ module _ where
       Two^ n .⊥
     ≈˘⟨ ·⊓-O {n} (f .fun v) ⟩
       _·⊓_ {n} O (f .fun v)
-    ∎
+    ∎ where open ≈-Reasoning (IsPreorder.isEquivalence (Two^ n .conjugate.Obj.≤-isPreorder))
   ·⊓-preserving {m} {n} f I v =
-    let open ≈-Reasoning (IsPreorder.isEquivalence (Two^ n .conjugate.Obj.≤-isPreorder)) in
     begin
       f .fun (_·⊓_ {m} I v)
     ≈⟨ _=>_.resp-≃ (f .*→*J ._=>J_.func) (·⊓-I {m} v) ⟩
       f .fun v
     ≈˘⟨ ·⊓-I {n} (f .fun v) ⟩
       _·⊓_ {n} I (f .fun v)
-    ∎
+    ∎ where open ≈-Reasoning (IsPreorder.isEquivalence (Two^ n .conjugate.Obj.≤-isPreorder))
 
   -- Project f to "tail" of its input (precomposition with biproduct injection).
   private
@@ -417,7 +415,7 @@ module _ where
                                     (two.¬ (_⋅_ {n} (fun f (e i)) x))
       per-i i = ¬-anti (⋅-mono {n} (¬-involutive {n} (fun f (e i)) .proj₁) (¬-involutive {n} x .proj₁))
 
-  -- Galois embedding: (adjoint f, f) forms a Galois connection.
+  -- (adjoint f, f) is a Galois connection.
   to-gal : ∀ {m n} → Two^J m ⇒J Two^J n → _⇒g_ (Two^-gal n) (Two^-gal m)
   to-gal {m} {n} f ._⇒g_.right = adjoint {m} {n} f .*→*M ._=>M_.func
   to-gal {m} {n} f ._⇒g_.left  = f .*→*J ._=>J_.func
@@ -456,8 +454,7 @@ module _ where
         ∎
         where open basics.≤-Reasoning two.≤-isPreorder
 
-  -- Conjugate embedding: (transpose f, f) forms a conjugate pair Two^n ⇒c Two^m.
-  -- Derive from to-gal via De Morgan duality.
+  -- (transpose f, f) is a conjugate pair; derive from to-gal via De Morgan duality.
   to-conj : ∀ {m n} → Two^J m ⇒J Two^J n → _⇒c_ (Two^ n) (Two^ m)
   to-conj {m} {n} f ._⇒c_.right = transpose {m} {n} f .*→*J ._=>J_.func
   to-conj {m} {n} f ._⇒c_.left  = f .*→*J ._=>J_.func
