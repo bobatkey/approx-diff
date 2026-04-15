@@ -74,19 +74,19 @@ module _ where
   ⋅-comm {suc n} (I , u) (O , v) = ⋅-comm {n} u v
   ⋅-comm {suc n} (I , u) (I , v) = tt
 
-  -- Bilinear (join-preserving in each argument); commutative so we only need one half.
-  ⋅-⊥ : ∀ {n} (u : Two^ n .Carrier) → two._≤_ (_⋅_ {n} u (Two^ n .⊥)) O
-  ⋅-⊥ {zero} _ = tt
-  ⋅-⊥ {suc n} (O , v) = ⋅-⊥ {n} v
-  ⋅-⊥ {suc n} (I , v) = ⋅-⊥ {n} v
+  -- Bilinear (join-preserving in each argument); but commutative, so only need one half.
+  ⋅-⊥ᵣ : ∀ {n} (u : Two^ n .Carrier) → two._≤_ (_⋅_ {n} u (Two^ n .⊥)) O
+  ⋅-⊥ᵣ {zero} _ = tt
+  ⋅-⊥ᵣ {suc n} (O , v) = ⋅-⊥ᵣ {n} v
+  ⋅-⊥ᵣ {suc n} (I , v) = ⋅-⊥ᵣ {n} v
 
-  ⋅-∨ : ∀ {n} (u v w : Two^ n .Carrier) →
+  ⋅-∨ᵣ : ∀ {n} (u v w : Two^ n .Carrier) →
         two._≤_ (_⋅_ {n} u (Two^ n ._∨_ v w)) ((_⋅_ {n} u v) ⊔ (_⋅_ {n} u w))
-  ⋅-∨ {zero} _ _ _ = tt
-  ⋅-∨ {suc n} (O , u) (_ , v) (_ , w) = ⋅-∨ {n} u v w
-  ⋅-∨ {suc n} (I , u) (O , v) (O , w) = ⋅-∨ {n} u v w
-  ⋅-∨ {suc n} (I , u) (O , v) (I , w) = ⊔-upper₂
-  ⋅-∨ {suc n} (I , u) (I , v) (_ , w) = tt
+  ⋅-∨ᵣ {zero} _ _ _ = tt
+  ⋅-∨ᵣ {suc n} (O , u) (_ , v) (_ , w) = ⋅-∨ᵣ {n} u v w
+  ⋅-∨ᵣ {suc n} (I , u) (O , v) (O , w) = ⋅-∨ᵣ {n} u v w
+  ⋅-∨ᵣ {suc n} (I , u) (O , v) (I , w) = ⊔-upper₂
+  ⋅-∨ᵣ {suc n} (I , u) (I , v) (_ , w) = tt
 
   private
     ⋅-monoᵣ : ∀ {n} (u : Two^ n .Carrier) {v w : Two^ n .Carrier} →
@@ -183,7 +183,7 @@ module _ where
 
 -- ⊡ with ⊤ is I (via De Morgan from ⋅-⊥).
 ⊡-⊤ : ∀ {n} (u : Two^ n .Carrier) → two._≤_ I (_⊡_ {n} u (Two^ n .⊤))
-⊡-⊤ {n} u = ¬-anti (two.≤-trans (⋅-mono {n} (Two^ n .≤-refl) (¬-⊤ {n})) (⋅-⊥ {n} (¬ {n} u)))
+⊡-⊤ {n} u = ¬-anti (two.≤-trans (⋅-mono {n} (Two^ n .≤-refl) (¬-⊤ {n})) (⋅-⊥ᵣ {n} (¬ {n} u)))
 
 -- Two^n as a conjugate.Obj (Heyting algebra).
 import conjugate
@@ -288,11 +288,11 @@ module _ where
   transpose {m} {n} f .*→*J .funcJ .preorder._=>_.mono v≤w =
     tabulate-mono {m} _ _ (λ i → ⋅-mono {n} (Two^ n .≤-refl) v≤w)
   transpose {m} {n} f .*→*J .join-semilattice._=>_.∨-preserving {v} {w} =
-    Two^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-∨ {n} (fun f (e i)) v w))
-                     (tabulate-∨ {m} _ _)
+    Two^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-∨ᵣ {n} (fun f (e i)) v w))
+                    (tabulate-∨ {m} _ _)
   transpose {m} {n} f .*→*J .join-semilattice._=>_.⊥-preserving =
-    Two^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-⊥ {n} (fun f (e i))))
-                     (tabulate-⊥ {m})
+    Two^ m .≤-trans (tabulate-mono {m} _ _ (λ i → ⋅-⊥ᵣ {n} (fun f (e i))))
+                    (tabulate-⊥ {m})
 
   adjoint : ∀ {m n} → Two^J m ⇒J Two^J n → Two^M n ⇒M Two^M m
   adjoint {m} {n} f .*→*M .funcM .funP v = tabulate {m} (λ i → _⊡_ {n} (¬ {n} (fun f (e i))) v)
@@ -349,7 +349,7 @@ module _ where
     matrix f j i = proj j (fun f (e i))
 
     ⋅-e : ∀ {n} (u : Two^ n .Carrier) (j : Fin n) → _⋅_ {n} u (e j) ≃t proj j u
-    ⋅-e {suc n} (O , u) zero = ⋅-⊥ {n} u , tt
+    ⋅-e {suc n} (O , u) zero = ⋅-⊥ᵣ {n} u , tt
     ⋅-e {suc n} (I , u) zero = tt , tt
     ⋅-e {suc n} (O , u) (suc j) = ⋅-e {n} u j
     ⋅-e {suc n} (I , u) (suc j) = ⋅-e {n} u j
