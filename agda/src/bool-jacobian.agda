@@ -144,12 +144,25 @@ module _ where
 
 -- De Morgan dual of ⋅ (i.e. ⋅ in the dual semiring).
 --   u ⊡ v = (u₀ ⊔ v₀) ⊓ ... ⊓ (uₙ ⊔ vₙ)
-_⊡_ : ∀ {n} → Two^ n .Carrier → Two^ n .Carrier → Two
-_⊡_ {n} u v = two.¬ (_⋅_ {n} (¬ {n} u) (¬ {n} v))
+module _ where
+  _⊡_ : ∀ {n} → Two^ n .Carrier → Two^ n .Carrier → Two
+  _⊡_ {n} u v = two.¬ (_⋅_ {n} (¬ {n} u) (¬ {n} v))
 
-⊡-mono : ∀ {n} (u : Two^ n .Carrier) {v w : Two^ n .Carrier} →
-         Two^ n ._≤_ v w → two._≤_ (_⊡_ {n} u v) (_⊡_ {n} u w)
-⊡-mono {n} u v≤w = ¬-anti (⋅-mono {n} (Two^ n .≤-refl) (¬-anti^ {n} v≤w))
+  ⊡-mono : ∀ {n} (u : Two^ n .Carrier) {v w : Two^ n .Carrier} →
+          Two^ n ._≤_ v w → two._≤_ (_⊡_ {n} u v) (_⊡_ {n} u w)
+  ⊡-mono {n} u v≤w = ¬-anti (⋅-mono {n} (Two^ n .≤-refl) (¬-anti^ {n} v≤w))
+
+  -- Bilinear in the (Two, ∧, ∨) semiring.
+  ⊡-⊤ : ∀ {n} (u : Two^ n .Carrier) → two._≤_ I (_⊡_ {n} u (Two^ n .⊤))
+  ⊡-⊤ {n} u = ¬-anti (two.≤-trans (⋅-mono {n} (Two^ n .≤-refl) (¬-⊤ {n})) (⋅-⊥ {n} (¬ {n} u)))
+
+  ⊡-∧ : ∀ {n} (u v w : Two^ n .Carrier) →
+        two._≤_ ((_⊡_ {n} u v) ⊓ (_⊡_ {n} u w)) (_⊡_ {n} u (conjugate.Obj._∧_ (Two^ n) v w))
+  ⊡-∧ {zero}  _ _ _ = tt
+  ⊡-∧ {suc n} (O , u) (O , v) (_ , w) = tt
+  ⊡-∧ {suc n} (O , u) (I , v) (O , w) = two.⊓-lower₂
+  ⊡-∧ {suc n} (O , u) (I , v) (I , w) = ⊡-∧ {n} u v w
+  ⊡-∧ {suc n} (I , u) (_ , v) (_ , w) = ⊡-∧ {n} u v w
 
 -- Multiply a vector by a scalar, with O as annihilator and I as identity.
 module _ where
@@ -180,19 +193,6 @@ module _ where
 ·⊓u⊣u→ (suc n) I (O , u) (v₀ , v) .proj₂ h = tt , ·⊓u⊣u→ n I u v .proj₂ h
 ·⊓u⊣u→ (suc n) I (I , u) (O , v) .proj₂ ()
 ·⊓u⊣u→ (suc n) I (I , u) (I , v) .proj₂ h = tt , ·⊓u⊣u→ n I u v .proj₂ h
-
--- ⊡ preserves ∧ in its second argument.
-⊡-∧ : ∀ {n} (u v w : Two^ n .Carrier) →
-      two._≤_ ((_⊡_ {n} u v) ⊓ (_⊡_ {n} u w)) (_⊡_ {n} u (conjugate.Obj._∧_ (Two^ n) v w))
-⊡-∧ {zero}  _ _ _ = tt
-⊡-∧ {suc n} (O , u) (O , v) (_ , w) = tt
-⊡-∧ {suc n} (O , u) (I , v) (O , w) = two.⊓-lower₂
-⊡-∧ {suc n} (O , u) (I , v) (I , w) = ⊡-∧ {n} u v w
-⊡-∧ {suc n} (I , u) (_ , v) (_ , w) = ⊡-∧ {n} u v w
-
--- ⊡ with ⊤ is I (via De Morgan from ⋅-⊥).
-⊡-⊤ : ∀ {n} (u : Two^ n .Carrier) → two._≤_ I (_⊡_ {n} u (Two^ n .⊤))
-⊡-⊤ {n} u = ¬-anti (two.≤-trans (⋅-mono {n} (Two^ n .≤-refl) (¬-⊤ {n})) (⋅-⊥ {n} (¬ {n} u)))
 
 -- Holds in any Boolean algebra.
 #-↔-≤ : ∀ {n} (u v : Two^ n .Carrier) → conjugate.Obj._#_ (Two^ n) u v ⇔ Two^ n ._≤_ u (¬ {n} v)
