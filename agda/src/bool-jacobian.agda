@@ -366,25 +366,25 @@ module _ where
     transpose-matrix : ∀ m n (f : Two^J m ⇒J Two^J n) (i : Fin m) (j : Fin n) →
                       matrix {n} {m} (transpose {m} {n} f) i j two.≃ matrix {m} {n} f j i
     transpose-matrix m n f i j =
-      two.≃-trans (proj-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) (e j)) i)
-              (⋅-e {n} (fun f (e i)) j)
+      two.≃-trans (proj-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) (e j)) i)
+                  (⋅-e {n} (f .fun (e i)) j)
 
   -- (adjoint f) and (transpose f) are De Morgan dual.
-  ¬transpose≃adjoint¬ : ∀ {m n} (f : Two^J m ⇒J Two^J n) (x : Two^ n .Carrier) →
-                       _≃_ (Two^ m) (¬ {m} (fun (transpose {m} {n} f) x))
-                                    (adjoint {m} {n} f .*→*M ._=>M_.func ._=>_.fun (¬ {n} x))
-  ¬transpose≃adjoint¬ {m} {n} f x .proj₁ =
-    Two^ m .≤-trans (¬-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) x) .proj₁) (tabulate-mono {m} _ _ per-i)
+  ¬transpose≃adjoint¬ : ∀ {m n} (f : Two^J m ⇒J Two^J n) (v : Two^ n .Carrier) →
+                       _≃_ (Two^ m) (¬ {m} (fun (transpose {m} {n} f) v))
+                                    (adjoint {m} {n} f .*→*M ._=>M_.func ._=>_.fun (¬ {n} v))
+  ¬transpose≃adjoint¬ {m} {n} f v .proj₁ =
+    Two^ m .≤-trans (¬-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) v) .proj₁) (tabulate-mono {m} _ _ per-i)
     where
-      per-i : (i : Fin m) → two._≤_ (two.¬ (_⋅_ {n} (fun f (e i)) x))
-                                    (_⊡_ {n} (¬ {n} (fun f (e i))) (¬ {n} x))
-      per-i i = ¬-anti (⋅-mono {n} (¬-involutive {n} (fun f (e i)) .proj₂) (¬-involutive {n} x .proj₂))
-  ¬transpose≃adjoint¬ {m} {n} f x .proj₂ =
-    Two^ m .≤-trans (tabulate-mono {m} _ _ per-i) (¬-tabulate {m} (λ k → _⋅_ {n} (fun f (e k)) x) .proj₂)
+      per-i : (i : Fin m) → two._≤_ (two.¬ (_⋅_ {n} (f .fun (e i)) v))
+                                    (_⊡_ {n} (¬ {n} (f .fun (e i))) (¬ {n} v))
+      per-i i = ¬-anti (⋅-mono {n} (¬-involutive {n} (f .fun (e i)) .proj₂) (¬-involutive {n} v .proj₂))
+  ¬transpose≃adjoint¬ {m} {n} f v .proj₂ =
+    Two^ m .≤-trans (tabulate-mono {m} _ _ per-i) (¬-tabulate {m} (λ k → _⋅_ {n} (f .fun (e k)) v) .proj₂)
     where
-      per-i : (i : Fin m) → two._≤_ (_⊡_ {n} (¬ {n} (fun f (e i))) (¬ {n} x))
-                                    (two.¬ (_⋅_ {n} (fun f (e i)) x))
-      per-i i = ¬-anti (⋅-mono {n} (¬-involutive {n} (fun f (e i)) .proj₁) (¬-involutive {n} x .proj₁))
+      per-i : (i : Fin m) → two._≤_ (_⊡_ {n} (¬ {n} (f .fun (e i))) (¬ {n} v))
+                                    (two.¬ (_⋅_ {n} (f .fun (e i)) v))
+      per-i i = ¬-anti (⋅-mono {n} (¬-involutive {n} (f .fun (e i)) .proj₁) (¬-involutive {n} v .proj₁))
 
   -- (adjoint f, f) is a Galois connection.
   to-gal : ∀ {m n} → Two^J m ⇒J Two^J n → _⇒g_ (Two^-gal n) (Two^-gal m)
@@ -393,21 +393,21 @@ module _ where
   to-gal {m} {n} f ._⇒g_.left⊣right {x} {y} .proj₁ y≤adj =
     let open basics.≤-Reasoning (Two^ n .conjugate.Obj.≤-isPreorder) in
     begin
-      fun f y
+      f .fun y
     ≤⟨ basis-decomp f y .proj₁ ⟩
-      ⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj i y) (fun f (e i)))
+      ⋁ (Two^J n) m (λ i → _·⊓_ {n} (proj i y) (f .fun (e i)))
     ≤⟨ ⋁-lub (Two^J n) m _ x per-i ⟩
       x
     ∎
     where
-      per-i : (i : Fin m) → Two^ n ._≤_ (_·⊓_ {n} (proj i y) (fun f (e i))) x
-      per-i i = ·⊓u⊣u→ n (proj i y) (fun f (e i)) x .proj₂
+      per-i : (i : Fin m) → Two^ n ._≤_ (_·⊓_ {n} (proj i y) (f .fun (e i))) x
+      per-i i = ·⊓u⊣u→ n (proj i y) (f .fun (e i)) x .proj₂
         (begin
           proj i y
         ≤⟨ proj-mono {m} y (adjoint {m} {n} f .*→*M ._=>M_.func ._=>_.fun x) .proj₁ y≤adj i ⟩
           proj i (adjoint {m} {n} f .*→*M ._=>M_.func ._=>_.fun x)
-        ≤⟨ proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (fun f (e k))) x) i .proj₁ ⟩
-          _⊡_ {n} (¬ {n} (fun f (e i))) x
+        ≤⟨ proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (f .fun (e k))) x) i .proj₁ ⟩
+          _⊡_ {n} (¬ {n} (f .fun (e i))) x
         ∎)
         where open basics.≤-Reasoning two.≤-isPreorder
   to-gal {m} {n} f ._⇒g_.left⊣right {x} {y} .proj₂ fy≤x =
@@ -417,10 +417,10 @@ module _ where
       per-i i =
         begin
           proj i y
-        ≤⟨ ·⊓u⊣u→ n (proj i y) (fun f (e i)) x .proj₁
+        ≤⟨ ·⊓u⊣u→ n (proj i y) (f .fun (e i)) x .proj₁
              (Two^ n .≤-trans (⋁-upper (Two^J n) m _ i) (Two^ n .≤-trans (basis-decomp f y .proj₂) fy≤x)) ⟩
-          _⊡_ {n} (¬ {n} (fun f (e i))) x
-        ≤⟨ proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (fun f (e k))) x) i .proj₂ ⟩
+          _⊡_ {n} (¬ {n} (f .fun (e i))) x
+        ≤⟨ proj-tabulate {m} (λ k → _⊡_ {n} (¬ {n} (f .fun (e k))) x) i .proj₂ ⟩
           proj i (adjoint {m} {n} f .*→*M ._=>M_.func ._=>_.fun x)
         ∎
         where open basics.≤-Reasoning two.≤-isPreorder
@@ -430,7 +430,7 @@ module _ where
   to-conj {m} {n} f ._⇒c_.right = transpose {m} {n} f .*→*J ._=>J_.func
   to-conj {m} {n} f ._⇒c_.left  = f .*→*J ._=>J_.func
   to-conj {m} {n} f ._⇒c_.conjugate {x} {y} .proj₁ y#tr =
-    #-↔-≤ {n} (fun f y) x .proj₂
+    #-↔-≤ {n} (f .fun y) x .proj₂
       (to-gal {m} {n} f ._⇒g_.left⊣right {¬ {n} x} {y} .proj₁
         (Two^ m .≤-trans
           (#-↔-≤ {m} y (fun (transpose {m} {n} f) x) .proj₁ y#tr)
@@ -438,5 +438,5 @@ module _ where
   to-conj {m} {n} f ._⇒c_.conjugate {x} {y} .proj₂ fy#x =
     #-↔-≤ {m} y (fun (transpose {m} {n} f) x) .proj₂
       (Two^ m .≤-trans
-        (to-gal {m} {n} f ._⇒g_.left⊣right {¬ {n} x} {y} .proj₂ (#-↔-≤ {n} (fun f y) x .proj₁ fy#x))
+        (to-gal {m} {n} f ._⇒g_.left⊣right {¬ {n} x} {y} .proj₂ (#-↔-≤ {n} (f .fun y) x .proj₁ fy#x))
         (¬transpose≃adjoint¬ f x .proj₂))
