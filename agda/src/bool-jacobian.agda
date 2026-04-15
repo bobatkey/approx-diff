@@ -140,19 +140,19 @@ _⊡_ {n} u v = two.¬ (_⋅_ {n} (¬ {n} u) (¬ {n} v))
          Two^ n ._≤_ v w → two._≤_ (_⊡_ {n} u v) (_⊡_ {n} u w)
 ⊡-mono {n} u v≤w = ¬-anti (⋅-mono {n} (Two^ n .≤-refl) (¬-anti^ {n} v≤w))
 
--- Scales the vector u by the Two value a.
-_·⊓_ : ∀ {n} → Two → Two^ n .Carrier → Two^ n .Carrier
-_·⊓_ {zero}  _ _       = tt
-_·⊓_ {suc n} a (b , u) = (a ⊓ b) , _·⊓_ {n} a u
+-- Scalar product, with O and I as annihilator and identity.
+module _ where
+  _·⊓_ : ∀ {n} → Two → Two^ n .Carrier → Two^ n .Carrier
+  _·⊓_ {zero}  _ _       = tt
+  _·⊓_ {suc n} a (b , u) = (a ⊓ b) , _·⊓_ {n} a u
 
--- O scales to ⊥; I is the identity.
-·⊓-O : ∀ {n} (u : Two^ n .Carrier) → _≃_ (Two^ n) (_·⊓_ {n} O u) (Two^ n .⊥)
-·⊓-O {zero}  _       = tt , tt
-·⊓-O {suc n} (_ , u) = (tt , ·⊓-O {n} u .proj₁) , (tt , ·⊓-O {n} u .proj₂)
+  ·⊓-O : ∀ {n} (u : Two^ n .Carrier) → _≃_ (Two^ n) (_·⊓_ {n} O u) (Two^ n .⊥)
+  ·⊓-O {zero}  _ = tt , tt
+  ·⊓-O {suc n} (_ , u) = (tt , ·⊓-O {n} u .proj₁) , (tt , ·⊓-O {n} u .proj₂)
 
-·⊓-I : ∀ {n} (u : Two^ n .Carrier) → _≃_ (Two^ n) (_·⊓_ {n} I u) u
-·⊓-I {zero}  _       = tt , tt
-·⊓-I {suc n} (_ , u) = (two.≤-refl , ·⊓-I {n} u .proj₁) , (two.≤-refl , ·⊓-I {n} u .proj₂)
+  ·⊓-I : ∀ {n} (u : Two^ n .Carrier) → _≃_ (Two^ n) (_·⊓_ {n} I u) u
+  ·⊓-I {zero}  _ = tt , tt
+  ·⊓-I {suc n} (_ , u) = (two.≤-refl , ·⊓-I {n} u .proj₁) , (two.≤-refl , ·⊓-I {n} u .proj₂)
 
 -- Pointwise lifting of meet/implication adjunction.
 ⊡-adj : ∀ n (a : Two) (u v : Two^ n .Carrier) →
