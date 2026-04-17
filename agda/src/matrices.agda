@@ -259,19 +259,10 @@ module matrices
         π i ∘ ι j
       ∎
 
-  -- Transpose reverses composition (requires scalar commutativity).
   transpose-comp : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) →
                    transpose {m} {k} (g ∘ f) ≈ (transpose {m} {n} f ∘ transpose {n} {k} g)
-  -- Helper: transpose g applied to the i-th injection gives a tuple of entries.
   private
-    transpose-ι : ∀ {n k} (g : X^ n ⇒ X^ k) (i : Fin k) →
-                  (transpose {n} {k} g ∘ ι {k} i) ≈ tuple {n} (λ l → entry g i l)
-    transpose-ι {n} {k} g i =
-      ≈-trans
-        (tuple-natural {n} (λ l → cotuple {k} (λ i' → entry g i' l)) (ι {k} i))
-        (tuple-cong {n} _ _ (λ l → cotuple-ι {k} (λ i' → entry g i' l) i))
-
-    -- Helper: entry of a composition is the dot product of entries (matrix multiplication).
+    -- The entry of a composition is the dot product of the entries (matrix multiplication).
     entry-comp : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) (i : Fin k) (j : Fin m) →
                  entry (g ∘ f) i j ≈ (cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j))
     entry-comp {m} {n} {k} f g i j =
@@ -287,13 +278,10 @@ module matrices
         cotuple {n} (λ l → entry g i l) ∘ (f ∘ ι {m} j)
       ≈˘⟨ ∘-cong ≈-refl (tuple-ext {n} (f ∘ ι {m} j)) ⟩
         cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j)
-      ∎
-      where open ≈-Reasoning isEquiv
+      ∎ where open ≈-Reasoning isEquiv
 
   -- Morphisms with equal entries are equal.
-  private
-    entry-ext : ∀ {m n} {f g : X^ m ⇒ X^ n} →
-                (∀ (i : Fin n) (j : Fin m) → entry f i j ≈ entry g i j) → f ≈ g
+    entry-ext : ∀ {m n} {f g : X^ m ⇒ X^ n} → (∀ (i : Fin n) (j : Fin m) → entry f i j ≈ entry g i j) → f ≈ g
     entry-ext {m} {n} {f} {g} h =
       ≈-trans (≈-sym (tuple-ext {n} f))
       (≈-trans (tuple-cong {n} _ _ (λ i →
