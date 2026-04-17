@@ -12,7 +12,8 @@ open import commutative-monoid using (CommutativeMonoid)
 -- biproducts and zero object, and base object X. Instantiating X to Two in SemiLat recovers the "Boolean
 -- Jacobian" setting FDVect_2. The endomorphisms of X act as the "scalars", and form a semiring, with
 -- composition as multiplication and addition via the CMon enrichment. We need the multiplication to be
--- commutative for the dagger to preserve composition, i.e. for the usual AB^T = B^T A^T to hold.
+-- commutative for the dot product to be commutative, in turn required for transpose to preserve composition
+-- (i.e. for the usual AB^T = B^T A^T to hold).
 module matrices
   {o m e} {𝒞 : Category o m e}
   (CM : CMonEnriched 𝒞)
@@ -145,18 +146,37 @@ module matrices
   entry f i j = π i ∘ (f ∘ ι j)
 
   -- Requires commutativity of scalar multiplication (monoid of endomorphisms of X).
-  dot-comm : ∀ {n} (h k : Fin n → X ⇒ X) →
-             (cotuple {n} h ∘ tuple {n} k) ≈ (cotuple {n} k ∘ tuple {n} h)
-  dot-comm {zero}  h k = {!!}
+  dot-comm : ∀ {n} (h k : Fin n → X ⇒ X) → (cotuple {n} h ∘ tuple {n} k) ≈ (cotuple {n} k ∘ tuple {n} h)
+  dot-comm {zero}  h k = ≈-refl
   dot-comm {suc n} h k =
     let open ≈-Reasoning isEquiv in
     begin
       copair (BP X (X^ n)) (h zero) (cotuple (λ i → h (suc i))) ∘ pair (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i)))
-    ≈⟨ {!!} ⟩
+    ≈⟨ comp-bilinear₁ _ _ _ ⟩
+      ((h zero ∘ p₁ (BP X (X^ n))) ∘ pair (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i))))
+      +m
+      ((cotuple (λ i → h (suc i)) ∘ p₂ (BP X (X^ n))) ∘ pair (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i))))
+    ≈⟨ homCM _ _ .+-cong (assoc _ _ _) (assoc _ _ _) ⟩
+      (h zero ∘ (p₁ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i)))))
+      +m
+      (cotuple (λ i → h (suc i)) ∘ (p₂ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i)))))
+    ≈⟨ homCM _ _ .+-cong
+         (∘-cong ≈-refl (pair-p₁ (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i)))))
+         (∘-cong ≈-refl (pair-p₂ (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i))))) ⟩
       (h zero ∘ k zero) +m (cotuple {n} (λ i → h (suc i)) ∘ tuple {n} (λ i → k (suc i)))
-    ≈⟨ {!!} ⟩
+    ≈⟨ homCM _ _ .+-cong (scalar-comm (h zero) (k zero)) (dot-comm (λ i → h (suc i)) (λ i → k (suc i))) ⟩
       (k zero ∘ h zero) +m (cotuple {n} (λ i → k (suc i)) ∘ tuple {n} (λ i → h (suc i)))
-    ≈⟨ {!!} ⟩
+    ≈˘⟨ homCM _ _ .+-cong
+          (∘-cong ≈-refl (pair-p₁ (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i)))))
+          (∘-cong ≈-refl (pair-p₂ (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i))))) ⟩
+      (k zero ∘ (p₁ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i)))))
+      +m
+      (cotuple (λ i → k (suc i)) ∘ (p₂ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i)))))
+    ≈˘⟨ homCM _ _ .+-cong (assoc _ _ _) (assoc _ _ _) ⟩
+      ((k zero ∘ p₁ (BP X (X^ n))) ∘ pair (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i))))
+      +m
+      ((cotuple (λ i → k (suc i)) ∘ p₂ (BP X (X^ n))) ∘ pair (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i))))
+    ≈˘⟨ comp-bilinear₁ _ _ _ ⟩
       copair (BP X (X^ n)) (k zero) (cotuple (λ i → k (suc i))) ∘ pair (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i)))
     ∎
 
