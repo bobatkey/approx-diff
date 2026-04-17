@@ -396,7 +396,7 @@ module matrices
     ≈⟨ tuple-cong {m}
         (λ i → π {m +ℕ n} (i ↑ˡ n) ∘ tuple {m +ℕ n} col)
         (λ i → π {m} i ∘ f)
-        (λ i → ≈-trans (tuple-π {m +ℕ n} c (i ↑ˡ n)) (split-pair-≡ {k} f g (splitAt-↑ˡ m i n))) ⟩
+        (λ i → ≈-trans (tuple-π {m +ℕ n} col (i ↑ˡ n)) (split-pair-≡ {k} f g (splitAt-↑ˡ m i n))) ⟩
       tuple {m} (λ i → π {m} i ∘ f)
     ≈⟨ tuple-ext {m} f ⟩
       f
@@ -411,7 +411,7 @@ module matrices
     ≈⟨ tuple-cong {n}
         (λ j → π {m +ℕ n} (m ↑ʳ j) ∘ tuple {m +ℕ n} col)
         (λ j → π {n} j ∘ g)
-        (λ j → ≈-trans (tuple-π {m +ℕ n} c (m ↑ʳ j)) (split-pair-≡ {k} f g (splitAt-↑ʳ m n j))) ⟩
+        (λ j → ≈-trans (tuple-π {m +ℕ n} col (m ↑ʳ j)) (split-pair-≡ {k} f g (splitAt-↑ʳ m n j))) ⟩
       tuple {n} (λ j → π {n} j ∘ g)
     ≈⟨ tuple-ext {n} g ⟩
       g
