@@ -275,7 +275,6 @@ module matrices
     entry-comp : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) (i : Fin k) (j : Fin m) →
                  entry (g ∘ f) i j ≈ (cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j))
     entry-comp {m} {n} {k} f g i j =
-      let open ≈-Reasoning isEquiv in
       begin
         π {k} i ∘ ((g ∘ f) ∘ ι {m} j)
       ≈⟨ ∘-cong ≈-refl (assoc g f (ι j)) ⟩
@@ -288,6 +287,8 @@ module matrices
         cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j)
       ∎
       where
+        open ≈-Reasoning isEquiv
+
         cotuple-ext-π : ∀ {n k} (g : X^ n ⇒ X^ k) (i : Fin k) →
                         (π {k} i ∘ g) ≈ cotuple {n} (λ l → entry g i l)
         cotuple-ext-π {n} {k} g i =
@@ -311,30 +312,14 @@ module matrices
         (cotuple-ext {m} (π {n} i ∘ g)))))
       (tuple-ext {n} g))
 
-    -- Entry of a composition on the RHS.
-    entry-comp-rhs : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) (i : Fin k) (j : Fin m) →
-                     entry (transpose {m} {n} f ∘ transpose {n} {k} g) j i ≈
-                     (cotuple {n} (λ l → entry f l j) ∘ tuple {n} (λ l → entry g i l))
-    entry-comp-rhs {m} {n} {k} f g i j =
-      let open ≈-Reasoning isEquiv in
-      begin
-        π {m} j ∘ ((transpose {m} {n} f ∘ transpose {n} {k} g) ∘ ι {k} i)
-      ≈⟨ ∘-cong ≈-refl (assoc (transpose {m} {n} f) (transpose {n} {k} g) (ι {k} i)) ⟩
-        π {m} j ∘ (transpose {m} {n} f ∘ (transpose {n} {k} g ∘ ι {k} i))
-      ≈˘⟨ assoc (π {m} j) (transpose {m} {n} f) (transpose {n} {k} g ∘ ι {k} i) ⟩
-        (π {m} j ∘ transpose {m} {n} f) ∘ (transpose {n} {k} g ∘ ι {k} i)
-      ≈⟨ ∘-cong (tuple-π {m} (λ l → cotuple {n} (λ l' → entry f l' l)) j) ≈-refl ⟩
-        cotuple {n} (λ l → entry f l j) ∘ (transpose {n} {k} g ∘ ι {k} i)
-      ≈⟨ ∘-cong ≈-refl (transpose-ι {n} {k} g i) ⟩
-        cotuple {n} (λ l → entry f l j) ∘ tuple {n} (λ l → entry g i l)
-      ∎
-
   transpose-comp {m} {n} {k} f g =
     entry-ext (λ i j →
       ≈-trans (transpose-entry {m} {k} (g ∘ f) i j)
       (≈-trans (entry-comp {m} {n} {k} f g j i)
       (≈-trans (dot-comm {n} (λ l → entry g j l) (λ l → entry f l i))
-               (≈-sym (entry-comp-rhs {m} {n} {k} f g j i)))))
+      (≈-sym (≈-trans (entry-comp {k} {n} {m} (transpose {n} {k} g) (transpose {m} {n} f) i j)
+                      (∘-cong (cotuple-cong {n} _ _ (λ l → transpose-entry {m} {n} f i l))
+                              (tuple-cong {n} _ _ (λ l → transpose-entry {n} {k} g l j))))))))
 
   transpose-id : ∀ {n} → transpose {n} {n} (id (X^ n)) ≈ id (X^ n)
   transpose-id {n} =
