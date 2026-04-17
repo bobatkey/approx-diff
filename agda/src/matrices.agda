@@ -115,7 +115,6 @@ module matrices
   entry : ∀ {m n} → X^ m ⇒ X^ n → Fin n → Fin m → X ⇒ X
   entry f i j = π i ∘ (f ∘ ι j)
 
-  -- Transpose: swap the iteration order of the matrix entries.
   transpose : ∀ {m n} → X^ m ⇒ X^ n → X^ n ⇒ X^ m
   transpose {m} {n} f = tuple {m} (λ j → cotuple {n} (λ i → entry f i j))
 
