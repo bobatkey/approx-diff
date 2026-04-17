@@ -1,9 +1,10 @@
 {-# OPTIONS --postfix-projections --prop --safe #-}
 
-open import Data.Nat using (ℕ; zero; suc)
-open import Data.Fin using (Fin; zero; suc)
+open import Data.Nat using (ℕ; zero; suc) renaming (_+_ to _+ℕ_)
+open import Data.Fin using (Fin; zero; suc; splitAt; _↑ˡ_; _↑ʳ_)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import prop-setoid using (module ≈-Reasoning)
-open import categories using (Category; IsInitial; IsTerminal; HasInitial; HasTerminal)
+open import categories using (Category; IsInitial; IsTerminal; HasInitial; HasTerminal; HasProducts)
 open import cmon-enriched using (CMonEnriched; Biproduct)
 open import commutative-monoid using (CommutativeMonoid)
 
@@ -365,3 +366,22 @@ module matrices
   initial .HasInitial.witness = 0
   initial .HasInitial.is-initial .IsInitial.from-initial = from-initial
   initial .HasInitial.is-initial .IsInitial.from-initial-ext = from-initial-ext
+
+  private
+    split-π : ∀ {m n} → Fin m ⊎ Fin n → X^ (m +ℕ n) ⇒ X
+    split-π {m} {n} (inj₁ i) = π {m +ℕ n} (i ↑ˡ n)
+    split-π {m} {n} (inj₂ j) = π {m +ℕ n} (m ↑ʳ j)
+
+  products : HasProducts cat
+  products .HasProducts.prod m n = m +ℕ n
+  products .HasProducts.p₁ {m} {n} = tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n))
+  products .HasProducts.p₂ {m} {n} = tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j))
+  products .HasProducts.pair {_} {m} {n} f g = tuple {m +ℕ n} (λ i → split-pair (splitAt m i))
+    where
+      split-pair : Fin m ⊎ Fin n → _ ⇒ X
+      split-pair (inj₁ i) = π {m} i ∘ f
+      split-pair (inj₂ j) = π {n} j ∘ g
+  products .HasProducts.pair-cong = {!!}
+  products .HasProducts.pair-p₁ = {!!}
+  products .HasProducts.pair-p₂ = {!!}
+  products .HasProducts.pair-ext = {!!}
