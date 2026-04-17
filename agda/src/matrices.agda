@@ -2,7 +2,7 @@
 
 open import Data.Nat using (ℕ; zero; suc) renaming (_+_ to _+ℕ_)
 open import Data.Fin using (Fin; zero; suc; splitAt; _↑ˡ_; _↑ʳ_)
-open import Data.Fin.Properties using (splitAt-↑ˡ)
+open import Data.Fin.Properties using (splitAt-↑ˡ; splitAt-↑ʳ)
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_; refl)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import prop-setoid using (module ≈-Reasoning)
@@ -405,5 +405,21 @@ module matrices
       open ≈-Reasoning isEquiv
       col : Fin (m +ℕ n) → X^ k ⇒ X
       col j = split-pair {k} {m} {n} f g (splitAt m j)
-  products .HasProducts.pair-p₂ = {!!}
+  products .HasProducts.pair-p₂ {k} {m} {n} f g =
+    begin
+      tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j)) ∘ tuple {m +ℕ n} col
+    ≈⟨ tuple-natural {n} (λ j → π {m +ℕ n} (m ↑ʳ j)) (tuple {m +ℕ n} col) ⟩
+      tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j) ∘ tuple {m +ℕ n} col)
+    ≈⟨ tuple-cong {n}
+        (λ j → π {m +ℕ n} (m ↑ʳ j) ∘ tuple {m +ℕ n} col)
+        (λ j → π {n} j ∘ g)
+        (λ j → ≈-trans (tuple-π {m +ℕ n} col (m ↑ʳ j)) (split-pair-≡ f g (splitAt-↑ʳ m n j))) ⟩
+      tuple {n} (λ j → π {n} j ∘ g)
+    ≈⟨ tuple-ext {n} g ⟩
+      g
+    ∎
+    where
+      open ≈-Reasoning isEquiv
+      col : Fin (m +ℕ n) → X^ k ⇒ X
+      col j = split-pair {k} {m} {n} f g (splitAt m j)
   products .HasProducts.pair-ext = {!!}
