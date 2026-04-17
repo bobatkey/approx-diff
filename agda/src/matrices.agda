@@ -289,16 +289,25 @@ module matrices
         tuple {n} (λ i → π {n} i ∘ f)
       ≈˘⟨ tuple-cong {n} _ _ (λ i → cotuple-ext {m} (π {n} i ∘ f)) ⟩
         tuple {n} (λ i → cotuple {m} (λ j → (π {n} i ∘ f) ∘ ι {m} j))
-      ≈⟨ tuple-cong {n} _ _ (λ i → cotuple-cong {m} _ _ (λ j →
-          ≈-trans (assoc (π {n} i) f (ι {m} j))
-          (≈-trans (h i j)
-          (≈-sym (assoc (π {n} i) g (ι {m} j)))))) ⟩
+      ≈⟨ tuple-cong {n} _ _ (λ i → cotuple-cong {m} _ _ (λ j → entry-step i j)) ⟩
         tuple {n} (λ i → cotuple {m} (λ j → (π {n} i ∘ g) ∘ ι {m} j))
       ≈⟨ tuple-cong {n} _ _ (λ i → cotuple-ext {m} (π {n} i ∘ g)) ⟩
         tuple {n} (λ i → π {n} i ∘ g)
       ≈⟨ tuple-ext {n} g ⟩
         g
-      ∎ where open ≈-Reasoning isEquiv
+      ∎ where
+        entry-step : ∀ (i : Fin n) (j : Fin m) → ((π {n} i ∘ f) ∘ ι {m} j) ≈ ((π {n} i ∘ g) ∘ ι {m} j)
+        entry-step i j =
+          begin
+            (π {n} i ∘ f) ∘ ι {m} j
+          ≈⟨ assoc (π {n} i) f (ι {m} j) ⟩
+            entry f i j
+          ≈⟨ h i j ⟩
+            entry g i j
+          ≈˘⟨ assoc (π {n} i) g (ι {m} j) ⟩
+            (π {n} i ∘ g) ∘ ι {m} j
+          ∎ where open ≈-Reasoning isEquiv
+        open ≈-Reasoning isEquiv
 
   transpose-comp {m} {n} {k} f g =
     entry-ext (λ i j → let open ≈-Reasoning isEquiv in
