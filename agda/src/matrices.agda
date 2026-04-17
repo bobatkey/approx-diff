@@ -213,4 +213,12 @@ module matrices
     ∎ where open ≈-Reasoning isEquiv
   kronecker-sym {suc n} (suc i) zero = ≈-sym (kronecker-sym zero (suc i))
   kronecker-sym {suc n} (suc i) (suc j) =
-    ≈-trans (kronecker-suc i j) (≈-trans (kronecker-sym i j) (≈-sym (kronecker-suc j i)))
+    begin
+      π (suc i) ∘ ι (suc j)
+    ≈⟨ kronecker-suc i j ⟩
+      (π i ∘ ι j)
+    ≈⟨ kronecker-sym i j ⟩
+      (π j ∘ ι i)
+    ≈˘⟨ kronecker-suc j i ⟩
+       π (suc j) ∘ ι (suc i)
+    ∎ where open ≈-Reasoning isEquiv
