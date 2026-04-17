@@ -275,10 +275,18 @@ module matrices
     entry-comp : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) (i : Fin k) (j : Fin m) →
                  entry (g ∘ f) i j ≈ (cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j))
     entry-comp {m} {n} {k} f g i j =
-      ≈-trans (∘-cong ≈-refl (assoc g f (ι {m} j)))
-      (≈-trans (≈-sym (assoc (π {k} i) g (f ∘ ι {m} j)))
-      (≈-trans (∘-cong (cotuple-ext-π {n} {k} g i) ≈-refl)
-               (∘-cong ≈-refl (tuple-ext-ι {m} {n} f j))))
+      let open ≈-Reasoning isEquiv in
+      begin
+        π {k} i ∘ ((g ∘ f) ∘ ι {m} j)
+      ≈⟨ ∘-cong ≈-refl (assoc g f (ι j)) ⟩
+        π {k} i ∘ (g ∘ (f ∘ ι {m} j))
+      ≈˘⟨ assoc (π {k} i) g (f ∘ ι {m} j) ⟩
+        (π {k} i ∘ g) ∘ (f ∘ ι {m} j)
+      ≈⟨ ∘-cong (cotuple-ext-π {n} {k} g i) ≈-refl ⟩
+        cotuple {n} (λ l → entry g i l) ∘ (f ∘ ι {m} j)
+      ≈⟨ ∘-cong ≈-refl (tuple-ext-ι {m} {n} f j) ⟩
+        cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j)
+      ∎
       where
         cotuple-ext-π : ∀ {n k} (g : X^ n ⇒ X^ k) (i : Fin k) →
                         (π {k} i ∘ g) ≈ cotuple {n} (λ l → entry g i l)
@@ -295,13 +303,34 @@ module matrices
     entry-ext : ∀ {m n} {f g : X^ m ⇒ X^ n} →
                 (∀ (i : Fin n) (j : Fin m) → entry f i j ≈ entry g i j) → f ≈ g
     entry-ext {m} {n} {f} {g} h =
-      ≈-trans (≈-sym (tuple-ext {n} f))
-      (≈-trans (tuple-cong {n} _ _ (λ i →
-        ≈-trans (≈-sym (cotuple-ext {m} (π {n} i ∘ f)))
-        (≈-trans (cotuple-cong {m} _ _ (λ j →
-          ≈-trans (assoc (π {n} i) f (ι {m} j)) (≈-trans (h i j) (≈-sym (assoc (π {n} i) g (ι {m} j))))))
-        (cotuple-ext {m} (π {n} i ∘ g)))))
-      (tuple-ext {n} g))
+      let open ≈-Reasoning isEquiv in
+      begin
+        f
+      ≈˘⟨ tuple-ext {n} f ⟩
+        tuple {n} (λ i → π {n} i ∘ f)
+      ≈⟨ tuple-cong {n} _ _ (λ i →
+           begin
+             π {n} i ∘ f
+           ≈˘⟨ cotuple-ext {m} (π {n} i ∘ f) ⟩
+             cotuple {m} (λ j → (π {n} i ∘ f) ∘ ι {m} j)
+           ≈⟨ cotuple-cong {m} _ _ (λ j →
+                begin
+                  (π {n} i ∘ f) ∘ ι {m} j
+                ≈⟨ assoc (π {n} i) f (ι {m} j) ⟩
+                  entry f i j
+                ≈⟨ h i j ⟩
+                  entry g i j
+                ≈˘⟨ assoc (π {n} i) g (ι {m} j) ⟩
+                  (π {n} i ∘ g) ∘ ι {m} j
+                ∎) ⟩
+             cotuple {m} (λ j → (π {n} i ∘ g) ∘ ι {m} j)
+           ≈⟨ cotuple-ext {m} (π {n} i ∘ g) ⟩
+             π {n} i ∘ g
+           ∎) ⟩
+        tuple {n} (λ i → π {n} i ∘ g)
+      ≈⟨ tuple-ext {n} g ⟩
+        g
+      ∎
 
     -- Entry of a composition on the RHS.
     entry-comp-rhs : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) (i : Fin k) (j : Fin m) →
@@ -320,7 +349,6 @@ module matrices
       (≈-trans (dot-comm {n} (λ l → entry g j l) (λ l → entry f l i))
                (≈-sym (entry-comp-rhs {m} {n} {k} f g j i)))))
 
-
   transpose-id : ∀ {n} → transpose {n} {n} (id (X^ n)) ≈ id (X^ n)
   transpose-id {n} =
     begin
@@ -336,3 +364,18 @@ module matrices
     ≈⟨ tuple-ext {n} (id (X^ n)) ⟩
       id (X^ n)
     ∎ where open ≈-Reasoning isEquiv
+
+  -- The matrix category Mat: objects are ℕ, morphisms m → n are X^m ⇒ X^n.
+  open import prop-setoid using (IsEquivalence)
+
+  cat : Category _ _ _
+  cat .Category.obj = ℕ
+  cat .Category._⇒_ m n = X^ m ⇒ X^ n
+  cat .Category._≈_ f g = f ≈ g
+  cat .Category.isEquiv = isEquiv
+  cat .Category.id n = id (X^ n)
+  cat .Category._∘_ f g = f ∘ g
+  cat .Category.∘-cong = ∘-cong
+  cat .Category.id-left = id-left
+  cat .Category.id-right = id-right
+  cat .Category.assoc f g h = assoc f g h
