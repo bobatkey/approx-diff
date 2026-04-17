@@ -149,7 +149,6 @@ module matrices
   dot-comm : ∀ {n} (h k : Fin n → X ⇒ X) → (cotuple {n} h ∘ tuple {n} k) ≈ (cotuple {n} k ∘ tuple {n} h)
   dot-comm {zero}  h k = ≈-refl
   dot-comm {suc n} h k =
-    let open ≈-Reasoning isEquiv in
     begin
       copair (BP X (X^ n)) (h zero) (cotuple (λ i → h (suc i))) ∘ pair (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i)))
     ≈⟨ comp-bilinear₁ _ _ _ ⟩
@@ -178,7 +177,7 @@ module matrices
       ((cotuple (λ i → k (suc i)) ∘ p₂ (BP X (X^ n))) ∘ pair (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i))))
     ≈˘⟨ comp-bilinear₁ _ _ _ ⟩
       copair (BP X (X^ n)) (k zero) (cotuple (λ i → k (suc i))) ∘ pair (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i)))
-    ∎
+    ∎ where open ≈-Reasoning isEquiv
 
   -- Dagger structure.
   transpose : ∀ {m n} → X^ m ⇒ X^ n → X^ n ⇒ X^ m
@@ -263,7 +262,64 @@ module matrices
   -- Transpose reverses composition (requires scalar commutativity).
   transpose-comp : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) →
                    transpose {m} {k} (g ∘ f) ≈ (transpose {m} {n} f ∘ transpose {n} {k} g)
-  transpose-comp {m} {n} {k} f g = {!!}
+  -- Helper: transpose g applied to the i-th injection gives a tuple of entries.
+  private
+    transpose-ι : ∀ {n k} (g : X^ n ⇒ X^ k) (i : Fin k) →
+                  (transpose {n} {k} g ∘ ι {k} i) ≈ tuple {n} (λ l → entry g i l)
+    transpose-ι {n} {k} g i =
+      ≈-trans
+        (tuple-natural {n} (λ l → cotuple {k} (λ i' → entry g i' l)) (ι {k} i))
+        (tuple-cong {n} _ _ (λ l → cotuple-ι {k} (λ i' → entry g i' l) i))
+
+    -- Helper: entry of a composition is the dot product of entries (matrix multiplication).
+    entry-comp : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) (i : Fin k) (j : Fin m) →
+                 entry (g ∘ f) i j ≈ (cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j))
+    entry-comp {m} {n} {k} f g i j =
+      ≈-trans (∘-cong ≈-refl (assoc g f (ι {m} j)))
+      (≈-trans (≈-sym (assoc (π {k} i) g (f ∘ ι {m} j)))
+      (≈-trans (∘-cong (cotuple-ext-π {n} {k} g i) ≈-refl)
+               (∘-cong ≈-refl (tuple-ext-ι {m} {n} f j))))
+      where
+        cotuple-ext-π : ∀ {n k} (g : X^ n ⇒ X^ k) (i : Fin k) →
+                        (π {k} i ∘ g) ≈ cotuple {n} (λ l → entry g i l)
+        cotuple-ext-π {n} {k} g i =
+          ≈-trans (≈-sym (cotuple-ext {n} (π {k} i ∘ g)))
+                  (cotuple-cong {n} _ _ (λ l → assoc (π {k} i) g (ι {n} l)))
+
+        tuple-ext-ι : ∀ {m n} (f : X^ m ⇒ X^ n) (j : Fin m) →
+                      (f ∘ ι {m} j) ≈ tuple {n} (λ l → entry f l j)
+        tuple-ext-ι {m} {n} f j = ≈-sym (tuple-ext {n} (f ∘ ι {m} j))
+
+  -- Morphisms with equal entries are equal.
+  private
+    entry-ext : ∀ {m n} {f g : X^ m ⇒ X^ n} →
+                (∀ (i : Fin n) (j : Fin m) → entry f i j ≈ entry g i j) → f ≈ g
+    entry-ext {m} {n} {f} {g} h =
+      ≈-trans (≈-sym (tuple-ext {n} f))
+      (≈-trans (tuple-cong {n} _ _ (λ i →
+        ≈-trans (≈-sym (cotuple-ext {m} (π {n} i ∘ f)))
+        (≈-trans (cotuple-cong {m} _ _ (λ j →
+          ≈-trans (assoc (π {n} i) f (ι {m} j)) (≈-trans (h i j) (≈-sym (assoc (π {n} i) g (ι {m} j))))))
+        (cotuple-ext {m} (π {n} i ∘ g)))))
+      (tuple-ext {n} g))
+
+    -- Entry of a composition on the RHS.
+    entry-comp-rhs : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) (i : Fin k) (j : Fin m) →
+                     entry (transpose {m} {n} f ∘ transpose {n} {k} g) j i ≈
+                     (cotuple {n} (λ l → entry f l j) ∘ tuple {n} (λ l → entry g i l))
+    entry-comp-rhs {m} {n} {k} f g i j =
+      ≈-trans (∘-cong ≈-refl (assoc (transpose {m} {n} f) (transpose {n} {k} g) (ι {k} i)))
+      (≈-trans (≈-sym (assoc (π {m} j) (transpose {m} {n} f) (transpose {n} {k} g ∘ ι {k} i)))
+      (≈-trans (∘-cong (tuple-π {m} (λ l → cotuple {n} (λ l' → entry f l' l)) j) ≈-refl)
+               (∘-cong ≈-refl (transpose-ι {n} {k} g i))))
+
+  transpose-comp {m} {n} {k} f g =
+    entry-ext (λ i j →
+      ≈-trans (transpose-entry {m} {k} (g ∘ f) i j)
+      (≈-trans (entry-comp {m} {n} {k} f g j i)
+      (≈-trans (dot-comm {n} (λ l → entry g j l) (λ l → entry f l i))
+               (≈-sym (entry-comp-rhs {m} {n} {k} f g j i)))))
+
 
   transpose-id : ∀ {n} → transpose {n} {n} (id (X^ n)) ≈ id (X^ n)
   transpose-id {n} =
