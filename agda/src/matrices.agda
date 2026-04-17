@@ -220,3 +220,20 @@ module matrices
       ≈⟨ ∘-cong ≈-refl id-left ⟩
         π i ∘ ι j
       ∎
+
+  transpose-id : ∀ {n} → transpose {n} {n} (id (X^ n)) ≈ id (X^ n)
+  transpose-id {n} =
+    let open ≈-Reasoning isEquiv in
+    begin
+      tuple {n} (λ j → cotuple {n} (λ i → π {n} i ∘ (id (X^ n) ∘ ι {n} j)))
+    ≈⟨ tuple-cong {n} _ _ (λ j → cotuple-cong {n} _ _ (λ i → ∘-cong ≈-refl id-left)) ⟩
+      tuple {n} (λ j → cotuple {n} (λ i → π {n} i ∘ ι {n} j))
+    ≈⟨ tuple-cong {n} _ _ (λ j → cotuple-cong {n} _ _ (λ i → kronecker-sym i j)) ⟩
+      tuple {n} (λ j → cotuple {n} (λ i → π {n} j ∘ ι {n} i))
+    ≈⟨ tuple-cong {n} _ _ (λ j → cotuple-ext {n} (π {n} j)) ⟩
+      tuple {n} (λ j → π {n} j)
+    ≈⟨ ≈-sym (tuple-cong {n} _ _ (λ j → id-right)) ⟩
+      tuple {n} (λ j → π {n} j ∘ id (X^ n))
+    ≈⟨ tuple-ext {n} (id (X^ n)) ⟩
+      id (X^ n)
+    ∎
