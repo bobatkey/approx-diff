@@ -1,7 +1,7 @@
 {-# OPTIONS --postfix-projections --prop --safe #-}
 
 -- Matrix representation via iterated biproducts in a (necessarily CMon-enriched) category with binary
--- biproducts and zero object, and base object A. Instantiating A to Two in SemiLat recovers the "Boolean
+-- biproducts and zero object, and base object X. Instantiating X to Two in SemiLat recovers the "Boolean
 -- Jacobian" setting FDVect_2.
 
 open import Data.Nat using (ℕ; zero; suc)
@@ -13,7 +13,7 @@ open import commutative-monoid using (CommutativeMonoid)
 
 module matrices
   {o m e} {𝒞 : Category o m e}
-  (CM : CMonEnriched 𝒞) -- technically derivable from BP and 𝟘, but our BP setup relies on CM
+  (CM : CMonEnriched 𝒞)
   (BP : ∀ x y → Biproduct CM x y)
   (𝟘 : Category.obj 𝒞)
   (𝟘-initial : IsInitial 𝒞 𝟘)
@@ -33,55 +33,50 @@ module matrices
   X^ zero = 𝟘
   X^ (suc n) = prod (BP X (X^ n))
 
-  private
-    bp : ∀ {n} → Biproduct CM X (X^ n)
-    bp {n} = BP X (X^ n)
-
-  -- i-th injection.
+  -- 'in' would be consistent with definition in biproduct but that's a reserved word.
   ι : ∀ {n} → Fin n → X ⇒ X^ n
-  ι {suc n} zero    = in₁ bp
-  ι {suc n} (suc i) = in₂ bp ∘ ι i
+  ι {suc n} zero = in₁ (BP X (X^ n))
+  ι {suc n} (suc i) = in₂ (BP X (X^ n)) ∘ ι i
 
-  -- i-th projection.
   π : ∀ {n} → Fin n → X^ n ⇒ X
-  π {suc n} zero    = p₁ bp
-  π {suc n} (suc i) = π i ∘ p₂ bp
+  π {suc n} zero = p₁ (BP X (X^ n))
+  π {suc n} (suc i) = π i ∘ p₂ (BP X (X^ n))
 
   -- n-ary pair: given n morphisms Z ⇒ X, produce Z ⇒ X^n.
   pairₙ : ∀ {n Z} → (Fin n → Z ⇒ X) → Z ⇒ X^ n
   pairₙ {zero}  f = to-terminal
-  pairₙ {suc n} f = pair bp (f zero) (pairₙ (f ∘ suc))
+  pairₙ {suc n} f = pair (BP X (X^ n)) (f zero) (pairₙ (λ i → f (suc i)))
 
   -- n-ary copair: given n morphisms X ⇒ Z, produce X^n ⇒ Z.
   copairₙ : ∀ {n Z} → (Fin n → X ⇒ Z) → X^ n ⇒ Z
   copairₙ {zero}  f = from-initial
-  copairₙ {suc n} f = copair bp (f zero) (copairₙ (f ∘ suc))
+  copairₙ {suc n} f = copair (BP X (X^ n)) (f zero) (copairₙ (λ i → f (suc i)))
 
   -- Universal property of n-ary pair: π i ∘ pairₙ f ≈ f i.
   π-pairₙ : ∀ {n Z} (f : Fin n → Z ⇒ X) (i : Fin n) → (π i ∘ pairₙ f) ≈ f i
-  π-pairₙ {suc n} f zero = pair-p₁ bp (f zero) (pairₙ (f ∘ suc))
+  π-pairₙ {suc n} f zero = pair-p₁ (BP X (X^ n)) (f zero) (pairₙ (λ i → f (suc i)))
   π-pairₙ {suc n} f (suc i) =
     begin
-      π i ∘ (p₂ bp ∘ pairₙ f)
-    ≈⟨ ≈-sym (assoc _ _ _) ⟩
-      (π i ∘ p₂ bp) ∘ pairₙ f
-    ≈⟨ ∘-cong ≈-refl (pair-p₂ bp (f zero) (pairₙ (f ∘ suc))) ⟩
-      π i ∘ pairₙ (f ∘ suc)
-    ≈⟨ π-pairₙ (f ∘ suc) i ⟩
+      (π i ∘ p₂ (BP X (X^ n))) ∘ pairₙ f
+    ≈⟨ assoc _ _ _ ⟩
+      π i ∘ (p₂ (BP X (X^ n)) ∘ pairₙ f)
+    ≈⟨ ∘-cong ≈-refl (pair-p₂ (BP X (X^ n)) (f zero) (pairₙ (λ i → f (suc i)))) ⟩
+      π i ∘ pairₙ (λ i → f (suc i))
+    ≈⟨ π-pairₙ (λ i → f (suc i)) i ⟩
       f (suc i)
     ∎ where open ≈-Reasoning isEquiv
 
   -- Universal property of n-ary copair: copairₙ f ∘ ι i ≈ f i.
   copairₙ-ι : ∀ {n Z} (f : Fin n → X ⇒ Z) (i : Fin n) → (copairₙ f ∘ ι i) ≈ f i
-  copairₙ-ι {suc n} f zero = copair-in₁ bp (f zero) (copairₙ (f ∘ suc))
+  copairₙ-ι {suc n} f zero = copair-in₁ (BP X (X^ n)) (f zero) (copairₙ (λ i → f (suc i)))
   copairₙ-ι {suc n} f (suc i) =
     begin
-      copairₙ f ∘ (in₂ bp ∘ ι i)
-    ≈⟨ assoc _ _ _ ⟩
-      (copairₙ f ∘ in₂ bp) ∘ ι i
-    ≈⟨ ∘-cong (copair-in₂ bp (f zero) (copairₙ (f ∘ suc))) ≈-refl ⟩
-      copairₙ (f ∘ suc) ∘ ι i
-    ≈⟨ copairₙ-ι (f ∘ suc) i ⟩
+      copairₙ f ∘ (in₂ (BP X (X^ n)) ∘ ι i)
+    ≈˘⟨ assoc _ _ _ ⟩
+      (copairₙ f ∘ in₂ (BP X (X^ n))) ∘ ι i
+    ≈⟨ ∘-cong (copair-in₂ (BP X (X^ n)) (f zero) (copairₙ (λ i → f (suc i)))) ≈-refl ⟩
+      copairₙ (λ i → f (suc i)) ∘ ι i
+    ≈⟨ copairₙ-ι (λ i → f (suc i)) i ⟩
       f (suc i)
     ∎ where open ≈-Reasoning isEquiv
 
