@@ -106,3 +106,15 @@ module matrices
   -- Matrix entry: the (i, j)-entry of a morphism f : X^m → X^n.
   entry : ∀ {m n} → X^ m ⇒ X^ n → Fin n → Fin m → X ⇒ X
   entry f i j = π i ∘ (f ∘ ι j)
+
+  -- Transpose: swap the iteration order of the matrix entries.
+  transpose : ∀ {m n} → X^ m ⇒ X^ n → X^ n ⇒ X^ m
+  transpose {m} {n} f = tuple {m} (λ j → cotuple {n} (λ i → entry f i j))
+
+  -- Sanity check that transpose does what we expect.
+  transpose-entry : ∀ {m n} (f : X^ m ⇒ X^ n) (i : Fin m) (j : Fin n) →
+                    entry (transpose {m} {n} f) i j ≈ entry f j i
+  transpose-entry {m} {n} f i j =
+    ≈-trans (≈-sym (assoc (π {m} i) (transpose {m} {n} f) (ι {n} j)))
+    (≈-trans (∘-cong (tuple-π {m} (λ k → cotuple {n} (λ l → entry f l k)) i) ≈-refl)
+             (cotuple-ι {n} (λ l → entry f l i) j))
