@@ -1,8 +1,8 @@
 {-# OPTIONS --postfix-projections --prop --safe #-}
 
--- Matrix representation via iterated biproducts in a CMon-enriched category.
--- Parameterised over a category 𝒞 with CMon-enrichment, biproducts, a zero object, and a generator A.
--- Instantiating A to Two in SemiLat recovers the Boolean Jacobian development of bool-jacobian.agda.
+-- Matrix representation via iterated biproducts in a category with binary biproducts and a zero object, and a
+-- generator A. (Such a category is necessarily CMon-enriched.) Instantiating A to Two in SemiLat recovers the
+-- Boolean Jacobian development of bool-jacobian.agda.
 
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Fin using (Fin; zero; suc)
@@ -13,7 +13,7 @@ open import commutative-monoid using (CommutativeMonoid)
 
 module matrices
   {o m e} {𝒞 : Category o m e}
-  (CM : CMonEnriched 𝒞)
+  (CM : CMonEnriched 𝒞) -- technically derivable from BP and 𝟘, but our BP setup relies on CM
   (BP : ∀ x y → Biproduct CM x y)
   (𝟘 : Category.obj 𝒞)
   (𝟘-initial : IsInitial 𝒞 𝟘)
@@ -26,7 +26,7 @@ module matrices
   open CommutativeMonoid
   open Biproduct
 
-  -- n-fold iterated biproduct of X.
+  -- n-ary biproduct.
   X^ : ℕ → obj
   X^ zero = 𝟘
   X^ (suc n) = prod (BP X (X^ n))
