@@ -382,41 +382,40 @@ module matrices
                    {s₁ s₂ : Fin m ⊎ Fin n} → s₁ ≡ s₂ → split-pair {k} f g s₁ ≈ split-pair {k} f g s₂
     split-pair-≡ _ _ refl = ≈-refl
 
-    col : ∀ {k m n} → X^ k ⇒ X^ m → X^ k ⇒ X^ n → Fin (m +ℕ n) → X^ k ⇒ X
-    col {k} {m} {n} f g j = split-pair {k} {m} {n} f g (splitAt m j)
-
   products : HasProducts cat
   products .HasProducts.prod m n = m +ℕ n
   products .HasProducts.p₁ {m} {n} = tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n))
   products .HasProducts.p₂ {m} {n} = tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j))
-  products .HasProducts.pair {k} {m} {n} f g = tuple {m +ℕ n} (col {k} {m} {n} f g)
+  products .HasProducts.pair {k} {m} {n} f g = tuple {m +ℕ n} (λ i → split-pair {k} {m} {n} f g (splitAt m i))
   products .HasProducts.pair-cong = {!!}
   products .HasProducts.pair-p₁ {k} {m} {n} f g =
-    let c = col {k} {m} {n} f g in
     begin
-      tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n)) ∘ tuple {m +ℕ n} c
-    ≈⟨ tuple-natural {m} (λ i → π {m +ℕ n} (i ↑ˡ n)) (tuple {m +ℕ n} c) ⟩
-      tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n) ∘ tuple {m +ℕ n} c)
+      tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n)) ∘ tuple {m +ℕ n} col
+    ≈⟨ tuple-natural {m} (λ i → π {m +ℕ n} (i ↑ˡ n)) (tuple {m +ℕ n} col) ⟩
+      tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n) ∘ tuple {m +ℕ n} col)
     ≈⟨ tuple-cong {m}
-        (λ i → π {m +ℕ n} (i ↑ˡ n) ∘ tuple {m +ℕ n} c)
+        (λ i → π {m +ℕ n} (i ↑ˡ n) ∘ tuple {m +ℕ n} col)
         (λ i → π {m} i ∘ f)
         (λ i → ≈-trans (tuple-π {m +ℕ n} c (i ↑ˡ n)) (split-pair-≡ {k} f g (splitAt-↑ˡ m i n))) ⟩
       tuple {m} (λ i → π {m} i ∘ f)
     ≈⟨ tuple-ext {m} f ⟩
       f
-    ∎ where open ≈-Reasoning isEquiv
+    ∎ where
+        open ≈-Reasoning isEquiv
+        col = λ i → split-pair {k} {m} {n} f g (splitAt m i)
   products .HasProducts.pair-p₂ {k} {m} {n} f g =
-    let c = col {k} {m} {n} f g in
     begin
-      tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j)) ∘ tuple {m +ℕ n} c
-    ≈⟨ tuple-natural {n} (λ j → π {m +ℕ n} (m ↑ʳ j)) (tuple {m +ℕ n} c) ⟩
-      tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j) ∘ tuple {m +ℕ n} c)
+      tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j)) ∘ tuple {m +ℕ n} col
+    ≈⟨ tuple-natural {n} (λ j → π {m +ℕ n} (m ↑ʳ j)) (tuple {m +ℕ n} col) ⟩
+      tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j) ∘ tuple {m +ℕ n} col)
     ≈⟨ tuple-cong {n}
-        (λ j → π {m +ℕ n} (m ↑ʳ j) ∘ tuple {m +ℕ n} c)
+        (λ j → π {m +ℕ n} (m ↑ʳ j) ∘ tuple {m +ℕ n} col)
         (λ j → π {n} j ∘ g)
         (λ j → ≈-trans (tuple-π {m +ℕ n} c (m ↑ʳ j)) (split-pair-≡ {k} f g (splitAt-↑ʳ m n j))) ⟩
       tuple {n} (λ j → π {n} j ∘ g)
     ≈⟨ tuple-ext {n} g ⟩
       g
-    ∎ where open ≈-Reasoning isEquiv
+    ∎ where
+        open ≈-Reasoning isEquiv
+        col = λ i → split-pair {k} {m} {n} f g (splitAt m i)
   products .HasProducts.pair-ext = {!!}
