@@ -316,10 +316,18 @@ module matrices
                      entry (transpose {m} {n} f ∘ transpose {n} {k} g) j i ≈
                      (cotuple {n} (λ l → entry f l j) ∘ tuple {n} (λ l → entry g i l))
     entry-comp-rhs {m} {n} {k} f g i j =
-      ≈-trans (∘-cong ≈-refl (assoc (transpose {m} {n} f) (transpose {n} {k} g) (ι {k} i)))
-      (≈-trans (≈-sym (assoc (π {m} j) (transpose {m} {n} f) (transpose {n} {k} g ∘ ι {k} i)))
-      (≈-trans (∘-cong (tuple-π {m} (λ l → cotuple {n} (λ l' → entry f l' l)) j) ≈-refl)
-               (∘-cong ≈-refl (transpose-ι {n} {k} g i))))
+      let open ≈-Reasoning isEquiv in
+      begin
+        π {m} j ∘ ((transpose {m} {n} f ∘ transpose {n} {k} g) ∘ ι {k} i)
+      ≈⟨ {!!} ⟩
+        π {m} j ∘ (transpose {m} {n} f ∘ (transpose {n} {k} g ∘ ι {k} i))
+      ≈⟨ {!!} ⟩
+        (π {m} j ∘ transpose {m} {n} f) ∘ (transpose {n} {k} g ∘ ι {k} i)
+      ≈⟨ {!!} ⟩
+        cotuple {n} (λ l → entry f l j) ∘ (transpose {n} {k} g ∘ ι {k} i)
+      ≈⟨ {!!} ⟩
+        cotuple {n} (λ l → entry f l j) ∘ tuple {n} (λ l → entry g i l)
+      ∎
 
   transpose-comp {m} {n} {k} f g =
     entry-ext (λ i j →
