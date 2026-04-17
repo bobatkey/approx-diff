@@ -3,7 +3,7 @@
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Fin using (Fin; zero; suc)
 open import prop-setoid using (module ≈-Reasoning)
-open import categories using (Category; IsInitial; IsTerminal; HasTerminal)
+open import categories using (Category; IsInitial; IsTerminal; HasInitial; HasTerminal)
 open import cmon-enriched using (CMonEnriched; Biproduct)
 open import commutative-monoid using (CommutativeMonoid)
 
@@ -360,3 +360,8 @@ module matrices
   terminal .HasTerminal.witness = 0
   terminal .HasTerminal.is-terminal .IsTerminal.to-terminal = to-terminal
   terminal .HasTerminal.is-terminal .IsTerminal.to-terminal-ext = to-terminal-ext
+
+  initial : HasInitial cat
+  initial .HasInitial.witness = 0
+  initial .HasInitial.is-initial .IsInitial.from-initial = from-initial
+  initial .HasInitial.is-initial .IsInitial.from-initial-ext = from-initial-ext
