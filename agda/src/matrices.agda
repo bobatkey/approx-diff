@@ -42,14 +42,12 @@ module matrices
   π {suc n} zero = p₁ (BP X (X^ n))
   π {suc n} (suc i) = π i ∘ p₂ (BP X (X^ n))
 
-  -- n-ary pair: given n morphisms Z ⇒ X, produce Z ⇒ X^n.
   pairₙ : ∀ {n Z} → (Fin n → Z ⇒ X) → Z ⇒ X^ n
-  pairₙ {zero}  f = to-terminal
+  pairₙ {zero} f = to-terminal
   pairₙ {suc n} f = pair (BP X (X^ n)) (f zero) (pairₙ (λ i → f (suc i)))
 
-  -- n-ary copair: given n morphisms X ⇒ Z, produce X^n ⇒ Z.
   copairₙ : ∀ {n Z} → (Fin n → X ⇒ Z) → X^ n ⇒ Z
-  copairₙ {zero}  f = from-initial
+  copairₙ {zero} f = from-initial
   copairₙ {suc n} f = copair (BP X (X^ n)) (f zero) (copairₙ (λ i → f (suc i)))
 
   -- Universal property of n-ary pair: π i ∘ pairₙ f ≈ f i.
