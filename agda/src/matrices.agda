@@ -1,8 +1,8 @@
 {-# OPTIONS --postfix-projections --prop --safe #-}
 
--- Matrix representation via iterated biproducts in a category with binary biproducts and a zero object, and a
--- generator A. (Such a category is necessarily CMon-enriched.) Instantiating A to Two in SemiLat recovers the
--- Boolean Jacobian development of bool-jacobian.agda.
+-- Matrix representation via iterated biproducts in a (necessarily CMon-enriched) category with binary
+-- biproducts and zero object, and base object A. (Such a category is necessarily CMon-enriched.)
+-- Instantiating A to Two in SemiLat recovers the Boolean Jacobian development of bool-jacobian.agda.
 
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Fin using (Fin; zero; suc)
