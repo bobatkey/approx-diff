@@ -1,10 +1,11 @@
 {-# OPTIONS --postfix-projections --prop --safe #-}
 
-open import Level using (0ℓ; suc)
+open import Level using (Level; 0ℓ; suc)
 open import categories using (Category; HasProducts; HasTerminal; HasCoproducts)
 
 module example-signature-interpretation
-  (𝒞 : Category (suc 0ℓ) 0ℓ 0ℓ)
+  {o : Level}
+  (𝒞 : Category o 0ℓ 0ℓ)
   (𝒞-products : HasProducts 𝒞)
   (𝒞-terminal : HasTerminal 𝒞)
   (TWO : Category.obj 𝒞)
@@ -26,7 +27,7 @@ module Fam⟨𝒞⟩ = fam.CategoryOfFamilies 0ℓ 0ℓ 𝒞
 
 open Fam⟨𝒞⟩ using (simple[_,_]; simplef[_,_]) public
 
-cat : Category (suc 0ℓ) 0ℓ 0ℓ
+cat : Category _ _ _
 cat = Fam⟨𝒞⟩.cat
 
 module C = Category cat
