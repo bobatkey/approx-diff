@@ -319,13 +319,13 @@ module matrices
       let open ≈-Reasoning isEquiv in
       begin
         π {m} j ∘ ((transpose {m} {n} f ∘ transpose {n} {k} g) ∘ ι {k} i)
-      ≈⟨ {!!} ⟩
+      ≈⟨ ∘-cong ≈-refl (assoc (transpose {m} {n} f) (transpose {n} {k} g) (ι {k} i)) ⟩
         π {m} j ∘ (transpose {m} {n} f ∘ (transpose {n} {k} g ∘ ι {k} i))
-      ≈⟨ {!!} ⟩
+      ≈˘⟨ assoc (π {m} j) (transpose {m} {n} f) (transpose {n} {k} g ∘ ι {k} i) ⟩
         (π {m} j ∘ transpose {m} {n} f) ∘ (transpose {n} {k} g ∘ ι {k} i)
-      ≈⟨ {!!} ⟩
+      ≈⟨ ∘-cong (tuple-π {m} (λ l → cotuple {n} (λ l' → entry f l' l)) j) ≈-refl ⟩
         cotuple {n} (λ l → entry f l j) ∘ (transpose {n} {k} g ∘ ι {k} i)
-      ≈⟨ {!!} ⟩
+      ≈⟨ ∘-cong ≈-refl (transpose-ι {n} {k} g i) ⟩
         cotuple {n} (λ l → entry f l j) ∘ tuple {n} (λ l → entry g i l)
       ∎
 
