@@ -174,3 +174,43 @@ module matrices
     ≈⟨ tuple-ext {n} f ⟩
       f
     ∎ where open ≈-Reasoning isEquiv
+
+  -- Reduce π (suc i) ∘ ι (suc j) to π i ∘ ι j via biproduct laws.
+  private
+    kronecker-suc : ∀ {n} (i j : Fin n) → (π {suc n} (suc i) ∘ ι {suc n} (suc j)) ≈ (π {n} i ∘ ι {n} j)
+    kronecker-suc {n} i j =
+      begin
+        (π i ∘ p₂ (BP X (X^ n))) ∘ (in₂ (BP X (X^ n)) ∘ ι j)
+      ≈⟨ assoc _ _ _ ⟩
+        π i ∘ (p₂ (BP X (X^ n)) ∘ (in₂ (BP X (X^ n)) ∘ ι j))
+      ≈⟨ ∘-cong ≈-refl (≈-sym (assoc _ _ _)) ⟩
+        π i ∘ ((p₂ (BP X (X^ n)) ∘ in₂ (BP X (X^ n))) ∘ ι j)
+      ≈⟨ ∘-cong ≈-refl (∘-cong (id-2 (BP X (X^ n))) ≈-refl) ⟩
+        π i ∘ (id _ ∘ ι j)
+      ≈⟨ ∘-cong ≈-refl id-left ⟩
+        π i ∘ ι j
+      ∎ where open ≈-Reasoning isEquiv
+
+  -- In any biproduct category π i ∘ ι j is id when i = j and the zero morphism εm when i ≠ j.
+  -- This is a trivial consequence.
+  kronecker-sym : ∀ {n} (i j : Fin n) → (π {n} i ∘ ι {n} j) ≈ (π {n} j ∘ ι {n} i)
+  kronecker-sym {suc n} zero zero = ≈-refl
+  kronecker-sym {suc n} zero (suc j) =
+    begin
+      p₁ (BP X (X^ n)) ∘ (in₂ (BP X (X^ n)) ∘ ι j)
+    ≈˘⟨ assoc _ _ _ ⟩
+      (p₁ (BP X (X^ n)) ∘ in₂ (BP X (X^ n))) ∘ ι j
+    ≈⟨ ∘-cong (zero-1 (BP X (X^ n))) ≈-refl ⟩
+      εm ∘ ι j
+    ≈⟨ comp-bilinear-ε₁ _ ⟩
+      εm
+    ≈˘⟨ comp-bilinear-ε₂ _ ⟩
+      π j ∘ εm
+    ≈˘⟨ ∘-cong ≈-refl (zero-2 (BP X (X^ n))) ⟩
+      π j ∘ (p₂ (BP X (X^ n)) ∘ in₁ (BP X (X^ n)))
+    ≈˘⟨ assoc _ _ _ ⟩
+      (π j ∘ p₂ (BP X (X^ n))) ∘ in₁ (BP X (X^ n))
+    ∎ where open ≈-Reasoning isEquiv
+  kronecker-sym {suc n} (suc i) zero = ≈-sym (kronecker-sym zero (suc i))
+  kronecker-sym {suc n} (suc i) (suc j) =
+    ≈-trans (kronecker-suc i j) (≈-trans (kronecker-sym i j) (≈-sym (kronecker-suc j i)))
