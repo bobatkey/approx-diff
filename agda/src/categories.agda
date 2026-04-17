@@ -4,6 +4,7 @@ module categories where
 
 open import Level using (suc; _⊔_; Lift; lift)
 open import Data.Product using (_,_)
+open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
 open import prop using (LiftP; Prf; ⊤; ⟪_⟫; tt; lift)
 open import prop-setoid
   using (IsEquivalence; Setoid; module ≈-Reasoning; ⊗-setoid)
@@ -42,6 +43,9 @@ record Category o m e : Set (suc (o ⊔ m ⊔ e)) where
 
   ≈-trans : ∀ {x y} {f g h : x ⇒ y} → f ≈ g → g ≈ h → f ≈ h
   ≈-trans = isEquiv .trans
+
+  ≡-to-≈ : ∀ {x y} {f g : x ⇒ y} → f ≡ g → f ≈ g
+  ≡-to-≈ ≡.refl = ≈-refl
 
   id-swap : ∀ {x y}{f : x ⇒ y} → (id y ∘ f) ≈ (f ∘ id x)
   id-swap = isEquiv .trans id-left (≈-sym id-right)

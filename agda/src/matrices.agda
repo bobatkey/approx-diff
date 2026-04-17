@@ -4,7 +4,7 @@ open import Data.Nat using (ℕ; zero; suc) renaming (_+_ to _+ℕ_)
 open import Data.Fin using (Fin; zero; suc; splitAt; _↑ˡ_; _↑ʳ_)
 open import Data.Fin using (join)
 open import Data.Fin.Properties using (splitAt-↑ˡ; splitAt-↑ʳ; join-splitAt)
-open import Relation.Binary.PropositionalEquality as ≡ using (_≡_; refl)
+open import Relation.Binary.PropositionalEquality as ≡ using (_≡_; refl; cong)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import prop-setoid using (module ≈-Reasoning)
 open import categories using (Category; IsInitial; IsTerminal; HasInitial; HasTerminal; HasProducts)
@@ -379,12 +379,6 @@ module matrices
     split-pair {_} {m} f g (inj₁ i) = π {m} i ∘ f
     split-pair {_} {_} {n} f g (inj₂ j) = π {n} j ∘ g
 
-    split-pair-≡ : ∀ {k m n} (f : X^ k ⇒ X^ m) (g : X^ k ⇒ X^ n)
-                   {s₁ s₂ : Fin m ⊎ Fin n} → s₁ ≡ s₂ → split-pair {k} f g s₁ ≈ split-pair {k} f g s₂
-    split-pair-≡ _ _ refl = ≈-refl
-
-    π-≡ : ∀ {n} {i j : Fin n} → i ≡ j → π {n} i ≈ π {n} j
-    π-≡ refl = ≈-refl
 
     split-pair-cong : ∀ {k m n} {f₁ f₂ : X^ k ⇒ X^ m} {g₁ g₂ : X^ k ⇒ X^ n}
                       → f₁ ≈ f₂ → g₁ ≈ g₂ → ∀ s → split-pair {k} {m} {n} f₁ g₁ s ≈ split-pair {k} {m} {n} f₂ g₂ s
@@ -406,7 +400,7 @@ module matrices
     ≈⟨ tuple-cong {m}
         (λ i → π {m +ℕ n} (i ↑ˡ n) ∘ tuple {m +ℕ n} col)
         (λ i → π {m} i ∘ f)
-        (λ i → ≈-trans (tuple-π {m +ℕ n} col (i ↑ˡ n)) (split-pair-≡ {k} f g (splitAt-↑ˡ m i n))) ⟩
+        (λ i → ≈-trans (tuple-π {m +ℕ n} col (i ↑ˡ n)) (≡-to-≈ (cong (split-pair {k} {m} {n} f g) (splitAt-↑ˡ m i n)))) ⟩
       tuple {m} (λ i → π {m} i ∘ f)
     ≈⟨ tuple-ext {m} f ⟩
       f
@@ -421,7 +415,7 @@ module matrices
     ≈⟨ tuple-cong {n}
         (λ j → π {m +ℕ n} (m ↑ʳ j) ∘ tuple {m +ℕ n} col)
         (λ j → π {n} j ∘ g)
-        (λ j → ≈-trans (tuple-π {m +ℕ n} col (m ↑ʳ j)) (split-pair-≡ {k} f g (splitAt-↑ʳ m n j))) ⟩
+        (λ j → ≈-trans (tuple-π {m +ℕ n} col (m ↑ʳ j)) (≡-to-≈ (cong (split-pair {k} {m} {n} f g) (splitAt-↑ʳ m n j)))) ⟩
       tuple {n} (λ j → π {n} j ∘ g)
     ≈⟨ tuple-ext {n} g ⟩
       g
@@ -432,7 +426,7 @@ module matrices
     begin
       tuple {m +ℕ n} col
     ≈⟨ tuple-cong {m +ℕ n} col (λ i → π {m +ℕ n} i ∘ f)
-        (λ i → ≈-trans (col-ext (splitAt m i)) (∘-cong (π-≡ (join-splitAt m n i)) ≈-refl)) ⟩
+        (λ i → ≈-trans (col-ext (splitAt m i)) (≡-to-≈ (cong (λ j → π {m +ℕ n} j ∘ f) (join-splitAt m n i)))) ⟩
       tuple {m +ℕ n} (λ i → π {m +ℕ n} i ∘ f)
     ≈⟨ tuple-ext {m +ℕ n} f ⟩
       f

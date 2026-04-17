@@ -8,6 +8,7 @@ open import Data.Unit using (tt) renaming (⊤ to 𝟙S)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Empty using () renaming (⊥ to 𝟘)
 open import Data.Product using (_×_; proj₁; proj₂; _,_)
+open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
 
 record IsEquivalence {o e} {A : Set o} (_≈_ : A → A → Prop e) : Set (o ⊔ e) where
   field
