@@ -158,3 +158,19 @@ module matrices
     ≈⟨ cotuple-ι {n} (λ l → entry f l i) j ⟩
       π {n} j ∘ (f ∘ ι {m} i)
     ∎ where open ≈-Reasoning isEquiv
+
+  transpose-involutive : ∀ {m n} (f : X^ m ⇒ X^ n) → transpose {n} {m} (transpose {m} {n} f) ≈ f
+  transpose-involutive {m} {n} f =
+    begin
+      tuple {n} (λ j → cotuple {m} (λ i → entry (transpose {m} {n} f) i j))
+    ≈⟨ tuple-cong {n} _ _ (λ j → cotuple-cong {m} _ _ (λ i → transpose-entry f i j)) ⟩
+      tuple {n} (λ j → cotuple {m} (λ i → entry f j i))
+    ≡⟨⟩
+      tuple {n} (λ j → cotuple {m} (λ i → π {n} j ∘ (f ∘ ι {m} i)))
+    ≈⟨ tuple-cong {n} _ _ (λ j → ≈-sym (cotuple-natural (π {n} j) (λ i → f ∘ ι {m} i))) ⟩
+      tuple {n} (λ j → π {n} j ∘ cotuple {m} (λ i → f ∘ ι {m} i))
+    ≈⟨ tuple-cong {n} _ _ (λ j → ∘-cong ≈-refl (cotuple-ext {m} f)) ⟩
+      tuple {n} (λ j → π {n} j ∘ f)
+    ≈⟨ tuple-ext {n} f ⟩
+      f
+    ∎ where open ≈-Reasoning isEquiv
