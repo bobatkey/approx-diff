@@ -19,6 +19,7 @@ module matrices
   (𝟘-initial : IsInitial 𝒞 𝟘)
   (𝟘-terminal : IsTerminal 𝒞 𝟘)
   (X : Category.obj 𝒞)
+  (scalar-comm : ∀ (f g : Category._⇒_ 𝒞 X X) → Category._≈_ 𝒞 (Category._∘_ 𝒞 f g) (Category._∘_ 𝒞 g f))
   where
 
   open Category 𝒞
@@ -141,6 +142,22 @@ module matrices
   entry : ∀ {m n} → X^ m ⇒ X^ n → Fin n → Fin m → X ⇒ X
   entry f i j = π i ∘ (f ∘ ι j)
 
+  -- Dot product symmetry: cotuple h ∘ tuple k ≈ cotuple k ∘ tuple h (requires scalar-comm).
+  dot-comm : ∀ {n} (h k : Fin n → X ⇒ X) →
+             (cotuple {n} h ∘ tuple {n} k) ≈ (cotuple {n} k ∘ tuple {n} h)
+  dot-comm {zero}  h k = {!!}
+  dot-comm {suc n} h k =
+    let open ≈-Reasoning isEquiv in
+    begin
+      copair (BP X (X^ n)) (h zero) (cotuple (λ i → h (suc i))) ∘ pair (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i)))
+    ≈⟨ {!!} ⟩
+      (h zero ∘ k zero) +m (cotuple {n} (λ i → h (suc i)) ∘ tuple {n} (λ i → k (suc i)))
+    ≈⟨ {!!} ⟩
+      (k zero ∘ h zero) +m (cotuple {n} (λ i → k (suc i)) ∘ tuple {n} (λ i → h (suc i)))
+    ≈⟨ {!!} ⟩
+      copair (BP X (X^ n)) (k zero) (cotuple (λ i → k (suc i))) ∘ pair (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i)))
+    ∎
+
   -- Dagger structure.
   transpose : ∀ {m n} → X^ m ⇒ X^ n → X^ n ⇒ X^ m
   transpose {m} {n} f = tuple {m} (λ j → cotuple {n} (λ i → entry f i j))
@@ -220,6 +237,11 @@ module matrices
       ≈⟨ ∘-cong ≈-refl id-left ⟩
         π i ∘ ι j
       ∎
+
+  -- Transpose reverses composition (requires scalar commutativity).
+  transpose-comp : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) →
+                   transpose {m} {k} (g ∘ f) ≈ (transpose {m} {n} f ∘ transpose {n} {k} g)
+  transpose-comp {m} {n} {k} f g = {!!}
 
   transpose-id : ∀ {n} → transpose {n} {n} (id (X^ n)) ≈ id (X^ n)
   transpose-id {n} =
