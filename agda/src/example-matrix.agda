@@ -14,6 +14,7 @@ TWO : SemiLat.Obj
 TWO = SemiLat.TWO
 
 open import two using (Two; O; I)
+open import prop-setoid using (module ≈-Reasoning)
 import join-semilattice
 import preorder
 open SemiLat._≃m_
@@ -23,9 +24,17 @@ open preorder._≃m_ using (eqfun)
 
 scalar-comm : ∀ (f g : TWO ⇒ TWO) → (f ∘ g) ≈ (g ∘ f)
 scalar-comm f g .f≃f .eqfunc .eqfun O =
-  two.≃-trans (resp-≃ f (⊥-preserving-≃ g))
-  (two.≃-trans (⊥-preserving-≃ f)
-  (two.≃-sym (two.≃-trans (resp-≃ g (⊥-preserving-≃ f)) (⊥-preserving-≃ g))))
+  begin
+    fun f (fun g O)
+  ≈⟨ resp-≃ f (⊥-preserving-≃ g) ⟩
+    fun f O
+  ≈⟨ ⊥-preserving-≃ f ⟩
+    O
+  ≈˘⟨ ⊥-preserving-≃ g ⟩
+    fun g O
+  ≈˘⟨ resp-≃ g (⊥-preserving-≃ f) ⟩
+    fun g (fun f O)
+  ∎ where open ≈-Reasoning two.isEquivalence
 scalar-comm f g .f≃f .eqfunc .eqfun I = go (fun f I) (fun g I) two.≃-refl two.≃-refl
   where
     step : ∀ (a b : Two) → a two.≃ fun f I → b two.≃ fun g I → fun f b two.≃ fun g a
@@ -36,9 +45,15 @@ scalar-comm f g .f≃f .eqfunc .eqfun I = go (fun f I) (fun g I) two.≃-refl tw
 
     go : ∀ (a b : Two) → a two.≃ fun f I → b two.≃ fun g I → fun f (fun g I) two.≃ fun g (fun f I)
     go a b eq-a eq-b =
-      two.≃-trans (resp-≃ f (two.≃-sym eq-b))
-      (two.≃-trans (step a b eq-a eq-b)
-      (resp-≃ g eq-a))
+      begin
+        fun f (fun g I)
+      ≈⟨ resp-≃ f (two.≃-sym eq-b) ⟩
+        fun f b
+      ≈⟨ step a b eq-a eq-b ⟩
+        fun g a
+      ≈⟨ resp-≃ g eq-a ⟩
+        fun g (fun f I)
+      ∎ where open ≈-Reasoning two.isEquivalence
 
 import matrices
 open matrices SemiLat.cmon-enriched
