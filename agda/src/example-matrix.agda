@@ -37,11 +37,13 @@ scalar-comm f g .f≃f .eqfunc .eqfun O =
   ∎ where open ≈-Reasoning two.isEquivalence
 scalar-comm f g .f≃f .eqfunc .eqfun I = go (fun f I) (fun g I) two.≃-refl two.≃-refl
   where
+    open ≈-Reasoning two.isEquivalence
+
     step : ∀ (a b : Two) → a two.≃ fun f I → b two.≃ fun g I → fun f b two.≃ fun g a
-    step O O _   _ = two.≃-trans (⊥-preserving-≃ f) (two.≃-sym (⊥-preserving-≃ g))
-    step O I eq-a _ = two.≃-trans (two.≃-sym eq-a) (two.≃-sym (⊥-preserving-≃ g))
-    step I O _ eq-b = two.≃-trans (⊥-preserving-≃ f) eq-b
-    step I I eq-a eq-b = two.≃-trans (two.≃-sym eq-a) eq-b
+    step O O _     _     = begin fun f O ≈⟨ ⊥-preserving-≃ f ⟩ O ≈˘⟨ ⊥-preserving-≃ g ⟩ fun g O ∎
+    step O I eq-a  _     = begin fun f I ≈˘⟨ eq-a ⟩ O ≈˘⟨ ⊥-preserving-≃ g ⟩ fun g O ∎
+    step I O _     eq-b  = begin fun f O ≈⟨ ⊥-preserving-≃ f ⟩ O ≈⟨ eq-b ⟩ fun g I ∎
+    step I I eq-a  eq-b  = begin fun f I ≈˘⟨ eq-a ⟩ I ≈⟨ eq-b ⟩ fun g I ∎
 
     go : ∀ (a b : Two) → a two.≃ fun f I → b two.≃ fun g I → fun f (fun g I) two.≃ fun g (fun f I)
     go a b eq-a eq-b =
@@ -53,7 +55,7 @@ scalar-comm f g .f≃f .eqfunc .eqfun I = go (fun f I) (fun g I) two.≃-refl tw
         fun g a
       ≈⟨ resp-≃ g eq-a ⟩
         fun g (fun f I)
-      ∎ where open ≈-Reasoning two.isEquivalence
+      ∎
 
 import matrices
 open matrices SemiLat.cmon-enriched
