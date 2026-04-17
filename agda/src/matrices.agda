@@ -282,22 +282,31 @@ module matrices
 
   -- Morphisms with equal entries are equal.
     entry-ext : ∀ {m n} {f g : X^ m ⇒ X^ n} → (∀ (i : Fin n) (j : Fin m) → entry f i j ≈ entry g i j) → f ≈ g
-    entry-ext {m} {n} {f} {g} h = let open ≈-Reasoning isEquiv in
+    entry-ext {m} {n} {f} {g} h =
       begin
         f
       ≈˘⟨ tuple-ext {n} f ⟩
         tuple {n} (λ i → π {n} i ∘ f)
-      ≈⟨ tuple-cong {n} _ _ (λ i →
-          ≈-trans (≈-sym (cotuple-ext {m} (π {n} i ∘ f)))
-          (≈-trans (cotuple-cong {m} _ _ (λ j →
-            ≈-trans (assoc (π {n} i) f (ι {m} j))
-            (≈-trans (h i j)
-            (≈-sym (assoc (π {n} i) g (ι {m} j))))))
-          (cotuple-ext {m} (π {n} i ∘ g)))) ⟩
+      ≈⟨ tuple-cong {n} _ _ (λ i → row-ext i) ⟩
         tuple {n} (λ i → π {n} i ∘ g)
       ≈⟨ tuple-ext {n} g ⟩
         g
-      ∎
+      ∎ where
+        row-ext : ∀ (i : Fin n) → (π {n} i ∘ f) ≈ (π {n} i ∘ g)
+        row-ext i =
+          begin
+            π {n} i ∘ f
+          ≈˘⟨ cotuple-ext {m} (π {n} i ∘ f) ⟩
+            cotuple {m} (λ j → (π {n} i ∘ f) ∘ ι {m} j)
+          ≈⟨ cotuple-cong {m} _ _ (λ j →
+              ≈-trans (assoc (π {n} i) f (ι {m} j))
+              (≈-trans (h i j)
+              (≈-sym (assoc (π {n} i) g (ι {m} j))))) ⟩
+            cotuple {m} (λ j → (π {n} i ∘ g) ∘ ι {m} j)
+          ≈⟨ cotuple-ext {m} (π {n} i ∘ g) ⟩
+            π {n} i ∘ g
+          ∎ where open ≈-Reasoning isEquiv
+        open ≈-Reasoning isEquiv
 
   transpose-comp {m} {n} {k} f g =
     entry-ext (λ i j → let open ≈-Reasoning isEquiv in
