@@ -281,23 +281,14 @@ module matrices
         π {k} i ∘ (g ∘ (f ∘ ι {m} j))
       ≈˘⟨ assoc (π {k} i) g (f ∘ ι {m} j) ⟩
         (π {k} i ∘ g) ∘ (f ∘ ι {m} j)
-      ≈⟨ ∘-cong (cotuple-ext-π {n} {k} g i) ≈-refl ⟩
+      ≈˘⟨ ∘-cong (cotuple-ext {n} (π {k} i ∘ g)) ≈-refl ⟩
+        cotuple {n} (λ l → (π {k} i ∘ g) ∘ ι {n} l) ∘ (f ∘ ι {m} j)
+      ≈⟨ ∘-cong (cotuple-cong {n} _ _ (λ l → assoc (π {k} i) g (ι {n} l))) ≈-refl ⟩
         cotuple {n} (λ l → entry g i l) ∘ (f ∘ ι {m} j)
-      ≈⟨ ∘-cong ≈-refl (tuple-ext-ι {m} {n} f j) ⟩
+      ≈˘⟨ ∘-cong ≈-refl (tuple-ext {n} (f ∘ ι {m} j)) ⟩
         cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j)
       ∎
-      where
-        open ≈-Reasoning isEquiv
-
-        cotuple-ext-π : ∀ {n k} (g : X^ n ⇒ X^ k) (i : Fin k) →
-                        (π {k} i ∘ g) ≈ cotuple {n} (λ l → entry g i l)
-        cotuple-ext-π {n} {k} g i =
-          ≈-trans (≈-sym (cotuple-ext {n} (π {k} i ∘ g)))
-                  (cotuple-cong {n} _ _ (λ l → assoc (π {k} i) g (ι {n} l)))
-
-        tuple-ext-ι : ∀ {m n} (f : X^ m ⇒ X^ n) (j : Fin m) →
-                      (f ∘ ι {m} j) ≈ tuple {n} (λ l → entry f l j)
-        tuple-ext-ι {m} {n} f j = ≈-sym (tuple-ext {n} (f ∘ ι {m} j))
+      where open ≈-Reasoning isEquiv
 
   -- Morphisms with equal entries are equal.
   private
