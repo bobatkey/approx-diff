@@ -2,7 +2,8 @@
 
 open import Data.Nat using (ℕ; zero; suc) renaming (_+_ to _+ℕ_)
 open import Data.Fin using (Fin; zero; suc; splitAt; _↑ˡ_; _↑ʳ_)
-open import Data.Fin.Properties using (splitAt-↑ˡ; splitAt-↑ʳ)
+open import Data.Fin using (join)
+open import Data.Fin.Properties using (splitAt-↑ˡ; splitAt-↑ʳ; join-splitAt)
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_; refl)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import prop-setoid using (module ≈-Reasoning)
@@ -382,6 +383,9 @@ module matrices
                    {s₁ s₂ : Fin m ⊎ Fin n} → s₁ ≡ s₂ → split-pair {k} f g s₁ ≈ split-pair {k} f g s₂
     split-pair-≡ _ _ refl = ≈-refl
 
+    π-≡ : ∀ {n} {i j : Fin n} → i ≡ j → π {n} i ≈ π {n} j
+    π-≡ refl = ≈-refl
+
     split-pair-cong : ∀ {k m n} {f₁ f₂ : X^ k ⇒ X^ m} {g₁ g₂ : X^ k ⇒ X^ n}
                       → f₁ ≈ f₂ → g₁ ≈ g₂ → ∀ s → split-pair {k} {m} {n} f₁ g₁ s ≈ split-pair {k} {m} {n} f₂ g₂ s
     split-pair-cong f≈ g≈ (inj₁ i) = ∘-cong ≈-refl f≈
@@ -424,4 +428,34 @@ module matrices
     ∎ where
         open ≈-Reasoning isEquiv
         col = λ i → split-pair {k} {m} {n} f g (splitAt m i)
-  products .HasProducts.pair-ext = {!!}
+  products .HasProducts.pair-ext {k} {m} {n} f =
+    begin
+      tuple {m +ℕ n} col
+    ≈⟨ tuple-cong {m +ℕ n} col (λ i → π {m +ℕ n} i ∘ f)
+        (λ i → ≈-trans (col-ext (splitAt m i)) (∘-cong (π-≡ (join-splitAt m n i)) ≈-refl)) ⟩
+      tuple {m +ℕ n} (λ i → π {m +ℕ n} i ∘ f)
+    ≈⟨ tuple-ext {m +ℕ n} f ⟩
+      f
+    ∎ where
+        p₁' = tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n))
+        p₂' = tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j))
+        col = λ i → split-pair {k} {m} {n} (p₁' ∘ f) (p₂' ∘ f) (splitAt m i)
+
+        col-ext : ∀ (s : Fin m ⊎ Fin n) → split-pair {k} {m} {n} (p₁' ∘ f) (p₂' ∘ f) s ≈ (π {m +ℕ n} (join m n s) ∘ f)
+        col-ext (inj₁ j) =
+          begin
+            π {m} j ∘ (p₁' ∘ f)
+          ≈˘⟨ assoc (π {m} j) p₁' f ⟩
+            (π {m} j ∘ p₁') ∘ f
+          ≈⟨ ∘-cong (tuple-π {m} (λ i → π {m +ℕ n} (i ↑ˡ n)) j) ≈-refl ⟩
+            π {m +ℕ n} (j ↑ˡ n) ∘ f
+          ∎ where open ≈-Reasoning isEquiv
+        col-ext (inj₂ j) =
+          begin
+            π {n} j ∘ (p₂' ∘ f)
+          ≈˘⟨ assoc (π {n} j) p₂' f ⟩
+            (π {n} j ∘ p₂') ∘ f
+          ≈⟨ ∘-cong (tuple-π {n} (λ i → π {m +ℕ n} (m ↑ʳ i)) j) ≈-refl ⟩
+            π {m +ℕ n} (m ↑ʳ j) ∘ f
+          ∎ where open ≈-Reasoning isEquiv
+        open ≈-Reasoning isEquiv
