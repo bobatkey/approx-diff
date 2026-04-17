@@ -382,12 +382,18 @@ module matrices
                    {s₁ s₂ : Fin m ⊎ Fin n} → s₁ ≡ s₂ → split-pair {k} f g s₁ ≈ split-pair {k} f g s₂
     split-pair-≡ _ _ refl = ≈-refl
 
+    split-pair-cong : ∀ {k m n} {f₁ f₂ : X^ k ⇒ X^ m} {g₁ g₂ : X^ k ⇒ X^ n}
+                      → f₁ ≈ f₂ → g₁ ≈ g₂ → ∀ s → split-pair {k} {m} {n} f₁ g₁ s ≈ split-pair {k} {m} {n} f₂ g₂ s
+    split-pair-cong f≈ g≈ (inj₁ i) = ∘-cong ≈-refl f≈
+    split-pair-cong f≈ g≈ (inj₂ j) = ∘-cong ≈-refl g≈
+
   products : HasProducts cat
   products .HasProducts.prod m n = m +ℕ n
   products .HasProducts.p₁ {m} {n} = tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n))
   products .HasProducts.p₂ {m} {n} = tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j))
   products .HasProducts.pair {k} {m} {n} f g = tuple {m +ℕ n} (λ i → split-pair {k} {m} {n} f g (splitAt m i))
-  products .HasProducts.pair-cong = {!!}
+  products .HasProducts.pair-cong {_} {m} {n} f≈ g≈ =
+    tuple-cong {m +ℕ n} _ _ (λ i → split-pair-cong f≈ g≈ (splitAt m i))
   products .HasProducts.pair-p₁ {k} {m} {n} f g =
     begin
       tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n)) ∘ tuple {m +ℕ n} col
