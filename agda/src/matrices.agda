@@ -1,8 +1,5 @@
 {-# OPTIONS --postfix-projections --prop --safe #-}
 
--- Matrix representation via iterated biproducts in a (necessarily CMon-enriched) category with binary
--- biproducts and zero object, and base object X. Instantiating X to Two in SemiLat recovers the "Boolean
--- Jacobian" setting FDVect_2.
 
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Fin using (Fin; zero; suc)
@@ -11,6 +8,11 @@ open import categories using (Category; IsInitial; IsTerminal)
 open import cmon-enriched using (CMonEnriched; Biproduct)
 open import commutative-monoid using (CommutativeMonoid)
 
+-- Matrix representation via iterated biproducts in a (necessarily CMon-enriched) category with binary
+-- biproducts and zero object, and base object X. Instantiating X to Two in SemiLat recovers the "Boolean
+-- Jacobian" setting FDVect_2. The endomorphisms of X act as the "scalars", and form a semiring, with
+-- composition as multiplication and addition via the CMon enrichment. We need the multiplication to be
+-- commutative for the dagger to preserve composition, i.e. for the usual AB^T = B^T A^T to hold.
 module matrices
   {o m e} {𝒞 : Category o m e}
   (CM : CMonEnriched 𝒞)
@@ -142,7 +144,7 @@ module matrices
   entry : ∀ {m n} → X^ m ⇒ X^ n → Fin n → Fin m → X ⇒ X
   entry f i j = π i ∘ (f ∘ ι j)
 
-  -- Dot product symmetry: cotuple h ∘ tuple k ≈ cotuple k ∘ tuple h (requires scalar-comm).
+  -- Requires commutativity of scalar multiplication (monoid of endomorphisms of X).
   dot-comm : ∀ {n} (h k : Fin n → X ⇒ X) →
              (cotuple {n} h ∘ tuple {n} k) ≈ (cotuple {n} k ∘ tuple {n} h)
   dot-comm {zero}  h k = {!!}
@@ -245,7 +247,6 @@ module matrices
 
   transpose-id : ∀ {n} → transpose {n} {n} (id (X^ n)) ≈ id (X^ n)
   transpose-id {n} =
-    let open ≈-Reasoning isEquiv in
     begin
       tuple {n} (λ j → cotuple {n} (λ i → π {n} i ∘ (id (X^ n) ∘ ι {n} j)))
     ≈⟨ tuple-cong {n} _ _ (λ j → cotuple-cong {n} _ _ (λ i → ∘-cong ≈-refl id-left)) ⟩
@@ -258,4 +259,4 @@ module matrices
       tuple {n} (λ j → π {n} j ∘ id (X^ n))
     ≈⟨ tuple-ext {n} (id (X^ n)) ⟩
       id (X^ n)
-    ∎
+    ∎ where open ≈-Reasoning isEquiv
