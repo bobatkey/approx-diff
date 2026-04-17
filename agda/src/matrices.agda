@@ -115,6 +115,12 @@ module matrices
   transpose-entry : ∀ {m n} (f : X^ m ⇒ X^ n) (i : Fin m) (j : Fin n) →
                     entry (transpose {m} {n} f) i j ≈ entry f j i
   transpose-entry {m} {n} f i j =
-    ≈-trans (≈-sym (assoc (π {m} i) (transpose {m} {n} f) (ι {n} j)))
-    (≈-trans (∘-cong (tuple-π {m} (λ k → cotuple {n} (λ l → entry f l k)) i) ≈-refl)
-             (cotuple-ι {n} (λ l → entry f l i) j))
+    begin
+      π {m} i ∘ (transpose {m} {n} f ∘ ι {n} j)
+    ≈˘⟨ assoc _ _ _ ⟩
+      (π {m} i ∘ transpose {m} {n} f) ∘ ι {n} j
+    ≈⟨ ∘-cong (tuple-π {m} (λ k → cotuple {n} (λ l → entry f l k)) i) ≈-refl ⟩
+      cotuple {n} (λ l → entry f l i) ∘ ι {n} j
+    ≈⟨ cotuple-ι {n} (λ l → entry f l i) j ⟩
+      π {n} j ∘ (f ∘ ι {m} i)
+    ∎ where open ≈-Reasoning isEquiv
