@@ -22,10 +22,10 @@ module matrices
   (𝟘-initial : IsInitial 𝒞 𝟘)
   (𝟘-terminal : IsTerminal 𝒞 𝟘)
   (X : Category.obj 𝒞)
-  (scalar-comm : ∀ (f g : Category._⇒_ 𝒞 X X) → Category._≈_ 𝒞 (Category._∘_ 𝒞 f g) (Category._∘_ 𝒞 g f))
+  (open Category 𝒞)
+  (scalar-comm : ∀ (f g : X ⇒ X) → (f ∘ g) ≈ (g ∘ f))
   where
 
-  open Category 𝒞
   open CMonEnriched CM
   open CommutativeMonoid
   open Biproduct
