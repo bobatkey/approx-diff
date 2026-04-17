@@ -262,7 +262,7 @@ module matrices
   transpose-comp : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) →
                    transpose {m} {k} (g ∘ f) ≈ (transpose {m} {n} f ∘ transpose {n} {k} g)
   private
-    -- The entry of a composition is the dot product of the entries (matrix multiplication).
+    -- The entry of a composition is a dot product of entries (matrix multiplication).
     entry-comp : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) (i : Fin k) (j : Fin m) →
                  entry (g ∘ f) i j ≈ (cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j))
     entry-comp {m} {n} {k} f g i j =
