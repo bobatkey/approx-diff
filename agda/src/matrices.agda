@@ -1,6 +1,5 @@
 {-# OPTIONS --postfix-projections --prop --safe #-}
 
-
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Fin using (Fin; zero; suc)
 open import prop-setoid using (module ≈-Reasoning)
@@ -145,7 +144,7 @@ module matrices
   entry : ∀ {m n} → X^ m ⇒ X^ n → Fin n → Fin m → X ⇒ X
   entry f i j = π i ∘ (f ∘ ι j)
 
-  -- Requires commutativity of scalar multiplication (monoid of endomorphisms of X).
+  -- Requires commutativity of scalar multiplication (composition in X ⇒ X).
   dot-comm : ∀ {n} (h k : Fin n → X ⇒ X) → (cotuple {n} h ∘ tuple {n} k) ≈ (cotuple {n} k ∘ tuple {n} h)
   dot-comm {zero}  h k = ≈-refl
   dot-comm {suc n} h k =
@@ -342,7 +341,7 @@ module matrices
       id (X^ n)
     ∎ where open ≈-Reasoning isEquiv
 
-  -- The matrix category Mat: objects are ℕ, morphisms m → n are X^m ⇒ X^n.
+  -- Category Mat where objects are ℕ, morphisms m → n are X^m ⇒ X^n.
   open import prop-setoid using (IsEquivalence)
 
   cat : Category _ _ _

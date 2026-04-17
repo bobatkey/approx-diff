@@ -3,12 +3,48 @@
 module example-matrix where
 
 open import Level using (0ℓ)
-open import categories using (Category)
+open import categories using (Category; HasTerminal; HasInitial; IsInitial; IsTerminal)
 
-import join-semilattice-category as JSL
-import galois
+import join-semilattice-category as SemiLat
+import cmon-enriched as CMon
 
--- TWO (= 𝟚) as an object of SemiLat, extracted from galois.TWO.
-TWO : JSL.Obj
-TWO .JSL.Obj.carrier = galois.TWO .galois.Obj.carrier
-TWO .JSL.Obj.joins = galois.TWO .galois.Obj.joins
+open Category SemiLat.cat
+
+TWO : SemiLat.Obj
+TWO = SemiLat.TWO
+
+open import two using (Two; O; I)
+import join-semilattice
+import preorder
+open SemiLat._≃m_
+open SemiLat._⇒_
+open join-semilattice._≃m_ using (eqfunc)
+open preorder._≃m_ using (eqfun)
+
+scalar-comm : ∀ (f g : TWO ⇒ TWO) → (f ∘ g) ≈ (g ∘ f)
+scalar-comm f g .f≃f .eqfunc .eqfun O =
+  two.≃-trans (resp-≃ f (⊥-preserving-≃ g))
+  (two.≃-trans (⊥-preserving-≃ f)
+  (two.≃-sym (two.≃-trans (resp-≃ g (⊥-preserving-≃ f)) (⊥-preserving-≃ g))))
+scalar-comm f g .f≃f .eqfunc .eqfun I = go (fun f I) (fun g I) two.≃-refl two.≃-refl
+  where
+    step : ∀ (a b : Two) → a two.≃ fun f I → b two.≃ fun g I → fun f b two.≃ fun g a
+    step O O _   _ = two.≃-trans (⊥-preserving-≃ f) (two.≃-sym (⊥-preserving-≃ g))
+    step O I eq-a _ = two.≃-trans (two.≃-sym eq-a) (two.≃-sym (⊥-preserving-≃ g))
+    step I O _ eq-b = two.≃-trans (⊥-preserving-≃ f) eq-b
+    step I I eq-a eq-b = two.≃-trans (two.≃-sym eq-a) eq-b
+
+    go : ∀ (a b : Two) → a two.≃ fun f I → b two.≃ fun g I → fun f (fun g I) two.≃ fun g (fun f I)
+    go a b eq-a eq-b =
+      two.≃-trans (resp-≃ f (two.≃-sym eq-b))
+      (two.≃-trans (step a b eq-a eq-b)
+      (resp-≃ g eq-a))
+
+import matrices
+open matrices SemiLat.cmon-enriched
+  (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
+  (HasTerminal.witness SemiLat.terminal)
+  (HasInitial.is-initial SemiLat.initial)
+  (HasTerminal.is-terminal SemiLat.terminal)
+  TWO
+  scalar-comm
