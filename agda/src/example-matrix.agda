@@ -57,6 +57,8 @@ scalar-comm f g .f≃f .eqfunc .eqfun I = go (fun f I) (fun g I) two.≃-refl tw
         fun g (fun f I)
       ∎
 
+open CMon.CMonEnriched SemiLat.cmon-enriched using (_+m_)
+
 import matrices
 open matrices SemiLat.cmon-enriched
   (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
@@ -65,3 +67,17 @@ open matrices SemiLat.cmon-enriched
   (HasTerminal.is-terminal SemiLat.terminal)
   TWO
   scalar-comm
+
+private
+  module Mat = Category cat
+
+open categories using (HasProducts)
+
+import example-signature-interpretation
+unit : Mat._⇒_ 0 2
+unit = HasInitial.from-initial initial {2}
+
+conjunct : Mat._⇒_ (HasProducts.prod products 2 2) 2
+conjunct = HasProducts.p₁ products {2} {2} +m HasProducts.p₂ products {2} {2}
+
+open example-signature-interpretation cat products terminal 2 unit conjunct
