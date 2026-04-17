@@ -303,34 +303,13 @@ module matrices
     entry-ext : ∀ {m n} {f g : X^ m ⇒ X^ n} →
                 (∀ (i : Fin n) (j : Fin m) → entry f i j ≈ entry g i j) → f ≈ g
     entry-ext {m} {n} {f} {g} h =
-      let open ≈-Reasoning isEquiv in
-      begin
-        f
-      ≈˘⟨ tuple-ext {n} f ⟩
-        tuple {n} (λ i → π {n} i ∘ f)
-      ≈⟨ tuple-cong {n} _ _ (λ i →
-           begin
-             π {n} i ∘ f
-           ≈˘⟨ cotuple-ext {m} (π {n} i ∘ f) ⟩
-             cotuple {m} (λ j → (π {n} i ∘ f) ∘ ι {m} j)
-           ≈⟨ cotuple-cong {m} _ _ (λ j →
-                begin
-                  (π {n} i ∘ f) ∘ ι {m} j
-                ≈⟨ assoc (π {n} i) f (ι {m} j) ⟩
-                  entry f i j
-                ≈⟨ h i j ⟩
-                  entry g i j
-                ≈˘⟨ assoc (π {n} i) g (ι {m} j) ⟩
-                  (π {n} i ∘ g) ∘ ι {m} j
-                ∎) ⟩
-             cotuple {m} (λ j → (π {n} i ∘ g) ∘ ι {m} j)
-           ≈⟨ cotuple-ext {m} (π {n} i ∘ g) ⟩
-             π {n} i ∘ g
-           ∎) ⟩
-        tuple {n} (λ i → π {n} i ∘ g)
-      ≈⟨ tuple-ext {n} g ⟩
-        g
-      ∎
+      ≈-trans (≈-sym (tuple-ext {n} f))
+      (≈-trans (tuple-cong {n} _ _ (λ i →
+        ≈-trans (≈-sym (cotuple-ext {m} (π {n} i ∘ f)))
+        (≈-trans (cotuple-cong {m} _ _ (λ j →
+          ≈-trans (assoc (π {n} i) f (ι {m} j)) (≈-trans (h i j) (≈-sym (assoc (π {n} i) g (ι {m} j))))))
+        (cotuple-ext {m} (π {n} i ∘ g)))))
+      (tuple-ext {n} g))
 
     -- Entry of a composition on the RHS.
     entry-comp-rhs : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) (i : Fin k) (j : Fin m) →
