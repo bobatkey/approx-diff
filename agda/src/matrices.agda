@@ -2,6 +2,8 @@
 
 open import Data.Nat using (ℕ; zero; suc) renaming (_+_ to _+ℕ_)
 open import Data.Fin using (Fin; zero; suc; splitAt; _↑ˡ_; _↑ʳ_)
+open import Data.Fin.Properties using (splitAt-↑ˡ)
+open import Relation.Binary.PropositionalEquality as ≡ using (_≡_; refl)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import prop-setoid using (module ≈-Reasoning)
 open import categories using (Category; IsInitial; IsTerminal; HasInitial; HasTerminal; HasProducts)
@@ -372,16 +374,36 @@ module matrices
     split-π {m} {n} (inj₁ i) = π {m +ℕ n} (i ↑ˡ n)
     split-π {m} {n} (inj₂ j) = π {m +ℕ n} (m ↑ʳ j)
 
+    split-pair : ∀ {k m n} → X^ k ⇒ X^ m → X^ k ⇒ X^ n → Fin m ⊎ Fin n → X^ k ⇒ X
+    split-pair {_} {m} f g (inj₁ i) = π {m} i ∘ f
+    split-pair {_} {_} {n} f g (inj₂ j) = π {n} j ∘ g
+
+    split-pair-≡ : ∀ {k m n} (f : X^ k ⇒ X^ m) (g : X^ k ⇒ X^ n)
+                   {s₁ s₂ : Fin m ⊎ Fin n} → s₁ ≡ s₂ → split-pair {k} f g s₁ ≈ split-pair {k} f g s₂
+    split-pair-≡ _ _ refl = ≈-refl
+
   products : HasProducts cat
   products .HasProducts.prod m n = m +ℕ n
   products .HasProducts.p₁ {m} {n} = tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n))
   products .HasProducts.p₂ {m} {n} = tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j))
-  products .HasProducts.pair {_} {m} {n} f g = tuple {m +ℕ n} (λ i → split-pair (splitAt m i))
-    where
-      split-pair : Fin m ⊎ Fin n → _ ⇒ X
-      split-pair (inj₁ i) = π {m} i ∘ f
-      split-pair (inj₂ j) = π {n} j ∘ g
+  products .HasProducts.pair {k} {m} {n} f g = tuple {m +ℕ n} (λ i → split-pair {k} {m} {n} f g (splitAt m i))
   products .HasProducts.pair-cong = {!!}
-  products .HasProducts.pair-p₁ = {!!}
+  products .HasProducts.pair-p₁ {k} {m} {n} f g =
+    begin
+      tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n)) ∘ tuple {m +ℕ n} col
+    ≈⟨ tuple-natural {m} (λ i → π {m +ℕ n} (i ↑ˡ n)) (tuple {m +ℕ n} col) ⟩
+      tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n) ∘ tuple {m +ℕ n} col)
+    ≈⟨ tuple-cong {m}
+        (λ i → π {m +ℕ n} (i ↑ˡ n) ∘ tuple {m +ℕ n} col)
+        (λ i → π {m} i ∘ f)
+        (λ i → ≈-trans (tuple-π {m +ℕ n} col (i ↑ˡ n)) (split-pair-≡ f g (splitAt-↑ˡ m i n))) ⟩
+      tuple {m} (λ i → π {m} i ∘ f)
+    ≈⟨ tuple-ext {m} f ⟩
+      f
+    ∎
+    where
+      open ≈-Reasoning isEquiv
+      col : Fin (m +ℕ n) → X^ k ⇒ X
+      col j = split-pair {k} {m} {n} f g (splitAt m j)
   products .HasProducts.pair-p₂ = {!!}
   products .HasProducts.pair-ext = {!!}
