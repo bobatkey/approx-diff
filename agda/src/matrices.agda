@@ -493,9 +493,9 @@ module matrices
             tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n)) ∘ bwd
           ≈⟨ tuple-natural {m} (λ i → π {m +ℕ n} (i ↑ˡ n)) bwd ⟩
             tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n) ∘ bwd)
-          ≈⟨ tuple-cong {m} _ _
-              (λ i → ≈-trans (tuple-π {m +ℕ n} (λ j → bwd-col (splitAt m j)) (i ↑ˡ n))
-                              (≡-to-≈ (cong bwd-col (splitAt-↑ˡ m i n)))) ⟩
+          ≈⟨ tuple-cong {m} _ _ (λ i → tuple-π {m +ℕ n} (λ j → bwd-col (splitAt m j)) (i ↑ˡ n)) ⟩
+            tuple {m} (λ i → bwd-col (splitAt m (i ↑ˡ n)))
+          ≈⟨ tuple-cong {m} _ _ (λ i → ≡-to-≈ (cong bwd-col (splitAt-↑ˡ m i n))) ⟩
             tuple {m} (λ i → π {m} i ∘ p₁ (BP (X^ m) (X^ n)))
           ≈⟨ tuple-ext {m} (p₁ (BP (X^ m) (X^ n))) ⟩
             p₁ (BP (X^ m) (X^ n))
@@ -511,9 +511,9 @@ module matrices
             tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j)) ∘ bwd
           ≈⟨ tuple-natural {n} (λ j → π {m +ℕ n} (m ↑ʳ j)) bwd ⟩
             tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j) ∘ bwd)
-          ≈⟨ tuple-cong {n} _ _
-              (λ j → ≈-trans (tuple-π {m +ℕ n} (λ i → bwd-col (splitAt m i)) (m ↑ʳ j))
-                              (≡-to-≈ (cong bwd-col (splitAt-↑ʳ m n j)))) ⟩
+          ≈⟨ tuple-cong {n} _ _ (λ j → tuple-π {m +ℕ n} (λ i → bwd-col (splitAt m i)) (m ↑ʳ j)) ⟩
+            tuple {n} (λ j → bwd-col (splitAt m (m ↑ʳ j)))
+          ≈⟨ tuple-cong {n} _ _ (λ j → ≡-to-≈ (cong bwd-col (splitAt-↑ʳ m n j))) ⟩
             tuple {n} (λ j → π {n} j ∘ p₂ (BP (X^ m) (X^ n)))
           ≈⟨ tuple-ext {n} (p₂ (BP (X^ m) (X^ n))) ⟩
             p₂ (BP (X^ m) (X^ n))
@@ -523,10 +523,9 @@ module matrices
         tuple {m +ℕ n} col ∘ split-fwd
       ≈⟨ tuple-natural {m +ℕ n} col split-fwd ⟩
         tuple {m +ℕ n} (λ i → col i ∘ split-fwd)
-      ≈⟨ tuple-cong {m +ℕ n}
-          (λ i → col i ∘ split-fwd)
-          (λ i → π {m +ℕ n} i)
-          (λ i → ≈-trans (col-id (splitAt m i)) (≡-to-≈ (cong (π {m +ℕ n}) (join-splitAt m n i)))) ⟩
+      ≈⟨ tuple-cong {m +ℕ n} _ _ (λ i → col-id (splitAt m i)) ⟩
+        tuple {m +ℕ n} (λ i → π {m +ℕ n} (join m n (splitAt m i)))
+      ≈⟨ tuple-cong {m +ℕ n} _ _ (λ i → ≡-to-≈ (cong (π {m +ℕ n}) (join-splitAt m n i))) ⟩
         tuple {m +ℕ n} (λ i → π {m +ℕ n} i)
       ≈⟨ tuple-ext0 {m +ℕ n} ⟩
         id (X^ (m +ℕ n))
