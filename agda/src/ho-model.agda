@@ -2,7 +2,7 @@
 
 module ho-model where
 
-open import Level using (0ℓ; suc)
+open import Level using (Level; 0ℓ; suc)
 open import categories using (Category; HasProducts; HasTerminal; op-coproducts→products; op-initial→terminal; HasCoproducts)
 open import product-category using (product; product-limit; product-products; product-terminal)
 open import cmon-enriched
@@ -105,7 +105,8 @@ open import signature
 import lists
 
 module Interpretation
-  (𝒞 : Category (suc 0ℓ) 0ℓ 0ℓ)
+  {o : Level}
+  (𝒞 : Category o 0ℓ 0ℓ)
   (𝒞-terminal : HasTerminal 𝒞)
   (𝒞-products : HasProducts 𝒞)
   (𝒟 : Category (suc 0ℓ) 0ℓ 0ℓ)
