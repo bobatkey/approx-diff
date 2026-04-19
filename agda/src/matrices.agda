@@ -104,6 +104,9 @@ module matrices
       f
     ∎ where open ≈-Reasoning isEquiv
 
+  tuple-ext0 : ∀ {n} → tuple {n} (λ i → π {n} i) ≈ id (X^ n)
+  tuple-ext0 {n} = ≈-trans (≈-sym (tuple-cong {n} _ _ (λ i → id-right))) (tuple-ext {n} (id (X^ n)))
+
   cotuple-cong : ∀ {n Z} (f g : Fin n → X ⇒ Z) → (∀ i → f i ≈ g i) → cotuple f ≈ cotuple g
   cotuple-cong {zero}  f g h = ≈-refl
   cotuple-cong {suc n} f g h = copair-cong (BP X (X^ n)) (h zero) (cotuple-cong (λ i → f (suc i)) (λ i → g (suc i)) (λ i → h (suc i)))
@@ -382,7 +385,6 @@ module matrices
     split-pair {_} {m} f g (inj₁ i) = π {m} i ∘ f
     split-pair {_} {_} {n} f g (inj₂ j) = π {n} j ∘ g
 
-
     split-pair-cong : ∀ {k m n} {f₁ f₂ : X^ k ⇒ X^ m} {g₁ g₂ : X^ k ⇒ X^ n}
                       → f₁ ≈ f₂ → g₁ ≈ g₂ → ∀ s → split-pair {k} {m} {n} f₁ g₁ s ≈ split-pair {k} {m} {n} f₂ g₂ s
     split-pair-cong f≈ g≈ (inj₁ i) = ∘-cong ≈-refl f≈
@@ -462,51 +464,48 @@ module matrices
     X^-bwd-col m n (inj₁ j) = π {m} j ∘ p₁ (BP (X^ m) (X^ n))
     X^-bwd-col m n (inj₂ j) = π {n} j ∘ p₂ (BP (X^ m) (X^ n))
 
+    X^-split-fwd : ∀ m n → X^ (m +ℕ n) ⇒ (X^ m ⊕ X^ n)
+    X^-split-fwd m n = pair (BP (X^ m) (X^ n))
+      (tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n)))
+      (tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j)))
+
   X^-split : ∀ m n → Iso (X^ (m +ℕ n)) (X^ m ⊕ X^ n)
-  X^-split m n .Iso.fwd = pair bp
-    (tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n)))
-    (tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j)))
-    where bp = BP (X^ m) (X^ n)
+  X^-split m n .Iso.fwd = X^-split-fwd m n
   X^-split m n .Iso.bwd = tuple {m +ℕ n} (λ i → X^-bwd-col m n (splitAt m i))
   X^-split m n .Iso.fwd∘bwd≈id = {!!}
   X^-split m n .Iso.bwd∘fwd≈id =
     begin
-      tuple {m +ℕ n} col ∘ fwd'
-    ≈⟨ tuple-natural {m +ℕ n} col fwd' ⟩
-      tuple {m +ℕ n} (λ i → col i ∘ fwd')
+      tuple {m +ℕ n} col ∘ X^-split-fwd m n
+    ≈⟨ tuple-natural {m +ℕ n} col (X^-split-fwd m n) ⟩
+      tuple {m +ℕ n} (λ i → col i ∘ X^-split-fwd m n)
     ≈⟨ tuple-cong {m +ℕ n}
-        (λ i → col i ∘ fwd')
+        (λ i → col i ∘ X^-split-fwd m n)
         (λ i → π {m +ℕ n} i)
         (λ i → ≈-trans (col-id (splitAt m i)) (≡-to-≈ (cong (π {m +ℕ n}) (join-splitAt m n i)))) ⟩
       tuple {m +ℕ n} (λ i → π {m +ℕ n} i)
-    ≈⟨ tuple-id {m +ℕ n} ⟩
+    ≈⟨ tuple-ext0 {m +ℕ n} ⟩
       id (X^ (m +ℕ n))
     ∎
     where
-      bp = BP (X^ m) (X^ n)
       col = λ i → X^-bwd-col m n (splitAt m i)
-      fwd' = pair bp (tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n))) (tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j)))
 
-      tuple-id : ∀ {n} → tuple {n} (λ i → π {n} i) ≈ id (X^ n)
-      tuple-id {n} = ≈-trans (≈-sym (tuple-cong {n} _ _ (λ i → id-right))) (tuple-ext {n} (id (X^ n)))
-
-      col-id : ∀ (s : Fin m ⊎ Fin n) → (X^-bwd-col m n s ∘ fwd') ≈ π {m +ℕ n} (join m n s)
+      col-id : ∀ (s : Fin m ⊎ Fin n) → (X^-bwd-col m n s ∘ X^-split-fwd m n) ≈ π {m +ℕ n} (join m n s)
       col-id (inj₁ j) =
         begin
-          (π {m} j ∘ p₁ bp) ∘ fwd'
-        ≈⟨ assoc (π {m} j) (p₁ bp) fwd' ⟩
-          π {m} j ∘ (p₁ bp ∘ fwd')
-        ≈⟨ ∘-cong ≈-refl (pair-p₁ bp _ _) ⟩
+          (π {m} j ∘ p₁ (BP (X^ m) (X^ n))) ∘ X^-split-fwd m n
+        ≈⟨ assoc (π {m} j) (p₁ (BP (X^ m) (X^ n))) (X^-split-fwd m n) ⟩
+          π {m} j ∘ (p₁ (BP (X^ m) (X^ n)) ∘ X^-split-fwd m n)
+        ≈⟨ ∘-cong ≈-refl (pair-p₁ (BP (X^ m) (X^ n)) _ _) ⟩
           π {m} j ∘ tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n))
         ≈⟨ tuple-π {m} (λ i → π {m +ℕ n} (i ↑ˡ n)) j ⟩
           π {m +ℕ n} (j ↑ˡ n)
         ∎ where open ≈-Reasoning isEquiv
       col-id (inj₂ j) =
         begin
-          (π {n} j ∘ p₂ bp) ∘ fwd'
-        ≈⟨ assoc (π {n} j) (p₂ bp) fwd' ⟩
-          π {n} j ∘ (p₂ bp ∘ fwd')
-        ≈⟨ ∘-cong ≈-refl (pair-p₂ bp _ _) ⟩
+          (π {n} j ∘ p₂ (BP (X^ m) (X^ n))) ∘ X^-split-fwd m n
+        ≈⟨ assoc (π {n} j) (p₂ (BP (X^ m) (X^ n))) (X^-split-fwd m n) ⟩
+          π {n} j ∘ (p₂ (BP (X^ m) (X^ n)) ∘ X^-split-fwd m n)
+        ≈⟨ ∘-cong ≈-refl (pair-p₂ (BP (X^ m) (X^ n)) _ _) ⟩
           π {n} j ∘ tuple {n} (λ i → π {m +ℕ n} (m ↑ʳ i))
         ≈⟨ tuple-π {n} (λ i → π {m +ℕ n} (m ↑ʳ i)) j ⟩
           π {m +ℕ n} (m ↑ʳ j)
