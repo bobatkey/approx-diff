@@ -35,10 +35,13 @@ module matrices
   open IsInitial 𝟘-initial
   open IsTerminal 𝟘-terminal
 
+  _⊕_ : obj → obj → obj
+  x ⊕ y = prod (BP x y)
+
   -- n-ary biproduct.
   X^ : ℕ → obj
   X^ zero = 𝟘
-  X^ (suc n) = prod (BP X (X^ n))
+  X^ (suc n) = X ⊕ X^ n
 
   -- i-th injection.
   ι : ∀ {n} → Fin n → X ⇒ X^ n
@@ -455,11 +458,11 @@ module matrices
         open ≈-Reasoning isEquiv
 
   private
-    X^-bwd-col : ∀ m n → Fin m ⊎ Fin n → prod (BP (X^ m) (X^ n)) ⇒ X
+    X^-bwd-col : ∀ m n → Fin m ⊎ Fin n → (X^ m ⊕ X^ n) ⇒ X
     X^-bwd-col m n (inj₁ j) = π {m} j ∘ p₁ (BP (X^ m) (X^ n))
     X^-bwd-col m n (inj₂ j) = π {n} j ∘ p₂ (BP (X^ m) (X^ n))
 
-  X^-split : ∀ m n → Iso (X^ (m +ℕ n)) (prod (BP (X^ m) (X^ n)))
+  X^-split : ∀ m n → Iso (X^ (m +ℕ n)) (X^ m ⊕ X^ n)
   X^-split m n .Iso.fwd = pair bp
     (tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n)))
     (tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j)))
