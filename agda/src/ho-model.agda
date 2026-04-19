@@ -99,132 +99,6 @@ open import finite-product-functor
 
 open Functor
 
-𝓖 : Functor galois.cat M×Jop
-𝓖 .fobj X =
-  record { carrier = X .galois.Obj.carrier ; meets = X .galois.Obj.meets } ,
-  record { carrier = X .galois.Obj.carrier ; joins = X .galois.Obj.joins }
-𝓖 .fmor f =
-  record { *→* = galois._⇒g_.right-∧ f } ,
-  record { *→* = galois._⇒g_.left-∨ f }
-𝓖 .fmor-cong f≃g =
-  record { f≃f = record { eqfunc = f≃g .galois._≃g_.right-eq } } ,
-  record { f≃f = record { eqfunc = f≃g .galois._≃g_.left-eq } }
-𝓖 .fmor-id {X} =
-  record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } } ,
-  record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }
-𝓖 .fmor-comp f g =
-  (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }) ,
-  (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } })
-
-module _ where
-
-  import meet-semilattice
-  import join-semilattice
-  open M×Jop.IsIso
-  open import prop using (tt; proj₁; proj₂)
-
-  𝓖-preserve-terminal : preserve-chosen-terminal 𝓖 galois.terminal M×Jop-terminal
-  𝓖-preserve-terminal .inverse =
-    record { *→* = meet-semilattice.terminal } ,
-    record { *→* = join-semilattice.initial }
-  𝓖-preserve-terminal .f∘inverse≈id =
-    HasTerminal.to-terminal-unique M×Jop-terminal _ _
-  𝓖-preserve-terminal .inverse∘f≈id =
-    record { f≃f = record { eqfunc = record { eqfun = λ x → tt , tt } } } ,
-    record { f≃f = record { eqfunc = record { eqfun = λ x → tt , tt } } }
-
-  open meet-semilattice-category._⇒_
-  open join-semilattice-category._⇒_
-  open meet-semilattice-category._≃m_
-  open join-semilattice-category._≃m_
-  open meet-semilattice._≃m_
-  open join-semilattice._≃m_
-  open preorder._≃m_
-  open galois.Obj
-
-  𝓖-preserve-products : preserve-chosen-products 𝓖 galois.products (biproducts→products _ M×Jop-biproducts)
-  𝓖-preserve-products .inverse .proj₁ .*→* = meet-semilattice.id
-  𝓖-preserve-products .inverse .proj₂ .*→* = join-semilattice.id
-  𝓖-preserve-products {X} {Y} .f∘inverse≈id .proj₁ .f≃f .eqfunc .eqfun (x , y) =
-    (X .π₁ , Y .π₂) ,
-    (X .⟨_∧_⟩ (X .≤-refl) (X .≤-top) , Y .⟨_∧_⟩ (Y .≤-top) (Y .≤-refl))
-  𝓖-preserve-products {X} {Y} .f∘inverse≈id .proj₂ .f≃f .eqfunc .eqfun (x , y) =
-    (X .[_∨_] (X .[_∨_] (X .≤-refl) (X .≤-bottom)) (X .≤-bottom) ,
-     Y .[_∨_] (Y .≤-bottom) (Y .[_∨_] (Y .≤-bottom) (Y .≤-refl))) ,
-    (X .≤-trans (X .inl) (X .inl) , Y .≤-trans (Y .inr) (Y .inr))
-  𝓖-preserve-products {X} {Y} .inverse∘f≈id .proj₁ .f≃f .eqfunc .eqfun (x , y) =
-    (X .π₁ , Y .π₂) ,
-    (X .⟨_∧_⟩ (X .≤-refl) (X .≤-top) , Y .⟨_∧_⟩ (Y .≤-top) (Y .≤-refl))
-  𝓖-preserve-products {X} {Y} .inverse∘f≈id .proj₂ .f≃f .eqfunc .eqfun (x , y) =
-    (X .[_∨_] (X .[_∨_] (X .≤-refl) (X .≤-bottom)) (X .≤-bottom) ,
-     Y .[_∨_] (Y .≤-bottom) (Y .[_∨_] (Y .≤-bottom) (Y .≤-refl))) ,
-    (X .≤-trans (X .inl) (X .inl) , Y .≤-trans (Y .inr) (Y .inr))
-
-------------------------------------------------------------------------------
--- Functor from HeytConj to Join×Join^op, which preserves finite products
-
-import conjugate
-
-𝓒 : Functor conjugate.cat J×Jop
-𝓒 .fobj X =
-  record { carrier = X .conjugate.Obj.carrier ; joins = X .conjugate.Obj.joins } ,
-  record { carrier = X .conjugate.Obj.carrier ; joins = X .conjugate.Obj.joins }
-𝓒 .fmor f =
-  record { *→* = conjugate._⇒c_.right-∨ f } ,
-  record { *→* = conjugate._⇒c_.left-∨ f }
-𝓒 .fmor-cong f≃g =
-  record { f≃f = record { eqfunc = f≃g .conjugate._≃c_.right-eq } } ,
-  record { f≃f = record { eqfunc = f≃g .conjugate._≃c_.left-eq } }
-𝓒 .fmor-id {X} =
-  record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } } ,
-  record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }
-𝓒 .fmor-comp f g =
-  (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }) ,
-  (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } })
-
-module _ where
-
-  private
-    module J×Jop = Category J×Jop
-
-  import join-semilattice
-  open J×Jop.IsIso
-  open import prop using (tt; proj₁; proj₂)
-
-  𝓒-preserve-terminal : preserve-chosen-terminal 𝓒 conjugate.terminal J×Jop-terminal
-  𝓒-preserve-terminal .inverse =
-    record { *→* = join-semilattice.terminal } ,
-    record { *→* = join-semilattice.initial }
-  𝓒-preserve-terminal .f∘inverse≈id =
-    HasTerminal.to-terminal-unique J×Jop-terminal _ _
-  𝓒-preserve-terminal .inverse∘f≈id =
-    record { f≃f = record { eqfunc = record { eqfun = λ x → tt , tt } } } ,
-    record { f≃f = record { eqfunc = record { eqfun = λ x → tt , tt } } }
-
-  open join-semilattice-category._⇒_
-  open join-semilattice-category._≃m_
-  open join-semilattice._≃m_
-  open preorder._≃m_
-  open conjugate.Obj
-
-  𝓒-preserve-products : preserve-chosen-products 𝓒 conjugate.products (biproducts→products _ J×Jop-biproducts)
-  𝓒-preserve-products .inverse .proj₁ .*→* = join-semilattice.id
-  𝓒-preserve-products .inverse .proj₂ .*→* = join-semilattice.id
-  𝓒-preserve-products {X} {Y} .f∘inverse≈id .proj₁ .f≃f .eqfunc .eqfun (x , y) =
-    (X .[_∨_] (X .≤-refl) (X .≤-bottom) , Y .[_∨_] (Y .≤-bottom) (Y .≤-refl)) ,
-    (X .inl , Y .inr)
-  𝓒-preserve-products {X} {Y} .f∘inverse≈id .proj₂ .f≃f .eqfunc .eqfun (x , y) =
-    (X .[_∨_] (X .[_∨_] (X .≤-refl) (X .≤-bottom)) (X .≤-bottom) ,
-     Y .[_∨_] (Y .≤-bottom) (Y .[_∨_] (Y .≤-bottom) (Y .≤-refl))) ,
-    (X .≤-trans (X .inl) (X .inl) , Y .≤-trans (Y .inr) (Y .inr))
-  𝓒-preserve-products {X} {Y} .inverse∘f≈id .proj₁ .f≃f .eqfunc .eqfun (x , y) =
-    (X .[_∨_] (X .≤-refl) (X .≤-bottom) , Y .[_∨_] (Y .≤-bottom) (Y .≤-refl)) ,
-    (X .inl , Y .inr)
-  𝓒-preserve-products {X} {Y} .inverse∘f≈id .proj₂ .f≃f .eqfunc .eqfun (x , y) =
-    (X .[_∨_] (X .[_∨_] (X .≤-refl) (X .≤-bottom)) (X .≤-bottom) ,
-     Y .[_∨_] (Y .≤-bottom) (Y .[_∨_] (Y .≤-bottom) (Y .≤-refl))) ,
-    (X .≤-trans (X .inl) (X .inl) , Y .≤-trans (Y .inr) (Y .inr))
-
 ------------------------------------------------------------------------------
 -- Given a CMon-enriched category 𝒟 with limits, terminal, and
 -- biproducts, a source category 𝒞 with terminal and products, and a
@@ -325,12 +199,139 @@ module Interpretation
 ------------------------------------------------------------------------------
 -- Concrete instantiations
 
-module Galois = Interpretation
-  galois.cat galois.terminal galois.products
-  M×Jop M×Jop-cmon-enriched M×Jop-limits M×Jop-terminal M×Jop-biproducts
-  𝓖 𝓖-preserve-terminal (λ {X} {Y} → 𝓖-preserve-products {X} {Y})
+module Galois where
+  import meet-semilattice
+  import join-semilattice
+  open import prop using (tt; proj₁; proj₂)
 
-module Conjugate = Interpretation
-  conjugate.cat conjugate.terminal conjugate.products
-  J×Jop J×Jop-cmon-enriched J×Jop-limits J×Jop-terminal J×Jop-biproducts
-  𝓒 𝓒-preserve-terminal (λ {X} {Y} → 𝓒-preserve-products {X} {Y})
+  𝓕 : Functor galois.cat M×Jop
+  𝓕 .fobj X =
+    record { carrier = X .galois.Obj.carrier ; meets = X .galois.Obj.meets } ,
+    record { carrier = X .galois.Obj.carrier ; joins = X .galois.Obj.joins }
+  𝓕 .fmor f =
+    record { *→* = galois._⇒g_.right-∧ f } ,
+    record { *→* = galois._⇒g_.left-∨ f }
+  𝓕 .fmor-cong f≃g =
+    record { f≃f = record { eqfunc = f≃g .galois._≃g_.right-eq } } ,
+    record { f≃f = record { eqfunc = f≃g .galois._≃g_.left-eq } }
+  𝓕 .fmor-id {X} =
+    record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } } ,
+    record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }
+  𝓕 .fmor-comp f g =
+    (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }) ,
+    (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } })
+
+  private
+    module M×Jop' = Category M×Jop
+
+  open M×Jop'.IsIso
+
+  𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 galois.terminal M×Jop-terminal
+  𝓕-preserve-terminal .inverse =
+    record { *→* = meet-semilattice.terminal } ,
+    record { *→* = join-semilattice.initial }
+  𝓕-preserve-terminal .f∘inverse≈id =
+    HasTerminal.to-terminal-unique M×Jop-terminal _ _
+  𝓕-preserve-terminal .inverse∘f≈id =
+    record { f≃f = record { eqfunc = record { eqfun = λ x → tt , tt } } } ,
+    record { f≃f = record { eqfunc = record { eqfun = λ x → tt , tt } } }
+
+  open meet-semilattice-category._⇒_
+  open join-semilattice-category._⇒_
+  open meet-semilattice-category._≃m_
+  open join-semilattice-category._≃m_
+  open meet-semilattice._≃m_
+  open join-semilattice._≃m_
+  open preorder._≃m_
+  open galois.Obj
+
+  𝓕-preserve-products : preserve-chosen-products 𝓕 galois.products (biproducts→products _ M×Jop-biproducts)
+  𝓕-preserve-products .inverse .proj₁ .*→* = meet-semilattice.id
+  𝓕-preserve-products .inverse .proj₂ .*→* = join-semilattice.id
+  𝓕-preserve-products {X} {Y} .f∘inverse≈id .proj₁ .f≃f .eqfunc .eqfun (x , y) =
+    (X .π₁ , Y .π₂) ,
+    (X .⟨_∧_⟩ (X .≤-refl) (X .≤-top) , Y .⟨_∧_⟩ (Y .≤-top) (Y .≤-refl))
+  𝓕-preserve-products {X} {Y} .f∘inverse≈id .proj₂ .f≃f .eqfunc .eqfun (x , y) =
+    (X .[_∨_] (X .[_∨_] (X .≤-refl) (X .≤-bottom)) (X .≤-bottom) ,
+     Y .[_∨_] (Y .≤-bottom) (Y .[_∨_] (Y .≤-bottom) (Y .≤-refl))) ,
+    (X .≤-trans (X .inl) (X .inl) , Y .≤-trans (Y .inr) (Y .inr))
+  𝓕-preserve-products {X} {Y} .inverse∘f≈id .proj₁ .f≃f .eqfunc .eqfun (x , y) =
+    (X .π₁ , Y .π₂) ,
+    (X .⟨_∧_⟩ (X .≤-refl) (X .≤-top) , Y .⟨_∧_⟩ (Y .≤-top) (Y .≤-refl))
+  𝓕-preserve-products {X} {Y} .inverse∘f≈id .proj₂ .f≃f .eqfunc .eqfun (x , y) =
+    (X .[_∨_] (X .[_∨_] (X .≤-refl) (X .≤-bottom)) (X .≤-bottom) ,
+     Y .[_∨_] (Y .≤-bottom) (Y .[_∨_] (Y .≤-bottom) (Y .≤-refl))) ,
+    (X .≤-trans (X .inl) (X .inl) , Y .≤-trans (Y .inr) (Y .inr))
+
+  open Interpretation
+    galois.cat galois.terminal galois.products
+    M×Jop M×Jop-cmon-enriched M×Jop-limits M×Jop-terminal M×Jop-biproducts
+    𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
+    public
+
+module Conjugate where
+  import join-semilattice
+  import conjugate
+  open import prop using (tt; proj₁; proj₂)
+
+  𝓕 : Functor conjugate.cat J×Jop
+  𝓕 .fobj X =
+    record { carrier = X .conjugate.Obj.carrier ; joins = X .conjugate.Obj.joins } ,
+    record { carrier = X .conjugate.Obj.carrier ; joins = X .conjugate.Obj.joins }
+  𝓕 .fmor f =
+    record { *→* = conjugate._⇒c_.right-∨ f } ,
+    record { *→* = conjugate._⇒c_.left-∨ f }
+  𝓕 .fmor-cong f≃g =
+    record { f≃f = record { eqfunc = f≃g .conjugate._≃c_.right-eq } } ,
+    record { f≃f = record { eqfunc = f≃g .conjugate._≃c_.left-eq } }
+  𝓕 .fmor-id {X} =
+    record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } } ,
+    record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }
+  𝓕 .fmor-comp f g =
+    (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }) ,
+    (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } })
+
+  private
+    module J×Jop' = Category J×Jop
+
+  open J×Jop'.IsIso
+
+  𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 conjugate.terminal J×Jop-terminal
+  𝓕-preserve-terminal .inverse =
+    record { *→* = join-semilattice.terminal } ,
+    record { *→* = join-semilattice.initial }
+  𝓕-preserve-terminal .f∘inverse≈id =
+    HasTerminal.to-terminal-unique J×Jop-terminal _ _
+  𝓕-preserve-terminal .inverse∘f≈id =
+    record { f≃f = record { eqfunc = record { eqfun = λ x → tt , tt } } } ,
+    record { f≃f = record { eqfunc = record { eqfun = λ x → tt , tt } } }
+
+  open join-semilattice-category._⇒_
+  open join-semilattice-category._≃m_
+  open join-semilattice._≃m_
+  open preorder._≃m_
+  open conjugate.Obj
+
+  𝓕-preserve-products : preserve-chosen-products 𝓕 conjugate.products (biproducts→products _ J×Jop-biproducts)
+  𝓕-preserve-products .inverse .proj₁ .*→* = join-semilattice.id
+  𝓕-preserve-products .inverse .proj₂ .*→* = join-semilattice.id
+  𝓕-preserve-products {X} {Y} .f∘inverse≈id .proj₁ .f≃f .eqfunc .eqfun (x , y) =
+    (X .[_∨_] (X .≤-refl) (X .≤-bottom) , Y .[_∨_] (Y .≤-bottom) (Y .≤-refl)) ,
+    (X .inl , Y .inr)
+  𝓕-preserve-products {X} {Y} .f∘inverse≈id .proj₂ .f≃f .eqfunc .eqfun (x , y) =
+    (X .[_∨_] (X .[_∨_] (X .≤-refl) (X .≤-bottom)) (X .≤-bottom) ,
+     Y .[_∨_] (Y .≤-bottom) (Y .[_∨_] (Y .≤-bottom) (Y .≤-refl))) ,
+    (X .≤-trans (X .inl) (X .inl) , Y .≤-trans (Y .inr) (Y .inr))
+  𝓕-preserve-products {X} {Y} .inverse∘f≈id .proj₁ .f≃f .eqfunc .eqfun (x , y) =
+    (X .[_∨_] (X .≤-refl) (X .≤-bottom) , Y .[_∨_] (Y .≤-bottom) (Y .≤-refl)) ,
+    (X .inl , Y .inr)
+  𝓕-preserve-products {X} {Y} .inverse∘f≈id .proj₂ .f≃f .eqfunc .eqfun (x , y) =
+    (X .[_∨_] (X .[_∨_] (X .≤-refl) (X .≤-bottom)) (X .≤-bottom) ,
+     Y .[_∨_] (Y .≤-bottom) (Y .[_∨_] (Y .≤-bottom) (Y .≤-refl))) ,
+    (X .≤-trans (X .inl) (X .inl) , Y .≤-trans (Y .inr) (Y .inr))
+
+  open Interpretation
+    conjugate.cat conjugate.terminal conjugate.products
+    J×Jop J×Jop-cmon-enriched J×Jop-limits J×Jop-terminal J×Jop-biproducts
+    𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
+    public
