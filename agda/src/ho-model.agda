@@ -415,9 +415,17 @@ module Matrix where
   SemiLat-products = biproducts→products _ SemiLat-BP
 
   𝓕-preserve-products : preserve-chosen-products 𝓕 products SemiLat-products
-  𝓕-preserve-products {m} {n} = {!!}
+  𝓕-preserve-products {m} {n} .inverse = X^-split m n .Iso.bwd
+  𝓕-preserve-products {m} {n} .f∘inverse≈id = X^-split m n .Iso.fwd∘bwd≈id
+  𝓕-preserve-products {m} {n} .inverse∘f≈id = X^-split m n .Iso.bwd∘fwd≈id
 
   𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
   𝓕-preserve-terminal .inverse = SemiLat'.id _
   𝓕-preserve-terminal .f∘inverse≈id = HasTerminal.to-terminal-unique SemiLat.terminal _ _
   𝓕-preserve-terminal .inverse∘f≈id = HasTerminal.to-terminal-unique SemiLat.terminal _ _
+
+  open Interpretation
+    cat terminal products
+    SemiLat.cat SemiLat.cmon-enriched SemiLat.limits SemiLat.terminal SemiLat-BP
+    𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
+    public
