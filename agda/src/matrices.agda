@@ -467,12 +467,18 @@ module matrices
   X^-split m n .Iso.bwd = tuple {m +ℕ n} (λ i → X^-bwd-col m n (splitAt m i))
   X^-split m n .Iso.fwd∘bwd≈id = {!!}
   X^-split m n .Iso.bwd∘fwd≈id =
-    ≈-trans (tuple-natural {m +ℕ n} col fwd')
-    (≈-trans (tuple-cong {m +ℕ n}
-      (λ i → col i ∘ fwd')
-      (λ i → π {m +ℕ n} i)
-      (λ i → ≈-trans (col-id (splitAt m i)) (≡-to-≈ (cong (π {m +ℕ n}) (join-splitAt m n i)))))
-    (tuple-id {m +ℕ n}))
+    begin
+      tuple {m +ℕ n} col ∘ fwd'
+    ≈⟨ tuple-natural {m +ℕ n} col fwd' ⟩
+      tuple {m +ℕ n} (λ i → col i ∘ fwd')
+    ≈⟨ tuple-cong {m +ℕ n}
+        (λ i → col i ∘ fwd')
+        (λ i → π {m +ℕ n} i)
+        (λ i → ≈-trans (col-id (splitAt m i)) (≡-to-≈ (cong (π {m +ℕ n}) (join-splitAt m n i)))) ⟩
+      tuple {m +ℕ n} (λ i → π {m +ℕ n} i)
+    ≈⟨ tuple-id {m +ℕ n} ⟩
+      id (X^ (m +ℕ n))
+    ∎
     where
       bp = BP (X^ m) (X^ n)
       col = λ i → X^-bwd-col m n (splitAt m i)
@@ -502,3 +508,4 @@ module matrices
         ≈⟨ tuple-π {n} (λ i → π {m +ℕ n} (m ↑ʳ i)) j ⟩
           π {m +ℕ n} (m ↑ʳ j)
         ∎ where open ≈-Reasoning isEquiv
+      open ≈-Reasoning isEquiv
