@@ -107,6 +107,9 @@ module matrices
   tuple-ext0 : ∀ {n} → tuple {n} (λ i → π {n} i) ≈ id (X^ n)
   tuple-ext0 {n} = ≈-trans (≈-sym (tuple-cong {n} _ _ (λ i → id-right))) (tuple-ext {n} (id (X^ n)))
 
+  bp-pair-ext0 : ∀ {x y} (bp : Biproduct CM x y) → pair bp (p₁ bp) (p₂ bp) ≈ id (prod bp)
+  bp-pair-ext0 bp = ≈-trans (≈-sym (pair-cong bp id-right id-right)) (pair-ext bp (id _))
+
   cotuple-cong : ∀ {n Z} (f g : Fin n → X ⇒ Z) → (∀ i → f i ≈ g i) → cotuple f ≈ cotuple g
   cotuple-cong {zero}  f g h = ≈-refl
   cotuple-cong {suc n} f g h = copair-cong (BP X (X^ n)) (h zero) (cotuple-cong (λ i → f (suc i)) (λ i → g (suc i)) (λ i → h (suc i)))
@@ -473,7 +476,48 @@ module matrices
     X^-split : Iso (X^ (m +ℕ n)) (X^ m ⊕ X^ n)
     X^-split .Iso.fwd = split-fwd
     X^-split .Iso.bwd = tuple {m +ℕ n} (λ i → bwd-col (splitAt m i))
-    X^-split .Iso.fwd∘bwd≈id = {!!}
+    X^-split .Iso.fwd∘bwd≈id =
+      ≈-trans (≈-sym (pair-ext (BP (X^ m) (X^ n)) (split-fwd ∘ bwd)))
+      (≈-trans (pair-cong (BP (X^ m) (X^ n)) p₁-preserved p₂-preserved)
+      (bp-pair-ext0 (BP (X^ m) (X^ n))))
+      where
+        bwd = tuple {m +ℕ n} (λ i → bwd-col (splitAt m i))
+
+        p₁-preserved : (p₁ (BP (X^ m) (X^ n)) ∘ (split-fwd ∘ bwd)) ≈ p₁ (BP (X^ m) (X^ n))
+        p₁-preserved =
+          begin
+            p₁ (BP (X^ m) (X^ n)) ∘ (split-fwd ∘ bwd)
+          ≈˘⟨ assoc (p₁ (BP (X^ m) (X^ n))) split-fwd bwd ⟩
+            (p₁ (BP (X^ m) (X^ n)) ∘ split-fwd) ∘ bwd
+          ≈⟨ ∘-cong (pair-p₁ (BP (X^ m) (X^ n)) _ _) ≈-refl ⟩
+            tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n)) ∘ bwd
+          ≈⟨ tuple-natural {m} (λ i → π {m +ℕ n} (i ↑ˡ n)) bwd ⟩
+            tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n) ∘ bwd)
+          ≈⟨ tuple-cong {m} _ _
+              (λ i → ≈-trans (tuple-π {m +ℕ n} (λ j → bwd-col (splitAt m j)) (i ↑ˡ n))
+                              (≡-to-≈ (cong bwd-col (splitAt-↑ˡ m i n)))) ⟩
+            tuple {m} (λ i → π {m} i ∘ p₁ (BP (X^ m) (X^ n)))
+          ≈⟨ tuple-ext {m} (p₁ (BP (X^ m) (X^ n))) ⟩
+            p₁ (BP (X^ m) (X^ n))
+          ∎ where open ≈-Reasoning isEquiv
+
+        p₂-preserved : (p₂ (BP (X^ m) (X^ n)) ∘ (split-fwd ∘ bwd)) ≈ p₂ (BP (X^ m) (X^ n))
+        p₂-preserved =
+          begin
+            p₂ (BP (X^ m) (X^ n)) ∘ (split-fwd ∘ bwd)
+          ≈˘⟨ assoc (p₂ (BP (X^ m) (X^ n))) split-fwd bwd ⟩
+            (p₂ (BP (X^ m) (X^ n)) ∘ split-fwd) ∘ bwd
+          ≈⟨ ∘-cong (pair-p₂ (BP (X^ m) (X^ n)) _ _) ≈-refl ⟩
+            tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j)) ∘ bwd
+          ≈⟨ tuple-natural {n} (λ j → π {m +ℕ n} (m ↑ʳ j)) bwd ⟩
+            tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j) ∘ bwd)
+          ≈⟨ tuple-cong {n} _ _
+              (λ j → ≈-trans (tuple-π {m +ℕ n} (λ i → bwd-col (splitAt m i)) (m ↑ʳ j))
+                              (≡-to-≈ (cong bwd-col (splitAt-↑ʳ m n j)))) ⟩
+            tuple {n} (λ j → π {n} j ∘ p₂ (BP (X^ m) (X^ n)))
+          ≈⟨ tuple-ext {n} (p₂ (BP (X^ m) (X^ n))) ⟩
+            p₂ (BP (X^ m) (X^ n))
+          ∎ where open ≈-Reasoning isEquiv
     X^-split .Iso.bwd∘fwd≈id =
       begin
         tuple {m +ℕ n} col ∘ split-fwd
