@@ -403,3 +403,13 @@ module Matrix where
   𝓕 .fmor-cong f≈ = f≈
   𝓕 .fmor-id = Category.≈-refl SemiLat.cat
   𝓕 .fmor-comp _ _ = Category.≈-refl SemiLat.cat
+
+  open import finite-product-functor using (preserve-chosen-terminal)
+  private
+    module SemiLat' = Category SemiLat.cat
+  open SemiLat'.IsIso
+
+  𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
+  𝓕-preserve-terminal .inverse = SemiLat'.id _
+  𝓕-preserve-terminal .f∘inverse≈id = HasTerminal.to-terminal-unique SemiLat.terminal _ _
+  𝓕-preserve-terminal .inverse∘f≈id = HasTerminal.to-terminal-unique SemiLat.terminal _ _
