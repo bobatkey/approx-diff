@@ -409,6 +409,14 @@ module Matrix where
     module SemiLat' = Category SemiLat.cat
   open SemiLat'.IsIso
 
+  open import finite-product-functor using (preserve-chosen-products)
+
+  SemiLat-BP = CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products
+  SemiLat-products = biproducts→products _ SemiLat-BP
+
+  𝓕-preserve-products : preserve-chosen-products 𝓕 products SemiLat-products
+  𝓕-preserve-products {m} {n} = {!!}
+
   𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
   𝓕-preserve-terminal .inverse = SemiLat'.id _
   𝓕-preserve-terminal .f∘inverse≈id = HasTerminal.to-terminal-unique SemiLat.terminal _ _
