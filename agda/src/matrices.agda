@@ -459,55 +459,56 @@ module matrices
           ∎ where open ≈-Reasoning isEquiv
         open ≈-Reasoning isEquiv
 
-  private
-    X^-bwd-col : ∀ m n → Fin m ⊎ Fin n → (X^ m ⊕ X^ n) ⇒ X
-    X^-bwd-col m n (inj₁ j) = π {m} j ∘ p₁ (BP (X^ m) (X^ n))
-    X^-bwd-col m n (inj₂ j) = π {n} j ∘ p₂ (BP (X^ m) (X^ n))
+  module _ (m n : ℕ) where
+    private
+      bwd-col : Fin m ⊎ Fin n → (X^ m ⊕ X^ n) ⇒ X
+      bwd-col (inj₁ j) = π {m} j ∘ p₁ (BP (X^ m) (X^ n))
+      bwd-col (inj₂ j) = π {n} j ∘ p₂ (BP (X^ m) (X^ n))
 
-    X^-split-fwd : ∀ m n → X^ (m +ℕ n) ⇒ (X^ m ⊕ X^ n)
-    X^-split-fwd m n = pair (BP (X^ m) (X^ n))
-      (tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n)))
-      (tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j)))
+      split-fwd : X^ (m +ℕ n) ⇒ (X^ m ⊕ X^ n)
+      split-fwd = pair (BP (X^ m) (X^ n))
+        (tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n)))
+        (tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j)))
 
-  X^-split : ∀ m n → Iso (X^ (m +ℕ n)) (X^ m ⊕ X^ n)
-  X^-split m n .Iso.fwd = X^-split-fwd m n
-  X^-split m n .Iso.bwd = tuple {m +ℕ n} (λ i → X^-bwd-col m n (splitAt m i))
-  X^-split m n .Iso.fwd∘bwd≈id = {!!}
-  X^-split m n .Iso.bwd∘fwd≈id =
-    begin
-      tuple {m +ℕ n} col ∘ X^-split-fwd m n
-    ≈⟨ tuple-natural {m +ℕ n} col (X^-split-fwd m n) ⟩
-      tuple {m +ℕ n} (λ i → col i ∘ X^-split-fwd m n)
-    ≈⟨ tuple-cong {m +ℕ n}
-        (λ i → col i ∘ X^-split-fwd m n)
-        (λ i → π {m +ℕ n} i)
-        (λ i → ≈-trans (col-id (splitAt m i)) (≡-to-≈ (cong (π {m +ℕ n}) (join-splitAt m n i)))) ⟩
-      tuple {m +ℕ n} (λ i → π {m +ℕ n} i)
-    ≈⟨ tuple-ext0 {m +ℕ n} ⟩
-      id (X^ (m +ℕ n))
-    ∎
-    where
-      col = λ i → X^-bwd-col m n (splitAt m i)
+    X^-split : Iso (X^ (m +ℕ n)) (X^ m ⊕ X^ n)
+    X^-split .Iso.fwd = split-fwd
+    X^-split .Iso.bwd = tuple {m +ℕ n} (λ i → bwd-col (splitAt m i))
+    X^-split .Iso.fwd∘bwd≈id = {!!}
+    X^-split .Iso.bwd∘fwd≈id =
+      begin
+        tuple {m +ℕ n} col ∘ split-fwd
+      ≈⟨ tuple-natural {m +ℕ n} col split-fwd ⟩
+        tuple {m +ℕ n} (λ i → col i ∘ split-fwd)
+      ≈⟨ tuple-cong {m +ℕ n}
+          (λ i → col i ∘ split-fwd)
+          (λ i → π {m +ℕ n} i)
+          (λ i → ≈-trans (col-id (splitAt m i)) (≡-to-≈ (cong (π {m +ℕ n}) (join-splitAt m n i)))) ⟩
+        tuple {m +ℕ n} (λ i → π {m +ℕ n} i)
+      ≈⟨ tuple-ext0 {m +ℕ n} ⟩
+        id (X^ (m +ℕ n))
+      ∎
+      where
+        col = λ i → bwd-col (splitAt m i)
 
-      col-id : ∀ (s : Fin m ⊎ Fin n) → (X^-bwd-col m n s ∘ X^-split-fwd m n) ≈ π {m +ℕ n} (join m n s)
-      col-id (inj₁ j) =
-        begin
-          (π {m} j ∘ p₁ (BP (X^ m) (X^ n))) ∘ X^-split-fwd m n
-        ≈⟨ assoc (π {m} j) (p₁ (BP (X^ m) (X^ n))) (X^-split-fwd m n) ⟩
-          π {m} j ∘ (p₁ (BP (X^ m) (X^ n)) ∘ X^-split-fwd m n)
-        ≈⟨ ∘-cong ≈-refl (pair-p₁ (BP (X^ m) (X^ n)) _ _) ⟩
-          π {m} j ∘ tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n))
-        ≈⟨ tuple-π {m} (λ i → π {m +ℕ n} (i ↑ˡ n)) j ⟩
-          π {m +ℕ n} (j ↑ˡ n)
-        ∎ where open ≈-Reasoning isEquiv
-      col-id (inj₂ j) =
-        begin
-          (π {n} j ∘ p₂ (BP (X^ m) (X^ n))) ∘ X^-split-fwd m n
-        ≈⟨ assoc (π {n} j) (p₂ (BP (X^ m) (X^ n))) (X^-split-fwd m n) ⟩
-          π {n} j ∘ (p₂ (BP (X^ m) (X^ n)) ∘ X^-split-fwd m n)
-        ≈⟨ ∘-cong ≈-refl (pair-p₂ (BP (X^ m) (X^ n)) _ _) ⟩
-          π {n} j ∘ tuple {n} (λ i → π {m +ℕ n} (m ↑ʳ i))
-        ≈⟨ tuple-π {n} (λ i → π {m +ℕ n} (m ↑ʳ i)) j ⟩
-          π {m +ℕ n} (m ↑ʳ j)
-        ∎ where open ≈-Reasoning isEquiv
-      open ≈-Reasoning isEquiv
+        col-id : ∀ (s : Fin m ⊎ Fin n) → (bwd-col s ∘ split-fwd) ≈ π {m +ℕ n} (join m n s)
+        col-id (inj₁ j) =
+          begin
+            (π {m} j ∘ p₁ (BP (X^ m) (X^ n))) ∘ split-fwd
+          ≈⟨ assoc (π {m} j) (p₁ (BP (X^ m) (X^ n))) split-fwd ⟩
+            π {m} j ∘ (p₁ (BP (X^ m) (X^ n)) ∘ split-fwd)
+          ≈⟨ ∘-cong ≈-refl (pair-p₁ (BP (X^ m) (X^ n)) _ _) ⟩
+            π {m} j ∘ tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n))
+          ≈⟨ tuple-π {m} (λ i → π {m +ℕ n} (i ↑ˡ n)) j ⟩
+            π {m +ℕ n} (j ↑ˡ n)
+          ∎ where open ≈-Reasoning isEquiv
+        col-id (inj₂ j) =
+          begin
+            (π {n} j ∘ p₂ (BP (X^ m) (X^ n))) ∘ split-fwd
+          ≈⟨ assoc (π {n} j) (p₂ (BP (X^ m) (X^ n))) split-fwd ⟩
+            π {n} j ∘ (p₂ (BP (X^ m) (X^ n)) ∘ split-fwd)
+          ≈⟨ ∘-cong ≈-refl (pair-p₂ (BP (X^ m) (X^ n)) _ _) ⟩
+            π {n} j ∘ tuple {n} (λ i → π {m +ℕ n} (m ↑ʳ i))
+          ≈⟨ tuple-π {n} (λ i → π {m +ℕ n} (m ↑ʳ i)) j ⟩
+            π {m +ℕ n} (m ↑ʳ j)
+          ∎ where open ≈-Reasoning isEquiv
+        open ≈-Reasoning isEquiv
