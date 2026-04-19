@@ -458,11 +458,10 @@ module matrices
   X^-split m n .Iso.fwd = pair (BP (X^ m) (X^ n))
     (tuple {m} (λ i → π {m +ℕ n} (i ↑ˡ n)))
     (tuple {n} (λ j → π {m +ℕ n} (m ↑ʳ j)))
-  X^-split m n .Iso.bwd = tuple {m +ℕ n} (bwd-col m n)
+  X^-split m n .Iso.bwd = tuple {m +ℕ n} (λ i → bwd-col m n (splitAt m i))
     where
-      bwd-col : ∀ m n → Fin (m +ℕ n) → prod (BP (X^ m) (X^ n)) ⇒ X
-      bwd-col m n i with splitAt m i
-      ... | inj₁ j = π {m} j ∘ p₁ (BP (X^ m) (X^ n))
-      ... | inj₂ j = π {n} j ∘ p₂ (BP (X^ m) (X^ n))
+      bwd-col : ∀ m n → Fin m ⊎ Fin n → prod (BP (X^ m) (X^ n)) ⇒ X
+      bwd-col m n (inj₁ j) = π {m} j ∘ p₁ (BP (X^ m) (X^ n))
+      bwd-col m n (inj₂ j) = π {n} j ∘ p₂ (BP (X^ m) (X^ n))
   X^-split m n .Iso.fwd∘bwd≈id = {!!}
   X^-split m n .Iso.bwd∘fwd≈id = {!!}
