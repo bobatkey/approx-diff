@@ -16,13 +16,13 @@ private
   module Mat = Category cat
 
 import example-signature-interpretation
-unit : Mat._⇒_ 0 2
-unit = HasInitial.from-initial initial {2}
+unit : Mat._⇒_ 0 1
+unit = HasInitial.from-initial initial {1}
 
-conjunct : Mat._⇒_ (HasProducts.prod products 2 2) 2
-conjunct = HasProducts.p₁ products {2} {2} +m HasProducts.p₂ products {2} {2}
+conjunct : Mat._⇒_ (HasProducts.prod products 1 1) 1
+conjunct = HasProducts.p₁ products {1} {1} +m HasProducts.p₂ products {1} {1}
 
-open example-signature-interpretation cat products terminal 2 unit conjunct
+open example-signature-interpretation cat products terminal 1 unit conjunct
 
 open import Data.List using (List; []; _∷_)
 open import every using (Every; []; _∷_)
@@ -65,5 +65,14 @@ module example1 where
 
   fwd-slice = λ supply → ⟦ example.ex.query label.a ⟧tm .famf .transf (_ , input) .*→* .func .fun supply
 
-  test-fwd1 : fwd-slice {!!} ≡ {!!}
-  test-fwd1 = {!!}
+  -- Output depends on 1st label (would be ⊥ in the Galois example)
+  test-fwd1 : fwd-slice (· , (· , ⊤ , ·) , (· , ⊥ , ·) , (· , ⊥ , ·) , _) ≡ (⊤ , ·)
+  test-fwd1 = ≡-refl
+
+  -- Output doesn't depend on 2nd label
+  test-fwd2 : fwd-slice (· , (· , ⊥ , ·) , (· , ⊤ , ·) , (· , ⊥ , ·) , _) ≡ (⊥ , ·)
+  test-fwd2 = ≡-refl
+
+  -- Output depends on 3rd label (would be ⊥ in the Galois example)
+  test-fwd3 : fwd-slice (· , (· , ⊥ , ·) , (· , ⊥ , ·) , (· , ⊤ , ·) , _) ≡ (⊤ , ·)
+  test-fwd3 = ≡-refl
