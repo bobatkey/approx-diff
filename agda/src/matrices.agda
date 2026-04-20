@@ -107,22 +107,31 @@ module matrices
   tuple-ext0 : ∀ {n} → tuple {n} (λ i → π {n} i) ≈ id (X^ n)
   tuple-ext0 {n} = ≈-trans (≈-sym (tuple-cong {n} _ _ (λ i → id-right))) (tuple-ext {n} (id (X^ n)))
 
-
-  -- A tuple of zeros is zero.
-  tuple-εm : ∀ {n Z} → tuple {n} {Z} (λ _ → εm) ≈ εm
-  tuple-εm {zero} = to-terminal-ext εm
-  tuple-εm {suc n} {Z} =
-    let bp = BP X (X^ n) in
-    ≈-trans (pair-cong bp ≈-refl (tuple-εm {n} {Z}))
-    (≈-trans (+-cong (homCM Z _) (comp-bilinear-ε₂ (in₁ bp)) (comp-bilinear-ε₂ (in₂ bp)))
-    (+-lunit (homCM Z _)))
+  tuple-ext-εm : ∀ {n Z} → tuple {n} {Z} (λ _ → εm) ≈ εm
+  tuple-ext-εm {zero} = to-terminal-ext εm
+  tuple-ext-εm {suc n} {Z} =
+    begin
+      pair (BP X (X^ n)) εm (tuple {n} (λ _ → εm))
+    ≈⟨ pair-cong (BP X (X^ n)) ≈-refl (tuple-ext-εm {n} {Z}) ⟩
+      pair (BP X (X^ n)) εm εm
+    ≈⟨ +-cong (homCM Z _) (comp-bilinear-ε₂ (in₁ (BP X (X^ n)))) (comp-bilinear-ε₂ (in₂ (BP X (X^ n)))) ⟩
+      εm +m εm
+    ≈⟨ +-lunit (homCM Z _) ⟩
+      εm
+    ∎ where open ≈-Reasoning isEquiv
 
   -- A morphism into X^n is εm iff each projection is εm.
   εm-ext : ∀ {n Z} {f : Z ⇒ X^ n} → (∀ i → (π {n} i ∘ f) ≈ εm) → f ≈ εm
   εm-ext {n} {Z} {f} h =
-    ≈-trans (≈-sym (tuple-ext {n} f))
-    (≈-trans (tuple-cong {n} _ _ h)
-    (tuple-εm {n} {Z}))
+    begin
+      f
+    ≈˘⟨ tuple-ext {n} f ⟩
+      tuple {n} (λ i → π {n} i ∘ f)
+    ≈⟨ tuple-cong {n} _ _ h ⟩
+      tuple {n} (λ _ → εm)
+    ≈⟨ tuple-ext-εm {n} {Z} ⟩
+      εm
+    ∎ where open ≈-Reasoning isEquiv
 
   cotuple-cong : ∀ {n Z} (f g : Fin n → X ⇒ Z) → (∀ i → f i ≈ g i) → cotuple f ≈ cotuple g
   cotuple-cong {zero}  f g h = ≈-refl
