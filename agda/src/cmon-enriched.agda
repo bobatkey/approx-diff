@@ -151,6 +151,16 @@ module _ {o m e} {𝒞 : Category o m e} (CM : CMonEnriched 𝒞) where
     pair-ext0 : pair p₁ p₂ ≈ id prod
     pair-ext0 = ≈-trans (≈-sym (pair-cong id-right id-right)) (pair-ext (id _))
 
+    pair-natural : ∀ {w x} (f : w ⇒ A) (g : w ⇒ B) (h : x ⇒ w) → (pair f g ∘ h) ≈ pair (f ∘ h) (g ∘ h)
+    pair-natural f g h =
+      begin
+        ((in₁ ∘ f) +m (in₂ ∘ g)) ∘ h
+      ≈⟨ comp-bilinear₁ _ _ h ⟩
+        ((in₁ ∘ f) ∘ h) +m ((in₂ ∘ g) ∘ h)
+      ≈⟨ homCM _ _ .+-cong (assoc _ _ _) (assoc _ _ _) ⟩
+        (in₁ ∘ (f ∘ h)) +m (in₂ ∘ (g ∘ h))
+      ∎ where open ≈-Reasoning isEquiv
+
     -- And coproducts
     copair : ∀ {x} → A ⇒ x → B ⇒ x → prod ⇒ x
     copair f g = (f ∘ p₁) +m (g ∘ p₂)
