@@ -556,6 +556,10 @@ module matrices
           ∎ where open ≈-Reasoning isEquiv
         open ≈-Reasoning isEquiv
 
+  -- The codiagonal (internal addition / join on X), from the biproduct + CMon enrichment.
+  ∨ : (X ⊕ X) ⇒ X
+  ∨ = copair (BP X X) (id X) (id X)
+
   -- Additional structure when scalar addition is idempotent (End(X) is an idempotent semiring).
   module WithIdempotence
     (scalar-idem : (id X +m id X) ≈ id X)
@@ -589,27 +593,6 @@ module matrices
       ≈⟨ id-right ⟩
         f
       ∎ where open ≈-Reasoning isEquiv
-
-    -- The internal join on X (codiagonal).
-    ∨ : (X ⊕ X) ⇒ X
-    ∨ = copair (BP X X) (id X) (id X)
-
-    -- ∨ computes: ∨ ∘ ⟨f, g⟩ = f +m g.
-    ∨-compute : ∀ {A} (f g : A ⇒ X) → (∨ ∘ pair (BP X X) f g) ≈ (f +m g)
-    ∨-compute f g =
-      begin
-        ((id X ∘ p₁ (BP X X)) +m (id X ∘ p₂ (BP X X))) ∘ pair (BP X X) f g
-      ≈⟨ ∘-cong (+-cong (homCM _ _) id-left id-left) ≈-refl ⟩
-        (p₁ (BP X X) +m p₂ (BP X X)) ∘ pair (BP X X) f g
-      ≈⟨ comp-bilinear₁ (p₁ (BP X X)) (p₂ (BP X X)) (pair (BP X X) f g) ⟩
-        (p₁ (BP X X) ∘ pair (BP X X) f g) +m (p₂ (BP X X) ∘ pair (BP X X) f g)
-      ≈⟨ +-cong (homCM _ _) (pair-p₁ (BP X X) f g) (pair-p₂ (BP X X) f g) ⟩
-        f +m g
-      ∎ where open ≈-Reasoning isEquiv
-
-    -- ∨ is idempotent.
-    ∨-idem : (∨ ∘ pair (BP X X) (id X) (id X)) ≈ id X
-    ∨-idem = ≈-trans (∨-compute (id X) (id X)) scalar-idem
 
     -- The enrichment order.
     _≤m_ : ∀ {A B} → A ⇒ B → A ⇒ B → Prop _
@@ -648,9 +631,14 @@ module matrices
   module Conjugation
     (scalar-idem : (id X +m id X) ≈ id X)
     (∧ : (X ⊕ X) ⇒ X)
-    -- Distributivity: ∧ is bilinear w.r.t. +m (∧ distributes over ∨).
-    (∧-bilinear₁ : ∀ {A} (f₁ f₂ g : A ⇒ X) → (∧ ∘ pair (BP X X) (f₁ +m f₂) g) ≈ ((∧ ∘ pair (BP X X) f₁ g) +m (∧ ∘ pair (BP X X) f₂ g)))
-    (∧-bilinear₂ : ∀ {A} (f g₁ g₂ : A ⇒ X) → (∧ ∘ pair (BP X X) f (g₁ +m g₂)) ≈ ((∧ ∘ pair (BP X X) f g₁) +m (∧ ∘ pair (BP X X) f g₂)))
+    -- Distributivity: ∧ distributes over ∨.
+    (∧-∨-distrib₁ : ∀ {A} (f g h : A ⇒ X) →
+      (∧ ∘ pair (BP X X) (∨ ∘ pair (BP X X) f g) h) ≈ (∨ ∘ pair (BP X X) (∧ ∘ pair (BP X X) f h) (∧ ∘ pair (BP X X) g h)))
+    (∧-∨-distrib₂ : ∀ {A} (f g h : A ⇒ X) →
+      (∧ ∘ pair (BP X X) f (∨ ∘ pair (BP X X) g h)) ≈ (∨ ∘ pair (BP X X) (∧ ∘ pair (BP X X) f g) (∧ ∘ pair (BP X X) f h)))
+    -- ∧ is commutative.
+    (∧-comm : ∀ {A} (f g : A ⇒ X) → (∧ ∘ pair (BP X X) f g) ≈ (∧ ∘ pair (BP X X) g f))
+    -- ∧ absorbs ⊥.
     (∧-ε₁ : ∀ {A} (g : A ⇒ X) → (∧ ∘ pair (BP X X) εm g) ≈ εm)
     (∧-ε₂ : ∀ {A} (f : A ⇒ X) → (∧ ∘ pair (BP X X) f εm) ≈ εm)
     (neg : X ⇒ X)
