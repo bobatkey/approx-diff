@@ -120,18 +120,6 @@ module matrices
       εm
     ∎ where open ≈-Reasoning isEquiv
 
-  -- A morphism into X^n is εm iff each projection is εm.
-  εm-ext : ∀ {n Z} {f : Z ⇒ X^ n} → (∀ i → (π {n} i ∘ f) ≈ εm) → f ≈ εm
-  εm-ext {n} {Z} {f} h =
-    begin
-      f
-    ≈˘⟨ tuple-ext {n} f ⟩
-      tuple {n} (λ i → π {n} i ∘ f)
-    ≈⟨ tuple-cong {n} _ _ h ⟩
-      tuple {n} (λ _ → εm)
-    ≈⟨ tuple-ext-εm {n} {Z} ⟩
-      εm
-    ∎ where open ≈-Reasoning isEquiv
 
   cotuple-cong : ∀ {n Z} (f g : Fin n → X ⇒ Z) → (∀ i → f i ≈ g i) → cotuple f ≈ cotuple g
   cotuple-cong {zero}  f g h = ≈-refl
@@ -679,5 +667,13 @@ module matrices
     conjugation : ∀ {m n A} (f : X^ m ⇒ X^ n) (x : A ⇒ X^ n) (y : A ⇒ X^ m) →
                   _#^_ {n} (f ∘ y) x ⇔ _#^_ {m} y (transpose {m} {n} f ∘ x)
     conjugation {m} {n} {A} f x y .proj₁ fy#x =
-      εm-ext {m} {A} (λ j → {!!})
+      begin
+        ∧^ {m} ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x)
+      ≈˘⟨ tuple-ext {m} _ ⟩
+        tuple {m} (λ j → π {m} j ∘ (∧^ {m} ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x)))
+      ≈⟨ tuple-cong {m} _ _ (λ j → {!!}) ⟩
+        tuple {m} (λ _ → εm)
+      ≈⟨ tuple-ext-εm {m} {A} ⟩
+        εm
+      ∎ where open ≈-Reasoning isEquiv
     conjugation f x y .proj₂ = {!!}
