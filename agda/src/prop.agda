@@ -58,18 +58,18 @@ open Prf
 module _ where
   infix 2 _⇔_
 
-  _⇔_ : Prop → Prop → Prop
+  _⇔_ : ∀ {a b} → Prop a → Prop b → Prop (a ⊔ b)
   P ⇔ Q = (P → Q) ∧ (Q → P)
 
-  refl-⇔ : ∀ {P} → P ⇔ P
+  refl-⇔ : ∀ {a} {P : Prop a} → P ⇔ P
   refl-⇔ .proj₁ x = x
   refl-⇔ .proj₂ x = x
 
-  sym-⇔ : ∀ {P Q} → P ⇔ Q → Q ⇔ P
+  sym-⇔ : ∀ {a b} {P : Prop a} {Q : Prop b} → P ⇔ Q → Q ⇔ P
   sym-⇔ e .proj₁ = e .proj₂
   sym-⇔ e .proj₂ = e .proj₁
 
-  trans-⇔ : ∀ {P Q R} → P ⇔ Q → Q ⇔ R → P ⇔ R
+  trans-⇔ : ∀ {a b c} {P : Prop a} {Q : Prop b} {R : Prop c} → P ⇔ Q → Q ⇔ R → P ⇔ R
   trans-⇔ e₁ e₂ .proj₁ p = e₂ .proj₁ (e₁ .proj₁ p)
   trans-⇔ e₁ e₂ .proj₂ r = e₁ .proj₂ (e₂ .proj₂ r)
 

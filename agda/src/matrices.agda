@@ -590,6 +590,28 @@ module matrices
         f
       ∎ where open ≈-Reasoning isEquiv
 
+    -- The internal join on X (codiagonal).
+    ∨ : (X ⊕ X) ⇒ X
+    ∨ = copair (BP X X) (id X) (id X)
+
+    -- ∨ computes: ∨ ∘ ⟨f, g⟩ = f +m g.
+    ∨-compute : ∀ {A} (f g : A ⇒ X) → (∨ ∘ pair (BP X X) f g) ≈ (f +m g)
+    ∨-compute f g =
+      begin
+        ((id X ∘ p₁ (BP X X)) +m (id X ∘ p₂ (BP X X))) ∘ pair (BP X X) f g
+      ≈⟨ ∘-cong (+-cong (homCM _ _) id-left id-left) ≈-refl ⟩
+        (p₁ (BP X X) +m p₂ (BP X X)) ∘ pair (BP X X) f g
+      ≈⟨ comp-bilinear₁ (p₁ (BP X X)) (p₂ (BP X X)) (pair (BP X X) f g) ⟩
+        (p₁ (BP X X) ∘ pair (BP X X) f g) +m (p₂ (BP X X) ∘ pair (BP X X) f g)
+      ≈⟨ +-cong (homCM _ _) (pair-p₁ (BP X X) f g) (pair-p₂ (BP X X) f g) ⟩
+        f +m g
+      ∎ where open ≈-Reasoning isEquiv
+
+    -- ∨ is idempotent.
+    ∨-idem : (∨ ∘ pair (BP X X) (id X) (id X)) ≈ id X
+    ∨-idem = ≈-trans (∨-compute (id X) (id X)) scalar-idem
+
+    -- The enrichment order.
     _≤m_ : ∀ {A B} → A ⇒ B → A ⇒ B → Prop _
     f ≤m g = (f +m g) ≈ g
 
@@ -621,3 +643,32 @@ module matrices
     -- Adjoint: De Morgan dual of transpose.
     adjoint : ∀ {m n} → X^ m ⇒ X^ n → X^ n ⇒ X^ m
     adjoint {m} {n} f = neg^ {m} ∘ (transpose {m} {n} f ∘ neg^ {n})
+
+  -- Conjugation: (f, transpose f) is a conjugate pair.
+  module Conjugation
+    (scalar-idem : (id X +m id X) ≈ id X)
+    (∧ : (X ⊕ X) ⇒ X)
+    -- Distributivity: ∧ is bilinear w.r.t. +m (∧ distributes over ∨).
+    (∧-bilinear₁ : ∀ {A} (f₁ f₂ g : A ⇒ X) → (∧ ∘ pair (BP X X) (f₁ +m f₂) g) ≈ ((∧ ∘ pair (BP X X) f₁ g) +m (∧ ∘ pair (BP X X) f₂ g)))
+    (∧-bilinear₂ : ∀ {A} (f g₁ g₂ : A ⇒ X) → (∧ ∘ pair (BP X X) f (g₁ +m g₂)) ≈ ((∧ ∘ pair (BP X X) f g₁) +m (∧ ∘ pair (BP X X) f g₂)))
+    (∧-ε₁ : ∀ {A} (g : A ⇒ X) → (∧ ∘ pair (BP X X) εm g) ≈ εm)
+    (∧-ε₂ : ∀ {A} (f : A ⇒ X) → (∧ ∘ pair (BP X X) f εm) ≈ εm)
+    (neg : X ⇒ X)
+    (neg-involutive : (neg ∘ neg) ≈ id X)
+    where
+
+    open WithIdempotence scalar-idem
+    open WithMeets ∧
+    open WithNegation neg neg-involutive
+
+    -- Componentwise disjointness on X^n.
+    _#^_ : ∀ {n A} → A ⇒ X^ n → A ⇒ X^ n → Prop _
+    _#^_ {n} f g = (∧^ {n} ∘ pair (BP (X^ n) (X^ n)) f g) ≈ εm
+
+    open import prop using (_⇔_; proj₁; proj₂)
+
+    -- The conjugation property: f(y) # x ↔ y # transpose(f)(x).
+    conjugation : ∀ {m n A} (f : X^ m ⇒ X^ n) (x : A ⇒ X^ n) (y : A ⇒ X^ m) →
+                  _#^_ {n} (f ∘ y) x ⇔ _#^_ {m} y (transpose {m} {n} f ∘ x)
+    conjugation f x y .proj₁ = {!!}
+    conjugation f x y .proj₂ = {!!}
