@@ -535,11 +535,9 @@ module Matrix where
     X^-¬-antitone {m} (transpose {m} {n} f .*→*J .func .preorder._=>_.mono (X^-¬-antitone {n} v≤w))
 
   -- ¬(transpose f v) ≃ adjoint f (¬ v)
-  ¬transpose≃adjoint¬ : ∀ {m n} (f : X^ m ⇒ X^ n)
-                         (v : galois.Obj.Carrier (X^-gal n)) →
-                         galois.Obj._≃_ (X^-gal m)
-                           (X^-¬ {m} (transpose {m} {n} f .*→*J .func .fun v))
-                           (adjoint {m} {n} f .fun (X^-¬ {n} v))
+  ¬transpose≃adjoint¬ : ∀ {m n} (f : X^ m ⇒ X^ n) (v : galois.Obj.Carrier (X^-gal n)) →
+                        galois.Obj._≃_ (X^-gal m) (X^-¬ {m} (transpose {m} {n} f .*→*J .func .fun v))
+                                                  (adjoint {m} {n} f .fun (X^-¬ {n} v))
   ¬transpose≃adjoint¬ = {!!}
 
   -- (f, adjoint f) is a Galois connection (the main theorem).
