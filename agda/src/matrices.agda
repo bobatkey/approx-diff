@@ -599,16 +599,15 @@ module matrices
   -- Additional structure when X has meets.
   module WithMeets
     (∧ : (X ⊕ X) ⇒ X)
-    (⊤ : 𝟘 ⇒ X)
     where
 
     -- Componentwise meet on X^n.
     ∧^ : ∀ {n} → (X^ n ⊕ X^ n) ⇒ X^ n
     ∧^ {n} = tuple {n} (λ i → ∧ ∘ pair (BP X X) (π {n} i ∘ p₁ (BP (X^ n) (X^ n))) (π {n} i ∘ p₂ (BP (X^ n) (X^ n))))
 
-    -- Top element of X^n.
-    ⊤^ : ∀ {n} → 𝟘 ⇒ X^ n
-    ⊤^ {n} = tuple {n} (λ _ → ⊤)
+    -- Disjointness: f # g iff (f ∧ g) = 0.
+    _#_ : ∀ {A} → A ⇒ X → A ⇒ X → Prop _
+    f # g = (∧ ∘ pair (BP X X) f g) ≈ εm
 
   -- Additional structure when X has a negation.
   module WithNegation
