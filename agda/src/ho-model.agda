@@ -433,7 +433,7 @@ module Matrix where
   import conjugate
   open import Data.Nat using (ℕ; zero; suc)
 
-  import prop
+  open import prop using (tt; _,_; proj₁; proj₂)
   import Data.Unit
   open import basics using (IsMeet; IsTop)
   import meet-semilattice
@@ -444,16 +444,16 @@ module Matrix where
     X^-meets : ∀ n → meet-semilattice.MeetSemilattice (SemiLat.Obj.carrier (X^ n))
     X^-meets zero ._∧_ _ _ = Data.Unit.tt
     X^-meets zero .⊤ = Data.Unit.tt
-    X^-meets zero .∧-isMeet .IsMeet.π₁ = prop.tt
-    X^-meets zero .∧-isMeet .IsMeet.π₂ = prop.tt
-    X^-meets zero .∧-isMeet .IsMeet.⟨_,_⟩ _ _ = prop.tt
-    X^-meets zero .⊤-isTop .IsTop.≤-top = prop.tt
+    X^-meets zero .∧-isMeet .IsMeet.π₁ = tt
+    X^-meets zero .∧-isMeet .IsMeet.π₂ = tt
+    X^-meets zero .∧-isMeet .IsMeet.⟨_,_⟩ _ _ = tt
+    X^-meets zero .⊤-isTop .IsTop.≤-top = tt
     X^-meets (suc n) ._∧_ (a , u) (b , v) = (a two.⊓ b) , X^-meets n ._∧_ u v
     X^-meets (suc n) .⊤ = (I , X^-meets n .⊤)
-    X^-meets (suc n) .∧-isMeet .IsMeet.π₁ = two.⊓-isMeet .IsMeet.π₁ prop., X^-meets n .∧-isMeet .IsMeet.π₁
-    X^-meets (suc n) .∧-isMeet .IsMeet.π₂ = two.⊓-isMeet .IsMeet.π₂ prop., X^-meets n .∧-isMeet .IsMeet.π₂
-    X^-meets (suc n) .∧-isMeet .IsMeet.⟨_,_⟩ (a , u) (b , v) = two.⊓-isMeet .IsMeet.⟨_,_⟩ a b prop., X^-meets n .∧-isMeet .IsMeet.⟨_,_⟩ u v
-    X^-meets (suc n) .⊤-isTop .IsTop.≤-top = two.I-isTop .IsTop.≤-top prop., X^-meets n .⊤-isTop .IsTop.≤-top
+    X^-meets (suc n) .∧-isMeet .IsMeet.π₁ = two.⊓-isMeet .IsMeet.π₁ , X^-meets n .∧-isMeet .IsMeet.π₁
+    X^-meets (suc n) .∧-isMeet .IsMeet.π₂ = two.⊓-isMeet .IsMeet.π₂ , X^-meets n .∧-isMeet .IsMeet.π₂
+    X^-meets (suc n) .∧-isMeet .IsMeet.⟨_,_⟩ (a , u) (b , v) = two.⊓-isMeet .IsMeet.⟨_,_⟩ a b , X^-meets n .∧-isMeet .IsMeet.⟨_,_⟩ u v
+    X^-meets (suc n) .⊤-isTop .IsTop.≤-top = two.I-isTop .IsTop.≤-top , X^-meets n .⊤-isTop .IsTop.≤-top
 
   X^-conj : ℕ → conjugate.Obj
   X^-conj n .carrier = SemiLat.Obj.carrier (X^ n)
@@ -463,24 +463,24 @@ module Matrix where
     where
       X^-#-reflect : ∀ n {x y} → (∀ z → conjugate.Obj._#_ (X^-conj n) y z → conjugate.Obj._#_ (X^-conj n) x z) →
                      X^-conj n ._≤_ x y
-      X^-#-reflect zero _ = prop.tt
+      X^-#-reflect zero _ = tt
       X^-#-reflect (suc n) {a , u} {b , v} h =
-        conjugate.TWO .#-reflect (λ c b#c → prop.proj₁ (h (c , X^-conj n .⊥) (b#c prop., X^-meets n .∧-isMeet .IsMeet.π₂))) prop.,
-        X^-#-reflect n (λ w v#w → prop.proj₂ (h (conjugate.TWO .⊥ , w) (two.⊓-isMeet .IsMeet.π₂ prop., v#w)))
+        conjugate.TWO .#-reflect (λ c b#c → proj₁ (h (c , X^-conj n .⊥) (b#c , X^-meets n .∧-isMeet .IsMeet.π₂))) ,
+        X^-#-reflect n (λ w v#w → proj₂ (h (conjugate.TWO .⊥ , w) (two.⊓-isMeet .IsMeet.π₂ , v#w)))
   X^-conj n .∧-∨-distrib = X^-∧-∨ n
     where
       X^-∧-∨ : ∀ n x y z → X^-conj n ._≤_ (X^-conj n ._∧_ x (X^-conj n ._∨_ y z))
                                           (X^-conj n ._∨_ (X^-conj n ._∧_ x y) (X^-conj n ._∧_ x z))
-      X^-∧-∨ zero _ _ _ = prop.tt
+      X^-∧-∨ zero _ _ _ = tt
       X^-∧-∨ (suc n) (a , u) (b , v) (c , w) =
-        conjugate.TWO .∧-∨-distrib a b c prop., X^-∧-∨ n u v w
+        conjugate.TWO .∧-∨-distrib a b c , X^-∧-∨ n u v w
   X^-conj n .∨-∧-distrib = X^-∨-∧ n
     where
       X^-∨-∧ : ∀ n x y z → X^-conj n ._≤_ (X^-conj n ._∨_ x (X^-conj n ._∧_ y z))
                                           (X^-conj n ._∧_ (X^-conj n ._∨_ x y) (X^-conj n ._∨_ x z))
-      X^-∨-∧ zero _ _ _ = prop.tt
+      X^-∨-∧ zero _ _ _ = tt
       X^-∨-∧ (suc n) (a , u) (b , v) (c , w) =
-        conjugate.TWO .∨-∧-distrib a b c prop., X^-∨-∧ n u v w
+        conjugate.TWO .∨-∧-distrib a b c , X^-∨-∧ n u v w
 
   open conjugate using (_⇒c_)
   open _⇒c_
