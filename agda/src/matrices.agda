@@ -556,6 +556,31 @@ module matrices
           ∎ where open ≈-Reasoning isEquiv
         open ≈-Reasoning isEquiv
 
+  -- Additional structure when +m is idempotent (SemiLat-enrichment).
+  module WithIdempotence
+    (idem : ∀ {A B} (f : A ⇒ B) → (f +m f) ≈ f)
+    where
+
+    _≤m_ : ∀ {A B} → A ⇒ B → A ⇒ B → Prop _
+    f ≤m g = (f +m g) ≈ g
+
+    ≤m-refl : ∀ {A B} {f : A ⇒ B} → f ≤m f
+    ≤m-refl = idem _
+
+    ≤m-trans : ∀ {A B} {f g h : A ⇒ B} → f ≤m g → g ≤m h → f ≤m h
+    ≤m-trans {A} {B} {f} {g} {h} f≤g g≤h =
+      begin
+        f +m h
+      ≈˘⟨ +-cong (homCM A B) ≈-refl g≤h ⟩
+        f +m (g +m h)
+      ≈˘⟨ +-assoc (homCM A B) ⟩
+        (f +m g) +m h
+      ≈⟨ +-cong (homCM A B) f≤g ≈-refl ⟩
+        g +m h
+      ≈⟨ g≤h ⟩
+        h
+      ∎ where open ≈-Reasoning isEquiv
+
   -- Join on X as a morphism (codiagonal), from the biproduct + CMon enrichment.
   ∨ : (X ⊕ X) ⇒ X
   ∨ = copair (BP X X) (id X) (id X)
