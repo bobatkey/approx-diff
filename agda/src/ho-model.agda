@@ -433,16 +433,35 @@ module Matrix where
   import conjugate
   open import Data.Nat using (ℕ; zero; suc)
 
-  X^-conj : ℕ → conjugate.Obj
-  X^-conj zero = conjugate.𝟙
-  X^-conj (suc n) = conjugate._⊕_ conjugate.TWO (X^-conj n)
-
-  -- Check: does X^-conj project to X^ as a SemiLat object?
-  -- The base cases differ (conjugate.𝟙 vs SemiLat.terminal.witness).
-  -- But the carriers agree propositionally:
-  open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+  import meet-semilattice
   open conjugate.Obj
 
-  carrier-agree : ∀ n → X^-conj n .Carrier ≡ preorder.Preorder.Carrier (SemiLat.Obj.carrier (X^ n))
-  carrier-agree zero = refl
-  carrier-agree (suc n) rewrite carrier-agree n = refl
+  X^-conj : ℕ → conjugate.Obj
+  X^-conj n .carrier = SemiLat.Obj.carrier (X^ n)
+  X^-conj n .joins = SemiLat.Obj.joins (X^ n)
+  X^-conj n .meets = X^-meets n
+    where
+      TWO-meets : meet-semilattice.MeetSemilattice (SemiLat.Obj.carrier TWO)
+      TWO-meets .meet-semilattice.MeetSemilattice._∧_ = two._⊓_
+      TWO-meets .meet-semilattice.MeetSemilattice.⊤ = two.I
+      TWO-meets .meet-semilattice.MeetSemilattice.∧-isMeet = two.⊓-isMeet
+      TWO-meets .meet-semilattice.MeetSemilattice.⊤-isTop = two.I-isTop
+
+      X^-meets : ∀ n → meet-semilattice.MeetSemilattice (SemiLat.Obj.carrier (X^ n))
+      X^-meets zero = meet-semilattice.𝟙
+      X^-meets (suc n) = meet-semilattice._⊕_ TWO-meets (X^-meets n)
+  X^-conj n .#-reflect = {!!}
+  X^-conj n .∧-∨-distrib = {!!}
+  X^-conj n .∨-∧-distrib = {!!}
+
+  open conjugate using (_⇒c_)
+  open _⇒c_
+
+  to-conj : ∀ {m n} → Category._⇒_ SemiLat.cat (X^ m) (X^ n) → X^-conj n ⇒c X^-conj m
+  to-conj {m} {n} f .right = transpose {m} {n} f .*→*J .func
+    where open SemiLat._⇒_ renaming (*→* to *→*J)
+          open join-semilattice._=>_ using (func)
+  to-conj {m} {n} f .left = f .*→*J .func
+    where open SemiLat._⇒_ renaming (*→* to *→*J)
+          open join-semilattice._=>_ using (func)
+  to-conj {m} {n} f .conjugate = {!!}
