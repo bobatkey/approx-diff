@@ -581,6 +581,29 @@ module matrices
         h
       ∎ where open ≈-Reasoning isEquiv
 
+    open import basics using (IsPreorder; IsJoin; IsBottom)
+
+    ≤m-isPreorder : ∀ {A B} → IsPreorder (_≤m_ {A} {B})
+    ≤m-isPreorder .IsPreorder.refl = ≤m-refl
+    ≤m-isPreorder .IsPreorder.trans = ≤m-trans
+
+    +m-isJoin : ∀ {A B} → IsJoin (≤m-isPreorder {A} {B}) (_+m_ {A} {B})
+    +m-isJoin {A} {B} .IsJoin.inl {f} {g} =
+      let cm = homCM A B in
+      ≈-trans (≈-sym (+-assoc cm)) (+-cong cm (idem f) ≈-refl)
+    +m-isJoin {A} {B} .IsJoin.inr {f} {g} =
+      let cm = homCM A B in
+      ≈-trans (+-cong cm ≈-refl (+-comm cm))
+      (≈-trans (≈-sym (+-assoc cm))
+      (≈-trans (+-cong cm (idem g) ≈-refl) (+-comm cm)))
+    +m-isJoin {A} {B} .IsJoin.[_,_] {f} {g} {h} f≤h g≤h =
+      let cm = homCM A B in
+      ≈-trans (+-assoc cm) (≈-trans (+-cong cm ≈-refl g≤h) f≤h)
+
+    εm-isBottom : ∀ {A B} → IsBottom (≤m-isPreorder {A} {B}) (εm {A} {B})
+    εm-isBottom .IsBottom.≤-bottom = +-lunit (homCM _ _)
+      where open import basics using (IsBottom)
+
   -- Join on X as a morphism (codiagonal), from the biproduct + CMon enrichment.
   ∨ : (X ⊕ X) ⇒ X
   ∨ = copair (BP X X) (id X) (id X)
