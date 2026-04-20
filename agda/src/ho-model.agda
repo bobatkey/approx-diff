@@ -441,48 +441,53 @@ module Matrix where
 
   -- X^n as a conjugate.Obj (Heyting algebra): carrier and joins from Mat, meets by induction.
   module X^-Heyting where
+    open SemiLat.Obj
+
     private
-      X^-meets : ∀ n → meet-semilattice.MeetSemilattice (SemiLat.Obj.carrier (X^ n))
-      X^-meets zero ._∧_ _ _ = Data.Unit.tt
-      X^-meets zero .⊤ = Data.Unit.tt
-      X^-meets zero .∧-isMeet .IsMeet.π₁ = tt
-      X^-meets zero .∧-isMeet .IsMeet.π₂ = tt
-      X^-meets zero .∧-isMeet .IsMeet.⟨_,_⟩ _ _ = tt
-      X^-meets zero .⊤-isTop .IsTop.≤-top = tt
-      X^-meets (suc n) ._∧_ (a , u) (b , v) = (a two.⊓ b) , X^-meets n ._∧_ u v
-      X^-meets (suc n) .⊤ = (I , X^-meets n .⊤)
-      X^-meets (suc n) .∧-isMeet .IsMeet.π₁ = two.⊓-isMeet .IsMeet.π₁ , X^-meets n .∧-isMeet .IsMeet.π₁
-      X^-meets (suc n) .∧-isMeet .IsMeet.π₂ = two.⊓-isMeet .IsMeet.π₂ , X^-meets n .∧-isMeet .IsMeet.π₂
-      X^-meets (suc n) .∧-isMeet .IsMeet.⟨_,_⟩ (a , u) (b , v) = two.⊓-isMeet .IsMeet.⟨_,_⟩ a b , X^-meets n .∧-isMeet .IsMeet.⟨_,_⟩ u v
-      X^-meets (suc n) .⊤-isTop .IsTop.≤-top = two.I-isTop .IsTop.≤-top , X^-meets n .⊤-isTop .IsTop.≤-top
+      meets : ∀ n → meet-semilattice.MeetSemilattice (carrier (X^ n))
+      meets zero ._∧_ _ _ = Data.Unit.tt
+      meets zero .⊤ = Data.Unit.tt
+      meets zero .∧-isMeet .IsMeet.π₁ = tt
+      meets zero .∧-isMeet .IsMeet.π₂ = tt
+      meets zero .∧-isMeet .IsMeet.⟨_,_⟩ _ _ = tt
+      meets zero .⊤-isTop .IsTop.≤-top = tt
+      meets (suc n) ._∧_ (a , u) (b , v) = (a two.⊓ b) , meets n ._∧_ u v
+      meets (suc n) .⊤ = (I , meets n .⊤)
+      meets (suc n) .∧-isMeet .IsMeet.π₁ = two.⊓-isMeet .IsMeet.π₁ , meets n .∧-isMeet .IsMeet.π₁
+      meets (suc n) .∧-isMeet .IsMeet.π₂ = two.⊓-isMeet .IsMeet.π₂ , meets n .∧-isMeet .IsMeet.π₂
+      meets (suc n) .∧-isMeet .IsMeet.⟨_,_⟩ (a , u) (b , v) =
+        two.⊓-isMeet .IsMeet.⟨_,_⟩ a b , meets n .∧-isMeet .IsMeet.⟨_,_⟩ u v
+      meets (suc n) .⊤-isTop .IsTop.≤-top = two.I-isTop .IsTop.≤-top , meets n .⊤-isTop .IsTop.≤-top
 
-    -- x # y = (x ∧ y) ≤ ⊥, using X^-meets for ∧ and X^ for ≤ and ⊥.
-    _#_ : ∀ {n} → SemiLat.Obj.Carrier (X^ n) → SemiLat.Obj.Carrier (X^ n) → Prop
-    _#_ {n} x y = SemiLat.Obj._≤_ (X^ n) (X^-meets n ._∧_ x y) (SemiLat.Obj.⊥ (X^ n))
+    -- x # y = (x ∧ y) ≤ ⊥, using meets for ∧ and X^ for ≤ and ⊥.
+    _#_ : ∀ {n} → Carrier (X^ n) → Carrier (X^ n) → Prop
+    _#_ {n} x y = _≤_ (X^ n) (meets n ._∧_ x y) (⊥ (X^ n))
 
-    reflect : ∀ n {x y} → (∀ z → _#_ {n} y z → _#_ {n} x z) → SemiLat.Obj._≤_ (X^ n) x y
-    reflect zero _ = tt
-    reflect (suc n) {a , u} {b , v} h =
-      conjugate.TWO .conjugate.Obj.#-reflect (λ c b#c → proj₁ (h (c , SemiLat.Obj.⊥ (X^ n)) (b#c , X^-meets n .∧-isMeet .IsMeet.π₂))) ,
-      reflect n (λ w v#w → proj₂ (h (conjugate.TWO .conjugate.Obj.⊥ , w) (two.⊓-isMeet .IsMeet.π₂ , v#w)))
+    #-reflect : ∀ n {x y} → (∀ z → _#_ {n} y z → _#_ {n} x z) → _≤_ (X^ n) x y
+    #-reflect zero _ = tt
+    #-reflect (suc n) {a , u} {b , v} h =
+      conjugate.TWO .conjugate.Obj.#-reflect (λ c b#c → proj₁ (h (c , ⊥ (X^ n)) (b#c , meets n .∧-isMeet .IsMeet.π₂))) ,
+      #-reflect n (λ w v#w → proj₂ (h (conjugate.TWO .conjugate.Obj.⊥ , w) (two.⊓-isMeet .IsMeet.π₂ , v#w)))
 
-    ∧-∨ : ∀ n x y z → SemiLat.Obj._≤_ (X^ n) (X^-meets n ._∧_ x (SemiLat.Obj._∨_ (X^ n) y z))
-                                             (SemiLat.Obj._∨_ (X^ n) (X^-meets n ._∧_ x y) (X^-meets n ._∧_ x z))
-    ∧-∨ zero _ _ _ = tt
-    ∧-∨ (suc n) (a , u) (b , v) (c , w) = conjugate.TWO .conjugate.Obj.∧-∨-distrib a b c , ∧-∨ n u v w
+    ∧-∨-distrib : ∀ n x y z → _≤_ (X^ n)
+                  (meets n ._∧_ x (_∨_ (X^ n) y z)) (_∨_ (X^ n) (meets n ._∧_ x y) (meets n ._∧_ x z))
+    ∧-∨-distrib zero _ _ _ = tt
+    ∧-∨-distrib (suc n) (a , u) (b , v) (c , w) =
+      conjugate.TWO .conjugate.Obj.∧-∨-distrib a b c , ∧-∨-distrib n u v w
 
-    ∨-∧ : ∀ n x y z → SemiLat.Obj._≤_ (X^ n) (SemiLat.Obj._∨_ (X^ n) x (X^-meets n ._∧_ y z))
-                                             (X^-meets n ._∧_ (SemiLat.Obj._∨_ (X^ n) x y) (SemiLat.Obj._∨_ (X^ n) x z))
-    ∨-∧ zero _ _ _ = tt
-    ∨-∧ (suc n) (a , u) (b , v) (c , w) = conjugate.TWO .conjugate.Obj.∨-∧-distrib a b c , ∨-∧ n u v w
+    ∨-∧-distrib : ∀ n x y z → _≤_ (X^ n) (_∨_ (X^ n) x (meets n ._∧_ y z))
+                                    (meets n ._∧_ (_∨_ (X^ n) x y) (_∨_ (X^ n) x z))
+    ∨-∧-distrib zero _ _ _ = tt
+    ∨-∧-distrib (suc n) (a , u) (b , v) (c , w) =
+      conjugate.TWO .conjugate.Obj.∨-∧-distrib a b c , ∨-∧-distrib n u v w
 
     conj : ℕ → conjugate.Obj
-    conj n .conjugate.Obj.carrier = SemiLat.Obj.carrier (X^ n)
-    conj n .conjugate.Obj.joins = SemiLat.Obj.joins (X^ n)
-    conj n .conjugate.Obj.meets = X^-meets n
-    conj n .conjugate.Obj.#-reflect = reflect n
-    conj n .conjugate.Obj.∧-∨-distrib = ∧-∨ n
-    conj n .conjugate.Obj.∨-∧-distrib = ∨-∧ n
+    conj n .conjugate.Obj.carrier = carrier (X^ n)
+    conj n .conjugate.Obj.joins = joins (X^ n)
+    conj n .conjugate.Obj.meets = meets n
+    conj n .conjugate.Obj.#-reflect = #-reflect n
+    conj n .conjugate.Obj.∧-∨-distrib = ∧-∨-distrib n
+    conj n .conjugate.Obj.∨-∧-distrib = ∨-∧-distrib n
 
   open X^-Heyting using () renaming (conj to X^-conj)
   open conjugate using (_⇒c_)
