@@ -460,8 +460,20 @@ module Matrix where
   X^-conj n .joins = SemiLat.Obj.joins (X^ n)
   X^-conj n .meets = X^-meets n
   X^-conj n .#-reflect = {!!}
-  X^-conj n .∧-∨-distrib = {!!}
-  X^-conj n .∨-∧-distrib = {!!}
+  X^-conj n .∧-∨-distrib = X^-∧-∨ n
+    where
+      X^-∧-∨ : ∀ n x y z → X^-conj n ._≤_ (X^-conj n ._∧_ x (X^-conj n ._∨_ y z))
+                                             (X^-conj n ._∨_ (X^-conj n ._∧_ x y) (X^-conj n ._∧_ x z))
+      X^-∧-∨ zero _ _ _ = prop.tt
+      X^-∧-∨ (suc n) (a , u) (b , v) (c , w) =
+        conjugate.TWO .∧-∨-distrib a b c prop., X^-∧-∨ n u v w
+  X^-conj n .∨-∧-distrib = X^-∨-∧ n
+    where
+      X^-∨-∧ : ∀ n x y z → X^-conj n ._≤_ (X^-conj n ._∨_ x (X^-conj n ._∧_ y z))
+                                             (X^-conj n ._∧_ (X^-conj n ._∨_ x y) (X^-conj n ._∨_ x z))
+      X^-∨-∧ zero _ _ _ = prop.tt
+      X^-∨-∧ (suc n) (a , u) (b , v) (c , w) =
+        conjugate.TWO .∨-∧-distrib a b c prop., X^-∨-∧ n u v w
 
   open conjugate using (_⇒c_)
   open _⇒c_
