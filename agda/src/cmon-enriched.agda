@@ -148,6 +148,9 @@ module _ {o m e} {𝒞 : Category o m e} (CM : CMonEnriched 𝒞) where
         f                                   ∎
       where open ≈-Reasoning isEquiv
 
+    pair-ext0 : pair p₁ p₂ ≈ id prod
+    pair-ext0 = ≈-trans (≈-sym (pair-cong id-right id-right)) (pair-ext (id _))
+
     -- And coproducts
     copair : ∀ {x} → A ⇒ x → B ⇒ x → prod ⇒ x
     copair f g = (f ∘ p₁) +m (g ∘ p₂)

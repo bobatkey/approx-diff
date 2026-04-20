@@ -107,8 +107,6 @@ module matrices
   tuple-ext0 : ∀ {n} → tuple {n} (λ i → π {n} i) ≈ id (X^ n)
   tuple-ext0 {n} = ≈-trans (≈-sym (tuple-cong {n} _ _ (λ i → id-right))) (tuple-ext {n} (id (X^ n)))
 
-  bp-pair-ext0 : ∀ {x y} (bp : Biproduct CM x y) → pair bp (p₁ bp) (p₂ bp) ≈ id (prod bp)
-  bp-pair-ext0 bp = ≈-trans (≈-sym (pair-cong bp id-right id-right)) (pair-ext bp (id _))
 
   -- A tuple of zeros is zero.
   tuple-εm : ∀ {n Z} → tuple {n} {Z} (λ _ → εm) ≈ εm
@@ -495,7 +493,7 @@ module matrices
     X^-split .Iso.fwd∘bwd≈id =
       ≈-trans (≈-sym (pair-ext (BP (X^ m) (X^ n)) (split-fwd ∘ bwd)))
       (≈-trans (pair-cong (BP (X^ m) (X^ n)) p₁-preserved p₂-preserved)
-      (bp-pair-ext0 (BP (X^ m) (X^ n))))
+      (pair-ext0 (BP (X^ m) (X^ n))))
       where
         bwd = tuple {m +ℕ n} (λ i → bwd-col (splitAt m i))
 
