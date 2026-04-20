@@ -459,18 +459,25 @@ module Matrix where
   X^-conj n .carrier = SemiLat.Obj.carrier (X^ n)
   X^-conj n .joins = SemiLat.Obj.joins (X^ n)
   X^-conj n .meets = X^-meets n
-  X^-conj n .#-reflect = {!!}
+  X^-conj n .#-reflect = X^-#-reflect n
+    where
+      X^-#-reflect : ∀ n {x y} → (∀ z → conjugate.Obj._#_ (X^-conj n) y z → conjugate.Obj._#_ (X^-conj n) x z) →
+                     X^-conj n ._≤_ x y
+      X^-#-reflect zero _ = prop.tt
+      X^-#-reflect (suc n) {a , u} {b , v} h =
+        conjugate.TWO .#-reflect (λ c b#c → prop.proj₁ (h (c , X^-conj n .⊥) (b#c prop., X^-meets n .∧-isMeet .IsMeet.π₂))) prop.,
+        X^-#-reflect n (λ w v#w → prop.proj₂ (h (conjugate.TWO .⊥ , w) (two.⊓-isMeet .IsMeet.π₂ prop., v#w)))
   X^-conj n .∧-∨-distrib = X^-∧-∨ n
     where
       X^-∧-∨ : ∀ n x y z → X^-conj n ._≤_ (X^-conj n ._∧_ x (X^-conj n ._∨_ y z))
-                                             (X^-conj n ._∨_ (X^-conj n ._∧_ x y) (X^-conj n ._∧_ x z))
+                                          (X^-conj n ._∨_ (X^-conj n ._∧_ x y) (X^-conj n ._∧_ x z))
       X^-∧-∨ zero _ _ _ = prop.tt
       X^-∧-∨ (suc n) (a , u) (b , v) (c , w) =
         conjugate.TWO .∧-∨-distrib a b c prop., X^-∧-∨ n u v w
   X^-conj n .∨-∧-distrib = X^-∨-∧ n
     where
       X^-∨-∧ : ∀ n x y z → X^-conj n ._≤_ (X^-conj n ._∨_ x (X^-conj n ._∧_ y z))
-                                             (X^-conj n ._∧_ (X^-conj n ._∨_ x y) (X^-conj n ._∨_ x z))
+                                          (X^-conj n ._∧_ (X^-conj n ._∨_ x y) (X^-conj n ._∨_ x z))
       X^-∨-∧ zero _ _ _ = prop.tt
       X^-∨-∧ (suc n) (a , u) (b , v) (c , w) =
         conjugate.TWO .∨-∧-distrib a b c prop., X^-∨-∧ n u v w
