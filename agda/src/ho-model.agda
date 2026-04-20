@@ -433,18 +433,35 @@ module Matrix where
   import conjugate
   open import Data.Nat using (ℕ; zero; suc)
 
-  open import prop using (tt)
+  import prop
+  import Data.Unit
+  open import basics using (IsMeet; IsTop)
+  import meet-semilattice
   open conjugate.Obj
+  open meet-semilattice.MeetSemilattice
+
+  private
+    X^-meets : ∀ n → meet-semilattice.MeetSemilattice (SemiLat.Obj.carrier (X^ n))
+    X^-meets zero ._∧_ _ _ = Data.Unit.tt
+    X^-meets zero .⊤ = Data.Unit.tt
+    X^-meets zero .∧-isMeet .IsMeet.π₁ = prop.tt
+    X^-meets zero .∧-isMeet .IsMeet.π₂ = prop.tt
+    X^-meets zero .∧-isMeet .IsMeet.⟨_,_⟩ _ _ = prop.tt
+    X^-meets zero .⊤-isTop .IsTop.≤-top = prop.tt
+    X^-meets (suc n) ._∧_ (a , u) (b , v) = (a two.⊓ b) , X^-meets n ._∧_ u v
+    X^-meets (suc n) .⊤ = (I , X^-meets n .⊤)
+    X^-meets (suc n) .∧-isMeet .IsMeet.π₁ = two.⊓-isMeet .IsMeet.π₁ prop., X^-meets n .∧-isMeet .IsMeet.π₁
+    X^-meets (suc n) .∧-isMeet .IsMeet.π₂ = two.⊓-isMeet .IsMeet.π₂ prop., X^-meets n .∧-isMeet .IsMeet.π₂
+    X^-meets (suc n) .∧-isMeet .IsMeet.⟨_,_⟩ (a , u) (b , v) = two.⊓-isMeet .IsMeet.⟨_,_⟩ a b prop., X^-meets n .∧-isMeet .IsMeet.⟨_,_⟩ u v
+    X^-meets (suc n) .⊤-isTop .IsTop.≤-top = two.I-isTop .IsTop.≤-top prop., X^-meets n .⊤-isTop .IsTop.≤-top
 
   X^-conj : ℕ → conjugate.Obj
-  X^-conj zero = conjugate.𝟙
-  X^-conj (suc n) = conjugate._⊕_ conjugate.TWO (X^-conj n)
-
-  open import Relation.Binary.PropositionalEquality as ≡ using (_≡_; refl; cong; subst)
-
-  carrier-agree : ∀ n → X^-conj n .Carrier ≡ preorder.Preorder.Carrier (SemiLat.Obj.carrier (X^ n))
-  carrier-agree zero = refl
-  carrier-agree (suc n) rewrite carrier-agree n = refl
+  X^-conj n .carrier = SemiLat.Obj.carrier (X^ n)
+  X^-conj n .joins = SemiLat.Obj.joins (X^ n)
+  X^-conj n .meets = X^-meets n
+  X^-conj n .#-reflect = {!!}
+  X^-conj n .∧-∨-distrib = {!!}
+  X^-conj n .∨-∧-distrib = {!!}
 
   open conjugate using (_⇒c_)
   open _⇒c_
