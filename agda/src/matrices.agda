@@ -110,6 +110,22 @@ module matrices
   bp-pair-ext0 : ∀ {x y} (bp : Biproduct CM x y) → pair bp (p₁ bp) (p₂ bp) ≈ id (prod bp)
   bp-pair-ext0 bp = ≈-trans (≈-sym (pair-cong bp id-right id-right)) (pair-ext bp (id _))
 
+  -- A tuple of zeros is zero.
+  tuple-εm : ∀ {n Z} → tuple {n} {Z} (λ _ → εm) ≈ εm
+  tuple-εm {zero} = to-terminal-ext εm
+  tuple-εm {suc n} {Z} =
+    let bp = BP X (X^ n) in
+    ≈-trans (pair-cong bp ≈-refl (tuple-εm {n} {Z}))
+    (≈-trans (+-cong (homCM Z _) (comp-bilinear-ε₂ (in₁ bp)) (comp-bilinear-ε₂ (in₂ bp)))
+    (+-lunit (homCM Z _)))
+
+  -- A morphism into X^n is εm iff each projection is εm.
+  εm-ext : ∀ {n Z} {f : Z ⇒ X^ n} → (∀ i → (π {n} i ∘ f) ≈ εm) → f ≈ εm
+  εm-ext {n} {Z} {f} h =
+    ≈-trans (≈-sym (tuple-ext {n} f))
+    (≈-trans (tuple-cong {n} _ _ h)
+    (tuple-εm {n} {Z}))
+
   cotuple-cong : ∀ {n Z} (f g : Fin n → X ⇒ Z) → (∀ i → f i ≈ g i) → cotuple f ≈ cotuple g
   cotuple-cong {zero}  f g h = ≈-refl
   cotuple-cong {suc n} f g h = copair-cong (BP X (X^ n)) (h zero) (cotuple-cong (λ i → f (suc i)) (λ i → g (suc i)) (λ i → h (suc i)))
@@ -631,14 +647,11 @@ module matrices
   module Conjugation
     (scalar-idem : (id X +m id X) ≈ id X)
     (∧ : (X ⊕ X) ⇒ X)
-    -- Distributivity: ∧ distributes over ∨.
     (∧-∨-distrib₁ : ∀ {A} (f g h : A ⇒ X) →
       (∧ ∘ pair (BP X X) (∨ ∘ pair (BP X X) f g) h) ≈ (∨ ∘ pair (BP X X) (∧ ∘ pair (BP X X) f h) (∧ ∘ pair (BP X X) g h)))
     (∧-∨-distrib₂ : ∀ {A} (f g h : A ⇒ X) →
       (∧ ∘ pair (BP X X) f (∨ ∘ pair (BP X X) g h)) ≈ (∨ ∘ pair (BP X X) (∧ ∘ pair (BP X X) f g) (∧ ∘ pair (BP X X) f h)))
-    -- ∧ is commutative.
     (∧-comm : ∀ {A} (f g : A ⇒ X) → (∧ ∘ pair (BP X X) f g) ≈ (∧ ∘ pair (BP X X) g f))
-    -- ∧ absorbs ⊥.
     (∧-ε₁ : ∀ {A} (g : A ⇒ X) → (∧ ∘ pair (BP X X) εm g) ≈ εm)
     (∧-ε₂ : ∀ {A} (f : A ⇒ X) → (∧ ∘ pair (BP X X) f εm) ≈ εm)
     (neg : X ⇒ X)
@@ -658,5 +671,6 @@ module matrices
     -- The conjugation property: f(y) # x ↔ y # transpose(f)(x).
     conjugation : ∀ {m n A} (f : X^ m ⇒ X^ n) (x : A ⇒ X^ n) (y : A ⇒ X^ m) →
                   _#^_ {n} (f ∘ y) x ⇔ _#^_ {m} y (transpose {m} {n} f ∘ x)
-    conjugation f x y .proj₁ = {!!}
+    conjugation {m} {n} {A} f x y .proj₁ fy#x =
+      εm-ext {m} {A} (λ j → {!!})
     conjugation f x y .proj₂ = {!!}
