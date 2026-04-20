@@ -544,7 +544,15 @@ module Matrix where
   to-gal : ∀ {m n} → X^ m ⇒ X^ n → X^-gal n ⇒g X^-gal m
   to-gal {m} {n} f .right = adjoint {m} {n} f
   to-gal {m} {n} f .left = f .*→*J .func
-  to-gal {m} {n} f .left⊣right {x} {y} .proj₁ = {!!}
+  to-gal {m} {n} f .left⊣right {x} {y} .proj₁ y≤adj =
+    let open basics.≤-Reasoning (preorder.Preorder.≤-isPreorder (SemiLat.Obj.carrier (X^ n))) in
+    begin
+      f .*→*J .func .fun y
+    ≤⟨ cotuple-ext {m} f .f≃f .eqfunc .eqfun y .proj₂ ⟩
+      cotuple {m} (λ i → f ∘ ι {m} i) .*→*J .func .fun y
+    ≤⟨ {!!} ⟩
+      x
+    ∎
   to-gal {m} {n} f .left⊣right {x} {y} .proj₂ = {!!}
 
   -- (transpose f, f) is a conjugate pair; derived from to-gal via De Morgan duality.
