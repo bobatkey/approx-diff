@@ -556,15 +556,23 @@ module matrices
           ∎ where open ≈-Reasoning isEquiv
         open ≈-Reasoning isEquiv
 
+  -- Join on X as a morphism (codiagonal), from the biproduct + CMon enrichment.
+  ∨ : (X ⊕ X) ⇒ X
+  ∨ = copair (BP X X) (id X) (id X)
+
+  -- Componentwise join on X^n.
+  ∨^ : ∀ {n} → (X^ n ⊕ X^ n) ⇒ X^ n
+  ∨^ {n} = copair (BP (X^ n) (X^ n)) (id (X^ n)) (id (X^ n))
+
+  -- Bottom element of X^n.
+  ⊥^ : ∀ {n} → 𝟘 ⇒ X^ n
+  ⊥^ {n} = from-initial
+
   -- Additional structure when X has meets.
   module WithMeets
     (∧ : (X ⊕ X) ⇒ X)
-    (⊤X : 𝟘 ⇒ X)
+    (⊤ : 𝟘 ⇒ X)
     where
-
-    -- Join on X as a morphism (codiagonal).
-    ∨ : (X ⊕ X) ⇒ X
-    ∨ = copair (BP X X) (id X) (id X)
 
     -- Componentwise meet on X^n.
     ∧^ : ∀ {n} → (X^ n ⊕ X^ n) ⇒ X^ n
@@ -572,7 +580,7 @@ module matrices
 
     -- Top element of X^n.
     ⊤^ : ∀ {n} → 𝟘 ⇒ X^ n
-    ⊤^ {n} = tuple {n} (λ _ → ⊤X)
+    ⊤^ {n} = tuple {n} (λ _ → ⊤)
 
   -- Additional structure when X has a negation.
   module WithNegation
