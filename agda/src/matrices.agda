@@ -556,65 +556,29 @@ module matrices
           ∎ where open ≈-Reasoning isEquiv
         open ≈-Reasoning isEquiv
 
-  -- Additional structure when +m is idempotent (SemiLat-enrichment).
+  -- Additional structure when scalar addition is idempotent (End(X) is an idempotent semiring).
   module WithIdempotence
-    (idem : ∀ {A B} (f : A ⇒ B) → (f +m f) ≈ f)
+    (scalar-idem : (id X +m id X) ≈ id X)
     where
+
+    -- 1 + 1 = 1 implies f + f = f for all morphisms into or out of X (and hence X^n).
+    idem-right : ∀ {A} (f : A ⇒ X) → (f +m f) ≈ f
+    idem-right f =
+      ≈-trans (+-cong (homCM _ _) (≈-sym id-left) (≈-sym id-left))
+      (≈-trans (≈-sym (comp-bilinear₁ (id X) (id X) f))
+      (≈-trans (∘-cong scalar-idem ≈-refl) id-left))
+
+    idem-left : ∀ {B} (f : X ⇒ B) → (f +m f) ≈ f
+    idem-left f =
+      ≈-trans (+-cong (homCM _ _) (≈-sym id-right) (≈-sym id-right))
+      (≈-trans (≈-sym (comp-bilinear₂ f (id X) (id X)))
+      (≈-trans (∘-cong ≈-refl scalar-idem) id-right))
 
     _≤m_ : ∀ {A B} → A ⇒ B → A ⇒ B → Prop _
     f ≤m g = (f +m g) ≈ g
 
-    ≤m-refl : ∀ {A B} {f : A ⇒ B} → f ≤m f
-    ≤m-refl = idem _
-
-    ≤m-trans : ∀ {A B} {f g h : A ⇒ B} → f ≤m g → g ≤m h → f ≤m h
-    ≤m-trans {A} {B} {f} {g} {h} f≤g g≤h =
-      begin
-        f +m h
-      ≈˘⟨ +-cong (homCM A B) ≈-refl g≤h ⟩
-        f +m (g +m h)
-      ≈˘⟨ +-assoc (homCM A B) ⟩
-        (f +m g) +m h
-      ≈⟨ +-cong (homCM A B) f≤g ≈-refl ⟩
-        g +m h
-      ≈⟨ g≤h ⟩
-        h
-      ∎ where open ≈-Reasoning isEquiv
-
-    open import basics using (IsPreorder; IsJoin; IsBottom)
-
-    ≤m-isPreorder : ∀ {A B} → IsPreorder (_≤m_ {A} {B})
-    ≤m-isPreorder .IsPreorder.refl = ≤m-refl
-    ≤m-isPreorder .IsPreorder.trans = ≤m-trans
-
-    +m-isJoin : ∀ {A B} → IsJoin (≤m-isPreorder {A} {B}) (_+m_ {A} {B})
-    +m-isJoin {A} {B} .IsJoin.inl {f} {g} =
-      let cm = homCM A B in
-      ≈-trans (≈-sym (+-assoc cm)) (+-cong cm (idem f) ≈-refl)
-    +m-isJoin {A} {B} .IsJoin.inr {f} {g} =
-      let cm = homCM A B in
-      ≈-trans (+-cong cm ≈-refl (+-comm cm))
-      (≈-trans (≈-sym (+-assoc cm))
-      (≈-trans (+-cong cm (idem g) ≈-refl) (+-comm cm)))
-    +m-isJoin {A} {B} .IsJoin.[_,_] {f} {g} {h} f≤h g≤h =
-      let cm = homCM A B in
-      ≈-trans (+-assoc cm) (≈-trans (+-cong cm ≈-refl g≤h) f≤h)
-
-    εm-isBottom : ∀ {A B} → IsBottom (≤m-isPreorder {A} {B}) (εm {A} {B})
-    εm-isBottom .IsBottom.≤-bottom = +-lunit (homCM _ _)
-      where open import basics using (IsBottom)
-
-  -- Join on X as a morphism (codiagonal), from the biproduct + CMon enrichment.
-  ∨ : (X ⊕ X) ⇒ X
-  ∨ = copair (BP X X) (id X) (id X)
-
-  -- Componentwise join on X^n.
-  ∨^ : ∀ {n} → (X^ n ⊕ X^ n) ⇒ X^ n
-  ∨^ {n} = copair (BP (X^ n) (X^ n)) (id (X^ n)) (id (X^ n))
-
-  -- Bottom element of X^n.
-  ⊥^ : ∀ {n} → 𝟘 ⇒ X^ n
-  ⊥^ {n} = from-initial
+    ≤m-refl : ∀ {A} {f : A ⇒ X} → f ≤m f
+    ≤m-refl = idem-right _
 
   -- Additional structure when X has meets.
   module WithMeets
