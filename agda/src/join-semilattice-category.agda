@@ -254,19 +254,17 @@ products .HasProducts.pair-p₂ f g .f≃f = join-semilattice.pair-p₂ (f .*→
 products .HasProducts.pair-ext f .f≃f = join-semilattice.pair-ext (f .*→*)
 
 initial : HasInitial cat
-initial .HasInitial.witness = record { joins = 𝟙 }
+initial .HasInitial.witness = record { carrier = preorder.𝟙 ; joins = 𝟙 }
 initial .HasInitial.is-initial .categories.IsInitial.from-initial .*→* = join-semilattice.initial
 initial .HasInitial.is-initial .categories.IsInitial.from-initial-ext f .f≃f = join-semilattice.initial-unique _ _ _
 
 terminal : HasTerminal cat
-terminal .HasTerminal.witness = record { joins = 𝟙 }
+terminal .HasTerminal.witness = record { carrier = preorder.𝟙 ; joins = 𝟙 }
 terminal .HasTerminal.is-terminal .categories.IsTerminal.to-terminal .*→* = join-semilattice.terminal
 terminal .HasTerminal.is-terminal .categories.IsTerminal.to-terminal-ext f .f≃f = join-semilattice.terminal-unique _ _ _
 
 TWO : Obj
-TWO .carrier .Preorder.Carrier = two.Two
-TWO .carrier .Preorder._≤_ = two._≤_
-TWO .carrier .Preorder.≤-isPreorder = two.≤-isPreorder
+TWO .carrier = two.Two-preorder
 TWO .joins .JoinSemilattice._∨_ = two._⊔_
 TWO .joins .JoinSemilattice.⊥ = two.O
 TWO .joins .JoinSemilattice.∨-isJoin = two.⊔-isJoin

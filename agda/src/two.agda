@@ -33,6 +33,13 @@ I ≤ I = ⊤
 
 open IsPreorder ≤-isPreorder public
 
+open import preorder using (Preorder)
+
+Two-preorder : Preorder
+Two-preorder .Preorder.Carrier = Two
+Two-preorder .Preorder._≤_ = _≤_
+Two-preorder .Preorder.≤-isPreorder = ≤-isPreorder
+
 ------------------------------------------------------------------------------
 I-isTop : IsTop ≤-isPreorder I
 I-isTop .IsTop.≤-top {O} = tt

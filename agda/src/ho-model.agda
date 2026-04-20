@@ -433,26 +433,18 @@ module Matrix where
   import conjugate
   open import Data.Nat using (ℕ; zero; suc)
 
-  import meet-semilattice
+  open import prop using (tt)
   open conjugate.Obj
 
   X^-conj : ℕ → conjugate.Obj
-  X^-conj n .carrier = SemiLat.Obj.carrier (X^ n)
-  X^-conj n .joins = SemiLat.Obj.joins (X^ n)
-  X^-conj n .meets = X^-meets n
-    where
-      TWO-meets : meet-semilattice.MeetSemilattice (SemiLat.Obj.carrier TWO)
-      TWO-meets .meet-semilattice.MeetSemilattice._∧_ = two._⊓_
-      TWO-meets .meet-semilattice.MeetSemilattice.⊤ = two.I
-      TWO-meets .meet-semilattice.MeetSemilattice.∧-isMeet = two.⊓-isMeet
-      TWO-meets .meet-semilattice.MeetSemilattice.⊤-isTop = two.I-isTop
+  X^-conj zero = conjugate.𝟙
+  X^-conj (suc n) = conjugate._⊕_ conjugate.TWO (X^-conj n)
 
-      X^-meets : ∀ n → meet-semilattice.MeetSemilattice (SemiLat.Obj.carrier (X^ n))
-      X^-meets zero = meet-semilattice.𝟙
-      X^-meets (suc n) = meet-semilattice._⊕_ TWO-meets (X^-meets n)
-  X^-conj n .#-reflect = {!!}
-  X^-conj n .∧-∨-distrib = {!!}
-  X^-conj n .∨-∧-distrib = {!!}
+  open import Relation.Binary.PropositionalEquality as ≡ using (_≡_; refl; cong; subst)
+
+  carrier-agree : ∀ n → X^-conj n .Carrier ≡ preorder.Preorder.Carrier (SemiLat.Obj.carrier (X^ n))
+  carrier-agree zero = refl
+  carrier-agree (suc n) rewrite carrier-agree n = refl
 
   open conjugate using (_⇒c_)
   open _⇒c_

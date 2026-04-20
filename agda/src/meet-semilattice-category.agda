@@ -151,7 +151,7 @@ products .HasProducts.pair-p₂ f g .f≃f = meet-semilattice.pair-p₂ (f .*→
 products .HasProducts.pair-ext f .f≃f = meet-semilattice.pair-ext (f .*→*)
 
 terminal : HasTerminal cat
-terminal .HasTerminal.witness = record { meets = 𝟙 }
+terminal .HasTerminal.witness = record { carrier = preorder.𝟙 ; meets = 𝟙 }
 terminal .HasTerminal.is-terminal .categories.IsTerminal.to-terminal .*→* = meet-semilattice.terminal
 terminal .HasTerminal.is-terminal .categories.IsTerminal.to-terminal-ext f .f≃f =
   meet-semilattice.terminal-unique _ _ _
@@ -160,9 +160,7 @@ terminal .HasTerminal.is-terminal .categories.IsTerminal.to-terminal-ext f .f≃
 --   where open import product-diagram using (limits→products)
 
 TWO : Obj
-TWO .carrier .Preorder.Carrier = two.Two
-TWO .carrier .Preorder._≤_ = two._≤_
-TWO .carrier .Preorder.≤-isPreorder = two.≤-isPreorder
+TWO .carrier = two.Two-preorder
 TWO .meets .MeetSemilattice._∧_ = two._⊓_
 TWO .meets .MeetSemilattice.⊤ = two.I
 TWO .meets .MeetSemilattice.∧-isMeet = two.⊓-isMeet
