@@ -642,15 +642,12 @@ module matrices
   module Conjugation
     (scalar-idem : (id X +m id X) ≈ id X)
     (∧ : (X ⊕ X) ⇒ X)
-    (∧-∨-distrib₁ : ∀ {A} (f g h : A ⇒ X) →
-      (∧ ∘ pair (BP X X) (∨ ∘ pair (BP X X) f g) h) ≈ (∨ ∘ pair (BP X X) (∧ ∘ pair (BP X X) f h) (∧ ∘ pair (BP X X) g h)))
-    (∧-∨-distrib₂ : ∀ {A} (f g h : A ⇒ X) →
-      (∧ ∘ pair (BP X X) f (∨ ∘ pair (BP X X) g h)) ≈ (∨ ∘ pair (BP X X) (∧ ∘ pair (BP X X) f g) (∧ ∘ pair (BP X X) f h)))
-    (∧-comm : ∀ {A} (f g : A ⇒ X) → (∧ ∘ pair (BP X X) f g) ≈ (∧ ∘ pair (BP X X) g f))
-    (∧-ε₁ : ∀ {A} (g : A ⇒ X) → (∧ ∘ pair (BP X X) εm g) ≈ εm)
-    (∧-ε₂ : ∀ {A} (f : A ⇒ X) → (∧ ∘ pair (BP X X) f εm) ≈ εm)
     (neg : X ⇒ X)
     (neg-involutive : (neg ∘ neg) ≈ id X)
+    -- Complement law: ¬x ∧ x = ⊥.
+    (∧-complement : ∀ {A} (f : A ⇒ X) → (∧ ∘ pair (BP X X) (neg ∘ f) f) ≈ εm)
+    -- De Morgan: ¬(f ∨ g) = ¬f ∧ ¬g.
+    (neg-∨ : ∀ {A} (f g : A ⇒ X) → (neg ∘ (f +m g)) ≈ (∧ ∘ pair (BP X X) (neg ∘ f) (neg ∘ g)))
     where
 
     open WithIdempotence scalar-idem
@@ -663,38 +660,15 @@ module matrices
 
     open import prop using (_⇔_; proj₁; proj₂)
 
+    -- Disjointness ↔ below complement: f # g ↔ f ≤m (neg ∘ g).
+    #-to-≤ : ∀ {A} {f g : A ⇒ X} → f # g → f ≤m (neg ∘ g)
+    #-to-≤ = {!!}
+
+    ≤-to-# : ∀ {A} {f g : A ⇒ X} → f ≤m (neg ∘ g) → f # g
+    ≤-to-# = {!!}
+
     -- The conjugation property: f(y) # x ↔ y # transpose(f)(x).
     conjugation : ∀ {m n A} (f : X^ m ⇒ X^ n) (x : A ⇒ X^ n) (y : A ⇒ X^ m) →
                   _#^_ {n} (f ∘ y) x ⇔ _#^_ {m} y (transpose {m} {n} f ∘ x)
-    conjugation {m} {n} {A} f x y .proj₁ fy#x =
-      begin
-        ∧^ {m} ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x)
-      ≈˘⟨ tuple-ext {m} _ ⟩
-        tuple {m} (λ j → π {m} j ∘ (∧^ {m} ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x)))
-      ≈⟨ tuple-cong {m} _ _ per-j ⟩
-        tuple {m} (λ _ → εm)
-      ≈⟨ tuple-ext-εm {m} {A} ⟩
-        εm
-      ∎ where
-        per-j : ∀ (j : Fin m) → (π {m} j ∘ (∧^ {m} ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x))) ≈ εm
-        per-j j =
-          begin
-            π {m} j ∘ (∧^ {m} ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x))
-          ≈˘⟨ assoc (π {m} j) (∧^ {m}) _ ⟩
-            (π {m} j ∘ ∧^ {m}) ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x)
-          ≈⟨ ∘-cong (tuple-π {m} _ j) ≈-refl ⟩
-            (∧ ∘ pair (BP X X) (π {m} j ∘ p₁ (BP (X^ m) (X^ m))) (π {m} j ∘ p₂ (BP (X^ m) (X^ m)))) ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x)
-          ≈⟨ assoc ∧ _ _ ⟩
-            ∧ ∘ (pair (BP X X) (π {m} j ∘ p₁ (BP (X^ m) (X^ m))) (π {m} j ∘ p₂ (BP (X^ m) (X^ m))) ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x))
-          ≈⟨ ∘-cong ≈-refl (step j) ⟩
-            ∧ ∘ pair (BP X X) (π {m} j ∘ y) (π {m} j ∘ (transpose {m} {n} f ∘ x))
-          ≈⟨ {!!} ⟩
-            εm
-          ∎ where
-            open ≈-Reasoning isEquiv
-            step : ∀ j → (pair (BP X X) (π {m} j ∘ p₁ (BP (X^ m) (X^ m))) (π {m} j ∘ p₂ (BP (X^ m) (X^ m)))
-                           ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x))
-                         ≈ pair (BP X X) (π {m} j ∘ y) (π {m} j ∘ (transpose {m} {n} f ∘ x))
-            step j = {!!}
-        open ≈-Reasoning isEquiv
+    conjugation f x y .proj₁ = {!!}
     conjugation f x y .proj₂ = {!!}
