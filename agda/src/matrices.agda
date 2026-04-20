@@ -686,10 +686,15 @@ module matrices
             (∧ ∘ pair (BP X X) (π {m} j ∘ p₁ (BP (X^ m) (X^ m))) (π {m} j ∘ p₂ (BP (X^ m) (X^ m)))) ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x)
           ≈⟨ assoc ∧ _ _ ⟩
             ∧ ∘ (pair (BP X X) (π {m} j ∘ p₁ (BP (X^ m) (X^ m))) (π {m} j ∘ p₂ (BP (X^ m) (X^ m))) ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x))
-          ≈⟨ ∘-cong ≈-refl {!!} ⟩
+          ≈⟨ ∘-cong ≈-refl (step j) ⟩
             ∧ ∘ pair (BP X X) (π {m} j ∘ y) (π {m} j ∘ (transpose {m} {n} f ∘ x))
           ≈⟨ {!!} ⟩
             εm
-          ∎ where open ≈-Reasoning isEquiv
+          ∎ where
+            open ≈-Reasoning isEquiv
+            step : ∀ j → (pair (BP X X) (π {m} j ∘ p₁ (BP (X^ m) (X^ m))) (π {m} j ∘ p₂ (BP (X^ m) (X^ m)))
+                           ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x))
+                         ≈ pair (BP X X) (π {m} j ∘ y) (π {m} j ∘ (transpose {m} {n} f ∘ x))
+            step j = {!!}
         open ≈-Reasoning isEquiv
     conjugation f x y .proj₂ = {!!}
