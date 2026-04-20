@@ -500,4 +500,5 @@ module Matrix where
   to-conj {m} {n} f .left = f .*→*J .func
     where open SemiLat._⇒_ renaming (*→* to *→*J)
           open join-semilattice._=>_ using (func)
-  to-conj {m} {n} f .conjugate = {!!}
+  to-conj {m} {n} f .conjugate {x} {y} .proj₁ = {!!}  -- y # transpose(f)(x) → f(y) # x
+  to-conj {m} {n} f .conjugate {x} {y} .proj₂ = {!!}  -- f(y) # x → y # transpose(f)(x)

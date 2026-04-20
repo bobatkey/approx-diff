@@ -555,3 +555,34 @@ module matrices
             π {m +ℕ n} (m ↑ʳ j)
           ∎ where open ≈-Reasoning isEquiv
         open ≈-Reasoning isEquiv
+
+  -- Additional structure when X has meets.
+  module WithMeets
+    (∧ : (X ⊕ X) ⇒ X)
+    (⊤X : 𝟘 ⇒ X)
+    where
+
+    -- Join on X as a morphism (codiagonal).
+    ∨ : (X ⊕ X) ⇒ X
+    ∨ = copair (BP X X) (id X) (id X)
+
+    -- Componentwise meet on X^n.
+    ∧^ : ∀ {n} → (X^ n ⊕ X^ n) ⇒ X^ n
+    ∧^ {n} = tuple {n} (λ i → ∧ ∘ pair (BP X X) (π {n} i ∘ p₁ (BP (X^ n) (X^ n))) (π {n} i ∘ p₂ (BP (X^ n) (X^ n))))
+
+    -- Top element of X^n.
+    ⊤^ : ∀ {n} → 𝟘 ⇒ X^ n
+    ⊤^ {n} = tuple {n} (λ _ → ⊤X)
+
+  -- Additional structure when X has a negation.
+  module WithNegation
+    (neg : X ⇒ X)
+    (neg-involutive : (neg ∘ neg) ≈ id X) -- neg also needs to invert the order, but we don't have that yet
+    where
+
+    neg^ : ∀ {n} → X^ n ⇒ X^ n
+    neg^ {n} = tuple {n} (λ i → neg ∘ π {n} i)
+
+    -- Adjoint: De Morgan dual of transpose.
+    adjoint : ∀ {m n} → X^ m ⇒ X^ n → X^ n ⇒ X^ m
+    adjoint {m} {n} f = neg^ {m} ∘ (transpose {m} {n} f ∘ neg^ {n})
