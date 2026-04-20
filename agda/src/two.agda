@@ -108,5 +108,10 @@ complement-∨ {I} = tt
 ¬-involutive {O} = ≃-refl {O}
 ¬-involutive {I} = ≃-refl {I}
 
+¬-antitone : ∀ {x y} → x ≤ y → ¬ y ≤ ¬ x
+¬-antitone {O} {O} _ = tt
+¬-antitone {O} {I} _ = tt
+¬-antitone {I} {I} _ = tt
+
 -- FIXME: de Morgan, etc., should be derived from the fact that this
 -- is a Boolean algebra.

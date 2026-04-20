@@ -494,7 +494,11 @@ module Matrix where
     ¬^ {zero} _ = Data.Unit.tt
     ¬^ {suc n} (a , u) = two.¬ a , ¬^ {n} u
 
-  open X^-Heyting using () renaming (conj to X^-conj; ¬^ to X^-¬)
+    ¬^-antitone : ∀ {n} {x y : Carrier (X^ n)} → _≤_ (X^ n) x y → _≤_ (X^ n) (¬^ {n} y) (¬^ {n} x)
+    ¬^-antitone {zero} _ = tt
+    ¬^-antitone {suc n} (a≤b , u≤v) = two.¬-antitone a≤b , ¬^-antitone {n} u≤v
+
+  open X^-Heyting using () renaming (conj to X^-conj; ¬^ to X^-¬; ¬^-antitone to X^-¬-antitone)
   open conjugate using (_⇒c_)
   open _⇒c_
 
@@ -523,14 +527,15 @@ module Matrix where
                  conjugate.Obj._≃_ (X^-conj n) x (X^-¬ {n} (X^-¬ {n} x))
   ¬-involutive = {!!}
 
-  -- The adjoint: ¬ ∘ transpose f ∘ ¬ (as a meet-preserving map).
-  adjoint : ∀ {m n} → Category._⇒_ SemiLat.cat (X^ m) (X^ n) →
+  -- The adjoint: ¬ ∘ transpose f ∘ ¬ (as a monotone map).
+  adjoint : ∀ {m n} → X^ m ⇒ X^ n →
             preorder._=>_ (SemiLat.Obj.carrier (X^ n)) (SemiLat.Obj.carrier (X^ m))
   adjoint {m} {n} f .fun v = X^-¬ {m} (transpose {m} {n} f .*→*J .func .fun (X^-¬ {n} v))
-  adjoint {m} {n} f .preorder._=>_.mono = {!!}
+  adjoint {m} {n} f .preorder._=>_.mono v≤w =
+    X^-¬-antitone {m} (transpose {m} {n} f .*→*J .func .preorder._=>_.mono (X^-¬-antitone {n} v≤w))
 
   -- ¬(transpose f v) ≃ adjoint f (¬ v)
-  ¬transpose≃adjoint¬ : ∀ {m n} (f : Category._⇒_ SemiLat.cat (X^ m) (X^ n))
+  ¬transpose≃adjoint¬ : ∀ {m n} (f : X^ m ⇒ X^ n)
                          (v : galois.Obj.Carrier (X^-gal n)) →
                          galois.Obj._≃_ (X^-gal m)
                            (X^-¬ {m} (transpose {m} {n} f .*→*J .func .fun v))
@@ -538,14 +543,14 @@ module Matrix where
   ¬transpose≃adjoint¬ = {!!}
 
   -- (f, adjoint f) is a Galois connection (the main theorem).
-  to-gal : ∀ {m n} → Category._⇒_ SemiLat.cat (X^ m) (X^ n) → X^-gal n ⇒g X^-gal m
+  to-gal : ∀ {m n} → X^ m ⇒ X^ n → X^-gal n ⇒g X^-gal m
   to-gal {m} {n} f .right = adjoint {m} {n} f
   to-gal {m} {n} f .left = f .*→*J .func
   to-gal {m} {n} f .left⊣right {x} {y} .proj₁ = {!!}
   to-gal {m} {n} f .left⊣right {x} {y} .proj₂ = {!!}
 
   -- (transpose f, f) is a conjugate pair; derived from to-gal via De Morgan duality.
-  to-conj : ∀ {m n} → Category._⇒_ SemiLat.cat (X^ m) (X^ n) → X^-conj n ⇒c X^-conj m
+  to-conj : ∀ {m n} → X^ m ⇒ X^ n → X^-conj n ⇒c X^-conj m
   to-conj {m} {n} f .right = transpose {m} {n} f .*→*J .func
   to-conj {m} {n} f .left = f .*→*J .func
   to-conj {m} {n} f .conjugate {x} {y} .proj₁ = {!!}
