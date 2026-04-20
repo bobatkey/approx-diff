@@ -429,3 +429,20 @@ module Matrix where
     SemiLat.cat SemiLat.cmon-enriched SemiLat.limits SemiLat.terminal SemiLat-BP
     𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
     public
+
+  import conjugate
+  open import Data.Nat using (ℕ; zero; suc)
+
+  X^-conj : ℕ → conjugate.Obj
+  X^-conj zero = conjugate.𝟙
+  X^-conj (suc n) = conjugate._⊕_ conjugate.TWO (X^-conj n)
+
+  -- Check: does X^-conj project to X^ as a SemiLat object?
+  -- The base cases differ (conjugate.𝟙 vs SemiLat.terminal.witness).
+  -- But the carriers agree propositionally:
+  open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+  open conjugate.Obj
+
+  carrier-agree : ∀ n → X^-conj n .Carrier ≡ preorder.Preorder.Carrier (SemiLat.Obj.carrier (X^ n))
+  carrier-agree zero = refl
+  carrier-agree (suc n) rewrite carrier-agree n = refl
