@@ -676,8 +676,16 @@ module matrices
       ≈⟨ tuple-ext-εm {m} {A} ⟩
         εm
       ∎ where
-        open ≈-Reasoning isEquiv
-
         per-j : ∀ (j : Fin m) → (π {m} j ∘ (∧^ {m} ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x))) ≈ εm
-        per-j j = {!!}
+        per-j j =
+          begin
+            π {m} j ∘ (∧^ {m} ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x))
+          ≈˘⟨ assoc (π {m} j) (∧^ {m}) _ ⟩
+            (π {m} j ∘ ∧^ {m}) ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x)
+          ≈⟨ ∘-cong (tuple-π {m} _ j) ≈-refl ⟩
+            (∧ ∘ pair (BP X X) (π {m} j ∘ p₁ (BP (X^ m) (X^ m))) (π {m} j ∘ p₂ (BP (X^ m) (X^ m)))) ∘ pair (BP (X^ m) (X^ m)) y (transpose {m} {n} f ∘ x)
+          ≈⟨ {!!} ⟩
+            εm
+          ∎ where open ≈-Reasoning isEquiv
+        open ≈-Reasoning isEquiv
     conjugation f x y .proj₂ = {!!}
