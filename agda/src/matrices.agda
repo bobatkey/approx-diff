@@ -564,15 +564,31 @@ module matrices
     -- 1 + 1 = 1 implies f + f = f for all morphisms into or out of X (and hence X^n).
     idem-right : ∀ {A} (f : A ⇒ X) → (f +m f) ≈ f
     idem-right f =
-      ≈-trans (+-cong (homCM _ _) (≈-sym id-left) (≈-sym id-left))
-      (≈-trans (≈-sym (comp-bilinear₁ (id X) (id X) f))
-      (≈-trans (∘-cong scalar-idem ≈-refl) id-left))
+      begin
+        f +m f
+      ≈˘⟨ +-cong (homCM _ _) id-left id-left ⟩
+        (id X ∘ f) +m (id X ∘ f)
+      ≈˘⟨ comp-bilinear₁ (id X) (id X) f ⟩
+        (id X +m id X) ∘ f
+      ≈⟨ ∘-cong scalar-idem ≈-refl ⟩
+        id X ∘ f
+      ≈⟨ id-left ⟩
+        f
+      ∎ where open ≈-Reasoning isEquiv
 
     idem-left : ∀ {B} (f : X ⇒ B) → (f +m f) ≈ f
     idem-left f =
-      ≈-trans (+-cong (homCM _ _) (≈-sym id-right) (≈-sym id-right))
-      (≈-trans (≈-sym (comp-bilinear₂ f (id X) (id X)))
-      (≈-trans (∘-cong ≈-refl scalar-idem) id-right))
+      begin
+        f +m f
+      ≈˘⟨ +-cong (homCM _ _) id-right id-right ⟩
+        (f ∘ id X) +m (f ∘ id X)
+      ≈˘⟨ comp-bilinear₂ f (id X) (id X) ⟩
+        f ∘ (id X +m id X)
+      ≈⟨ ∘-cong ≈-refl scalar-idem ⟩
+        f ∘ id X
+      ≈⟨ id-right ⟩
+        f
+      ∎ where open ≈-Reasoning isEquiv
 
     _≤m_ : ∀ {A B} → A ⇒ B → A ⇒ B → Prop _
     f ≤m g = (f +m g) ≈ g
