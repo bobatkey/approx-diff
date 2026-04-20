@@ -433,7 +433,7 @@ module Matrix where
   import conjugate
   open import Data.Nat using (ℕ; zero; suc)
 
-  open import prop using (tt; _,_; proj₁; proj₂)
+  open import prop using (tt; _,_; proj₁; proj₂; _⇔_)
   import Data.Unit
   open import basics using (IsMeet; IsTop)
   import meet-semilattice
@@ -489,16 +489,64 @@ module Matrix where
     conj n .conjugate.Obj.∧-∨-distrib = ∧-∨-distrib n
     conj n .conjugate.Obj.∨-∧-distrib = ∨-∧-distrib n
 
-  open X^-Heyting using () renaming (conj to X^-conj)
+    -- Carrier-level negation on X^n (componentwise two.¬).
+    ¬^ : ∀ {n} → Carrier (X^ n) → Carrier (X^ n)
+    ¬^ {zero} _ = Data.Unit.tt
+    ¬^ {suc n} (a , u) = two.¬ a , ¬^ {n} u
+
+  open X^-Heyting using () renaming (conj to X^-conj; ¬^ to X^-¬)
   open conjugate using (_⇒c_)
   open _⇒c_
 
+  open SemiLat._⇒_ renaming (*→* to *→*J)
+  open join-semilattice._=>_ using (func)
+  open preorder._=>_ using (fun)
+
+  import galois
+  open galois using (_⇒g_)
+  open _⇒g_
+
+  -- X^n as a galois.Obj: carrier and joins from Mat, meets from X^-conj.
+  X^-gal : ℕ → galois.Obj
+  X^-gal n .galois.Obj.carrier = SemiLat.Obj.carrier (X^ n)
+  X^-gal n .galois.Obj.meets = conjugate.Obj.meets (X^-conj n)
+  X^-gal n .galois.Obj.joins = SemiLat.Obj.joins (X^ n)
+
+  -- Disjointness ↔ below complement.
+  #-↔-≤ : ∀ {n} (x y : conjugate.Obj.Carrier (X^-conj n)) →
+           conjugate.Obj._#_ (X^-conj n) x y ⇔ X^-conj n .conjugate.Obj._≤_ x (X^-¬ {n} y)
+  #-↔-≤ x y .proj₁ = {!!}
+  #-↔-≤ x y .proj₂ = {!!}
+
+  -- Negation is involutive.
+  ¬-involutive : ∀ {n} (x : conjugate.Obj.Carrier (X^-conj n)) →
+                 conjugate.Obj._≃_ (X^-conj n) x (X^-¬ {n} (X^-¬ {n} x))
+  ¬-involutive = {!!}
+
+  -- The adjoint: ¬ ∘ transpose f ∘ ¬ (as a meet-preserving map).
+  adjoint : ∀ {m n} → Category._⇒_ SemiLat.cat (X^ m) (X^ n) →
+            preorder._=>_ (SemiLat.Obj.carrier (X^ n)) (SemiLat.Obj.carrier (X^ m))
+  adjoint {m} {n} f .fun v = X^-¬ {m} (transpose {m} {n} f .*→*J .func .fun (X^-¬ {n} v))
+  adjoint {m} {n} f .preorder._=>_.mono = {!!}
+
+  -- ¬(transpose f v) ≃ adjoint f (¬ v)
+  ¬transpose≃adjoint¬ : ∀ {m n} (f : Category._⇒_ SemiLat.cat (X^ m) (X^ n))
+                         (v : galois.Obj.Carrier (X^-gal n)) →
+                         galois.Obj._≃_ (X^-gal m)
+                           (X^-¬ {m} (transpose {m} {n} f .*→*J .func .fun v))
+                           (adjoint {m} {n} f .fun (X^-¬ {n} v))
+  ¬transpose≃adjoint¬ = {!!}
+
+  -- (f, adjoint f) is a Galois connection (the main theorem).
+  to-gal : ∀ {m n} → Category._⇒_ SemiLat.cat (X^ m) (X^ n) → X^-gal n ⇒g X^-gal m
+  to-gal {m} {n} f .right = adjoint {m} {n} f
+  to-gal {m} {n} f .left = f .*→*J .func
+  to-gal {m} {n} f .left⊣right {x} {y} .proj₁ = {!!}
+  to-gal {m} {n} f .left⊣right {x} {y} .proj₂ = {!!}
+
+  -- (transpose f, f) is a conjugate pair; derived from to-gal via De Morgan duality.
   to-conj : ∀ {m n} → Category._⇒_ SemiLat.cat (X^ m) (X^ n) → X^-conj n ⇒c X^-conj m
   to-conj {m} {n} f .right = transpose {m} {n} f .*→*J .func
-    where open SemiLat._⇒_ renaming (*→* to *→*J)
-          open join-semilattice._=>_ using (func)
   to-conj {m} {n} f .left = f .*→*J .func
-    where open SemiLat._⇒_ renaming (*→* to *→*J)
-          open join-semilattice._=>_ using (func)
-  to-conj {m} {n} f .conjugate {x} {y} .proj₁ = {!!}  -- y # transpose(f)(x) → f(y) # x
-  to-conj {m} {n} f .conjugate {x} {y} .proj₂ = {!!}  -- f(y) # x → y # transpose(f)(x)
+  to-conj {m} {n} f .conjugate {x} {y} .proj₁ = {!!}
+  to-conj {m} {n} f .conjugate {x} {y} .proj₂ = {!!}
