@@ -428,16 +428,27 @@ module Matrix where
 
   open import Data.Nat using () renaming (_+_ to _+ℕ_)
 
-  𝓕-preserve-products : preserve-chosen-products 𝓕 Mat-products SemiLat-products
-  𝓕-preserve-products {x} {y} .inverse .*→* .func .fun uv i = concat {x} {y} (proj₁ uv) (proj₂ uv) i
-  𝓕-preserve-products {x} .inverse .*→* .func .mono (p , q) =
-    concat-preserves {x} two._≤_ p q
-  𝓕-preserve-products {x} .inverse .*→* .∨-preserving {uv} {uv'} i =
+  inv : ∀ {x y} → HasProducts.prod SemiLat-products (𝓕-obj x) (𝓕-obj y) ⇒ 𝓕-obj (x +ℕ y)
+  inv {x} {y} .*→* .func .fun uv i = concat {x} {y} (proj₁ uv) (proj₂ uv) i
+  inv {x} .*→* .func .mono (p , q) = concat-preserves {x} two._≤_ p q
+  inv {x} .*→* .∨-preserving {uv} {uv'} i =
     prop.proj₁ (concat-+ {x} (proj₁ uv) (proj₁ uv') (proj₂ uv) (proj₂ uv') i)
-  𝓕-preserve-products {x} .inverse .*→* .⊥-preserving i =
-    prop.proj₁ (concat-ε {x} i)
-  𝓕-preserve-products .f∘inverse≈id = {!!}
-  𝓕-preserve-products .inverse∘f≈id = {!!}
+  inv {x} .*→* .⊥-preserving i = prop.proj₁ (concat-ε {x} i)
+
+  split-concat : ∀ {x y} →
+    let fwd = HasProducts.pair SemiLat-products (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y}))
+    in Category._∘_ SemiLat.cat fwd (inv {x} {y}) ≃m Category.id SemiLat.cat _
+  split-concat = {!!}
+
+  concat-split : ∀ {x y} →
+    let fwd = HasProducts.pair SemiLat-products (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y}))
+    in Category._∘_ SemiLat.cat (inv {x} {y}) fwd ≃m Category.id SemiLat.cat _
+  concat-split = {!!}
+
+  𝓕-preserve-products : preserve-chosen-products 𝓕 Mat-products SemiLat-products
+  𝓕-preserve-products .inverse = inv
+  𝓕-preserve-products .f∘inverse≈id = split-concat
+  𝓕-preserve-products .inverse∘f≈id = concat-split
 
   open Interpretation
     cat terminal Mat-products
