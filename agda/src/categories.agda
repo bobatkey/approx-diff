@@ -27,6 +27,9 @@ record Category o m e : Set (suc (o ⊔ m ⊔ e)) where
     id  : ∀ x → x ⇒ x
     _∘_ : ∀ {x y z} → y ⇒ z → x ⇒ y → x ⇒ z
 
+  infixl 21 _∘_
+
+  field
     ∘-cong : ∀ {x y z} {f₁ f₂ : y ⇒ z} {g₁ g₂ : x ⇒ y} →
       f₁ ≈ f₂ → g₁ ≈ g₂ → (f₁ ∘ g₁) ≈ (f₂ ∘ g₂)
 
