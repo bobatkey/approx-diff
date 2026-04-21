@@ -395,4 +395,14 @@ module Matrix where
     (λ i → prop.proj₂ (Σ-cong {x} (λ j → IsMeet.cong two.⊓-isMeet (p i j) (two.≃-refl {v j}))))
   𝓕 .fmor-id {x} .f≃f .eqfunc .eqfun v =
     (λ i → prop.proj₁ (Σ-unit {x} i v)) , (λ i → prop.proj₂ (Σ-unit {x} i v))
-  𝓕 .fmor-comp = {!!}
+  𝓕 .fmor-comp {x} {y} f g .f≃f .eqfunc .eqfun v =
+    (λ i → prop.proj₁ (chain i)) , (λ i → prop.proj₂ (chain i))
+    where
+      chain : ∀ i → two._≃_
+        (Σ {x} (λ j → Σ {y} (λ k → two._⊓_ (f i k) (g k j)) two.⊓ v j))
+        (Σ {y} (λ k → f i k two.⊓ Σ {x} (λ j → g k j two.⊓ v j)))
+      chain i =
+        two.≃-trans (Σ-cong {x} (λ j → Σ-·-distribᵣ (λ k → f i k two.⊓ g k j) (v j)))
+          (two.≃-trans (Σ-cong {x} (λ j → Σ-cong {y} (λ k → ·-assoc {f i k} {g k j} {v j})))
+            (two.≃-trans (Σ-interchange {x} {y} (λ j k → f i k two.⊓ (g k j two.⊓ v j)))
+              (Σ-cong {y} (λ k → two.≃-sym (Σ-·-distribₗ (f i k) (λ j → g k j two.⊓ v j))))))
