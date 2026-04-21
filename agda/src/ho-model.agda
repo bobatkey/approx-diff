@@ -450,7 +450,17 @@ module Matrix where
       recover₂ i = two.≃-trans (Σ-p₂ {x} w i) (split₂-concat (proj₁ uv) (proj₂ uv) i)
 
   𝓕-concat-split : ∀ {x y} → inv {x} {y} ∘ₛ pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ≃m idₛ _
-  𝓕-concat-split = {!!}
+  𝓕-concat-split {x} .f≃f .eqfunc .eqfun w =
+    (λ i → two.≤-trans
+              (concat-preserves {x} two._≤_
+                (λ k → two.⊔-least {z = split₁ {x} w k} (prop.proj₁ (Σ-p₁ {x} w k)) tt)
+                (λ k → prop.proj₁ (Σ-p₂ {x} w k)) i)
+              (prop.proj₁ (concat-split {x} w i))) ,
+    (λ i → two.≤-trans
+              (prop.proj₂ (concat-split {x} w i))
+              (concat-preserves {x} two._≤_
+                (λ k → two.≤-trans (prop.proj₂ (Σ-p₁ {x} w k)) (two.⊔-upper₁ {y = O}))
+                (λ k → prop.proj₂ (Σ-p₂ {x} w k)) i))
 
   𝓕-preserve-products : preserve-chosen-products 𝓕 Mat-products SemiLat-products
   𝓕-preserve-products .inverse = inv
