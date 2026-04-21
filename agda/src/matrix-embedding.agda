@@ -52,3 +52,29 @@ module matrix-embedding
   cotuple : ∀ {n Z} → (Fin n → X ⇒ Z) → X^ n ⇒ Z
   cotuple {zero} f = from-initial
   cotuple {suc n} f = copair (BP X (X^ n)) (f zero) (cotuple (λ i → f (suc i)))
+
+  tuple-π : ∀ {n Z} (f : Fin n → Z ⇒ X) (i : Fin n) → (π i ∘ tuple f) ≈ f i
+  tuple-π {suc n} f zero = pair-p₁ (BP X (X^ n)) (f zero) (tuple (λ i → f (suc i)))
+  tuple-π {suc n} f (suc i) =
+    begin
+      (π i ∘ p₂ (BP X (X^ n))) ∘ tuple f
+    ≈⟨ assoc _ _ _ ⟩
+      π i ∘ (p₂ (BP X (X^ n)) ∘ tuple f)
+    ≈⟨ ∘-cong ≈-refl (pair-p₂ (BP X (X^ n)) (f zero) (tuple (λ i → f (suc i)))) ⟩
+      π i ∘ tuple (λ i → f (suc i))
+    ≈⟨ tuple-π (λ i → f (suc i)) i ⟩
+      f (suc i)
+    ∎ where open ≈-Reasoning isEquiv
+
+  cotuple-ι : ∀ {n Z} (f : Fin n → X ⇒ Z) (i : Fin n) → (cotuple f ∘ ι i) ≈ f i
+  cotuple-ι {suc n} f zero = copair-in₁ (BP X (X^ n)) (f zero) (cotuple (λ i → f (suc i)))
+  cotuple-ι {suc n} f (suc i) =
+    begin
+      cotuple f ∘ (in₂ (BP X (X^ n)) ∘ ι i)
+    ≈˘⟨ assoc _ _ _ ⟩
+      (cotuple f ∘ in₂ (BP X (X^ n))) ∘ ι i
+    ≈⟨ ∘-cong (copair-in₂ (BP X (X^ n)) (f zero) (cotuple (λ i → f (suc i)))) ≈-refl ⟩
+      cotuple (λ i → f (suc i)) ∘ ι i
+    ≈⟨ cotuple-ι (λ i → f (suc i)) i ⟩
+      f (suc i)
+    ∎ where open ≈-Reasoning isEquiv
