@@ -397,6 +397,7 @@ module Matrix where
   SemiLat-𝟘-initial = HasInitial.is-initial SemiLat.initial
 
   open import cmon-enriched using (CMonEnriched)
+
   scalar-· : ∀ {a b} → scalar (a · b) ≈ₛ scalar a ∘ₛ scalar b
   scalar-· {two.O} {two.O} = ≈ₛ-sym (CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched εm)
   scalar-· {two.O} {two.I} = ≈ₛ-sym (CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched (idₛ SemiLat.TWO))
