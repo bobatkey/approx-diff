@@ -424,6 +424,7 @@ module Matrix where
   𝓕-preserve-terminal .inverse∘f≈id .f≃f .eqfunc .eqfun v = (λ ()) , (λ ())
 
   SemiLat-products = biproducts→products SemiLat.cmon-enriched SemiLat-BP
+  open HasProducts SemiLat-products using (pair)
   Mat-products = biproducts→products cmon biproduct
 
   open import Data.Nat using () renaming (_+_ to _+ℕ_)
@@ -436,11 +437,11 @@ module Matrix where
   inv {x} .*→* .⊥-preserving i = prop.proj₁ (concat-ε {x} i)
 
   split-concat : ∀ {x y} →
-                 HasProducts.pair SemiLat-products (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ∘ₛ inv {x} {y} ≃m idₛ _
+                 pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ∘ₛ inv {x} {y} ≃m idₛ _
   split-concat = {!!}
 
   concat-split : ∀ {x y} →
-                 inv {x} {y} ∘ₛ HasProducts.pair SemiLat-products (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ≃m idₛ _
+                 inv {x} {y} ∘ₛ pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ≃m idₛ _
   concat-split = {!!}
 
   𝓕-preserve-products : preserve-chosen-products 𝓕 Mat-products SemiLat-products
