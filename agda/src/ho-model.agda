@@ -373,7 +373,6 @@ module Matrix where
   private
     module homCM {x y} = CommutativeMonoid (CMon.CMonEnriched.homCM SemiLat.cmon-enriched x y)
 
-  -- Preservation of addition: scalar (a + b) ≈ scalar a +m scalar b.
   scalar-+ : ∀ {a b} → scalar (a + b) ≈ₛ scalar a +m scalar b
   scalar-+ {two.O} {two.O} = ≈ₛ-sym homCM.+-lunit
   scalar-+ {two.O} {two.I} = ≈ₛ-sym homCM.+-lunit
@@ -390,7 +389,6 @@ module Matrix where
   SemiLat-𝟘 : SemiLat.Obj
   SemiLat-𝟘 = HasTerminal.witness SemiLat.terminal
 
-  -- Preservation of multiplication: scalar (a · b) ≈ scalar a ∘ₛ scalar b.
   open import cmon-enriched using (CMonEnriched)
   scalar-· : ∀ {a b} → scalar (a · b) ≈ₛ scalar a ∘ₛ scalar b
   scalar-· {two.O} {two.O} = ≈ₛ-sym (CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched εm)
