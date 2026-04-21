@@ -2,6 +2,7 @@
 
 open import prop-setoid using (Setoid)
 open import commutative-semiring using (CommutativeSemiring)
+open import commutative-monoid using (Idempotent)
 
 module matrix {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
 
@@ -110,6 +111,19 @@ e-sym (suc i) (suc j) = e-sym i j
 Σ-interchange {suc m} {n} f =
   trans (+-cong refl (Σ-interchange {m} {n} (λ i → f (suc i))))
         (Σ-+ {n} (f zero) (λ j → Σ {m} (λ i → f (suc i) j)))
+
+-- When addition is idempotent, Σ is monotone w.r.t. the induced order.
+module Idempotent+ (idem : Idempotent additive) where
+  open Idempotent idem
+
+  open import basics using (IsJoin)
+
+  +-mono : ∀ {x₁ x₂ y₁ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ + y₁) ≤ (x₂ + y₂)
+  +-mono = IsJoin.mono +-isJoin
+
+  Σ-mono : ∀ {n} {f g : Fin n → Carrier} → (∀ i → f i ≤ g i) → Σ {n} f ≤ Σ {n} g
+  Σ-mono {zero} _ = +-idem
+  Σ-mono {suc n} h = +-mono (h zero) (Σ-mono {n} (λ i → h (suc i)))
 
 ≈ₘ-isEquiv : ∀ {m n} → IsEquivalence (_≈ₘ_ {m} {n})
 ≈ₘ-isEquiv .IsEquivalence.refl i j = refl
