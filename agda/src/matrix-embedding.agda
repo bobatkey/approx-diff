@@ -209,6 +209,43 @@ module matrix-embedding
     module Mat = matrix S
     open matrix S using (Mat)
 
+  -- scalar preserves dot products.
+  scalar-Σ : ∀ {n} (f g : Fin n → Carrier) →
+    scalar (Mat.Σ (λ k → f k ·ₛ g k)) ≈ (cotuple {n} (λ k → scalar (f k)) ∘ tuple {n} (λ k → scalar (g k)))
+  scalar-Σ {zero} f g =
+    begin
+      scalar S-ε
+    ≈⟨ scalar-ε ⟩
+      εm
+    ≈˘⟨ comp-bilinear-ε₁ to-terminal ⟩
+      εm ∘ to-terminal
+    ≈˘⟨ ∘-cong (from-initial-ext εm) ≈-refl ⟩
+      from-initial ∘ to-terminal
+    ∎ where open ≈-Reasoning isEquiv
+  scalar-Σ {suc n} f g =
+    begin
+      scalar ((f zero ·ₛ g zero) +ₛ Mat.Σ (λ k → f (suc k) ·ₛ g (suc k)))
+    ≈⟨ scalar-+ ⟩
+      scalar (f zero ·ₛ g zero) +m scalar (Mat.Σ (λ k → f (suc k) ·ₛ g (suc k)))
+    ≈⟨ homCM _ _ .+-cong scalar-· (scalar-Σ (λ k → f (suc k)) (λ k → g (suc k))) ⟩
+      (scalar (f zero) ∘ scalar (g zero))
+      +m
+      (cotuple {n} (λ k → scalar (f (suc k))) ∘ tuple {n} (λ k → scalar (g (suc k))))
+    ≈˘⟨ homCM _ _ .+-cong
+          (∘-cong ≈-refl (pair-p₁ (BP X (X^ n)) _ _))
+          (∘-cong ≈-refl (pair-p₂ (BP X (X^ n)) _ _)) ⟩
+      (scalar (f zero) ∘ (p₁ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (scalar (g zero)) (tuple (λ k → scalar (g (suc k))))))
+      +m
+      (cotuple {n} (λ k → scalar (f (suc k))) ∘ (p₂ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (scalar (g zero)) (tuple (λ k → scalar (g (suc k))))))
+    ≈˘⟨ homCM _ _ .+-cong (assoc _ _ _) (assoc _ _ _) ⟩
+      ((scalar (f zero) ∘ p₁ (BP X (X^ n))) ∘ pair (BP X (X^ n)) (scalar (g zero)) (tuple (λ k → scalar (g (suc k)))))
+      +m
+      ((cotuple {n} (λ k → scalar (f (suc k))) ∘ p₂ (BP X (X^ n))) ∘ pair (BP X (X^ n)) (scalar (g zero)) (tuple (λ k → scalar (g (suc k)))))
+    ≈˘⟨ comp-bilinear₁ _ _ _ ⟩
+      copair (BP X (X^ n)) (scalar (f zero)) (cotuple {n} (λ k → scalar (f (suc k))))
+      ∘ pair (BP X (X^ n)) (scalar (g zero)) (tuple {n} (λ k → scalar (g (suc k))))
+    ∎ where open ≈-Reasoning isEquiv
+
   -- scalar applied to the Kronecker delta e matches projection-injection.
   scalar-e : ∀ {n} (i j : Fin n) → scalar (Mat.e i j) ≈ (π {n} i ∘ ι {n} j)
   scalar-e {suc n} zero zero =
@@ -275,4 +312,28 @@ module matrix-embedding
     ≈˘⟨ ∘-cong ≈-refl id-left ⟩
       π {n} i ∘ (id (X^ n) ∘ ι {n} j)
     ∎) where open ≈-Reasoning isEquiv
-  𝓕 .fmor-comp = {!!}
+  𝓕 .fmor-comp {x} {y} {z} M N = entry-ext (λ i j →
+    begin
+      entry (𝓕 .fmor (M Mat.∘ N)) i j
+    ≈⟨ entry-𝓕 (M Mat.∘ N) i j ⟩
+      scalar (Mat.Σ (λ k → M i k ·ₛ N k j))
+    ≈⟨ scalar-Σ (λ k → M i k) (λ k → N k j) ⟩
+      cotuple {y} (λ k → scalar (M i k)) ∘ tuple {y} (λ k → scalar (N k j))
+    ≈˘⟨ ∘-cong (cotuple-cong {y} _ _ (λ k → entry-𝓕 M i k))
+               (tuple-cong {y} _ _ (λ k → entry-𝓕 N k j)) ⟩
+      cotuple {y} (λ k → entry (𝓕 .fmor M) i k) ∘ tuple {y} (λ k → entry (𝓕 .fmor N) k j)
+    ≈˘⟨ entry-comp {x} {y} {z} (𝓕 .fmor N) (𝓕 .fmor M) i j ⟩
+      π {z} i ∘ ((𝓕 .fmor M ∘ 𝓕 .fmor N) ∘ ι {x} j)
+    ∎) where
+      open ≈-Reasoning isEquiv
+      entry-𝓕 : ∀ {m n} (M : Mat n m) (i : Fin n) (j : Fin m) → entry (𝓕 .fmor M) i j ≈ scalar (M i j)
+      entry-𝓕 {m} {n} M i j =
+        begin
+          π {n} i ∘ (tuple {n} (λ i' → cotuple {m} (λ j' → scalar (M i' j'))) ∘ ι {m} j)
+        ≈˘⟨ assoc _ _ _ ⟩
+          (π {n} i ∘ tuple {n} (λ i' → cotuple {m} (λ j' → scalar (M i' j')))) ∘ ι {m} j
+        ≈⟨ ∘-cong (tuple-π {n} _ i) ≈-refl ⟩
+          cotuple {m} (λ j' → scalar (M i j')) ∘ ι {m} j
+        ≈⟨ cotuple-ι {m} _ j ⟩
+          scalar (M i j)
+        ∎
