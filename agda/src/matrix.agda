@@ -56,33 +56,13 @@ open import prop using (tt)
 open import prop-setoid using (IsEquivalence)
 open import categories using (Category)
 
-≈ₘ-isEquiv : ∀ {m n} → IsEquivalence (_≈ₘ_ {m} {n})
-≈ₘ-isEquiv .IsEquivalence.refl i j = refl
-≈ₘ-isEquiv .IsEquivalence.sym p i j = sym (p i j)
-≈ₘ-isEquiv .IsEquivalence.trans p q i j = trans (p i j) (q i j)
-
-∘-cong : ∀ {m n k} {M₁ M₂ : Mat m n} {N₁ N₂ : Mat n k} →
-  M₁ ≈ₘ M₂ → N₁ ≈ₘ N₂ → (M₁ ∘ N₁) ≈ₘ (M₂ ∘ N₂)
-∘-cong {m} {n} p q i k = Σ-cong {n} (λ j → ·-cong (p i j) (q j k))
-  where
-    Σ-cong : ∀ {n} {f g : Fin n → Carrier} → (∀ i → f i ≈ g i) → Σ {n} f ≈ Σ {n} g
-    Σ-cong {zero} _ = refl
-    Σ-cong {suc n} h = +-cong (h zero) (Σ-cong {n} (λ i → h (suc i)))
-
-id-left : ∀ {m n} {M : Mat m n} → (I ∘ M) ≈ₘ M
-id-left {m} {n} i k = {!!}
-
-id-right : ∀ {m n} {M : Mat m n} → (M ∘ I) ≈ₘ M
-id-right {m} {n} i k = {!!}
-
-assoc : ∀ {m n k l} (M : Mat m n) (N : Mat n k) (P : Mat k l) →
-  ((M ∘ N) ∘ P) ≈ₘ (M ∘ (N ∘ P))
-assoc M N P i l = {!!}
-
--- Σ respects pointwise ≈.
 Σ-cong : ∀ {n} {f g : Fin n → Carrier} → (∀ i → f i ≈ g i) → Σ {n} f ≈ Σ {n} g
 Σ-cong {zero} _ = refl
 Σ-cong {suc n} h = +-cong (h zero) (Σ-cong {n} (λ i → h (suc i)))
+
+-- Kronecker delta is symmetric.
+e-sym : ∀ {n} (i j : Fin n) → e i j ≈ e j i
+e-sym = {!!}
 
 -- Picking out the i-th element: Σⱼ e(i,j) · f(j) ≈ f(i).
 Σ-unit : ∀ {n} (i : Fin n) (f : Fin n → Carrier) → Σ {n} (λ j → e i j · f j) ≈ f i
@@ -95,6 +75,27 @@ assoc M N P i l = {!!}
 -- Interchange (Fubini): Σᵢ Σⱼ f(i,j) ≈ Σⱼ Σᵢ f(i,j).
 Σ-interchange : ∀ {m n} (f : Fin m → Fin n → Carrier) → Σ {m} (λ i → Σ {n} (f i)) ≈ Σ {n} (λ j → Σ {m} (λ i → f i j))
 Σ-interchange = {!!}
+
+≈ₘ-isEquiv : ∀ {m n} → IsEquivalence (_≈ₘ_ {m} {n})
+≈ₘ-isEquiv .IsEquivalence.refl i j = refl
+≈ₘ-isEquiv .IsEquivalence.sym p i j = sym (p i j)
+≈ₘ-isEquiv .IsEquivalence.trans p q i j = trans (p i j) (q i j)
+
+∘-cong : ∀ {m n k} {M₁ M₂ : Mat m n} {N₁ N₂ : Mat n k} →
+  M₁ ≈ₘ M₂ → N₁ ≈ₘ N₂ → (M₁ ∘ N₁) ≈ₘ (M₂ ∘ N₂)
+∘-cong {m} {n} p q i k = Σ-cong {n} (λ j → ·-cong (p i j) (q j k))
+
+id-left : ∀ {m n} {M : Mat m n} → (I ∘ M) ≈ₘ M
+id-left {M = M} i k = Σ-unit i (λ j → M j k)
+
+id-right : ∀ {m n} {M : Mat m n} → (M ∘ I) ≈ₘ M
+id-right {n = n} {M = M} i k =
+  trans (Σ-cong {n} (λ j → ·-cong refl (e-sym j k)))
+        (trans (Σ-cong {n} (λ j → ·-comm)) (Σ-unit k (M i)))
+
+assoc : ∀ {m n k l} (M : Mat m n) (N : Mat n k) (P : Mat k l) →
+  ((M ∘ N) ∘ P) ≈ₘ (M ∘ (N ∘ P))
+assoc M N P i l = {!!}
 
 cat : Category _ _ _
 cat .Category.obj = ℕ
