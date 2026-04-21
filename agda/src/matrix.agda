@@ -164,16 +164,13 @@ _+ₘ_ : ∀ {m n} → Mat m n → Mat m n → Mat m n
 Σ-distribₗ : ∀ {n} (f g : Fin n → Carrier) → Σ {n} (λ i → f i + g i) ≈ Σ {n} f + Σ {n} g
 Σ-distribₗ {n} f g = sym (Σ-+ {n} f g)
 
--- Composition distributes over +ₘ on the left.
-comp-bilinear₁ : ∀ {m n k} (M₁ M₂ : Mat m n) (N : Mat n k) →
-  ((M₁ +ₘ M₂) ∘ N) ≈ₘ ((M₁ ∘ N) +ₘ (M₂ ∘ N))
+comp-bilinear₁ : ∀ {m n k} (M₁ M₂ : Mat m n) (N : Mat n k) → ((M₁ +ₘ M₂) ∘ N) ≈ₘ ((M₁ ∘ N) +ₘ (M₂ ∘ N))
 comp-bilinear₁ {n = n} M₁ M₂ N i k =
   trans (Σ-cong {n} (λ j → ·-+-distribᵣ))
         (sym (Σ-+ {n} (λ j → M₁ i j · N j k) (λ j → M₂ i j · N j k)))
 
 -- Composition distributes over +ₘ on the right.
-comp-bilinear₂ : ∀ {m n k} (M : Mat m n) (N₁ N₂ : Mat n k) →
-  (M ∘ (N₁ +ₘ N₂)) ≈ₘ ((M ∘ N₁) +ₘ (M ∘ N₂))
+comp-bilinear₂ : ∀ {m n k} (M : Mat m n) (N₁ N₂ : Mat n k) → (M ∘ (N₁ +ₘ N₂)) ≈ₘ ((M ∘ N₁) +ₘ (M ∘ N₂))
 comp-bilinear₂ {n = n} M N₁ N₂ i k =
   trans (Σ-cong {n} (λ j → ·-+-distribₗ))
         (sym (Σ-+ {n} (λ j → M i j · N₁ j k) (λ j → M i j · N₂ j k)))
@@ -230,14 +227,52 @@ in₂ {zero}  i j = e i j
 in₂ {suc m} zero _ = ε
 in₂ {suc m} (suc i) j = in₂ {m} i j
 
+-- The four block-identity laws, all by induction on m.
+-- Helper: Σ of (ε · f j) ≈ ε.
+private
+  Σ-ε· : ∀ {n} (f : Fin n → Carrier) → Σ {n} (λ j → ε · f j) ≈ ε
+  Σ-ε· {n} f = trans (Σ-cong {n} (λ j → ε-annihilₗ)) (Σ-ε {n})
+
+  ·ε-Σ : ∀ {n} (f : Fin n → Carrier) → Σ {n} (λ j → f j · ε) ≈ ε
+  ·ε-Σ {n} f = trans (Σ-cong {n} (λ j → ε-annihilᵣ)) (Σ-ε {n})
+
+id-1 : ∀ m n → (p₁ {m} {n} ∘ in₁ {m} {n}) ≈ₘ I
+id-1 (suc m) n zero zero =
+  trans (+-cong ·-lunit (Σ-ε· {m +ℕ n} _)) (trans +-comm +-lunit)
+id-1 (suc m) n zero (suc k) =
+  trans (+-cong ε-annihilᵣ (Σ-ε· {m +ℕ n} _)) +-lunit
+id-1 (suc m) n (suc i) zero =
+  trans (+-cong ε-annihilₗ (·ε-Σ {m +ℕ n} _)) +-lunit
+id-1 (suc m) n (suc i) (suc k) =
+  trans (+-cong ε-annihilₗ refl) (trans +-lunit (id-1 m n i k))
+
+id-2 : ∀ m n → (p₂ {m} {n} ∘ in₂ {m} {n}) ≈ₘ I
+id-2 zero n i j = Σ-unit i (λ k → e k j)
+id-2 (suc m) n i j =
+  trans (+-cong ε-annihilₗ refl) (trans +-lunit (id-2 m n i j))
+
+zero-1 : ∀ m n → (p₁ {m} {n} ∘ in₂ {m} {n}) ≈ₘ εₘ
+zero-1 zero n ()
+zero-1 (suc m) n zero j =
+  trans (+-cong ε-annihilᵣ (Σ-ε· {m +ℕ n} _)) +-lunit
+zero-1 (suc m) n (suc i) j =
+  trans (+-cong ε-annihilₗ refl) (trans +-lunit (zero-1 m n i j))
+
+zero-2 : ∀ m n → (p₂ {m} {n} ∘ in₁ {m} {n}) ≈ₘ εₘ
+zero-2 zero n _ ()
+zero-2 (suc m) n i zero =
+  trans (+-cong ε-annihilₗ (·ε-Σ {m +ℕ n} _)) +-lunit
+zero-2 (suc m) n i (suc j) =
+  trans (+-cong ε-annihilₗ refl) (trans +-lunit (zero-2 m n i j))
+
 biproduct : ∀ m n → Biproduct cmon m n
 biproduct m n .Biproduct.prod = m +ℕ n
 biproduct m n .Biproduct.p₁ = p₁ {m} {n}
 biproduct m n .Biproduct.p₂ = p₂ {m} {n}
 biproduct m n .Biproduct.in₁ = in₁ {m} {n}
 biproduct m n .Biproduct.in₂ = in₂ {m} {n}
-biproduct m n .Biproduct.id-1 = {!!}
-biproduct m n .Biproduct.id-2 = {!!}
-biproduct m n .Biproduct.zero-1 = {!!}
-biproduct m n .Biproduct.zero-2 = {!!}
+biproduct m n .Biproduct.id-1 = id-1 m n
+biproduct m n .Biproduct.id-2 = id-2 m n
+biproduct m n .Biproduct.zero-1 = zero-1 m n
+biproduct m n .Biproduct.zero-2 = zero-2 m n
 biproduct m n .Biproduct.id-+ = {!!}
