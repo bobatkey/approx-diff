@@ -23,12 +23,13 @@ module matrix-embedding
   {A : Setoid o' ℓ} (S : CommutativeSemiring A)
   (let open Category 𝒞)
   (let open CMonEnriched CM)
-  (let open CommutativeSemiring S using (Carrier; ε; _+_; _·_) renaming (ι to 𝟙))
+  (let open CommutativeSemiring S using (Carrier) renaming (ε to S-ε; ι to S-ι; _+_ to _+ₛ_; _·_ to _·ₛ_; _≈_ to _≈ₛ_))
   (scalar : Carrier → X ⇒ X)
-  (scalar-ε : scalar ε ≈ εm)
-  (scalar-𝟙 : scalar 𝟙 ≈ id X)
-  (scalar-+ : ∀ {a b} → scalar (a + b) ≈ scalar a +m scalar b)
-  (scalar-· : ∀ {a b} → scalar (a · b) ≈ scalar a ∘ scalar b)
+  (scalar-cong : ∀ {a b} → a ≈ₛ b → scalar a ≈ scalar b)
+  (scalar-ε : scalar S-ε ≈ εm)
+  (scalar-ι : scalar S-ι ≈ id X)
+  (scalar-+ : ∀ {a b} → scalar (a +ₛ b) ≈ scalar a +m scalar b)
+  (scalar-· : ∀ {a b} → scalar (a ·ₛ b) ≈ scalar a ∘ scalar b)
   where
 
   open CommutativeMonoid
@@ -183,7 +184,8 @@ module matrix-embedding
   𝓕 : Functor Mat.cat 𝒞
   𝓕 .fobj = X^
   𝓕 .fmor M = tuple (λ i → cotuple (λ j → scalar (M i j)))
-  𝓕 .fmor-cong = {!!}
+  𝓕 .fmor-cong p =
+    tuple-cong _ _ (λ i → cotuple-cong _ _ (λ j → scalar-cong (p i j)))
   𝓕 .fmor-id = {!!}
   𝓕 .fmor-comp = {!!}
 
