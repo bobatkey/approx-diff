@@ -385,7 +385,6 @@ module Matrix where
       I-idem-+m .SemiLat._≃m_.f≃f .JSL._≃m_.eqfunc .preorder._≃m_.eqfun two.O = two.≤-refl {two.O} , two.≤-refl {two.O}
       I-idem-+m .SemiLat._≃m_.f≃f .JSL._≃m_.eqfunc .preorder._≃m_.eqfun two.I = two.≤-refl {two.I} , two.≤-refl {two.I}
 
-  -- Zero object in SemiLat (shared by terminal and initial).
   open import categories using (IsInitial; IsTerminal; HasInitial)
 
   SemiLat-𝟘 : SemiLat.Obj
