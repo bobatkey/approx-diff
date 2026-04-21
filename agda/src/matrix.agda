@@ -44,6 +44,8 @@ I = e
 _∘_ : ∀ {m n k} → Mat m n → Mat n k → Mat m k
 (M ∘ N) i k = Σ (λ j → M i j · N j k)
 
+infixl 21 _∘_
+
 _ᵀ : ∀ {m n} → Mat m n → Mat n m
 (M ᵀ) i j = M j i
 
@@ -114,18 +116,18 @@ e-sym (suc i) (suc j) = e-sym i j
 ≈ₘ-isEquiv .IsEquivalence.sym p i j = sym (p i j)
 ≈ₘ-isEquiv .IsEquivalence.trans p q i j = trans (p i j) (q i j)
 
-∘-cong : ∀ {m n k} {M₁ M₂ : Mat m n} {N₁ N₂ : Mat n k} → M₁ ≈ₘ M₂ → N₁ ≈ₘ N₂ → (M₁ ∘ N₁) ≈ₘ (M₂ ∘ N₂)
+∘-cong : ∀ {m n k} {M₁ M₂ : Mat m n} {N₁ N₂ : Mat n k} → M₁ ≈ₘ M₂ → N₁ ≈ₘ N₂ → M₁ ∘ N₁ ≈ₘ M₂ ∘ N₂
 ∘-cong {m} {n} p q i k = Σ-cong {n} (λ j → ·-cong (p i j) (q j k))
 
-id-left : ∀ {m n} {M : Mat m n} → (I ∘ M) ≈ₘ M
+id-left : ∀ {m n} {M : Mat m n} → I ∘ M ≈ₘ M
 id-left {M = M} i k = Σ-unit i (λ j → M j k)
 
-id-right : ∀ {m n} {M : Mat m n} → (M ∘ I) ≈ₘ M
+id-right : ∀ {m n} {M : Mat m n} → M ∘ I ≈ₘ M
 id-right {n = n} {M = M} i k =
   trans (Σ-cong {n} (λ j → ·-cong refl (e-sym j k)))
         (trans (Σ-cong {n} (λ j → ·-comm)) (Σ-unit k (M i)))
 
-assoc : ∀ {m n k l} (M : Mat m n) (N : Mat n k) (P : Mat k l) → ((M ∘ N) ∘ P) ≈ₘ (M ∘ (N ∘ P))
+assoc : ∀ {m n k l} (M : Mat m n) (N : Mat n k) (P : Mat k l) → (M ∘ N) ∘ P ≈ₘ M ∘ (N ∘ P)
 assoc {n = n} {k} M N P i l =
   trans (Σ-cong {k} (λ j → Σ-·-distribᵣ (λ r → M i r · N r j) (P j l)))
     (trans (Σ-cong {k} (λ j → Σ-cong {n} (λ r → ·-assoc)))
@@ -152,6 +154,8 @@ open import Data.Nat using () renaming (_+_ to _+ℕ_)
 _+ₘ_ : ∀ {m n} → Mat m n → Mat m n → Mat m n
 (M +ₘ N) i j = M i j + N i j
 
+infixl 21 _+ₘ_
+
 -- Zero matrix.
 εₘ : ∀ {m n} → Mat m n
 εₘ _ _ = ε
@@ -164,24 +168,24 @@ _+ₘ_ : ∀ {m n} → Mat m n → Mat m n → Mat m n
 Σ-distribₗ : ∀ {n} (f g : Fin n → Carrier) → Σ {n} (λ i → f i + g i) ≈ Σ {n} f + Σ {n} g
 Σ-distribₗ {n} f g = sym (Σ-+ {n} f g)
 
-comp-bilinear₁ : ∀ {m n k} (M₁ M₂ : Mat m n) (N : Mat n k) → ((M₁ +ₘ M₂) ∘ N) ≈ₘ ((M₁ ∘ N) +ₘ (M₂ ∘ N))
+comp-bilinear₁ : ∀ {m n k} (M₁ M₂ : Mat m n) (N : Mat n k) → (M₁ +ₘ M₂) ∘ N ≈ₘ (M₁ ∘ N) +ₘ (M₂ ∘ N)
 comp-bilinear₁ {n = n} M₁ M₂ N i k =
   trans (Σ-cong {n} (λ j → ·-+-distribᵣ))
         (sym (Σ-+ {n} (λ j → M₁ i j · N j k) (λ j → M₂ i j · N j k)))
 
 -- Composition distributes over +ₘ on the right.
-comp-bilinear₂ : ∀ {m n k} (M : Mat m n) (N₁ N₂ : Mat n k) → (M ∘ (N₁ +ₘ N₂)) ≈ₘ ((M ∘ N₁) +ₘ (M ∘ N₂))
+comp-bilinear₂ : ∀ {m n k} (M : Mat m n) (N₁ N₂ : Mat n k) → M ∘ (N₁ +ₘ N₂) ≈ₘ (M ∘ N₁) +ₘ (M ∘ N₂)
 comp-bilinear₂ {n = n} M N₁ N₂ i k =
   trans (Σ-cong {n} (λ j → ·-+-distribₗ))
         (sym (Σ-+ {n} (λ j → M i j · N₁ j k) (λ j → M i j · N₂ j k)))
 
 -- Composition with zero matrix on the left.
-comp-ε₁ : ∀ {m n k} (N : Mat n k) → (εₘ ∘ N) ≈ₘ (εₘ {m} {k})
+comp-ε₁ : ∀ {m n k} (N : Mat n k) → εₘ ∘ N ≈ₘ εₘ {m} {k}
 comp-ε₁ {n = n} N i k =
   trans (Σ-cong {n} (λ j → ε-annihilₗ)) (Σ-ε {n})
 
 -- Composition with zero matrix on the right.
-comp-ε₂ : ∀ {m n k} (M : Mat m n) → (M ∘ εₘ) ≈ₘ (εₘ {m} {k})
+comp-ε₂ : ∀ {m n k} (M : Mat m n) → M ∘ εₘ ≈ₘ εₘ {m} {k}
 comp-ε₂ {n = n} M i k =
   trans (Σ-cong {n} (λ j → ε-annihilᵣ)) (Σ-ε {n})
 
@@ -236,7 +240,7 @@ private
   ·ε-Σ : ∀ {n} (f : Fin n → Carrier) → Σ {n} (λ j → f j · ε) ≈ ε
   ·ε-Σ {n} f = trans (Σ-cong {n} (λ j → ε-annihilᵣ)) (Σ-ε {n})
 
-id-1 : ∀ m n → (p₁ {m} {n} ∘ in₁ {m} {n}) ≈ₘ I
+id-1 : ∀ m n → p₁ {m} {n} ∘ in₁ {m} {n} ≈ₘ I
 id-1 (suc m) n zero zero =
   trans (+-cong ·-lunit (Σ-ε· {m +ℕ n} _)) (trans +-comm +-lunit)
 id-1 (suc m) n zero (suc k) =
@@ -246,19 +250,19 @@ id-1 (suc m) n (suc i) zero =
 id-1 (suc m) n (suc i) (suc k) =
   trans (+-cong ε-annihilₗ refl) (trans +-lunit (id-1 m n i k))
 
-id-2 : ∀ m n → (p₂ {m} {n} ∘ in₂ {m} {n}) ≈ₘ I
+id-2 : ∀ m n → p₂ {m} {n} ∘ in₂ {m} {n} ≈ₘ I
 id-2 zero n i j = Σ-unit i (λ k → e k j)
 id-2 (suc m) n i j =
   trans (+-cong ε-annihilₗ refl) (trans +-lunit (id-2 m n i j))
 
-zero-1 : ∀ m n → (p₁ {m} {n} ∘ in₂ {m} {n}) ≈ₘ εₘ
+zero-1 : ∀ m n → p₁ {m} {n} ∘ in₂ {m} {n} ≈ₘ εₘ
 zero-1 zero n ()
 zero-1 (suc m) n zero j =
   trans (+-cong ε-annihilᵣ (Σ-ε· {m +ℕ n} _)) +-lunit
 zero-1 (suc m) n (suc i) j =
   trans (+-cong ε-annihilₗ refl) (trans +-lunit (zero-1 m n i j))
 
-zero-2 : ∀ m n → (p₂ {m} {n} ∘ in₁ {m} {n}) ≈ₘ εₘ
+zero-2 : ∀ m n → p₂ {m} {n} ∘ in₁ {m} {n} ≈ₘ εₘ
 zero-2 zero n _ ()
 zero-2 (suc m) n i zero =
   trans (+-cong ε-annihilₗ (·ε-Σ {m +ℕ n} _)) +-lunit
