@@ -386,8 +386,16 @@ module Matrix where
       I-idem-+m .SemiLat._≃m_.f≃f .JSL._≃m_.eqfunc .preorder._≃m_.eqfun two.I = two.≤-refl {two.I} , two.≤-refl {two.I}
 
   -- Zero object in SemiLat (shared by terminal and initial).
+  open import categories using (IsInitial; IsTerminal; HasInitial)
+
   SemiLat-𝟘 : SemiLat.Obj
   SemiLat-𝟘 = HasTerminal.witness SemiLat.terminal
+
+  SemiLat-𝟘-terminal : IsTerminal SemiLat.cat SemiLat-𝟘
+  SemiLat-𝟘-terminal = HasTerminal.is-terminal SemiLat.terminal
+
+  SemiLat-𝟘-initial : IsInitial SemiLat.cat SemiLat-𝟘
+  SemiLat-𝟘-initial = HasInitial.is-initial SemiLat.initial
 
   open import cmon-enriched using (CMonEnriched)
   scalar-· : ∀ {a b} → scalar (a · b) ≈ₛ scalar a ∘ₛ scalar b
