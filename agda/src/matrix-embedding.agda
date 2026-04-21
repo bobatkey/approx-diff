@@ -21,21 +21,20 @@ module matrix-embedding
   (𝟘-terminal : IsTerminal 𝒞 𝟘)
   (X : Category.obj 𝒞)
   {A : Setoid o' ℓ} (S : CommutativeSemiring A)
-  (scalar : CommutativeSemiring.Carrier S → Category._⇒_ 𝒞 X X)
-  (scalar-ε : Category._≈_ 𝒞 (scalar (CommutativeSemiring.ε S)) (CMonEnriched.εm CM))
-  (scalar-ι : Category._≈_ 𝒞 (scalar (CommutativeSemiring.ι S)) (Category.id 𝒞 X))
-  (scalar-+ : ∀ {a b} → Category._≈_ 𝒞 (scalar (CommutativeSemiring._+_ S a b))
-                                        (CMonEnriched._+m_ CM (scalar a) (scalar b)))
-  (scalar-· : ∀ {a b} → Category._≈_ 𝒞 (scalar (CommutativeSemiring._·_ S a b))
-                                        (Category._∘_ 𝒞 (scalar a) (scalar b)))
+  (let open Category 𝒞)
+  (let open CMonEnriched CM)
+  (let open CommutativeSemiring S using (Carrier; ε; _+_; _·_) renaming (ι to 𝟙))
+  (scalar : Carrier → X ⇒ X)
+  (scalar-ε : scalar ε ≈ εm)
+  (scalar-𝟙 : scalar 𝟙 ≈ id X)
+  (scalar-+ : ∀ {a b} → scalar (a + b) ≈ scalar a +m scalar b)
+  (scalar-· : ∀ {a b} → scalar (a · b) ≈ scalar a ∘ scalar b)
   where
 
-  open CMonEnriched CM
   open CommutativeMonoid
   open Biproduct
   open IsInitial 𝟘-initial
   open IsTerminal 𝟘-terminal
-  open Category 𝒞
 
   _⊕_ : obj → obj → obj
   x ⊕ y = prod (BP x y)

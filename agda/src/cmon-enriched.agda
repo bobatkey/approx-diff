@@ -21,6 +21,8 @@ record CMonEnriched {o m e} (𝒞 : Category o m e) : Set (o ⊔ m ⊔ e) where
   _+m_ : ∀ {x y} → x ⇒ y → x ⇒ y → x ⇒ y
   f +m g = homCM _ _ ._+_ f g
 
+  infixl 21 _+m_
+
   εm : ∀ {x y} → x ⇒ y
   εm {x} {y} = homCM x y .ε
 
