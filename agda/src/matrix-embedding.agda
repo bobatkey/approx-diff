@@ -2,22 +2,32 @@
 
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Fin using (Fin; zero; suc)
-open import prop-setoid using (module ≈-Reasoning)
+open import prop-setoid using (Setoid; module ≈-Reasoning)
 open import categories using (Category; IsInitial; IsTerminal; HasInitial; HasTerminal)
 open import cmon-enriched using (CMonEnriched; Biproduct)
 open import commutative-monoid using (CommutativeMonoid)
+open import commutative-semiring using (CommutativeSemiring)
 
 -- Embedding of Mat(S) into a CMon-enriched category 𝒞 with binary biproducts and zero object, via a chosen
--- scalar object X whose endomorphism semiring is (isomorphic to) S. The representation functor builds the
--- SemiLat morphism for a matrix M by taking the n-ary pair of n-ary copairs of the matrix entries.
+-- scalar object X whose endomorphism semiring is (isomorphic to) S, witnessed by a semiring homomorphism
+-- scalar : Carrier S → (X ⇒ X). The representation functor builds the morphism for a matrix M by taking
+-- the n-ary pair of n-ary copairs of the scalar-embedded matrix entries.
 module matrix-embedding
-  {o m e} {𝒞 : Category o m e}
+  {o m e o' ℓ} {𝒞 : Category o m e}
   (CM : CMonEnriched 𝒞)
   (BP : ∀ x y → Biproduct CM x y)
   (𝟘 : Category.obj 𝒞)
   (𝟘-initial : IsInitial 𝒞 𝟘)
   (𝟘-terminal : IsTerminal 𝒞 𝟘)
   (X : Category.obj 𝒞)
+  {A : Setoid o' ℓ} (S : CommutativeSemiring A)
+  (scalar : CommutativeSemiring.Carrier S → Category._⇒_ 𝒞 X X)
+  (scalar-ε : Category._≈_ 𝒞 (scalar (CommutativeSemiring.ε S)) (CMonEnriched.εm CM))
+  (scalar-ι : Category._≈_ 𝒞 (scalar (CommutativeSemiring.ι S)) (Category.id 𝒞 X))
+  (scalar-+ : ∀ {a b} → Category._≈_ 𝒞 (scalar (CommutativeSemiring._+_ S a b))
+                                        (CMonEnriched._+m_ CM (scalar a) (scalar b)))
+  (scalar-· : ∀ {a b} → Category._≈_ 𝒞 (scalar (CommutativeSemiring._·_ S a b))
+                                        (Category._∘_ 𝒞 (scalar a) (scalar b)))
   where
 
   open CMonEnriched CM
