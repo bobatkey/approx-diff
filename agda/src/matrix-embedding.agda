@@ -180,12 +180,59 @@ module matrix-embedding
     module Mat = matrix S
     open matrix S using (Mat)
 
+  -- scalar applied to the Kronecker delta e matches projection-injection.
+  scalar-e : ∀ {n} (i j : Fin n) → scalar (Mat.e i j) ≈ (π {n} i ∘ ι {n} j)
+  scalar-e {suc n} zero zero =
+    begin
+      scalar S-ι ≈⟨ scalar-ι ⟩ id X
+    ≈˘⟨ id-1 (BP X (X^ n)) ⟩
+      p₁ (BP X (X^ n)) ∘ in₁ (BP X (X^ n))
+    ∎
+    where open ≈-Reasoning isEquiv
+  scalar-e {suc n} zero (suc j) =
+    begin
+      scalar S-ε
+    ≈⟨ scalar-ε ⟩
+      εm
+    ≈˘⟨ comp-bilinear-ε₁ _ ⟩
+      εm ∘ ι j
+    ≈˘⟨ ∘-cong (zero-1 (BP X (X^ n))) ≈-refl ⟩
+      (p₁ (BP X (X^ n)) ∘ in₂ (BP X (X^ n))) ∘ ι j
+    ≈⟨ assoc _ _ _ ⟩
+      p₁ (BP X (X^ n)) ∘ (in₂ (BP X (X^ n)) ∘ ι j)
+    ∎ where open ≈-Reasoning isEquiv
+  scalar-e {suc n} (suc i) zero =
+    begin
+      scalar S-ε
+    ≈⟨ scalar-ε ⟩
+      εm
+    ≈˘⟨ comp-bilinear-ε₂ _ ⟩
+      π i ∘ εm
+    ≈˘⟨ ∘-cong ≈-refl (zero-2 (BP X (X^ n))) ⟩
+      π i ∘ (p₂ (BP X (X^ n)) ∘ in₁ (BP X (X^ n)))
+    ≈˘⟨ assoc _ _ _ ⟩
+      (π i ∘ p₂ (BP X (X^ n))) ∘ in₁ (BP X (X^ n))
+    ∎ where open ≈-Reasoning isEquiv
+  scalar-e {suc n} (suc i) (suc j) =
+    begin
+      scalar (Mat.e i j)
+    ≈⟨ scalar-e i j ⟩
+      π i ∘ ι j
+    ≈˘⟨ ∘-cong ≈-refl id-left ⟩
+      π i ∘ (id _ ∘ ι j)
+    ≈˘⟨ ∘-cong ≈-refl (∘-cong (id-2 (BP X (X^ n))) ≈-refl) ⟩
+      π i ∘ ((p₂ (BP X (X^ n)) ∘ in₂ (BP X (X^ n))) ∘ ι j)
+    ≈⟨ ∘-cong ≈-refl (assoc _ _ _) ⟩
+      π i ∘ (p₂ (BP X (X^ n)) ∘ (in₂ (BP X (X^ n)) ∘ ι j))
+    ≈˘⟨ assoc _ _ _ ⟩
+      (π i ∘ p₂ (BP X (X^ n))) ∘ (in₂ (BP X (X^ n)) ∘ ι j)
+    ∎ where open ≈-Reasoning isEquiv
+
   -- The representation functor: maps a matrix M to its "build from entries" morphism in 𝒞.
   𝓕 : Functor Mat.cat 𝒞
   𝓕 .fobj = X^
   𝓕 .fmor M = tuple (λ i → cotuple (λ j → scalar (M i j)))
-  𝓕 .fmor-cong p =
-    tuple-cong _ _ (λ i → cotuple-cong _ _ (λ j → scalar-cong (p i j)))
+  𝓕 .fmor-cong p = tuple-cong _ _ (λ i → cotuple-cong _ _ (λ j → scalar-cong (p i j)))
   𝓕 .fmor-id = {!!}
   𝓕 .fmor-comp = {!!}
 
