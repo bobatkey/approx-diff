@@ -436,13 +436,17 @@ module Matrix where
   inv {x} .*→* .⊥-preserving i = prop.proj₁ (concat-ε {x} i)
 
   split-concat : ∀ {x y} →
-    let fwd = HasProducts.pair SemiLat-products (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y}))
-    in Category._∘_ SemiLat.cat fwd (inv {x} {y}) ≃m Category.id SemiLat.cat _
+    Category._∘_ SemiLat.cat
+      (HasProducts.pair SemiLat-products (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})))
+      (inv {x} {y})
+    ≃m Category.id SemiLat.cat _
   split-concat = {!!}
 
   concat-split : ∀ {x y} →
-    let fwd = HasProducts.pair SemiLat-products (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y}))
-    in Category._∘_ SemiLat.cat (inv {x} {y}) fwd ≃m Category.id SemiLat.cat _
+    Category._∘_ SemiLat.cat
+      (inv {x} {y})
+      (HasProducts.pair SemiLat-products (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})))
+    ≃m Category.id SemiLat.cat _
   concat-split = {!!}
 
   𝓕-preserve-products : preserve-chosen-products 𝓕 Mat-products SemiLat-products
