@@ -34,3 +34,21 @@ module matrix-embedding
   X^ : ℕ → obj
   X^ zero = 𝟘
   X^ (suc n) = X ⊕ X^ n
+
+  -- i-th injection.
+  ι : ∀ {n} → Fin n → X ⇒ X^ n
+  ι {suc n} zero = in₁ (BP X (X^ n))
+  ι {suc n} (suc i) = in₂ (BP X (X^ n)) ∘ ι i
+
+  -- i-th projection.
+  π : ∀ {n} → Fin n → X^ n ⇒ X
+  π {suc n} zero = p₁ (BP X (X^ n))
+  π {suc n} (suc i) = π i ∘ p₂ (BP X (X^ n))
+
+  tuple : ∀ {n Z} → (Fin n → Z ⇒ X) → Z ⇒ X^ n
+  tuple {zero} f = to-terminal
+  tuple {suc n} f = pair (BP X (X^ n)) (f zero) (tuple (λ i → f (suc i)))
+
+  cotuple : ∀ {n Z} → (Fin n → X ⇒ Z) → X^ n ⇒ Z
+  cotuple {zero} f = from-initial
+  cotuple {suc n} f = copair (BP X (X^ n)) (f zero) (cotuple (λ i → f (suc i)))
