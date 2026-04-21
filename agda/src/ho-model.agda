@@ -406,3 +406,19 @@ module Matrix where
           (two.≃-trans (Σ-cong {x} (λ j → Σ-cong {y} (λ k → ·-assoc {f i k} {g k j} {v j})))
             (two.≃-trans (Σ-interchange {x} {y} (λ j k → f i k two.⊓ (g k j two.⊓ v j)))
               (Σ-cong {y} (λ k → two.≃-sym (Σ-·-distribₗ (f i k) (λ j → g k j two.⊓ v j))))))
+
+  open import finite-product-functor using (preserve-chosen-terminal; preserve-chosen-products)
+  open import cmon-enriched using (biproducts→products)
+
+  open Category SemiLat.cat using (IsIso)
+  open IsIso
+
+  SemiLat-BP = cmon-enriched.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products
+
+  𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
+  𝓕-preserve-terminal .inverse .*→* .func .fun _ _ = O
+  𝓕-preserve-terminal .inverse .*→* .func .mono _ ()
+  𝓕-preserve-terminal .inverse .*→* .∨-preserving ()
+  𝓕-preserve-terminal .inverse .*→* .⊥-preserving ()
+  𝓕-preserve-terminal .f∘inverse≈id = HasTerminal.to-terminal-unique SemiLat.terminal _ _
+  𝓕-preserve-terminal .inverse∘f≈id .f≃f .eqfunc .eqfun v = (λ ()) , (λ ())
