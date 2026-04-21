@@ -358,7 +358,10 @@ module Matrix where
   scalar two.I = idₛ SemiLat.TWO
 
   scalar-cong : ∀ {a b} → a two.≃ b → scalar a ≈ₛ scalar b
-  scalar-cong = {!!}
+  scalar-cong {two.O} {two.O} _ = ≈ₛ-refl
+  scalar-cong {two.O} {two.I} (_ , ())
+  scalar-cong {two.I} {two.O} (() , _)
+  scalar-cong {two.I} {two.I} _ = ≈ₛ-refl
 
   scalar-ε : scalar two.O ≈ₛ εm
   scalar-ε = ≈ₛ-refl
@@ -375,5 +378,10 @@ module Matrix where
   scalar-+ {two.O} {two.O} = ≈ₛ-sym homCM.+-lunit
   scalar-+ {two.O} {two.I} = ≈ₛ-sym homCM.+-lunit
   scalar-+ {two.I} {two.O} = ≈ₛ-sym +m-runit
-  scalar-+ {two.I} {two.I} = {!!}  -- needs idempotence of id under +m
-
+  scalar-+ {two.I} {two.I} = I-idem-+m
+    where
+      import join-semilattice as JSL
+      import preorder
+      I-idem-+m : idₛ SemiLat.TWO ≈ₛ idₛ SemiLat.TWO +m idₛ SemiLat.TWO
+      I-idem-+m .SemiLat._≃m_.f≃f .JSL._≃m_.eqfunc .preorder._≃m_.eqfun two.O = two.≤-refl {two.O} , two.≤-refl {two.O}
+      I-idem-+m .SemiLat._≃m_.f≃f .JSL._≃m_.eqfunc .preorder._≃m_.eqfun two.I = two.≤-refl {two.I} , two.≤-refl {two.I}
