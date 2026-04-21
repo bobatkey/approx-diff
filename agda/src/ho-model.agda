@@ -386,6 +386,10 @@ module Matrix where
       I-idem-+m .SemiLat._≃m_.f≃f .JSL._≃m_.eqfunc .preorder._≃m_.eqfun two.O = two.≤-refl {two.O} , two.≤-refl {two.O}
       I-idem-+m .SemiLat._≃m_.f≃f .JSL._≃m_.eqfunc .preorder._≃m_.eqfun two.I = two.≤-refl {two.I} , two.≤-refl {two.I}
 
+  -- Zero object in SemiLat (shared by terminal and initial).
+  SemiLat-𝟘 : SemiLat.Obj
+  SemiLat-𝟘 = HasTerminal.witness SemiLat.terminal
+
   -- Preservation of multiplication: scalar (a · b) ≈ scalar a ∘ₛ scalar b.
   open import cmon-enriched using (CMonEnriched)
   scalar-· : ∀ {a b} → scalar (a · b) ≈ₛ scalar a ∘ₛ scalar b
