@@ -78,3 +78,13 @@ module matrix-embedding
     ≈⟨ cotuple-ι (λ i → f (suc i)) i ⟩
       f (suc i)
     ∎ where open ≈-Reasoning isEquiv
+
+  tuple-cong : ∀ {n Z} (f g : Fin n → Z ⇒ X) → (∀ i → f i ≈ g i) → tuple f ≈ tuple g
+  tuple-cong {zero}  f g h = ≈-refl
+  tuple-cong {suc n} f g h =
+    pair-cong (BP X (X^ n)) (h zero) (tuple-cong (λ i → f (suc i)) (λ i → g (suc i)) (λ i → h (suc i)))
+
+  cotuple-cong : ∀ {n Z} (f g : Fin n → X ⇒ Z) → (∀ i → f i ≈ g i) → cotuple f ≈ cotuple g
+  cotuple-cong {zero}  f g h = ≈-refl
+  cotuple-cong {suc n} f g h =
+    copair-cong (BP X (X^ n)) (h zero) (cotuple-cong (λ i → f (suc i)) (λ i → g (suc i)) (λ i → h (suc i)))
