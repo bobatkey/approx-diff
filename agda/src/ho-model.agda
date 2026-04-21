@@ -339,4 +339,46 @@ module Matrix where
   open import two using (Two; O; I)
   open import matrix two.semiring public
 
-  -- TODO: functor 𝓕 : cat → SemiLat.cat, preservation proofs, Interpretation instantiation.
+  import join-semilattice-category as SemiLat
+  open SemiLat.Obj
+  open SemiLat._⇒_
+  open import join-semilattice using (JoinSemilattice; _=>_)
+  open JoinSemilattice
+  open _=>_
+  open import preorder using (Preorder)
+  open Preorder
+  open preorder._=>_ using (fun; mono)
+  open import Data.Nat using (ℕ; zero; suc)
+  open import Data.Fin using (Fin; zero; suc)
+  open import prop using (tt; _,_)
+  open import basics using (IsPreorder; IsJoin; IsBottom)
+
+  -- 𝓕(n): the pointwise join-semilattice on Vec n = Fin n → Two.
+  𝓕-obj : ℕ → SemiLat.Obj
+  𝓕-obj n .carrier .Carrier = Vec n
+  𝓕-obj n .carrier ._≤_ u v = ∀ i → two._≤_ (u i) (v i)
+  𝓕-obj n .carrier .≤-isPreorder .IsPreorder.refl i = two.≤-refl
+  𝓕-obj n .carrier .≤-isPreorder .IsPreorder.trans p q i = two.≤-trans (p i) (q i)
+  𝓕-obj n .joins ._∨_ u v i = two._⊔_ (u i) (v i)
+  𝓕-obj n .joins .⊥ _ = O
+  𝓕-obj n .joins .∨-isJoin .IsJoin.inl i = two.⊔-upper₁
+  𝓕-obj n .joins .∨-isJoin .IsJoin.inr i = two.⊔-upper₂
+  𝓕-obj n .joins .∨-isJoin .IsJoin.[_,_] p q i = two.⊔-least (p i) (q i)
+  𝓕-obj n .joins .⊥-isBottom .IsBottom.≤-bottom _ = tt
+
+  -- 𝓕 on morphisms: matrix-vector multiplication.
+  𝓕-mor : ∀ {m n} → Mat n m → SemiLat._⇒_ (𝓕-obj m) (𝓕-obj n)
+  𝓕-mor M .*→* .func .fun v i = Σ (λ j → two._⊓_ (M i j) (v j))
+  𝓕-mor M .*→* .func .mono = {!!}
+  𝓕-mor M .*→* .∨-preserving = {!!}
+  𝓕-mor M .*→* .⊥-preserving = {!!}
+
+  open import functor using (Functor)
+  open Functor
+
+  𝓕 : Functor cat SemiLat.cat
+  𝓕 .fobj = 𝓕-obj
+  𝓕 .fmor = 𝓕-mor
+  𝓕 .fmor-cong = {!!}
+  𝓕 .fmor-id = {!!}
+  𝓕 .fmor-comp = {!!}
