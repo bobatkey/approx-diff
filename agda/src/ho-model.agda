@@ -86,7 +86,7 @@ J×Jop-products : HasProducts J×Jop
 J×Jop-products = biproducts→products _ J×Jop-biproducts
 
 open import functor using (Functor)
-open import Data.Product using (_,_; proj₁; proj₂)
+open import Data.Product using (_,_; _×_; proj₁; proj₂)
 open import prop using (_,_)
 open import prop-setoid using (IsEquivalence)
 open import finite-product-functor
@@ -426,7 +426,25 @@ module Matrix where
   SemiLat-products = biproducts→products SemiLat.cmon-enriched SemiLat-BP
   Mat-products = biproducts→products cmon biproduct
 
+  open import Data.Nat using () renaming (_+_ to _+ℕ_)
+
   𝓕-preserve-products : preserve-chosen-products 𝓕 Mat-products SemiLat-products
-  𝓕-preserve-products .inverse = {!!}
+  𝓕-preserve-products {x} {y} .inverse .*→* .func .fun uv i = concat {x} {y} (proj₁ uv) (proj₂ uv) i
+  𝓕-preserve-products {x} .inverse .*→* .func .mono (p , q) =
+    concat-preserves {x} {_~_ = two._≤_} p q
+  𝓕-preserve-products {x} .inverse .*→* .∨-preserving {uv} {uv'} i = concat-∨ {x} i
+    where
+      concat-∨ : ∀ {x y} {uv uv' : Vec x × Vec y} →
+        ∀ i → concat (λ j → proj₁ uv j two.⊔ proj₁ uv' j) (λ j → proj₂ uv j two.⊔ proj₂ uv' j) i
+              two.≤ (concat (proj₁ uv) (proj₂ uv) i two.⊔ concat (proj₁ uv') (proj₂ uv') i)
+      concat-∨ {zero} i = two.≤-refl
+      concat-∨ {suc x} zero = two.≤-refl
+      concat-∨ {suc x} (suc i) = concat-∨ {x} i
+  𝓕-preserve-products {x} .inverse .*→* .⊥-preserving i = concat-⊥ {x} i
+    where
+      concat-⊥ : ∀ {x y} → ∀ i → concat {x} {y} (λ _ → O) (λ _ → O) i two.≤ O
+      concat-⊥ {zero} i = two.≤-refl {O}
+      concat-⊥ {suc x} zero = tt
+      concat-⊥ {suc x} (suc i) = concat-⊥ {x} i
   𝓕-preserve-products .f∘inverse≈id = {!!}
   𝓕-preserve-products .inverse∘f≈id = {!!}
