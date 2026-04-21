@@ -18,6 +18,10 @@ record CommutativeMonoid {o e} (A : Setoid o e) : Set (o ⊔ e) where
   field
     ε   : Carrier
     _+_ : Carrier → Carrier → Carrier
+
+  infixl 21 _+_
+
+  field
     +-cong  : ∀ {x₁ x₂ y₁ y₂} → x₁ ≈ x₂ → y₁ ≈ y₂ → (x₁ + y₁) ≈ (x₂ + y₂)
     +-lunit : ∀ {x} → (ε + x) ≈ x
     +-assoc : ∀ {x y z} → ((x + y) + z) ≈ (x + (y + z))
