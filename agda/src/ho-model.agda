@@ -410,7 +410,7 @@ module Matrix where
   open import finite-product-functor using (preserve-chosen-terminal; preserve-chosen-products)
   open import cmon-enriched using (biproducts→products)
 
-  open Category SemiLat.cat using (IsIso)
+  open Category SemiLat.cat using (IsIso) renaming (_∘_ to _∘ₛ_; id to idₛ)
   open IsIso
 
   SemiLat-BP = cmon-enriched.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products
@@ -436,17 +436,11 @@ module Matrix where
   inv {x} .*→* .⊥-preserving i = prop.proj₁ (concat-ε {x} i)
 
   split-concat : ∀ {x y} →
-    Category._∘_ SemiLat.cat
-      (HasProducts.pair SemiLat-products (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})))
-      (inv {x} {y})
-    ≃m Category.id SemiLat.cat _
+                 HasProducts.pair SemiLat-products (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ∘ₛ inv {x} {y} ≃m idₛ _
   split-concat = {!!}
 
   concat-split : ∀ {x y} →
-    Category._∘_ SemiLat.cat
-      (inv {x} {y})
-      (HasProducts.pair SemiLat-products (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})))
-    ≃m Category.id SemiLat.cat _
+                 inv {x} {y} ∘ₛ HasProducts.pair SemiLat-products (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ≃m idₛ _
   concat-split = {!!}
 
   𝓕-preserve-products : preserve-chosen-products 𝓕 Mat-products SemiLat-products
