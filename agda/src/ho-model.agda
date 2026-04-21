@@ -403,3 +403,12 @@ module Matrix where
   scalar-· {two.O} {two.I} = ≈ₛ-sym (CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched (idₛ SemiLat.TWO))
   scalar-· {two.I} {two.O} = ≈ₛ-sym (Category.id-left SemiLat.cat)
   scalar-· {two.I} {two.I} = ≈ₛ-sym (Category.id-left SemiLat.cat)
+
+  open import matrix-embedding
+    SemiLat.cmon-enriched SemiLat-BP
+    SemiLat-𝟘 SemiLat-𝟘-initial SemiLat-𝟘-terminal
+    SemiLat.TWO two.semiring
+    scalar scalar-cong scalar-ε scalar-ι
+    (λ {a} {b} → scalar-+ {a} {b}) (λ {a} {b} → scalar-· {a} {b})
+    renaming (ι to inj)
+    public
