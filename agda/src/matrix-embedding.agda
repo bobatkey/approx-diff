@@ -162,3 +162,32 @@ module matrix-embedding
     ≈˘⟨ ∘-cong ≈-refl (tuple-ext {n} (f ∘ ι {m} j)) ⟩
       cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j)
     ∎ where open ≈-Reasoning isEquiv
+
+  -- Morphisms with equal entries are equal.
+  entry-ext : ∀ {m n} {f g : X^ m ⇒ X^ n} → (∀ (i : Fin n) (j : Fin m) → entry f i j ≈ entry g i j) → f ≈ g
+  entry-ext {m} {n} {f} {g} h =
+    begin
+      f
+    ≈˘⟨ tuple-ext {n} f ⟩
+      tuple {n} (λ i → π {n} i ∘ f)
+    ≈˘⟨ tuple-cong {n} _ _ (λ i → cotuple-ext {m} (π {n} i ∘ f)) ⟩
+      tuple {n} (λ i → cotuple {m} (λ j → (π {n} i ∘ f) ∘ ι {m} j))
+    ≈⟨ tuple-cong {n} _ _ (λ i → cotuple-cong {m} _ _ (λ j → entry-step i j)) ⟩
+      tuple {n} (λ i → cotuple {m} (λ j → (π {n} i ∘ g) ∘ ι {m} j))
+    ≈⟨ tuple-cong {n} _ _ (λ i → cotuple-ext {m} (π {n} i ∘ g)) ⟩
+      tuple {n} (λ i → π {n} i ∘ g)
+    ≈⟨ tuple-ext {n} g ⟩
+      g
+    ∎ where
+      entry-step : ∀ (i : Fin n) (j : Fin m) → ((π {n} i ∘ f) ∘ ι {m} j) ≈ ((π {n} i ∘ g) ∘ ι {m} j)
+      entry-step i j =
+        begin
+          (π {n} i ∘ f) ∘ ι {m} j
+        ≈⟨ assoc (π {n} i) f (ι {m} j) ⟩
+          entry f i j
+        ≈⟨ h i j ⟩
+          entry g i j
+        ≈˘⟨ assoc (π {n} i) g (ι {m} j) ⟩
+          (π {n} i ∘ g) ∘ ι {m} j
+        ∎ where open ≈-Reasoning isEquiv
+      open ≈-Reasoning isEquiv
