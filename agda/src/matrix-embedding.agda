@@ -114,3 +114,29 @@ module matrix-embedding
     ≈⟨ copair-ext (BP X (X^ n)) f ⟩
       f
     ∎ where open ≈-Reasoning isEquiv
+
+  tuple-natural : ∀ {n Y Z} (f : Fin n → Y ⇒ X) (g : Z ⇒ Y) → (tuple f ∘ g) ≈ tuple {n} (λ i → f i ∘ g)
+  tuple-natural {zero}  f g = ≈-sym (to-terminal-ext (to-terminal ∘ g))
+  tuple-natural {suc n} f g =
+    begin
+      pair (BP X (X^ n)) (f zero) (tuple (λ i → f (suc i))) ∘ g
+    ≈⟨ comp-bilinear₁ _ _ g ⟩
+      ((in₁ (BP X (X^ n)) ∘ f zero) ∘ g) +m ((in₂ (BP X (X^ n)) ∘ tuple (λ i → f (suc i))) ∘ g)
+    ≈⟨ homCM _ _ .+-cong (assoc _ _ _) (assoc _ _ _) ⟩
+      (in₁ (BP X (X^ n)) ∘ (f zero ∘ g)) +m (in₂ (BP X (X^ n)) ∘ (tuple (λ i → f (suc i)) ∘ g))
+    ≈⟨ pair-cong (BP X (X^ n)) ≈-refl (tuple-natural (λ i → f (suc i)) g) ⟩
+      pair (BP X (X^ n)) (f zero ∘ g) (tuple {n} (λ i → f (suc i) ∘ g))
+    ∎ where open ≈-Reasoning isEquiv
+
+  cotuple-natural : ∀ {n Y Z} (g : Y ⇒ Z) (f : Fin n → X ⇒ Y) → (g ∘ cotuple f) ≈ cotuple {n} (λ i → g ∘ f i)
+  cotuple-natural {zero}  g f = ≈-sym (from-initial-ext (g ∘ from-initial))
+  cotuple-natural {suc n} g f =
+    begin
+      g ∘ copair (BP X (X^ n)) (f zero) (cotuple (λ i → f (suc i)))
+    ≈⟨ comp-bilinear₂ g _ _ ⟩
+      (g ∘ (f zero ∘ p₁ (BP X (X^ n)))) +m (g ∘ (cotuple (λ i → f (suc i)) ∘ p₂ (BP X (X^ n))))
+    ≈⟨ homCM _ _ .+-cong (≈-sym (assoc _ _ _)) (≈-sym (assoc _ _ _)) ⟩
+      ((g ∘ f zero) ∘ p₁ (BP X (X^ n))) +m ((g ∘ cotuple (λ i → f (suc i))) ∘ p₂ (BP X (X^ n)))
+    ≈⟨ copair-cong (BP X (X^ n)) ≈-refl (cotuple-natural g (λ i → f (suc i))) ⟩
+      copair (BP X (X^ n)) (g ∘ f zero) (cotuple {n} (λ i → g ∘ f (suc i)))
+    ∎ where open ≈-Reasoning isEquiv
