@@ -172,6 +172,21 @@ module matrix-embedding
       cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j)
     ∎ where open ≈-Reasoning isEquiv
 
+  open import functor using (Functor)
+  open Functor
+  import matrix
+  private
+    module Mat = matrix S
+    open matrix S using (Mat)
+
+  -- The representation functor: maps a matrix M to its "build from entries" morphism in 𝒞.
+  𝓕 : Functor Mat.cat 𝒞
+  𝓕 .fobj = X^
+  𝓕 .fmor M = tuple (λ i → cotuple (λ j → scalar (M i j)))
+  𝓕 .fmor-cong = {!!}
+  𝓕 .fmor-id = {!!}
+  𝓕 .fmor-comp = {!!}
+
   -- Morphisms with equal entries are equal.
   entry-ext : ∀ {m n} {f g : X^ m ⇒ X^ n} → (∀ (i : Fin n) (j : Fin m) → entry f i j ≈ entry g i j) → f ≈ g
   entry-ext {m} {n} {f} {g} h =
