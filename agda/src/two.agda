@@ -153,6 +153,16 @@ open CommutativeMonoid
 O-⊓-annihilₗ : ∀ {x} → (O ⊓ x) ≃ O
 O-⊓-annihilₗ = ≤-refl {O} , ≤-refl {O}
 
+open import commutative-monoid using (Idempotent)
+
+⊔-idem : Idempotent ⊔-cmon
+⊔-idem .Idempotent.+-idem {O} = ≤-refl {O} , ≤-refl {O}
+⊔-idem .Idempotent.+-idem {I} = ≤-refl {I} , ≤-refl {I}
+
+⊓-idem : Idempotent ⊓-cmon
+⊓-idem .Idempotent.+-idem {O} = ≤-refl {O} , ≤-refl {O}
+⊓-idem .Idempotent.+-idem {I} = ≤-refl {I} , ≤-refl {I}
+
 semiring : CommutativeSemiring Two-setoid
 semiring .CommutativeSemiring.additive = ⊔-cmon
 semiring .CommutativeSemiring.multiplicative = ⊓-cmon
