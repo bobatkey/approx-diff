@@ -157,6 +157,19 @@ cat .Category.id-left = id-left
 cat .Category.id-right = id-right
 cat .Category.assoc = assoc
 
+open import categories using (HasTerminal; IsTerminal; HasInitial; IsInitial)
+
+-- 0 is a zero object (both terminal and initial).
+terminal : HasTerminal cat
+terminal .HasTerminal.witness = 0
+terminal .HasTerminal.is-terminal .IsTerminal.to-terminal ()
+terminal .HasTerminal.is-terminal .IsTerminal.to-terminal-ext f ()
+
+initial : HasInitial cat
+initial .HasInitial.witness = 0
+initial .HasInitial.is-initial .IsInitial.from-initial _ ()
+initial .HasInitial.is-initial .IsInitial.from-initial-ext f _ ()
+
 open import cmon-enriched using (CMonEnriched; Biproduct)
 open import commutative-monoid using (CommutativeMonoid)
 open import Data.Nat using () renaming (_+_ to _+ℕ_)
