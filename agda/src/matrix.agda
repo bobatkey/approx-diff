@@ -322,10 +322,23 @@ concat {suc x} u v zero = u zero
 concat {suc x} u v (suc i) = concat {x} (λ j → u (suc j)) v i
 
 -- concat preserves any pointwise relation.
-concat-preserves : ∀ {x y p} {_~_ : Carrier → Carrier → Prop p}
+concat-preserves : ∀ {x y p} (_~_ : Carrier → Carrier → Prop p)
   {u₁ u₂ : Vec x} {v₁ v₂ : Vec y} →
   (∀ i → u₁ i ~ u₂ i) → (∀ i → v₁ i ~ v₂ i) →
   ∀ i → concat u₁ v₁ i ~ concat u₂ v₂ i
-concat-preserves {zero} p q i = q i
-concat-preserves {suc x} p q zero = p zero
-concat-preserves {suc x} {_~_ = _~_} p q (suc i) = concat-preserves {x} {_~_ = _~_} (λ j → p (suc j)) q i
+concat-preserves {zero} _ p q i = q i
+concat-preserves {suc x} _ p q zero = p zero
+concat-preserves {suc x} _~_ p q (suc i) = concat-preserves {x} _~_ (λ j → p (suc j)) q i
+
+-- concat distributes over pointwise +.
+concat-+ : ∀ {x y} (u₁ u₂ : Vec x) (v₁ v₂ : Vec y) →
+  ∀ i → concat (λ j → u₁ j + u₂ j) (λ j → v₁ j + v₂ j) i ≈ concat u₁ v₁ i + concat u₂ v₂ i
+concat-+ {zero} u₁ u₂ v₁ v₂ i = refl
+concat-+ {suc x} u₁ u₂ v₁ v₂ zero = refl
+concat-+ {suc x} u₁ u₂ v₁ v₂ (suc i) = concat-+ {x} (λ j → u₁ (suc j)) (λ j → u₂ (suc j)) v₁ v₂ i
+
+-- concat of zero vectors is zero.
+concat-ε : ∀ {x y} → ∀ i → concat {x} {y} (λ _ → ε) (λ _ → ε) i ≈ ε
+concat-ε {zero} i = refl
+concat-ε {suc x} zero = refl
+concat-ε {suc x} (suc i) = concat-ε {x} i

@@ -431,20 +431,10 @@ module Matrix where
   𝓕-preserve-products : preserve-chosen-products 𝓕 Mat-products SemiLat-products
   𝓕-preserve-products {x} {y} .inverse .*→* .func .fun uv i = concat {x} {y} (proj₁ uv) (proj₂ uv) i
   𝓕-preserve-products {x} .inverse .*→* .func .mono (p , q) =
-    concat-preserves {x} {_~_ = two._≤_} p q
-  𝓕-preserve-products {x} .inverse .*→* .∨-preserving {uv} {uv'} i = concat-∨ {x} i
-    where
-      concat-∨ : ∀ {x y} {uv uv' : Vec x × Vec y} →
-        ∀ i → concat (λ j → proj₁ uv j two.⊔ proj₁ uv' j) (λ j → proj₂ uv j two.⊔ proj₂ uv' j) i
-              two.≤ (concat (proj₁ uv) (proj₂ uv) i two.⊔ concat (proj₁ uv') (proj₂ uv') i)
-      concat-∨ {zero} i = two.≤-refl
-      concat-∨ {suc x} zero = two.≤-refl
-      concat-∨ {suc x} (suc i) = concat-∨ {x} i
-  𝓕-preserve-products {x} .inverse .*→* .⊥-preserving i = concat-⊥ {x} i
-    where
-      concat-⊥ : ∀ {x y} → ∀ i → concat {x} {y} (λ _ → O) (λ _ → O) i two.≤ O
-      concat-⊥ {zero} i = two.≤-refl {O}
-      concat-⊥ {suc x} zero = tt
-      concat-⊥ {suc x} (suc i) = concat-⊥ {x} i
+    concat-preserves {x} two._≤_ p q
+  𝓕-preserve-products {x} .inverse .*→* .∨-preserving {uv} {uv'} i =
+    prop.proj₁ (concat-+ {x} (proj₁ uv) (proj₁ uv') (proj₂ uv) (proj₂ uv') i)
+  𝓕-preserve-products {x} .inverse .*→* .⊥-preserving i =
+    prop.proj₁ (concat-ε {x} i)
   𝓕-preserve-products .f∘inverse≈id = {!!}
   𝓕-preserve-products .inverse∘f≈id = {!!}
