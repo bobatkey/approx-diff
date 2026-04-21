@@ -341,6 +341,7 @@ module Matrix where
 
   import join-semilattice-category as SemiLat
   open SemiLat.Obj
+  open SemiLat using (_⇒_)
   open SemiLat._⇒_
   open import join-semilattice using (JoinSemilattice; _=>_)
   open JoinSemilattice
@@ -367,7 +368,7 @@ module Matrix where
   𝓕-obj n .joins .⊥-isBottom .IsBottom.≤-bottom _ = tt
 
   -- 𝓕 on morphisms: matrix-vector multiplication.
-  𝓕-mor : ∀ {m n} → Mat n m → SemiLat._⇒_ (𝓕-obj m) (𝓕-obj n)
+  𝓕-mor : ∀ {m n} → Mat n m → 𝓕-obj m ⇒ 𝓕-obj n
   𝓕-mor M .*→* .func .fun v i = Σ (λ j → two._⊓_ (M i j) (v j))
   𝓕-mor M .*→* .func .mono v≤w i =
     +-to-Σ.Σ-preserves two._≤_ two.≤-refl (IsJoin.mono two.⊔-isJoin)
