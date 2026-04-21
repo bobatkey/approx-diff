@@ -339,294 +339,34 @@ module Matrix where
   import join-semilattice-category as SemiLat
   import cmon-enriched as CMon
   open import two using (Two; O; I)
-  open import prop-setoid using (module ≈-Reasoning)
-  import join-semilattice
-  import preorder
-  open SemiLat._≃m_
-  open SemiLat._⇒_
-  open join-semilattice._≃m_ using (eqfunc)
-  open preorder._≃m_ using (eqfun)
-
-  open Category SemiLat.cat
-
-  TWO : SemiLat.Obj
-  TWO = SemiLat.TWO
-
-  scalar-comm : ∀ (f g : TWO ⇒ TWO) → (f ∘ g) ≈ (g ∘ f)
-  scalar-comm f g .f≃f .eqfunc .eqfun O =
-    begin
-      fun f (fun g O)
-    ≈⟨ resp-≃ f (⊥-preserving-≃ g) ⟩
-      fun f O
-    ≈⟨ ⊥-preserving-≃ f ⟩
-      O
-    ≈˘⟨ ⊥-preserving-≃ g ⟩
-      fun g O
-    ≈˘⟨ resp-≃ g (⊥-preserving-≃ f) ⟩
-      fun g (fun f O)
-    ∎ where open ≈-Reasoning two.isEquivalence
-  scalar-comm f g .f≃f .eqfunc .eqfun I = go (fun f I) (fun g I) two.≃-refl two.≃-refl
-    where
-      open ≈-Reasoning two.isEquivalence
-
-      step : ∀ (a b : Two) → a two.≃ fun f I → b two.≃ fun g I → fun f b two.≃ fun g a
-      step O O _     _     = begin fun f O ≈⟨ ⊥-preserving-≃ f ⟩ O ≈˘⟨ ⊥-preserving-≃ g ⟩ fun g O ∎
-      step O I eq-a  _     = begin fun f I ≈˘⟨ eq-a ⟩ O ≈˘⟨ ⊥-preserving-≃ g ⟩ fun g O ∎
-      step I O _     eq-b  = begin fun f O ≈⟨ ⊥-preserving-≃ f ⟩ O ≈⟨ eq-b ⟩ fun g I ∎
-      step I I eq-a  eq-b  = begin fun f I ≈˘⟨ eq-a ⟩ I ≈⟨ eq-b ⟩ fun g I ∎
-
-      go : ∀ (a b : Two) → a two.≃ fun f I → b two.≃ fun g I → fun f (fun g I) two.≃ fun g (fun f I)
-      go a b eq-a eq-b =
-        begin
-          fun f (fun g I)
-        ≈⟨ resp-≃ f (two.≃-sym eq-b) ⟩
-          fun f b
-        ≈⟨ step a b eq-a eq-b ⟩
-          fun g a
-        ≈⟨ resp-≃ g eq-a ⟩
-          fun g (fun f I)
-        ∎
-
-  import matrices
-  open matrices SemiLat.cmon-enriched
-    (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
-    (categories.HasTerminal.witness SemiLat.terminal)
-    (categories.HasInitial.is-initial SemiLat.initial)
-    (categories.HasTerminal.is-terminal SemiLat.terminal)
-    TWO
-    scalar-comm
-    public
-
-  𝓕 : Functor cat SemiLat.cat
-  𝓕 .fobj = X^
-  𝓕 .fmor f = f
-  𝓕 .fmor-cong f≈ = f≈
-  𝓕 .fmor-id = Category.≈-refl SemiLat.cat
-  𝓕 .fmor-comp _ _ = Category.≈-refl SemiLat.cat
-
-  open import finite-product-functor using (preserve-chosen-terminal)
-  private
-    module SemiLat' = Category SemiLat.cat
-  open SemiLat'.IsIso
-
-  open import finite-product-functor using (preserve-chosen-products)
-
-  SemiLat-BP = CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products
-  SemiLat-products = biproducts→products _ SemiLat-BP
-
-  𝓕-preserve-products : preserve-chosen-products 𝓕 products SemiLat-products
-  𝓕-preserve-products {m} {n} .inverse = X^-split m n .Iso.bwd
-  𝓕-preserve-products {m} {n} .f∘inverse≈id = X^-split m n .Iso.fwd∘bwd≈id
-  𝓕-preserve-products {m} {n} .inverse∘f≈id = X^-split m n .Iso.bwd∘fwd≈id
-
-  𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
-  𝓕-preserve-terminal .inverse = SemiLat'.id _
-  𝓕-preserve-terminal .f∘inverse≈id = HasTerminal.to-terminal-unique SemiLat.terminal _ _
-  𝓕-preserve-terminal .inverse∘f≈id = HasTerminal.to-terminal-unique SemiLat.terminal _ _
-
-  open Interpretation
-    cat terminal products
-    SemiLat.cat SemiLat.cmon-enriched SemiLat.limits SemiLat.terminal SemiLat-BP
-    𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
-    public
-
-  import conjugate
   open import Data.Nat using (ℕ; zero; suc)
-  open import Data.Fin using (Fin)
 
-  open import prop using (tt; _,_; proj₁; proj₂; _⇔_)
-  import Data.Unit
-  open import basics using (IsMeet; IsTop)
-  import meet-semilattice
-  open meet-semilattice.MeetSemilattice
+  -- Two as a commutative semiring: (∨, O) + (∧, I).
+  open import commutative-semiring using (CommutativeSemiring)
+  open import commutative-monoid using (CommutativeMonoid)
 
-  -- X^n as a conjugate.Obj (Heyting algebra): carrier and joins from Mat, meets by induction.
-  module X^-Heyting where
-    open SemiLat.Obj
+  Two-+-cmon : CommutativeMonoid two.setoid
+  Two-+-cmon .CommutativeMonoid.ε = O
+  Two-+-cmon .CommutativeMonoid._+_ = two._⊔_
+  Two-+-cmon .CommutativeMonoid.+-cong = two.⊔-cong
+  Two-+-cmon .CommutativeMonoid.+-lunit = two.⊔-lunit
+  Two-+-cmon .CommutativeMonoid.+-assoc = two.⊔-assoc
+  Two-+-cmon .CommutativeMonoid.+-comm = two.⊔-comm
 
-    private
-      meets : ∀ n → meet-semilattice.MeetSemilattice (carrier (X^ n))
-      meets zero ._∧_ _ _ = Data.Unit.tt
-      meets zero .⊤ = Data.Unit.tt
-      meets zero .∧-isMeet .IsMeet.π₁ = tt
-      meets zero .∧-isMeet .IsMeet.π₂ = tt
-      meets zero .∧-isMeet .IsMeet.⟨_,_⟩ _ _ = tt
-      meets zero .⊤-isTop .IsTop.≤-top = tt
-      meets (suc n) ._∧_ (a , u) (b , v) = (a two.⊓ b) , meets n ._∧_ u v
-      meets (suc n) .⊤ = (I , meets n .⊤)
-      meets (suc n) .∧-isMeet .IsMeet.π₁ = two.⊓-isMeet .IsMeet.π₁ , meets n .∧-isMeet .IsMeet.π₁
-      meets (suc n) .∧-isMeet .IsMeet.π₂ = two.⊓-isMeet .IsMeet.π₂ , meets n .∧-isMeet .IsMeet.π₂
-      meets (suc n) .∧-isMeet .IsMeet.⟨_,_⟩ (a , u) (b , v) =
-        two.⊓-isMeet .IsMeet.⟨_,_⟩ a b , meets n .∧-isMeet .IsMeet.⟨_,_⟩ u v
-      meets (suc n) .⊤-isTop .IsTop.≤-top = two.I-isTop .IsTop.≤-top , meets n .⊤-isTop .IsTop.≤-top
+  Two-·-cmon : CommutativeMonoid two.setoid
+  Two-·-cmon .CommutativeMonoid.ε = I
+  Two-·-cmon .CommutativeMonoid._+_ = two._⊓_
+  Two-·-cmon .CommutativeMonoid.+-cong = two.⊓-cong
+  Two-·-cmon .CommutativeMonoid.+-lunit = two.⊓-lunit
+  Two-·-cmon .CommutativeMonoid.+-assoc = two.⊓-assoc
+  Two-·-cmon .CommutativeMonoid.+-comm = two.⊓-comm
 
-    -- x # y = (x ∧ y) ≤ ⊥, using meets for ∧ and X^ for ≤ and ⊥.
-    _#_ : ∀ {n} → Carrier (X^ n) → Carrier (X^ n) → Prop
-    _#_ {n} x y = _≤_ (X^ n) (meets n ._∧_ x y) (⊥ (X^ n))
+  Two-semiring : CommutativeSemiring two.setoid
+  Two-semiring .CommutativeSemiring.additive = Two-+-cmon
+  Two-semiring .CommutativeSemiring.multiplicative = Two-·-cmon
+  Two-semiring .CommutativeSemiring.·-+-distribₗ = two.⊓-⊔-distribₗ
+  Two-semiring .CommutativeSemiring.ε-annihilₗ = two.O-⊓-annihilₗ
 
-    #-reflect : ∀ n {x y} → (∀ z → _#_ {n} y z → _#_ {n} x z) → _≤_ (X^ n) x y
-    #-reflect zero _ = tt
-    #-reflect (suc n) {a , u} {b , v} h =
-      conjugate.TWO .conjugate.Obj.#-reflect (λ c b#c → proj₁ (h (c , ⊥ (X^ n)) (b#c , meets n .∧-isMeet .IsMeet.π₂))) ,
-      #-reflect n (λ w v#w → proj₂ (h (conjugate.TWO .conjugate.Obj.⊥ , w) (two.⊓-isMeet .IsMeet.π₂ , v#w)))
+  open import matrix Two-semiring public
 
-    ∧-∨-distrib : ∀ n x y z → _≤_ (X^ n)
-                  (meets n ._∧_ x (_∨_ (X^ n) y z)) (_∨_ (X^ n) (meets n ._∧_ x y) (meets n ._∧_ x z))
-    ∧-∨-distrib zero _ _ _ = tt
-    ∧-∨-distrib (suc n) (a , u) (b , v) (c , w) =
-      conjugate.TWO .conjugate.Obj.∧-∨-distrib a b c , ∧-∨-distrib n u v w
-
-    ∨-∧-distrib : ∀ n x y z → _≤_ (X^ n) (_∨_ (X^ n) x (meets n ._∧_ y z))
-                                    (meets n ._∧_ (_∨_ (X^ n) x y) (_∨_ (X^ n) x z))
-    ∨-∧-distrib zero _ _ _ = tt
-    ∨-∧-distrib (suc n) (a , u) (b , v) (c , w) =
-      conjugate.TWO .conjugate.Obj.∨-∧-distrib a b c , ∨-∧-distrib n u v w
-
-    conj : ℕ → conjugate.Obj
-    conj n .conjugate.Obj.carrier = carrier (X^ n)
-    conj n .conjugate.Obj.joins = joins (X^ n)
-    conj n .conjugate.Obj.meets = meets n
-    conj n .conjugate.Obj.#-reflect = #-reflect n
-    conj n .conjugate.Obj.∧-∨-distrib = ∧-∨-distrib n
-    conj n .conjugate.Obj.∨-∧-distrib = ∨-∧-distrib n
-
-    -- Carrier-level negation on X^n (componentwise two.¬).
-    ¬^ : ∀ {n} → Carrier (X^ n) → Carrier (X^ n)
-    ¬^ {zero} _ = Data.Unit.tt
-    ¬^ {suc n} (a , u) = two.¬ a , ¬^ {n} u
-
-    ¬^-antitone : ∀ {n} {x y : Carrier (X^ n)} → _≤_ (X^ n) x y → _≤_ (X^ n) (¬^ {n} y) (¬^ {n} x)
-    ¬^-antitone {zero} _ = tt
-    ¬^-antitone {suc n} (a≤b , u≤v) = two.¬-antitone a≤b , ¬^-antitone {n} u≤v
-
-    π-¬^ : ∀ {n} (i : Fin n) (v : Carrier (X^ n)) →
-            SemiLat._⇒_.fun (π {n} i) (¬^ {n} v) two.≃ two.¬ (SemiLat._⇒_.fun (π {n} i) v)
-    π-¬^ {suc n} Fin.zero (a , _) = two.≃-refl
-    π-¬^ {suc n} (Fin.suc i) (_ , v) = π-¬^ {n} i v
-
-  open X^-Heyting using () renaming (conj to X^-conj; ¬^ to X^-¬; ¬^-antitone to X^-¬-antitone; π-¬^ to X^-π-¬)
-  open conjugate using (_⇒c_)
-  open _⇒c_
-
-  open SemiLat._⇒_ renaming (*→* to *→*J)
-  open join-semilattice._=>_ using (func)
-  open preorder._=>_ using (fun)
-
-  import galois
-  open galois using (_⇒g_)
-  open _⇒g_
-
-  -- X^n as a galois.Obj: carrier and joins from Mat, meets from X^-conj.
-  X^-gal : ℕ → galois.Obj
-  X^-gal n .galois.Obj.carrier = SemiLat.Obj.carrier (X^ n)
-  X^-gal n .galois.Obj.meets = conjugate.Obj.meets (X^-conj n)
-  X^-gal n .galois.Obj.joins = SemiLat.Obj.joins (X^ n)
-
-  -- Disjointness ↔ below complement.
-  #-↔-≤ : ∀ {n} (x y : conjugate.Obj.Carrier (X^-conj n)) →
-           conjugate.Obj._#_ (X^-conj n) x y ⇔ X^-conj n .conjugate.Obj._≤_ x (X^-¬ {n} y)
-  #-↔-≤ x y .proj₁ = {!!}
-  #-↔-≤ x y .proj₂ = {!!}
-
-  -- Negation is involutive.
-  ¬-involutive : ∀ {n} (x : conjugate.Obj.Carrier (X^-conj n)) →
-                 conjugate.Obj._≃_ (X^-conj n) x (X^-¬ {n} (X^-¬ {n} x))
-  ¬-involutive = {!!}
-
-  -- The adjoint: ¬ ∘ transpose f ∘ ¬ (as a monotone map).
-  adjoint : ∀ {m n} → X^ m ⇒ X^ n →
-            preorder._=>_ (SemiLat.Obj.carrier (X^ n)) (SemiLat.Obj.carrier (X^ m))
-  adjoint {m} {n} f .fun v = X^-¬ {m} (transpose {m} {n} f .*→*J .func .fun (X^-¬ {n} v))
-  adjoint {m} {n} f .preorder._=>_.mono v≤w =
-    X^-¬-antitone {m} (transpose {m} {n} f .*→*J .func .preorder._=>_.mono (X^-¬-antitone {n} v≤w))
-
-  -- ¬(transpose f v) ≃ adjoint f (¬ v)
-  ¬transpose≃adjoint¬ : ∀ {m n} (f : X^ m ⇒ X^ n) (v : galois.Obj.Carrier (X^-gal n)) →
-                        galois.Obj._≃_ (X^-gal m) (X^-¬ {m} (transpose {m} {n} f .*→*J .func .fun v))
-                                                  (adjoint {m} {n} f .fun (X^-¬ {n} v))
-  ¬transpose≃adjoint¬ = {!!}
-
-  -- Carrier-level lub for cotuple: if each summand ≤ z, the cotuple ≤ z.
-  cotuple-lub : ∀ {m} n (g : Fin m → TWO ⇒ X^ n) (y : SemiLat.Obj.Carrier (X^ m)) (z : SemiLat.Obj.Carrier (X^ n)) →
-                (∀ i → preorder.Preorder._≤_ (SemiLat.Obj.carrier (X^ n)) (g i .*→*J .func .fun (π {m} i .*→*J .func .fun y)) z) →
-                preorder.Preorder._≤_ (SemiLat.Obj.carrier (X^ n)) (cotuple {m} g .*→*J .func .fun y) z
-  cotuple-lub {zero} n g y z h =
-    join-semilattice.JoinSemilattice.≤-bottom (SemiLat.Obj.joins (X^ n))
-  cotuple-lub {suc m} n g (a , v) z h =
-    join-semilattice.JoinSemilattice.[_∨_] (SemiLat.Obj.joins (X^ n))
-      (h Fin.zero) (cotuple-lub {m} n (λ i → g (Fin.suc i)) v z (λ i → h (Fin.suc i)))
-
-  -- Scalar lemma: if s(¬a) ≤ O then s(I) ≤ a, for s : TWO ⇒ TWO.
-  private
-    scalar-adj : (s : TWO ⇒ TWO) (a : Two) → two._≤_ (s .*→*J .func .fun (two.¬ a)) O → two._≤_ (s .*→*J .func .fun I) a
-    scalar-adj s O h = h
-    scalar-adj s I _ = two.I-isTop .IsTop.≤-top
-
-  -- From cotuple of scalars ≤ O, extract each component ≤ O.
-  cotuple-upper : ∀ {n} (g : Fin n → TWO ⇒ TWO) (v : SemiLat.Obj.Carrier (X^ n)) →
-                  two._≤_ (cotuple {n} g .*→*J .func .fun v) O →
-                  ∀ k → two._≤_ (g k .*→*J .func .fun (π {n} k .*→*J .func .fun v)) O
-  cotuple-upper {suc n} g (a , v) h Fin.zero =
-    two.≤-trans (two.≤-trans two.⊔-upper₁ h) tt
-  cotuple-upper {suc n} g (a , v) h (Fin.suc k) =
-    cotuple-upper {n} (λ k → g (Fin.suc k)) v (two.≤-trans two.⊔-upper₂ h) k
-
-  -- Build vector inequality from per-component scalar inequalities.
-  proj-≤ : ∀ {n} (u : SemiLat.Obj.Carrier (X^ n)) (x : SemiLat.Obj.Carrier (X^ n)) →
-            (∀ k → two._≤_ (π {n} k .*→*J .func .fun u) (π {n} k .*→*J .func .fun x)) →
-            preorder.Preorder._≤_ (SemiLat.Obj.carrier (X^ n)) u x
-  proj-≤ {zero} _ _ _ = tt
-  proj-≤ {suc n} (a , u) (b , x) h = h Fin.zero , proj-≤ {n} u x (λ k → h (Fin.suc k))
-
-  -- Key lemma: if the i-th component of transpose f (¬x) is O, then column i of f is ≤ x.
-  col-≤ : ∀ {m n} (f : X^ m ⇒ X^ n) (i : Fin m) (x : SemiLat.Obj.Carrier (X^ n)) →
-           two._≤_ (π {m} i .*→*J .func .fun (transpose {m} {n} f .*→*J .func .fun (X^-¬ {n} x))) O →
-           preorder.Preorder._≤_ (SemiLat.Obj.carrier (X^ n)) (f .*→*J .func .fun (ι {m} i .*→*J .func .fun I)) x
-  col-≤ {m} {n} f i x h = proj-≤ {n} _ x per-k
-    where
-      -- Rewrite hypothesis using tuple-π: π i ∘ transpose f ≈ cotuple (λ k → entry f k i)
-      cotuple-hyp : two._≤_ (cotuple {n} (λ k → entry {m} {n} f k i) .*→*J .func .fun (X^-¬ {n} x)) O
-      cotuple-hyp = two.≤-trans
-        (tuple-π {m} (λ j → cotuple {n} (λ k → entry {m} {n} f k j)) i .f≃f .eqfunc .eqfun (X^-¬ {n} x) .proj₂) h
-
-      per-k : ∀ k → two._≤_ (π {n} k .*→*J .func .fun (f .*→*J .func .fun (ι {m} i .*→*J .func .fun I)))
-                              (π {n} k .*→*J .func .fun x)
-      per-k k = scalar-adj (entry {m} {n} f k i) (π {n} k .*→*J .func .fun x)
-        (two.≤-trans
-          (entry {m} {n} f k i .*→*J .func .preorder._=>_.mono (X^-π-¬ k x .proj₂))
-          (cotuple-upper {n} (λ l → entry {m} {n} f l i) (X^-¬ {n} x) cotuple-hyp k))
-
-  -- (f, adjoint f) is a Galois connection (the main theorem).
-  to-gal : ∀ {m n} → X^ m ⇒ X^ n → X^-gal n ⇒g X^-gal m
-  to-gal {m} {n} f .right = adjoint {m} {n} f
-  to-gal {m} {n} f .left = f .*→*J .func
-  to-gal {m} {n} f .left⊣right {x} {y} .proj₁ y≤adj =
-    let open basics.≤-Reasoning (preorder.Preorder.≤-isPreorder (SemiLat.Obj.carrier (X^ n))) in
-    begin
-      f .*→*J .func .fun y
-    ≤⟨ cotuple-ext {m} f .f≃f .eqfunc .eqfun y .proj₂ ⟩
-      cotuple {m} (λ i → f ∘ ι {m} i) .*→*J .func .fun y
-    ≤⟨ cotuple-lub {m} n (λ i → f ∘ ι {m} i) y x per-i ⟩
-      x
-    ∎
-    where
-      per-i : ∀ i → preorder.Preorder._≤_ (SemiLat.Obj.carrier (X^ n))
-                       ((f ∘ ι {m} i) .*→*J .func .fun (π {m} i .*→*J .func .fun y)) x
-      per-i i with π {m} i .*→*J .func .fun y | π {m} i .*→*J .func .preorder._=>_.mono y≤adj
-      ... | O | _ = preorder.Preorder.≤-trans (SemiLat.Obj.carrier (X^ n))
-                      ((f ∘ ι {m} i) .*→*J .join-semilattice._=>_.⊥-preserving)
-                      (join-semilattice.JoinSemilattice.≤-bottom (SemiLat.Obj.joins (X^ n)))
-      ... | I | πy≤πadj = col-≤ f i x (¬-to-O (two.≤-trans πy≤πadj (X^-π-¬ i (transpose {m} {n} f .*→*J .func .fun (X^-¬ {n} x)) .proj₁)))
-        where
-          -- From I ≤ ¬t, derive t ≤ O.
-          ¬-to-O : ∀ {t} → two._≤_ I (two.¬ t) → two._≤_ t O
-          ¬-to-O {O} _ = tt
-          ¬-to-O {I} ()
-  to-gal {m} {n} f .left⊣right {x} {y} .proj₂ = {!!}
-
-  -- (transpose f, f) is a conjugate pair; derived from to-gal via De Morgan duality.
-  to-conj : ∀ {m n} → X^ m ⇒ X^ n → X^-conj n ⇒c X^-conj m
-  to-conj {m} {n} f .right = transpose {m} {n} f .*→*J .func
-  to-conj {m} {n} f .left = f .*→*J .func
-  to-conj {m} {n} f .conjugate {x} {y} .proj₁ = {!!}
-  to-conj {m} {n} f .conjugate {x} {y} .proj₂ = {!!}
+  -- TODO: functor 𝓕 : cat → SemiLat.cat, preservation proofs, Interpretation instantiation.
