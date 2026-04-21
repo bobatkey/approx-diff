@@ -373,7 +373,11 @@ module Matrix where
   𝓕-mor M .*→* .func .mono v≤w i =
     +-to-Σ.Σ-preserves two._≤_ two.≤-refl (IsJoin.mono two.⊔-isJoin)
       (λ j → IsMeet.mono two.⊓-isMeet two.≤-refl (v≤w j))
-  𝓕-mor M .*→* .∨-preserving = {!!}
+  𝓕-mor {m} M .*→* .∨-preserving {u} {v} i =
+    two.≤-trans
+      (+-to-Σ.Σ-preserves two._≤_ two.≤-refl (IsJoin.mono two.⊔-isJoin) {m}
+        (λ j → prop.proj₁ (·-+-distribₗ {M i j} {u j} {v j})))
+      (prop.proj₂ (Σ-+ {m} (λ j → M i j two.⊓ u j) (λ j → M i j two.⊓ v j)))
   𝓕-mor {m} M .*→* .⊥-preserving i =
     prop.proj₁ (two.≃-trans (Σ-cong {m} (λ j → ε-annihilᵣ)) (Σ-ε {m}))
 
