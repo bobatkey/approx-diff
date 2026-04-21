@@ -340,135 +340,37 @@ module Matrix where
   open import matrix two.semiring public
 
   import join-semilattice-category as SemiLat
-  open SemiLat using (Obj; _⇒_; _≃m_)
-  open Obj
-  open _⇒_
-  open _≃m_
-  open import join-semilattice using (JoinSemilattice; _=>_)
-  open JoinSemilattice
-  open _=>_
-  open join-semilattice._≃m_ using (eqfunc)
-  open import preorder using (Preorder)
-  open Preorder
-  open preorder._=>_ using (fun; mono)
-  open preorder._≃m_ using (eqfun)
-  open import Data.Nat using (ℕ; zero; suc)
-  open import Data.Fin using (Fin; zero; suc)
-  open import prop using (tt; _,_)
-  open import basics using (IsPreorder; IsJoin; IsBottom; IsMeet)
-
-  -- 𝓕(n): the pointwise join-semilattice on Vec n = Fin n → Two.
-  𝓕-obj : ℕ → Obj
-  𝓕-obj n .carrier .Carrier = Vec n
-  𝓕-obj n .carrier ._≤_ u v = ∀ i → two._≤_ (u i) (v i)
-  𝓕-obj n .carrier .≤-isPreorder .IsPreorder.refl i = two.≤-refl
-  𝓕-obj n .carrier .≤-isPreorder .IsPreorder.trans p q i = two.≤-trans (p i) (q i)
-  𝓕-obj n .joins ._∨_ u v i = two._⊔_ (u i) (v i)
-  𝓕-obj n .joins .⊥ _ = O
-  𝓕-obj n .joins .∨-isJoin .IsJoin.inl i = two.⊔-upper₁
-  𝓕-obj n .joins .∨-isJoin .IsJoin.inr i = two.⊔-upper₂
-  𝓕-obj n .joins .∨-isJoin .IsJoin.[_,_] p q i = two.⊔-least (p i) (q i)
-  𝓕-obj n .joins .⊥-isBottom .IsBottom.≤-bottom _ = tt
-
-  -- 𝓕 on morphisms: matrix-vector multiplication.
-  𝓕-mor : ∀ {m n} → Mat n m → 𝓕-obj m ⇒ 𝓕-obj n
-  𝓕-mor M .*→* .func .fun v i = Σ (λ j → two._⊓_ (M i j) (v j))
-  𝓕-mor M .*→* .func .mono v≤w i =
-    +-to-Σ.Σ-preserves two._≤_ two.≤-refl (IsJoin.mono two.⊔-isJoin)
-      (λ j → IsMeet.mono two.⊓-isMeet two.≤-refl (v≤w j))
-  𝓕-mor {m} M .*→* .∨-preserving {u} {v} i =
-    two.≤-trans
-      (+-to-Σ.Σ-preserves two._≤_ two.≤-refl (IsJoin.mono two.⊔-isJoin) {m}
-        (λ j → prop.proj₁ (·-+-distribₗ {M i j} {u j} {v j})))
-      (prop.proj₂ (Σ-+ {m} (λ j → M i j two.⊓ u j) (λ j → M i j two.⊓ v j)))
-  𝓕-mor {m} M .*→* .⊥-preserving i =
-    prop.proj₁ (two.≃-trans (Σ-cong {m} (λ j → ε-annihilᵣ)) (Σ-ε {m}))
-
-  open import functor using (Functor)
-  open Functor
-
-  𝓕 : Functor cat SemiLat.cat
-  𝓕 .fobj = 𝓕-obj
-  𝓕 .fmor = 𝓕-mor
-  𝓕 .fmor-cong {x} p .f≃f .eqfunc .eqfun v =
-    (λ i → prop.proj₁ (Σ-cong {x} (λ j → IsMeet.cong two.⊓-isMeet (p i j) (two.≃-refl {v j})))) ,
-    (λ i → prop.proj₂ (Σ-cong {x} (λ j → IsMeet.cong two.⊓-isMeet (p i j) (two.≃-refl {v j}))))
-  𝓕 .fmor-id {x} .f≃f .eqfunc .eqfun v =
-    (λ i → prop.proj₁ (Σ-unit {x} i v)) , (λ i → prop.proj₂ (Σ-unit {x} i v))
-  𝓕 .fmor-comp {x} {y} f g .f≃f .eqfunc .eqfun v =
-    (λ i → prop.proj₁ (chain i)) , (λ i → prop.proj₂ (chain i))
-    where
-      chain : ∀ i → two._≃_
-        (Σ {x} (λ j → Σ {y} (λ k → two._⊓_ (f i k) (g k j)) two.⊓ v j))
-        (Σ {y} (λ k → f i k two.⊓ Σ {x} (λ j → g k j two.⊓ v j)))
-      chain i =
-        two.≃-trans (Σ-cong {x} (λ j → Σ-·-distribᵣ (λ k → f i k two.⊓ g k j) (v j)))
-          (two.≃-trans (Σ-cong {x} (λ j → Σ-cong {y} (λ k → ·-assoc {f i k} {g k j} {v j})))
-            (two.≃-trans (Σ-interchange {x} {y} (λ j k → f i k two.⊓ (g k j two.⊓ v j)))
-              (Σ-cong {y} (λ k → two.≃-sym (Σ-·-distribₗ (f i k) (λ j → g k j two.⊓ v j))))))
-
-  open import finite-product-functor using (preserve-chosen-terminal; preserve-chosen-products)
+  import cmon-enriched as CMon
   open import cmon-enriched using (biproducts→products)
+  open import finite-product-functor using (preserve-chosen-terminal; preserve-chosen-products)
 
-  open Category SemiLat.cat using (IsIso) renaming (_∘_ to _∘ₛ_; id to idₛ)
-  open IsIso
-
-  SemiLat-BP = cmon-enriched.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products
-
-  𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
-  𝓕-preserve-terminal .inverse .*→* .func .fun _ _ = O
-  𝓕-preserve-terminal .inverse .*→* .func .mono _ ()
-  𝓕-preserve-terminal .inverse .*→* .∨-preserving ()
-  𝓕-preserve-terminal .inverse .*→* .⊥-preserving ()
-  𝓕-preserve-terminal .f∘inverse≈id = HasTerminal.to-terminal-unique SemiLat.terminal _ _
-  𝓕-preserve-terminal .inverse∘f≈id .f≃f .eqfunc .eqfun v = (λ ()) , (λ ())
-
+  SemiLat-BP = CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products
   SemiLat-products = biproducts→products SemiLat.cmon-enriched SemiLat-BP
-  open HasProducts SemiLat-products using (pair)
   Mat-products = biproducts→products cmon biproduct
 
-  open import Data.Nat using () renaming (_+_ to _+ℕ_)
+  -- Scalar embedding: Two → (TWO ⇒ TWO) in SemiLat.
+  scalar : Two → Category._⇒_ SemiLat.cat SemiLat.TWO SemiLat.TWO
+  scalar two.O = CMon.CMonEnriched.εm SemiLat.cmon-enriched
+  scalar two.I = Category.id SemiLat.cat SemiLat.TWO
 
-  inv : ∀ {x y} → HasProducts.prod SemiLat-products (𝓕-obj x) (𝓕-obj y) ⇒ 𝓕-obj (x +ℕ y)
-  inv {x} {y} .*→* .func .fun uv i = concat {x} {y} (proj₁ uv) (proj₂ uv) i
-  inv {x} .*→* .func .mono (p , q) = concat-preserves {x} two._≤_ p q
-  inv {x} .*→* .∨-preserving {uv} {uv'} i =
-    prop.proj₁ (concat-+ {x} (proj₁ uv) (proj₁ uv') (proj₂ uv) (proj₂ uv') i)
-  inv {x} .*→* .⊥-preserving i = prop.proj₁ (concat-ε {x} i)
+  scalar-cong : ∀ {a b} → a two.≃ b → Category._≈_ SemiLat.cat (scalar a) (scalar b)
+  scalar-cong = {!!}
 
-  𝓕-split-concat : ∀ {x y} → pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ∘ₛ inv {x} {y} ≃m idₛ _
-  𝓕-split-concat {x} .f≃f .eqfunc .eqfun uv =
-    ((λ i → two.⊔-least (prop.proj₁ (recover₁ i)) tt) ,
-     (λ i → prop.proj₁ (recover₂ i))) ,
-    ((λ i → two.≤-trans (prop.proj₂ (recover₁ i)) two.⊔-upper₁) ,
-     (λ i → prop.proj₂ (recover₂ i)))
-    where
-      w = concat (proj₁ uv) (proj₂ uv)
-      recover₁ : ∀ i → Σ (λ j → p₁ i j two.⊓ w j) two.≃ proj₁ uv i
-      recover₁ i = two.≃-trans (Σ-p₁ {x} w i) (split₁-concat (proj₁ uv) (proj₂ uv) i)
-      recover₂ : ∀ i → Σ (λ j → p₂ i j two.⊓ w j) two.≃ proj₂ uv i
-      recover₂ i = two.≃-trans (Σ-p₂ {x} w i) (split₂-concat (proj₁ uv) (proj₂ uv) i)
+  scalar-ε : Category._≈_ SemiLat.cat (scalar two.O) (CMon.CMonEnriched.εm SemiLat.cmon-enriched)
+  scalar-ε = Category.≈-refl SemiLat.cat
 
-  𝓕-concat-split : ∀ {x y} → inv {x} {y} ∘ₛ pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ≃m idₛ _
-  𝓕-concat-split {x} .f≃f .eqfunc .eqfun w =
-    (λ i → two.≤-trans
-              (concat-preserves {x} two._≤_
-                (λ k → two.⊔-least {z = split₁ {x} w k} (prop.proj₁ (Σ-p₁ {x} w k)) tt)
-                (λ k → prop.proj₁ (Σ-p₂ {x} w k)) i)
-              (prop.proj₁ (concat-split {x} w i))) ,
-    (λ i → two.≤-trans
-              (prop.proj₂ (concat-split {x} w i))
-              (concat-preserves {x} two._≤_
-                (λ k → two.≤-trans (prop.proj₂ (Σ-p₁ {x} w k)) (two.⊔-upper₁ {y = O}))
-                (λ k → prop.proj₂ (Σ-p₂ {x} w k)) i))
+  scalar-ι : Category._≈_ SemiLat.cat (scalar two.I) (Category.id SemiLat.cat SemiLat.TWO)
+  scalar-ι = Category.≈-refl SemiLat.cat
 
-  𝓕-preserve-products : preserve-chosen-products 𝓕 Mat-products SemiLat-products
-  𝓕-preserve-products .inverse = inv
-  𝓕-preserve-products .f∘inverse≈id = 𝓕-split-concat
-  𝓕-preserve-products .inverse∘f≈id = 𝓕-concat-split
+  open import commutative-monoid using (CommutativeMonoid)
+  private
+    module homCM {x y} = CommutativeMonoid (CMon.CMonEnriched.homCM SemiLat.cmon-enriched x y)
+  open CMon.CMonEnriched SemiLat.cmon-enriched using (_+m_; εm)
 
-  open Interpretation
-    cat terminal Mat-products
-    SemiLat.cat SemiLat.cmon-enriched SemiLat.limits SemiLat.terminal SemiLat-BP
-    𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
-    public
+  -- Preservation of addition: scalar (a + b) ≈ scalar a +m scalar b.
+  scalar-+ : ∀ {a b} → Category._≈_ SemiLat.cat (scalar (a + b)) (scalar a +m scalar b)
+  scalar-+ {two.O} {two.O} = Category.≈-sym SemiLat.cat homCM.+-lunit
+  scalar-+ {two.O} {two.I} = Category.≈-sym SemiLat.cat homCM.+-lunit
+  scalar-+ {two.I} {two.O} = {!!}
+  scalar-+ {two.I} {two.I} = {!!}
+
