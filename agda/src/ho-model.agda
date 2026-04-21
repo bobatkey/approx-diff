@@ -387,6 +387,8 @@ module Matrix where
   𝓕 : Functor cat SemiLat.cat
   𝓕 .fobj = 𝓕-obj
   𝓕 .fmor = 𝓕-mor
-  𝓕 .fmor-cong = {!!}
+  𝓕 .fmor-cong {x} p .SemiLat._≃m_.f≃f .join-semilattice._≃m_.eqfunc .preorder._≃m_.eqfun v =
+    (λ i → prop.proj₁ (Σ-cong {x} (λ j → IsMeet.cong two.⊓-isMeet (p i j) (two.≃-refl {v j})))) ,
+    (λ i → prop.proj₂ (Σ-cong {x} (λ j → IsMeet.cong two.⊓-isMeet (p i j) (two.≃-refl {v j}))))
   𝓕 .fmor-id = {!!}
   𝓕 .fmor-comp = {!!}
