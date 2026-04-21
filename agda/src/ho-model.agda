@@ -423,8 +423,8 @@ module Matrix where
   𝓕-preserve-terminal .f∘inverse≈id = HasTerminal.to-terminal-unique SemiLat.terminal _ _
   𝓕-preserve-terminal .inverse∘f≈id .f≃f .eqfunc .eqfun v = (λ ()) , (λ ())
 
-  SemiLat-products = biproducts→products SemiLat.cat SemiLat-BP
-  Mat-products = biproducts→products cat (cmon-enriched.cmon+products→biproducts cmon biproduct)
+  SemiLat-products = biproducts→products SemiLat.cmon-enriched SemiLat-BP
+  Mat-products = biproducts→products cmon biproduct
 
   𝓕-preserve-products : preserve-chosen-products 𝓕 Mat-products SemiLat-products
   𝓕-preserve-products .inverse = {!!}
