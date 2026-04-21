@@ -5,7 +5,7 @@ open import commutative-semiring using (CommutativeSemiring)
 
 module matrix {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
 
-open CommutativeSemiring S
+open CommutativeSemiring S public
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Fin using (Fin; zero; suc)
 

@@ -373,7 +373,8 @@ module Matrix where
     +-to-Σ.Σ-preserves two._≤_ two.≤-refl (IsJoin.mono two.⊔-isJoin)
       (λ j → IsMeet.mono two.⊓-isMeet two.≤-refl (v≤w j))
   𝓕-mor M .*→* .∨-preserving = {!!}
-  𝓕-mor M .*→* .⊥-preserving = {!!}
+  𝓕-mor {m} M .*→* .⊥-preserving i =
+    prop.proj₁ (two.≃-trans (Σ-cong {m} (λ j → ε-annihilᵣ)) (Σ-ε {m}))
 
   open import functor using (Functor)
   open Functor
