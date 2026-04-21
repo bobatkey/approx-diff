@@ -143,3 +143,101 @@ cat .Category.∘-cong = ∘-cong
 cat .Category.id-left = id-left
 cat .Category.id-right = id-right
 cat .Category.assoc = assoc
+
+open import cmon-enriched using (CMonEnriched; Biproduct)
+open import commutative-monoid using (CommutativeMonoid)
+open import Data.Nat using () renaming (_+_ to _+ℕ_)
+
+-- Pointwise addition of matrices.
+_+ₘ_ : ∀ {m n} → Mat m n → Mat m n → Mat m n
+(M +ₘ N) i j = M i j + N i j
+
+-- Zero matrix.
+εₘ : ∀ {m n} → Mat m n
+εₘ _ _ = ε
+
+-- Σ over zero function is zero.
+Σ-+ₘ : ∀ {n} {f : Fin n → Carrier} → Σ {n} (λ i → f i + ε) ≈ Σ {n} f
+Σ-+ₘ {n} = Σ-cong {n} (λ i → trans +-comm +-lunit)
+
+-- Σ distributes over pointwise addition.
+Σ-distribₗ : ∀ {n} (f g : Fin n → Carrier) → Σ {n} (λ i → f i + g i) ≈ Σ {n} f + Σ {n} g
+Σ-distribₗ {n} f g = sym (Σ-+ {n} f g)
+
+-- Composition distributes over +ₘ on the left.
+comp-bilinear₁ : ∀ {m n k} (M₁ M₂ : Mat m n) (N : Mat n k) →
+  ((M₁ +ₘ M₂) ∘ N) ≈ₘ ((M₁ ∘ N) +ₘ (M₂ ∘ N))
+comp-bilinear₁ {n = n} M₁ M₂ N i k =
+  trans (Σ-cong {n} (λ j → ·-+-distribᵣ))
+        (sym (Σ-+ {n} (λ j → M₁ i j · N j k) (λ j → M₂ i j · N j k)))
+
+-- Composition distributes over +ₘ on the right.
+comp-bilinear₂ : ∀ {m n k} (M : Mat m n) (N₁ N₂ : Mat n k) →
+  (M ∘ (N₁ +ₘ N₂)) ≈ₘ ((M ∘ N₁) +ₘ (M ∘ N₂))
+comp-bilinear₂ {n = n} M N₁ N₂ i k =
+  trans (Σ-cong {n} (λ j → ·-+-distribₗ))
+        (sym (Σ-+ {n} (λ j → M i j · N₁ j k) (λ j → M i j · N₂ j k)))
+
+-- Composition with zero matrix on the left.
+comp-ε₁ : ∀ {m n k} (N : Mat n k) → (εₘ ∘ N) ≈ₘ (εₘ {m} {k})
+comp-ε₁ {n = n} N i k =
+  trans (Σ-cong {n} (λ j → ε-annihilₗ)) (Σ-ε {n})
+
+-- Composition with zero matrix on the right.
+comp-ε₂ : ∀ {m n k} (M : Mat m n) → (M ∘ εₘ) ≈ₘ (εₘ {m} {k})
+comp-ε₂ {n = n} M i k =
+  trans (Σ-cong {n} (λ j → ε-annihilᵣ)) (Σ-ε {n})
+
+private
+  hom-setoid : ℕ → ℕ → Setoid _ _
+  hom-setoid m n .Setoid.Carrier = Mat n m
+  hom-setoid m n .Setoid._≈_ = _≈ₘ_
+  hom-setoid m n .Setoid.isEquivalence = ≈ₘ-isEquiv
+
+cmon : CMonEnriched cat
+cmon .CMonEnriched.homCM m n .CommutativeMonoid.ε = εₘ
+cmon .CMonEnriched.homCM m n .CommutativeMonoid._+_ = _+ₘ_
+cmon .CMonEnriched.homCM m n .CommutativeMonoid.+-cong p q i j = +-cong (p i j) (q i j)
+cmon .CMonEnriched.homCM m n .CommutativeMonoid.+-lunit i j = +-lunit
+cmon .CMonEnriched.homCM m n .CommutativeMonoid.+-assoc i j = +-assoc
+cmon .CMonEnriched.homCM m n .CommutativeMonoid.+-comm i j = +-comm
+cmon .CMonEnriched.comp-bilinear₁ = comp-bilinear₁
+cmon .CMonEnriched.comp-bilinear₂ = comp-bilinear₂
+cmon .CMonEnriched.comp-bilinear-ε₁ = comp-ε₁
+cmon .CMonEnriched.comp-bilinear-ε₂ = comp-ε₂
+
+-- Biproduct: m ⊕ n = m +ℕ n.
+
+p₁ : ∀ {m n} → Mat m (m +ℕ n)
+p₁ {suc m} zero zero    = ι
+p₁ {suc m} zero (suc _) = ε
+p₁ {suc m} (suc i) zero = ε
+p₁ {suc m} (suc i) (suc j) = p₁ {m} i j
+
+p₂ : ∀ {m n} → Mat n (m +ℕ n)
+p₂ {zero}  i j = e i j
+p₂ {suc m} i zero = ε
+p₂ {suc m} i (suc j) = p₂ {m} i j
+
+in₁ : ∀ {m n} → Mat (m +ℕ n) m
+in₁ {suc m} zero zero    = ι
+in₁ {suc m} zero (suc _) = ε
+in₁ {suc m} (suc i) zero = ε
+in₁ {suc m} (suc i) (suc j) = in₁ {m} i j
+
+in₂ : ∀ {m n} → Mat (m +ℕ n) n
+in₂ {zero}  i j = e i j
+in₂ {suc m} zero _ = ε
+in₂ {suc m} (suc i) j = in₂ {m} i j
+
+biproduct : ∀ m n → Biproduct cmon m n
+biproduct m n .Biproduct.prod = m +ℕ n
+biproduct m n .Biproduct.p₁ = p₁ {m} {n}
+biproduct m n .Biproduct.p₂ = p₂ {m} {n}
+biproduct m n .Biproduct.in₁ = in₁ {m} {n}
+biproduct m n .Biproduct.in₂ = in₂ {m} {n}
+biproduct m n .Biproduct.id-1 = {!!}
+biproduct m n .Biproduct.id-2 = {!!}
+biproduct m n .Biproduct.zero-1 = {!!}
+biproduct m n .Biproduct.zero-2 = {!!}
+biproduct m n .Biproduct.id-+ = {!!}
