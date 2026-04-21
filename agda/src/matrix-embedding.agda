@@ -187,8 +187,7 @@ module matrix-embedding
       scalar S-ι ≈⟨ scalar-ι ⟩ id X
     ≈˘⟨ id-1 (BP X (X^ n)) ⟩
       p₁ (BP X (X^ n)) ∘ in₁ (BP X (X^ n))
-    ∎
-    where open ≈-Reasoning isEquiv
+    ∎ where open ≈-Reasoning isEquiv
   scalar-e {suc n} zero (suc j) =
     begin
       scalar S-ε
