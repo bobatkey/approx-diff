@@ -340,7 +340,11 @@ module Matrix where
   open import matrix two.semiring public
 
   import join-semilattice-category as SemiLat
+  open Category SemiLat.cat
+    using ()
+    renaming (_⇒_ to _⇒ₛ_; _∘_ to _∘ₛ_; id to idₛ; _≈_ to _≈ₛ_; ≈-refl to ≈ₛ-refl; ≈-sym to ≈ₛ-sym; ≈-trans to ≈ₛ-trans)
   import cmon-enriched as CMon
+  open CMon.CMonEnriched SemiLat.cmon-enriched using (_+m_; εm; +m-runit)
   open import cmon-enriched using (biproducts→products)
   open import finite-product-functor using (preserve-chosen-terminal; preserve-chosen-products)
 
@@ -349,28 +353,27 @@ module Matrix where
   Mat-products = biproducts→products cmon biproduct
 
   -- Scalar embedding: Two → (TWO ⇒ TWO) in SemiLat.
-  scalar : Two → Category._⇒_ SemiLat.cat SemiLat.TWO SemiLat.TWO
-  scalar two.O = CMon.CMonEnriched.εm SemiLat.cmon-enriched
-  scalar two.I = Category.id SemiLat.cat SemiLat.TWO
+  scalar : Two → SemiLat.TWO ⇒ₛ SemiLat.TWO
+  scalar two.O = εm
+  scalar two.I = idₛ SemiLat.TWO
 
-  scalar-cong : ∀ {a b} → a two.≃ b → Category._≈_ SemiLat.cat (scalar a) (scalar b)
+  scalar-cong : ∀ {a b} → a two.≃ b → scalar a ≈ₛ scalar b
   scalar-cong = {!!}
 
-  scalar-ε : Category._≈_ SemiLat.cat (scalar two.O) (CMon.CMonEnriched.εm SemiLat.cmon-enriched)
-  scalar-ε = Category.≈-refl SemiLat.cat
+  scalar-ε : scalar two.O ≈ₛ εm
+  scalar-ε = ≈ₛ-refl
 
-  scalar-ι : Category._≈_ SemiLat.cat (scalar two.I) (Category.id SemiLat.cat SemiLat.TWO)
-  scalar-ι = Category.≈-refl SemiLat.cat
+  scalar-ι : scalar two.I ≈ₛ idₛ SemiLat.TWO
+  scalar-ι = ≈ₛ-refl
 
   open import commutative-monoid using (CommutativeMonoid)
   private
     module homCM {x y} = CommutativeMonoid (CMon.CMonEnriched.homCM SemiLat.cmon-enriched x y)
-  open CMon.CMonEnriched SemiLat.cmon-enriched using (_+m_; εm)
 
   -- Preservation of addition: scalar (a + b) ≈ scalar a +m scalar b.
-  scalar-+ : ∀ {a b} → Category._≈_ SemiLat.cat (scalar (a + b)) (scalar a +m scalar b)
-  scalar-+ {two.O} {two.O} = Category.≈-sym SemiLat.cat homCM.+-lunit
-  scalar-+ {two.O} {two.I} = Category.≈-sym SemiLat.cat homCM.+-lunit
-  scalar-+ {two.I} {two.O} = {!!}
-  scalar-+ {two.I} {two.I} = {!!}
+  scalar-+ : ∀ {a b} → scalar (a + b) ≈ₛ scalar a +m scalar b
+  scalar-+ {two.O} {two.O} = ≈ₛ-sym homCM.+-lunit
+  scalar-+ {two.O} {two.I} = ≈ₛ-sym homCM.+-lunit
+  scalar-+ {two.I} {two.O} = ≈ₛ-sym +m-runit
+  scalar-+ {two.I} {two.I} = {!!}  -- needs idempotence of id under +m
 
