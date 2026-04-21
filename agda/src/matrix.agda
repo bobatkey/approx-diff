@@ -264,6 +264,21 @@ zero-2 (suc m) n i zero =
 zero-2 (suc m) n i (suc j) =
   trans (+-cong ε-annihilₗ refl) (trans +-lunit (zero-2 m n i j))
 
+id-+ : ∀ m n → (in₁ {m} {n} ∘ p₁ {m} {n}) +ₘ (in₂ {m} {n} ∘ p₂ {m} {n}) ≈ₘ I {m +ℕ n}
+id-+ zero n i j =
+  trans +-lunit (Σ-unit i (λ k → e k j))
+id-+ (suc m) n zero zero =
+  trans (+-cong (+-cong ·-lunit (Σ-ε· {m} _)) (Σ-ε· {n} _))
+        (trans (+-cong (trans +-comm +-lunit) refl) (trans +-comm +-lunit))
+id-+ (suc m) n zero (suc j) =
+  trans (+-cong (+-cong ε-annihilᵣ (Σ-ε· {m} _)) (Σ-ε· {n} _))
+        (trans (+-cong +-lunit refl) +-lunit)
+id-+ (suc m) n (suc i) zero =
+  trans (+-cong (+-cong ε-annihilₗ (·ε-Σ {m} _)) (·ε-Σ {n} _))
+        (trans (+-cong +-lunit refl) +-lunit)
+id-+ (suc m) n (suc i) (suc j) =
+  trans (+-cong (+-cong ε-annihilₗ refl) refl) (trans (+-cong +-lunit refl) (id-+ m n i j))
+
 biproduct : ∀ m n → Biproduct cmon m n
 biproduct m n .Biproduct.prod = m +ℕ n
 biproduct m n .Biproduct.p₁ = p₁ {m} {n}
@@ -274,4 +289,4 @@ biproduct m n .Biproduct.id-1 = id-1 m n
 biproduct m n .Biproduct.id-2 = id-2 m n
 biproduct m n .Biproduct.zero-1 = zero-1 m n
 biproduct m n .Biproduct.zero-2 = zero-2 m n
-biproduct m n .Biproduct.id-+ = {!!}
+biproduct m n .Biproduct.id-+ = id-+ m n
