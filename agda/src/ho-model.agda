@@ -351,7 +351,7 @@ module Matrix where
   open import Data.Nat using (ℕ; zero; suc)
   open import Data.Fin using (Fin; zero; suc)
   open import prop using (tt; _,_)
-  open import basics using (IsPreorder; IsJoin; IsBottom)
+  open import basics using (IsPreorder; IsJoin; IsBottom; IsMeet)
 
   -- 𝓕(n): the pointwise join-semilattice on Vec n = Fin n → Two.
   𝓕-obj : ℕ → SemiLat.Obj
@@ -369,7 +369,9 @@ module Matrix where
   -- 𝓕 on morphisms: matrix-vector multiplication.
   𝓕-mor : ∀ {m n} → Mat n m → SemiLat._⇒_ (𝓕-obj m) (𝓕-obj n)
   𝓕-mor M .*→* .func .fun v i = Σ (λ j → two._⊓_ (M i j) (v j))
-  𝓕-mor M .*→* .func .mono = {!!}
+  𝓕-mor M .*→* .func .mono v≤w i =
+    +-to-Σ.Σ-preserves two._≤_ two.≤-refl (IsJoin.mono two.⊔-isJoin)
+      (λ j → IsMeet.mono two.⊓-isMeet two.≤-refl (v≤w j))
   𝓕-mor M .*→* .∨-preserving = {!!}
   𝓕-mor M .*→* .⊥-preserving = {!!}
 
