@@ -173,6 +173,35 @@ module matrix-embedding
       cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j)
     ∎ where open ≈-Reasoning isEquiv
 
+  -- Morphisms with equal entries are equal.
+  entry-ext : ∀ {m n} {f g : X^ m ⇒ X^ n} → (∀ (i : Fin n) (j : Fin m) → entry f i j ≈ entry g i j) → f ≈ g
+  entry-ext {m} {n} {f} {g} h =
+    begin
+      f
+    ≈˘⟨ tuple-ext {n} f ⟩
+      tuple {n} (λ i → π {n} i ∘ f)
+    ≈˘⟨ tuple-cong {n} _ _ (λ i → cotuple-ext {m} (π {n} i ∘ f)) ⟩
+      tuple {n} (λ i → cotuple {m} (λ j → (π {n} i ∘ f) ∘ ι {m} j))
+    ≈⟨ tuple-cong {n} _ _ (λ i → cotuple-cong {m} _ _ (λ j → entry-step i j)) ⟩
+      tuple {n} (λ i → cotuple {m} (λ j → (π {n} i ∘ g) ∘ ι {m} j))
+    ≈⟨ tuple-cong {n} _ _ (λ i → cotuple-ext {m} (π {n} i ∘ g)) ⟩
+      tuple {n} (λ i → π {n} i ∘ g)
+    ≈⟨ tuple-ext {n} g ⟩
+      g
+    ∎ where
+      entry-step : ∀ (i : Fin n) (j : Fin m) → ((π {n} i ∘ f) ∘ ι {m} j) ≈ ((π {n} i ∘ g) ∘ ι {m} j)
+      entry-step i j =
+        begin
+          (π {n} i ∘ f) ∘ ι {m} j
+        ≈⟨ assoc (π {n} i) f (ι {m} j) ⟩
+          entry f i j
+        ≈⟨ h i j ⟩
+          entry g i j
+        ≈˘⟨ assoc (π {n} i) g (ι {m} j) ⟩
+          (π {n} i ∘ g) ∘ ι {m} j
+        ∎ where open ≈-Reasoning isEquiv
+      open ≈-Reasoning isEquiv
+
   open import functor using (Functor)
   open Functor
   import matrix
@@ -232,34 +261,18 @@ module matrix-embedding
   𝓕 .fobj = X^
   𝓕 .fmor M = tuple (λ i → cotuple (λ j → scalar (M i j)))
   𝓕 .fmor-cong p = tuple-cong _ _ (λ i → cotuple-cong _ _ (λ j → scalar-cong (p i j)))
-  𝓕 .fmor-id = {!!}
-  𝓕 .fmor-comp = {!!}
-
-  -- Morphisms with equal entries are equal.
-  entry-ext : ∀ {m n} {f g : X^ m ⇒ X^ n} → (∀ (i : Fin n) (j : Fin m) → entry f i j ≈ entry g i j) → f ≈ g
-  entry-ext {m} {n} {f} {g} h =
+  𝓕 .fmor-id {n} = entry-ext (λ i j →
     begin
-      f
-    ≈˘⟨ tuple-ext {n} f ⟩
-      tuple {n} (λ i → π {n} i ∘ f)
-    ≈˘⟨ tuple-cong {n} _ _ (λ i → cotuple-ext {m} (π {n} i ∘ f)) ⟩
-      tuple {n} (λ i → cotuple {m} (λ j → (π {n} i ∘ f) ∘ ι {m} j))
-    ≈⟨ tuple-cong {n} _ _ (λ i → cotuple-cong {m} _ _ (λ j → entry-step i j)) ⟩
-      tuple {n} (λ i → cotuple {m} (λ j → (π {n} i ∘ g) ∘ ι {m} j))
-    ≈⟨ tuple-cong {n} _ _ (λ i → cotuple-ext {m} (π {n} i ∘ g)) ⟩
-      tuple {n} (λ i → π {n} i ∘ g)
-    ≈⟨ tuple-ext {n} g ⟩
-      g
-    ∎ where
-      entry-step : ∀ (i : Fin n) (j : Fin m) → ((π {n} i ∘ f) ∘ ι {m} j) ≈ ((π {n} i ∘ g) ∘ ι {m} j)
-      entry-step i j =
-        begin
-          (π {n} i ∘ f) ∘ ι {m} j
-        ≈⟨ assoc (π {n} i) f (ι {m} j) ⟩
-          entry f i j
-        ≈⟨ h i j ⟩
-          entry g i j
-        ≈˘⟨ assoc (π {n} i) g (ι {m} j) ⟩
-          (π {n} i ∘ g) ∘ ι {m} j
-        ∎ where open ≈-Reasoning isEquiv
-      open ≈-Reasoning isEquiv
+      π {n} i ∘ (tuple {n} (λ i' → cotuple {n} (λ j' → scalar (Mat.I i' j'))) ∘ ι {n} j)
+    ≈˘⟨ assoc _ _ _ ⟩
+      (π {n} i ∘ tuple {n} (λ i' → cotuple {n} (λ j' → scalar (Mat.I i' j')))) ∘ ι {n} j
+    ≈⟨ ∘-cong (tuple-π {n} _ i) ≈-refl ⟩
+      cotuple {n} (λ j' → scalar (Mat.I i j')) ∘ ι {n} j
+    ≈⟨ cotuple-ι {n} _ j ⟩
+      scalar (Mat.I i j)
+    ≈⟨ scalar-e i j ⟩
+      π {n} i ∘ ι {n} j
+    ≈˘⟨ ∘-cong ≈-refl id-left ⟩
+      π {n} i ∘ (id (X^ n) ∘ ι {n} j)
+    ∎) where open ≈-Reasoning isEquiv
+  𝓕 .fmor-comp = {!!}
