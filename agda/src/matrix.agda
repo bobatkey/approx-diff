@@ -173,20 +173,17 @@ comp-bilinear₁ {n = n} M₁ M₂ N i k =
   trans (Σ-cong {n} (λ j → ·-+-distribᵣ))
         (sym (Σ-+ {n} (λ j → M₁ i j · N j k) (λ j → M₂ i j · N j k)))
 
--- Composition distributes over +ₘ on the right.
 comp-bilinear₂ : ∀ {m n k} (M : Mat m n) (N₁ N₂ : Mat n k) → M ∘ (N₁ +ₘ N₂) ≈ₘ (M ∘ N₁) +ₘ (M ∘ N₂)
 comp-bilinear₂ {n = n} M N₁ N₂ i k =
   trans (Σ-cong {n} (λ j → ·-+-distribₗ))
         (sym (Σ-+ {n} (λ j → M i j · N₁ j k) (λ j → M i j · N₂ j k)))
 
--- Composition with zero matrix on the left.
-comp-ε₁ : ∀ {m n k} (N : Mat n k) → εₘ ∘ N ≈ₘ εₘ {m} {k}
-comp-ε₁ {n = n} N i k =
+comp-bilinear-ε₁ : ∀ {m n k} (N : Mat n k) → εₘ ∘ N ≈ₘ εₘ {m} {k}
+comp-bilinear-ε₁ {n = n} N i k =
   trans (Σ-cong {n} (λ j → ε-annihilₗ)) (Σ-ε {n})
 
--- Composition with zero matrix on the right.
-comp-ε₂ : ∀ {m n k} (M : Mat m n) → M ∘ εₘ ≈ₘ εₘ {m} {k}
-comp-ε₂ {n = n} M i k =
+comp-bilinear-ε₂ : ∀ {m n k} (M : Mat m n) → M ∘ εₘ ≈ₘ εₘ {m} {k}
+comp-bilinear-ε₂ {n = n} M i k =
   trans (Σ-cong {n} (λ j → ε-annihilᵣ)) (Σ-ε {n})
 
 private
@@ -204,13 +201,13 @@ cmon .CMonEnriched.homCM m n .CommutativeMonoid.+-assoc i j = +-assoc
 cmon .CMonEnriched.homCM m n .CommutativeMonoid.+-comm i j = +-comm
 cmon .CMonEnriched.comp-bilinear₁ = comp-bilinear₁
 cmon .CMonEnriched.comp-bilinear₂ = comp-bilinear₂
-cmon .CMonEnriched.comp-bilinear-ε₁ = comp-ε₁
-cmon .CMonEnriched.comp-bilinear-ε₂ = comp-ε₂
+cmon .CMonEnriched.comp-bilinear-ε₁ = comp-bilinear-ε₁
+cmon .CMonEnriched.comp-bilinear-ε₂ = comp-bilinear-ε₂
 
 -- Biproduct: m ⊕ n = m +ℕ n.
 
 p₁ : ∀ {m n} → Mat m (m +ℕ n)
-p₁ {suc m} zero zero    = ι
+p₁ {suc m} zero zero = ι
 p₁ {suc m} zero (suc _) = ε
 p₁ {suc m} (suc i) zero = ε
 p₁ {suc m} (suc i) (suc j) = p₁ {m} i j
@@ -221,7 +218,7 @@ p₂ {suc m} i zero = ε
 p₂ {suc m} i (suc j) = p₂ {m} i j
 
 in₁ : ∀ {m n} → Mat (m +ℕ n) m
-in₁ {suc m} zero zero    = ι
+in₁ {suc m} zero zero = ι
 in₁ {suc m} zero (suc _) = ε
 in₁ {suc m} (suc i) zero = ε
 in₁ {suc m} (suc i) (suc j) = in₁ {m} i j
@@ -231,8 +228,6 @@ in₂ {zero}  i j = e i j
 in₂ {suc m} zero _ = ε
 in₂ {suc m} (suc i) j = in₂ {m} i j
 
--- The four block-identity laws, all by induction on m.
--- Helper: Σ of (ε · f j) ≈ ε.
 private
   Σ-ε· : ∀ {n} (f : Fin n → Carrier) → Σ {n} (λ j → ε · f j) ≈ ε
   Σ-ε· {n} f = trans (Σ-cong {n} (λ j → ε-annihilₗ)) (Σ-ε {n})
