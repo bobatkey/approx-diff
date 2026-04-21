@@ -85,6 +85,11 @@ e-sym (suc i) (suc j) = e-sym i j
 Σ-·-distribᵣ : ∀ {n} (f : Fin n → Carrier) (x : Carrier) → Σ {n} f · x ≈ Σ {n} (λ j → f j · x)
 Σ-·-distribᵣ = {!!}
 
+-- Distributing · over Σ on the left: x · (Σⱼ fⱼ) ≈ Σⱼ (x · fⱼ).
+Σ-·-distribₗ : ∀ {n} (x : Carrier) (f : Fin n → Carrier) → x · Σ {n} f ≈ Σ {n} (λ j → x · f j)
+Σ-·-distribₗ {n} x f =
+  trans ·-comm (trans (Σ-·-distribᵣ f x) (Σ-cong {n} (λ j → ·-comm)))
+
 -- Interchange (Fubini): Σᵢ Σⱼ f(i,j) ≈ Σⱼ Σᵢ f(i,j).
 Σ-interchange : ∀ {m n} (f : Fin m → Fin n → Carrier) → Σ {m} (λ i → Σ {n} (f i)) ≈ Σ {n} (λ j → Σ {m} (λ i → f i j))
 Σ-interchange = {!!}
@@ -107,7 +112,11 @@ id-right {n = n} {M = M} i k =
 
 assoc : ∀ {m n k l} (M : Mat m n) (N : Mat n k) (P : Mat k l) →
   ((M ∘ N) ∘ P) ≈ₘ (M ∘ (N ∘ P))
-assoc M N P i l = {!!}
+assoc {n = n} {k} M N P i l =
+  trans (Σ-cong {k} (λ j → Σ-·-distribᵣ (λ r → M i r · N r j) (P j l)))
+    (trans (Σ-cong {k} (λ j → Σ-cong {n} (λ r → ·-assoc)))
+      (trans (Σ-interchange {k} {n} (λ j r → M i r · (N r j · P j l)))
+        (Σ-cong {n} (λ r → sym (Σ-·-distribₗ (M i r) (λ j → N r j · P j l))))))
 
 cat : Category _ _ _
 cat .Category.obj = ℕ
