@@ -436,16 +436,26 @@ module Matrix where
     prop.proj₁ (concat-+ {x} (proj₁ uv) (proj₁ uv') (proj₂ uv) (proj₂ uv') i)
   inv {x} .*→* .⊥-preserving i = prop.proj₁ (concat-ε {x} i)
 
-  split-concat : ∀ {x y} → pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ∘ₛ inv {x} {y} ≃m idₛ _
-  split-concat .f≃f .eqfunc .eqfun uv = {!!}
+  𝓕-split-concat : ∀ {x y} → pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ∘ₛ inv {x} {y} ≃m idₛ _
+  𝓕-split-concat {x} .f≃f .eqfunc .eqfun uv =
+    ((λ i → two.⊔-least (prop.proj₁ (comp₁ i)) tt) ,
+     (λ i → prop.proj₁ (comp₂ i))) ,
+    ((λ i → two.≤-trans (prop.proj₂ (comp₁ i)) two.⊔-upper₁) ,
+     (λ i → prop.proj₂ (comp₂ i)))
+    where
+      w = concat (proj₁ uv) (proj₂ uv)
+      comp₁ : ∀ i → Σ (λ j → p₁ i j two.⊓ w j) two.≃ proj₁ uv i
+      comp₁ i = two.≃-trans (Σ-p₁ {x} w i) (split₁-concat (proj₁ uv) (proj₂ uv) i)
+      comp₂ : ∀ i → Σ (λ j → p₂ i j two.⊓ w j) two.≃ proj₂ uv i
+      comp₂ i = two.≃-trans (Σ-p₂ {x} w i) (split₂-concat (proj₁ uv) (proj₂ uv) i)
 
-  concat-split : ∀ {x y} → inv {x} {y} ∘ₛ pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ≃m idₛ _
-  concat-split = {!!}
+  𝓕-concat-split : ∀ {x y} → inv {x} {y} ∘ₛ pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ≃m idₛ _
+  𝓕-concat-split = {!!}
 
   𝓕-preserve-products : preserve-chosen-products 𝓕 Mat-products SemiLat-products
   𝓕-preserve-products .inverse = inv
-  𝓕-preserve-products .f∘inverse≈id = split-concat
-  𝓕-preserve-products .inverse∘f≈id = concat-split
+  𝓕-preserve-products .f∘inverse≈id = 𝓕-split-concat
+  𝓕-preserve-products .inverse∘f≈id = 𝓕-concat-split
 
   open Interpretation
     cat terminal Mat-products
