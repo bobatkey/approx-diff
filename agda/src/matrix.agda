@@ -337,3 +337,39 @@ concat-ε : ∀ {x y} → ∀ i → concat {x} {y} (λ _ → ε) (λ _ → ε) i
 concat-ε {zero} i = refl
 concat-ε {suc x} zero = refl
 concat-ε {suc x} (suc i) = concat-ε {x} i
+
+-- Vector splitting (inverse of concat).
+split₁ : ∀ {x y} → Vec (x +ℕ y) → Vec x
+split₁ {suc x} w zero = w zero
+split₁ {suc x} w (suc i) = split₁ {x} (λ j → w (suc j)) i
+
+split₂ : ∀ {x y} → Vec (x +ℕ y) → Vec y
+split₂ {zero} w = w
+split₂ {suc x} w = split₂ {x} (λ j → w (suc j))
+
+-- Round-trips: concat and split are inverse.
+split₁-concat : ∀ {x y} (u : Vec x) (v : Vec y) (i : Fin x) → split₁ {x} (concat u v) i ≈ u i
+split₁-concat {suc x} u v zero = refl
+split₁-concat {suc x} u v (suc i) = split₁-concat {x} (λ j → u (suc j)) v i
+
+split₂-concat : ∀ {x y} (u : Vec x) (v : Vec y) (i : Fin y) → split₂ {x} (concat u v) i ≈ v i
+split₂-concat {zero} u v i = refl
+split₂-concat {suc x} u v i = split₂-concat {x} (λ j → u (suc j)) v i
+
+concat-split : ∀ {x y} (w : Vec (x +ℕ y)) (i : Fin (x +ℕ y)) → concat (split₁ {x} w) (split₂ {x} w) i ≈ w i
+concat-split {zero} w i = refl
+concat-split {suc x} w zero = refl
+concat-split {suc x} w (suc i) = concat-split {x} (λ j → w (suc j)) i
+
+-- Matrix multiplication by p₁/p₂ computes split₁/split₂.
+Σ-p₁ : ∀ {x y} (w : Vec (x +ℕ y)) (i : Fin x) → Σ {x +ℕ y} (λ j → p₁ {x} {y} i j · w j) ≈ split₁ {x} w i
+Σ-p₁ {suc x} w zero =
+  trans (+-cong ·-lunit (trans (Σ-cong {x +ℕ _} (λ j → ε-annihilₗ)) (Σ-ε {x +ℕ _})))
+        (trans +-comm +-lunit)
+Σ-p₁ {suc x} w (suc i) =
+  trans (+-cong ε-annihilₗ refl) (trans +-lunit (Σ-p₁ {x} (λ j → w (suc j)) i))
+
+Σ-p₂ : ∀ {x y} (w : Vec (x +ℕ y)) (i : Fin y) → Σ {x +ℕ y} (λ j → p₂ {x} {y} i j · w j) ≈ split₂ {x} w i
+Σ-p₂ {zero} w i = Σ-unit i w
+Σ-p₂ {suc x} w i =
+  trans (+-cong ε-annihilₗ refl) (trans +-lunit (Σ-p₂ {x} (λ j → w (suc j)) i))

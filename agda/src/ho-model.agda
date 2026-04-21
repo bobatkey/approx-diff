@@ -437,7 +437,7 @@ module Matrix where
   inv {x} .*→* .⊥-preserving i = prop.proj₁ (concat-ε {x} i)
 
   split-concat : ∀ {x y} → pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ∘ₛ inv {x} {y} ≃m idₛ _
-  split-concat = {!!}
+  split-concat .f≃f .eqfunc .eqfun uv = {!!}
 
   concat-split : ∀ {x y} → inv {x} {y} ∘ₛ pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ≃m idₛ _
   concat-split = {!!}
