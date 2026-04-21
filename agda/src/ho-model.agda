@@ -438,16 +438,16 @@ module Matrix where
 
   𝓕-split-concat : ∀ {x y} → pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ∘ₛ inv {x} {y} ≃m idₛ _
   𝓕-split-concat {x} .f≃f .eqfunc .eqfun uv =
-    ((λ i → two.⊔-least (prop.proj₁ (comp₁ i)) tt) ,
-     (λ i → prop.proj₁ (comp₂ i))) ,
-    ((λ i → two.≤-trans (prop.proj₂ (comp₁ i)) two.⊔-upper₁) ,
-     (λ i → prop.proj₂ (comp₂ i)))
+    ((λ i → two.⊔-least (prop.proj₁ (recover₁ i)) tt) ,
+     (λ i → prop.proj₁ (recover₂ i))) ,
+    ((λ i → two.≤-trans (prop.proj₂ (recover₁ i)) two.⊔-upper₁) ,
+     (λ i → prop.proj₂ (recover₂ i)))
     where
       w = concat (proj₁ uv) (proj₂ uv)
-      comp₁ : ∀ i → Σ (λ j → p₁ i j two.⊓ w j) two.≃ proj₁ uv i
-      comp₁ i = two.≃-trans (Σ-p₁ {x} w i) (split₁-concat (proj₁ uv) (proj₂ uv) i)
-      comp₂ : ∀ i → Σ (λ j → p₂ i j two.⊓ w j) two.≃ proj₂ uv i
-      comp₂ i = two.≃-trans (Σ-p₂ {x} w i) (split₂-concat (proj₁ uv) (proj₂ uv) i)
+      recover₁ : ∀ i → Σ (λ j → p₁ i j two.⊓ w j) two.≃ proj₁ uv i
+      recover₁ i = two.≃-trans (Σ-p₁ {x} w i) (split₁-concat (proj₁ uv) (proj₂ uv) i)
+      recover₂ : ∀ i → Σ (λ j → p₂ i j two.⊓ w j) two.≃ proj₂ uv i
+      recover₂ i = two.≃-trans (Σ-p₂ {x} w i) (split₂-concat (proj₁ uv) (proj₂ uv) i)
 
   𝓕-concat-split : ∀ {x y} → inv {x} {y} ∘ₛ pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ≃m idₛ _
   𝓕-concat-split = {!!}
