@@ -92,9 +92,22 @@ e-sym (suc i) (suc j) = e-sym i j
 Σ-·-distribₗ {n} x f =
   trans ·-comm (trans (Σ-·-distribᵣ f x) (Σ-cong {n} (λ j → ·-comm)))
 
--- Interchange (Fubini): Σᵢ Σⱼ f(i,j) ≈ Σⱼ Σᵢ f(i,j).
++-interchange : ∀ {a b c d} → (a + b) + (c + d) ≈ (a + c) + (b + d)
++-interchange =
+  trans +-assoc (trans (+-cong refl (trans (sym +-assoc) (trans (+-cong +-comm refl) +-assoc))) (sym +-assoc))
+
+-- Σ distributes over +: Σ g + Σ h ≈ Σ (λ j → g j + h j).
+Σ-+ : ∀ {n} (g h : Fin n → Carrier) → Σ {n} g + Σ {n} h ≈ Σ {n} (λ j → g j + h j)
+Σ-+ {zero} g h = +-lunit
+Σ-+ {suc n} g h =
+  trans +-interchange (+-cong refl (Σ-+ {n} (λ j → g (suc j)) (λ j → h (suc j))))
+
+-- Swapping two finite sums.
 Σ-interchange : ∀ {m n} (f : Fin m → Fin n → Carrier) → Σ {m} (λ i → Σ {n} (f i)) ≈ Σ {n} (λ j → Σ {m} (λ i → f i j))
-Σ-interchange = {!!}
+Σ-interchange {zero} {n} f = sym (Σ-ε {n})
+Σ-interchange {suc m} {n} f =
+  trans (+-cong refl (Σ-interchange {m} {n} (λ i → f (suc i))))
+        (Σ-+ {n} (f zero) (λ j → Σ {m} (λ i → f (suc i) j)))
 
 ≈ₘ-isEquiv : ∀ {m n} → IsEquivalence (_≈ₘ_ {m} {n})
 ≈ₘ-isEquiv .IsEquivalence.refl i j = refl
