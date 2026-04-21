@@ -436,12 +436,10 @@ module Matrix where
     prop.proj₁ (concat-+ {x} (proj₁ uv) (proj₁ uv') (proj₂ uv) (proj₂ uv') i)
   inv {x} .*→* .⊥-preserving i = prop.proj₁ (concat-ε {x} i)
 
-  split-concat : ∀ {x y} →
-                 pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ∘ₛ inv {x} {y} ≃m idₛ _
+  split-concat : ∀ {x y} → pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ∘ₛ inv {x} {y} ≃m idₛ _
   split-concat = {!!}
 
-  concat-split : ∀ {x y} →
-                 inv {x} {y} ∘ₛ pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ≃m idₛ _
+  concat-split : ∀ {x y} → inv {x} {y} ∘ₛ pair (𝓕-mor (p₁ {x} {y})) (𝓕-mor (p₂ {x} {y})) ≃m idₛ _
   concat-split = {!!}
 
   𝓕-preserve-products : preserve-chosen-products 𝓕 Mat-products SemiLat-products
