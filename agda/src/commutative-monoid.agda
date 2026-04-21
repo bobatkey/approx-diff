@@ -28,38 +28,6 @@ record CommutativeMonoid {o e} (A : Setoid o e) : Set (o ⊔ e) where
     +-comm  : ∀ {x y} → (x + y) ≈ (y + x)
 
 ------------------------------------------------------------------------------
--- Idempotent commutative monoids (semilattices)have an order.
-
-record Idempotent {o e} {A : Setoid o e} (M : CommutativeMonoid A) : Set (o ⊔ e) where
-  open Setoid A
-  open CommutativeMonoid M
-
-  field
-    +-idem : ∀ {x} → (x + x) ≈ x
-
-  _≤_ : Carrier → Carrier → Prop e
-  x ≤ y = (x + y) ≈ y
-
-  open import basics using (IsPreorder; IsJoin; IsBottom)
-
-  ≤-isPreorder : IsPreorder _≤_
-  ≤-isPreorder .IsPreorder.refl = +-idem
-  ≤-isPreorder .IsPreorder.trans {x} {y} {z} x≤y y≤z =
-    trans (+-cong refl (sym y≤z))
-      (trans (sym +-assoc) (trans (+-cong x≤y refl) y≤z))
-
-  +-isJoin : IsJoin ≤-isPreorder _+_
-  +-isJoin .IsJoin.inl {x} {y} =
-    trans (sym +-assoc) (+-cong +-idem refl)
-  +-isJoin .IsJoin.inr {x} {y} =
-    trans (+-cong refl +-comm) (trans (sym +-assoc) (trans (+-cong +-idem refl) +-comm))
-  +-isJoin .IsJoin.[_,_] {x} {y} {z} x≤z y≤z =
-    trans +-assoc (trans (+-cong refl y≤z) x≤z)
-
-  ε-isBottom : IsBottom ≤-isPreorder ε
-  ε-isBottom .IsBottom.≤-bottom = +-lunit
-
-------------------------------------------------------------------------------
 
 record _=[_]>_ {o e}{A B : Setoid o e}(X : CommutativeMonoid A)(f : A ⇒s B)(Y : CommutativeMonoid B) : Prop (o ⊔ e) where
   private

@@ -2,7 +2,6 @@
 
 open import prop-setoid using (Setoid)
 open import commutative-semiring using (CommutativeSemiring)
-open import commutative-monoid using (Idempotent)
 
 module matrix {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
 
@@ -59,9 +58,19 @@ open import prop using (tt)
 open import prop-setoid using (IsEquivalence)
 open import categories using (Category)
 
+-- Any reflexive relation preserved by + is preserved by Σ.
+module +-to-Σ
+  {p} (_~_ : Carrier → Carrier → Prop p)
+  (~-refl : ∀ {x} → x ~ x)
+  (+-preserves : ∀ {x₁ x₂ y₁ y₂} → x₁ ~ x₂ → y₁ ~ y₂ → (x₁ + y₁) ~ (x₂ + y₂))
+  where
+
+  Σ-preserves : ∀ {n} {f g : Fin n → Carrier} → (∀ i → f i ~ g i) → Σ {n} f ~ Σ {n} g
+  Σ-preserves {zero} _ = ~-refl
+  Σ-preserves {suc n} h = +-preserves (h zero) (Σ-preserves {n} (λ i → h (suc i)))
+
 Σ-cong : ∀ {n} {f g : Fin n → Carrier} → (∀ i → f i ≈ g i) → Σ {n} f ≈ Σ {n} g
-Σ-cong {zero} _ = refl
-Σ-cong {suc n} h = +-cong (h zero) (Σ-cong {n} (λ i → h (suc i)))
+Σ-cong = +-to-Σ.Σ-preserves _≈_ refl +-cong
 
 -- Kronecker delta is symmetric.
 e-sym : ∀ {n} (i j : Fin n) → e i j ≈ e j i
@@ -112,18 +121,6 @@ e-sym (suc i) (suc j) = e-sym i j
   trans (+-cong refl (Σ-interchange {m} {n} (λ i → f (suc i))))
         (Σ-+ {n} (f zero) (λ j → Σ {m} (λ i → f (suc i) j)))
 
--- When addition is idempotent, Σ is monotone w.r.t. the induced order.
-module Idempotent+ (idem : Idempotent additive) where
-  open Idempotent idem
-
-  open import basics using (IsJoin)
-
-  +-mono : ∀ {x₁ x₂ y₁ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ + y₁) ≤ (x₂ + y₂)
-  +-mono = IsJoin.mono +-isJoin
-
-  Σ-mono : ∀ {n} {f g : Fin n → Carrier} → (∀ i → f i ≤ g i) → Σ {n} f ≤ Σ {n} g
-  Σ-mono {zero} _ = +-idem
-  Σ-mono {suc n} h = +-mono (h zero) (Σ-mono {n} (λ i → h (suc i)))
 
 ≈ₘ-isEquiv : ∀ {m n} → IsEquivalence (_≈ₘ_ {m} {n})
 ≈ₘ-isEquiv .IsEquivalence.refl i j = refl
