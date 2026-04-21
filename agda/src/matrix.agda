@@ -62,7 +62,10 @@ open import categories using (Category)
 
 -- Kronecker delta is symmetric.
 e-sym : ∀ {n} (i j : Fin n) → e i j ≈ e j i
-e-sym = {!!}
+e-sym zero zero = refl
+e-sym zero (suc _) = refl
+e-sym (suc _) zero = refl
+e-sym (suc i) (suc j) = e-sym i j
 
 -- Picking out the i-th element: Σⱼ e(i,j) · f(j) ≈ f(i).
 Σ-unit : ∀ {n} (i : Fin n) (f : Fin n → Carrier) → Σ {n} (λ j → e i j · f j) ≈ f i
@@ -81,8 +84,7 @@ e-sym = {!!}
 ≈ₘ-isEquiv .IsEquivalence.sym p i j = sym (p i j)
 ≈ₘ-isEquiv .IsEquivalence.trans p q i j = trans (p i j) (q i j)
 
-∘-cong : ∀ {m n k} {M₁ M₂ : Mat m n} {N₁ N₂ : Mat n k} →
-  M₁ ≈ₘ M₂ → N₁ ≈ₘ N₂ → (M₁ ∘ N₁) ≈ₘ (M₂ ∘ N₂)
+∘-cong : ∀ {m n k} {M₁ M₂ : Mat m n} {N₁ N₂ : Mat n k} → M₁ ≈ₘ M₂ → N₁ ≈ₘ N₂ → (M₁ ∘ N₁) ≈ₘ (M₂ ∘ N₂)
 ∘-cong {m} {n} p q i k = Σ-cong {n} (λ j → ·-cong (p i j) (q j k))
 
 id-left : ∀ {m n} {M : Mat m n} → (I ∘ M) ≈ₘ M
