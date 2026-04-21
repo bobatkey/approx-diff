@@ -83,7 +83,9 @@ e-sym (suc i) (suc j) = e-sym i j
 
 -- Distributing · over Σ on the right: (Σⱼ fⱼ) · x ≈ Σⱼ (fⱼ · x).
 Σ-·-distribᵣ : ∀ {n} (f : Fin n → Carrier) (x : Carrier) → Σ {n} f · x ≈ Σ {n} (λ j → f j · x)
-Σ-·-distribᵣ = {!!}
+Σ-·-distribᵣ {zero} f x = ε-annihilₗ
+Σ-·-distribᵣ {suc n} f x =
+  trans ·-+-distribᵣ (+-cong refl (Σ-·-distribᵣ {n} (λ j → f (suc j)) x))
 
 -- Distributing · over Σ on the left: x · (Σⱼ fⱼ) ≈ Σⱼ (x · fⱼ).
 Σ-·-distribₗ : ∀ {n} (x : Carrier) (f : Fin n → Carrier) → x · Σ {n} f ≈ Σ {n} (λ j → x · f j)
@@ -110,8 +112,7 @@ id-right {n = n} {M = M} i k =
   trans (Σ-cong {n} (λ j → ·-cong refl (e-sym j k)))
         (trans (Σ-cong {n} (λ j → ·-comm)) (Σ-unit k (M i)))
 
-assoc : ∀ {m n k l} (M : Mat m n) (N : Mat n k) (P : Mat k l) →
-  ((M ∘ N) ∘ P) ≈ₘ (M ∘ (N ∘ P))
+assoc : ∀ {m n k l} (M : Mat m n) (N : Mat n k) (P : Mat k l) → ((M ∘ N) ∘ P) ≈ₘ (M ∘ (N ∘ P))
 assoc {n = n} {k} M N P i l =
   trans (Σ-cong {k} (λ j → Σ-·-distribᵣ (λ r → M i r · N r j) (P j l)))
     (trans (Σ-cong {k} (λ j → Σ-cong {n} (λ r → ·-assoc)))
