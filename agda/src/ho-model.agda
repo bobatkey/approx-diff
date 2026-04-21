@@ -340,22 +340,25 @@ module Matrix where
   open import matrix two.semiring public
 
   import join-semilattice-category as SemiLat
-  open SemiLat.Obj
-  open SemiLat using (_⇒_)
-  open SemiLat._⇒_
+  open SemiLat using (Obj; _⇒_; _≃m_)
+  open Obj
+  open _⇒_
+  open _≃m_
   open import join-semilattice using (JoinSemilattice; _=>_)
   open JoinSemilattice
   open _=>_
+  open join-semilattice._≃m_ using (eqfunc)
   open import preorder using (Preorder)
   open Preorder
   open preorder._=>_ using (fun; mono)
+  open preorder._≃m_ using (eqfun)
   open import Data.Nat using (ℕ; zero; suc)
   open import Data.Fin using (Fin; zero; suc)
   open import prop using (tt; _,_)
   open import basics using (IsPreorder; IsJoin; IsBottom; IsMeet)
 
   -- 𝓕(n): the pointwise join-semilattice on Vec n = Fin n → Two.
-  𝓕-obj : ℕ → SemiLat.Obj
+  𝓕-obj : ℕ → Obj
   𝓕-obj n .carrier .Carrier = Vec n
   𝓕-obj n .carrier ._≤_ u v = ∀ i → two._≤_ (u i) (v i)
   𝓕-obj n .carrier .≤-isPreorder .IsPreorder.refl i = two.≤-refl
@@ -387,9 +390,9 @@ module Matrix where
   𝓕 : Functor cat SemiLat.cat
   𝓕 .fobj = 𝓕-obj
   𝓕 .fmor = 𝓕-mor
-  𝓕 .fmor-cong {x} p .SemiLat._≃m_.f≃f .join-semilattice._≃m_.eqfunc .preorder._≃m_.eqfun v =
+  𝓕 .fmor-cong {x} p .f≃f .eqfunc .eqfun v =
     (λ i → prop.proj₁ (Σ-cong {x} (λ j → IsMeet.cong two.⊓-isMeet (p i j) (two.≃-refl {v j})))) ,
     (λ i → prop.proj₂ (Σ-cong {x} (λ j → IsMeet.cong two.⊓-isMeet (p i j) (two.≃-refl {v j}))))
-  𝓕 .fmor-id {x} .SemiLat._≃m_.f≃f .join-semilattice._≃m_.eqfunc .preorder._≃m_.eqfun v =
+  𝓕 .fmor-id {x} .f≃f .eqfunc .eqfun v =
     (λ i → prop.proj₁ (Σ-unit {x} i v)) , (λ i → prop.proj₂ (Σ-unit {x} i v))
   𝓕 .fmor-comp = {!!}
