@@ -1,7 +1,7 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 module two where
 
-open import prop using (⊤; ⊥; tt; _∨_; inj₁; inj₂)
+open import prop using (⊤; ⊥; tt; _∨_; inj₁; inj₂; _,_)
 open import basics using (IsPreorder; IsMeet; IsJoin; IsBottom; IsTop)
 
 data Two : Set where
@@ -115,3 +115,46 @@ complement-∨ {I} = tt
 
 -- FIXME: de Morgan, etc., should be derived from the fact that this
 -- is a Boolean algebra.
+
+------------------------------------------------------------------------------
+-- Two as a commutative semiring (⊔, O, ⊓, I).
+
+open import prop-setoid using (Setoid; IsEquivalence)
+open import commutative-monoid using (CommutativeMonoid)
+open import commutative-semiring using (CommutativeSemiring)
+
+Two-setoid : Setoid _ _
+Two-setoid .Setoid.Carrier = Two
+Two-setoid .Setoid._≈_ = _≃_
+Two-setoid .Setoid.isEquivalence = isEquivalence
+
+open CommutativeMonoid
+
+⊔-cmon : CommutativeMonoid Two-setoid
+⊔-cmon .ε = O
+⊔-cmon ._+_ = _⊔_
+⊔-cmon .+-cong = IsJoin.cong ⊔-isJoin
+⊔-cmon .+-lunit {x} = ≤-refl {x} , ≤-refl {x}
+⊔-cmon .+-assoc {x} {y} {z} = IsJoin.assoc ⊔-isJoin {x} {y} {z}
+⊔-cmon .+-comm {x} {y} = IsJoin.comm ⊔-isJoin {x} {y} , IsJoin.comm ⊔-isJoin {y} {x}
+
+⊓-cmon : CommutativeMonoid Two-setoid
+⊓-cmon .ε = I
+⊓-cmon ._+_ = _⊓_
+⊓-cmon .+-cong = IsMeet.cong ⊓-isMeet
+⊓-cmon .+-lunit {x} = ≤-refl {x} , ≤-refl {x}
+⊓-cmon .+-assoc {x} {y} {z} = IsMeet.assoc ⊓-isMeet {x} {y} {z}
+⊓-cmon .+-comm {x} {y} = IsMeet.comm ⊓-isMeet {x} {y} , IsMeet.comm ⊓-isMeet {y} {x}
+
+⊓-⊔-distribₗ : ∀ {x y z} → (x ⊓ (y ⊔ z)) ≃ ((x ⊓ y) ⊔ (x ⊓ z))
+⊓-⊔-distribₗ {O} {y} {z} = ≤-refl {O} , ≤-refl {O}
+⊓-⊔-distribₗ {I} {y} {z} = ≤-refl {y ⊔ z} , ≤-refl {y ⊔ z}
+
+O-⊓-annihilₗ : ∀ {x} → (O ⊓ x) ≃ O
+O-⊓-annihilₗ = ≤-refl {O} , ≤-refl {O}
+
+semiring : CommutativeSemiring Two-setoid
+semiring .CommutativeSemiring.additive = ⊔-cmon
+semiring .CommutativeSemiring.multiplicative = ⊓-cmon
+semiring .CommutativeSemiring.·-+-distribₗ {x} {y} {z} = ⊓-⊔-distribₗ {x} {y} {z}
+semiring .CommutativeSemiring.ε-annihilₗ {x} = O-⊓-annihilₗ {x}

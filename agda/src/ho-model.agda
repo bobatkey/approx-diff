@@ -336,37 +336,7 @@ module Conjugate where
     public
 
 module Matrix where
-  import join-semilattice-category as SemiLat
-  import cmon-enriched as CMon
   open import two using (Two; O; I)
-  open import Data.Nat using (ℕ; zero; suc)
-
-  -- Two as a commutative semiring: (∨, O) + (∧, I).
-  open import commutative-semiring using (CommutativeSemiring)
-  open import commutative-monoid using (CommutativeMonoid)
-
-  Two-+-cmon : CommutativeMonoid two.setoid
-  Two-+-cmon .CommutativeMonoid.ε = O
-  Two-+-cmon .CommutativeMonoid._+_ = two._⊔_
-  Two-+-cmon .CommutativeMonoid.+-cong = two.⊔-cong
-  Two-+-cmon .CommutativeMonoid.+-lunit = two.⊔-lunit
-  Two-+-cmon .CommutativeMonoid.+-assoc = two.⊔-assoc
-  Two-+-cmon .CommutativeMonoid.+-comm = two.⊔-comm
-
-  Two-·-cmon : CommutativeMonoid two.setoid
-  Two-·-cmon .CommutativeMonoid.ε = I
-  Two-·-cmon .CommutativeMonoid._+_ = two._⊓_
-  Two-·-cmon .CommutativeMonoid.+-cong = two.⊓-cong
-  Two-·-cmon .CommutativeMonoid.+-lunit = two.⊓-lunit
-  Two-·-cmon .CommutativeMonoid.+-assoc = two.⊓-assoc
-  Two-·-cmon .CommutativeMonoid.+-comm = two.⊓-comm
-
-  Two-semiring : CommutativeSemiring two.setoid
-  Two-semiring .CommutativeSemiring.additive = Two-+-cmon
-  Two-semiring .CommutativeSemiring.multiplicative = Two-·-cmon
-  Two-semiring .CommutativeSemiring.·-+-distribₗ = two.⊓-⊔-distribₗ
-  Two-semiring .CommutativeSemiring.ε-annihilₗ = two.O-⊓-annihilₗ
-
-  open import matrix Two-semiring public
+  open import matrix two.semiring public
 
   -- TODO: functor 𝓕 : cat → SemiLat.cat, preservation proofs, Interpretation instantiation.
