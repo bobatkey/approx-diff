@@ -67,9 +67,19 @@ e-sym zero (suc _) = refl
 e-sym (suc _) zero = refl
 e-sym (suc i) (suc j) = e-sym i j
 
+-- Σ of zeros is zero.
+Σ-ε : ∀ {n} → Σ {n} (λ _ → ε) ≈ ε
+Σ-ε {zero} = refl
+Σ-ε {suc n} = trans +-lunit (Σ-ε {n})
+
 -- Picking out the i-th element: Σⱼ e(i,j) · f(j) ≈ f(i).
 Σ-unit : ∀ {n} (i : Fin n) (f : Fin n → Carrier) → Σ {n} (λ j → e i j · f j) ≈ f i
-Σ-unit = {!!}
+Σ-unit {suc n} zero f =
+  trans (+-cong ·-lunit (trans (Σ-cong {n} (λ j → ε-annihilₗ)) (Σ-ε {n})))
+        (trans +-comm +-lunit)
+Σ-unit {suc n} (suc i) f =
+  trans (+-cong ε-annihilₗ refl)
+        (trans +-lunit (Σ-unit i (λ j → f (suc j))))
 
 -- Distributing · over Σ on the right: (Σⱼ fⱼ) · x ≈ Σⱼ (fⱼ · x).
 Σ-·-distribᵣ : ∀ {n} (f : Fin n → Carrier) (x : Carrier) → Σ {n} f · x ≈ Σ {n} (λ j → f j · x)
