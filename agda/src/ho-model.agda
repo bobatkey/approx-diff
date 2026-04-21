@@ -438,3 +438,9 @@ module Matrix where
     prop.proj₁ (concat-ε {x} i)
   𝓕-preserve-products .f∘inverse≈id = {!!}
   𝓕-preserve-products .inverse∘f≈id = {!!}
+
+  open Interpretation
+    cat terminal Mat-products
+    SemiLat.cat SemiLat.cmon-enriched SemiLat.limits SemiLat.terminal SemiLat-BP
+    𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
+    public
