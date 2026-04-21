@@ -385,3 +385,11 @@ module Matrix where
       I-idem-+m : idₛ SemiLat.TWO ≈ₛ idₛ SemiLat.TWO +m idₛ SemiLat.TWO
       I-idem-+m .SemiLat._≃m_.f≃f .JSL._≃m_.eqfunc .preorder._≃m_.eqfun two.O = two.≤-refl {two.O} , two.≤-refl {two.O}
       I-idem-+m .SemiLat._≃m_.f≃f .JSL._≃m_.eqfunc .preorder._≃m_.eqfun two.I = two.≤-refl {two.I} , two.≤-refl {two.I}
+
+  -- Preservation of multiplication: scalar (a · b) ≈ scalar a ∘ₛ scalar b.
+  open import cmon-enriched using (CMonEnriched)
+  scalar-· : ∀ {a b} → scalar (a · b) ≈ₛ scalar a ∘ₛ scalar b
+  scalar-· {two.O} {two.O} = ≈ₛ-sym (CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched εm)
+  scalar-· {two.O} {two.I} = ≈ₛ-sym (CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched (idₛ SemiLat.TWO))
+  scalar-· {two.I} {two.O} = ≈ₛ-sym (Category.id-left SemiLat.cat)
+  scalar-· {two.I} {two.I} = ≈ₛ-sym (Category.id-left SemiLat.cat)
