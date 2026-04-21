@@ -432,6 +432,7 @@ module Matrix where
 
   import conjugate
   open import Data.Nat using (ℕ; zero; suc)
+  open import Data.Fin using (Fin)
 
   open import prop using (tt; _,_; proj₁; proj₂; _⇔_)
   import Data.Unit
@@ -498,7 +499,12 @@ module Matrix where
     ¬^-antitone {zero} _ = tt
     ¬^-antitone {suc n} (a≤b , u≤v) = two.¬-antitone a≤b , ¬^-antitone {n} u≤v
 
-  open X^-Heyting using () renaming (conj to X^-conj; ¬^ to X^-¬; ¬^-antitone to X^-¬-antitone)
+    π-¬^ : ∀ {n} (i : Fin n) (v : Carrier (X^ n)) →
+            SemiLat._⇒_.fun (π {n} i) (¬^ {n} v) two.≃ two.¬ (SemiLat._⇒_.fun (π {n} i) v)
+    π-¬^ {suc n} Fin.zero (a , _) = two.≃-refl
+    π-¬^ {suc n} (Fin.suc i) (_ , v) = π-¬^ {n} i v
+
+  open X^-Heyting using () renaming (conj to X^-conj; ¬^ to X^-¬; ¬^-antitone to X^-¬-antitone; π-¬^ to X^-π-¬)
   open conjugate using (_⇒c_)
   open _⇒c_
 
@@ -540,6 +546,56 @@ module Matrix where
                                                   (adjoint {m} {n} f .fun (X^-¬ {n} v))
   ¬transpose≃adjoint¬ = {!!}
 
+  -- Carrier-level lub for cotuple: if each summand ≤ z, the cotuple ≤ z.
+  cotuple-lub : ∀ {m} n (g : Fin m → TWO ⇒ X^ n) (y : SemiLat.Obj.Carrier (X^ m)) (z : SemiLat.Obj.Carrier (X^ n)) →
+                (∀ i → preorder.Preorder._≤_ (SemiLat.Obj.carrier (X^ n)) (g i .*→*J .func .fun (π {m} i .*→*J .func .fun y)) z) →
+                preorder.Preorder._≤_ (SemiLat.Obj.carrier (X^ n)) (cotuple {m} g .*→*J .func .fun y) z
+  cotuple-lub {zero} n g y z h =
+    join-semilattice.JoinSemilattice.≤-bottom (SemiLat.Obj.joins (X^ n))
+  cotuple-lub {suc m} n g (a , v) z h =
+    join-semilattice.JoinSemilattice.[_∨_] (SemiLat.Obj.joins (X^ n))
+      (h Fin.zero) (cotuple-lub {m} n (λ i → g (Fin.suc i)) v z (λ i → h (Fin.suc i)))
+
+  -- Scalar lemma: if s(¬a) ≤ O then s(I) ≤ a, for s : TWO ⇒ TWO.
+  private
+    scalar-adj : (s : TWO ⇒ TWO) (a : Two) → two._≤_ (s .*→*J .func .fun (two.¬ a)) O → two._≤_ (s .*→*J .func .fun I) a
+    scalar-adj s O h = h
+    scalar-adj s I _ = two.I-isTop .IsTop.≤-top
+
+  -- From cotuple of scalars ≤ O, extract each component ≤ O.
+  cotuple-upper : ∀ {n} (g : Fin n → TWO ⇒ TWO) (v : SemiLat.Obj.Carrier (X^ n)) →
+                  two._≤_ (cotuple {n} g .*→*J .func .fun v) O →
+                  ∀ k → two._≤_ (g k .*→*J .func .fun (π {n} k .*→*J .func .fun v)) O
+  cotuple-upper {suc n} g (a , v) h Fin.zero =
+    two.≤-trans (two.≤-trans two.⊔-upper₁ h) tt
+  cotuple-upper {suc n} g (a , v) h (Fin.suc k) =
+    cotuple-upper {n} (λ k → g (Fin.suc k)) v (two.≤-trans two.⊔-upper₂ h) k
+
+  -- Build vector inequality from per-component scalar inequalities.
+  proj-≤ : ∀ {n} (u : SemiLat.Obj.Carrier (X^ n)) (x : SemiLat.Obj.Carrier (X^ n)) →
+            (∀ k → two._≤_ (π {n} k .*→*J .func .fun u) (π {n} k .*→*J .func .fun x)) →
+            preorder.Preorder._≤_ (SemiLat.Obj.carrier (X^ n)) u x
+  proj-≤ {zero} _ _ _ = tt
+  proj-≤ {suc n} (a , u) (b , x) h = h Fin.zero , proj-≤ {n} u x (λ k → h (Fin.suc k))
+
+  -- Key lemma: if the i-th component of transpose f (¬x) is O, then column i of f is ≤ x.
+  col-≤ : ∀ {m n} (f : X^ m ⇒ X^ n) (i : Fin m) (x : SemiLat.Obj.Carrier (X^ n)) →
+           two._≤_ (π {m} i .*→*J .func .fun (transpose {m} {n} f .*→*J .func .fun (X^-¬ {n} x))) O →
+           preorder.Preorder._≤_ (SemiLat.Obj.carrier (X^ n)) (f .*→*J .func .fun (ι {m} i .*→*J .func .fun I)) x
+  col-≤ {m} {n} f i x h = proj-≤ {n} _ x per-k
+    where
+      -- Rewrite hypothesis using tuple-π: π i ∘ transpose f ≈ cotuple (λ k → entry f k i)
+      cotuple-hyp : two._≤_ (cotuple {n} (λ k → entry {m} {n} f k i) .*→*J .func .fun (X^-¬ {n} x)) O
+      cotuple-hyp = two.≤-trans
+        (tuple-π {m} (λ j → cotuple {n} (λ k → entry {m} {n} f k j)) i .f≃f .eqfunc .eqfun (X^-¬ {n} x) .proj₂) h
+
+      per-k : ∀ k → two._≤_ (π {n} k .*→*J .func .fun (f .*→*J .func .fun (ι {m} i .*→*J .func .fun I)))
+                              (π {n} k .*→*J .func .fun x)
+      per-k k = scalar-adj (entry {m} {n} f k i) (π {n} k .*→*J .func .fun x)
+        (two.≤-trans
+          (entry {m} {n} f k i .*→*J .func .preorder._=>_.mono (X^-π-¬ k x .proj₂))
+          (cotuple-upper {n} (λ l → entry {m} {n} f l i) (X^-¬ {n} x) cotuple-hyp k))
+
   -- (f, adjoint f) is a Galois connection (the main theorem).
   to-gal : ∀ {m n} → X^ m ⇒ X^ n → X^-gal n ⇒g X^-gal m
   to-gal {m} {n} f .right = adjoint {m} {n} f
@@ -550,9 +606,22 @@ module Matrix where
       f .*→*J .func .fun y
     ≤⟨ cotuple-ext {m} f .f≃f .eqfunc .eqfun y .proj₂ ⟩
       cotuple {m} (λ i → f ∘ ι {m} i) .*→*J .func .fun y
-    ≤⟨ {!!} ⟩
+    ≤⟨ cotuple-lub {m} n (λ i → f ∘ ι {m} i) y x per-i ⟩
       x
     ∎
+    where
+      per-i : ∀ i → preorder.Preorder._≤_ (SemiLat.Obj.carrier (X^ n))
+                       ((f ∘ ι {m} i) .*→*J .func .fun (π {m} i .*→*J .func .fun y)) x
+      per-i i with π {m} i .*→*J .func .fun y | π {m} i .*→*J .func .preorder._=>_.mono y≤adj
+      ... | O | _ = preorder.Preorder.≤-trans (SemiLat.Obj.carrier (X^ n))
+                      ((f ∘ ι {m} i) .*→*J .join-semilattice._=>_.⊥-preserving)
+                      (join-semilattice.JoinSemilattice.≤-bottom (SemiLat.Obj.joins (X^ n)))
+      ... | I | πy≤πadj = col-≤ f i x (¬-to-O (two.≤-trans πy≤πadj (X^-π-¬ i (transpose {m} {n} f .*→*J .func .fun (X^-¬ {n} x)) .proj₁)))
+        where
+          -- From I ≤ ¬t, derive t ≤ O.
+          ¬-to-O : ∀ {t} → two._≤_ I (two.¬ t) → two._≤_ t O
+          ¬-to-O {O} _ = tt
+          ¬-to-O {I} ()
   to-gal {m} {n} f .left⊣right {x} {y} .proj₂ = {!!}
 
   -- (transpose f, f) is a conjugate pair; derived from to-gal via De Morgan duality.
