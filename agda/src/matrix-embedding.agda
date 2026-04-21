@@ -140,3 +140,25 @@ module matrix-embedding
     ≈⟨ copair-cong (BP X (X^ n)) ≈-refl (cotuple-natural g (λ i → f (suc i))) ⟩
       copair (BP X (X^ n)) (g ∘ f zero) (cotuple {n} (λ i → g ∘ f (suc i)))
     ∎ where open ≈-Reasoning isEquiv
+
+  -- Matrix entry: the (i, j)-entry of a morphism f : X^m → X^n.
+  entry : ∀ {m n} → X^ m ⇒ X^ n → Fin n → Fin m → X ⇒ X
+  entry f i j = π i ∘ (f ∘ ι j)
+
+  -- The (i,j)-entry of a composition is a dot product of entries (matrix multiplication).
+  entry-comp : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) (i : Fin k) (j : Fin m) →
+               entry (g ∘ f) i j ≈ (cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j))
+  entry-comp {m} {n} {k} f g i j =
+    begin
+      π {k} i ∘ ((g ∘ f) ∘ ι {m} j)
+    ≈⟨ ∘-cong ≈-refl (assoc g f (ι j)) ⟩
+      π {k} i ∘ (g ∘ (f ∘ ι {m} j))
+    ≈˘⟨ assoc (π {k} i) g (f ∘ ι {m} j) ⟩
+      (π {k} i ∘ g) ∘ (f ∘ ι {m} j)
+    ≈˘⟨ ∘-cong (cotuple-ext {n} (π {k} i ∘ g)) ≈-refl ⟩
+      cotuple {n} (λ l → (π {k} i ∘ g) ∘ ι {n} l) ∘ (f ∘ ι {m} j)
+    ≈⟨ ∘-cong (cotuple-cong {n} _ _ (λ l → assoc (π {k} i) g (ι {n} l))) ≈-refl ⟩
+      cotuple {n} (λ l → entry g i l) ∘ (f ∘ ι {m} j)
+    ≈˘⟨ ∘-cong ≈-refl (tuple-ext {n} (f ∘ ι {m} j)) ⟩
+      cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j)
+    ∎ where open ≈-Reasoning isEquiv
