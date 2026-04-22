@@ -211,20 +211,38 @@ module matrix-embedding
       scalar (M i j)
     ∎ where open ≈-Reasoning isEquiv
 
-  -- TODO: The remaining bridge components — F⁻¹, round trips F⁻¹∘F / F∘F⁻¹, and
-  -- CMon preservation (F-εₘ, F-+ₘ) — are commented out pending incremental restoration.
-  -- Restore one definition at a time, verifying compilation after each.
-  --
   -- F⁻¹ : matrix-rep.cat → Mat(S), the "extract matrix of entries" direction.
-  -- F⁻¹ : Functor cat Mat.cat
-  -- F⁻¹ .fobj n = n
-  -- F⁻¹ .fmor {m} {n} f i j = scalar-inv (entry {m} {n} f i j)
-  -- F⁻¹ .fmor-cong p i j = scalar-inv-cong (∘-cong ≈-refl (∘-cong p ≈-refl))
-  -- F⁻¹ .fmor-id {n} i j = ...
-  -- F⁻¹ .fmor-comp {x} {y} {z} g f i j = ...
-  --
+  F⁻¹ : Functor cat Mat.cat
+  F⁻¹ .fobj n = n
+  F⁻¹ .fmor {m} {n} f i j = scalar-inv (entry {m} {n} f i j)
+  F⁻¹ .fmor-cong p i j = scalar-inv-cong (∘-cong ≈-refl (∘-cong p ≈-refl))
+  F⁻¹ .fmor-id {n} i j =
+    begin
+      scalar-inv (entry {n} {n} (id (X^ n)) i j)
+    ≈⟨ scalar-inv-cong (∘-cong ≈-refl id-left) ⟩
+      scalar-inv (π {n} i ∘ ι {n} j)
+    ≈˘⟨ scalar-inv-cong (scalar-e i j) ⟩
+      scalar-inv (scalar (Mat.e i j))
+    ≈⟨ scalar-inv-scalar (Mat.e i j) ⟩
+      Mat.e i j
+    ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
+  F⁻¹ .fmor-comp {x} {y} {z} g f i j =
+    begin
+      scalar-inv (entry {x} {z} (g ∘ f) i j)
+    ≈⟨ scalar-inv-cong (entry-comp {x} {y} {z} f g i j) ⟩
+      scalar-inv (cotuple {y} (λ k → entry {y} {z} g i k) ∘ tuple {y} (λ k → entry {x} {y} f k j))
+    ≈˘⟨ scalar-inv-cong (∘-cong (cotuple-cong {y} _ _ (λ k → scalar-scalar-inv _))
+                                 (tuple-cong {y} _ _ (λ k → scalar-scalar-inv _))) ⟩
+      scalar-inv (cotuple {y} (λ k → scalar (scalar-inv (entry {y} {z} g i k)))
+                  ∘ tuple {y} (λ k → scalar (scalar-inv (entry {x} {y} f k j))))
+    ≈˘⟨ scalar-inv-cong (scalar-Σ {y} (λ k → scalar-inv (entry {y} {z} g i k)) (λ k → scalar-inv (entry {x} {y} f k j))) ⟩
+      scalar-inv (scalar (Mat.Σ {y} (λ k → scalar-inv (entry {y} {z} g i k) ·ₛ scalar-inv (entry {x} {y} f k j))))
+    ≈⟨ scalar-inv-scalar _ ⟩
+      Mat.Σ {y} (λ k → scalar-inv (entry {y} {z} g i k) ·ₛ scalar-inv (entry {x} {y} f k j))
+    ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
+
+  -- TODO: Round trips and CMon preservation — restore next.
   -- F⁻¹∘F : ∀ {m n} (M : Mat n m) → (F⁻¹ .fmor (F .fmor M)) Mat.≈ₘ M
   -- F∘F⁻¹ : ∀ {m n} (f : X^ m ⇒ X^ n) → F .fmor (F⁻¹ .fmor f) ≈ f
-  --
   -- F-εₘ : ∀ {m n} → F .fmor (Mat.εₘ {m} {n}) ≈ εm {X^ n} {X^ m}
   -- F-+ₘ : ∀ {m n} (M N : Mat n m) → F .fmor (M Mat.+ₘ N) ≈ (F .fmor M +m F .fmor N)
