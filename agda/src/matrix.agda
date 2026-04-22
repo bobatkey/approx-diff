@@ -386,7 +386,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
   open import basics using (IsPreorder; IsJoin; IsBottom; IsMeet; IsTop)
   open import preorder using (Preorder)
   open import Data.Nat using (ℕ)
-  open import Data.Fin using (Fin)
+  open import Data.Fin using (Fin; zero; suc)
   open import join-semilattice using (JoinSemilattice)
   open import meet-semilattice using (MeetSemilattice)
   open Mat S public
@@ -526,7 +526,35 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     _#^_ : ∀ {n} → Vec n → Vec n → Prop _
     u #^ v = (u ⋅ v) ≈ ⊥
 
-    module Heyting (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y) where
+    -- ≈ ⊥ ⟺ ≤ ⊥ (⊥ is bottom, so the two forms are interchangeable).
+    ≈⊥→≤⊥ : ∀ {x} → x ≈ ⊥ → x ≤ ⊥
+    ≈⊥→≤⊥ x≈⊥ = trans (∨-cong x≈⊥ refl) ∨-idem
+
+    ≤⊥→≈⊥ : ∀ {x} → x ≤ ⊥ → x ≈ ⊥
+    ≤⊥→≈⊥ x≤⊥ = trans (sym (trans ∨-comm ∨-lunit)) x≤⊥
+
+    -- Indicator vector: z at index i, ⊥ elsewhere. Used to lift scalar #-reflect
+    -- to vector #-reflect by isolating one coordinate.
+    point : ∀ {n} → Fin n → Carrier → Vec n
+    point zero    z zero    = z
+    point zero    z (suc _) = ⊥
+    point (suc _) z zero    = ⊥
+    point (suc i) z (suc j) = point i z j
+
+    point-at : ∀ {n} (i : Fin n) (z : Carrier) → point i z i ≈ z
+    point-at zero    z = refl
+    point-at (suc i) z = point-at i z
+
+    point-# : ∀ {n} (i : Fin n) (z : Carrier) (v : Vec n) →
+              v i # z → ∀ j → v j # point i z j
+    point-# zero    z v h zero    = h
+    point-# zero    z v _ (suc _) = ⊥-annihilᵣ
+    point-# (suc _) z v _ zero    = ⊥-annihilᵣ
+    point-# (suc i) z v h (suc j) = point-# i z (λ k → v (suc k)) h j
+
+    module HeytingAlgebra
+      (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y)
+      where
 
       import conjugate
 
@@ -535,7 +563,10 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       ⟦ n ⟧ .conjugate.Obj.carrier = vec-preorder preorder n
       ⟦ n ⟧ .conjugate.Obj.meets = vec-meet preorder meets n
       ⟦ n ⟧ .conjugate.Obj.joins = vec-join preorder semilattice n
-      ⟦ n ⟧ .conjugate.Obj.#-reflect = {!!}
+      ⟦ n ⟧ .conjugate.Obj.#-reflect {u} {v} h i =
+        #-reflect λ z vi#z →
+          trans (∧-cong refl (sym (point-at i z)))
+                (≤⊥→≈⊥ (h (point i z) (λ j → ≈⊥→≤⊥ (point-# i z v vi#z j)) i))
       ⟦ n ⟧ .conjugate.Obj.∧-∨-distrib x y z i = trans (∨-cong ∧-∨-distribₗ refl) ∨-idem
 
       to-conj : ∀ {m n} → Matrix n m → ⟦ m ⟧ conjugate.⇒c ⟦ n ⟧
