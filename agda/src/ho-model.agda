@@ -387,8 +387,8 @@ module Matrix where
           fun g (fun f I)
         ∎
 
-  import matrices
-  open matrices SemiLat.cmon-enriched
+  import matrix-rep
+  open matrix-rep SemiLat.cmon-enriched
     (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
     (categories.HasTerminal.witness SemiLat.terminal)
     (categories.HasInitial.is-initial SemiLat.initial)

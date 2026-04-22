@@ -17,7 +17,7 @@ open import commutative-monoid using (CommutativeMonoid)
 -- composition as multiplication and addition via the CMon enrichment. We need the multiplication to be
 -- commutative for the dot product to be commutative, in turn required for transpose to preserve composition
 -- (i.e. for the usual AB^T = B^T A^T to hold).
-module matrices
+module matrix-rep
   {o m e} {𝒞 : Category o m e}
   (CM : CMonEnriched 𝒞)
   (BP : ∀ x y → Biproduct CM x y)
