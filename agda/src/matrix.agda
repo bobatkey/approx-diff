@@ -385,7 +385,7 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
 module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
   open import basics using (IsPreorder; IsJoin; IsBottom; IsMeet; IsTop)
   open import preorder using (Preorder)
-  open import Data.Nat using (ℕ)
+  open import Data.Nat using (ℕ; zero; suc)
   open import Data.Fin using (Fin; zero; suc)
   open import join-semilattice using (JoinSemilattice)
   open import meet-semilattice using (MeetSemilattice)
@@ -527,41 +527,52 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     _#^_ : ∀ {n} → Vec n → Vec n → Prop _
     u #^ v = (u ⋅ v) ≤ ⊥
 
-    -- Indicator vector: z at index i, ⊥ elsewhere — the i-th biproduct injection
-    -- of z into S^n. Used to lift scalar #-reflect to vectors by isolating one
-    -- coordinate.
+    -- i-th biproduct injection z ↦ (0,…,0,z,0,…,0) into S^n.
     point : ∀ {n} → Fin n → Carrier → Vec n
-    point zero    z zero    = z
-    point zero    z (suc _) = ⊥
-    point (suc _) z zero    = ⊥
-    point (suc i) z (suc j) = point i z j
+    point i z j = e i j ∧ z
 
-    point-at : ∀ {n} (i : Fin n) (z : Carrier) → point i z i ≈ z
-    point-at zero    z = refl
-    point-at (suc i) z = point-at i z
+    -- Dot product isolates the ith coordinate: v ⋅ point i z ≈ v i ∧ z.
+    -- This is the key fact that lets #-reflect lift to #^-reflect without case analysis.
+    ⋅-point : ∀ {n} (v : Vec n) (i : Fin n) (z : Carrier) → (v ⋅ point i z) ≈ (v i ∧ z)
+    ⋅-point {n} v i z =
+      trans (Σ-cong {n} (λ j → trans (sym ∧-assoc) (∧-cong ∧-comm refl)))
+      (trans (sym (Σ-·-distribᵣ (λ j → e i j ∧ v j) z))
+             (∧-cong (Σ-unit i v) refl))
 
-    point-# : ∀ {n} (i : Fin n) (z : Carrier) (v : Vec n) →
-              v i # z → ∀ j → v j # point i z j
-    point-# zero    z v h zero    = h
-    point-# zero    z v _ (suc _) = IsMeet.π₂ ∧-isMeet
-    point-# (suc _) z v _ zero    = IsMeet.π₂ ∧-isMeet
-    point-# (suc i) z v h (suc j) = point-# i z (λ k → v (suc k)) h j
+    -- Σ is an upper bound on each summand.
+    Σ-ub : ∀ {n} (f : Fin n → Carrier) (i : Fin n) → f i ≤ Σ f
+    Σ-ub f zero    = IsJoin.inl ∨-isJoin
+    Σ-ub f (suc i) = IsPreorder.trans ≤-isPreorder (Σ-ub (λ j → f (suc j)) i) (IsJoin.inr ∨-isJoin)
+
+    -- Pointwise ≤ ⊥ implies Σ ≤ ⊥.
+    Σ-≤-⊥ : ∀ {n} (f : Fin n → Carrier) → (∀ j → f j ≤ ⊥) → Σ f ≤ ⊥
+    Σ-≤-⊥ {zero}  _ _ = IsPreorder.refl ≤-isPreorder
+    Σ-≤-⊥ {suc n} f h = IsJoin.[_,_] ∨-isJoin (h zero) (Σ-≤-⊥ (λ j → f (suc j)) (λ j → h (suc j)))
 
     module HeytingAlgebra
       (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y)
       where
 
+      -- Lift scalar #-reflect to vectors using the dot-product form #^.
+      -- ⋅-point isolates coordinate i, avoiding any case analysis on Fin.
+      #^-reflect : ∀ {n} {u v : Vec n} → (∀ w → v #^ w → u #^ w) → ∀ i → u i ≤ v i
+      #^-reflect {n} {u} {v} h i =
+        #-reflect λ z vi#z →
+          trans (∨-cong (sym (⋅-point u i z)) refl)
+                (h (point i z) (trans (∨-cong (⋅-point v i z) refl) vi#z))
+
       import conjugate
 
-      -- Vec n as a conjugate.Obj.
+      -- Vec n as a conjugate.Obj. Obj's pointwise disjointness is bridged to #^
+      -- by Σ-ub (each coordinate ≤ Σ) and Σ-≤-⊥ (Σ of bounded summands is bounded).
       ⟦_⟧ : ℕ → conjugate.Obj
       ⟦ n ⟧ .conjugate.Obj.carrier = vec-preorder preorder n
       ⟦ n ⟧ .conjugate.Obj.meets = vec-meet preorder meets n
       ⟦ n ⟧ .conjugate.Obj.joins = vec-join preorder semilattice n
-      ⟦ n ⟧ .conjugate.Obj.#-reflect {u} {v} h i =
-        #-reflect λ z vi#z →
-          trans (∨-cong (∧-cong refl (sym (point-at i z))) refl)
-                (h (point i z) (point-# i z v vi#z) i)
+      ⟦ n ⟧ .conjugate.Obj.#-reflect {u} {v} h = #^-reflect h^
+        where
+          h^ : ∀ w → v #^ w → u #^ w
+          h^ w v⋅w≤⊥ = Σ-≤-⊥ _ (h w (λ j → IsPreorder.trans ≤-isPreorder (Σ-ub _ j) v⋅w≤⊥))
       ⟦ n ⟧ .conjugate.Obj.∧-∨-distrib x y z i = trans (∨-cong ∧-∨-distribₗ refl) ∨-idem
 
       to-conj : ∀ {m n} → Matrix n m → ⟦ m ⟧ conjugate.⇒c ⟦ n ⟧
