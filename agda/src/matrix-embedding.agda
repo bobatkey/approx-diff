@@ -252,7 +252,17 @@ module matrix-embedding
       M i j
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
 
-  -- TODO: Right-inverse round trip and CMon preservation — restore next.
-  -- F∘F⁻¹ : ∀ {m n} (f : X^ m ⇒ X^ n) → F .fmor (F⁻¹ .fmor f) ≈ f
+  -- Round trip: F is a left inverse of F⁻¹ up to hom equality.
+  F∘F⁻¹ : ∀ {m n} (f : X^ m ⇒ X^ n) → F .fmor {m} {n} (F⁻¹ .fmor {m} {n} f) ≈ f
+  F∘F⁻¹ {m} {n} f = entry-ext {m} {n} (λ i j →
+    begin
+      entry {m} {n} (F .fmor {m} {n} (F⁻¹ .fmor {m} {n} f)) i j
+    ≈⟨ entry-F {m} {n} (F⁻¹ .fmor {m} {n} f) i j ⟩
+      scalar (scalar-inv (entry {m} {n} f i j))
+    ≈⟨ scalar-scalar-inv _ ⟩
+      entry {m} {n} f i j
+    ∎) where open ≈-Reasoning isEquiv
+
+  -- TODO: CMon preservation — restore next.
   -- F-εₘ : ∀ {m n} → F .fmor (Mat.εₘ {m} {n}) ≈ εm {X^ n} {X^ m}
   -- F-+ₘ : ∀ {m n} (M N : Mat n m) → F .fmor (M Mat.+ₘ N) ≈ (F .fmor M +m F .fmor N)
