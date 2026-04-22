@@ -241,8 +241,18 @@ module matrix-embedding
       Mat.Σ {y} (λ k → scalar-inv (entry {y} {z} g i k) ·ₛ scalar-inv (entry {x} {y} f k j))
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
 
-  -- TODO: Round trips and CMon preservation — restore next.
-  -- F⁻¹∘F : ∀ {m n} (M : Mat n m) → (F⁻¹ .fmor (F .fmor M)) Mat.≈ₘ M
+  -- Round trip: F⁻¹ is a left inverse of F up to pointwise semiring equality.
+  F⁻¹∘F : ∀ {m n} (M : Mat n m) → (F⁻¹ .fmor (F .fmor M)) Mat.≈ₘ M
+  F⁻¹∘F {m} {n} M i j =
+    begin
+      scalar-inv (entry {m} {n} (F .fmor {m} {n} M) i j)
+    ≈⟨ scalar-inv-cong (entry-F {m} {n} M i j) ⟩
+      scalar-inv (scalar (M i j))
+    ≈⟨ scalar-inv-scalar (M i j) ⟩
+      M i j
+    ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
+
+  -- TODO: Right-inverse round trip and CMon preservation — restore next.
   -- F∘F⁻¹ : ∀ {m n} (f : X^ m ⇒ X^ n) → F .fmor (F⁻¹ .fmor f) ≈ f
   -- F-εₘ : ∀ {m n} → F .fmor (Mat.εₘ {m} {n}) ≈ εm {X^ n} {X^ m}
   -- F-+ₘ : ∀ {m n} (M N : Mat n m) → F .fmor (M Mat.+ₘ N) ≈ (F .fmor M +m F .fmor N)
