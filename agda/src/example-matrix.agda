@@ -71,17 +71,17 @@ module example1 where
   ε₀ : Data.Fin.Fin 0 → Two
   ε₀ ()
 
-  supply : Two → Two → Two → _
-  supply a b c = ε₀ , (ε₀ , ⟨ a ⟩) , (ε₀ , ⟨ b ⟩) , (ε₀ , ⟨ c ⟩) , _
+  supply : _ → _ → _ → _
+  supply a b c = · , (· , a) , (· , b) , (· , c) , _
 
   -- Output depends on 1st label (would be ⊥ in the Galois example)
-  test-fwd1 : fwd-slice (supply ⊤ ⊥ ⊥) ≡ ⟨ ⊤ ⟩
+  test-fwd1 : fwd-slice (supply ⊤ ⊥ ⊥) ≡ (⊤ , ·)
   test-fwd1 = ≡-refl
 
   -- Output doesn't depend on 2nd label
-  test-fwd2 : fwd-slice (supply ⊥ ⊤ ⊥) ≡ ⟨ ⊥ ⟩
+  test-fwd2 : fwd-slice (supply ⊥ ⊤ ⊥) ≡ (⊥ , ·)
   test-fwd2 = ≡-refl
 
   -- Output depends on 3rd label (would be ⊥ in the Galois example)
-  test-fwd3 : fwd-slice (supply ⊥ ⊥ ⊤) ≡ ⟨ ⊤ ⟩
+  test-fwd3 : fwd-slice (supply ⊥ ⊥ ⊤) ≡ (⊤ , ·)
   test-fwd3 = ≡-refl
