@@ -584,6 +584,10 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
           ; mono = λ u≤v i →
               Σ-mono (λ j → IsMeet.mono ∧-isMeet (IsPreorder.refl ≤-isPreorder) (u≤v j))
           }
-        ; left = {!!}
+        ; left = record
+          { fun  = λ y j → (M ᵀ) j ⋅ y
+          ; mono = λ y≤y' j →
+              Σ-mono (λ i → IsMeet.mono ∧-isMeet (IsPreorder.refl ≤-isPreorder) (y≤y' i))
+          }
         ; conjugate = {!!}
         }
