@@ -375,16 +375,7 @@ concat-split {suc x} w (suc i) = concat-split {x} (λ j → w (suc j)) i
 Σ-p₂ {suc x} w i =
   trans (+-cong ε-annihilₗ refl) (trans +-lunit (Σ-p₂ {x} (λ j → w (suc j)) i))
 
-------------------------------------------------------------------------------
--- Tiered lattice structure on S. Each tier exposes raw ingredients (IsPreorder,
--- IsJoin, IsMeet, IsBottom, IsTop) suitable for downstream assembly into
--- JoinSemilattice / MeetSemilattice / conjugate.Obj when levels permit.
---
--- Join and Meet are symmetric siblings, each defining its own induced order.
--- Lattice combines them — in a distributive lattice the two orders coincide.
-
--- If + is idempotent then (S, +) is a join-semilattice with ⊥ = ε, using the
--- +-induced order x ≤ y ≜ x + y ≈ y.
+-- If + is idempotent then (S, +) is a join-semilattice.
 module Join (+-idem : ∀ {x} → (x + x) ≈ x) where
 
   open import basics using (IsPreorder; IsJoin; IsBottom) public
@@ -399,16 +390,16 @@ module Join (+-idem : ∀ {x} → (x + x) ≈ x) where
     trans (sym (+-cong refl yz)) (trans (sym +-assoc) (trans (+-cong xy refl) yz))
 
   +-isJoin : IsJoin ≤-isPreorder _+_
-  +-isJoin .IsJoin.inl         = trans (sym +-assoc) (+-cong +-idem refl)
-  +-isJoin .IsJoin.inr         = trans (+-cong refl +-comm) (trans (sym +-assoc) (trans (+-cong +-idem refl) +-comm))
+  +-isJoin .IsJoin.inl = trans (sym +-assoc) (+-cong +-idem refl)
+  +-isJoin .IsJoin.inr =
+    trans (+-cong refl +-comm) (trans (sym +-assoc) (trans (+-cong +-idem refl) +-comm))
   +-isJoin .IsJoin.[_,_] xz yz = trans +-assoc (trans (+-cong refl yz) xz)
 
   ε-isBottom : IsBottom ≤-isPreorder ε
   ε-isBottom .IsBottom.≤-bottom = +-lunit
 
 ------------------------------------------------------------------------------
--- Dual: if · is idempotent then (S, ·) is a meet-semilattice with ⊤ = ι, using
--- the ·-induced order x ≤ y ≜ x · y ≈ x.
+-- Dual: if · is idempotent then (S, ·) is a meet-semilattice.
 module Meet (·-idem : ∀ {x} → (x · x) ≈ x) where
 
   open import basics using (IsPreorder; IsMeet; IsTop) public
@@ -419,33 +410,21 @@ module Meet (·-idem : ∀ {x} → (x · x) ≈ x) where
 
   ≤-isPreorder : IsPreorder _≤_
   ≤-isPreorder .IsPreorder.refl = ·-idem
-  ≤-isPreorder .IsPreorder.trans {x} {y} {z} xy yz = trans s1 (trans s2 (trans s3 xy))
-    where
-      s1 : (x · z) ≈ ((x · y) · z)
-      s1 = ·-cong (sym xy) refl
-      s2 : ((x · y) · z) ≈ (x · (y · z))
-      s2 = ·-assoc
-      s3 : (x · (y · z)) ≈ (x · y)
-      s3 = ·-cong refl yz
+  ≤-isPreorder .IsPreorder.trans xy yz =
+    trans (·-cong (sym xy) refl) (trans ·-assoc (trans (·-cong refl yz) xy))
 
   ·-isMeet : IsMeet ≤-isPreorder _·_
-  ·-isMeet .IsMeet.π₁           = trans ·-assoc (trans (·-cong refl ·-comm) (trans (sym ·-assoc) (·-cong ·-idem refl)))
-  ·-isMeet .IsMeet.π₂           = trans ·-assoc (·-cong refl ·-idem)
+  ·-isMeet .IsMeet.π₁ =
+    trans ·-assoc (trans (·-cong refl ·-comm) (trans (sym ·-assoc) (·-cong ·-idem refl)))
+  ·-isMeet .IsMeet.π₂ = trans ·-assoc (·-cong refl ·-idem)
   ·-isMeet .IsMeet.⟨_,_⟩ xy xz = trans (sym ·-assoc) (trans (·-cong xy refl) xz)
 
   ι-isTop : IsTop ≤-isPreorder ι
   ι-isTop .IsTop.≤-top = trans ·-comm ·-lunit
 
-------------------------------------------------------------------------------
--- Combining Join and Meet at a shared ordering gives a bounded distributive
--- lattice. This module is a pure assembly: no new axioms, just the pre-built
--- records. Callers feed in IsPreorder / IsJoin / IsBottom / IsMeet / IsTop
--- witnesses at a common _≤_ (typically Join's, after reconciling via
--- absorption). Distributivity comes for free from the semiring.
-open import basics
-  using (IsPreorder; IsJoin; IsBottom; IsMeet; IsTop)
+open import basics using (IsPreorder; IsJoin; IsBottom; IsMeet; IsTop)
 
-module Lattice
+module DistributiveLattice
   {b} {_≤_ : Carrier → Carrier → Prop b}
   (≤-isPreorder : IsPreorder _≤_)
   (+-isJoin     : IsJoin ≤-isPreorder _+_)
@@ -454,21 +433,15 @@ module Lattice
   (ι-isTop      : IsTop ≤-isPreorder ι)
   where
 
-  -- Disjointness at the carrier level.
+  -- Disjointness on elements and vectors.
   infix 4 _#_
   _#_ : Carrier → Carrier → Prop _
   x # y = (x · y) ≈ ε
 
-  -- Disjointness on vectors: u #^ v iff Σᵢ (u i · v i) ≈ ε.
-  -- (This uses only the semiring structure, but is most meaningful at the
-  -- lattice tier where # relates to the meet-zero characterisation of ≤⊥.)
   infix 4 _#^_
   _#^_ : ∀ {n} → Vec n → Vec n → Prop _
   u #^ v = (u ⋅ v) ≈ ε
 
-  ----------------------------------------------------------------------------
-  -- Tier 3: Heyting-like structure via #-reflect. Enough to construct
-  -- conjugate pairs on X^n / X^m from matrices M : Mat n m.
   module Heyting (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y) where
 
     -- TODO: to-conj construction.
