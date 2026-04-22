@@ -66,7 +66,7 @@ module matrix-embedding
   import matrix
   private
     module Mat = matrix S
-    open matrix S using (Mat) public
+    open matrix S using (Matrix) public
 
   open Functor
 
@@ -187,7 +187,7 @@ module matrix-embedding
       π {z} i ∘ ((F .fmor M ∘ F .fmor N) ∘ ι {x} j)
     ∎) where
       open ≈-Reasoning isEquiv
-      entry-F : ∀ {m n} (M : Mat n m) (i : Fin n) (j : Fin m) → entry (F .fmor M) i j ≈ scalar (M i j)
+      entry-F : ∀ {m n} (M : Matrix n m) (i : Fin n) (j : Fin m) → entry (F .fmor M) i j ≈ scalar (M i j)
       entry-F {m} {n} M i j =
         begin
           π {n} i ∘ (tuple {n} (λ i' → cotuple {m} (λ j' → scalar (M i' j'))) ∘ ι {m} j)
@@ -200,7 +200,7 @@ module matrix-embedding
         ∎
 
   -- Entry-wise characterization of F, re-stated at module level for use below.
-  entry-F : ∀ {m n} (M : Mat n m) (i : Fin n) (j : Fin m) → entry (F .fmor M) i j ≈ scalar (M i j)
+  entry-F : ∀ {m n} (M : Matrix n m) (i : Fin n) (j : Fin m) → entry (F .fmor M) i j ≈ scalar (M i j)
   entry-F {m} {n} M i j =
     begin
       π {n} i ∘ (tuple {n} (λ i' → cotuple {m} (λ j' → scalar (M i' j'))) ∘ ι {m} j)
@@ -242,7 +242,7 @@ module matrix-embedding
       Mat.Σ {y} (λ k → scalar-inv (entry {y} {z} g i k) ·ₛ scalar-inv (entry {x} {y} f k j))
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
 
-  F⁻¹∘F : ∀ {m n} (M : Mat n m) → (F⁻¹ .fmor (F .fmor M)) Mat.≈ₘ M
+  F⁻¹∘F : ∀ {m n} (M : Matrix n m) → (F⁻¹ .fmor (F .fmor M)) Mat.≈ₘ M
   F⁻¹∘F {m} {n} M i j =
     begin
       scalar-inv (entry {m} {n} (F .fmor {m} {n} M) i j)
@@ -276,7 +276,7 @@ module matrix-embedding
       π {m} i ∘ (εm ∘ ι {n} j)
     ∎) where open ≈-Reasoning isEquiv
 
-  F-+ₘ : ∀ {m n} (M N : Mat n m) → F .fmor {m} {n} (M Mat.+ₘ N) ≈ (F .fmor {m} {n} M +m F .fmor {m} {n} N)
+  F-+ₘ : ∀ {m n} (M N : Matrix n m) → F .fmor {m} {n} (M Mat.+ₘ N) ≈ (F .fmor {m} {n} M +m F .fmor {m} {n} N)
   F-+ₘ {m} {n} M N = entry-ext {m} {n} (λ i j →
     begin
       entry {m} {n} (F .fmor {m} {n} (M Mat.+ₘ N)) i j
@@ -293,7 +293,7 @@ module matrix-embedding
     ∎) where open ≈-Reasoning isEquiv
 
   -- F is faithful: morphisms in Mat(S) are determined by their F-images.
-  F-faithful : ∀ {m n} {M N : Mat n m} → F .fmor {m} {n} M ≈ F .fmor {m} {n} N → M Mat.≈ₘ N
+  F-faithful : ∀ {m n} {M N : Matrix n m} → F .fmor {m} {n} M ≈ F .fmor {m} {n} N → M Mat.≈ₘ N
   F-faithful {m} {n} {M} {N} eq i j =
     begin
       M i j

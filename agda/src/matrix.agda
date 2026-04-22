@@ -33,24 +33,24 @@ e (suc i) (suc j) = e i j
 _⋅_ : ∀ {n} → Vec n → Vec n → Carrier
 _⋅_ {n} u v = Σ {n} (λ i → u i · v i)
 
-Mat : ℕ → ℕ → Set o
-Mat m n = Fin m → Fin n → Carrier
+Matrix : ℕ → ℕ → Set o
+Matrix m n = Fin m → Fin n → Carrier
 
 -- Identity matrix (Kronecker delta).
-I : ∀ {n} → Mat n n
+I : ∀ {n} → Matrix n n
 I = e
 
 -- Matrix composition: (M ∘ N)ᵢₖ = Σⱼ Mᵢⱼ · Nⱼₖ.
-_∘_ : ∀ {m n k} → Mat m n → Mat n k → Mat m k
+_∘_ : ∀ {m n k} → Matrix m n → Matrix n k → Matrix m k
 (M ∘ N) i k = Σ (λ j → M i j · N j k)
 
 infixl 21 _∘_
 
-_ᵀ : ∀ {m n} → Mat m n → Mat n m
+_ᵀ : ∀ {m n} → Matrix m n → Matrix n m
 (M ᵀ) i j = M j i
 
 -- Pointwise equality of matrices.
-_≈ₘ_ : ∀ {m n} → Mat m n → Mat m n → Prop ℓ
+_≈ₘ_ : ∀ {m n} → Matrix m n → Matrix m n → Prop ℓ
 M ≈ₘ N = ∀ i j → M i j ≈ N i j
 
 open import Level using (Level; _⊔_)
@@ -127,18 +127,18 @@ e-sym (suc i) (suc j) = e-sym i j
 ≈ₘ-isEquiv .IsEquivalence.sym p i j = sym (p i j)
 ≈ₘ-isEquiv .IsEquivalence.trans p q i j = trans (p i j) (q i j)
 
-∘-cong : ∀ {m n k} {M₁ M₂ : Mat m n} {N₁ N₂ : Mat n k} → M₁ ≈ₘ M₂ → N₁ ≈ₘ N₂ → M₁ ∘ N₁ ≈ₘ M₂ ∘ N₂
+∘-cong : ∀ {m n k} {M₁ M₂ : Matrix m n} {N₁ N₂ : Matrix n k} → M₁ ≈ₘ M₂ → N₁ ≈ₘ N₂ → M₁ ∘ N₁ ≈ₘ M₂ ∘ N₂
 ∘-cong {m} {n} p q i k = Σ-cong {n} (λ j → ·-cong (p i j) (q j k))
 
-id-left : ∀ {m n} {M : Mat m n} → I ∘ M ≈ₘ M
+id-left : ∀ {m n} {M : Matrix m n} → I ∘ M ≈ₘ M
 id-left {M = M} i k = Σ-unit i (λ j → M j k)
 
-id-right : ∀ {m n} {M : Mat m n} → M ∘ I ≈ₘ M
+id-right : ∀ {m n} {M : Matrix m n} → M ∘ I ≈ₘ M
 id-right {n = n} {M = M} i k =
   trans (Σ-cong {n} (λ j → ·-cong refl (e-sym j k)))
         (trans (Σ-cong {n} (λ j → ·-comm)) (Σ-unit k (M i)))
 
-assoc : ∀ {m n k l} (M : Mat m n) (N : Mat n k) (P : Mat k l) → (M ∘ N) ∘ P ≈ₘ M ∘ (N ∘ P)
+assoc : ∀ {m n k l} (M : Matrix m n) (N : Matrix n k) (P : Matrix k l) → (M ∘ N) ∘ P ≈ₘ M ∘ (N ∘ P)
 assoc {n = n} {k} M N P i l =
   trans (Σ-cong {k} (λ j → Σ-·-distribᵣ (λ r → M i r · N r j) (P j l)))
     (trans (Σ-cong {k} (λ j → Σ-cong {n} (λ r → ·-assoc)))
@@ -147,7 +147,7 @@ assoc {n = n} {k} M N P i l =
 
 cat : Category _ _ _
 cat .Category.obj = ℕ
-cat .Category._⇒_ m n = Mat n m
+cat .Category._⇒_ m n = Matrix n m
 cat .Category._≈_ = _≈ₘ_
 cat .Category.isEquiv = ≈ₘ-isEquiv
 cat .Category.id n = I
@@ -175,13 +175,13 @@ open import commutative-monoid using (CommutativeMonoid)
 open import Data.Nat using () renaming (_+_ to _+ℕ_)
 
 -- Pointwise addition of matrices.
-_+ₘ_ : ∀ {m n} → Mat m n → Mat m n → Mat m n
+_+ₘ_ : ∀ {m n} → Matrix m n → Matrix m n → Matrix m n
 (M +ₘ N) i j = M i j + N i j
 
 infixl 21 _+ₘ_
 
 -- Zero matrix.
-εₘ : ∀ {m n} → Mat m n
+εₘ : ∀ {m n} → Matrix m n
 εₘ _ _ = ε
 
 -- Σ over zero function is zero.
@@ -192,27 +192,27 @@ infixl 21 _+ₘ_
 Σ-distribₗ : ∀ {n} (f g : Fin n → Carrier) → Σ {n} (λ i → f i + g i) ≈ Σ {n} f + Σ {n} g
 Σ-distribₗ {n} f g = sym (Σ-+ {n} f g)
 
-comp-bilinear₁ : ∀ {m n k} (M₁ M₂ : Mat m n) (N : Mat n k) → (M₁ +ₘ M₂) ∘ N ≈ₘ (M₁ ∘ N) +ₘ (M₂ ∘ N)
+comp-bilinear₁ : ∀ {m n k} (M₁ M₂ : Matrix m n) (N : Matrix n k) → (M₁ +ₘ M₂) ∘ N ≈ₘ (M₁ ∘ N) +ₘ (M₂ ∘ N)
 comp-bilinear₁ {n = n} M₁ M₂ N i k =
   trans (Σ-cong {n} (λ j → ·-+-distribᵣ))
         (sym (Σ-+ {n} (λ j → M₁ i j · N j k) (λ j → M₂ i j · N j k)))
 
-comp-bilinear₂ : ∀ {m n k} (M : Mat m n) (N₁ N₂ : Mat n k) → M ∘ (N₁ +ₘ N₂) ≈ₘ (M ∘ N₁) +ₘ (M ∘ N₂)
+comp-bilinear₂ : ∀ {m n k} (M : Matrix m n) (N₁ N₂ : Matrix n k) → M ∘ (N₁ +ₘ N₂) ≈ₘ (M ∘ N₁) +ₘ (M ∘ N₂)
 comp-bilinear₂ {n = n} M N₁ N₂ i k =
   trans (Σ-cong {n} (λ j → ·-+-distribₗ))
         (sym (Σ-+ {n} (λ j → M i j · N₁ j k) (λ j → M i j · N₂ j k)))
 
-comp-bilinear-ε₁ : ∀ {m n k} (N : Mat n k) → εₘ ∘ N ≈ₘ εₘ {m} {k}
+comp-bilinear-ε₁ : ∀ {m n k} (N : Matrix n k) → εₘ ∘ N ≈ₘ εₘ {m} {k}
 comp-bilinear-ε₁ {n = n} N i k =
   trans (Σ-cong {n} (λ j → ε-annihilₗ)) (Σ-ε {n})
 
-comp-bilinear-ε₂ : ∀ {m n k} (M : Mat m n) → M ∘ εₘ ≈ₘ εₘ {m} {k}
+comp-bilinear-ε₂ : ∀ {m n k} (M : Matrix m n) → M ∘ εₘ ≈ₘ εₘ {m} {k}
 comp-bilinear-ε₂ {n = n} M i k =
   trans (Σ-cong {n} (λ j → ε-annihilᵣ)) (Σ-ε {n})
 
 private
   hom-setoid : ℕ → ℕ → Setoid _ _
-  hom-setoid m n .Setoid.Carrier = Mat n m
+  hom-setoid m n .Setoid.Carrier = Matrix n m
   hom-setoid m n .Setoid._≈_ = _≈ₘ_
   hom-setoid m n .Setoid.isEquivalence = ≈ₘ-isEquiv
 
@@ -230,24 +230,24 @@ cmon .CMonEnriched.comp-bilinear-ε₂ = comp-bilinear-ε₂
 
 -- Biproduct: m ⊕ n = m +ℕ n.
 
-p₁ : ∀ {m n} → Mat m (m +ℕ n)
+p₁ : ∀ {m n} → Matrix m (m +ℕ n)
 p₁ {suc m} zero zero = ι
 p₁ {suc m} zero (suc _) = ε
 p₁ {suc m} (suc i) zero = ε
 p₁ {suc m} (suc i) (suc j) = p₁ {m} i j
 
-p₂ : ∀ {m n} → Mat n (m +ℕ n)
+p₂ : ∀ {m n} → Matrix n (m +ℕ n)
 p₂ {zero}  i j = e i j
 p₂ {suc m} i zero = ε
 p₂ {suc m} i (suc j) = p₂ {m} i j
 
-in₁ : ∀ {m n} → Mat (m +ℕ n) m
+in₁ : ∀ {m n} → Matrix (m +ℕ n) m
 in₁ {suc m} zero zero = ι
 in₁ {suc m} zero (suc _) = ε
 in₁ {suc m} (suc i) zero = ε
 in₁ {suc m} (suc i) (suc j) = in₁ {m} i j
 
-in₂ : ∀ {m n} → Mat (m +ℕ n) n
+in₂ : ∀ {m n} → Matrix (m +ℕ n) n
 in₂ {zero}  i j = e i j
 in₂ {suc m} zero _ = ε
 in₂ {suc m} (suc i) j = in₂ {m} i j
@@ -444,4 +444,5 @@ module DistributiveLattice
 
   module Heyting (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y) where
 
-    -- TODO: to-conj construction.
+    -- TODO: ⟦_⟧ : ℕ → conjugate.Obj and to-conj : Matrix n m → ⟦m⟧ ⇒c ⟦n⟧
+    -- (restored after level-0 restructure).
