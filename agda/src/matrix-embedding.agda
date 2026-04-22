@@ -57,7 +57,7 @@ module matrix-embedding
     ∎ where open ≈-Reasoning isEquiv
 
   import matrix-rep
-  open matrix-rep CM BP 𝟘 𝟘-initial 𝟘-terminal X scalar-comm public
+  open matrix-rep CM BP 𝟘 𝟘-initial 𝟘-terminal X scalar-comm hiding (cat) public
 
   open IsInitial 𝟘-initial
   open IsTerminal 𝟘-terminal
@@ -241,7 +241,6 @@ module matrix-embedding
       Mat.Σ {y} (λ k → scalar-inv (entry {y} {z} g i k) ·ₛ scalar-inv (entry {x} {y} f k j))
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
 
-  -- Round trip: F⁻¹ is a left inverse of F up to pointwise semiring equality.
   F⁻¹∘F : ∀ {m n} (M : Mat n m) → (F⁻¹ .fmor (F .fmor M)) Mat.≈ₘ M
   F⁻¹∘F {m} {n} M i j =
     begin
@@ -252,7 +251,6 @@ module matrix-embedding
       M i j
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
 
-  -- Round trip: F is a left inverse of F⁻¹ up to hom equality.
   F∘F⁻¹ : ∀ {m n} (f : X^ m ⇒ X^ n) → F .fmor {m} {n} (F⁻¹ .fmor {m} {n} f) ≈ f
   F∘F⁻¹ {m} {n} f = entry-ext {m} {n} (λ i j →
     begin
@@ -291,4 +289,46 @@ module matrix-embedding
       π {n} i ∘ ((F .fmor {m} {n} M ∘ ι {m} j) +m (F .fmor {m} {n} N ∘ ι {m} j))
     ≈˘⟨ ∘-cong ≈-refl (comp-bilinear₁ _ _ _) ⟩
       π {n} i ∘ ((F .fmor {m} {n} M +m F .fmor {m} {n} N) ∘ ι {m} j)
+    ∎) where open ≈-Reasoning isEquiv
+
+  -- F is faithful: morphisms in Mat(S) are determined by their F-images.
+  F-faithful : ∀ {m n} {M N : Mat n m} → F .fmor {m} {n} M ≈ F .fmor {m} {n} N → M Mat.≈ₘ N
+  F-faithful {m} {n} {M} {N} eq i j =
+    begin
+      M i j
+    ≈˘⟨ F⁻¹∘F {m} {n} M i j ⟩
+      scalar-inv (entry {m} {n} (F .fmor {m} {n} M) i j)
+    ≈⟨ scalar-inv-cong (∘-cong ≈-refl (∘-cong eq ≈-refl)) ⟩
+      scalar-inv (entry {m} {n} (F .fmor {m} {n} N) i j)
+    ≈⟨ F⁻¹∘F {m} {n} N i j ⟩
+      N i j
+    ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
+
+  -- F⁻¹ preserves the zero morphism (derived via F's preservation + faithfulness).
+  F⁻¹-εₘ : ∀ {m n} → (F⁻¹ .fmor {m} {n} (εm {X^ m} {X^ n})) Mat.≈ₘ (Mat.εₘ {n} {m})
+  F⁻¹-εₘ {m} {n} = F-faithful {m} {n}
+    {F⁻¹ .fmor {m} {n} (εm {X^ m} {X^ n})}
+    {Mat.εₘ {n} {m}}
+    (begin
+      F .fmor {m} {n} (F⁻¹ .fmor {m} {n} (εm {X^ m} {X^ n}))
+    ≈⟨ F∘F⁻¹ {m} {n} (εm {X^ m} {X^ n}) ⟩
+      εm
+    ≈˘⟨ F-εₘ {n} {m} ⟩
+      F .fmor {m} {n} (Mat.εₘ {n} {m})
+    ∎) where open ≈-Reasoning isEquiv
+
+  -- F⁻¹ preserves addition (derived via F's preservation + faithfulness).
+  F⁻¹-+ₘ : ∀ {m n} (f g : X^ m ⇒ X^ n) →
+           F⁻¹ .fmor {m} {n} (f +m g) Mat.≈ₘ (F⁻¹ .fmor {m} {n} f Mat.+ₘ F⁻¹ .fmor {m} {n} g)
+  F⁻¹-+ₘ {m} {n} f g = F-faithful {m} {n}
+    {F⁻¹ .fmor {m} {n} (f +m g)}
+    {F⁻¹ .fmor {m} {n} f Mat.+ₘ F⁻¹ .fmor {m} {n} g}
+    (begin
+      F .fmor {m} {n} (F⁻¹ .fmor {m} {n} (f +m g))
+    ≈⟨ F∘F⁻¹ {m} {n} (f +m g) ⟩
+      f +m g
+    ≈˘⟨ homCM _ _ .+-cong (F∘F⁻¹ {m} {n} f) (F∘F⁻¹ {m} {n} g) ⟩
+      F .fmor {m} {n} (F⁻¹ .fmor {m} {n} f) +m F .fmor {m} {n} (F⁻¹ .fmor {m} {n} g)
+    ≈˘⟨ F-+ₘ (F⁻¹ .fmor {m} {n} f) (F⁻¹ .fmor {m} {n} g) ⟩
+      F .fmor {m} {n} (F⁻¹ .fmor {m} {n} f Mat.+ₘ F⁻¹ .fmor {m} {n} g)
     ∎) where open ≈-Reasoning isEquiv
