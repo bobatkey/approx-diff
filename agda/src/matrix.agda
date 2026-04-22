@@ -384,6 +384,10 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
 -- Additional (ordered) structures that might be present on S.
 module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
   open import basics using (IsPreorder; IsJoin; IsBottom; IsMeet; IsTop)
+  open import preorder using (Preorder)
+  open import Data.Nat using (ℕ)
+  import join-semilattice
+  import meet-semilattice
   open Mat S public
     renaming (
       _·_ to _∧_;
@@ -425,6 +429,36 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     ⊥-isBottom : IsBottom ≤-isPreorder ⊥
     ⊥-isBottom .IsBottom.≤-bottom = ∨-lunit
 
+    -- S's carrier as a Preorder and JoinSemilattice.
+    preorder : Preorder
+    preorder .Preorder.Carrier = Carrier
+    preorder .Preorder._≤_ = _≤_
+    preorder .Preorder.≤-isPreorder = ≤-isPreorder
+
+    semilattice : join-semilattice.JoinSemilattice preorder
+    semilattice .join-semilattice.JoinSemilattice._∨_ = _∨_
+    semilattice .join-semilattice.JoinSemilattice.⊥ = ⊥
+    semilattice .join-semilattice.JoinSemilattice.∨-isJoin = ∨-isJoin
+    semilattice .join-semilattice.JoinSemilattice.⊥-isBottom = ⊥-isBottom
+
+    -- Pointwise lift to Vec n.
+    vec-preorder : ℕ → Preorder
+    vec-preorder n .Preorder.Carrier = Vec n
+    vec-preorder n .Preorder._≤_ u v = ∀ i → u i ≤ v i
+    vec-preorder n .Preorder.≤-isPreorder .IsPreorder.refl i = IsPreorder.refl ≤-isPreorder
+    vec-preorder n .Preorder.≤-isPreorder .IsPreorder.trans u≤v v≤w i =
+      IsPreorder.trans ≤-isPreorder (u≤v i) (v≤w i)
+
+    vec-joins : (n : ℕ) → join-semilattice.JoinSemilattice (vec-preorder n)
+    vec-joins n .join-semilattice.JoinSemilattice._∨_ u v i = u i ∨ v i
+    vec-joins n .join-semilattice.JoinSemilattice.⊥ _ = ⊥
+    vec-joins n .join-semilattice.JoinSemilattice.∨-isJoin .IsJoin.inl i = IsJoin.inl ∨-isJoin
+    vec-joins n .join-semilattice.JoinSemilattice.∨-isJoin .IsJoin.inr i = IsJoin.inr ∨-isJoin
+    vec-joins n .join-semilattice.JoinSemilattice.∨-isJoin .IsJoin.[_,_] u≤w v≤w i =
+      IsJoin.[_,_] ∨-isJoin (u≤w i) (v≤w i)
+    vec-joins n .join-semilattice.JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom i =
+      IsBottom.≤-bottom ⊥-isBottom
+
   ----------------------------------------------------------------------------
   -- Dual: if ∧ is idempotent then (S, ∧) is a meet-semilattice with ⊤.
   module Meet (∧-idem : ∀ {x} → (x ∧ x) ≈ x) where
@@ -447,6 +481,35 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     ⊤-isTop : IsTop ≤-isPreorder ⊤
     ⊤-isTop .IsTop.≤-top = trans ∧-comm ∧-lunit
 
+    -- S's carrier as a Preorder and MeetSemilattice.
+    preorder : Preorder
+    preorder .Preorder.Carrier = Carrier
+    preorder .Preorder._≤_ = _≤_
+    preorder .Preorder.≤-isPreorder = ≤-isPreorder
+
+    semilattice : meet-semilattice.MeetSemilattice preorder
+    semilattice .meet-semilattice.MeetSemilattice._∧_ = _∧_
+    semilattice .meet-semilattice.MeetSemilattice.⊤ = ⊤
+    semilattice .meet-semilattice.MeetSemilattice.∧-isMeet = ∧-isMeet
+    semilattice .meet-semilattice.MeetSemilattice.⊤-isTop = ⊤-isTop
+
+    -- Pointwise lift to Vec n.
+    vec-preorder : ℕ → Preorder
+    vec-preorder n .Preorder.Carrier = Vec n
+    vec-preorder n .Preorder._≤_ u v = ∀ i → u i ≤ v i
+    vec-preorder n .Preorder.≤-isPreorder .IsPreorder.refl i = IsPreorder.refl ≤-isPreorder
+    vec-preorder n .Preorder.≤-isPreorder .IsPreorder.trans u≤v v≤w i =
+      IsPreorder.trans ≤-isPreorder (u≤v i) (v≤w i)
+
+    vec-meets : (n : ℕ) → meet-semilattice.MeetSemilattice (vec-preorder n)
+    vec-meets n .meet-semilattice.MeetSemilattice._∧_ u v i = u i ∧ v i
+    vec-meets n .meet-semilattice.MeetSemilattice.⊤ _ = ⊤
+    vec-meets n .meet-semilattice.MeetSemilattice.∧-isMeet .IsMeet.π₁ i = IsMeet.π₁ ∧-isMeet
+    vec-meets n .meet-semilattice.MeetSemilattice.∧-isMeet .IsMeet.π₂ i = IsMeet.π₂ ∧-isMeet
+    vec-meets n .meet-semilattice.MeetSemilattice.∧-isMeet .IsMeet.⟨_,_⟩ x≤y x≤z i =
+      IsMeet.⟨_,_⟩ ∧-isMeet (x≤y i) (x≤z i)
+    vec-meets n .meet-semilattice.MeetSemilattice.⊤-isTop .IsTop.≤-top i = IsTop.≤-top ⊤-isTop
+
   module DistributiveLattice
     {_≤_ : Carrier → Carrier → Prop}
     (≤-isPreorder : IsPreorder _≤_)
@@ -465,22 +528,59 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     _#^_ : ∀ {n} → Vec n → Vec n → Prop _
     u #^ v = (u ⋅ v) ≈ ⊥
 
-    module Heyting (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y) where
+    -- Vec n with pointwise ≤ from the shared lattice ordering.
+    vec-preorder : ℕ → Preorder
+    vec-preorder n .Preorder.Carrier = Vec n
+    vec-preorder n .Preorder._≤_ u v = ∀ i → u i ≤ v i
+    vec-preorder n .Preorder.≤-isPreorder .IsPreorder.refl i = IsPreorder.refl ≤-isPreorder
+    vec-preorder n .Preorder.≤-isPreorder .IsPreorder.trans u≤v v≤w i =
+      IsPreorder.trans ≤-isPreorder (u≤v i) (v≤w i)
 
-      open import preorder using (Preorder)
-      open import Data.Nat using (ℕ)
+    -- Pointwise join-semilattice on Vec n, at the lattice ordering.
+    vec-joins : (n : ℕ) → join-semilattice.JoinSemilattice (vec-preorder n)
+    vec-joins n .join-semilattice.JoinSemilattice._∨_ u v i = u i ∨ v i
+    vec-joins n .join-semilattice.JoinSemilattice.⊥ _ = ⊥
+    vec-joins n .join-semilattice.JoinSemilattice.∨-isJoin .IsJoin.inl i = IsJoin.inl ∨-isJoin
+    vec-joins n .join-semilattice.JoinSemilattice.∨-isJoin .IsJoin.inr i = IsJoin.inr ∨-isJoin
+    vec-joins n .join-semilattice.JoinSemilattice.∨-isJoin .IsJoin.[_,_] u≤w v≤w i =
+      IsJoin.[_,_] ∨-isJoin (u≤w i) (v≤w i)
+    vec-joins n .join-semilattice.JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom i =
+      IsBottom.≤-bottom ⊥-isBottom
+
+    -- Pointwise meet-semilattice on Vec n, at the lattice ordering.
+    vec-meets : (n : ℕ) → meet-semilattice.MeetSemilattice (vec-preorder n)
+    vec-meets n .meet-semilattice.MeetSemilattice._∧_ u v i = u i ∧ v i
+    vec-meets n .meet-semilattice.MeetSemilattice.⊤ _ = ⊤
+    vec-meets n .meet-semilattice.MeetSemilattice.∧-isMeet .IsMeet.π₁ i = IsMeet.π₁ ∧-isMeet
+    vec-meets n .meet-semilattice.MeetSemilattice.∧-isMeet .IsMeet.π₂ i = IsMeet.π₂ ∧-isMeet
+    vec-meets n .meet-semilattice.MeetSemilattice.∧-isMeet .IsMeet.⟨_,_⟩ x≤y x≤z i =
+      IsMeet.⟨_,_⟩ ∧-isMeet (x≤y i) (x≤z i)
+    vec-meets n .meet-semilattice.MeetSemilattice.⊤-isTop .IsTop.≤-top i = IsTop.≤-top ⊤-isTop
+
+    module Heyting
+      (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y)
+      -- ∧-∨-distrib is the forward direction of ∧ distributing over ∨; at an
+      -- abstract ≤ we take it as a parameter (derivable at Join's ≤ from the
+      -- semiring's ∧-∨-distribₗ).
+      (∧-∨-distribˢ : ∀ x y z → (x ∧ (y ∨ z)) ≤ ((x ∧ y) ∨ (x ∧ z)))
+      where
+
       import conjugate
 
-      -- Vec n as a conjugate.Obj, with pointwise ≤, meets, joins.
+      -- Vec n as a conjugate.Obj.
       ⟦_⟧ : ℕ → conjugate.Obj
-      ⟦ n ⟧ .conjugate.Obj.carrier .Preorder.Carrier = Vec n
-      ⟦ n ⟧ .conjugate.Obj.carrier .Preorder._≤_ u v = ∀ i → u i ≤ v i
-      ⟦ n ⟧ .conjugate.Obj.carrier .Preorder.≤-isPreorder = {!!}
-      ⟦ n ⟧ .conjugate.Obj.meets       = {!!}
-      ⟦ n ⟧ .conjugate.Obj.joins       = {!!}
+      ⟦ n ⟧ .conjugate.Obj.carrier     = vec-preorder n
+      ⟦ n ⟧ .conjugate.Obj.meets       = vec-meets n
+      ⟦ n ⟧ .conjugate.Obj.joins       = vec-joins n
       ⟦ n ⟧ .conjugate.Obj.#-reflect   = {!!}
-      ⟦ n ⟧ .conjugate.Obj.∧-∨-distrib = {!!}
-      ⟦ n ⟧ .conjugate.Obj.∨-∧-distrib = {!!}
+      ⟦ n ⟧ .conjugate.Obj.∧-∨-distrib x y z i = ∧-∨-distribˢ (x i) (y i) (z i)
+      -- Pointwise ∨-over-∧ (one direction) holds in any lattice.
+      ⟦ n ⟧ .conjugate.Obj.∨-∧-distrib x y z i =
+        IsJoin.[_,_] ∨-isJoin
+          (IsMeet.⟨_,_⟩ ∧-isMeet (IsJoin.inl ∨-isJoin) (IsJoin.inl ∨-isJoin))
+          (IsMeet.⟨_,_⟩ ∧-isMeet
+            (IsPreorder.trans ≤-isPreorder (IsMeet.π₁ ∧-isMeet) (IsJoin.inr ∨-isJoin))
+            (IsPreorder.trans ≤-isPreorder (IsMeet.π₂ ∧-isMeet) (IsJoin.inr ∨-isJoin)))
 
       -- Each matrix M : Matrix n m induces a conjugate morphism ⟦m⟧ ⇒c ⟦n⟧.
       -- The right leg is M's action as matrix-vector product; the left leg is
