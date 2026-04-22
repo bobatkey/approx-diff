@@ -386,8 +386,9 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
   open import basics using (IsPreorder; IsJoin; IsBottom; IsMeet; IsTop)
   open import preorder using (Preorder)
   open import Data.Nat using (ℕ)
-  import join-semilattice
-  import meet-semilattice
+  open import Data.Fin using (Fin)
+  open import join-semilattice using (JoinSemilattice)
+  open import meet-semilattice using (MeetSemilattice)
   open Mat S public
     renaming (
       _·_ to _∧_;
@@ -407,6 +408,34 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       ε-annihilₗ to ⊥-annihilₗ;
       ε-annihilᵣ to ⊥-annihilᵣ
     )
+
+  -- Pointwise lifts to Vec n.
+  vec-preorder : Preorder → ℕ → Preorder
+  vec-preorder P n .Preorder.Carrier = Fin n → P .Preorder.Carrier
+  vec-preorder P n .Preorder._≤_ u v = ∀ i → P .Preorder._≤_ (u i) (v i)
+  vec-preorder P n .Preorder.≤-isPreorder .IsPreorder.refl i = IsPreorder.refl (P .Preorder.≤-isPreorder)
+  vec-preorder P n .Preorder.≤-isPreorder .IsPreorder.trans u≤v v≤w i =
+    IsPreorder.trans (P .Preorder.≤-isPreorder) (u≤v i) (v≤w i)
+
+  vec-join : (P : Preorder) → JoinSemilattice P → (n : ℕ) → JoinSemilattice (vec-preorder P n)
+  vec-join P J n .JoinSemilattice._∨_ u v i = J .JoinSemilattice._∨_ (u i) (v i)
+  vec-join P J n .JoinSemilattice.⊥ _ = J .JoinSemilattice.⊥
+  vec-join P J n .JoinSemilattice.∨-isJoin .IsJoin.inl i = IsJoin.inl (J .JoinSemilattice.∨-isJoin)
+  vec-join P J n .JoinSemilattice.∨-isJoin .IsJoin.inr i = IsJoin.inr (J .JoinSemilattice.∨-isJoin)
+  vec-join P J n .JoinSemilattice.∨-isJoin .IsJoin.[_,_] u≤w v≤w i =
+    IsJoin.[_,_] (J .JoinSemilattice.∨-isJoin) (u≤w i) (v≤w i)
+  vec-join P J n .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom i =
+    IsBottom.≤-bottom (J .JoinSemilattice.⊥-isBottom)
+
+  vec-meet : (P : Preorder) → MeetSemilattice P → (n : ℕ) → MeetSemilattice (vec-preorder P n)
+  vec-meet P M n .MeetSemilattice._∧_ u v i = M .MeetSemilattice._∧_ (u i) (v i)
+  vec-meet P M n .MeetSemilattice.⊤ _ = M .MeetSemilattice.⊤
+  vec-meet P M n .MeetSemilattice.∧-isMeet .IsMeet.π₁ i = IsMeet.π₁ (M .MeetSemilattice.∧-isMeet)
+  vec-meet P M n .MeetSemilattice.∧-isMeet .IsMeet.π₂ i = IsMeet.π₂ (M .MeetSemilattice.∧-isMeet)
+  vec-meet P M n .MeetSemilattice.∧-isMeet .IsMeet.⟨_,_⟩ x≤y x≤z i =
+    IsMeet.⟨_,_⟩ (M .MeetSemilattice.∧-isMeet) (x≤y i) (x≤z i)
+  vec-meet P M n .MeetSemilattice.⊤-isTop .IsTop.≤-top i =
+    IsTop.≤-top (M .MeetSemilattice.⊤-isTop)
 
   -- If ∨ is idempotent then (S, ∨) is a join-semilattice with ⊥.
   module Join (∨-idem : ∀ {x} → (x ∨ x) ≈ x) where
@@ -434,30 +463,12 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     preorder .Preorder._≤_ = _≤_
     preorder .Preorder.≤-isPreorder = ≤-isPreorder
 
-    semilattice : join-semilattice.JoinSemilattice preorder
-    semilattice .join-semilattice.JoinSemilattice._∨_ = _∨_
-    semilattice .join-semilattice.JoinSemilattice.⊥ = ⊥
-    semilattice .join-semilattice.JoinSemilattice.∨-isJoin = ∨-isJoin
-    semilattice .join-semilattice.JoinSemilattice.⊥-isBottom = ⊥-isBottom
+    semilattice : JoinSemilattice preorder
+    semilattice .JoinSemilattice._∨_ = _∨_
+    semilattice .JoinSemilattice.⊥ = ⊥
+    semilattice .JoinSemilattice.∨-isJoin = ∨-isJoin
+    semilattice .JoinSemilattice.⊥-isBottom = ⊥-isBottom
 
-    vec-preorder : ℕ → Preorder
-    vec-preorder n .Preorder.Carrier = Vec n
-    vec-preorder n .Preorder._≤_ u v = ∀ i → u i ≤ v i
-    vec-preorder n .Preorder.≤-isPreorder .IsPreorder.refl i = IsPreorder.refl ≤-isPreorder
-    vec-preorder n .Preorder.≤-isPreorder .IsPreorder.trans u≤v v≤w i =
-      IsPreorder.trans ≤-isPreorder (u≤v i) (v≤w i)
-
-    vec-joins : (n : ℕ) → join-semilattice.JoinSemilattice (vec-preorder n)
-    vec-joins n .join-semilattice.JoinSemilattice._∨_ u v i = u i ∨ v i
-    vec-joins n .join-semilattice.JoinSemilattice.⊥ _ = ⊥
-    vec-joins n .join-semilattice.JoinSemilattice.∨-isJoin .IsJoin.inl i = IsJoin.inl ∨-isJoin
-    vec-joins n .join-semilattice.JoinSemilattice.∨-isJoin .IsJoin.inr i = IsJoin.inr ∨-isJoin
-    vec-joins n .join-semilattice.JoinSemilattice.∨-isJoin .IsJoin.[_,_] u≤w v≤w i =
-      IsJoin.[_,_] ∨-isJoin (u≤w i) (v≤w i)
-    vec-joins n .join-semilattice.JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom i =
-      IsBottom.≤-bottom ⊥-isBottom
-
-  ----------------------------------------------------------------------------
   -- Dual: if ∧ is idempotent then (S, ∧) is a meet-semilattice with ⊤.
   module Meet (∧-idem : ∀ {x} → (x ∧ x) ≈ x) where
 
@@ -484,27 +495,11 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     preorder .Preorder._≤_ = _≤_
     preorder .Preorder.≤-isPreorder = ≤-isPreorder
 
-    semilattice : meet-semilattice.MeetSemilattice preorder
-    semilattice .meet-semilattice.MeetSemilattice._∧_ = _∧_
-    semilattice .meet-semilattice.MeetSemilattice.⊤ = ⊤
-    semilattice .meet-semilattice.MeetSemilattice.∧-isMeet = ∧-isMeet
-    semilattice .meet-semilattice.MeetSemilattice.⊤-isTop = ⊤-isTop
-
-    vec-preorder : ℕ → Preorder
-    vec-preorder n .Preorder.Carrier = Vec n
-    vec-preorder n .Preorder._≤_ u v = ∀ i → u i ≤ v i
-    vec-preorder n .Preorder.≤-isPreorder .IsPreorder.refl i = IsPreorder.refl ≤-isPreorder
-    vec-preorder n .Preorder.≤-isPreorder .IsPreorder.trans u≤v v≤w i =
-      IsPreorder.trans ≤-isPreorder (u≤v i) (v≤w i)
-
-    vec-meets : (n : ℕ) → meet-semilattice.MeetSemilattice (vec-preorder n)
-    vec-meets n .meet-semilattice.MeetSemilattice._∧_ u v i = u i ∧ v i
-    vec-meets n .meet-semilattice.MeetSemilattice.⊤ _ = ⊤
-    vec-meets n .meet-semilattice.MeetSemilattice.∧-isMeet .IsMeet.π₁ i = IsMeet.π₁ ∧-isMeet
-    vec-meets n .meet-semilattice.MeetSemilattice.∧-isMeet .IsMeet.π₂ i = IsMeet.π₂ ∧-isMeet
-    vec-meets n .meet-semilattice.MeetSemilattice.∧-isMeet .IsMeet.⟨_,_⟩ x≤y x≤z i =
-      IsMeet.⟨_,_⟩ ∧-isMeet (x≤y i) (x≤z i)
-    vec-meets n .meet-semilattice.MeetSemilattice.⊤-isTop .IsTop.≤-top i = IsTop.≤-top ⊤-isTop
+    semilattice : MeetSemilattice preorder
+    semilattice .MeetSemilattice._∧_ = _∧_
+    semilattice .MeetSemilattice.⊤ = ⊤
+    semilattice .MeetSemilattice.∧-isMeet = ∧-isMeet
+    semilattice .MeetSemilattice.⊤-isTop = ⊤-isTop
 
   module DistributiveLattice
     {_≤_ : Carrier → Carrier → Prop}
@@ -515,6 +510,23 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     (⊤-isTop      : IsTop ≤-isPreorder ⊤)
     where
 
+    preorder : Preorder
+    preorder .Preorder.Carrier = Carrier
+    preorder .Preorder._≤_ = _≤_
+    preorder .Preorder.≤-isPreorder = ≤-isPreorder
+
+    joins : JoinSemilattice preorder
+    joins .JoinSemilattice._∨_ = _∨_
+    joins .JoinSemilattice.⊥ = ⊥
+    joins .JoinSemilattice.∨-isJoin = ∨-isJoin
+    joins .JoinSemilattice.⊥-isBottom = ⊥-isBottom
+
+    meets : MeetSemilattice preorder
+    meets .MeetSemilattice._∧_ = _∧_
+    meets .MeetSemilattice.⊤ = ⊤
+    meets .MeetSemilattice.∧-isMeet = ∧-isMeet
+    meets .MeetSemilattice.⊤-isTop = ⊤-isTop
+
     -- Disjointness on elements and vectors.
     infix 4 _#_
     _#_ : Carrier → Carrier → Prop _
@@ -524,47 +536,24 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     _#^_ : ∀ {n} → Vec n → Vec n → Prop _
     u #^ v = (u ⋅ v) ≈ ⊥
 
-    vec-preorder : ℕ → Preorder
-    vec-preorder n .Preorder.Carrier = Vec n
-    vec-preorder n .Preorder._≤_ u v = ∀ i → u i ≤ v i
-    vec-preorder n .Preorder.≤-isPreorder .IsPreorder.refl i = IsPreorder.refl ≤-isPreorder
-    vec-preorder n .Preorder.≤-isPreorder .IsPreorder.trans u≤v v≤w i =
-      IsPreorder.trans ≤-isPreorder (u≤v i) (v≤w i)
-
-    vec-joins : (n : ℕ) → join-semilattice.JoinSemilattice (vec-preorder n)
-    vec-joins n .join-semilattice.JoinSemilattice._∨_ u v i = u i ∨ v i
-    vec-joins n .join-semilattice.JoinSemilattice.⊥ _ = ⊥
-    vec-joins n .join-semilattice.JoinSemilattice.∨-isJoin .IsJoin.inl i = IsJoin.inl ∨-isJoin
-    vec-joins n .join-semilattice.JoinSemilattice.∨-isJoin .IsJoin.inr i = IsJoin.inr ∨-isJoin
-    vec-joins n .join-semilattice.JoinSemilattice.∨-isJoin .IsJoin.[_,_] u≤w v≤w i =
-      IsJoin.[_,_] ∨-isJoin (u≤w i) (v≤w i)
-    vec-joins n .join-semilattice.JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom i =
-      IsBottom.≤-bottom ⊥-isBottom
-
-    vec-meets : (n : ℕ) → meet-semilattice.MeetSemilattice (vec-preorder n)
-    vec-meets n .meet-semilattice.MeetSemilattice._∧_ u v i = u i ∧ v i
-    vec-meets n .meet-semilattice.MeetSemilattice.⊤ _ = ⊤
-    vec-meets n .meet-semilattice.MeetSemilattice.∧-isMeet .IsMeet.π₁ i = IsMeet.π₁ ∧-isMeet
-    vec-meets n .meet-semilattice.MeetSemilattice.∧-isMeet .IsMeet.π₂ i = IsMeet.π₂ ∧-isMeet
-    vec-meets n .meet-semilattice.MeetSemilattice.∧-isMeet .IsMeet.⟨_,_⟩ x≤y x≤z i =
-      IsMeet.⟨_,_⟩ ∧-isMeet (x≤y i) (x≤z i)
-    vec-meets n .meet-semilattice.MeetSemilattice.⊤-isTop .IsTop.≤-top i = IsTop.≤-top ⊤-isTop
-
     module Heyting
       (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y)
-      -- ∧-∨-distrib is the forward direction of ∧ distributing over ∨; at an
-      -- abstract ≤ we take it as a parameter (derivable at Join's ≤ from the
-      -- semiring's ∧-∨-distribₗ).
-      (∧-∨-distribˢ : ∀ x y z → (x ∧ (y ∨ z)) ≤ ((x ∧ y) ∨ (x ∧ z)))
+      -- ≈→≤: carrier-level ≈ refines ≤. Derivable at Join's ≤ (since ≤ is then
+      -- `∨ = y`), but not at an abstract ≤; we take it as a parameter.
+      (≈→≤ : ∀ {x y} → x ≈ y → x ≤ y)
       where
 
       import conjugate
 
+      -- One direction of ∧-over-∨ distributivity, derived from the semiring.
+      ∧-∨-distribˢ : ∀ x y z → (x ∧ (y ∨ z)) ≤ ((x ∧ y) ∨ (x ∧ z))
+      ∧-∨-distribˢ x y z = ≈→≤ ∧-∨-distribₗ
+
       -- Vec n as a conjugate.Obj.
       ⟦_⟧ : ℕ → conjugate.Obj
-      ⟦ n ⟧ .conjugate.Obj.carrier     = vec-preorder n
-      ⟦ n ⟧ .conjugate.Obj.meets       = vec-meets n
-      ⟦ n ⟧ .conjugate.Obj.joins       = vec-joins n
+      ⟦ n ⟧ .conjugate.Obj.carrier     = vec-preorder preorder n
+      ⟦ n ⟧ .conjugate.Obj.meets       = vec-meet preorder meets n
+      ⟦ n ⟧ .conjugate.Obj.joins       = vec-join preorder joins n
       ⟦ n ⟧ .conjugate.Obj.#-reflect   = {!!}
       ⟦ n ⟧ .conjugate.Obj.∧-∨-distrib x y z i = ∧-∨-distribˢ (x i) (y i) (z i)
       -- Pointwise ∨-over-∧ (one direction) holds in any lattice.
