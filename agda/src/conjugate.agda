@@ -52,8 +52,7 @@ record Obj : Set (suc 0ℓ) where
 
   -- holds in any bounded lattice
   ∨-∧-distrib : ∀ x y z → x ∨ (y ∧ z) ≤ (x ∨ y) ∧ (x ∨ z)
-  ∨-∧-distrib x y z =
-    [ ⟨ inl ∧ inl ⟩ ∨ ⟨ ≤-trans π₁ inr ∧ ≤-trans π₂ inr ⟩ ]
+  ∨-∧-distrib x y z = [ ⟨ inl ∧ inl ⟩ ∨ ⟨ ≤-trans π₁ inr ∧ ≤-trans π₂ inr ⟩ ]
 
   #-distrib : ∀ {x y z} → x # y → x # z → x # (y ∨ z)
   #-distrib x#y x#z = ≤-trans (∧-∨-distrib _ _ _) (≤-trans (∨-mono x#y x#z) (∨-idem .proj₁))
