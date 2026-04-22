@@ -549,6 +549,10 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     Σ-≤-⊥ {zero}  _ _ = IsPreorder.refl ≤-isPreorder
     Σ-≤-⊥ {suc n} f h = IsJoin.[_,_] ∨-isJoin (h zero) (Σ-≤-⊥ (λ j → f (suc j)) (λ j → h (suc j)))
 
+    -- Σ is monotone in its argument (pointwise ≤ → Σ ≤).
+    Σ-mono : ∀ {n} {f g : Fin n → Carrier} → (∀ j → f j ≤ g j) → Σ f ≤ Σ g
+    Σ-mono = +-to-Σ.Σ-preserves _≤_ (IsPreorder.refl ≤-isPreorder) (IsJoin.mono ∨-isJoin)
+
     module HeytingAlgebra
       (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y)
       where
@@ -575,5 +579,18 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
           h^ w v⋅w≤⊥ = Σ-≤-⊥ _ (h w (λ j → IsPreorder.trans ≤-isPreorder (Σ-ub _ j) v⋅w≤⊥))
       ⟦ n ⟧ .conjugate.Obj.∧-∨-distrib x y z i = trans (∨-cong ∧-∨-distribₗ refl) ∨-idem
 
+      -- Matrix M : Fin n → Fin m → Carrier gives:
+      --   right : Vec m → Vec n is matrix-vector product (M u) i = row i of M  ⋅  u.
+      --   left  : Vec n → Vec m is transpose action (y Mᵀ) j = y  ⋅  column j of M.
+      -- The conjugate condition y · (M u) ≈ (y Mᵀ) · u follows from Σ-interchange
+      -- on the double sum.
       to-conj : ∀ {m n} → Matrix n m → ⟦ m ⟧ conjugate.⇒c ⟦ n ⟧
-      to-conj M = {!!}
+      to-conj {m} {n} M = record
+        { right = record
+          { fun  = λ u i → M i ⋅ u
+          ; mono = λ u≤v i →
+              Σ-mono (λ j → IsMeet.mono ∧-isMeet (IsPreorder.refl ≤-isPreorder) (u≤v j))
+          }
+        ; left = {!!}
+        ; conjugate = {!!}
+        }
