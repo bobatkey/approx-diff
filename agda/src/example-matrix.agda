@@ -72,7 +72,7 @@ module example1 where
   ε₀ ()
 
   supply : Two → Two → Two → _
-  supply a b c = · , (ε₀ , ⟨ a ⟩) , (ε₀ , ⟨ b ⟩) , (ε₀ , ⟨ c ⟩) , _
+  supply a b c = ε₀ , (ε₀ , ⟨ a ⟩) , (ε₀ , ⟨ b ⟩) , (ε₀ , ⟨ c ⟩) , _
 
   -- Output depends on 1st label (would be ⊥ in the Galois example)
   test-fwd1 : fwd-slice (supply ⊤ ⊥ ⊥) ≡ ⟨ ⊤ ⟩

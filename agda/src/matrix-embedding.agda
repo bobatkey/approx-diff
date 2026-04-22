@@ -3,7 +3,7 @@
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Fin using (Fin; zero; suc)
 open import prop-setoid using (Setoid; module ≈-Reasoning)
-open import categories using (Category; IsInitial; IsTerminal; HasInitial; HasTerminal)
+open import categories using (Category; IsInitial; IsTerminal; HasInitial; HasTerminal; HasProducts)
 open import cmon-enriched using (CMonEnriched; Biproduct)
 open import commutative-monoid using (CommutativeMonoid)
 open import commutative-semiring using (CommutativeSemiring)
@@ -337,3 +337,223 @@ module matrix-embedding
         ≈⟨ cotuple-ι {m} _ j ⟩
           scalar (M i j)
         ∎
+
+  -- Entry-wise characterization of 𝓕.fmor.
+  entry-𝓕 : ∀ {m n} (M : Mat n m) (i : Fin n) (j : Fin m) → entry (𝓕 .fmor M) i j ≈ scalar (M i j)
+  entry-𝓕 {m} {n} M i j =
+    begin
+      π {n} i ∘ (tuple {n} (λ i' → cotuple {m} (λ j' → scalar (M i' j'))) ∘ ι {m} j)
+    ≈˘⟨ assoc _ _ _ ⟩
+      (π {n} i ∘ tuple {n} (λ i' → cotuple {m} (λ j' → scalar (M i' j')))) ∘ ι {m} j
+    ≈⟨ ∘-cong (tuple-π {n} _ i) ≈-refl ⟩
+      cotuple {m} (λ j' → scalar (M i j')) ∘ ι {m} j
+    ≈⟨ cotuple-ι {m} _ j ⟩
+      scalar (M i j)
+    ∎ where open ≈-Reasoning isEquiv
+
+  open import finite-product-functor
+    using (preserve-chosen-terminal; preserve-chosen-products)
+  open import cmon-enriched using (biproducts→products)
+
+  -- Chosen terminals: matrix's 0, and 𝟘 in 𝒞.
+  Mat-terminal : HasTerminal Mat.cat
+  Mat-terminal = Mat.terminal
+
+  𝒞-terminal : HasTerminal 𝒞
+  𝒞-terminal .HasTerminal.witness = 𝟘
+  𝒞-terminal .HasTerminal.is-terminal = 𝟘-terminal
+
+  𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 Mat-terminal 𝒞-terminal
+  𝓕-preserve-terminal .Category.IsIso.inverse = id 𝟘
+  𝓕-preserve-terminal .Category.IsIso.f∘inverse≈id =
+    ≈-trans id-right (to-terminal-ext (id 𝟘))
+  𝓕-preserve-terminal .Category.IsIso.inverse∘f≈id =
+    ≈-trans id-left (to-terminal-ext (id 𝟘))
+
+  -- 𝓕 preserves the zero morphism.
+  𝓕-εₘ : ∀ {m n} → 𝓕 .fmor (Mat.εₘ {m} {n}) ≈ εm {X^ n} {X^ m}
+  𝓕-εₘ {m} {n} = entry-ext {n} {m} (λ i j →
+    begin
+      entry {n} {m} (𝓕 .fmor (Mat.εₘ {m} {n})) i j
+    ≈⟨ entry-𝓕 {n} {m} (Mat.εₘ {m} {n}) i j ⟩
+      scalar S-ε
+    ≈⟨ scalar-ε ⟩
+      εm
+    ≈˘⟨ comp-bilinear-ε₂ (π {m} i) ⟩
+      π {m} i ∘ εm
+    ≈˘⟨ ∘-cong ≈-refl (comp-bilinear-ε₁ (ι {n} j)) ⟩
+      π {m} i ∘ (εm ∘ ι {n} j)
+    ∎) where open ≈-Reasoning isEquiv
+
+  -- 𝓕 preserves addition of matrices.
+  𝓕-+ₘ : ∀ {m n} (M N : Mat n m) → 𝓕 .fmor (M Mat.+ₘ N) ≈ (𝓕 .fmor M +m 𝓕 .fmor N)
+  𝓕-+ₘ {m} {n} M N = entry-ext {m} {n} (λ i j →
+    begin
+      entry {m} {n} (𝓕 .fmor (M Mat.+ₘ N)) i j
+    ≈⟨ entry-𝓕 {m} {n} (M Mat.+ₘ N) i j ⟩
+      scalar (M i j +ₛ N i j)
+    ≈⟨ scalar-+ ⟩
+      scalar (M i j) +m scalar (N i j)
+    ≈˘⟨ homCM _ _ .+-cong (entry-𝓕 {m} {n} M i j) (entry-𝓕 {m} {n} N i j) ⟩
+      (π {n} i ∘ (𝓕 .fmor M ∘ ι {m} j)) +m (π {n} i ∘ (𝓕 .fmor N ∘ ι {m} j))
+    ≈˘⟨ comp-bilinear₂ _ _ _ ⟩
+      π {n} i ∘ ((𝓕 .fmor M ∘ ι {m} j) +m (𝓕 .fmor N ∘ ι {m} j))
+    ≈˘⟨ ∘-cong ≈-refl (comp-bilinear₁ _ _ _) ⟩
+      π {n} i ∘ ((𝓕 .fmor M +m 𝓕 .fmor N) ∘ ι {m} j)
+    ∎) where open ≈-Reasoning isEquiv
+
+  Mat-products : HasProducts Mat.cat
+  Mat-products = biproducts→products Mat.cmon Mat.biproduct
+
+  𝒞-products : HasProducts 𝒞
+  𝒞-products = biproducts→products CM BP
+
+  𝓕-preserve-products : preserve-chosen-products 𝓕 Mat-products 𝒞-products
+  𝓕-preserve-products {m} {n} = iso
+    where
+      module BP' = Biproduct (BP (X^ m) (X^ n))
+
+      𝓕p₁ = 𝓕 .fmor (Mat.p₁ {m} {n})
+      𝓕p₂ = 𝓕 .fmor (Mat.p₂ {m} {n})
+      𝓕in₁ = 𝓕 .fmor (Mat.in₁ {m} {n})
+      𝓕in₂ = 𝓕 .fmor (Mat.in₂ {m} {n})
+
+      forward = BP'.pair 𝓕p₁ 𝓕p₂
+      backward = BP'.copair 𝓕in₁ 𝓕in₂
+
+      -- 𝓕 preserves the biproduct equations from Mat.
+      𝓕-id-1 : (𝓕p₁ ∘ 𝓕in₁) ≈ id (X^ m)
+      𝓕-id-1 = ≈-trans (≈-sym (𝓕 .fmor-comp (Mat.p₁ {m} {n}) (Mat.in₁ {m} {n})))
+                        (≈-trans (𝓕 .fmor-cong (Mat.id-1 m n)) (𝓕 .fmor-id {m}))
+
+      𝓕-id-2 : (𝓕p₂ ∘ 𝓕in₂) ≈ id (X^ n)
+      𝓕-id-2 = ≈-trans (≈-sym (𝓕 .fmor-comp (Mat.p₂ {m} {n}) (Mat.in₂ {m} {n})))
+                        (≈-trans (𝓕 .fmor-cong (Mat.id-2 m n)) (𝓕 .fmor-id {n}))
+
+      𝓕-zero-1 : (𝓕p₁ ∘ 𝓕in₂) ≈ εm {X^ n} {X^ m}
+      𝓕-zero-1 = ≈-trans (≈-sym (𝓕 .fmor-comp (Mat.p₁ {m} {n}) (Mat.in₂ {m} {n})))
+                          (≈-trans (𝓕 .fmor-cong (Mat.zero-1 m n)) (𝓕-εₘ {m} {n}))
+
+      𝓕-zero-2 : (𝓕p₂ ∘ 𝓕in₁) ≈ εm {X^ m} {X^ n}
+      𝓕-zero-2 = ≈-trans (≈-sym (𝓕 .fmor-comp (Mat.p₂ {m} {n}) (Mat.in₁ {m} {n})))
+                          (≈-trans (𝓕 .fmor-cong (Mat.zero-2 m n)) (𝓕-εₘ {n} {m}))
+
+      in₁-p₁ : Mat (m Data.Nat.+ n) (m Data.Nat.+ n)
+      in₁-p₁ = Mat.in₁ {m} {n} Mat.∘ Mat.p₁ {m} {n}
+
+      in₂-p₂ : Mat (m Data.Nat.+ n) (m Data.Nat.+ n)
+      in₂-p₂ = Mat.in₂ {m} {n} Mat.∘ Mat.p₂ {m} {n}
+
+      𝓕-id-+ : ((𝓕in₁ ∘ 𝓕p₁) +m (𝓕in₂ ∘ 𝓕p₂)) ≈ id (X^ (m Data.Nat.+ n))
+      𝓕-id-+ =
+        begin
+          (𝓕in₁ ∘ 𝓕p₁) +m (𝓕in₂ ∘ 𝓕p₂)
+        ≈˘⟨ homCM _ _ .+-cong (𝓕 .fmor-comp (Mat.in₁ {m} {n}) (Mat.p₁ {m} {n}))
+                              (𝓕 .fmor-comp (Mat.in₂ {m} {n}) (Mat.p₂ {m} {n})) ⟩
+          𝓕 .fmor in₁-p₁ +m 𝓕 .fmor in₂-p₂
+        ≈˘⟨ 𝓕-+ₘ in₁-p₁ in₂-p₂ ⟩
+          𝓕 .fmor (in₁-p₁ Mat.+ₘ in₂-p₂)
+        ≈⟨ 𝓕 .fmor-cong (Mat.id-+ m n) ⟩
+          𝓕 .fmor (Mat.I {m Data.Nat.+ n})
+        ≈⟨ 𝓕 .fmor-id {m Data.Nat.+ n} ⟩
+          id _
+        ∎ where open ≈-Reasoning isEquiv
+
+      𝓕p₁-backward : (𝓕p₁ ∘ backward) ≈ BP'.p₁
+      𝓕p₁-backward =
+        begin
+          𝓕p₁ ∘ ((𝓕in₁ ∘ BP'.p₁) +m (𝓕in₂ ∘ BP'.p₂))
+        ≈⟨ comp-bilinear₂ _ _ _ ⟩
+          (𝓕p₁ ∘ (𝓕in₁ ∘ BP'.p₁)) +m (𝓕p₁ ∘ (𝓕in₂ ∘ BP'.p₂))
+        ≈˘⟨ homCM _ _ .+-cong (assoc _ _ _) (assoc _ _ _) ⟩
+          ((𝓕p₁ ∘ 𝓕in₁) ∘ BP'.p₁) +m ((𝓕p₁ ∘ 𝓕in₂) ∘ BP'.p₂)
+        ≈⟨ homCM _ _ .+-cong (∘-cong 𝓕-id-1 ≈-refl) (∘-cong 𝓕-zero-1 ≈-refl) ⟩
+          (id _ ∘ BP'.p₁) +m (εm ∘ BP'.p₂)
+        ≈⟨ homCM _ _ .+-cong id-left (comp-bilinear-ε₁ _) ⟩
+          BP'.p₁ +m εm
+        ≈⟨ +m-runit ⟩
+          BP'.p₁
+        ∎ where open ≈-Reasoning isEquiv
+
+      𝓕p₂-backward : (𝓕p₂ ∘ backward) ≈ BP'.p₂
+      𝓕p₂-backward =
+        begin
+          𝓕p₂ ∘ ((𝓕in₁ ∘ BP'.p₁) +m (𝓕in₂ ∘ BP'.p₂))
+        ≈⟨ comp-bilinear₂ _ _ _ ⟩
+          (𝓕p₂ ∘ (𝓕in₁ ∘ BP'.p₁)) +m (𝓕p₂ ∘ (𝓕in₂ ∘ BP'.p₂))
+        ≈˘⟨ homCM _ _ .+-cong (assoc _ _ _) (assoc _ _ _) ⟩
+          ((𝓕p₂ ∘ 𝓕in₁) ∘ BP'.p₁) +m ((𝓕p₂ ∘ 𝓕in₂) ∘ BP'.p₂)
+        ≈⟨ homCM _ _ .+-cong (∘-cong 𝓕-zero-2 ≈-refl) (∘-cong 𝓕-id-2 ≈-refl) ⟩
+          (εm ∘ BP'.p₁) +m (id _ ∘ BP'.p₂)
+        ≈⟨ homCM _ _ .+-cong (comp-bilinear-ε₁ _) id-left ⟩
+          εm +m BP'.p₂
+        ≈⟨ homCM _ _ .+-lunit ⟩
+          BP'.p₂
+        ∎ where open ≈-Reasoning isEquiv
+
+      forward∘backward : (forward ∘ backward) ≈ id BP'.prod
+      forward∘backward =
+        begin
+          forward ∘ backward
+        ≈⟨ BP'.pair-natural _ _ _ ⟩
+          BP'.pair (𝓕p₁ ∘ backward) (𝓕p₂ ∘ backward)
+        ≈⟨ BP'.pair-cong 𝓕p₁-backward 𝓕p₂-backward ⟩
+          BP'.pair BP'.p₁ BP'.p₂
+        ≈⟨ BP'.pair-ext0 ⟩
+          id BP'.prod
+        ∎ where open ≈-Reasoning isEquiv
+
+      -- Rearrange (a ∘ p) ∘ (i ∘ b) to a ∘ ((p ∘ i) ∘ b).
+      collapse : ∀ {A B C D E} (a : D ⇒ E) (p : C ⇒ D) (i : B ⇒ C) (b : A ⇒ B) →
+                 ((a ∘ p) ∘ (i ∘ b)) ≈ (a ∘ ((p ∘ i) ∘ b))
+      collapse a p i b =
+        ≈-trans (assoc _ _ _) (∘-cong ≈-refl (≈-sym (assoc _ _ _)))
+
+      cross-id : ∀ {A B C} (a : B ⇒ C) (b : A ⇒ B) → (a ∘ (id B ∘ b)) ≈ (a ∘ b)
+      cross-id a b = ∘-cong ≈-refl id-left
+
+      cross-εm : ∀ {A B C D} (a : C ⇒ D) (b : A ⇒ B) → (a ∘ (εm {B} {C} ∘ b)) ≈ εm
+      cross-εm a b =
+        ≈-trans (∘-cong ≈-refl (comp-bilinear-ε₁ _)) (comp-bilinear-ε₂ _)
+
+      -- backward ∘ forward ≈ id via 4-term expansion; cross-terms vanish.
+      backward∘forward : (backward ∘ forward) ≈ id (X^ (m Data.Nat.+ n))
+      backward∘forward =
+        begin
+          ((𝓕in₁ ∘ BP'.p₁) +m (𝓕in₂ ∘ BP'.p₂)) ∘ ((BP'.in₁ ∘ 𝓕p₁) +m (BP'.in₂ ∘ 𝓕p₂))
+        ≈⟨ comp-bilinear₁ _ _ _ ⟩
+          ((𝓕in₁ ∘ BP'.p₁) ∘ ((BP'.in₁ ∘ 𝓕p₁) +m (BP'.in₂ ∘ 𝓕p₂))) +m
+          ((𝓕in₂ ∘ BP'.p₂) ∘ ((BP'.in₁ ∘ 𝓕p₁) +m (BP'.in₂ ∘ 𝓕p₂)))
+        ≈⟨ homCM _ _ .+-cong (comp-bilinear₂ _ _ _) (comp-bilinear₂ _ _ _) ⟩
+          (((𝓕in₁ ∘ BP'.p₁) ∘ (BP'.in₁ ∘ 𝓕p₁)) +m ((𝓕in₁ ∘ BP'.p₁) ∘ (BP'.in₂ ∘ 𝓕p₂))) +m
+          (((𝓕in₂ ∘ BP'.p₂) ∘ (BP'.in₁ ∘ 𝓕p₁)) +m ((𝓕in₂ ∘ BP'.p₂) ∘ (BP'.in₂ ∘ 𝓕p₂)))
+        ≈⟨ homCM _ _ .+-cong
+             (homCM _ _ .+-cong (collapse 𝓕in₁ BP'.p₁ BP'.in₁ 𝓕p₁) (collapse 𝓕in₁ BP'.p₁ BP'.in₂ 𝓕p₂))
+             (homCM _ _ .+-cong (collapse 𝓕in₂ BP'.p₂ BP'.in₁ 𝓕p₁) (collapse 𝓕in₂ BP'.p₂ BP'.in₂ 𝓕p₂)) ⟩
+          ((𝓕in₁ ∘ ((BP'.p₁ ∘ BP'.in₁) ∘ 𝓕p₁)) +m (𝓕in₁ ∘ ((BP'.p₁ ∘ BP'.in₂) ∘ 𝓕p₂))) +m
+          ((𝓕in₂ ∘ ((BP'.p₂ ∘ BP'.in₁) ∘ 𝓕p₁)) +m (𝓕in₂ ∘ ((BP'.p₂ ∘ BP'.in₂) ∘ 𝓕p₂)))
+        ≈⟨ homCM _ _ .+-cong
+             (homCM _ _ .+-cong
+                (∘-cong ≈-refl (∘-cong BP'.id-1 ≈-refl))
+                (∘-cong ≈-refl (∘-cong BP'.zero-1 ≈-refl)))
+             (homCM _ _ .+-cong
+                (∘-cong ≈-refl (∘-cong BP'.zero-2 ≈-refl))
+                (∘-cong ≈-refl (∘-cong BP'.id-2 ≈-refl))) ⟩
+          ((𝓕in₁ ∘ (id _ ∘ 𝓕p₁)) +m (𝓕in₁ ∘ (εm ∘ 𝓕p₂))) +m
+          ((𝓕in₂ ∘ (εm ∘ 𝓕p₁)) +m (𝓕in₂ ∘ (id _ ∘ 𝓕p₂)))
+        ≈⟨ homCM _ _ .+-cong
+             (homCM _ _ .+-cong (cross-id 𝓕in₁ 𝓕p₁) (cross-εm 𝓕in₁ 𝓕p₂))
+             (homCM _ _ .+-cong (cross-εm 𝓕in₂ 𝓕p₁) (cross-id 𝓕in₂ 𝓕p₂)) ⟩
+          ((𝓕in₁ ∘ 𝓕p₁) +m εm) +m (εm +m (𝓕in₂ ∘ 𝓕p₂))
+        ≈⟨ homCM _ _ .+-cong +m-runit (homCM _ _ .+-lunit) ⟩
+          (𝓕in₁ ∘ 𝓕p₁) +m (𝓕in₂ ∘ 𝓕p₂)
+        ≈⟨ 𝓕-id-+ ⟩
+          id _
+        ∎ where open ≈-Reasoning isEquiv
+
+      iso : Category.IsIso 𝒞 forward
+      iso = record
+        { inverse = backward
+        ; f∘inverse≈id = forward∘backward
+        ; inverse∘f≈id = backward∘forward
+        }

@@ -350,7 +350,6 @@ module Matrix where
 
   SemiLat-BP = CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products
   SemiLat-products = biproducts→products SemiLat.cmon-enriched SemiLat-BP
-  Mat-products = biproducts→products cmon biproduct
 
   -- Scalar embedding: Two → (TWO ⇒ TWO) in SemiLat.
   scalar : Two → SemiLat.TWO ⇒ₛ SemiLat.TWO
@@ -411,4 +410,10 @@ module Matrix where
     scalar scalar-cong scalar-ε scalar-ι
     (λ {a} {b} → scalar-+ {a} {b}) (λ {a} {b} → scalar-· {a} {b})
     renaming (ι to inj)
+    public
+
+  open Interpretation
+    cat Mat-terminal Mat-products
+    SemiLat.cat SemiLat.cmon-enriched SemiLat.limits SemiLat.terminal SemiLat-BP
+    𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
     public
