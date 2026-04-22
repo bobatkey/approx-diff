@@ -49,7 +49,11 @@ record Obj : Set (suc 0ℓ) where
   field
     #-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y
     ∧-∨-distrib : ∀ x y z → x ∧ (y ∨ z) ≤ (x ∧ y) ∨ (x ∧ z)
-    ∨-∧-distrib : ∀ x y z → x ∨ (y ∧ z) ≤ (x ∨ y) ∧ (x ∨ z)
+
+  -- holds in any bounded lattice
+  ∨-∧-distrib : ∀ x y z → x ∨ (y ∧ z) ≤ (x ∨ y) ∧ (x ∨ z)
+  ∨-∧-distrib x y z =
+    [ ⟨ inl ∧ inl ⟩ ∨ ⟨ ≤-trans π₁ inr ∧ ≤-trans π₂ inr ⟩ ]
 
   #-distrib : ∀ {x y z} → x # y → x # z → x # (y ∨ z)
   #-distrib x#y x#z = ≤-trans (∧-∨-distrib _ _ _) (≤-trans (∨-mono x#y x#z) (∨-idem .proj₁))
@@ -234,7 +238,6 @@ module _ where
   𝟙 .joins = join-semilattice.𝟙
   𝟙 .#-reflect _ = tt
   𝟙 .∧-∨-distrib _ _ _ = tt
-  𝟙 .∨-∧-distrib _ _ _ = tt
 
   to-𝟙 : ∀ X → X ⇒c 𝟙
   to-𝟙 X .right = meet-semilattice.terminal {X = X .meets} ._=>M_.func
@@ -269,8 +272,6 @@ module _ where
     #-reflect Y (λ b y'#b → proj₂ (h (X .⊥ , b) (π₂ X , y'#b)))
   (X ⊕ Y) .∧-∨-distrib (x₁ , y₁) (x₂ , y₂) (x₃ , y₃) =
     ∧-∨-distrib X x₁ x₂ x₃ , ∧-∨-distrib Y y₁ y₂ y₃
-  (X ⊕ Y) .∨-∧-distrib (x₁ , y₁) (x₂ , y₂) (x₃ , y₃) =
-    ∨-∧-distrib X x₁ x₂ x₃ , ∨-∧-distrib Y y₁ y₂ y₃
 
   ⊕-# : ∀ {X Y} {x₁ x₂ y₁ y₂} → _#_ (X ⊕ Y) (x₁ , y₁) (x₂ , y₂) ⇔ _#_ X x₁ x₂ ∧ₚ _#_ Y y₁ y₂
   ⊕-# .proj₁ p = p
@@ -334,7 +335,3 @@ module _ where
   TWO .∧-∨-distrib I O O = tt
   TWO .∧-∨-distrib I O I = tt
   TWO .∧-∨-distrib I I _ = tt
-  TWO .∨-∧-distrib O O _ = tt
-  TWO .∨-∧-distrib O I O = tt
-  TWO .∨-∧-distrib O I I = tt
-  TWO .∨-∧-distrib I _ _ = tt

@@ -501,25 +501,15 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     semilattice .MeetSemilattice.∧-isMeet = ∧-isMeet
     semilattice .MeetSemilattice.⊤-isTop = ⊤-isTop
 
+  -- DistributiveLattice commits to Join's concrete ≤ (so ≈→≤ is derivable
+  -- inside). Takes Join's idempotence and Meet's ∧-isMeet/⊤-isTop at that ≤.
   module DistributiveLattice
-    {_≤_ : Carrier → Carrier → Prop}
-    (≤-isPreorder : IsPreorder _≤_)
-    (∨-isJoin     : IsJoin ≤-isPreorder _∨_)
-    (⊥-isBottom   : IsBottom ≤-isPreorder ⊥)
-    (∧-isMeet     : IsMeet ≤-isPreorder _∧_)
-    (⊤-isTop      : IsTop ≤-isPreorder ⊤)
+    (∨-idem   : ∀ {x} → (x ∨ x) ≈ x)
+    (∧-isMeet : IsMeet (Join.≤-isPreorder ∨-idem) _∧_)
+    (⊤-isTop  : IsTop  (Join.≤-isPreorder ∨-idem) ⊤)
     where
 
-    preorder : Preorder
-    preorder .Preorder.Carrier = Carrier
-    preorder .Preorder._≤_ = _≤_
-    preorder .Preorder.≤-isPreorder = ≤-isPreorder
-
-    joins : JoinSemilattice preorder
-    joins .JoinSemilattice._∨_ = _∨_
-    joins .JoinSemilattice.⊥ = ⊥
-    joins .JoinSemilattice.∨-isJoin = ∨-isJoin
-    joins .JoinSemilattice.⊥-isBottom = ⊥-isBottom
+    open Join ∨-idem public
 
     meets : MeetSemilattice preorder
     meets .MeetSemilattice._∧_ = _∧_
@@ -536,33 +526,17 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     _#^_ : ∀ {n} → Vec n → Vec n → Prop _
     u #^ v = (u ⋅ v) ≈ ⊥
 
-    module Heyting
-      (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y)
-      -- ≈→≤: carrier-level ≈ refines ≤. Derivable at Join's ≤ (since ≤ is then
-      -- `∨ = y`), but not at an abstract ≤; we take it as a parameter.
-      (≈→≤ : ∀ {x y} → x ≈ y → x ≤ y)
-      where
+    module Heyting (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y) where
 
       import conjugate
 
-      -- One direction of ∧-over-∨ distributivity, derived from the semiring.
-      ∧-∨-distribˢ : ∀ x y z → (x ∧ (y ∨ z)) ≤ ((x ∧ y) ∨ (x ∧ z))
-      ∧-∨-distribˢ x y z = ≈→≤ ∧-∨-distribₗ
-
       -- Vec n as a conjugate.Obj.
       ⟦_⟧ : ℕ → conjugate.Obj
-      ⟦ n ⟧ .conjugate.Obj.carrier  = vec-preorder preorder n
+      ⟦ n ⟧ .conjugate.Obj.carrier = vec-preorder preorder n
       ⟦ n ⟧ .conjugate.Obj.meets = vec-meet preorder meets n
-      ⟦ n ⟧ .conjugate.Obj.joins = vec-join preorder joins n
+      ⟦ n ⟧ .conjugate.Obj.joins = vec-join preorder semilattice n
       ⟦ n ⟧ .conjugate.Obj.#-reflect = {!!}
-      ⟦ n ⟧ .conjugate.Obj.∧-∨-distrib x y z i = ∧-∨-distribˢ (x i) (y i) (z i)
-      -- Pointwise ∨-over-∧ (one direction) holds in any lattice.
-      ⟦ n ⟧ .conjugate.Obj.∨-∧-distrib x y z i =
-        IsJoin.[_,_] ∨-isJoin
-          (IsMeet.⟨_,_⟩ ∧-isMeet (IsJoin.inl ∨-isJoin) (IsJoin.inl ∨-isJoin))
-          (IsMeet.⟨_,_⟩ ∧-isMeet
-            (IsPreorder.trans ≤-isPreorder (IsMeet.π₁ ∧-isMeet) (IsJoin.inr ∨-isJoin))
-            (IsPreorder.trans ≤-isPreorder (IsMeet.π₂ ∧-isMeet) (IsJoin.inr ∨-isJoin)))
+      ⟦ n ⟧ .conjugate.Obj.∧-∨-distrib x y z i = trans (∨-cong ∧-∨-distribₗ refl) ∨-idem
 
       to-conj : ∀ {m n} → Matrix n m → ⟦ m ⟧ conjugate.⇒c ⟦ n ⟧
       to-conj M = {!!}
