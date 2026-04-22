@@ -381,37 +381,31 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
   Σ-p₂ {suc x} w i =
     trans (+-cong ε-annihilₗ refl) (trans +-lunit (Σ-p₂ {x} (λ j → w (suc j)) i))
 
-------------------------------------------------------------------------------
--- Tiered lattice structure on a level-0 semiring. Callers open this anonymous
--- module with their level-0 S; tier sub-modules (Join / Meet / Lattice /
--- Heyting) parameterise on the appropriate lattice axioms. Within this scope,
--- · is renamed to ∧, + to ∨, ε to ⊥, ι to ⊤ for readability.
+-- Additional (ordered) structures that might be present on S.
 module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
-
+  open import basics using (IsPreorder; IsJoin; IsBottom; IsMeet; IsTop)
   open Mat S public
-    renaming ( _·_ to _∧_
-             ; _+_ to _∨_
-             ; ε to ⊥
-             ; ι to ⊤
-             ; ·-cong to ∧-cong
-             ; ·-assoc to ∧-assoc
-             ; ·-comm to ∧-comm
-             ; ·-lunit to ∧-lunit
-             ; +-cong to ∨-cong
-             ; +-assoc to ∨-assoc
-             ; +-comm to ∨-comm
-             ; +-lunit to ∨-lunit
-             ; ·-+-distribₗ to ∧-∨-distribₗ
-             ; ·-+-distribᵣ to ∧-∨-distribᵣ
-             ; ε-annihilₗ to ⊥-annihilₗ
-             ; ε-annihilᵣ to ⊥-annihilᵣ
-             )
+    renaming (
+      _·_ to _∧_;
+      _+_ to _∨_;
+      ε to ⊥;
+      ι to ⊤;
+      ·-cong to ∧-cong;
+      ·-assoc to ∧-assoc;
+      ·-comm to ∧-comm;
+      ·-lunit to ∧-lunit;
+      +-cong to ∨-cong;
+      +-assoc to ∨-assoc;
+      +-comm to ∨-comm;
+      +-lunit to ∨-lunit;
+      ·-+-distribₗ to ∧-∨-distribₗ;
+      ·-+-distribᵣ to ∧-∨-distribᵣ;
+      ε-annihilₗ to ⊥-annihilₗ;
+      ε-annihilᵣ to ⊥-annihilᵣ
+    )
 
-  ----------------------------------------------------------------------------
   -- If ∨ is idempotent then (S, ∨) is a join-semilattice with ⊥.
   module Join (∨-idem : ∀ {x} → (x ∨ x) ≈ x) where
-
-    open import basics using (IsPreorder; IsJoin; IsBottom) public
 
     infix 4 _≤_
     _≤_ : Carrier → Carrier → Prop _
@@ -435,8 +429,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
   -- Dual: if ∧ is idempotent then (S, ∧) is a meet-semilattice with ⊤.
   module Meet (∧-idem : ∀ {x} → (x ∧ x) ≈ x) where
 
-    open import basics using (IsPreorder; IsMeet; IsTop) public
-
     infix 4 _≤_
     _≤_ : Carrier → Carrier → Prop _
     x ≤ y = (x ∧ y) ≈ x
@@ -455,11 +447,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     ⊤-isTop : IsTop ≤-isPreorder ⊤
     ⊤-isTop .IsTop.≤-top = trans ∧-comm ∧-lunit
 
-  open import basics using (IsPreorder; IsJoin; IsBottom; IsMeet; IsTop)
-
-  ----------------------------------------------------------------------------
-  -- Assembly module: take pre-built IsJoin / IsMeet / IsBottom / IsTop at a
-  -- shared ≤ (typically from Join after reconciling with Meet via absorption).
   module DistributiveLattice
     {_≤_ : Carrier → Carrier → Prop}
     (≤-isPreorder : IsPreorder _≤_)
