@@ -65,8 +65,8 @@ module matrix-embedding
 
   import matrix
   private
-    module Mat = matrix S
-    open matrix S using (Matrix) public
+    module Mat = matrix.Mat S
+    open matrix.Mat S using (Matrix) public
 
   open Functor
 
