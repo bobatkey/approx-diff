@@ -9,9 +9,9 @@ open import commutative-monoid using (CommutativeMonoid)
 open import commutative-semiring using (CommutativeSemiring)
 open import functor using (Functor)
 
--- CMon-enriched equivalence Mat(S) ≃ matrix-rep.cat (𝒞, X), given an iso between the semiring S and
--- End(X). The representation of S inside End(X) is faithful on both sides: scalar is a homomorphism
--- with an inverse scalar-inv that is also a homomorphism (automatically, given scalar is bijective).
+-- CMon-enriched equivalence Mat(S) ≃ MatRep(𝒞, X), given an iso between the semiring S and End(X).
+-- The representation of S inside End(X) is faithful on both sides: scalar is a homomorphism with an
+-- inverse scalar-inv that is also a homomorphism (automatically, given scalar is bijective).
 module matrix-embedding
   {o m e o' ℓ} {𝒞 : Category o m e}
   (CM : CMonEnriched 𝒞)
@@ -57,7 +57,8 @@ module matrix-embedding
     ∎ where open ≈-Reasoning isEquiv
 
   import matrix-rep
-  open matrix-rep CM BP 𝟘 𝟘-initial 𝟘-terminal X scalar-comm hiding (cat) public
+  module MatRep = matrix-rep CM BP 𝟘 𝟘-initial 𝟘-terminal X scalar-comm
+  open MatRep hiding (cat) public
 
   open IsInitial 𝟘-initial
   open IsTerminal 𝟘-terminal
@@ -153,8 +154,8 @@ module matrix-embedding
       (π i ∘ p₂ (BP X (X^ n))) ∘ (in₂ (BP X (X^ n)) ∘ ι j)
     ∎ where open ≈-Reasoning isEquiv
 
-  -- F : Mat(S) → matrix-rep.cat, the "assemble matrix from entries" direction.
-  F : Functor Mat.cat cat
+  -- F : Mat(S) → MatRep(𝒞, X), the "assemble matrix from entries" direction.
+  F : Functor Mat.cat MatRep.cat
   F .fobj n = n
   F .fmor {m} {n} M = tuple {n} (λ i → cotuple {m} (λ j → scalar (M i j)))
   F .fmor-cong p = tuple-cong _ _ (λ i → cotuple-cong _ _ (λ j → scalar-cong (p i j)))
@@ -211,8 +212,8 @@ module matrix-embedding
       scalar (M i j)
     ∎ where open ≈-Reasoning isEquiv
 
-  -- F⁻¹ : matrix-rep.cat → Mat(S), the "extract matrix of entries" direction.
-  F⁻¹ : Functor cat Mat.cat
+  -- F⁻¹ : MatRep(𝒞, X) → Mat(S), the "extract matrix of entries" direction.
+  F⁻¹ : Functor MatRep.cat Mat.cat
   F⁻¹ .fobj n = n
   F⁻¹ .fmor {m} {n} f i j = scalar-inv (entry {m} {n} f i j)
   F⁻¹ .fmor-cong p i j = scalar-inv-cong (∘-cong ≈-refl (∘-cong p ≈-refl))
