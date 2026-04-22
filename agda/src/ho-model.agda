@@ -427,3 +427,95 @@ module Matrix where
     SemiLat.cat SemiLat.cmon-enriched SemiLat.limits SemiLat.terminal SemiLat-BP
     𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
     public
+
+  ------------------------------------------------------------------------------
+  -- Sanity check: witness the equivalence Mat(Two) ≃ MatRep(SemiLat, TWO) by
+  -- instantiating matrix-embedding with the iso between Two and End(TWO).
+  -- (Not used downstream; exists to verify the bridge's module signature is
+  -- constructible for this instance.)
+
+  open CMon.CMonEnriched SemiLat.cmon-enriched using (_+m_; εm; +m-runit)
+
+  -- scalar : Two → End(TWO) in SemiLat.
+  scalar : Two → TWO ⇒ TWO
+  scalar O = εm
+  scalar I = Category.id SemiLat.cat TWO
+
+  scalar-cong : ∀ {a b} → a two.≃ b → scalar a ≈ scalar b
+  scalar-cong {O} {O} _ = Category.≈-refl SemiLat.cat
+  scalar-cong {O} {I} (_ , ())
+  scalar-cong {I} {O} (() , _)
+  scalar-cong {I} {I} _ = Category.≈-refl SemiLat.cat
+
+  scalar-ε : scalar O ≈ εm
+  scalar-ε = Category.≈-refl SemiLat.cat
+
+  scalar-ι : scalar I ≈ Category.id SemiLat.cat TWO
+  scalar-ι = Category.≈-refl SemiLat.cat
+
+  open import commutative-monoid using (CommutativeMonoid)
+  private
+    module homCM {x y} = CommutativeMonoid (CMon.CMonEnriched.homCM SemiLat.cmon-enriched x y)
+
+  -- scalar preserves addition (⊔). The I+I case needs idempotence of SemiLat's +m on id.
+  scalar-+ : ∀ {a b} → scalar (a two.⊔ b) ≈ scalar a +m scalar b
+  scalar-+ {O} {O} = Category.≈-sym SemiLat.cat homCM.+-lunit
+  scalar-+ {O} {I} = Category.≈-sym SemiLat.cat homCM.+-lunit
+  scalar-+ {I} {O} = Category.≈-sym SemiLat.cat +m-runit
+  scalar-+ {I} {I} = I-idem
+    where
+      I-idem : Category.id SemiLat.cat TWO ≈ Category.id SemiLat.cat TWO +m Category.id SemiLat.cat TWO
+      I-idem .f≃f .eqfunc .eqfun O = two.≤-refl {O} , two.≤-refl {O}
+      I-idem .f≃f .eqfunc .eqfun I = two.≤-refl {I} , two.≤-refl {I}
+
+  -- scalar preserves multiplication (⊓). Composition of scalars via SemiLat's ∘.
+  scalar-· : ∀ {a b} → scalar (a two.⊓ b) ≈ scalar a ∘ scalar b
+  scalar-· {O} {O} = Category.≈-sym SemiLat.cat (CMon.CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched εm)
+  scalar-· {O} {I} = Category.≈-sym SemiLat.cat (CMon.CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched (Category.id SemiLat.cat TWO))
+  scalar-· {I} {O} = Category.≈-sym SemiLat.cat (Category.id-left SemiLat.cat)
+  scalar-· {I} {I} = Category.≈-sym SemiLat.cat (Category.id-left SemiLat.cat)
+
+  -- scalar-inv : End(TWO) → Two, extracting f(I). Since TWO endomorphisms preserve ⊥, they
+  -- are determined by their value at I, which is either O (giving εm) or I (giving id TWO).
+  scalar-inv : TWO ⇒ TWO → Two
+  scalar-inv f = fun f I
+
+  scalar-inv-cong : ∀ {f g : TWO ⇒ TWO} → f ≈ g → scalar-inv f two.≃ scalar-inv g
+  scalar-inv-cong p = p .f≃f .eqfunc .eqfun I
+
+  scalar-inv-scalar : ∀ a → scalar-inv (scalar a) two.≃ a
+  scalar-inv-scalar O = two.≃-refl {O}
+  scalar-inv-scalar I = two.≃-refl {I}
+
+  -- Key lemma: an endomorphism f of TWO is determined by f(I). Proof is case analysis on fun f I.
+  scalar-scalar-inv : ∀ (f : TWO ⇒ TWO) → scalar (scalar-inv f) ≈ f
+  scalar-scalar-inv f = go (fun f I) two.≃-refl
+    where
+      -- ⊥-preserving gives us O ≃ fun f O via the pair (O ≤ fun f O = tt, fun f O ≤ O).
+      O≃fO : O two.≃ fun f O
+      O≃fO = prop.tt , ⊥-preserving-≃ f .proj₁
+        where
+          import prop
+          open import prop using (proj₁)
+      -- Given a two.≃ fun f I, show scalar a ≈ f pointwise.
+      go : (a : Two) → a two.≃ fun f I → scalar a ≈ f
+      go O eq .f≃f .eqfunc .eqfun O = O≃fO
+      go O eq .f≃f .eqfunc .eqfun I = eq
+      go I eq .f≃f .eqfunc .eqfun O = O≃fO
+      go I eq .f≃f .eqfunc .eqfun I = eq
+
+  -- Instantiate the bridge: witnesses Mat(Two) ≃ MatRep(SemiLat, TWO) as a CMon-enriched equivalence.
+  -- This isn't wired into downstream code — it's just a sanity check that the bridge's module
+  -- signature is constructible for this instance.
+  import matrix-embedding
+  module MatBridge = matrix-embedding
+    SemiLat.cmon-enriched
+    (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
+    (categories.HasTerminal.witness SemiLat.terminal)
+    (categories.HasInitial.is-initial SemiLat.initial)
+    (categories.HasTerminal.is-terminal SemiLat.terminal)
+    TWO
+    two.semiring
+    scalar scalar-cong scalar-ε scalar-ι
+    (λ {a} {b} → scalar-+ {a} {b}) (λ {a} {b} → scalar-· {a} {b})
+    scalar-inv scalar-inv-cong scalar-inv-scalar scalar-scalar-inv
