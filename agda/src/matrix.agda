@@ -467,8 +467,23 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
 
     module Heyting (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y) where
 
-      -- TODO:
-      --   ⟦_⟧ : ℕ → conjugate.Obj   -- Vec n as a conjugate.Obj
-      --   to-conj : ∀ {m n} → Matrix n m → ⟦ m ⟧ ⇒c ⟦ n ⟧
-      -- Now type-checks at level 0 thanks to the anonymous wrapper; to be
-      -- filled in next.
+      open import preorder using (Preorder)
+      open import Data.Nat using (ℕ)
+      import conjugate
+
+      -- Vec n as a conjugate.Obj, with pointwise ≤, meets, joins.
+      ⟦_⟧ : ℕ → conjugate.Obj
+      ⟦ n ⟧ .conjugate.Obj.carrier .Preorder.Carrier = Vec n
+      ⟦ n ⟧ .conjugate.Obj.carrier .Preorder._≤_ u v = ∀ i → u i ≤ v i
+      ⟦ n ⟧ .conjugate.Obj.carrier .Preorder.≤-isPreorder = {!!}
+      ⟦ n ⟧ .conjugate.Obj.meets       = {!!}
+      ⟦ n ⟧ .conjugate.Obj.joins       = {!!}
+      ⟦ n ⟧ .conjugate.Obj.#-reflect   = {!!}
+      ⟦ n ⟧ .conjugate.Obj.∧-∨-distrib = {!!}
+      ⟦ n ⟧ .conjugate.Obj.∨-∧-distrib = {!!}
+
+      -- Each matrix M : Matrix n m induces a conjugate morphism ⟦m⟧ ⇒c ⟦n⟧.
+      -- The right leg is M's action as matrix-vector product; the left leg is
+      -- Mᵀ's action.
+      to-conj : ∀ {m n} → Matrix n m → ⟦ m ⟧ conjugate.⇒c ⟦ n ⟧
+      to-conj M = {!!}
