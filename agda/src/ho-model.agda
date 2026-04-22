@@ -336,84 +336,94 @@ module Conjugate where
     public
 
 module Matrix where
-  open import two using (Two; O; I)
-  open import matrix two.semiring public
-
   import join-semilattice-category as SemiLat
-  open Category SemiLat.cat
-    using ()
-    renaming (_⇒_ to _⇒ₛ_; _∘_ to _∘ₛ_; id to idₛ; _≈_ to _≈ₛ_; ≈-refl to ≈ₛ-refl; ≈-sym to ≈ₛ-sym; ≈-trans to ≈ₛ-trans)
   import cmon-enriched as CMon
-  open CMon.CMonEnriched SemiLat.cmon-enriched using (_+m_; εm; +m-runit)
-  open import cmon-enriched using (biproducts→products)
-  open import finite-product-functor using (preserve-chosen-terminal; preserve-chosen-products)
+  open import two using (Two; O; I)
+  open import prop-setoid using (module ≈-Reasoning)
+  import join-semilattice
+  import preorder
+  open SemiLat._≃m_
+  open SemiLat._⇒_
+  open join-semilattice._≃m_ using (eqfunc)
+  open preorder._≃m_ using (eqfun)
 
-  SemiLat-BP = CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products
-  SemiLat-products = biproducts→products SemiLat.cmon-enriched SemiLat-BP
+  open Category SemiLat.cat
 
-  -- Scalar embedding: Two → (TWO ⇒ TWO) in SemiLat.
-  scalar : Two → SemiLat.TWO ⇒ₛ SemiLat.TWO
-  scalar two.O = εm
-  scalar two.I = idₛ SemiLat.TWO
+  TWO : SemiLat.Obj
+  TWO = SemiLat.TWO
 
-  scalar-cong : ∀ {a b} → a two.≃ b → scalar a ≈ₛ scalar b
-  scalar-cong {two.O} {two.O} _ = ≈ₛ-refl
-  scalar-cong {two.O} {two.I} (_ , ())
-  scalar-cong {two.I} {two.O} (() , _)
-  scalar-cong {two.I} {two.I} _ = ≈ₛ-refl
-
-  scalar-ε : scalar two.O ≈ₛ εm
-  scalar-ε = ≈ₛ-refl
-
-  scalar-ι : scalar two.I ≈ₛ idₛ SemiLat.TWO
-  scalar-ι = ≈ₛ-refl
-
-  open import commutative-monoid using (CommutativeMonoid)
-  private
-    module homCM {x y} = CommutativeMonoid (CMon.CMonEnriched.homCM SemiLat.cmon-enriched x y)
-
-  scalar-+ : ∀ {a b} → scalar (a + b) ≈ₛ scalar a +m scalar b
-  scalar-+ {two.O} {two.O} = ≈ₛ-sym homCM.+-lunit
-  scalar-+ {two.O} {two.I} = ≈ₛ-sym homCM.+-lunit
-  scalar-+ {two.I} {two.O} = ≈ₛ-sym +m-runit
-  scalar-+ {two.I} {two.I} = I-idem-+m
+  scalar-comm : ∀ (f g : TWO ⇒ TWO) → (f ∘ g) ≈ (g ∘ f)
+  scalar-comm f g .f≃f .eqfunc .eqfun O =
+    begin
+      fun f (fun g O)
+    ≈⟨ resp-≃ f (⊥-preserving-≃ g) ⟩
+      fun f O
+    ≈⟨ ⊥-preserving-≃ f ⟩
+      O
+    ≈˘⟨ ⊥-preserving-≃ g ⟩
+      fun g O
+    ≈˘⟨ resp-≃ g (⊥-preserving-≃ f) ⟩
+      fun g (fun f O)
+    ∎ where open ≈-Reasoning two.isEquivalence
+  scalar-comm f g .f≃f .eqfunc .eqfun I = go (fun f I) (fun g I) two.≃-refl two.≃-refl
     where
-      import join-semilattice as JSL
-      import preorder
-      I-idem-+m : idₛ SemiLat.TWO ≈ₛ idₛ SemiLat.TWO +m idₛ SemiLat.TWO
-      I-idem-+m .SemiLat._≃m_.f≃f .JSL._≃m_.eqfunc .preorder._≃m_.eqfun two.O = two.≤-refl {two.O} , two.≤-refl {two.O}
-      I-idem-+m .SemiLat._≃m_.f≃f .JSL._≃m_.eqfunc .preorder._≃m_.eqfun two.I = two.≤-refl {two.I} , two.≤-refl {two.I}
+      open ≈-Reasoning two.isEquivalence
 
-  open import categories using (IsInitial; IsTerminal; HasInitial)
+      step : ∀ (a b : Two) → a two.≃ fun f I → b two.≃ fun g I → fun f b two.≃ fun g a
+      step O O _     _     = begin fun f O ≈⟨ ⊥-preserving-≃ f ⟩ O ≈˘⟨ ⊥-preserving-≃ g ⟩ fun g O ∎
+      step O I eq-a  _     = begin fun f I ≈˘⟨ eq-a ⟩ O ≈˘⟨ ⊥-preserving-≃ g ⟩ fun g O ∎
+      step I O _     eq-b  = begin fun f O ≈⟨ ⊥-preserving-≃ f ⟩ O ≈⟨ eq-b ⟩ fun g I ∎
+      step I I eq-a  eq-b  = begin fun f I ≈˘⟨ eq-a ⟩ I ≈⟨ eq-b ⟩ fun g I ∎
 
-  SemiLat-𝟘 : SemiLat.Obj
-  SemiLat-𝟘 = HasTerminal.witness SemiLat.terminal
+      go : ∀ (a b : Two) → a two.≃ fun f I → b two.≃ fun g I → fun f (fun g I) two.≃ fun g (fun f I)
+      go a b eq-a eq-b =
+        begin
+          fun f (fun g I)
+        ≈⟨ resp-≃ f (two.≃-sym eq-b) ⟩
+          fun f b
+        ≈⟨ step a b eq-a eq-b ⟩
+          fun g a
+        ≈⟨ resp-≃ g eq-a ⟩
+          fun g (fun f I)
+        ∎
 
-  SemiLat-𝟘-terminal : IsTerminal SemiLat.cat SemiLat-𝟘
-  SemiLat-𝟘-terminal = HasTerminal.is-terminal SemiLat.terminal
-
-  SemiLat-𝟘-initial : IsInitial SemiLat.cat SemiLat-𝟘
-  SemiLat-𝟘-initial = HasInitial.is-initial SemiLat.initial
-
-  open import cmon-enriched using (CMonEnriched)
-
-  scalar-· : ∀ {a b} → scalar (a · b) ≈ₛ scalar a ∘ₛ scalar b
-  scalar-· {two.O} {two.O} = ≈ₛ-sym (CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched εm)
-  scalar-· {two.O} {two.I} = ≈ₛ-sym (CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched (idₛ SemiLat.TWO))
-  scalar-· {two.I} {two.O} = ≈ₛ-sym (Category.id-left SemiLat.cat)
-  scalar-· {two.I} {two.I} = ≈ₛ-sym (Category.id-left SemiLat.cat)
-
-  open import matrix-embedding
-    SemiLat.cmon-enriched SemiLat-BP
-    SemiLat-𝟘 SemiLat-𝟘-initial SemiLat-𝟘-terminal
-    SemiLat.TWO two.semiring
-    scalar scalar-cong scalar-ε scalar-ι
-    (λ {a} {b} → scalar-+ {a} {b}) (λ {a} {b} → scalar-· {a} {b})
-    renaming (ι to inj)
+  import matrices
+  open matrices SemiLat.cmon-enriched
+    (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
+    (categories.HasTerminal.witness SemiLat.terminal)
+    (categories.HasInitial.is-initial SemiLat.initial)
+    (categories.HasTerminal.is-terminal SemiLat.terminal)
+    TWO
+    scalar-comm
     public
 
+  𝓕 : Functor cat SemiLat.cat
+  𝓕 .fobj = X^
+  𝓕 .fmor f = f
+  𝓕 .fmor-cong f≈ = f≈
+  𝓕 .fmor-id = Category.≈-refl SemiLat.cat
+  𝓕 .fmor-comp _ _ = Category.≈-refl SemiLat.cat
+
+  open import finite-product-functor using (preserve-chosen-terminal; preserve-chosen-products)
+  private
+    module SemiLat' = Category SemiLat.cat
+  open SemiLat'.IsIso
+
+  SemiLat-BP = CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products
+  SemiLat-products = biproducts→products _ SemiLat-BP
+
+  𝓕-preserve-products : preserve-chosen-products 𝓕 products SemiLat-products
+  𝓕-preserve-products {m} {n} .inverse = X^-split m n .Iso.bwd
+  𝓕-preserve-products {m} {n} .f∘inverse≈id = X^-split m n .Iso.fwd∘bwd≈id
+  𝓕-preserve-products {m} {n} .inverse∘f≈id = X^-split m n .Iso.bwd∘fwd≈id
+
+  𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
+  𝓕-preserve-terminal .inverse = SemiLat'.id _
+  𝓕-preserve-terminal .f∘inverse≈id = HasTerminal.to-terminal-unique SemiLat.terminal _ _
+  𝓕-preserve-terminal .inverse∘f≈id = HasTerminal.to-terminal-unique SemiLat.terminal _ _
+
   open Interpretation
-    cat Mat-terminal Mat-products
+    cat terminal products
     SemiLat.cat SemiLat.cmon-enriched SemiLat.limits SemiLat.terminal SemiLat-BP
     𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
     public
