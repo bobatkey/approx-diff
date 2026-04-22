@@ -6,9 +6,7 @@ open import Level using (0ℓ)
 open import prop-setoid using (Setoid)
 open import commutative-semiring using (CommutativeSemiring)
 
-------------------------------------------------------------------------------
--- Polymorphic matrix theory over a commutative semiring S.
-
+-- Matrices over a commutative semiring S.
 module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
 
   open CommutativeSemiring S public
@@ -30,7 +28,7 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
   proj : ∀ {n} → Fin n → Vec n → Carrier
   proj i v = v i
 
-  -- i-th biproduct injection into S^n: z at index i, ε elsewhere.
+  -- i-th injection into S^n: z at index i, ε elsewhere.
   inj : ∀ {n} → Fin n → Carrier → Vec n
   inj i z j = e i j · z
 
@@ -481,6 +479,19 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     semilattice .JoinSemilattice.∨-isJoin = ∨-isJoin
     semilattice .JoinSemilattice.⊥-isBottom = ⊥-isBottom
 
+    -- Iterated-∨ laws (Σ is ∨ iterated). These mirror the binary IsJoin laws:
+    -- Σ-ub corresponds to inl/inr, Σ-lub to [_,_], Σ-mono to mono.
+    Σ-ub : ∀ {n} (f : Fin n → Carrier) (i : Fin n) → f i ≤ Σ f
+    Σ-ub f zero    = IsJoin.inl ∨-isJoin
+    Σ-ub f (suc i) = IsPreorder.trans ≤-isPreorder (Σ-ub (λ j → f (suc j)) i) (IsJoin.inr ∨-isJoin)
+
+    Σ-lub : ∀ {n} {z} (f : Fin n → Carrier) → (∀ j → f j ≤ z) → Σ f ≤ z
+    Σ-lub {zero}  _ _ = IsBottom.≤-bottom ⊥-isBottom
+    Σ-lub {suc n} f h = IsJoin.[_,_] ∨-isJoin (h zero) (Σ-lub (λ j → f (suc j)) (λ j → h (suc j)))
+
+    Σ-mono : ∀ {n} {f g : Fin n → Carrier} → (∀ j → f j ≤ g j) → Σ f ≤ Σ g
+    Σ-mono = +-to-Σ.Σ-preserves _≤_ (IsPreorder.refl ≤-isPreorder) (IsJoin.mono ∨-isJoin)
+
   -- Dual: if ∧ is idempotent then (S, ∧) is a meet-semilattice with ⊤.
   module Meet (∧-idem : ∀ {x} → (x ∧ x) ≈ x) where
 
@@ -513,8 +524,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     semilattice .MeetSemilattice.∧-isMeet = ∧-isMeet
     semilattice .MeetSemilattice.⊤-isTop = ⊤-isTop
 
-  -- DistributiveLattice commits to Join's concrete ≤ (so ≈→≤ is derivable
-  -- inside). Takes Join's idempotence and Meet's ∧-isMeet/⊤-isTop at that ≤.
+  -- Use the join's poset (which will agree with the meet's).
   module DistributiveLattice
     (∨-idem   : ∀ {x} → (x ∨ x) ≈ x)
     (∧-isMeet : IsMeet (Join.≤-isPreorder ∨-idem) _∧_)
@@ -538,20 +548,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     _#^_ : ∀ {n} → Vec n → Vec n → Prop _
     u #^ v = (u ⋅ v) ≤ ⊥
 
-    -- Σ is an upper bound on each summand.
-    Σ-ub : ∀ {n} (f : Fin n → Carrier) (i : Fin n) → f i ≤ Σ f
-    Σ-ub f zero = IsJoin.inl ∨-isJoin
-    Σ-ub f (suc i) = IsPreorder.trans ≤-isPreorder (Σ-ub (λ j → f (suc j)) i) (IsJoin.inr ∨-isJoin)
-
-    -- Pointwise ≤ ⊥ implies Σ ≤ ⊥.
-    Σ-≤-⊥ : ∀ {n} (f : Fin n → Carrier) → (∀ j → f j ≤ ⊥) → Σ f ≤ ⊥
-    Σ-≤-⊥ {zero} _ _ = IsPreorder.refl ≤-isPreorder
-    Σ-≤-⊥ {suc n} f h = IsJoin.[_,_] ∨-isJoin (h zero) (Σ-≤-⊥ (λ j → f (suc j)) (λ j → h (suc j)))
-
-    -- Σ is monotone in its argument (pointwise ≤ → Σ ≤).
-    Σ-mono : ∀ {n} {f g : Fin n → Carrier} → (∀ j → f j ≤ g j) → Σ f ≤ Σ g
-    Σ-mono = +-to-Σ.Σ-preserves _≤_ (IsPreorder.refl ≤-isPreorder) (IsJoin.mono ∨-isJoin)
-
     module HeytingAlgebra
       (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y)
       where
@@ -566,8 +562,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
 
       import conjugate
 
-      -- Vec n as a conjugate.Obj. Obj's pointwise disjointness is bridged to #^
-      -- by Σ-ub (each coordinate ≤ Σ) and Σ-≤-⊥ (Σ of bounded summands is bounded).
       ⟦_⟧ : ℕ → conjugate.Obj
       ⟦ n ⟧ .conjugate.Obj.carrier = vec-preorder preorder n
       ⟦ n ⟧ .conjugate.Obj.meets = vec-meet preorder meets n
@@ -575,7 +569,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       ⟦ n ⟧ .conjugate.Obj.#-reflect {u} {v} h = #^-reflect h^
         where
           h^ : ∀ w → v #^ w → u #^ w
-          h^ w v⋅w≤⊥ = Σ-≤-⊥ _ (h w (λ j → IsPreorder.trans ≤-isPreorder (Σ-ub _ j) v⋅w≤⊥))
+          h^ w v⋅w≤⊥ = Σ-lub _ (h w (λ j → IsPreorder.trans ≤-isPreorder (Σ-ub _ j) v⋅w≤⊥))
       ⟦ n ⟧ .conjugate.Obj.∧-∨-distrib x y z i = trans (∨-cong ∧-∨-distribₗ refl) ∨-idem
 
       -- Matrix M : Fin n → Fin m → Carrier gives:
