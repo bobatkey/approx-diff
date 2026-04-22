@@ -429,7 +429,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     ⊥-isBottom : IsBottom ≤-isPreorder ⊥
     ⊥-isBottom .IsBottom.≤-bottom = ∨-lunit
 
-    -- S's carrier as a Preorder and JoinSemilattice.
     preorder : Preorder
     preorder .Preorder.Carrier = Carrier
     preorder .Preorder._≤_ = _≤_
@@ -441,7 +440,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     semilattice .join-semilattice.JoinSemilattice.∨-isJoin = ∨-isJoin
     semilattice .join-semilattice.JoinSemilattice.⊥-isBottom = ⊥-isBottom
 
-    -- Pointwise lift to Vec n.
     vec-preorder : ℕ → Preorder
     vec-preorder n .Preorder.Carrier = Vec n
     vec-preorder n .Preorder._≤_ u v = ∀ i → u i ≤ v i
@@ -481,7 +479,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     ⊤-isTop : IsTop ≤-isPreorder ⊤
     ⊤-isTop .IsTop.≤-top = trans ∧-comm ∧-lunit
 
-    -- S's carrier as a Preorder and MeetSemilattice.
     preorder : Preorder
     preorder .Preorder.Carrier = Carrier
     preorder .Preorder._≤_ = _≤_
@@ -493,7 +490,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     semilattice .meet-semilattice.MeetSemilattice.∧-isMeet = ∧-isMeet
     semilattice .meet-semilattice.MeetSemilattice.⊤-isTop = ⊤-isTop
 
-    -- Pointwise lift to Vec n.
     vec-preorder : ℕ → Preorder
     vec-preorder n .Preorder.Carrier = Vec n
     vec-preorder n .Preorder._≤_ u v = ∀ i → u i ≤ v i
@@ -528,7 +524,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     _#^_ : ∀ {n} → Vec n → Vec n → Prop _
     u #^ v = (u ⋅ v) ≈ ⊥
 
-    -- Vec n with pointwise ≤ from the shared lattice ordering.
     vec-preorder : ℕ → Preorder
     vec-preorder n .Preorder.Carrier = Vec n
     vec-preorder n .Preorder._≤_ u v = ∀ i → u i ≤ v i
@@ -536,7 +531,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     vec-preorder n .Preorder.≤-isPreorder .IsPreorder.trans u≤v v≤w i =
       IsPreorder.trans ≤-isPreorder (u≤v i) (v≤w i)
 
-    -- Pointwise join-semilattice on Vec n, at the lattice ordering.
     vec-joins : (n : ℕ) → join-semilattice.JoinSemilattice (vec-preorder n)
     vec-joins n .join-semilattice.JoinSemilattice._∨_ u v i = u i ∨ v i
     vec-joins n .join-semilattice.JoinSemilattice.⊥ _ = ⊥
@@ -547,7 +541,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     vec-joins n .join-semilattice.JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom i =
       IsBottom.≤-bottom ⊥-isBottom
 
-    -- Pointwise meet-semilattice on Vec n, at the lattice ordering.
     vec-meets : (n : ℕ) → meet-semilattice.MeetSemilattice (vec-preorder n)
     vec-meets n .meet-semilattice.MeetSemilattice._∧_ u v i = u i ∧ v i
     vec-meets n .meet-semilattice.MeetSemilattice.⊤ _ = ⊤
