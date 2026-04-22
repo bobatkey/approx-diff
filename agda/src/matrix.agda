@@ -591,7 +591,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
           }
         ; conjugate = λ {x} {y} → record
           { proj₁ = →-direction {x} {y}
-          ; proj₂ = {!!}
+          ; proj₂ = ←-direction {x} {y}
           }
         }
         where
@@ -615,3 +615,12 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
             IsPreorder.trans ≤-isPreorder
               (Σ-ub _ j)
               (trans (∨-cong (sym swap) refl) (Σ-lub _ h))
+
+          -- Reverse direction — same structure, transport goes through swap (not sym).
+          ←-direction : ∀ {x : Vec m} {y : Vec n} →
+                        (∀ j → (((M ᵀ) j ⋅ y) ∧ x j) ≤ ⊥) →
+                        (∀ i → (y i ∧ (M i ⋅ x)) ≤ ⊥)
+          ←-direction {x} {y} k i =
+            IsPreorder.trans ≤-isPreorder
+              (Σ-ub _ i)
+              (trans (∨-cong swap refl) (Σ-lub _ k))
