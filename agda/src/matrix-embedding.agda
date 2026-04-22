@@ -263,6 +263,32 @@ module matrix-embedding
       entry {m} {n} f i j
     ∎) where open ≈-Reasoning isEquiv
 
-  -- TODO: CMon preservation — restore next.
-  -- F-εₘ : ∀ {m n} → F .fmor (Mat.εₘ {m} {n}) ≈ εm {X^ n} {X^ m}
-  -- F-+ₘ : ∀ {m n} (M N : Mat n m) → F .fmor (M Mat.+ₘ N) ≈ (F .fmor M +m F .fmor N)
+  F-εₘ : ∀ {m n} → F .fmor (Mat.εₘ {m} {n}) ≈ εm {X^ n} {X^ m}
+  F-εₘ {m} {n} = entry-ext {n} {m} (λ i j →
+    begin
+      entry {n} {m} (F .fmor {n} {m} (Mat.εₘ {m} {n})) i j
+    ≈⟨ entry-F {n} {m} (Mat.εₘ {m} {n}) i j ⟩
+      scalar S-ε
+    ≈⟨ scalar-ε ⟩
+      εm
+    ≈˘⟨ comp-bilinear-ε₂ (π {m} i) ⟩
+      π {m} i ∘ εm
+    ≈˘⟨ ∘-cong ≈-refl (comp-bilinear-ε₁ (ι {n} j)) ⟩
+      π {m} i ∘ (εm ∘ ι {n} j)
+    ∎) where open ≈-Reasoning isEquiv
+
+  F-+ₘ : ∀ {m n} (M N : Mat n m) → F .fmor {m} {n} (M Mat.+ₘ N) ≈ (F .fmor {m} {n} M +m F .fmor {m} {n} N)
+  F-+ₘ {m} {n} M N = entry-ext {m} {n} (λ i j →
+    begin
+      entry {m} {n} (F .fmor {m} {n} (M Mat.+ₘ N)) i j
+    ≈⟨ entry-F {m} {n} (M Mat.+ₘ N) i j ⟩
+      scalar (M i j +ₛ N i j)
+    ≈⟨ scalar-+ ⟩
+      scalar (M i j) +m scalar (N i j)
+    ≈˘⟨ homCM _ _ .+-cong (entry-F {m} {n} M i j) (entry-F {m} {n} N i j) ⟩
+      (π {n} i ∘ (F .fmor {m} {n} M ∘ ι {m} j)) +m (π {n} i ∘ (F .fmor {m} {n} N ∘ ι {m} j))
+    ≈˘⟨ comp-bilinear₂ _ _ _ ⟩
+      π {n} i ∘ ((F .fmor {m} {n} M ∘ ι {m} j) +m (F .fmor {m} {n} N ∘ ι {m} j))
+    ≈˘⟨ ∘-cong ≈-refl (comp-bilinear₁ _ _ _) ⟩
+      π {n} i ∘ ((F .fmor {m} {n} M +m F .fmor {m} {n} N) ∘ ι {m} j)
+    ∎) where open ≈-Reasoning isEquiv
