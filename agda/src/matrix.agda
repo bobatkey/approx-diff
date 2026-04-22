@@ -373,3 +373,55 @@ concat-split {suc x} w (suc i) = concat-split {x} (λ j → w (suc j)) i
 Σ-p₂ {zero} w i = Σ-unit i w
 Σ-p₂ {suc x} w i =
   trans (+-cong ε-annihilₗ refl) (trans +-lunit (Σ-p₂ {x} (λ j → w (suc j)) i))
+
+------------------------------------------------------------------------------
+-- If + is idempotent then (S, +) is a join-semilattice with ⊥ = ε.
+module Join (+-idem : ∀ {x} → (x + x) ≈ x) where
+
+  infix 4 _≤_
+  _≤_ : Carrier → Carrier → Prop _
+  x ≤ y = (x + y) ≈ y
+
+  ≤-refl : ∀ {x} → x ≤ x
+  ≤-refl = +-idem
+
+  ≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
+  ≤-trans {x} {y} {z} xy yz = trans (sym (+-cong refl yz)) (trans (sym +-assoc) (trans (+-cong xy refl) yz))
+
+  +-inl : ∀ {x y} → x ≤ (x + y)
+  +-inl {x} {y} = trans (sym +-assoc) (+-cong +-idem refl)
+
+  +-inr : ∀ {x y} → y ≤ (x + y)
+  +-inr {x} {y} = trans (+-cong refl +-comm) (trans (sym +-assoc) (trans (+-cong +-idem refl) +-comm))
+
+  +-lub : ∀ {x y z} → x ≤ z → y ≤ z → (x + y) ≤ z
+  +-lub xz yz = trans +-assoc (trans (+-cong refl yz) xz)
+
+  ε-bot : ∀ {x} → ε ≤ x
+  ε-bot = +-lunit
+
+  ----------------------------------------------------------------------------
+  -- Tier 2.5: absorption. Makes · the meet in the induced order; combined with
+  -- idempotence and the semiring's distributivity, S becomes a bounded
+  -- distributive lattice with ⊥ = ε, ⊤ = ι, ∨ = +, ∧ = ·.
+  module Lattice (absorb : ∀ {x y} → (x + (x · y)) ≈ x) where
+
+    -- · is below both operands.
+    ·-≤₁ : ∀ {x y} → (x · y) ≤ x
+    ·-≤₁ = trans +-comm absorb
+
+    ·-≤₂ : ∀ {x y} → (x · y) ≤ y
+    ·-≤₂ = ≤-trans (≡→≤ ·-comm) ·-≤₁
+      where ≡→≤ : ∀ {x y} → x ≈ y → x ≤ y
+            ≡→≤ eq = trans (+-cong eq refl) +-idem
+
+    -- Disjointness at the carrier level.
+    infix 4 _#_
+    _#_ : Carrier → Carrier → Prop _
+    x # y = (x · y) ≈ ε
+
+    --------------------------------------------------------------------------
+    -- Tier 3: Heyting-like structure via #-reflect. Enough to construct
+    -- conjugate pairs on X^n / X^m from matrices M : Mat n m.
+    module Heyting (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y) where
+      -- TODO: disjointness on vectors, to-conj construction.
