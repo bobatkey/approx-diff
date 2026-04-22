@@ -551,10 +551,10 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
 
       -- Vec n as a conjugate.Obj.
       ⟦_⟧ : ℕ → conjugate.Obj
-      ⟦ n ⟧ .conjugate.Obj.carrier     = vec-preorder preorder n
-      ⟦ n ⟧ .conjugate.Obj.meets       = vec-meet preorder meets n
-      ⟦ n ⟧ .conjugate.Obj.joins       = vec-join preorder joins n
-      ⟦ n ⟧ .conjugate.Obj.#-reflect   = {!!}
+      ⟦ n ⟧ .conjugate.Obj.carrier  = vec-preorder preorder n
+      ⟦ n ⟧ .conjugate.Obj.meets = vec-meet preorder meets n
+      ⟦ n ⟧ .conjugate.Obj.joins = vec-join preorder joins n
+      ⟦ n ⟧ .conjugate.Obj.#-reflect = {!!}
       ⟦ n ⟧ .conjugate.Obj.∧-∨-distrib x y z i = ∧-∨-distribˢ (x i) (y i) (z i)
       -- Pointwise ∨-over-∧ (one direction) holds in any lattice.
       ⟦ n ⟧ .conjugate.Obj.∨-∧-distrib x y z i =
@@ -564,8 +564,5 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
             (IsPreorder.trans ≤-isPreorder (IsMeet.π₁ ∧-isMeet) (IsJoin.inr ∨-isJoin))
             (IsPreorder.trans ≤-isPreorder (IsMeet.π₂ ∧-isMeet) (IsJoin.inr ∨-isJoin)))
 
-      -- Each matrix M : Matrix n m induces a conjugate morphism ⟦m⟧ ⇒c ⟦n⟧.
-      -- The right leg is M's action as matrix-vector product; the left leg is
-      -- Mᵀ's action.
       to-conj : ∀ {m n} → Matrix n m → ⟦ m ⟧ conjugate.⇒c ⟦ n ⟧
       to-conj M = {!!}
