@@ -19,16 +19,20 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
   Vec : ℕ → Set o
   Vec n = Fin n → Carrier
 
-  -- Projection (just function application, but named for clarity).
-  proj : ∀ {n} → Fin n → Vec n → Carrier
-  proj i v = v i
-
   -- Standard basis vector: ι at position i, ε elsewhere.
   e : ∀ {n} → Fin n → Vec n
   e zero zero = ι
   e zero (suc _) = ε
   e (suc i) zero = ε
   e (suc i) (suc j) = e i j
+
+  -- i-th projection out of S^n (just function application, named for clarity).
+  proj : ∀ {n} → Fin n → Vec n → Carrier
+  proj i v = v i
+
+  -- i-th biproduct injection into S^n: z at index i, ε elsewhere.
+  inj : ∀ {n} → Fin n → Carrier → Vec n
+  inj i z j = e i j · z
 
   -- Finite sum: Σᵢ f(i), using addition of S.
   Σ : ∀ {n} → (Fin n → Carrier) → Carrier
@@ -109,6 +113,14 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
   Σ-·-distribₗ : ∀ {n} (x : Carrier) (f : Fin n → Carrier) → x · Σ {n} f ≈ Σ {n} (λ j → x · f j)
   Σ-·-distribₗ {n} x f =
     trans ·-comm (trans (Σ-·-distribᵣ f x) (Σ-cong {n} (λ j → ·-comm)))
+
+  -- Dot product isolates the ith coordinate: v ⋅ inj i z ≈ v i · z.
+  -- A weighted form of Σ-unit with a constant factor pulled outside the sum.
+  ⋅-inj : ∀ {n} (v : Vec n) (i : Fin n) (z : Carrier) → (v ⋅ inj i z) ≈ (v i · z)
+  ⋅-inj {n} v i z =
+    trans (Σ-cong {n} (λ j → trans (sym ·-assoc) (·-cong ·-comm refl)))
+    (trans (sym (Σ-·-distribᵣ (λ j → e i j · v j) z))
+           (·-cong (Σ-unit i v) refl))
 
   +-interchange : ∀ {a b c d} → (a + b) + (c + d) ≈ (a + c) + (b + d)
   +-interchange =
@@ -517,8 +529,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     meets .MeetSemilattice.∧-isMeet = ∧-isMeet
     meets .MeetSemilattice.⊤-isTop = ⊤-isTop
 
-    -- Disjointness on elements and vectors. Using (_ ≤ ⊥) matches conjugate.Obj's
-    -- form directly; it's equivalent to (_ ≈ ⊥) since ⊥ is bottom.
+    -- Disjointness on elements and vectors.
     infix 4 _#_
     _#_ : Carrier → Carrier → Prop _
     x # y = (x ∧ y) ≤ ⊥
@@ -527,26 +538,14 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     _#^_ : ∀ {n} → Vec n → Vec n → Prop _
     u #^ v = (u ⋅ v) ≤ ⊥
 
-    -- i-th biproduct injection z ↦ (0,…,0,z,0,…,0) into S^n.
-    point : ∀ {n} → Fin n → Carrier → Vec n
-    point i z j = e i j ∧ z
-
-    -- Dot product isolates the ith coordinate: v ⋅ point i z ≈ v i ∧ z.
-    -- This is the key fact that lets #-reflect lift to #^-reflect without case analysis.
-    ⋅-point : ∀ {n} (v : Vec n) (i : Fin n) (z : Carrier) → (v ⋅ point i z) ≈ (v i ∧ z)
-    ⋅-point {n} v i z =
-      trans (Σ-cong {n} (λ j → trans (sym ∧-assoc) (∧-cong ∧-comm refl)))
-      (trans (sym (Σ-·-distribᵣ (λ j → e i j ∧ v j) z))
-             (∧-cong (Σ-unit i v) refl))
-
     -- Σ is an upper bound on each summand.
     Σ-ub : ∀ {n} (f : Fin n → Carrier) (i : Fin n) → f i ≤ Σ f
-    Σ-ub f zero    = IsJoin.inl ∨-isJoin
+    Σ-ub f zero = IsJoin.inl ∨-isJoin
     Σ-ub f (suc i) = IsPreorder.trans ≤-isPreorder (Σ-ub (λ j → f (suc j)) i) (IsJoin.inr ∨-isJoin)
 
     -- Pointwise ≤ ⊥ implies Σ ≤ ⊥.
     Σ-≤-⊥ : ∀ {n} (f : Fin n → Carrier) → (∀ j → f j ≤ ⊥) → Σ f ≤ ⊥
-    Σ-≤-⊥ {zero}  _ _ = IsPreorder.refl ≤-isPreorder
+    Σ-≤-⊥ {zero} _ _ = IsPreorder.refl ≤-isPreorder
     Σ-≤-⊥ {suc n} f h = IsJoin.[_,_] ∨-isJoin (h zero) (Σ-≤-⊥ (λ j → f (suc j)) (λ j → h (suc j)))
 
     -- Σ is monotone in its argument (pointwise ≤ → Σ ≤).
@@ -558,12 +557,12 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       where
 
       -- Lift scalar #-reflect to vectors using the dot-product form #^.
-      -- ⋅-point isolates coordinate i, avoiding any case analysis on Fin.
+      -- ⋅-inj isolates coordinate i, avoiding any case analysis on Fin.
       #^-reflect : ∀ {n} {u v : Vec n} → (∀ w → v #^ w → u #^ w) → ∀ i → u i ≤ v i
       #^-reflect {n} {u} {v} h i =
         #-reflect λ z vi#z →
-          trans (∨-cong (sym (⋅-point u i z)) refl)
-                (h (point i z) (trans (∨-cong (⋅-point v i z) refl) vi#z))
+          trans (∨-cong (sym (⋅-inj u i z)) refl)
+                (h (inj i z) (trans (∨-cong (⋅-inj v i z) refl) vi#z))
 
       import conjugate
 
