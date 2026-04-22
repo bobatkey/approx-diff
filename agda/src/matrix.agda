@@ -589,5 +589,29 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
           ; mono = λ y≤y' j →
               Σ-mono (λ i → IsMeet.mono ∧-isMeet (IsPreorder.refl ≤-isPreorder) (y≤y' i))
           }
-        ; conjugate = {!!}
+        ; conjugate = λ {x} {y} → record
+          { proj₁ = →-direction {x} {y}
+          ; proj₂ = {!!}
+          }
         }
+        where
+          -- The algebraic heart of the conjugate: y · (M x) ≈ (Mᵀ y) · x, by
+          -- pushing y inside, interchanging the double sum, and pulling x out.
+          swap : ∀ {x : Vec m} {y : Vec n} →
+                 (y ⋅ (λ i → M i ⋅ x)) ≈ ((λ j → (M ᵀ) j ⋅ y) ⋅ x)
+          swap {x} {y} =
+            trans (Σ-cong {n} (λ i → Σ-·-distribₗ (y i) (λ j → M i j ∧ x j)))
+            (trans (Σ-interchange {n} {m} (λ i j → y i ∧ (M i j ∧ x j)))
+                   (Σ-cong {m} (λ j →
+                     trans (Σ-cong {n} (λ i → trans (sym ∧-assoc) (∧-cong ∧-comm refl)))
+                           (sym (Σ-·-distribᵣ (λ i → M i j ∧ y i) (x j))))))
+
+          -- Pointwise y (M x) disjoint ⇒ pointwise (Mᵀ y) x disjoint.
+          -- Pack pointwise hyp into Σ-form via Σ-lub, transport via swap, unpack via Σ-ub.
+          →-direction : ∀ {x : Vec m} {y : Vec n} →
+                        (∀ i → (y i ∧ (M i ⋅ x)) ≤ ⊥) →
+                        (∀ j → (((M ᵀ) j ⋅ y) ∧ x j) ≤ ⊥)
+          →-direction {x} {y} h j =
+            IsPreorder.trans ≤-isPreorder
+              (Σ-ub _ j)
+              (trans (∨-cong (sym swap) refl) (Σ-lub _ h))
