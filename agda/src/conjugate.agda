@@ -6,6 +6,7 @@ open import Level
 open import prop hiding (_∨_; ⊥) renaming (_∧_ to _∧ₚ_)
 open import prop-setoid using (IsEquivalence)
 open import preorder hiding (𝟙)
+open import basics using (module Disjoint)
 open import categories
 open import meet-semilattice
   using (MeetSemilattice)
@@ -32,22 +33,10 @@ record Obj : Set (suc 0ℓ) where
   open Preorder carrier public
   open MeetSemilattice meets renaming (idem to ∧-idem; interchange to ∧-interchange) public
   open JoinSemilattice joins renaming (idem to ∨-idem; interchange to ∨-interchange) public
-
-  _#_ : carrier .Preorder.Carrier -> carrier .Preorder.Carrier -> Prop
-  x # y = (x ∧ y) ≤ ⊥
-
-  #-sym : ∀ {x y} → x # y → y # x
-  #-sym = ≤-trans ∧-comm
-
-  ⊥-# : ∀ {x} → ⊥ # x
-  ⊥-# = π₁
-
-  -- annihilator map preserves ≤ automatically, and reflects ≤ as an additional assumption
-  #-mono : ∀ {x y} → x ≤ y → ∀ z → y # z → x # z
-  #-mono x≤y z = ≤-trans (∧-mono x≤y ≤-refl)
+  open Disjoint ≤-isPreorder ∧-isMeet ⊥-isBottom public
 
   field
-    #-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y
+    #-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y  -- #-mono is automatic
     ∧-∨-distrib : ∀ x y z → x ∧ (y ∨ z) ≤ (x ∧ y) ∨ (x ∧ z)
 
   -- holds in any bounded lattice

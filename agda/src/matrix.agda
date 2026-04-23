@@ -393,7 +393,7 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
 
 -- Additional (ordered) structures that might be present on S.
 module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
-  open import basics using (IsPreorder; IsJoin; IsBottom; IsMeet; IsTop)
+  open import basics using (IsPreorder; IsJoin; IsBottom; IsMeet; IsTop; module Disjoint)
   open import preorder using (Preorder)
   open import Data.Nat using (ℕ; zero; suc)
   open import Data.Fin using (Fin; zero; suc)
@@ -538,11 +538,9 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     meets .MeetSemilattice.∧-isMeet = ∧-isMeet
     meets .MeetSemilattice.⊤-isTop = ⊤-isTop
 
-    -- Disjointness on elements and vectors.
-    infix 4 _#_
-    _#_ : Carrier → Carrier → Prop _
-    x # y = (x ∧ y) ≤ ⊥
+    open Disjoint ≤-isPreorder ∧-isMeet ⊥-isBottom public
 
+    -- Dot-product form of disjointness, for vectors.
     infix 4 _#^_
     _#^_ : ∀ {n} → Vec n → Vec n → Prop _
     u #^ v = (u ⋅ v) ≤ ⊥

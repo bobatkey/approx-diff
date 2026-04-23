@@ -224,6 +224,25 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Prop b} (≤-isPreorder : IsPreo
     field
       ≤-bottom : ∀ {x} → ⊥ ≤ x
 
+  -- Disjointness from a meet and a bottom.
+  module Disjoint {_∧_ : A → A → A} {⊥ : A} (∧-isMeet : IsMeet _∧_) (⊥-isBottom : IsBottom ⊥) where
+    open IsMeet ∧-isMeet
+    open IsBottom ⊥-isBottom
+
+    infix 4 _#_
+    _#_ : A → A → Prop b
+    x # y = (x ∧ y) ≤ ⊥
+
+    #-sym : ∀ {x y} → x # y → y # x
+    #-sym = trans comm
+
+    ⊥-# : ∀ {x} → ⊥ # x
+    ⊥-# = π₁
+
+    -- The annihilator map y ↦ {z | z # y} preserves ≤ (is contravariant).
+    #-mono : ∀ {x y} → x ≤ y → ∀ z → y # z → x # z
+    #-mono x≤y z = trans (mono x≤y refl)
+
   module _ {_∨_ : A → A → A} {⊥ : A} (isJoin : IsJoin _∨_) (isBottom : IsBottom ⊥) where
     open IsJoin isJoin
     open IsBottom isBottom
