@@ -529,7 +529,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       open import conjugate using (Obj; _⇒c_)
       open _⇒c_
       open preorder._=>_ using (fun; mono)
-      open import prop using (proj₁; proj₂)
+      open import prop using (proj₁; proj₂; _⇔_)
 
       Heyting : ℕ → Obj
       Heyting n .Obj.carrier = vec-preorder preorder n
@@ -567,11 +567,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       module BooleanAlgebra
         (¬ : Carrier → Carrier)
         (¬-anti : ∀ {x y} → x ≤ y → ¬ y ≤ ¬ x)
-        -- Disjointness is complementation: Boolean-specific biconditional linking
-        -- the # of the Disjoint module to ≤ ¬.
-        (#→≤¬ : ∀ {x y} → x # y → x ≤ ¬ y)
-        (≤¬→# : ∀ {x y} → x ≤ ¬ y → x # y)
-        -- Double-negation elimination (one direction suffices for the adjunction).
+        (#-↔-≤¬ : ∀ {x y} → (x # y) ⇔ (x ≤ ¬ y))
         (¬¬-≤ : ∀ {x} → ¬ (¬ x) ≤ x)
         where
 
@@ -601,6 +597,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
         to-gal M .left .fun y i = M i ⋅ y
         to-gal M .left .mono y≤y' i = Σ-mono (λ j → IsMeet.mono ∧-isMeet ≤-refl (y≤y' j))
         to-gal M .left⊣right {x} {y} .proj₁ h i =
-          ≤-trans (#→≤¬ (to-conj M .conjugate {¬^ x} {y} .proj₁ (λ j → ≤¬→# (h j)) i)) ¬¬-≤
+          ≤-trans (#-↔-≤¬ .proj₁ (to-conj M .conjugate {¬^ x} {y} .proj₁ (λ j → #-↔-≤¬ .proj₂ (h j)) i)) ¬¬-≤
         to-gal M .left⊣right {x} {y} .proj₂ k j =
-          #→≤¬ (to-conj M .conjugate {¬^ x} {y} .proj₂ (λ i → #-mono (k i) _ (#-sym (≤¬→# ≤-refl))) j)
+          #-↔-≤¬ .proj₁ (to-conj M .conjugate {¬^ x} {y} .proj₂ (λ i → #-mono (k i) _ (#-sym (#-↔-≤¬ .proj₂ ≤-refl))) j)
