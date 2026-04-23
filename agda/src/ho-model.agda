@@ -343,18 +343,21 @@ module Matrix where
     module homCM {x y} = CommutativeMonoid (CMon.CMonEnriched.homCM SemiLat.cmon-enriched x y)
 
   -- Scalar iso Two ↔ End(TWO) in SemiLat. Each End(TWO) preserves ⊥, so is determined by its
-  -- value at I (either εm or id TWO); `to`/`from` witness the bijection, and `to` is a semiring
+  -- value at I (either εm or id); `to`/`from` witness the bijection, and `to` is a semiring
   -- homomorphism from two.semiring.
   module scalar where
     to : Two → TWO ⇒ TWO
     to O = εm
     to I = id TWO
 
-    cong : ∀ {a b} → a two.≃ b → to a ≈ to b
-    cong {O} {O} _ = ≈-refl
-    cong {O} {I} (_ , ())
-    cong {I} {O} (() , _)
-    cong {I} {I} _ = ≈-refl
+    from : TWO ⇒ TWO → Two
+    from f = fun f I
+
+    to-cong : ∀ {a b} → a two.≃ b → to a ≈ to b
+    to-cong {O} {O} _ = ≈-refl
+    to-cong {O} {I} (_ , ())
+    to-cong {I} {O} (() , _)
+    to-cong {I} {I} _ = ≈-refl
 
     preserves-ε : to O ≈ εm
     preserves-ε = ≈-refl
@@ -377,9 +380,6 @@ module Matrix where
     preserves-· {O} {I} = ≈-sym (comp-bilinear-ε₁ (id TWO))
     preserves-· {I} {O} = ≈-sym id-left
     preserves-· {I} {I} = ≈-sym id-left
-
-    from : TWO ⇒ TWO → Two
-    from f = fun f I
 
     from-cong : ∀ {f g : TWO ⇒ TWO} → f ≈ g → from f two.≃ from g
     from-cong p = p .f≃f .eqfunc .eqfun I
@@ -406,7 +406,7 @@ module Matrix where
         to a ∘ to b
       ≈˘⟨ preserves-· {a} {b} ⟩
         to (a two.⊓ b)
-      ≈⟨ cong (two.⊓-cmon .CommutativeMonoid.+-comm {a} {b}) ⟩
+      ≈⟨ to-cong (two.⊓-cmon .CommutativeMonoid.+-comm {a} {b}) ⟩
         to (b two.⊓ a)
       ≈⟨ preserves-· {b} {a} ⟩
         to b ∘ to a
@@ -467,6 +467,6 @@ module Matrix where
     (HasTerminal.is-terminal SemiLat.terminal)
     TWO
     two.semiring
-    scalar.to scalar.cong scalar.preserves-ε scalar.preserves-ι
+    scalar.to scalar.to-cong scalar.preserves-ε scalar.preserves-ι
     (λ {a} {b} → scalar.preserves-+ {a} {b}) (λ {a} {b} → scalar.preserves-· {a} {b})
     scalar.from scalar.from-cong scalar.from∘to scalar.to∘from
