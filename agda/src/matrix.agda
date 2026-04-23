@@ -541,7 +541,8 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
         ≤-trans (⟨_,_⟩ ≤-refl ≤-top)
           (≤-trans (∧-mono ≤-refl complement-∨)
             (≤-trans ∧-∨-distrib ([_,_] (≤-trans x#y ≤-bottom) π₂)))
-      #-↔-≤¬ .proj₂ x≤¬y = ≤-trans (∧-mono x≤¬y ≤-refl) (≤-trans (IsMeet.comm ∧-isMeet) complement-∧)
+      #-↔-≤¬ .proj₂ x≤¬y =
+        ≤-trans (∧-mono x≤¬y ≤-refl) (≤-trans (IsMeet.comm ∧-isMeet) complement-∧)
 
       ¬-antitone : ∀ {x y} → x ≤ y → ¬ y ≤ ¬ x
       ¬-antitone x≤y =
@@ -607,8 +608,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       to-conj M .conjugate {x} {y} .proj₂ k j =
         ≤-trans (Σ-ub _ j) (trans (∨-cong (swap (M ᵀ) {x} {y}) refl) (Σ-lub _ k))
 
-      -- De Morgan dual of the transpose. Meet-preserving; the Galois right
-      -- adjoint of M · _ (the join-preserving left adjoint).
+      -- De Morgan dual of the transpose. Meet-preserving; right adjoint of M · _.
       adjoint : ∀ {m n} → Matrix n m → Vec n → Vec m
       adjoint M x j = ¬ ((M ᵀ) j ⋅ ¬^ x)
 
@@ -626,6 +626,8 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       to-gal M .left .fun y i = M i ⋅ y
       to-gal M .left .mono y≤y' i = Σ-mono (λ j → ∧-mono ≤-refl (y≤y' j))
       to-gal M .left⊣right {x} {y} .proj₁ h i =
-        ≤-trans (#-↔-≤¬ .proj₁ (to-conj M .conjugate {¬^ x} {y} .proj₁ (λ j → #-↔-≤¬ .proj₂ (h j)) i)) ¬-involutive
+        ≤-trans (#-↔-≤¬ .proj₁ (to-conj M .conjugate {¬^ x} {y} .proj₁ (λ j → #-↔-≤¬ .proj₂ (h j)) i))
+                ¬-involutive
       to-gal M .left⊣right {x} {y} .proj₂ k j =
-        #-↔-≤¬ .proj₁ (to-conj M .conjugate {¬^ x} {y} .proj₂ (λ i → #-mono (k i) _ (#-sym (#-↔-≤¬ .proj₂ ≤-refl))) j)
+        #-↔-≤¬ .proj₁
+          (to-conj M .conjugate {¬^ x} {y} .proj₂ (λ i → #-mono (k i) _ (#-sym (#-↔-≤¬ .proj₂ ≤-refl))) j)
