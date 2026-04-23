@@ -563,20 +563,32 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
 
       -- FIXME: functor properties.
 
-      -- Boolean-algebra tier: adds a complement ¬ satisfying classical laws.
-      -- Needed for to-gal, which constructs the Galois right adjoint of
-      -- the forward matrix action as its De Morgan dual. Laws will be added
-      -- as needed by the proofs.
       module BooleanAlgebra
         (¬ : Carrier → Carrier)
+        (¬-anti : ∀ {x y} → x ≤ y → ¬ y ≤ ¬ x)
         where
 
-        -- Pointwise vector negation.
         ¬^ : ∀ {n} → Vec n → Vec n
         ¬^ u i = ¬ (u i)
 
-        -- Galois right adjoint of the forward matrix action M · _ .
-        -- The De Morgan dual: negate the input, apply M · _, negate the output.
-        -- Meet-preserving; paired with (M ᵀ ·) as the join-preserving left adjoint.
-        adj : ∀ {m n} → Matrix n m → Vec m → Vec n
-        adj M u i = ¬ (M i ⋅ ¬^ u)
+        ¬^-anti : ∀ {n} {u v : Vec n} → u ≤^ v → ¬^ v ≤^ ¬^ u
+        ¬^-anti u≤v i = ¬-anti (u≤v i)
+
+        -- Meet-preserving right adjoint of forward matrix action M · _ .
+        adjoint : ∀ {m n} → Matrix n m → Vec m → Vec n
+        adjoint M u i = ¬ (M i ⋅ ¬^ u)
+
+        open import galois using () renaming (Obj to Obj-g; _⇒g_ to _=>g_)
+        open _=>g_
+
+        BoundedLattice : ℕ → Obj-g
+        BoundedLattice n .Obj-g.carrier = Heyting n .Obj.carrier
+        BoundedLattice n .Obj-g.meets = Heyting n .Obj.meets
+        BoundedLattice n .Obj-g.joins = Heyting n .Obj.joins
+
+        to-gal : ∀ {m n} → Matrix n m → BoundedLattice m =>g BoundedLattice n
+        to-gal M .right .fun = adjoint M
+        to-gal M .right .mono u≤v i = ¬-anti (Σ-mono (λ j → IsMeet.mono ∧-isMeet ≤-refl (¬-anti (u≤v j))))
+        to-gal M .left .fun y j = (M ᵀ) j ⋅ y
+        to-gal M .left .mono y≤y' j = Σ-mono (λ i → IsMeet.mono ∧-isMeet ≤-refl (y≤y' i))
+        to-gal M .left⊣right = {!!}
