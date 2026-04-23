@@ -39,7 +39,7 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
 
   -- Dot product (sum of multiplications).
   _⋅_ : ∀ {n} → Vec n → Vec n → Carrier
-  _⋅_ {n} u v = Σ {n} (λ i → u i · v i)
+  _⋅_ {n} u v = Σ {n} λ i → u i · v i
 
   Matrix : ℕ → ℕ → Set o
   Matrix m n = Fin m → Fin n → Carrier
@@ -511,7 +511,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     -- Dot-product form of disjointness, for vectors.
     infix 4 _#^_
     _#^_ : ∀ {n} → Vec n → Vec n → Prop _
-    u #^ v = (u ⋅ v) ≤ ⊥
+    u #^ v = u ⋅ v ≤ ⊥
 
     module HeytingAlgebra
       (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y)
