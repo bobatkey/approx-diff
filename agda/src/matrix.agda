@@ -575,8 +575,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       -- Matrix M : Fin n → Fin m → Carrier gives:
       --   right : Vec m → Vec n is matrix-vector product (M u) i = row i of M  ⋅  u.
       --   left  : Vec n → Vec m is transpose action (y Mᵀ) j = y  ⋅  column j of M.
-      -- The conjugate condition y · (M u) ≈ (y Mᵀ) · u follows from Σ-interchange
-      -- on the double sum.
       to-conj : ∀ {m n} → Matrix n m → ⟦ m ⟧ conjugate.⇒c ⟦ n ⟧
       to-conj {m} {n} M = record
         { right = record
@@ -590,15 +588,22 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
               Σ-mono (λ i → IsMeet.mono ∧-isMeet (IsPreorder.refl ≤-isPreorder) (y≤y' i))
           }
         ; conjugate = λ {x} {y} → record
-          { proj₁ = →-direction {x} {y}
-          ; proj₂ = ←-direction {x} {y}
+          { proj₁ = λ h j →
+              -- Pack pointwise hyp into Σ-form (Σ-lub), transport via sym swap,
+              -- unpack the jth summand (Σ-ub).
+              IsPreorder.trans ≤-isPreorder
+                (Σ-ub _ j)
+                (trans (∨-cong (sym (swap {x} {y})) refl) (Σ-lub _ h))
+          ; proj₂ = λ k i →
+              -- Same structure, transport goes through swap (not sym).
+              IsPreorder.trans ≤-isPreorder
+                (Σ-ub _ i)
+                (trans (∨-cong (swap {x} {y}) refl) (Σ-lub _ k))
           }
         }
         where
-          -- The algebraic heart of the conjugate: y · (M x) ≈ (Mᵀ y) · x, by
-          -- pushing y inside, interchanging the double sum, and pulling x out.
-          swap : ∀ {x : Vec m} {y : Vec n} →
-                 (y ⋅ (λ i → M i ⋅ x)) ≈ ((λ j → (M ᵀ) j ⋅ y) ⋅ x)
+          -- Push y inside, interchange the double sum, and pull out x.
+          swap : ∀ {x : Vec m} {y : Vec n} → (y ⋅ (λ i → M i ⋅ x)) ≈ ((λ j → (M ᵀ) j ⋅ y) ⋅ x)
           swap {x} {y} =
             trans (Σ-cong {n} (λ i → Σ-·-distribₗ (y i) (λ j → M i j ∧ x j)))
             (trans (Σ-interchange {n} {m} (λ i j → y i ∧ (M i j ∧ x j)))
@@ -606,21 +611,4 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
                      trans (Σ-cong {n} (λ i → trans (sym ∧-assoc) (∧-cong ∧-comm refl)))
                            (sym (Σ-·-distribᵣ (λ i → M i j ∧ y i) (x j))))))
 
-          -- Pointwise y (M x) disjoint ⇒ pointwise (Mᵀ y) x disjoint.
-          -- Pack pointwise hyp into Σ-form via Σ-lub, transport via swap, unpack via Σ-ub.
-          →-direction : ∀ {x : Vec m} {y : Vec n} →
-                        (∀ i → (y i ∧ (M i ⋅ x)) ≤ ⊥) →
-                        (∀ j → (((M ᵀ) j ⋅ y) ∧ x j) ≤ ⊥)
-          →-direction {x} {y} h j =
-            IsPreorder.trans ≤-isPreorder
-              (Σ-ub _ j)
-              (trans (∨-cong (sym swap) refl) (Σ-lub _ h))
-
-          -- Reverse direction — same structure, transport goes through swap (not sym).
-          ←-direction : ∀ {x : Vec m} {y : Vec n} →
-                        (∀ j → (((M ᵀ) j ⋅ y) ∧ x j) ≤ ⊥) →
-                        (∀ i → (y i ∧ (M i ⋅ x)) ≤ ⊥)
-          ←-direction {x} {y} k i =
-            IsPreorder.trans ≤-isPreorder
-              (Σ-ub _ i)
-              (trans (∨-cong swap refl) (Σ-lub _ k))
+      -- FIXME: functor properties.
