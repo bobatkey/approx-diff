@@ -3,7 +3,7 @@
 module ho-model where
 
 open import Level using (Level; 0ℓ; suc)
-open import categories using (Category; HasProducts; HasTerminal; op-coproducts→products; op-initial→terminal; HasCoproducts)
+open import categories using (Category; HasProducts; HasTerminal; HasInitial; op-coproducts→products; op-initial→terminal; HasCoproducts)
 open import product-category using (product; product-limit; product-products; product-terminal)
 open import cmon-enriched
   using (CMonEnriched; product-cmon-enriched; op-cmon-enriched; Biproduct; biproducts→products)
@@ -201,39 +201,6 @@ module Galois where
   import meet-semilattice
   import join-semilattice
   open import prop using (tt; proj₁; proj₂)
-
-  𝓕 : Functor galois.cat M×Jop
-  𝓕 .fobj X =
-    record { carrier = X .galois.Obj.carrier ; meets = X .galois.Obj.meets } ,
-    record { carrier = X .galois.Obj.carrier ; joins = X .galois.Obj.joins }
-  𝓕 .fmor f =
-    record { *→* = galois._⇒g_.right-∧ f } ,
-    record { *→* = galois._⇒g_.left-∨ f }
-  𝓕 .fmor-cong f≃g =
-    record { f≃f = record { eqfunc = f≃g .galois._≃g_.right-eq } } ,
-    record { f≃f = record { eqfunc = f≃g .galois._≃g_.left-eq } }
-  𝓕 .fmor-id {X} =
-    record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } } ,
-    record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }
-  𝓕 .fmor-comp f g =
-    (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }) ,
-    (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } })
-
-  private
-    module M×Jop' = Category M×Jop
-
-  open M×Jop'.IsIso
-
-  𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 galois.terminal M×Jop-terminal
-  𝓕-preserve-terminal .inverse =
-    record { *→* = meet-semilattice.terminal } ,
-    record { *→* = join-semilattice.initial }
-  𝓕-preserve-terminal .f∘inverse≈id =
-    HasTerminal.to-terminal-unique M×Jop-terminal _ _
-  𝓕-preserve-terminal .inverse∘f≈id =
-    record { f≃f = record { eqfunc = record { eqfun = λ x → tt , tt } } } ,
-    record { f≃f = record { eqfunc = record { eqfun = λ x → tt , tt } } }
-
   open meet-semilattice-category._⇒_
   open join-semilattice-category._⇒_
   open meet-semilattice-category._≃m_
@@ -242,6 +209,31 @@ module Galois where
   open join-semilattice._≃m_
   open preorder._≃m_
   open galois.Obj
+
+  𝓕 : Functor galois.cat M×Jop
+  𝓕 .fobj X .proj₁ = record { carrier = X .galois.Obj.carrier ; meets = X .galois.Obj.meets }
+  𝓕 .fobj X .proj₂ = record { carrier = X .galois.Obj.carrier ; joins = X .galois.Obj.joins }
+  𝓕 .fmor f .proj₁ .*→* = galois._⇒g_.right-∧ f
+  𝓕 .fmor f .proj₂ .*→* = galois._⇒g_.left-∨ f
+  𝓕 .fmor-cong f≃g .proj₁ .f≃f .eqfunc = f≃g .galois._≃g_.right-eq
+  𝓕 .fmor-cong f≃g .proj₂ .f≃f .eqfunc = f≃g .galois._≃g_.left-eq
+  𝓕 .fmor-id .proj₁ .f≃f .eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl
+  𝓕 .fmor-id .proj₂ .f≃f .eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl
+  𝓕 .fmor-comp f g .proj₁ .f≃f .eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl
+  𝓕 .fmor-comp f g .proj₂ .f≃f .eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl
+
+  private
+    module M×Jop' = Category M×Jop
+
+  open M×Jop'.IsIso
+
+  𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 galois.terminal M×Jop-terminal
+  𝓕-preserve-terminal .inverse .proj₁ .*→* = meet-semilattice.terminal
+  𝓕-preserve-terminal .inverse .proj₂ .*→* = join-semilattice.initial
+  𝓕-preserve-terminal .f∘inverse≈id =
+    HasTerminal.to-terminal-unique M×Jop-terminal _ _
+  𝓕-preserve-terminal .inverse∘f≈id .proj₁ .f≃f .eqfunc .eqfun x = tt , tt
+  𝓕-preserve-terminal .inverse∘f≈id .proj₂ .f≃f .eqfunc .eqfun x = tt , tt
 
   𝓕-preserve-products : preserve-chosen-products 𝓕 galois.products (biproducts→products _ M×Jop-biproducts)
   𝓕-preserve-products .inverse .proj₁ .*→* = meet-semilattice.id
@@ -272,23 +264,23 @@ module Conjugate where
   import join-semilattice
   import conjugate
   open import prop using (tt; proj₁; proj₂)
+  open join-semilattice-category._⇒_
+  open join-semilattice-category._≃m_
+  open join-semilattice._≃m_
+  open preorder._≃m_
+  open conjugate.Obj
 
   𝓕 : Functor conjugate.cat J×Jop
-  𝓕 .fobj X =
-    record { carrier = X .conjugate.Obj.carrier ; joins = X .conjugate.Obj.joins } ,
-    record { carrier = X .conjugate.Obj.carrier ; joins = X .conjugate.Obj.joins }
-  𝓕 .fmor f =
-    record { *→* = conjugate._⇒c_.right-∨ f } ,
-    record { *→* = conjugate._⇒c_.left-∨ f }
-  𝓕 .fmor-cong f≃g =
-    record { f≃f = record { eqfunc = f≃g .conjugate._≃c_.right-eq } } ,
-    record { f≃f = record { eqfunc = f≃g .conjugate._≃c_.left-eq } }
-  𝓕 .fmor-id {X} =
-    record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } } ,
-    record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }
-  𝓕 .fmor-comp f g =
-    (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } }) ,
-    (record { f≃f = record { eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl } })
+  𝓕 .fobj X .proj₁ = record { carrier = X .conjugate.Obj.carrier ; joins = X .conjugate.Obj.joins }
+  𝓕 .fobj X .proj₂ = record { carrier = X .conjugate.Obj.carrier ; joins = X .conjugate.Obj.joins }
+  𝓕 .fmor f .proj₁ .*→* = conjugate._⇒c_.right-∨ f
+  𝓕 .fmor f .proj₂ .*→* = conjugate._⇒c_.left-∨ f
+  𝓕 .fmor-cong f≃g .proj₁ .f≃f .eqfunc = f≃g .conjugate._≃c_.right-eq
+  𝓕 .fmor-cong f≃g .proj₂ .f≃f .eqfunc = f≃g .conjugate._≃c_.left-eq
+  𝓕 .fmor-id .proj₁ .f≃f .eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl
+  𝓕 .fmor-id .proj₂ .f≃f .eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl
+  𝓕 .fmor-comp f g .proj₁ .f≃f .eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl
+  𝓕 .fmor-comp f g .proj₂ .f≃f .eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl
 
   private
     module J×Jop' = Category J×Jop
@@ -296,20 +288,12 @@ module Conjugate where
   open J×Jop'.IsIso
 
   𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 conjugate.terminal J×Jop-terminal
-  𝓕-preserve-terminal .inverse =
-    record { *→* = join-semilattice.terminal } ,
-    record { *→* = join-semilattice.initial }
+  𝓕-preserve-terminal .inverse .proj₁ .*→* = join-semilattice.terminal
+  𝓕-preserve-terminal .inverse .proj₂ .*→* = join-semilattice.initial
   𝓕-preserve-terminal .f∘inverse≈id =
     HasTerminal.to-terminal-unique J×Jop-terminal _ _
-  𝓕-preserve-terminal .inverse∘f≈id =
-    record { f≃f = record { eqfunc = record { eqfun = λ x → tt , tt } } } ,
-    record { f≃f = record { eqfunc = record { eqfun = λ x → tt , tt } } }
-
-  open join-semilattice-category._⇒_
-  open join-semilattice-category._≃m_
-  open join-semilattice._≃m_
-  open preorder._≃m_
-  open conjugate.Obj
+  𝓕-preserve-terminal .inverse∘f≈id .proj₁ .f≃f .eqfunc .eqfun x = tt , tt
+  𝓕-preserve-terminal .inverse∘f≈id .proj₂ .f≃f .eqfunc .eqfun x = tt , tt
 
   𝓕-preserve-products : preserve-chosen-products 𝓕 conjugate.products (biproducts→products _ J×Jop-biproducts)
   𝓕-preserve-products .inverse .proj₁ .*→* = join-semilattice.id
@@ -339,6 +323,7 @@ module Matrix where
   import join-semilattice-category as SemiLat
   import cmon-enriched as CMon
   open import two using (Two; O; I)
+  open import prop using (tt; proj₁)
   open import prop-setoid using (module ≈-Reasoning)
   import join-semilattice
   import preorder
@@ -390,9 +375,9 @@ module Matrix where
   import matrix-rep
   open matrix-rep SemiLat.cmon-enriched
     (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
-    (categories.HasTerminal.witness SemiLat.terminal)
-    (categories.HasInitial.is-initial SemiLat.initial)
-    (categories.HasTerminal.is-terminal SemiLat.terminal)
+    (HasTerminal.witness SemiLat.terminal)
+    (HasInitial.is-initial SemiLat.initial)
+    (HasTerminal.is-terminal SemiLat.terminal)
     TWO
     scalar-comm
     public
@@ -401,8 +386,8 @@ module Matrix where
   𝓕 .fobj = X^
   𝓕 .fmor f = f
   𝓕 .fmor-cong f≈ = f≈
-  𝓕 .fmor-id = Category.≈-refl SemiLat.cat
-  𝓕 .fmor-comp _ _ = Category.≈-refl SemiLat.cat
+  𝓕 .fmor-id = ≈-refl
+  𝓕 .fmor-comp _ _ = ≈-refl
 
   open import finite-product-functor using (preserve-chosen-terminal; preserve-chosen-products)
   private
@@ -428,30 +413,26 @@ module Matrix where
     𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
     public
 
-  ------------------------------------------------------------------------------
-  -- Sanity check: witness the equivalence Mat(Two) ≃ MatRep(SemiLat, TWO) by
-  -- instantiating matrix-embedding with the iso between Two and End(TWO).
-  -- (Not used downstream; exists to verify the bridge's module signature is
-  -- constructible for this instance.)
-
+  -- Sanity check: witness the equivalence Mat(Two) ≃ MatRep(SemiLat, TWO) by instantiating matrix-embedding
+  -- with the iso between Two and End(TWO).
   open CMon.CMonEnriched SemiLat.cmon-enriched using (_+m_; εm; +m-runit)
 
   -- scalar : Two → End(TWO) in SemiLat.
   scalar : Two → TWO ⇒ TWO
   scalar O = εm
-  scalar I = Category.id SemiLat.cat TWO
+  scalar I = id TWO
 
   scalar-cong : ∀ {a b} → a two.≃ b → scalar a ≈ scalar b
-  scalar-cong {O} {O} _ = Category.≈-refl SemiLat.cat
+  scalar-cong {O} {O} _ = ≈-refl
   scalar-cong {O} {I} (_ , ())
   scalar-cong {I} {O} (() , _)
-  scalar-cong {I} {I} _ = Category.≈-refl SemiLat.cat
+  scalar-cong {I} {I} _ = ≈-refl
 
   scalar-ε : scalar O ≈ εm
-  scalar-ε = Category.≈-refl SemiLat.cat
+  scalar-ε = ≈-refl
 
-  scalar-ι : scalar I ≈ Category.id SemiLat.cat TWO
-  scalar-ι = Category.≈-refl SemiLat.cat
+  scalar-ι : scalar I ≈ id TWO
+  scalar-ι = ≈-refl
 
   open import commutative-monoid using (CommutativeMonoid)
   private
@@ -459,21 +440,21 @@ module Matrix where
 
   -- scalar preserves addition (⊔). The I+I case needs idempotence of SemiLat's +m on id.
   scalar-+ : ∀ {a b} → scalar (a two.⊔ b) ≈ scalar a +m scalar b
-  scalar-+ {O} {O} = Category.≈-sym SemiLat.cat homCM.+-lunit
-  scalar-+ {O} {I} = Category.≈-sym SemiLat.cat homCM.+-lunit
-  scalar-+ {I} {O} = Category.≈-sym SemiLat.cat +m-runit
+  scalar-+ {O} {O} = ≈-sym homCM.+-lunit
+  scalar-+ {O} {I} = ≈-sym homCM.+-lunit
+  scalar-+ {I} {O} = ≈-sym +m-runit
   scalar-+ {I} {I} = I-idem
     where
-      I-idem : Category.id SemiLat.cat TWO ≈ Category.id SemiLat.cat TWO +m Category.id SemiLat.cat TWO
+      I-idem : id TWO ≈ id TWO +m id TWO
       I-idem .f≃f .eqfunc .eqfun O = two.≤-refl {O} , two.≤-refl {O}
       I-idem .f≃f .eqfunc .eqfun I = two.≤-refl {I} , two.≤-refl {I}
 
   -- scalar preserves multiplication (⊓). Composition of scalars via SemiLat's ∘.
   scalar-· : ∀ {a b} → scalar (a two.⊓ b) ≈ scalar a ∘ scalar b
-  scalar-· {O} {O} = Category.≈-sym SemiLat.cat (CMon.CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched εm)
-  scalar-· {O} {I} = Category.≈-sym SemiLat.cat (CMon.CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched (Category.id SemiLat.cat TWO))
-  scalar-· {I} {O} = Category.≈-sym SemiLat.cat (Category.id-left SemiLat.cat)
-  scalar-· {I} {I} = Category.≈-sym SemiLat.cat (Category.id-left SemiLat.cat)
+  scalar-· {O} {O} = ≈-sym (CMon.CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched εm)
+  scalar-· {O} {I} = ≈-sym (CMon.CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched (id TWO))
+  scalar-· {I} {O} = ≈-sym id-left
+  scalar-· {I} {I} = ≈-sym id-left
 
   -- scalar-inv : End(TWO) → Two, extracting f(I). Since TWO endomorphisms preserve ⊥, they
   -- are determined by their value at I, which is either O (giving εm) or I (giving id TWO).
@@ -487,16 +468,13 @@ module Matrix where
   scalar-inv-scalar O = two.≃-refl {O}
   scalar-inv-scalar I = two.≃-refl {I}
 
-  -- Key lemma: an endomorphism f of TWO is determined by f(I). Proof is case analysis on fun f I.
+  -- Endomorphismof TWO is determined by f(I).
   scalar-scalar-inv : ∀ (f : TWO ⇒ TWO) → scalar (scalar-inv f) ≈ f
   scalar-scalar-inv f = go (fun f I) two.≃-refl
     where
       -- ⊥-preserving gives us O ≃ fun f O via the pair (O ≤ fun f O = tt, fun f O ≤ O).
       O≃fO : O two.≃ fun f O
-      O≃fO = prop.tt , ⊥-preserving-≃ f .proj₁
-        where
-          import prop
-          open import prop using (proj₁)
+      O≃fO = tt , ⊥-preserving-≃ f .proj₁
       -- Given a two.≃ fun f I, show scalar a ≈ f pointwise.
       go : (a : Two) → a two.≃ fun f I → scalar a ≈ f
       go O eq .f≃f .eqfunc .eqfun O = O≃fO
@@ -504,16 +482,13 @@ module Matrix where
       go I eq .f≃f .eqfunc .eqfun O = O≃fO
       go I eq .f≃f .eqfunc .eqfun I = eq
 
-  -- Instantiate the bridge: witnesses Mat(Two) ≃ MatRep(SemiLat, TWO) as a CMon-enriched equivalence.
-  -- This isn't wired into downstream code — it's just a sanity check that the bridge's module
-  -- signature is constructible for this instance.
   import matrix-embedding
-  module MatBridge = matrix-embedding
+  module Mat≃MatRep = matrix-embedding
     SemiLat.cmon-enriched
     (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
-    (categories.HasTerminal.witness SemiLat.terminal)
-    (categories.HasInitial.is-initial SemiLat.initial)
-    (categories.HasTerminal.is-terminal SemiLat.terminal)
+    (HasTerminal.witness SemiLat.terminal)
+    (HasInitial.is-initial SemiLat.initial)
+    (HasTerminal.is-terminal SemiLat.terminal)
     TWO
     two.semiring
     scalar scalar-cong scalar-ε scalar-ι
