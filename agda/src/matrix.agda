@@ -527,11 +527,10 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
   -- Use the join's poset (which will agree with the meet's).
   module DistributiveLattice
     (∨-idem   : ∀ {x} → (x ∨ x) ≈ x)
-    (∧-isMeet : IsMeet (Join.≤-isPreorder ∨-idem) _∧_)
-    (⊤-isTop  : IsTop  (Join.≤-isPreorder ∨-idem) ⊤)
+    (open Join ∨-idem)
+    (∧-isMeet : IsMeet ≤-isPreorder _∧_)
+    (⊤-isTop  : IsTop ≤-isPreorder ⊤)
     where
-
-    open Join ∨-idem public
 
     meets : MeetSemilattice preorder
     meets .MeetSemilattice._∧_ = _∧_
@@ -553,29 +552,28 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       where
 
       -- Lift scalar #-reflect to vectors using the dot-product form #^.
-      -- ⋅-inj isolates coordinate i, avoiding any case analysis on Fin.
       #^-reflect : ∀ {n} {u v : Vec n} → (∀ w → v #^ w → u #^ w) → ∀ i → u i ≤ v i
       #^-reflect {n} {u} {v} h i =
         #-reflect λ z vi#z →
           trans (∨-cong (sym (⋅-inj u i z)) refl)
                 (h (inj i z) (trans (∨-cong (⋅-inj v i z) refl) vi#z))
 
-      import conjugate
+      open import conjugate using (Obj; _⇒c_)
 
-      ⟦_⟧ : ℕ → conjugate.Obj
-      ⟦ n ⟧ .conjugate.Obj.carrier = vec-preorder preorder n
-      ⟦ n ⟧ .conjugate.Obj.meets = vec-meet preorder meets n
-      ⟦ n ⟧ .conjugate.Obj.joins = vec-join preorder semilattice n
-      ⟦ n ⟧ .conjugate.Obj.#-reflect {u} {v} h = #^-reflect h^
+      ⟦_⟧ : ℕ → Obj
+      ⟦ n ⟧ .Obj.carrier = vec-preorder preorder n
+      ⟦ n ⟧ .Obj.meets = vec-meet preorder meets n
+      ⟦ n ⟧ .Obj.joins = vec-join preorder semilattice n
+      ⟦ n ⟧ .Obj.#-reflect {u} {v} h = #^-reflect h^
         where
           h^ : ∀ w → v #^ w → u #^ w
           h^ w v⋅w≤⊥ = Σ-lub _ (h w (λ j → IsPreorder.trans ≤-isPreorder (Σ-ub _ j) v⋅w≤⊥))
-      ⟦ n ⟧ .conjugate.Obj.∧-∨-distrib x y z i = trans (∨-cong ∧-∨-distribₗ refl) ∨-idem
+      ⟦ n ⟧ .Obj.∧-∨-distrib x y z i = trans (∨-cong ∧-∨-distribₗ refl) ∨-idem
 
       -- Matrix M : Fin n → Fin m → Carrier gives:
       --   right : Vec m → Vec n is matrix-vector product (M u) i = row i of M  ⋅  u.
       --   left  : Vec n → Vec m is transpose action (y Mᵀ) j = y  ⋅  column j of M.
-      to-conj : ∀ {m n} → Matrix n m → ⟦ m ⟧ conjugate.⇒c ⟦ n ⟧
+      to-conj : ∀ {m n} → Matrix n m → ⟦ m ⟧ ⇒c ⟦ n ⟧
       to-conj {m} {n} M = record
         { right = record
           { fun  = λ u i → M i ⋅ u
