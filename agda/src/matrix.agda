@@ -122,6 +122,21 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
   scale-ι : ∀ {n} (v : Vec n) → ∀ j → scale ι v j ≈ v j
   scale-ι v j = ·-lunit
 
+  -- Iterated vector join: pointwise Σ.
+  Σ^ : ∀ {m n} → (Fin m → Vec n) → Vec n
+  Σ^ g j = Σ (λ i → g i j)
+
+  -- Basis decomposition of a vector v : ∀ j → v j ≈ Σ_i (v i · e i j).
+  -- Using e-symmetry to massage Σ-unit into the shape v = Σ^ (scale (v _) (e _)).
+  Σ^-basis : ∀ {m} (v : Vec m) (j : Fin m) → v j ≈ Σ^ (λ i → scale (v i) (e i)) j
+  Σ^-basis v j =
+    trans (sym (Σ-unit j v))
+          (Σ-cong (λ i → trans (·-cong (e-sym j i) refl) ·-comm))
+
+  -- Pointwise Σ^-congruence.
+  Σ^-cong : ∀ {m n} {g g' : Fin m → Vec n} → (∀ i j → g i j ≈ g' i j) → ∀ j → Σ^ g j ≈ Σ^ g' j
+  Σ^-cong h j = Σ-cong (λ i → h i j)
+
   -- Dot product isolates the ith coordinate: v ⋅ inj i z ≈ v i · z.
   -- A weighted form of Σ-unit with a constant factor pulled outside the sum.
   ⋅-inj : ∀ {n} (v : Vec n) (i : Fin n) (z : Carrier) → (v ⋅ inj i z) ≈ (v i · z)
@@ -409,8 +424,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
   open import join-semilattice using (JoinSemilattice)
   open import meet-semilattice using (MeetSemilattice)
 
-  -- Pointwise lifts to Vec n. Defined before the ∧/∨/⊤/⊥ renaming of Mat so that
-  -- the record-field opens of Preorder/JoinSemilattice/MeetSemilattice don't clash.
+  -- Pointwise lifts to Vec n.
   module vec (P : Preorder) (n : ℕ) where
     open Preorder
     open JoinSemilattice
@@ -467,6 +481,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     where
 
     open IsPreorder ≤-isPreorder public using (_≃_) renaming (refl to ≤-refl; trans to ≤-trans)
+    open import prop public using (proj₁; proj₂)
 
     preorder : Preorder
     preorder .Preorder.Carrier = Carrier
@@ -491,6 +506,50 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     Σ-mono : ∀ {n} {f g : Fin n → Carrier} → (∀ j → f j ≤ g j) → Σ f ≤ Σ g
     Σ-mono = +-to-Σ.Σ-preserves _≤_ ≤-refl (IsJoin.mono ∨-isJoin)
 
+    -- Pointwise lift of _≤_ and _≃_ to Vec, from vec.preorder.
+    module _ {n : ℕ} where
+      open Preorder (vec.preorder preorder n) using () renaming (_≤_ to _≤^_; _≃_ to _≃^_) public
+
+    -- Iterated-∨ at Vec level.
+    Σ^-ub : ∀ {m n} (g : Fin m → Vec n) (i : Fin m) → g i ≤^ Σ^ g
+    Σ^-ub g i j = Σ-ub (λ k → g k j) i
+
+    Σ^-lub : ∀ {m n} {z : Vec n} (g : Fin m → Vec n) → (∀ i → g i ≤^ z) → Σ^ g ≤^ z
+    Σ^-lub g h j = Σ-lub (λ k → g k j) (λ i → h i j)
+
+    Σ^-mono : ∀ {m n} {g g' : Fin m → Vec n} → (∀ i → g i ≤^ g' i) → Σ^ g ≤^ Σ^ g'
+    Σ^-mono h j = Σ-mono (λ i → h i j)
+
+    -- Basis decomposition of a join-preserving, scale-linear map. Scale-linearity is an explicit hypothesis
+    -- because f's interaction with scalar · isn't otherwise constrained (like it is in Two). Currently unused,
+    -- but nice because it shows that because every such f is determined by its action on basis vectors, we
+    -- can think of it as a "join of atomic slices".
+    module _ {m n}
+      (f       : Vec m → Vec n)
+      (f-mono  : ∀ {u v} → u ≤^ v → f u ≤^ f v)
+      (f-⊥     : ∀ j → f (λ _ → ⊥) j ≤ ⊥)
+      (f-∨     : ∀ u v j → f (λ k → u k ∨ v k) j ≤ (f u j ∨ f v j))
+      (f-scale : ∀ a v j → f (scale a v) j ≃ scale a (f v) j)
+      where
+
+      -- f preserves and reflects Σ^.
+      f-Σ^ : ∀ {k} (g : Fin k → Vec m) → f (Σ^ g) ≃^ Σ^ (λ i → f (g i))
+      f-Σ^ {zero} g .proj₁ j = f-⊥ j
+      f-Σ^ {suc k} g .proj₁ j =
+        ≤-trans (f-∨ (g zero) (Σ^ (λ i → g (suc i))) j)
+                (IsJoin.mono ∨-isJoin ≤-refl (f-Σ^ (λ i → g (suc i)) .proj₁ j))
+      f-Σ^ g .proj₂ = Σ^-lub _ (λ i → f-mono (Σ^-ub g i))
+
+      basis-decomp : ∀ (v : Vec m) j → f v j ≃ Σ^ (λ i → scale (v i) (f (e i))) j
+      basis-decomp v j .proj₁ =
+        ≤-trans (f-mono (λ k → ≈→≤ (Σ^-basis v k)) j)
+          (≤-trans (f-Σ^ (λ i → scale (v i) (e i)) .proj₁ j)
+                   (Σ-mono (λ i → f-scale (v i) (e i) j .proj₁)))
+      basis-decomp v j .proj₂ =
+        ≤-trans (Σ-mono (λ i → f-scale (v i) (e i) j .proj₂))
+          (≤-trans (f-Σ^ (λ i → scale (v i) (e i)) .proj₂ j)
+                   (f-mono (λ k → ≈→≤ (sym (Σ^-basis v k))) j))
+
   module DistributiveLattice
     (_≤_          : Carrier → Carrier → Prop _)
     (≤-isPreorder : IsPreorder _≤_)
@@ -512,15 +571,12 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
 
     open Disjoint ≤-isPreorder ∧-isMeet ⊥-isBottom public
 
-    module _ {n : ℕ} where
-      open Preorder (vec.preorder preorder n) using () renaming (_≤_ to _≤^_) public
-
     -- Dot-product form of disjointness, for vectors.
     infix 4 _#^_
     _#^_ : ∀ {n} → Vec n → Vec n → Prop _
     u #^ v = (u ⋅ v) ≤ ⊥
 
-    open import prop using (proj₁; proj₂; _⇔_)
+    open import prop using (_⇔_)
 
     module BooleanAlgebra
       (¬ : Carrier → Carrier)
