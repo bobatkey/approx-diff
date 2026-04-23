@@ -112,6 +112,16 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
   Σ-·-distribₗ {n} x f =
     trans ·-comm (trans (Σ-·-distribᵣ f x) (Σ-cong {n} (λ j → ·-comm)))
 
+  -- Scalar × vector, pointwise.
+  scale : ∀ {n} → Carrier → Vec n → Vec n
+  scale a v j = a · v j
+
+  scale-ε : ∀ {n} (v : Vec n) → ∀ j → scale ε v j ≈ ε
+  scale-ε v j = ε-annihilₗ
+
+  scale-ι : ∀ {n} (v : Vec n) → ∀ j → scale ι v j ≈ v j
+  scale-ι v j = ·-lunit
+
   -- Dot product isolates the ith coordinate: v ⋅ inj i z ≈ v i · z.
   -- A weighted form of Σ-unit with a constant factor pulled outside the sum.
   ⋅-inj : ∀ {n} (v : Vec n) (i : Fin n) (z : Carrier) → (v ⋅ inj i z) ≈ (v i · z)
@@ -448,15 +458,12 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       ε-annihilᵣ to ⊥-annihilᵣ
     )
 
-  module DistributiveLattice
+  module Join
     (_≤_          : Carrier → Carrier → Prop _)
     (≤-isPreorder : IsPreorder _≤_)
-    (∧-isMeet     : IsMeet ≤-isPreorder _∧_)
-    (⊤-isTop      : IsTop  ≤-isPreorder ⊤)
     (∨-isJoin     : IsJoin ≤-isPreorder _∨_)
     (⊥-isBottom   : IsBottom ≤-isPreorder ⊥)
-    (∧-∨-distrib  : ∀ {x y z} → (x ∧ (y ∨ z)) ≤ ((x ∧ y) ∨ (x ∧ z)))
-    (≈→≤          : ∀ {x y} → x ≈ y → x ≤ y) -- S setoid equivalence compatible with the preorder
+    (≈→≤          : ∀ {x y} → x ≈ y → x ≤ y)
     where
 
     open IsPreorder ≤-isPreorder public using (_≃_) renaming (refl to ≤-refl; trans to ≤-trans)
@@ -465,12 +472,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     preorder .Preorder.Carrier = Carrier
     preorder .Preorder._≤_ = _≤_
     preorder .Preorder.≤-isPreorder = ≤-isPreorder
-
-    meets : MeetSemilattice preorder
-    meets .MeetSemilattice._∧_ = _∧_
-    meets .MeetSemilattice.⊤ = ⊤
-    meets .MeetSemilattice.∧-isMeet = ∧-isMeet
-    meets .MeetSemilattice.⊤-isTop = ⊤-isTop
 
     joins : JoinSemilattice preorder
     joins .JoinSemilattice._∨_ = _∨_
@@ -489,6 +490,25 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
 
     Σ-mono : ∀ {n} {f g : Fin n → Carrier} → (∀ j → f j ≤ g j) → Σ f ≤ Σ g
     Σ-mono = +-to-Σ.Σ-preserves _≤_ ≤-refl (IsJoin.mono ∨-isJoin)
+
+  module DistributiveLattice
+    (_≤_          : Carrier → Carrier → Prop _)
+    (≤-isPreorder : IsPreorder _≤_)
+    (∧-isMeet     : IsMeet ≤-isPreorder _∧_)
+    (⊤-isTop      : IsTop  ≤-isPreorder ⊤)
+    (∨-isJoin     : IsJoin ≤-isPreorder _∨_)
+    (⊥-isBottom   : IsBottom ≤-isPreorder ⊥)
+    (∧-∨-distrib  : ∀ {x y z} → (x ∧ (y ∨ z)) ≤ ((x ∧ y) ∨ (x ∧ z)))
+    (≈→≤          : ∀ {x y} → x ≈ y → x ≤ y) -- S setoid equivalence compatible with the preorder
+    where
+
+    open Join _≤_ ≤-isPreorder ∨-isJoin ⊥-isBottom ≈→≤ public
+
+    meets : MeetSemilattice preorder
+    meets .MeetSemilattice._∧_ = _∧_
+    meets .MeetSemilattice.⊤ = ⊤
+    meets .MeetSemilattice.∧-isMeet = ∧-isMeet
+    meets .MeetSemilattice.⊤-isTop = ⊤-isTop
 
     open Disjoint ≤-isPreorder ∧-isMeet ⊥-isBottom public
 
