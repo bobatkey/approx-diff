@@ -447,7 +447,8 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
   vec-meet P M n .MeetSemilattice.⊤-isTop .IsTop.≤-top i =
     IsTop.≤-top (M .MeetSemilattice.⊤-isTop)
 
-  -- If ∨ is idempotent then (S, ∨) is a join-semilattice with ⊥.
+  -- If ∨ is idempotent then (S, ∨) is a join-semilattice with ⊥. The dual statement is true of ∧ and ⊤ but we
+  -- don't need that at the moment.
   module Join (∨-idem : ∀ {x} → (x ∨ x) ≈ x) where
 
     infix 4 _≤_
@@ -479,50 +480,17 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     semilattice .JoinSemilattice.∨-isJoin = ∨-isJoin
     semilattice .JoinSemilattice.⊥-isBottom = ⊥-isBottom
 
-    -- Iterated-∨ laws (Σ is ∨ iterated). These mirror the binary IsJoin laws:
-    -- Σ-ub corresponds to inl/inr, Σ-lub to [_,_], Σ-mono to mono.
+    -- Analogues of the binary IsJoin laws for Σ, with Σ-ub corresponding to inl/inr and Σ-lub to [_,_].
     Σ-ub : ∀ {n} (f : Fin n → Carrier) (i : Fin n) → f i ≤ Σ f
-    Σ-ub f zero    = IsJoin.inl ∨-isJoin
+    Σ-ub f zero = IsJoin.inl ∨-isJoin
     Σ-ub f (suc i) = IsPreorder.trans ≤-isPreorder (Σ-ub (λ j → f (suc j)) i) (IsJoin.inr ∨-isJoin)
 
     Σ-lub : ∀ {n} {z} (f : Fin n → Carrier) → (∀ j → f j ≤ z) → Σ f ≤ z
-    Σ-lub {zero}  _ _ = IsBottom.≤-bottom ⊥-isBottom
+    Σ-lub {zero} _ _ = IsBottom.≤-bottom ⊥-isBottom
     Σ-lub {suc n} f h = IsJoin.[_,_] ∨-isJoin (h zero) (Σ-lub (λ j → f (suc j)) (λ j → h (suc j)))
 
     Σ-mono : ∀ {n} {f g : Fin n → Carrier} → (∀ j → f j ≤ g j) → Σ f ≤ Σ g
     Σ-mono = +-to-Σ.Σ-preserves _≤_ (IsPreorder.refl ≤-isPreorder) (IsJoin.mono ∨-isJoin)
-
-  -- Dual: if ∧ is idempotent then (S, ∧) is a meet-semilattice with ⊤.
-  module Meet (∧-idem : ∀ {x} → (x ∧ x) ≈ x) where
-
-    infix 4 _≤_
-    _≤_ : Carrier → Carrier → Prop _
-    x ≤ y = (x ∧ y) ≈ x
-
-    ≤-isPreorder : IsPreorder _≤_
-    ≤-isPreorder .IsPreorder.refl = ∧-idem
-    ≤-isPreorder .IsPreorder.trans xy yz =
-      trans (∧-cong (sym xy) refl) (trans ∧-assoc (trans (∧-cong refl yz) xy))
-
-    ∧-isMeet : IsMeet ≤-isPreorder _∧_
-    ∧-isMeet .IsMeet.π₁ =
-      trans ∧-assoc (trans (∧-cong refl ∧-comm) (trans (sym ∧-assoc) (∧-cong ∧-idem refl)))
-    ∧-isMeet .IsMeet.π₂ = trans ∧-assoc (∧-cong refl ∧-idem)
-    ∧-isMeet .IsMeet.⟨_,_⟩ xy xz = trans (sym ∧-assoc) (trans (∧-cong xy refl) xz)
-
-    ⊤-isTop : IsTop ≤-isPreorder ⊤
-    ⊤-isTop .IsTop.≤-top = trans ∧-comm ∧-lunit
-
-    preorder : Preorder
-    preorder .Preorder.Carrier = Carrier
-    preorder .Preorder._≤_ = _≤_
-    preorder .Preorder.≤-isPreorder = ≤-isPreorder
-
-    semilattice : MeetSemilattice preorder
-    semilattice .MeetSemilattice._∧_ = _∧_
-    semilattice .MeetSemilattice.⊤ = ⊤
-    semilattice .MeetSemilattice.∧-isMeet = ∧-isMeet
-    semilattice .MeetSemilattice.⊤-isTop = ⊤-isTop
 
   -- Use the join's poset (which will agree with the meet's).
   module DistributiveLattice
