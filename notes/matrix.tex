@@ -1,4 +1,4 @@
-\subsection{Matrices over a commutative semiring}
+\section{Matrices over a commutative semiring}
 \label{sec:matrix}
 
 Given any commutative semiring $S = (|S|, +, 0, \cdot, 1)$ we may form the category $\Mat(S)$ whose objects are
@@ -12,7 +12,7 @@ Most of the material here is formalised in the Agda module \texttt{matrix}.\foot
 Throughout, $S$ is a fixed commutative semiring with underlying setoid $(|S|, \approx)$. We write $0$ and $1$
 for the additive and multiplicative identities and $+, \cdot$ for the operations.
 
-\subsubsection{Vectors and standard basis}
+\subsection{Vectors and standard basis}
 \label{sec:matrix:vectors}
 
 A \emph{length-$n$ vector} over $S$ is a function $v : \mathrm{Fin}(n) \to |S|$; we write $v_i$ for $v(i)$.
@@ -32,7 +32,7 @@ sum over vectors, written $\bigoplus$, is simply pointwise iterated sum: for $g 
    \left(\bigoplus_{i} g(i)\right)_{\!j} = \sum_i g(i)_j.
 \end{salign*}
 
-\subsubsection{Basis decomposition}
+\subsection{Basis decomposition}
 \label{sec:matrix:basis-decomp}
 
 Every length-$m$ vector $v$ decomposes as an iterated sum of scaled basis vectors,
@@ -51,7 +51,7 @@ vectors via
 \end{salign*}
 \noindent i.e.\ as a ``join of atomic slices''.
 
-\subsubsection{The matrix category}
+\subsection{The matrix category}
 \label{sec:matrix:category}
 
 A matrix $M : m \to n$ is a function $\mathrm{Fin}(n) \to \mathrm{Fin}(m) \to |S|$; the entry at row $i$ and
@@ -65,14 +65,14 @@ the category laws reduces to standard identities about iterated sum: associativi
 sum-distributivity of $\cdot$ on both sides together with the interchange law $\sum_i \sum_j f(i)(j) \approx
 \sum_j \sum_i f(i)(j)$, and the identity laws use the sum-of-basis lemma.
 
-\subsubsection{Transpose}
+\subsection{Transpose}
 \label{sec:matrix:transpose}
 
 The \emph{transpose} $M^{\!\top} : n \to m$ of $M : m \to n$ has entries $(M^{\!\top})_{ji} = M_{ij}$. The
 transpose is involutive, $(M^{\!\top})^{\!\top} = M$, and interacts with composition as $(N \comp M)^{\!\top} =
 M^{\!\top} \comp N^{\!\top}$. Both facts are immediate from the semiring's commutativity.
 
-\subsubsection{$\CMon$-enrichment and biproducts}
+\subsection{$\CMon$-enrichment and biproducts}
 \label{sec:matrix:cmon}
 
 Pointwise addition $(M +_m N)_{ij} = M_{ij} + N_{ij}$ and the zero matrix $0_m$ equip each hom-set of $\Mat(S)$
@@ -81,7 +81,7 @@ $\CMon$-enriched. Moreover, $0 : \Mat(S)$ is a zero object (both terminal and in
 natural numbers is the \emph{biproduct} of $m$ and $n$ in $\Mat(S)$, with injections and projections given by
 the appropriate ``block'' matrices. $\Mat(S)$ is therefore a concrete semi-additive category.
 
-\subsubsection{Ordered tiers}
+\subsection{Ordered tiers}
 \label{sec:matrix:tiers}
 
 When $|S|$ carries additional order-theoretic structure compatible with $(+, \cdot)$, further derived
@@ -104,7 +104,7 @@ iff $u \cdot v \le 0$, together with its pointwise lift to vectors.
 embeddings discussed below.
 \end{itemize}
 
-\subsubsection{Example: $\Mat(\Two)$ for Boolean analysis}
+\subsection{Example: $\Mat(\Two)$ for Boolean analysis}
 \label{sec:matrix:two}
 
 Take $S = \Two = (\{\bot, \top\}, \join, \bot, \meet, \top)$ with $+ := \join$, $\cdot := \meet$, $0 := \bot$, $1
@@ -113,7 +113,7 @@ Take $S = \Two = (\{\bot, \top\}, \join, \bot, \meet, \top)$ with $+ := \join$, 
 in the dependency graph encoded by a matrix (\secref{matrix:two:matrices}). This was the starting point for
 the development and supplies the concrete semantics of interest for slicing-style analyses.
 
-\subsubsection{Morphisms as dependency relations}
+\subsection{Morphisms as dependency relations}
 \label{sec:matrix:two:matrices}
 
 At $S = \Two$ each entry $M_{ij}$ is a bit, and $M$ can be read as the \emph{dependency relation} between two
@@ -129,7 +129,7 @@ Basis decomposition specialises to
 \end{salign*}
 \noindent --- the ``live'' positions of $v$ select which columns of $M_f$ contribute.
 
-\subsubsection{Relation to $\SemiLat$}
+\subsection{Relation to $\SemiLat$}
 \label{sec:matrix:two:semilat}
 
 $\Mat(\Two)$ is equivalent (as a $\CMon$-enriched category) to the full subcategory of $\SemiLat$ spanned by
@@ -141,7 +141,7 @@ equivalence. This is captured in Agda by the module \texttt{matrix-embedding}, i
 under composition --- a fact which transports across the iso from commutativity of $(\Two, \meet)$, removing
 the need for a direct case analysis.
 
-\subsubsection{Two embeddings (to be generalised)}
+\subsection{Two embeddings (to be generalised)}
 \label{sec:matrix:two:embeddings}
 
 The following material is the Boolean-specific account of the two embeddings, to be folded into a generic
@@ -170,7 +170,7 @@ adjointness condition
 Boolean implication.
 \end{enumerate}
 
-\subsubsection{De Morgan duality}
+\subsection{De Morgan duality}
 \label{sec:matrix:two:de-morgan}
 
 The two backward maps are De Morgan duals:
@@ -193,7 +193,7 @@ case. In a general Heyting algebra the equivalence $a \disj b \iff a \le \neg b$
 the pseudo-complement), but the De Morgan identity $\neg f^{\!\top} = f_* \comp \neg$ relies on
 double-negation $\neg \comp \neg = \id$, which is Boolean-specific.
 
-\subsubsection{Connection to forward- and reverse-mode AD}
+\subsection{Connection to forward- and reverse-mode AD}
 \label{sec:matrix:two:ad}
 
 \begin{center}

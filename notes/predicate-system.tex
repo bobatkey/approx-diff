@@ -1,7 +1,7 @@
-\subsection{Predicate systems}
+\section{Predicate systems}
 \label{sec:predicate-system}
 
-\subsubsection{Predicate system over $\cat{C}$}
+\subsection{Predicate system over $\cat{C}$}
 
 Suppose $\cat{C}$ a category with finite products. A \emph{predicate system} over $\cat{C}$ consists of the
 following data:
@@ -22,7 +22,7 @@ $\residual$ and $\forall_Y$.
 \item $\reindex{-}{f}$ is lax (and thus $\directImage{-}{f}$ is colax) with respect to $\join$.
 \end{itemize}
 
-\subsubsection{Predicate system over $\Set$}
+\subsection{Predicate system over $\Set$}
 
 Suppose $X$ a set. Define a \emph{predicate on $X$} to be a family of (proof-irrelevant) propositions for
 every $x \in X$. For any function $f: X \to Y$, define $\reindex{P}{f}(x)$ iff $P(f(x))$ and
@@ -31,7 +31,7 @@ predicate system over $\Set$ which assigns to any set $X$ the set $\Pred(X)$ of 
 implication, with $\top, \meet, \join$ and $\residual$ defined pointwise and universal quantification defined
 as $\forall_Y(P)(x)$ iff $P(x,y)$ for all $y \in Y$.
 
-\subsubsection{Predicates on a presheaf}
+\subsection{Predicates on a presheaf}
 
 Suppose $\cat{C}$ a category and $F: \cat{C}^\op \to \Set$ a presheaf. Define a \emph{predicate on $F$} to be
 a family of predicates $P_X \in \Pred_\mathcal{S}(F(X))$ for every object $X$ in $\cat{C}$ such that $P_Y
@@ -43,7 +43,7 @@ presheaf $F$ the poset $\Pred(F)$ of predicates on $F$ ordered pointwise, where 
 \to G$, families of pullback and pushforward maps where $\reindex{P}{\alpha}_X = \reindex{P_X}{\alpha_X}$ and
 $\directImage{P}{\alpha}_X = \directImage{P_X}{\alpha_X}$.
 
-\subsubsection{Closure operator over a predicate system}
+\subsection{Closure operator over a predicate system}
 
 A \emph{closure operator} $C$ over a poset $(X, \sqleq)$ is a lax idempotent monad on $X$, with functoriality,
 unit and multiplication given by monotonicity, extensivity ($x \sqleq C(x)$) and idempotence ($C(C(x)) \sqleq
@@ -58,7 +58,7 @@ with any reindexing functor $\reindex{-}{f}$, i.e.~$C_X \comp \reindex{-}{f} \is
 
 % Haven't figured this out yet..
 %
-% \subsubsection{Coproduct closure operator}
+% \subsection{Coproduct closure operator}
 %
 % Suppose $\cat{C}$ a category with stable coproducts (\secref{stable-coproducts}). Define the fibred functor
 % $C$ where for every presheaf $F: \cat{C}^\op \to \Set$ the fibre map $C_F: \Pred(F) \to \Pred(F)$ sends every

@@ -1,4 +1,4 @@
-\subsection{Automatic differentiation}
+\section{Automatic differentiation}
 \label{sec:auto-diff}
 
 For a differentiable manifold $M$, write $\tangents_x(M)$ for the tangent space at a point $x \in M$ and
@@ -16,7 +16,7 @@ matrix of $f$ at $x$. Since $\RR^n$ is flat, $\cotangents_x(\RR^n)$ is also cano
 so in fact $\pullf{f}_x$ is a linear map $\RR^n \linearto \RR^m$.
 \end{itemize}
 
-\subsubsection{Chain rule}
+\subsection{Chain rule}
 
 Derivatives respect composition. Suppose $f: \RR^m \to \RR^n$ and $g: \RR^n \to \RR^k$. For any $x \in \RR^m$
 we have:
@@ -26,7 +26,7 @@ we have:
 \item $\pullf{(g \comp f)}_x = \pullf{f}_{x} \comp \pullf{g}_{f(x)}: \RR^k \to \RR^m$
 \end{itemize}
 
-\subsubsection{Forward mode automatic differentiation}
+\subsection{Forward mode automatic differentiation}
 
 \begin{definition}
 Define the functor $\tangents$ which sends every vector space $\RR^n$ to itself and every differentiable map
@@ -54,7 +54,7 @@ We can verify that $\tangents$ is indeed a functor, regardless of whether the li
 similarly for $g$ then the derivatives compose according to the forward chain rule and $(g \comp f)_2(x)$ is
 the derivative of $(g \comp f)_1$ at $x$.
 
-\subsubsection{Reverse mode automatic differentiation}
+\subsection{Reverse mode automatic differentiation}
 
 \begin{definition}
 Define the functor $\cotangents$ which sends every vector space $\RR^n$ to itself and every differentiable map
