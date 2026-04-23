@@ -508,6 +508,9 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
 
     open Disjoint ≤-isPreorder ∧-isMeet ⊥-isBottom public
 
+    module _ {n : ℕ} where
+      open Preorder (vec-preorder preorder n) using () renaming (_≤_ to _≤^_) public
+
     -- Dot-product form of disjointness, for vectors.
     infix 4 _#^_
     _#^_ : ∀ {n} → Vec n → Vec n → Prop _
@@ -517,7 +520,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y)
       where
 
-      #^-reflect : ∀ {n} {u v : Vec n} → (∀ w → v #^ w → u #^ w) → ∀ i → u i ≤ v i
+      #^-reflect : ∀ {n} {u v : Vec n} → (∀ w → v #^ w → u #^ w) → u ≤^ v
       #^-reflect {n} {u} {v} h i =
         #-reflect λ z vi#z →
           trans (∨-cong (sym (⋅-inj u i z)) refl)
