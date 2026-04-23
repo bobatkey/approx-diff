@@ -551,10 +551,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
                  trans (Σ-cong {n} (λ i → trans (sym ∧-assoc) (∧-cong ∧-comm refl)))
                        (sym (Σ-·-distribᵣ (λ i → M i j ∧ y i) (x j))))))
 
-      -- Convention: M : Matrix n m is read "from Fin m to Fin n"; the join-
-      -- preserving direction (left) goes outputs → inputs (Vec m → Vec n).
-      -- Target arrow is Heyting n ⇒c Heyting m (backwards along M), matching
-      -- the flipped direction used by to-gal.
+      -- Target arrow has direction of Mᵀ for consistency with to-gal.
       to-conj : ∀ {m n} → Matrix n m → Heyting n ⇒c Heyting m
       to-conj M .right .fun x j = (M ᵀ) j ⋅ x
       to-conj M .right .mono x≤x' j = Σ-mono (λ i → IsMeet.mono ∧-isMeet ≤-refl (x≤x' i))
@@ -578,9 +575,9 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
         ¬^-anti : ∀ {n} {u v : Vec n} → u ≤^ v → ¬^ v ≤^ ¬^ u
         ¬^-anti u≤v i = ¬-anti (u≤v i)
 
-        -- The De Morgan dual of the transpose action. Galois right adjoint
-        -- of the forward action M · _ when the latter is read as the (join-
-        -- preserving) left adjoint going outputs → inputs.
+        -- Meet-preserving De Morgan dual of the transpose. Direction is confusing here because we take M to
+        -- be the _backward_ map capturing output-to-input dependencies. The adjoint goes in the same direction
+        -- as M ᵀ, so corresponds to the _forwards_ map.
         adjoint : ∀ {m n} → Matrix n m → Vec n → Vec m
         adjoint M x j = ¬ ((M ᵀ) j ⋅ ¬^ x)
 
@@ -592,9 +589,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
         BoundedLattice n .Obj-g.meets = Heyting n .Obj.meets
         BoundedLattice n .Obj-g.joins = Heyting n .Obj.joins
 
-        -- Galois pair for matrix M : Matrix n m:
-        --   left  : Vec m → Vec n = M ·            (join-preserving, outputs → inputs)
-        --   right : Vec n → Vec m = ¬ ∘ Mᵀ· ∘ ¬    (meet-preserving, De Morgan dual of transpose)
         to-gal : ∀ {m n} → Matrix n m → BoundedLattice n =>g BoundedLattice m
         to-gal M .right .fun = adjoint M
         to-gal M .right .mono x≤x' j = ¬-anti (Σ-mono (λ i → IsMeet.mono ∧-isMeet ≤-refl (¬-anti (x≤x' i))))
