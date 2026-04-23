@@ -517,7 +517,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y)
       where
 
-      -- Lift scalar #-reflect to vectors using the dot-product form #^.
       #^-reflect : ∀ {n} {u v : Vec n} → (∀ w → v #^ w → u #^ w) → ∀ i → u i ≤ v i
       #^-reflect {n} {u} {v} h i =
         #-reflect λ z vi#z →
