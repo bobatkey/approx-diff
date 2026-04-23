@@ -3,7 +3,8 @@
 module conjugate where
 
 open import Level
-open import prop hiding (_∨_; ⊥) renaming (_∧_ to _∧ₚ_)
+open import Data.Unit using () renaming (tt to ttU)
+open import prop hiding (_∨_; ⊥; ⊤) renaming (_∧_ to _∧ₚ_)
 open import prop-setoid using (IsEquivalence)
 open import preorder hiding (𝟙)
 open import basics using (module Disjoint)
@@ -16,13 +17,7 @@ open import join-semilattice
   renaming (_=>_ to _=>J_; _≃m_ to _≃J_; _⊕_ to _⊕J_)
 open import cmon-enriched
 
--- Category of Heyting algebras (residuated lattices) and Tarski conjugates between them.
--- FIXME: express using the standard definition of Heyting algebra (although I think this is equivalent).
--- To bounded lattices, Heyting algebras add distributivity and "disjointness separation" (the annihilator map
--- Ann(x) := { z | z # x } is injective). The latter corresponds to Ann(x) being a principal ideal ↓(¬x)
--- where ¬x is the unique pseudocomplement. This seems to be the minimum structure required for conjugates to
--- preserve joins; in particular we don't need double negation.
-
+-- Category of Boolean algebras and Tarski conjugates between them.
 record Obj : Set (suc 0ℓ) where
   no-eta-equality
   field
@@ -36,12 +31,42 @@ record Obj : Set (suc 0ℓ) where
   open Disjoint ≤-isPreorder ∧-isMeet ⊥-isBottom public
 
   field
-    #-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y  -- #-mono is automatic
-    ∧-∨-distrib : ∀ x y z → x ∧ (y ∨ z) ≤ (x ∧ y) ∨ (x ∧ z)
+    ¬ : carrier .Preorder.Carrier → carrier .Preorder.Carrier
+    ∧-∨-distrib  : ∀ x y z → x ∧ (y ∨ z) ≤ (x ∧ y) ∨ (x ∧ z)
+    complement-∨ : ∀ {x} → ⊤ ≤ x ∨ ¬ x
+    complement-∧ : ∀ {x} → x ∧ ¬ x ≤ ⊥
 
-  -- holds in any bounded lattice
+  -- Holds in any bounded lattice.
   ∨-∧-distrib : ∀ x y z → x ∨ (y ∧ z) ≤ (x ∨ y) ∧ (x ∨ z)
   ∨-∧-distrib x y z = [ ⟨ inl ∧ inl ⟩ ∨ ⟨ ≤-trans π₁ inr ∧ ≤-trans π₂ inr ⟩ ]
+
+  -- ¬ is the pseudocomplement: # ⇔ ≤ ¬. Holds in any pseudocomplemented lattice.
+  #-↔-≤¬ : ∀ {x y} → (x # y) ⇔ (x ≤ ¬ y)
+  #-↔-≤¬ {x} {y} .proj₁ x#y =
+    ≤-trans ⟨ ≤-refl ∧ ≤-top ⟩
+      (≤-trans (∧-mono ≤-refl complement-∨)
+        (≤-trans (∧-∨-distrib x y (¬ y))
+          [ ≤-trans x#y ≤-bottom ∨ π₂ ]))
+  #-↔-≤¬ .proj₂ x≤¬y =
+    ≤-trans (∧-mono x≤¬y ≤-refl) (≤-trans ∧-comm complement-∧)
+
+  ¬-antitone : ∀ {x y} → x ≤ y → ¬ y ≤ ¬ x
+  ¬-antitone x≤y =
+    #-↔-≤¬ .proj₁ (#-sym (#-mono x≤y _ (#-sym (#-↔-≤¬ .proj₂ ≤-refl))))
+
+  ¬-involutive : ∀ {x} → ¬ (¬ x) ≤ x
+  ¬-involutive {x} =
+    ≤-trans ⟨ ≤-refl ∧ ≤-top ⟩
+      (≤-trans (∧-mono ≤-refl complement-∨)
+        (≤-trans (∧-∨-distrib (¬ (¬ x)) x (¬ x))
+          [ π₂ ∨ ≤-trans (≤-trans ∧-comm complement-∧) ≤-bottom ]))
+
+  -- The annihilator map is injective.
+  #-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y
+  #-reflect {x} {y} h =
+    ≤-trans
+      (#-↔-≤¬ .proj₁ (h (¬ y) (#-sym (#-↔-≤¬ .proj₂ ≤-refl))))
+      ¬-involutive
 
   #-distrib : ∀ {x y z} → x # y → x # z → x # (y ∨ z)
   #-distrib x#y x#z = ≤-trans (∧-∨-distrib _ _ _) (≤-trans (∨-mono x#y x#z) (∨-idem .proj₁))
@@ -69,25 +94,25 @@ record _⇒c_ (X Y : Obj) : Set where
 
   right-∨ : X .joins =>J Y .joins
   right-∨ .func = right
-  right-∨ .∨-preserving {x} {x'} = Y .#-reflect suffices
+  right-∨ .∨-preserving {x} {x'} = #-reflect Y suffices
        where
        suffices : ∀ y → (right .fun x YJ.∨ right .fun x') Y.# y → right .fun (x XJ.∨ x') Y.# y
        suffices y fx∨fx'#y =
          #-sym Y (conjugate .proj₂ (#-distrib X
            (conjugate .proj₁ (#-sym Y (#-mono Y (inl Y) y fx∨fx'#y)))
            (conjugate .proj₁ (#-sym Y (#-mono Y (inr Y) y fx∨fx'#y)))))
-  right-∨ .⊥-preserving = Y .#-reflect (λ _ _ → #-sym Y (conjugate .proj₂ (π₂ X)))
+  right-∨ .⊥-preserving = #-reflect Y (λ _ _ → #-sym Y (conjugate .proj₂ (π₂ X)))
 
   left-∨ : Y .joins =>J X .joins
   left-∨ .func = left
-  left-∨ .∨-preserving {y} {y'} = X .#-reflect suffices
+  left-∨ .∨-preserving {y} {y'} = #-reflect X suffices
        where
        suffices : ∀ x → (left .fun y XJ.∨ left .fun y') X.# x → left .fun (y YJ.∨ y') X.# x
        suffices x gy∨gy'#x =
          conjugate .proj₁ (#-sym Y (#-distrib Y
            (#-sym Y (conjugate .proj₂ (#-mono X (inl X) x gy∨gy'#x)))
            (#-sym Y (conjugate .proj₂ (#-mono X (inr X) x gy∨gy'#x)))))
-  left-∨ .⊥-preserving = X. #-reflect (λ _ _ → conjugate .proj₁ (π₁ Y))
+  left-∨ .⊥-preserving = #-reflect X (λ _ _ → conjugate .proj₁ (π₁ Y))
 
 open _⇒c_
 
@@ -224,8 +249,10 @@ module _ where
   𝟙 .carrier = preorder.𝟙
   𝟙 .meets = meet-semilattice.𝟙
   𝟙 .joins = join-semilattice.𝟙
-  𝟙 .#-reflect _ = tt
+  𝟙 .¬ _ = ttU
   𝟙 .∧-∨-distrib _ _ _ = tt
+  𝟙 .complement-∨ = tt
+  𝟙 .complement-∧ = tt
 
   to-𝟙 : ∀ X → X ⇒c 𝟙
   to-𝟙 X .right = meet-semilattice.terminal {X = X .meets} ._=>M_.func
@@ -239,7 +266,7 @@ module _ where
   terminal .is-terminal .to-terminal-ext {X} f .right-eq .eqfun _ = tt , tt
   terminal .is-terminal .to-terminal-ext {X} f .left-eq .eqfun _ =
     X .≤-bottom ,
-    X .#-reflect (λ _ _ → f .conjugate .proj₁ tt)
+    #-reflect X (λ _ _ → f .conjugate .proj₁ tt)
 
 -- Products
 module _ where
@@ -255,11 +282,11 @@ module _ where
   (X ⊕ Y) .carrier = X .carrier × Y .carrier
   (X ⊕ Y) .meets = X .meets ⊕M Y .meets
   (X ⊕ Y) .joins = X .joins ⊕J Y .joins
-  (X ⊕ Y) .#-reflect h =
-    #-reflect X (λ a x'#a → proj₁ (h (a , Y .⊥) (x'#a , π₂ Y))) ,
-    #-reflect Y (λ b y'#b → proj₂ (h (X .⊥ , b) (π₂ X , y'#b)))
+  (X ⊕ Y) .¬ (x , y) = ¬ X x , ¬ Y y
   (X ⊕ Y) .∧-∨-distrib (x₁ , y₁) (x₂ , y₂) (x₃ , y₃) =
     ∧-∨-distrib X x₁ x₂ x₃ , ∧-∨-distrib Y y₁ y₂ y₃
+  (X ⊕ Y) .complement-∨ = complement-∨ X , complement-∨ Y
+  (X ⊕ Y) .complement-∧ = complement-∧ X , complement-∧ Y
 
   ⊕-# : ∀ {X Y} {x₁ x₂ y₁ y₂} → _#_ (X ⊕ Y) (x₁ , y₁) (x₂ , y₂) ⇔ _#_ X x₁ x₂ ∧ₚ _#_ Y y₁ y₂
   ⊕-# .proj₁ p = p
@@ -316,10 +343,10 @@ module _ where
   TWO .joins .JoinSemilattice.⊥ = O
   TWO .joins .JoinSemilattice.∨-isJoin = two.⊔-isJoin
   TWO .joins .JoinSemilattice.⊥-isBottom = two.O-isBottom
-  TWO .#-reflect {O} h = tt
-  TWO .#-reflect {I} {O} h = h I tt
-  TWO .#-reflect {I} {I} h = tt
+  TWO .¬ = two.¬
   TWO .∧-∨-distrib O _ _ = tt
   TWO .∧-∨-distrib I O O = tt
   TWO .∧-∨-distrib I O I = tt
   TWO .∧-∨-distrib I I _ = tt
+  TWO .complement-∨ {x} = two.complement-∨ {x}
+  TWO .complement-∧ {x} = two.complement-∧ {x}
