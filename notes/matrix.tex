@@ -1,0 +1,209 @@
+\subsection{Matrices over a commutative semiring}
+\label{sec:matrix}
+
+Given any commutative semiring $S = (|S|, +, 0, \cdot, 1)$ we may form the category $\Mat(S)$ whose objects are
+the natural numbers and whose morphisms $m \to n$ are $n \times m$ matrices over $S$. Composition is matrix
+multiplication in $S$ and the identity $m \to m$ is the Kronecker $\delta$. Earlier drafts of these notes
+presented the Boolean case (\secref{matrix:two}) as a stand-alone construction; we now develop it as an
+instance of the semiring-generic story, which streamlines the formal development and isolates the precise
+amount of algebraic structure each property requires.
+Most of the material here is formalised in the Agda module \texttt{matrix}.\footnote{\url{agda/src/matrix.agda}}
+
+Throughout, $S$ is a fixed commutative semiring with underlying setoid $(|S|, \approx)$. We write $0$ and $1$
+for the additive and multiplicative identities and $+, \cdot$ for the operations.
+
+\subsubsection{Vectors and standard basis}
+\label{sec:matrix:vectors}
+
+A \emph{length-$n$ vector} over $S$ is a function $v : \mathrm{Fin}(n) \to |S|$; we write $v_i$ for $v(i)$.
+The \emph{standard basis vector} $e_i : \mathrm{Fin}(n) \to |S|$ at index $i$ is the Kronecker $\delta$,
+\begin{salign*}
+   (e_i)_j = \begin{cases} 1 & i = j \\ 0 & \text{otherwise} \end{cases}
+\end{salign*}
+\noindent and the \emph{injection} of a scalar $z$ at index $i$ is $\mathsf{inj}_i(z)_j = (e_i)_j \cdot z$.
+The \emph{iterated sum} of a family $f : \mathrm{Fin}(n) \to |S|$ is defined by induction,
+\begin{salign*}
+   \sum_{i : \mathrm{Fin}(0)} f(i) = 0 \qquad \sum_{i : \mathrm{Fin}(n+1)} f(i) = f(0) + \sum_{i : \mathrm{Fin}(n)} f(i{+}1)
+\end{salign*}
+\noindent and the \emph{dot product} of two length-$n$ vectors is $u \cdot v = \sum_i u_i \cdot v_i$. Iterated
+sum over vectors, written $\bigoplus$, is simply pointwise iterated sum: for $g : \mathrm{Fin}(m) \to
+\mathrm{Fin}(n) \to |S|$,
+\begin{salign*}
+   \left(\bigoplus_{i} g(i)\right)_{\!j} = \sum_i g(i)_j.
+\end{salign*}
+
+\subsubsection{Basis decomposition}
+\label{sec:matrix:basis-decomp}
+
+Every length-$m$ vector $v$ decomposes as an iterated sum of scaled basis vectors,
+\begin{salign*}
+   v \approx \bigoplus_{i} v_i \cdot e_i \tag{basis decomposition}
+\end{salign*}
+\noindent where $a \cdot w$ denotes scaling of vector $w$ by scalar $a$. This is the algebraic fact that the
+standard basis spans the vector space, and is the crucial identity enabling the representation of linear maps
+out of a free module as matrices. It is proved from the sum-of-basis lemma $\sum_j (e_i)_j \cdot f(j) \approx
+f(i)$ together with the symmetry $(e_i)_j \approx (e_j)_i$ of the Kronecker $\delta$. When $S$ has a
+compatible order with joins (and scaling is additive in its scalar argument), basis decomposition extends to
+$\join$-preserving, scale-linear maps: every such $f : |S|^m \to |S|^n$ is determined by its action on basis
+vectors via
+\begin{salign*}
+   f(v) \approx \bigoplus_i v_i \cdot f(e_i) \tag{map basis decomposition}
+\end{salign*}
+\noindent i.e.\ as a ``join of atomic slices''.
+
+\subsubsection{The matrix category}
+\label{sec:matrix:category}
+
+A matrix $M : m \to n$ is a function $\mathrm{Fin}(n) \to \mathrm{Fin}(m) \to |S|$; the entry at row $i$ and
+column $j$ is $M_{ij}$. Equivalently, a matrix is an $m$-indexed family of length-$n$ vectors (its columns).
+Composition of $N : n \to k$ and $M : m \to n$ is matrix multiplication,
+\begin{salign*}
+   (N \comp M)_{ik} = \sum_{j} N_{ij} \cdot M_{jk}
+\end{salign*}
+\noindent and the identity $I : m \to m$ is the Kronecker $\delta$: $I_{ij} = (e_i)_j$. That $\Mat(S)$ satisfies
+the category laws reduces to standard identities about iterated sum: associativity of composition uses
+sum-distributivity of $\cdot$ on both sides together with the interchange law $\sum_i \sum_j f(i)(j) \approx
+\sum_j \sum_i f(i)(j)$, and the identity laws use the sum-of-basis lemma.
+
+\subsubsection{Transpose}
+\label{sec:matrix:transpose}
+
+The \emph{transpose} $M^{\!\top} : n \to m$ of $M : m \to n$ has entries $(M^{\!\top})_{ji} = M_{ij}$. The
+transpose is involutive, $(M^{\!\top})^{\!\top} = M$, and interacts with composition as $(N \comp M)^{\!\top} =
+M^{\!\top} \comp N^{\!\top}$. Both facts are immediate from the semiring's commutativity.
+
+\subsubsection{$\CMon$-enrichment and biproducts}
+\label{sec:matrix:cmon}
+
+Pointwise addition $(M +_m N)_{ij} = M_{ij} + N_{ij}$ and the zero matrix $0_m$ equip each hom-set of $\Mat(S)$
+with a commutative monoid; composition distributes pointwise over $+_m$, so that $\Mat(S)$ is
+$\CMon$-enriched. Moreover, $0 : \Mat(S)$ is a zero object (both terminal and initial), and the sum $m + n$ of
+natural numbers is the \emph{biproduct} of $m$ and $n$ in $\Mat(S)$, with injections and projections given by
+the appropriate ``block'' matrices. $\Mat(S)$ is therefore a concrete semi-additive category.
+
+\subsubsection{Ordered tiers}
+\label{sec:matrix:tiers}
+
+When $|S|$ carries additional order-theoretic structure compatible with $(+, \cdot)$, further derived
+constructions are available. The Agda formalisation factors these into \emph{tiers}, each parameterised by a
+preorder $\le$ on $|S|$ and axioms for how $+, \cdot$ interact with $\le$:
+
+\begin{itemize}
+\item \emph{Join} tier: $+$ is the join with bottom element $0$ (i.e.\ $(|S|, \le, +, 0)$ is a
+join-semilattice). At this tier we obtain iterated-join laws $\Sigma$-ub, $\Sigma$-lub, $\Sigma$-mono on
+scalars; pointwise lifts $\le^{\!\wedge}$ and $\bigoplus$-ub, $\bigoplus$-lub, $\bigoplus$-mono on vectors; and
+the \emph{map basis decomposition} above for a join-preserving, scale-linear $f$.
+
+\item \emph{Distributive lattice} tier: additionally $\cdot$ is the meet with top element $1$, and
+$\cdot$ distributes over $+$. At this tier we obtain a notion of \emph{disjointness}, $u \disj v$
+iff $u \cdot v \le 0$, together with its pointwise lift to vectors.
+
+\item \emph{Boolean algebra} tier: additionally equipped with a negation $\neg$ satisfying excluded middle ($1
+\le x + \neg x$) and non-contradiction ($x \cdot \neg x \le 0$). Here we derive the $\disj$-reflect principle
+($y \le x$ iff every $z$ disjoint from $x$ is disjoint from $y$), involutivity of $\neg$, and the two
+embeddings discussed below.
+\end{itemize}
+
+\subsubsection{Example: $\Mat(\Two)$ for Boolean analysis}
+\label{sec:matrix:two}
+
+Take $S = \Two = (\{\bot, \top\}, \join, \bot, \meet, \top)$ with $+ := \join$, $\cdot := \meet$, $0 := \bot$, $1
+:= \top$; this is a commutative (in fact Boolean) semiring. $\Mat(\Two)$ has as its morphisms $m \to n$ the $n
+\times m$ Boolean matrices; matrix composition in the $(\Two, \join, \meet)$ semiring computes reachability
+in the dependency graph encoded by a matrix (\secref{matrix:two:matrices}). This was the starting point for
+the development and supplies the concrete semantics of interest for slicing-style analyses.
+
+\subsubsection{Morphisms as dependency relations}
+\label{sec:matrix:two:matrices}
+
+At $S = \Two$ each entry $M_{ij}$ is a bit, and $M$ can be read as the \emph{dependency relation} between two
+index sets: $M_{ij} = \top$ iff position $i$ in the codomain depends on position $j$ in the domain.
+Composition in the $(\Two, \join, \meet)$ semiring is reachability:
+\begin{salign*}
+   (N \comp M)_{ik} = \bigjoin_j N_{ij} \meet M_{jk}
+\end{salign*}
+\noindent evaluates to $\top$ iff there is some intermediate position $j$ witnessing a chain $k \to j \to i$.
+Basis decomposition specialises to
+\begin{salign*}
+   f(v) = \bigjoin_{j \in J(v)} f(e_j) \qquad (J(v) = \{j : v_j = \top\})
+\end{salign*}
+\noindent --- the ``live'' positions of $v$ select which columns of $M_f$ contribute.
+
+\subsubsection{Relation to $\SemiLat$}
+\label{sec:matrix:two:semilat}
+
+$\Mat(\Two)$ is equivalent (as a $\CMon$-enriched category) to the full subcategory of $\SemiLat$ spanned by
+the biproduct powers $\Two^n = \Two \biprod \cdots \biprod \Two$. The equivalence is witnessed by the
+\emph{scalar iso} $\Two \cong \SemiLat(\Two, \Two)$, identifying $\bot$ with the zero morphism and $\top$ with
+the identity; this lifts, via the semi-additive representation of morphisms as matrices, to the full
+equivalence. This is captured in Agda by the module \texttt{matrix-embedding}, instantiated at $\Two$ in
+\texttt{ho-model} (\secref{matrix:two:semilat}), which also exhibits that $\SemiLat(\Two, \Two)$ is commutative
+under composition --- a fact which transports across the iso from commutativity of $(\Two, \meet)$, removing
+the need for a direct case analysis.
+
+\subsubsection{Two embeddings (to be generalised)}
+\label{sec:matrix:two:embeddings}
+
+The following material is the Boolean-specific account of the two embeddings, to be folded into a generic
+account (valid in the Boolean algebra tier of \secref{matrix:tiers}) in a later pass.
+
+We now treat $f: \Two^m \to \Two^n$ as the \emph{backward} direction of an analysis --- a map that propagates
+output demand back to input demand, and consider two contravariant embeddings: into $\HeytConj$ (a subcategory
+of $\LatGal$), and into $\LatGal$ directly. The two embeddings pair $f$ with a forward-direction counterpart
+in two different ways:
+
+\begin{enumerate}
+\item \emph{Conjugate pair.} The transpose $f^{\!\top}$ pairs with $f$ to form a conjugate pair $(f^{\!\top},
+f)$ in $\HeytConj$ (\secref{categories-with-biproducts:heytconj}): both maps are $\join$-preserving, linked by
+the disjointness condition
+\begin{salign*}
+   y \disj f^{\!\top}(x) \iff f(y) \disj x
+\end{salign*}
+
+\item \emph{Galois connection.} The right adjoint $f_*: \Two^n \to \Two^m$ (meet-preserving) pairs with $f$ to
+form a Galois connection $f \dashv f_*$ in $\LatGal$ (\secref{categories-with-biproducts:latgal}), with
+adjointness condition
+\begin{salign*}
+   y \le f_*(x) \iff f(y) \le x
+\end{salign*}
+\noindent Concretely, $f_*(x)_i = \bigmeet_j (M_f[i,j] \to x_j)$, where $a \to b = \neg a \join b$ is
+Boolean implication.
+\end{enumerate}
+
+\subsubsection{De Morgan duality}
+\label{sec:matrix:two:de-morgan}
+
+The two backward maps are De Morgan duals:
+\begin{salign*}
+   \neg\,f^{\!\top}(x) = f_*(\neg x)
+\end{salign*}
+\noindent This is the Boolean-algebra identity relating the transpose (in the $(\join, \meet)$-semiring) to
+the adjoint (in the dual $(\meet, \join)$-semiring). Combined with the Boolean-algebra fact that $a \disj b
+\iff a \le \neg b$, we obtain the following chain:
+\begin{salign*}
+   y \disj f^{\!\top}(x)
+   & \iff y \le \neg\,f^{\!\top}(x) \\
+   & \iff y \le f_*(\neg x) \\
+   & \iff f(y) \le \neg x \\
+   & \iff f(y) \disj x
+\end{salign*}
+\noindent This (and an analogous argument for the Galois connection) exhibits the conjugate and Galois
+embeddings as mutually derivable given the Boolean structure on $\Two^n$. This is specific to the Boolean
+case. In a general Heyting algebra the equivalence $a \disj b \iff a \le \neg b$ still holds (taking $\neg$ as
+the pseudo-complement), but the De Morgan identity $\neg f^{\!\top} = f_* \comp \neg$ relies on
+double-negation $\neg \comp \neg = \id$, which is Boolean-specific.
+
+\subsubsection{Connection to forward- and reverse-mode AD}
+\label{sec:matrix:two:ad}
+
+\begin{center}
+\small
+\begin{tabular}{ll}
+ \textbf{Real-number AD in $\FinVect_\RR$} & \textbf{Boolean AD in $\Mat(\Two)$} \\
+ Linear map $\pushf{\phi}_x: \RR^m \linearto \RR^n$ (forward mode) & $\join$-preserving transpose $f^{\!\top}: \Two^m \to \Two^n$ (demanded by) \\
+ Linear transpose $\pullf{\phi}_x: \RR^n \linearto \RR^m$ (reverse mode) & Given $\join$-preserving $f: \Two^n
+ \to \Two^m$ (demands) \\
+ Matrix multiplication in $(\RR, +, \cdot)$ semiring & Matrix multiplication in $(\Two, \join,
+ \meet)$ semiring
+\end{tabular}
+\end{center}
