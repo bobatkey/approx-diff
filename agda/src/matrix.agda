@@ -527,6 +527,9 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
                 (h (inj i z) (trans (∨-cong (⋅-inj v i z) refl) vi#z))
 
       open import conjugate using (Obj; _⇒c_)
+      open _⇒c_
+      open preorder._=>_ using (fun; mono)
+      open import prop using (proj₁; proj₂)
 
       Heyting : ℕ → Obj
       Heyting n .Obj.carrier = vec-preorder preorder n
@@ -538,29 +541,24 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
           h^ w v⋅w≤⊥ = Σ-lub _ (h w (λ j → ≤-trans (Σ-ub _ j) v⋅w≤⊥))
       Heyting n .Obj.∧-∨-distrib x y z i = trans (∨-cong ∧-∨-distribₗ refl) ∨-idem
 
+      -- Push y inside, interchange, pull x out.
+      swap : ∀ {m n} (M : Matrix n m) {x : Vec m} {y : Vec n} →
+             (y ⋅ (λ i → M i ⋅ x)) ≈ ((λ j → (M ᵀ) j ⋅ y) ⋅ x)
+      swap {m} {n} M {x} {y} =
+        trans (Σ-cong {n} (λ i → Σ-·-distribₗ (y i) (λ j → M i j ∧ x j)))
+        (trans (Σ-interchange {n} {m} (λ i j → y i ∧ (M i j ∧ x j)))
+               (Σ-cong {m} (λ j →
+                 trans (Σ-cong {n} (λ i → trans (sym ∧-assoc) (∧-cong ∧-comm refl)))
+                       (sym (Σ-·-distribᵣ (λ i → M i j ∧ y i) (x j))))))
+
       to-conj : ∀ {m n} → Matrix n m → Heyting m ⇒c Heyting n
-      to-conj {m} {n} M = record
-        { right = record
-          { fun  = λ u i → M i ⋅ u
-          ; mono = λ u≤v i → Σ-mono (λ j → IsMeet.mono ∧-isMeet (≤-refl) (u≤v j))
-          }
-        ; left = record
-          { fun  = λ y j → (M ᵀ) j ⋅ y
-          ; mono = λ y≤y' j → Σ-mono (λ i → IsMeet.mono ∧-isMeet (≤-refl) (y≤y' i))
-          }
-        ; conjugate = λ {x} {y} → record
-          { proj₁ = λ h j → ≤-trans (Σ-ub _ j) (trans (∨-cong (sym (swap {x} {y})) refl) (Σ-lub _ h))
-          ; proj₂ = λ k i → ≤-trans (Σ-ub _ i) (trans (∨-cong (swap {x} {y}) refl) (Σ-lub _ k))
-          }
-        }
-        where
-          -- Push y inside, interchange the double sum, and pull out x.
-          swap : ∀ {x : Vec m} {y : Vec n} → (y ⋅ (λ i → M i ⋅ x)) ≈ ((λ j → (M ᵀ) j ⋅ y) ⋅ x)
-          swap {x} {y} =
-            trans (Σ-cong {n} (λ i → Σ-·-distribₗ (y i) (λ j → M i j ∧ x j)))
-            (trans (Σ-interchange {n} {m} (λ i j → y i ∧ (M i j ∧ x j)))
-                   (Σ-cong {m} (λ j →
-                     trans (Σ-cong {n} (λ i → trans (sym ∧-assoc) (∧-cong ∧-comm refl)))
-                           (sym (Σ-·-distribᵣ (λ i → M i j ∧ y i) (x j))))))
+      to-conj M .right .fun u i = M i ⋅ u
+      to-conj M .right .mono u≤v i = Σ-mono (λ j → IsMeet.mono ∧-isMeet ≤-refl (u≤v j))
+      to-conj M .left .fun y j = (M ᵀ) j ⋅ y
+      to-conj M .left .mono y≤y' j = Σ-mono (λ i → IsMeet.mono ∧-isMeet ≤-refl (y≤y' i))
+      to-conj M .conjugate {x} {y} .proj₁ h j =
+        ≤-trans (Σ-ub _ j) (trans (∨-cong (sym (swap M {x} {y})) refl) (Σ-lub _ h))
+      to-conj M .conjugate {x} {y} .proj₂ k i =
+        ≤-trans (Σ-ub _ i) (trans (∨-cong (swap M {x} {y}) refl) (Σ-lub _ k))
 
       -- FIXME: functor properties.
