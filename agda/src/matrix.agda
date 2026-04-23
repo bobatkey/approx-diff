@@ -628,3 +628,5 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       to-gal M .left⊣right {x} {y} .proj₂ k j =
         #-↔-≤¬ .proj₁
           (to-conj M .conjugate {¬^ x} {y} .proj₂ (λ i → #-mono (k i) _ (#-sym (#-↔-≤¬ .proj₂ ≤-refl))) j)
+
+      -- FIXME: functor properties of the two embeddings.
