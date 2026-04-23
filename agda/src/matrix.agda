@@ -562,3 +562,21 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
         ≤-trans (Σ-ub _ i) (trans (∨-cong (swap M {x} {y}) refl) (Σ-lub _ k))
 
       -- FIXME: functor properties.
+
+      -- Boolean-algebra tier: adds a complement ¬ satisfying classical laws.
+      -- Needed for to-gal, which constructs the Galois right adjoint of
+      -- the forward matrix action as its De Morgan dual. Laws will be added
+      -- as needed by the proofs.
+      module BooleanAlgebra
+        (¬ : Carrier → Carrier)
+        where
+
+        -- Pointwise vector negation.
+        ¬^ : ∀ {n} → Vec n → Vec n
+        ¬^ u i = ¬ (u i)
+
+        -- Galois right adjoint of the forward matrix action M · _ .
+        -- The De Morgan dual: negate the input, apply M · _, negate the output.
+        -- Meet-preserving; paired with (M ᵀ ·) as the join-preserving left adjoint.
+        adj : ∀ {m n} → Matrix n m → Vec m → Vec n
+        adj M u i = ¬ (M i ⋅ ¬^ u)
