@@ -333,44 +333,90 @@ module Matrix where
   open preorder._≃m_ using (eqfun)
 
   open Category SemiLat.cat
+  open CMon.CMonEnriched SemiLat.cmon-enriched using (_+m_; εm; +m-runit)
+  open import commutative-monoid using (CommutativeMonoid)
 
   TWO : SemiLat.Obj
   TWO = SemiLat.TWO
 
-  scalar-comm : ∀ (f g : TWO ⇒ TWO) → (f ∘ g) ≈ (g ∘ f)
-  scalar-comm f g .f≃f .eqfunc .eqfun O =
-    begin
-      fun f (fun g O)
-    ≈⟨ resp-≃ f (⊥-preserving-≃ g) ⟩
-      fun f O
-    ≈⟨ ⊥-preserving-≃ f ⟩
-      O
-    ≈˘⟨ ⊥-preserving-≃ g ⟩
-      fun g O
-    ≈˘⟨ resp-≃ g (⊥-preserving-≃ f) ⟩
-      fun g (fun f O)
-    ∎ where open ≈-Reasoning two.isEquivalence
-  scalar-comm f g .f≃f .eqfunc .eqfun I = go (fun f I) (fun g I) two.≃-refl two.≃-refl
+  private
+    module homCM {x y} = CommutativeMonoid (CMon.CMonEnriched.homCM SemiLat.cmon-enriched x y)
+
+  -- Scalar iso Two ↔ End(TWO) in SemiLat. Each End(TWO) preserves ⊥, so is determined by its
+  -- value at I (either εm or id TWO); scalar/scalar-inv witness the bijection, and scalar is a
+  -- semiring homomorphism from two.semiring.
+
+  scalar : Two → TWO ⇒ TWO
+  scalar O = εm
+  scalar I = id TWO
+
+  scalar-cong : ∀ {a b} → a two.≃ b → scalar a ≈ scalar b
+  scalar-cong {O} {O} _ = ≈-refl
+  scalar-cong {O} {I} (_ , ())
+  scalar-cong {I} {O} (() , _)
+  scalar-cong {I} {I} _ = ≈-refl
+
+  scalar-ε : scalar O ≈ εm
+  scalar-ε = ≈-refl
+
+  scalar-ι : scalar I ≈ id TWO
+  scalar-ι = ≈-refl
+
+  -- Addition preservation. The I+I case needs idempotence of +m at id TWO.
+  scalar-+ : ∀ {a b} → scalar (a two.⊔ b) ≈ scalar a +m scalar b
+  scalar-+ {O} {O} = ≈-sym homCM.+-lunit
+  scalar-+ {O} {I} = ≈-sym homCM.+-lunit
+  scalar-+ {I} {O} = ≈-sym +m-runit
+  scalar-+ {I} {I} = I-idem
     where
-      open ≈-Reasoning two.isEquivalence
+      I-idem : id TWO ≈ id TWO +m id TWO
+      I-idem .f≃f .eqfunc .eqfun O = two.≤-refl {O} , two.≤-refl {O}
+      I-idem .f≃f .eqfunc .eqfun I = two.≤-refl {I} , two.≤-refl {I}
 
-      step : ∀ (a b : Two) → a two.≃ fun f I → b two.≃ fun g I → fun f b two.≃ fun g a
-      step O O _     _     = begin fun f O ≈⟨ ⊥-preserving-≃ f ⟩ O ≈˘⟨ ⊥-preserving-≃ g ⟩ fun g O ∎
-      step O I eq-a  _     = begin fun f I ≈˘⟨ eq-a ⟩ O ≈˘⟨ ⊥-preserving-≃ g ⟩ fun g O ∎
-      step I O _     eq-b  = begin fun f O ≈⟨ ⊥-preserving-≃ f ⟩ O ≈⟨ eq-b ⟩ fun g I ∎
-      step I I eq-a  eq-b  = begin fun f I ≈˘⟨ eq-a ⟩ I ≈⟨ eq-b ⟩ fun g I ∎
+  -- Multiplication preservation. Composition of scalars via SemiLat's ∘.
+  scalar-· : ∀ {a b} → scalar (a two.⊓ b) ≈ scalar a ∘ scalar b
+  scalar-· {O} {O} = ≈-sym (CMon.CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched εm)
+  scalar-· {O} {I} = ≈-sym (CMon.CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched (id TWO))
+  scalar-· {I} {O} = ≈-sym id-left
+  scalar-· {I} {I} = ≈-sym id-left
 
-      go : ∀ (a b : Two) → a two.≃ fun f I → b two.≃ fun g I → fun f (fun g I) two.≃ fun g (fun f I)
-      go a b eq-a eq-b =
-        begin
-          fun f (fun g I)
-        ≈⟨ resp-≃ f (two.≃-sym eq-b) ⟩
-          fun f b
-        ≈⟨ step a b eq-a eq-b ⟩
-          fun g a
-        ≈⟨ resp-≃ g eq-a ⟩
-          fun g (fun f I)
-        ∎
+  scalar-inv : TWO ⇒ TWO → Two
+  scalar-inv f = fun f I
+
+  scalar-inv-cong : ∀ {f g : TWO ⇒ TWO} → f ≈ g → scalar-inv f two.≃ scalar-inv g
+  scalar-inv-cong p = p .f≃f .eqfunc .eqfun I
+
+  scalar-inv-scalar : ∀ a → scalar-inv (scalar a) two.≃ a
+  scalar-inv-scalar O = two.≃-refl {O}
+  scalar-inv-scalar I = two.≃-refl {I}
+
+  -- End(TWO) is determined by f(I).
+  scalar-scalar-inv : ∀ (f : TWO ⇒ TWO) → scalar (scalar-inv f) ≈ f
+  scalar-scalar-inv f .f≃f .eqfunc .eqfun O with fun f I
+  ... | O = tt , ⊥-preserving-≃ f .proj₁
+  ... | I = tt , ⊥-preserving-≃ f .proj₁
+  scalar-scalar-inv f .f≃f .eqfunc .eqfun I with fun f I
+  ... | O = two.≃-refl {O}
+  ... | I = two.≃-refl {I}
+
+  scalar-comm : ∀ (f g : TWO ⇒ TWO) → (f ∘ g) ≈ (g ∘ f)
+  scalar-comm f g =
+    begin
+      f ∘ g
+    ≈˘⟨ ∘-cong (scalar-scalar-inv f) (scalar-scalar-inv g) ⟩
+      scalar a ∘ scalar b
+    ≈˘⟨ scalar-· {a} {b} ⟩
+      scalar (a two.⊓ b)
+    ≈⟨ scalar-cong (two.⊓-cmon .CommutativeMonoid.+-comm {a} {b}) ⟩
+      scalar (b two.⊓ a)
+    ≈⟨ scalar-· {b} {a} ⟩
+      scalar b ∘ scalar a
+    ≈⟨ ∘-cong (scalar-scalar-inv g) (scalar-scalar-inv f) ⟩
+      g ∘ f
+    ∎ where
+      open ≈-Reasoning isEquiv
+      a = scalar-inv f
+      b = scalar-inv g
 
   import matrix-rep
   open matrix-rep SemiLat.cmon-enriched
@@ -415,73 +461,6 @@ module Matrix where
 
   -- Sanity check: witness the equivalence Mat(Two) ≃ MatRep(SemiLat, TWO) by instantiating matrix-embedding
   -- with the iso between Two and End(TWO).
-  open CMon.CMonEnriched SemiLat.cmon-enriched using (_+m_; εm; +m-runit)
-
-  -- scalar : Two → End(TWO) in SemiLat.
-  scalar : Two → TWO ⇒ TWO
-  scalar O = εm
-  scalar I = id TWO
-
-  scalar-cong : ∀ {a b} → a two.≃ b → scalar a ≈ scalar b
-  scalar-cong {O} {O} _ = ≈-refl
-  scalar-cong {O} {I} (_ , ())
-  scalar-cong {I} {O} (() , _)
-  scalar-cong {I} {I} _ = ≈-refl
-
-  scalar-ε : scalar O ≈ εm
-  scalar-ε = ≈-refl
-
-  scalar-ι : scalar I ≈ id TWO
-  scalar-ι = ≈-refl
-
-  open import commutative-monoid using (CommutativeMonoid)
-  private
-    module homCM {x y} = CommutativeMonoid (CMon.CMonEnriched.homCM SemiLat.cmon-enriched x y)
-
-  -- scalar preserves addition (⊔). The I+I case needs idempotence of SemiLat's +m on id.
-  scalar-+ : ∀ {a b} → scalar (a two.⊔ b) ≈ scalar a +m scalar b
-  scalar-+ {O} {O} = ≈-sym homCM.+-lunit
-  scalar-+ {O} {I} = ≈-sym homCM.+-lunit
-  scalar-+ {I} {O} = ≈-sym +m-runit
-  scalar-+ {I} {I} = I-idem
-    where
-      I-idem : id TWO ≈ id TWO +m id TWO
-      I-idem .f≃f .eqfunc .eqfun O = two.≤-refl {O} , two.≤-refl {O}
-      I-idem .f≃f .eqfunc .eqfun I = two.≤-refl {I} , two.≤-refl {I}
-
-  -- scalar preserves multiplication (⊓). Composition of scalars via SemiLat's ∘.
-  scalar-· : ∀ {a b} → scalar (a two.⊓ b) ≈ scalar a ∘ scalar b
-  scalar-· {O} {O} = ≈-sym (CMon.CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched εm)
-  scalar-· {O} {I} = ≈-sym (CMon.CMonEnriched.comp-bilinear-ε₁ SemiLat.cmon-enriched (id TWO))
-  scalar-· {I} {O} = ≈-sym id-left
-  scalar-· {I} {I} = ≈-sym id-left
-
-  -- scalar-inv : End(TWO) → Two, extracting f(I). Since TWO endomorphisms preserve ⊥, they
-  -- are determined by their value at I, which is either O (giving εm) or I (giving id TWO).
-  scalar-inv : TWO ⇒ TWO → Two
-  scalar-inv f = fun f I
-
-  scalar-inv-cong : ∀ {f g : TWO ⇒ TWO} → f ≈ g → scalar-inv f two.≃ scalar-inv g
-  scalar-inv-cong p = p .f≃f .eqfunc .eqfun I
-
-  scalar-inv-scalar : ∀ a → scalar-inv (scalar a) two.≃ a
-  scalar-inv-scalar O = two.≃-refl {O}
-  scalar-inv-scalar I = two.≃-refl {I}
-
-  -- Endomorphismof TWO is determined by f(I).
-  scalar-scalar-inv : ∀ (f : TWO ⇒ TWO) → scalar (scalar-inv f) ≈ f
-  scalar-scalar-inv f = go (fun f I) two.≃-refl
-    where
-      -- ⊥-preserving gives us O ≃ fun f O via the pair (O ≤ fun f O = tt, fun f O ≤ O).
-      O≃fO : O two.≃ fun f O
-      O≃fO = tt , ⊥-preserving-≃ f .proj₁
-      -- Given a two.≃ fun f I, show scalar a ≈ f pointwise.
-      go : (a : Two) → a two.≃ fun f I → scalar a ≈ f
-      go O eq .f≃f .eqfunc .eqfun O = O≃fO
-      go O eq .f≃f .eqfunc .eqfun I = eq
-      go I eq .f≃f .eqfunc .eqfun O = O≃fO
-      go I eq .f≃f .eqfunc .eqfun I = eq
-
   import matrix-embedding
   module Mat≃MatRep = matrix-embedding
     SemiLat.cmon-enriched
