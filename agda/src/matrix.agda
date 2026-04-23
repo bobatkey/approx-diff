@@ -567,6 +567,12 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       module BooleanAlgebra
         (¬ : Carrier → Carrier)
         (¬-anti : ∀ {x y} → x ≤ y → ¬ y ≤ ¬ x)
+        -- Disjointness is complementation: Boolean-specific biconditional linking
+        -- the # of the Disjoint module to ≤ ¬.
+        (#→≤¬ : ∀ {x y} → x # y → x ≤ ¬ y)
+        (≤¬→# : ∀ {x y} → x ≤ ¬ y → x # y)
+        -- Double-negation elimination (one direction suffices for the adjunction).
+        (¬¬-≤ : ∀ {x} → ¬ (¬ x) ≤ x)
         where
 
         ¬^ : ∀ {n} → Vec n → Vec n
@@ -594,4 +600,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
         to-gal M .right .mono x≤x' j = ¬-anti (Σ-mono (λ i → IsMeet.mono ∧-isMeet ≤-refl (¬-anti (x≤x' i))))
         to-gal M .left .fun y i = M i ⋅ y
         to-gal M .left .mono y≤y' i = Σ-mono (λ j → IsMeet.mono ∧-isMeet ≤-refl (y≤y' j))
-        to-gal M .left⊣right = {!!}
+        to-gal M .left⊣right {x} {y} .proj₁ h i =
+          ≤-trans (#→≤¬ (to-conj M .conjugate {¬^ x} {y} .proj₁ (λ j → ≤¬→# (h j)) i)) ¬¬-≤
+        to-gal M .left⊣right {x} {y} .proj₂ k j =
+          #→≤¬ (to-conj M .conjugate {¬^ x} {y} .proj₂ (λ i → #-mono (k i) _ (#-sym (≤¬→# ≤-refl))) j)
