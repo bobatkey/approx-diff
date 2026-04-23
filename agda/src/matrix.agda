@@ -551,15 +551,19 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
                  trans (Σ-cong {n} (λ i → trans (sym ∧-assoc) (∧-cong ∧-comm refl)))
                        (sym (Σ-·-distribᵣ (λ i → M i j ∧ y i) (x j))))))
 
-      to-conj : ∀ {m n} → Matrix n m → Heyting m ⇒c Heyting n
-      to-conj M .right .fun u i = M i ⋅ u
-      to-conj M .right .mono u≤v i = Σ-mono (λ j → IsMeet.mono ∧-isMeet ≤-refl (u≤v j))
-      to-conj M .left .fun y j = (M ᵀ) j ⋅ y
-      to-conj M .left .mono y≤y' j = Σ-mono (λ i → IsMeet.mono ∧-isMeet ≤-refl (y≤y' i))
-      to-conj M .conjugate {x} {y} .proj₁ h j =
-        ≤-trans (Σ-ub _ j) (trans (∨-cong (sym (swap M {x} {y})) refl) (Σ-lub _ h))
-      to-conj M .conjugate {x} {y} .proj₂ k i =
-        ≤-trans (Σ-ub _ i) (trans (∨-cong (swap M {x} {y}) refl) (Σ-lub _ k))
+      -- Convention: M : Matrix n m is read "from Fin m to Fin n"; the join-
+      -- preserving direction (left) goes outputs → inputs (Vec m → Vec n).
+      -- Target arrow is Heyting n ⇒c Heyting m (backwards along M), matching
+      -- the flipped direction used by to-gal.
+      to-conj : ∀ {m n} → Matrix n m → Heyting n ⇒c Heyting m
+      to-conj M .right .fun x j = (M ᵀ) j ⋅ x
+      to-conj M .right .mono x≤x' j = Σ-mono (λ i → IsMeet.mono ∧-isMeet ≤-refl (x≤x' i))
+      to-conj M .left .fun y i = M i ⋅ y
+      to-conj M .left .mono y≤y' i = Σ-mono (λ j → IsMeet.mono ∧-isMeet ≤-refl (y≤y' j))
+      to-conj M .conjugate {x} {y} .proj₁ h i =
+        ≤-trans (Σ-ub _ i) (trans (∨-cong (sym (swap (M ᵀ) {x} {y})) refl) (Σ-lub _ h))
+      to-conj M .conjugate {x} {y} .proj₂ k j =
+        ≤-trans (Σ-ub _ j) (trans (∨-cong (swap (M ᵀ) {x} {y}) refl) (Σ-lub _ k))
 
       -- FIXME: functor properties.
 
@@ -574,9 +578,11 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
         ¬^-anti : ∀ {n} {u v : Vec n} → u ≤^ v → ¬^ v ≤^ ¬^ u
         ¬^-anti u≤v i = ¬-anti (u≤v i)
 
-        -- Meet-preserving right adjoint of forward matrix action M · _ .
-        adjoint : ∀ {m n} → Matrix n m → Vec m → Vec n
-        adjoint M u i = ¬ (M i ⋅ ¬^ u)
+        -- The De Morgan dual of the transpose action. Galois right adjoint
+        -- of the forward action M · _ when the latter is read as the (join-
+        -- preserving) left adjoint going outputs → inputs.
+        adjoint : ∀ {m n} → Matrix n m → Vec n → Vec m
+        adjoint M x j = ¬ ((M ᵀ) j ⋅ ¬^ x)
 
         open import galois using () renaming (Obj to Obj-g; _⇒g_ to _=>g_)
         open _=>g_
@@ -586,9 +592,12 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
         BoundedLattice n .Obj-g.meets = Heyting n .Obj.meets
         BoundedLattice n .Obj-g.joins = Heyting n .Obj.joins
 
-        to-gal : ∀ {m n} → Matrix n m → BoundedLattice m =>g BoundedLattice n
+        -- Galois pair for matrix M : Matrix n m:
+        --   left  : Vec m → Vec n = M ·            (join-preserving, outputs → inputs)
+        --   right : Vec n → Vec m = ¬ ∘ Mᵀ· ∘ ¬    (meet-preserving, De Morgan dual of transpose)
+        to-gal : ∀ {m n} → Matrix n m → BoundedLattice n =>g BoundedLattice m
         to-gal M .right .fun = adjoint M
-        to-gal M .right .mono u≤v i = ¬-anti (Σ-mono (λ j → IsMeet.mono ∧-isMeet ≤-refl (¬-anti (u≤v j))))
-        to-gal M .left .fun y j = (M ᵀ) j ⋅ y
-        to-gal M .left .mono y≤y' j = Σ-mono (λ i → IsMeet.mono ∧-isMeet ≤-refl (y≤y' i))
+        to-gal M .right .mono x≤x' j = ¬-anti (Σ-mono (λ i → IsMeet.mono ∧-isMeet ≤-refl (¬-anti (x≤x' i))))
+        to-gal M .left .fun y i = M i ⋅ y
+        to-gal M .left .mono y≤y' i = Σ-mono (λ j → IsMeet.mono ∧-isMeet ≤-refl (y≤y' j))
         to-gal M .left⊣right = {!!}
