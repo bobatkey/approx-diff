@@ -516,70 +516,87 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     _#^_ : ∀ {n} → Vec n → Vec n → Prop _
     u #^ v = u ⋅ v ≤ ⊥
 
-    module HeytingAlgebra
-      (#-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y)
+    open import prop using (proj₁; proj₂; _⇔_)
+
+    -- Distributive lattice with a pseudocomplement; strictly weaker than Heyting (no relative
+    -- pseudocomplement →).
+    module PseudocomplementedLattice
+      (¬ : Carrier → Carrier)
+      (#-↔-≤¬ : ∀ {x y} → (x # y) ⇔ (x ≤ ¬ y))
       where
 
-      #^-reflect : ∀ {n} {u v : Vec n} → (∀ w → v #^ w → u #^ w) → u ≤^ v
-      #^-reflect {n} {u} {v} h i =
-        #-reflect λ z vi#z →
-          trans (∨-cong (sym (⋅-inj u i z)) refl)
-                (h (inj i z) (trans (∨-cong (⋅-inj v i z) refl) vi#z))
+      ¬-anti : ∀ {x y} → x ≤ y → ¬ y ≤ ¬ x
+      ¬-anti {x} {y} x≤y =
+        #-↔-≤¬ .proj₁ (#-sym (#-mono x≤y (¬ y) (#-sym (#-↔-≤¬ {¬ y} {y} .proj₂ ≤-refl))))
 
-      open import conjugate using (Obj; _⇒c_)
-      open _⇒c_
-      open preorder._=>_ using (fun; mono)
-      open import prop using (proj₁; proj₂; _⇔_)
+      ≤-¬¬ : ∀ {x} → x ≤ ¬ (¬ x)
+      ≤-¬¬ {x} = #-↔-≤¬ .proj₁ (#-sym (#-↔-≤¬ {¬ x} {x} .proj₂ ≤-refl))
 
-      Heyting : ℕ → Obj
-      Heyting n .Obj.carrier = vec-preorder preorder n
-      Heyting n .Obj.meets = vec-meet preorder meets n
-      Heyting n .Obj.joins = vec-join preorder semilattice n
-      Heyting n .Obj.#-reflect {u} {v} h = #^-reflect h^
-        where
-          h^ : ∀ w → v #^ w → u #^ w
-          h^ w v⋅w≤⊥ = Σ-lub _ (h w (λ j → ≤-trans (Σ-ub _ j) v⋅w≤⊥))
-      Heyting n .Obj.∧-∨-distrib x y z i = trans (∨-cong ∧-∨-distribₗ refl) ∨-idem
+      ¬^ : ∀ {n} → Vec n → Vec n
+      ¬^ u i = ¬ (u i)
 
-      -- Push y inside, interchange, pull x out.
-      swap : ∀ {m n} (M : Matrix n m) {x : Vec m} {y : Vec n} →
-             (y ⋅ (λ i → M i ⋅ x)) ≈ ((λ j → (M ᵀ) j ⋅ y) ⋅ x)
-      swap {m} {n} M {x} {y} =
-        trans (Σ-cong {n} (λ i → Σ-·-distribₗ (y i) (λ j → M i j ∧ x j)))
-        (trans (Σ-interchange {n} {m} (λ i j → y i ∧ (M i j ∧ x j)))
-               (Σ-cong {m} (λ j →
-                 trans (Σ-cong {n} (λ i → trans (sym ∧-assoc) (∧-cong ∧-comm refl)))
-                       (sym (Σ-·-distribᵣ (λ i → M i j ∧ y i) (x j))))))
+      ¬^-anti : ∀ {n} {u v : Vec n} → u ≤^ v → ¬^ v ≤^ ¬^ u
+      ¬^-anti u≤v i = ¬-anti (u≤v i)
 
-      -- Target arrow has direction of Mᵀ for consistency with to-gal.
-      to-conj : ∀ {m n} → Matrix n m → Heyting n ⇒c Heyting m
-      to-conj M .right .fun x j = (M ᵀ) j ⋅ x
-      to-conj M .right .mono x≤x' j = Σ-mono (λ i → IsMeet.mono ∧-isMeet ≤-refl (x≤x' i))
-      to-conj M .left .fun y i = M i ⋅ y
-      to-conj M .left .mono y≤y' i = Σ-mono (λ j → IsMeet.mono ∧-isMeet ≤-refl (y≤y' j))
-      to-conj M .conjugate {x} {y} .proj₁ h i =
-        ≤-trans (Σ-ub _ i) (trans (∨-cong (sym (swap (M ᵀ) {x} {y})) refl) (Σ-lub _ h))
-      to-conj M .conjugate {x} {y} .proj₂ k j =
-        ≤-trans (Σ-ub _ j) (trans (∨-cong (swap (M ᵀ) {x} {y}) refl) (Σ-lub _ k))
-
-      -- FIXME: functor properties.
-
+      -- Boolean tier: adds double-negation elimination. This collapses the
+      -- Heyting-internal #-reflect into a derivable fact (¬ is order-reflecting),
+      -- which suffices for to-conj, to-gal, and the conjugate.Obj construction.
       module BooleanAlgebra
-        (¬ : Carrier → Carrier)
-        (¬-anti : ∀ {x y} → x ≤ y → ¬ y ≤ ¬ x)
-        (#-↔-≤¬ : ∀ {x y} → (x # y) ⇔ (x ≤ ¬ y))
-        (¬¬-≤ : ∀ {x} → ¬ (¬ x) ≤ x)
+        (¬-involutive : ∀ {x} → ¬ (¬ x) ≤ x)
         where
 
-        ¬^ : ∀ {n} → Vec n → Vec n
-        ¬^ u i = ¬ (u i)
+        -- Derived from ¬-involutive + Heyting lemmas. Applying the hypothesis at
+        -- z := ¬ y and using non-contradiction y # ¬y gives x # ¬y, hence
+        -- x ≤ ¬¬y, hence x ≤ y by ¬-involutive.
+        #-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y
+        #-reflect {x} {y} h =
+          ≤-trans
+            (#-↔-≤¬ .proj₁ (h (¬ y) (#-sym (#-↔-≤¬ {¬ y} {y} .proj₂ ≤-refl))))
+            ¬-involutive
 
-        ¬^-anti : ∀ {n} {u v : Vec n} → u ≤^ v → ¬^ v ≤^ ¬^ u
-        ¬^-anti u≤v i = ¬-anti (u≤v i)
+        #^-reflect : ∀ {n} {u v : Vec n} → (∀ w → v #^ w → u #^ w) → u ≤^ v
+        #^-reflect {n} {u} {v} h i =
+          #-reflect λ z vi#z →
+            trans (∨-cong (sym (⋅-inj u i z)) refl)
+                  (h (inj i z) (trans (∨-cong (⋅-inj v i z) refl) vi#z))
 
-        -- Meet-preserving De Morgan dual of the transpose. Direction is confusing here because we take M to
-        -- be the _backward_ map capturing output-to-input dependencies. The adjoint goes in the same direction
-        -- as M ᵀ, so corresponds to the _forwards_ map.
+        open import conjugate using (Obj; _⇒c_)
+        open _⇒c_
+        open preorder._=>_ using (fun; mono)
+
+        BoolAlg : ℕ → Obj
+        BoolAlg n .Obj.carrier = vec-preorder preorder n
+        BoolAlg n .Obj.meets = vec-meet preorder meets n
+        BoolAlg n .Obj.joins = vec-join preorder semilattice n
+        BoolAlg n .Obj.#-reflect {u} {v} h = #^-reflect h^
+          where
+            h^ : ∀ w → v #^ w → u #^ w
+            h^ w v⋅w≤⊥ = Σ-lub _ (h w (λ j → ≤-trans (Σ-ub _ j) v⋅w≤⊥))
+        BoolAlg n .Obj.∧-∨-distrib x y z i = trans (∨-cong ∧-∨-distribₗ refl) ∨-idem
+
+        -- Push y inside, interchange, pull x out.
+        swap : ∀ {m n} (M : Matrix n m) {x : Vec m} {y : Vec n} →
+               (y ⋅ (λ i → M i ⋅ x)) ≈ ((λ j → (M ᵀ) j ⋅ y) ⋅ x)
+        swap {m} {n} M {x} {y} =
+          trans (Σ-cong {n} (λ i → Σ-·-distribₗ (y i) (λ j → M i j ∧ x j)))
+          (trans (Σ-interchange {n} {m} (λ i j → y i ∧ (M i j ∧ x j)))
+                 (Σ-cong {m} (λ j →
+                   trans (Σ-cong {n} (λ i → trans (sym ∧-assoc) (∧-cong ∧-comm refl)))
+                         (sym (Σ-·-distribᵣ (λ i → M i j ∧ y i) (x j))))))
+
+        -- Target arrow has direction of Mᵀ for consistency with to-gal.
+        to-conj : ∀ {m n} → Matrix n m → BoolAlg n ⇒c BoolAlg m
+        to-conj M .right .fun x j = (M ᵀ) j ⋅ x
+        to-conj M .right .mono x≤x' j = Σ-mono (λ i → IsMeet.mono ∧-isMeet ≤-refl (x≤x' i))
+        to-conj M .left .fun y i = M i ⋅ y
+        to-conj M .left .mono y≤y' i = Σ-mono (λ j → IsMeet.mono ∧-isMeet ≤-refl (y≤y' j))
+        to-conj M .conjugate {x} {y} .proj₁ h i =
+          ≤-trans (Σ-ub _ i) (trans (∨-cong (sym (swap (M ᵀ) {x} {y})) refl) (Σ-lub _ h))
+        to-conj M .conjugate {x} {y} .proj₂ k j =
+          ≤-trans (Σ-ub _ j) (trans (∨-cong (swap (M ᵀ) {x} {y}) refl) (Σ-lub _ k))
+
+        -- De Morgan dual of the transpose. Meet-preserving; the Galois right
+        -- adjoint of M · _ (the join-preserving left adjoint).
         adjoint : ∀ {m n} → Matrix n m → Vec n → Vec m
         adjoint M x j = ¬ ((M ᵀ) j ⋅ ¬^ x)
 
@@ -587,9 +604,9 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
         open _=>g_
 
         BoundedLattice : ℕ → Obj-g
-        BoundedLattice n .Obj-g.carrier = Heyting n .Obj.carrier
-        BoundedLattice n .Obj-g.meets = Heyting n .Obj.meets
-        BoundedLattice n .Obj-g.joins = Heyting n .Obj.joins
+        BoundedLattice n .Obj-g.carrier = vec-preorder preorder n
+        BoundedLattice n .Obj-g.meets = vec-meet preorder meets n
+        BoundedLattice n .Obj-g.joins = vec-join preorder semilattice n
 
         to-gal : ∀ {m n} → Matrix n m → BoundedLattice n =>g BoundedLattice m
         to-gal M .right .fun = adjoint M
@@ -597,6 +614,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
         to-gal M .left .fun y i = M i ⋅ y
         to-gal M .left .mono y≤y' i = Σ-mono (λ j → IsMeet.mono ∧-isMeet ≤-refl (y≤y' j))
         to-gal M .left⊣right {x} {y} .proj₁ h i =
-          ≤-trans (#-↔-≤¬ .proj₁ (to-conj M .conjugate {¬^ x} {y} .proj₁ (λ j → #-↔-≤¬ .proj₂ (h j)) i)) ¬¬-≤
+          ≤-trans (#-↔-≤¬ .proj₁ (to-conj M .conjugate {¬^ x} {y} .proj₁ (λ j → #-↔-≤¬ .proj₂ (h j)) i)) ¬-involutive
         to-gal M .left⊣right {x} {y} .proj₂ k j =
           #-↔-≤¬ .proj₁ (to-conj M .conjugate {¬^ x} {y} .proj₂ (λ i → #-mono (k i) _ (#-sym (#-↔-≤¬ .proj₂ ≤-refl))) j)
