@@ -342,8 +342,7 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
                      ∀ i → concat u₁ v₁ i ~ concat u₂ v₂ i
   concat-preserves {zero} _ _ v-eq i = v-eq i
   concat-preserves {suc x} _ u-eq _ zero = u-eq zero
-  concat-preserves {suc x} _~_ u-eq v-eq (suc i) =
-    concat-preserves {x} _~_ (λ j → u-eq (suc j)) v-eq i
+  concat-preserves {suc x} _~_ u-eq v-eq (suc i) = concat-preserves {x} _~_ (λ j → u-eq (suc j)) v-eq i
 
   concat-+ : ∀ {x y} (u₁ u₂ : Vec x) (v₁ v₂ : Vec y) i →
              concat (λ k → u₁ k + u₂ k) (λ k → v₁ k + v₂ k) i ≈ (concat u₁ v₁ i + concat u₂ v₂ i)
@@ -447,8 +446,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
   vec-meet P M n .MeetSemilattice.⊤-isTop .IsTop.≤-top i =
     IsTop.≤-top (M .MeetSemilattice.⊤-isTop)
 
-  -- If ∨ is idempotent then (S, ∨) is a join-semilattice with ⊥. The dual statement is true of ∧ and ⊤ but we
-  -- don't need that at the moment.
+  -- If ∨ is idempotent then (S, ∨) is a join-semilattice with ⊥. The dual statement we don't need at the moment.
   module Join (∨-idem : ∀ {x} → (x ∨ x) ≈ x) where
 
     infix 4 _≤_
@@ -480,7 +478,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     semilattice .JoinSemilattice.∨-isJoin = ∨-isJoin
     semilattice .JoinSemilattice.⊥-isBottom = ⊥-isBottom
 
-    -- Analogues of the binary IsJoin laws for Σ, with Σ-ub corresponding to inl/inr and Σ-lub to [_,_].
+    -- Analogues of binary IsJoin laws for Σ, with Σ-ub corresponding to inl/inr and Σ-lub to [_,_].
     Σ-ub : ∀ {n} (f : Fin n → Carrier) (i : Fin n) → f i ≤ Σ f
     Σ-ub f zero = IsJoin.inl ∨-isJoin
     Σ-ub f (suc i) = IsPreorder.trans ≤-isPreorder (Σ-ub (λ j → f (suc j)) i) (IsJoin.inr ∨-isJoin)
@@ -528,20 +526,17 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
 
       open import conjugate using (Obj; _⇒c_)
 
-      ⟦_⟧ : ℕ → Obj
-      ⟦ n ⟧ .Obj.carrier = vec-preorder preorder n
-      ⟦ n ⟧ .Obj.meets = vec-meet preorder meets n
-      ⟦ n ⟧ .Obj.joins = vec-join preorder semilattice n
-      ⟦ n ⟧ .Obj.#-reflect {u} {v} h = #^-reflect h^
+      Heyting : ℕ → Obj
+      Heyting n .Obj.carrier = vec-preorder preorder n
+      Heyting n .Obj.meets = vec-meet preorder meets n
+      Heyting n .Obj.joins = vec-join preorder semilattice n
+      Heyting n .Obj.#-reflect {u} {v} h = #^-reflect h^
         where
           h^ : ∀ w → v #^ w → u #^ w
           h^ w v⋅w≤⊥ = Σ-lub _ (h w (λ j → IsPreorder.trans ≤-isPreorder (Σ-ub _ j) v⋅w≤⊥))
-      ⟦ n ⟧ .Obj.∧-∨-distrib x y z i = trans (∨-cong ∧-∨-distribₗ refl) ∨-idem
+      Heyting n .Obj.∧-∨-distrib x y z i = trans (∨-cong ∧-∨-distribₗ refl) ∨-idem
 
-      -- Matrix M : Fin n → Fin m → Carrier gives:
-      --   right : Vec m → Vec n is matrix-vector product (M u) i = row i of M  ⋅  u.
-      --   left  : Vec n → Vec m is transpose action (y Mᵀ) j = y  ⋅  column j of M.
-      to-conj : ∀ {m n} → Matrix n m → ⟦ m ⟧ ⇒c ⟦ n ⟧
+      to-conj : ∀ {m n} → Matrix n m → Heyting m ⇒c Heyting n
       to-conj {m} {n} M = record
         { right = record
           { fun  = λ u i → M i ⋅ u
@@ -555,13 +550,10 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
           }
         ; conjugate = λ {x} {y} → record
           { proj₁ = λ h j →
-              -- Pack pointwise hyp into Σ-form (Σ-lub), transport via sym swap,
-              -- unpack the jth summand (Σ-ub).
               IsPreorder.trans ≤-isPreorder
                 (Σ-ub _ j)
                 (trans (∨-cong (sym (swap {x} {y})) refl) (Σ-lub _ h))
           ; proj₂ = λ k i →
-              -- Same structure, transport goes through swap (not sym).
               IsPreorder.trans ≤-isPreorder
                 (Σ-ub _ i)
                 (trans (∨-cong (swap {x} {y}) refl) (Σ-lub _ k))
