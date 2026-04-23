@@ -398,6 +398,36 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
   open import Data.Fin using (Fin; zero; suc)
   open import join-semilattice using (JoinSemilattice)
   open import meet-semilattice using (MeetSemilattice)
+
+  -- Pointwise lifts to Vec n. Defined before the ∧/∨/⊤/⊥ renaming of Mat so that
+  -- the record-field opens of Preorder/JoinSemilattice/MeetSemilattice don't clash.
+  module vec (P : Preorder) (n : ℕ) where
+    open Preorder
+    open JoinSemilattice
+    open MeetSemilattice
+
+    preorder : Preorder
+    preorder .Carrier = Fin n → P .Carrier
+    preorder ._≤_ u v = ∀ i → P ._≤_ (u i) (v i)
+    preorder .≤-isPreorder .IsPreorder.refl i = IsPreorder.refl (P .≤-isPreorder)
+    preorder .≤-isPreorder .IsPreorder.trans u≤v v≤w i = IsPreorder.trans (P .≤-isPreorder) (u≤v i) (v≤w i)
+
+    join : JoinSemilattice P → JoinSemilattice preorder
+    join J ._∨_ u v i = J ._∨_ (u i) (v i)
+    join J .⊥ _ = J .⊥
+    join J .∨-isJoin .IsJoin.inl i = IsJoin.inl (J .∨-isJoin)
+    join J .∨-isJoin .IsJoin.inr i = IsJoin.inr (J .∨-isJoin)
+    join J .∨-isJoin .IsJoin.[_,_] u≤w v≤w i = IsJoin.[_,_] (J .∨-isJoin) (u≤w i) (v≤w i)
+    join J .⊥-isBottom .IsBottom.≤-bottom i = IsBottom.≤-bottom (J .⊥-isBottom)
+
+    meet : MeetSemilattice P → MeetSemilattice preorder
+    meet M ._∧_ u v i = M ._∧_ (u i) (v i)
+    meet M .⊤ _ = M .⊤
+    meet M .∧-isMeet .IsMeet.π₁ i = IsMeet.π₁ (M .∧-isMeet)
+    meet M .∧-isMeet .IsMeet.π₂ i = IsMeet.π₂ (M .∧-isMeet)
+    meet M .∧-isMeet .IsMeet.⟨_,_⟩ x≤y x≤z i = IsMeet.⟨_,_⟩ (M .∧-isMeet) (x≤y i) (x≤z i)
+    meet M .⊤-isTop .IsTop.≤-top i = IsTop.≤-top (M .⊤-isTop)
+
   open Mat S public
     renaming (
       _·_ to _∧_;
@@ -418,34 +448,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       ε-annihilᵣ to ⊥-annihilᵣ
     )
 
-  -- Pointwise lifts to Vec n.
-  vec-preorder : Preorder → ℕ → Preorder
-  vec-preorder P n .Preorder.Carrier = Fin n → P .Preorder.Carrier
-  vec-preorder P n .Preorder._≤_ u v = ∀ i → P .Preorder._≤_ (u i) (v i)
-  vec-preorder P n .Preorder.≤-isPreorder .IsPreorder.refl i = IsPreorder.refl (P .Preorder.≤-isPreorder)
-  vec-preorder P n .Preorder.≤-isPreorder .IsPreorder.trans u≤v v≤w i =
-    IsPreorder.trans (P .Preorder.≤-isPreorder) (u≤v i) (v≤w i)
-
-  vec-join : (P : Preorder) → JoinSemilattice P → (n : ℕ) → JoinSemilattice (vec-preorder P n)
-  vec-join P J n .JoinSemilattice._∨_ u v i = J .JoinSemilattice._∨_ (u i) (v i)
-  vec-join P J n .JoinSemilattice.⊥ _ = J .JoinSemilattice.⊥
-  vec-join P J n .JoinSemilattice.∨-isJoin .IsJoin.inl i = IsJoin.inl (J .JoinSemilattice.∨-isJoin)
-  vec-join P J n .JoinSemilattice.∨-isJoin .IsJoin.inr i = IsJoin.inr (J .JoinSemilattice.∨-isJoin)
-  vec-join P J n .JoinSemilattice.∨-isJoin .IsJoin.[_,_] u≤w v≤w i =
-    IsJoin.[_,_] (J .JoinSemilattice.∨-isJoin) (u≤w i) (v≤w i)
-  vec-join P J n .JoinSemilattice.⊥-isBottom .IsBottom.≤-bottom i =
-    IsBottom.≤-bottom (J .JoinSemilattice.⊥-isBottom)
-
-  vec-meet : (P : Preorder) → MeetSemilattice P → (n : ℕ) → MeetSemilattice (vec-preorder P n)
-  vec-meet P M n .MeetSemilattice._∧_ u v i = M .MeetSemilattice._∧_ (u i) (v i)
-  vec-meet P M n .MeetSemilattice.⊤ _ = M .MeetSemilattice.⊤
-  vec-meet P M n .MeetSemilattice.∧-isMeet .IsMeet.π₁ i = IsMeet.π₁ (M .MeetSemilattice.∧-isMeet)
-  vec-meet P M n .MeetSemilattice.∧-isMeet .IsMeet.π₂ i = IsMeet.π₂ (M .MeetSemilattice.∧-isMeet)
-  vec-meet P M n .MeetSemilattice.∧-isMeet .IsMeet.⟨_,_⟩ x≤y x≤z i =
-    IsMeet.⟨_,_⟩ (M .MeetSemilattice.∧-isMeet) (x≤y i) (x≤z i)
-  vec-meet P M n .MeetSemilattice.⊤-isTop .IsTop.≤-top i =
-    IsTop.≤-top (M .MeetSemilattice.⊤-isTop)
-
   -- If ∨ is idempotent then (S, ∨) is a join-semilattice with ⊥. The dual statement we don't need at the moment.
   module Join (∨-idem : ∀ {x} → (x ∨ x) ≈ x) where
 
@@ -458,7 +460,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     ≤-isPreorder .IsPreorder.trans xy yz =
       trans (sym (∨-cong refl yz)) (trans (sym ∨-assoc) (trans (∨-cong xy refl) yz))
 
-    open IsPreorder ≤-isPreorder public using () renaming (refl to ≤-refl; trans to ≤-trans)
+    open IsPreorder ≤-isPreorder public using (_≃_) renaming (refl to ≤-refl; trans to ≤-trans)
 
     ∨-isJoin : IsJoin ≤-isPreorder _∨_
     ∨-isJoin .IsJoin.inl = trans (sym ∨-assoc) (∨-cong ∨-idem refl)
@@ -509,7 +511,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     open Disjoint ≤-isPreorder ∧-isMeet ⊥-isBottom public
 
     module _ {n : ℕ} where
-      open Preorder (vec-preorder preorder n) using () renaming (_≤_ to _≤^_) public
+      open Preorder (vec.preorder preorder n) using () renaming (_≤_ to _≤^_) public
 
     -- Dot-product form of disjointness, for vectors.
     infix 4 _#^_
@@ -524,12 +526,9 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       (complement-∧ : ∀ {x} → x ∧ ¬ x ≤ ⊥)
       where
 
-      -- Bring meet/join/top/bottom projections into scope unqualified,
-      -- renaming mono to disambiguate. (IsMeet.comm stays qualified — its
-      -- ∧-comm rename would clash with the semiring's ≈-level ∧-comm.)
-      open IsMeet   ∧-isMeet using (π₁; π₂; ⟨_,_⟩) renaming (mono to ∧-mono)
-      open IsJoin   ∨-isJoin using (inl; inr; [_,_]) renaming (mono to ∨-mono)
-      open IsTop    ⊤-isTop
+      open IsMeet ∧-isMeet using (π₁; π₂; ⟨_,_⟩) renaming (mono to ∧-mono)
+      open IsJoin ∨-isJoin using (inl; inr; [_,_]) renaming (mono to ∨-mono)
+      open IsTop ⊤-isTop
       open IsBottom ⊥-isBottom
 
       -- Transport semiring's ∧-∨-distribₗ to join-induced preorder.
@@ -538,9 +537,9 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
 
       #-↔-≤¬ : ∀ {x y} → (x # y) ⇔ (x ≤ ¬ y)
       #-↔-≤¬ {x} {y} .proj₁ x#y =
-        ≤-trans (⟨_,_⟩ ≤-refl ≤-top)
-          (≤-trans (∧-mono ≤-refl complement-∨)
-            (≤-trans ∧-∨-distrib ([_,_] (≤-trans x#y ≤-bottom) π₂)))
+        ≤-trans ⟨ ≤-refl , ≤-top ⟩
+                (≤-trans (∧-mono ≤-refl complement-∨)
+                         (≤-trans ∧-∨-distrib [ ≤-trans x#y ≤-bottom , π₂ ]))
       #-↔-≤¬ .proj₂ x≤¬y =
         ≤-trans (∧-mono x≤¬y ≤-refl) (≤-trans (IsMeet.comm ∧-isMeet) complement-∧)
 
@@ -548,19 +547,17 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       ¬-antitone x≤y =
         #-↔-≤¬ .proj₁ (#-sym (#-mono x≤y _ (#-sym (#-↔-≤¬ {¬ _} .proj₂ ≤-refl))))
 
-      ≤-¬¬ : ∀ {x} → x ≤ ¬ (¬ x)
-      ≤-¬¬ {x} = #-↔-≤¬ .proj₁ (#-sym (#-↔-≤¬ {¬ x} {x} .proj₂ ≤-refl))
-
-      ¬-involutive : ∀ {x} → ¬ (¬ x) ≤ x
-      ¬-involutive {x} =
-        ≤-trans (⟨_,_⟩ ≤-refl ≤-top)
-          (≤-trans (∧-mono ≤-refl complement-∨)
-            (≤-trans ∧-∨-distrib
-              ([_,_] π₂ (≤-trans (≤-trans (IsMeet.comm ∧-isMeet) complement-∧) ≤-bottom))))
+      ¬-involutive : ∀ {x} → x ≃ ¬ (¬ x)
+      ¬-involutive {x} .proj₁ = #-↔-≤¬ .proj₁ (#-sym (#-↔-≤¬ {¬ x} {x} .proj₂ ≤-refl))
+      ¬-involutive {x} .proj₂ =
+        ≤-trans ⟨ ≤-refl , ≤-top ⟩
+                (≤-trans (∧-mono ≤-refl complement-∨)
+                         (≤-trans ∧-∨-distrib
+                                  [ π₂ , ≤-trans (≤-trans (IsMeet.comm ∧-isMeet) complement-∧) ≤-bottom ]))
 
       #-reflect : ∀ {x y} → (∀ z → y # z → x # z) → x ≤ y
       #-reflect {x} {y} h =
-        ≤-trans (#-↔-≤¬ .proj₁ (h (¬ y) (#-sym (#-↔-≤¬ {¬ y} {y} .proj₂ ≤-refl)))) ¬-involutive
+        ≤-trans (#-↔-≤¬ .proj₁ (h (¬ y) (#-sym (#-↔-≤¬ {¬ y} {y} .proj₂ ≤-refl)))) (¬-involutive .proj₂)
 
       ¬^ : ∀ {n} → Vec n → Vec n
       ¬^ u i = ¬ (u i)
@@ -579,9 +576,9 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       open preorder._=>_ using (fun; mono)
 
       BoolAlg : ℕ → Obj
-      BoolAlg n .Obj.carrier = vec-preorder preorder n
-      BoolAlg n .Obj.meets = vec-meet preorder meets n
-      BoolAlg n .Obj.joins = vec-join preorder semilattice n
+      BoolAlg n .Obj.carrier = vec.preorder preorder n
+      BoolAlg n .Obj.meets = vec.meet preorder n meets
+      BoolAlg n .Obj.joins = vec.join preorder n semilattice
       BoolAlg n .Obj.¬ = ¬^
       BoolAlg n .Obj.∧-∨-distrib _ _ _ _ = ∧-∨-distrib
       BoolAlg n .Obj.complement-∨ _ = complement-∨
@@ -592,10 +589,10 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
              (y ⋅ (λ i → M i ⋅ x)) ≈ ((λ j → (M ᵀ) j ⋅ y) ⋅ x)
       swap {m} {n} M {x} {y} =
         trans (Σ-cong {n} (λ i → Σ-·-distribₗ (y i) (λ j → M i j ∧ x j)))
-        (trans (Σ-interchange {n} {m} (λ i j → y i ∧ (M i j ∧ x j)))
-               (Σ-cong {m} (λ j →
-                 trans (Σ-cong {n} (λ i → trans (sym ∧-assoc) (∧-cong ∧-comm refl)))
-                       (sym (Σ-·-distribᵣ (λ i → M i j ∧ y i) (x j))))))
+              (trans (Σ-interchange {n} {m} (λ i j → y i ∧ (M i j ∧ x j)))
+                     (Σ-cong {m} (λ j →
+                       trans (Σ-cong {n} (λ i → trans (sym ∧-assoc) (∧-cong ∧-comm refl)))
+                             (sym (Σ-·-distribᵣ (λ i → M i j ∧ y i) (x j))))))
 
       -- Target arrow has direction of Mᵀ for consistency with to-gal.
       to-conj : ∀ {m n} → Matrix n m → BoolAlg n ⇒c BoolAlg m
@@ -616,9 +613,9 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       open _=>g_
 
       BoundedLattice : ℕ → Obj-g
-      BoundedLattice n .Obj-g.carrier = vec-preorder preorder n
-      BoundedLattice n .Obj-g.meets = vec-meet preorder meets n
-      BoundedLattice n .Obj-g.joins = vec-join preorder semilattice n
+      BoundedLattice n .Obj-g.carrier = vec.preorder preorder n
+      BoundedLattice n .Obj-g.meets = vec.meet preorder n meets
+      BoundedLattice n .Obj-g.joins = vec.join preorder n semilattice
 
       to-gal : ∀ {m n} → Matrix n m → BoundedLattice n =>g BoundedLattice m
       to-gal M .right .fun = adjoint M
@@ -627,7 +624,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       to-gal M .left .mono y≤y' i = Σ-mono (λ j → ∧-mono ≤-refl (y≤y' j))
       to-gal M .left⊣right {x} {y} .proj₁ h i =
         ≤-trans (#-↔-≤¬ .proj₁ (to-conj M .conjugate {¬^ x} {y} .proj₁ (λ j → #-↔-≤¬ .proj₂ (h j)) i))
-                ¬-involutive
+                (¬-involutive .proj₂)
       to-gal M .left⊣right {x} {y} .proj₂ k j =
         #-↔-≤¬ .proj₁
           (to-conj M .conjugate {¬^ x} {y} .proj₂ (λ i → #-mono (k i) _ (#-sym (#-↔-≤¬ .proj₂ ≤-refl))) j)
