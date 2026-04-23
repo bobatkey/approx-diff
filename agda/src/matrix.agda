@@ -448,41 +448,37 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       ε-annihilᵣ to ⊥-annihilᵣ
     )
 
-  -- If ∨ is idempotent then (S, ∨) is a join-semilattice with ⊥. The dual statement we don't need at the moment.
-  module Join (∨-idem : ∀ {x} → (x ∨ x) ≈ x) where
-
-    infix 4 _≤_
-    _≤_ : Carrier → Carrier → Prop _
-    x ≤ y = (x ∨ y) ≈ y
-
-    ≤-isPreorder : IsPreorder _≤_
-    ≤-isPreorder .IsPreorder.refl = ∨-idem
-    ≤-isPreorder .IsPreorder.trans xy yz =
-      trans (sym (∨-cong refl yz)) (trans (sym ∨-assoc) (trans (∨-cong xy refl) yz))
+  module DistributiveLattice
+    (_≤_          : Carrier → Carrier → Prop _)
+    (≤-isPreorder : IsPreorder _≤_)
+    (∧-isMeet     : IsMeet ≤-isPreorder _∧_)
+    (⊤-isTop      : IsTop  ≤-isPreorder ⊤)
+    (∨-isJoin     : IsJoin ≤-isPreorder _∨_)
+    (⊥-isBottom   : IsBottom ≤-isPreorder ⊥)
+    (∧-∨-distrib  : ∀ {x y z} → (x ∧ (y ∨ z)) ≤ ((x ∧ y) ∨ (x ∧ z)))
+    (≈→≤          : ∀ {x y} → x ≈ y → x ≤ y) -- S setoid equivalence compatible with the preorder
+    where
 
     open IsPreorder ≤-isPreorder public using (_≃_) renaming (refl to ≤-refl; trans to ≤-trans)
-
-    ∨-isJoin : IsJoin ≤-isPreorder _∨_
-    ∨-isJoin .IsJoin.inl = trans (sym ∨-assoc) (∨-cong ∨-idem refl)
-    ∨-isJoin .IsJoin.inr =
-      trans (∨-cong refl ∨-comm) (trans (sym ∨-assoc) (trans (∨-cong ∨-idem refl) ∨-comm))
-    ∨-isJoin .IsJoin.[_,_] xz yz = trans ∨-assoc (trans (∨-cong refl yz) xz)
-
-    ⊥-isBottom : IsBottom ≤-isPreorder ⊥
-    ⊥-isBottom .IsBottom.≤-bottom = ∨-lunit
 
     preorder : Preorder
     preorder .Preorder.Carrier = Carrier
     preorder .Preorder._≤_ = _≤_
     preorder .Preorder.≤-isPreorder = ≤-isPreorder
 
-    semilattice : JoinSemilattice preorder
-    semilattice .JoinSemilattice._∨_ = _∨_
-    semilattice .JoinSemilattice.⊥ = ⊥
-    semilattice .JoinSemilattice.∨-isJoin = ∨-isJoin
-    semilattice .JoinSemilattice.⊥-isBottom = ⊥-isBottom
+    meets : MeetSemilattice preorder
+    meets .MeetSemilattice._∧_ = _∧_
+    meets .MeetSemilattice.⊤ = ⊤
+    meets .MeetSemilattice.∧-isMeet = ∧-isMeet
+    meets .MeetSemilattice.⊤-isTop = ⊤-isTop
 
-    -- Analogues of binary IsJoin laws for Σ, with Σ-ub corresponding to inl/inr and Σ-lub to [_,_].
+    joins : JoinSemilattice preorder
+    joins .JoinSemilattice._∨_ = _∨_
+    joins .JoinSemilattice.⊥ = ⊥
+    joins .JoinSemilattice.∨-isJoin = ∨-isJoin
+    joins .JoinSemilattice.⊥-isBottom = ⊥-isBottom
+
+    -- Iterated-∨ laws (Σ as iterated +). Σ-ub mirrors inl/inr, Σ-lub mirrors [_,_].
     Σ-ub : ∀ {n} (f : Fin n → Carrier) (i : Fin n) → f i ≤ Σ f
     Σ-ub f zero = IsJoin.inl ∨-isJoin
     Σ-ub f (suc i) = ≤-trans (Σ-ub (λ j → f (suc j)) i) (IsJoin.inr ∨-isJoin)
@@ -492,21 +488,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     Σ-lub {suc n} f h = IsJoin.[_,_] ∨-isJoin (h zero) (Σ-lub (λ j → f (suc j)) (λ j → h (suc j)))
 
     Σ-mono : ∀ {n} {f g : Fin n → Carrier} → (∀ j → f j ≤ g j) → Σ f ≤ Σ g
-    Σ-mono = +-to-Σ.Σ-preserves _≤_ (≤-refl) (IsJoin.mono ∨-isJoin)
-
-  -- Use the join's poset (which will agree with the meet's).
-  module DistributiveLattice
-    (∨-idem   : ∀ {x} → (x ∨ x) ≈ x)
-    (open Join ∨-idem)
-    (∧-isMeet : IsMeet ≤-isPreorder _∧_)
-    (⊤-isTop  : IsTop ≤-isPreorder ⊤)
-    where
-
-    meets : MeetSemilattice preorder
-    meets .MeetSemilattice._∧_ = _∧_
-    meets .MeetSemilattice.⊤ = ⊤
-    meets .MeetSemilattice.∧-isMeet = ∧-isMeet
-    meets .MeetSemilattice.⊤-isTop = ⊤-isTop
+    Σ-mono = +-to-Σ.Σ-preserves _≤_ ≤-refl (IsJoin.mono ∨-isJoin)
 
     open Disjoint ≤-isPreorder ∧-isMeet ⊥-isBottom public
 
@@ -516,7 +498,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     -- Dot-product form of disjointness, for vectors.
     infix 4 _#^_
     _#^_ : ∀ {n} → Vec n → Vec n → Prop _
-    u #^ v = u ⋅ v ≤ ⊥
+    u #^ v = (u ⋅ v) ≤ ⊥
 
     open import prop using (proj₁; proj₂; _⇔_)
 
@@ -530,10 +512,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       open IsJoin ∨-isJoin using (inl; inr; [_,_]) renaming (mono to ∨-mono)
       open IsTop ⊤-isTop
       open IsBottom ⊥-isBottom
-
-      -- Transport semiring's ∧-∨-distribₗ to join-induced preorder.
-      ∧-∨-distrib : ∀ {x y z} → x ∧ (y ∨ z) ≤ (x ∧ y) ∨ (x ∧ z)
-      ∧-∨-distrib = trans (∨-cong ∧-∨-distribₗ refl) ∨-idem
 
       #-↔-≤¬ : ∀ {x y} → (x # y) ⇔ (x ≤ ¬ y)
       #-↔-≤¬ {x} {y} .proj₁ x#y =
@@ -568,8 +546,8 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       #^-reflect : ∀ {n} {u v : Vec n} → (∀ w → v #^ w → u #^ w) → u ≤^ v
       #^-reflect {n} {u} {v} h i =
         #-reflect λ z vi#z →
-          trans (∨-cong (sym (⋅-inj u i z)) refl)
-                (h (inj i z) (trans (∨-cong (⋅-inj v i z) refl) vi#z))
+          ≤-trans (≈→≤ (sym (⋅-inj u i z)))
+            (h (inj i z) (≤-trans (≈→≤ (⋅-inj v i z)) vi#z))
 
       open import conjugate using (Obj; _⇒c_)
       open _⇒c_
@@ -578,7 +556,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       BoolAlg : ℕ → Obj
       BoolAlg n .Obj.carrier = vec.preorder preorder n
       BoolAlg n .Obj.meets = vec.meet preorder n meets
-      BoolAlg n .Obj.joins = vec.join preorder n semilattice
+      BoolAlg n .Obj.joins = vec.join preorder n joins
       BoolAlg n .Obj.¬ = ¬^
       BoolAlg n .Obj.∧-∨-distrib _ _ _ _ = ∧-∨-distrib
       BoolAlg n .Obj.complement-∨ _ = complement-∨
@@ -601,9 +579,9 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       to-conj M .left .fun y i = M i ⋅ y
       to-conj M .left .mono y≤y' i = Σ-mono (λ j → ∧-mono ≤-refl (y≤y' j))
       to-conj M .conjugate {x} {y} .proj₁ h i =
-        ≤-trans (Σ-ub _ i) (trans (∨-cong (sym (swap (M ᵀ) {x} {y})) refl) (Σ-lub _ h))
+        ≤-trans (Σ-ub _ i) (≤-trans (≈→≤ (sym (swap (M ᵀ) {x} {y}))) (Σ-lub _ h))
       to-conj M .conjugate {x} {y} .proj₂ k j =
-        ≤-trans (Σ-ub _ j) (trans (∨-cong (swap (M ᵀ) {x} {y}) refl) (Σ-lub _ k))
+        ≤-trans (Σ-ub _ j) (≤-trans (≈→≤ (swap (M ᵀ) {x} {y})) (Σ-lub _ k))
 
       -- De Morgan dual of the transpose. Meet-preserving; right adjoint of M · _.
       adjoint : ∀ {m n} → Matrix n m → Vec n → Vec m
@@ -615,7 +593,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       BoundedLattice : ℕ → Obj-g
       BoundedLattice n .Obj-g.carrier = vec.preorder preorder n
       BoundedLattice n .Obj-g.meets = vec.meet preorder n meets
-      BoundedLattice n .Obj-g.joins = vec.join preorder n semilattice
+      BoundedLattice n .Obj-g.joins = vec.join preorder n joins
 
       to-gal : ∀ {m n} → Matrix n m → BoundedLattice n =>g BoundedLattice m
       to-gal M .right .fun = adjoint M
