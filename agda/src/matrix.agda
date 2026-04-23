@@ -458,6 +458,8 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     ≤-isPreorder .IsPreorder.trans xy yz =
       trans (sym (∨-cong refl yz)) (trans (sym ∨-assoc) (trans (∨-cong xy refl) yz))
 
+    open IsPreorder ≤-isPreorder public using () renaming (refl to ≤-refl; trans to ≤-trans)
+
     ∨-isJoin : IsJoin ≤-isPreorder _∨_
     ∨-isJoin .IsJoin.inl = trans (sym ∨-assoc) (∨-cong ∨-idem refl)
     ∨-isJoin .IsJoin.inr =
@@ -481,14 +483,14 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     -- Analogues of binary IsJoin laws for Σ, with Σ-ub corresponding to inl/inr and Σ-lub to [_,_].
     Σ-ub : ∀ {n} (f : Fin n → Carrier) (i : Fin n) → f i ≤ Σ f
     Σ-ub f zero = IsJoin.inl ∨-isJoin
-    Σ-ub f (suc i) = IsPreorder.trans ≤-isPreorder (Σ-ub (λ j → f (suc j)) i) (IsJoin.inr ∨-isJoin)
+    Σ-ub f (suc i) = ≤-trans (Σ-ub (λ j → f (suc j)) i) (IsJoin.inr ∨-isJoin)
 
     Σ-lub : ∀ {n} {z} (f : Fin n → Carrier) → (∀ j → f j ≤ z) → Σ f ≤ z
     Σ-lub {zero} _ _ = IsBottom.≤-bottom ⊥-isBottom
     Σ-lub {suc n} f h = IsJoin.[_,_] ∨-isJoin (h zero) (Σ-lub (λ j → f (suc j)) (λ j → h (suc j)))
 
     Σ-mono : ∀ {n} {f g : Fin n → Carrier} → (∀ j → f j ≤ g j) → Σ f ≤ Σ g
-    Σ-mono = +-to-Σ.Σ-preserves _≤_ (IsPreorder.refl ≤-isPreorder) (IsJoin.mono ∨-isJoin)
+    Σ-mono = +-to-Σ.Σ-preserves _≤_ (≤-refl) (IsJoin.mono ∨-isJoin)
 
   -- Use the join's poset (which will agree with the meet's).
   module DistributiveLattice
@@ -533,30 +535,22 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       Heyting n .Obj.#-reflect {u} {v} h = #^-reflect h^
         where
           h^ : ∀ w → v #^ w → u #^ w
-          h^ w v⋅w≤⊥ = Σ-lub _ (h w (λ j → IsPreorder.trans ≤-isPreorder (Σ-ub _ j) v⋅w≤⊥))
+          h^ w v⋅w≤⊥ = Σ-lub _ (h w (λ j → ≤-trans (Σ-ub _ j) v⋅w≤⊥))
       Heyting n .Obj.∧-∨-distrib x y z i = trans (∨-cong ∧-∨-distribₗ refl) ∨-idem
 
       to-conj : ∀ {m n} → Matrix n m → Heyting m ⇒c Heyting n
       to-conj {m} {n} M = record
         { right = record
           { fun  = λ u i → M i ⋅ u
-          ; mono = λ u≤v i →
-              Σ-mono (λ j → IsMeet.mono ∧-isMeet (IsPreorder.refl ≤-isPreorder) (u≤v j))
+          ; mono = λ u≤v i → Σ-mono (λ j → IsMeet.mono ∧-isMeet (≤-refl) (u≤v j))
           }
         ; left = record
           { fun  = λ y j → (M ᵀ) j ⋅ y
-          ; mono = λ y≤y' j →
-              Σ-mono (λ i → IsMeet.mono ∧-isMeet (IsPreorder.refl ≤-isPreorder) (y≤y' i))
+          ; mono = λ y≤y' j → Σ-mono (λ i → IsMeet.mono ∧-isMeet (≤-refl) (y≤y' i))
           }
         ; conjugate = λ {x} {y} → record
-          { proj₁ = λ h j →
-              IsPreorder.trans ≤-isPreorder
-                (Σ-ub _ j)
-                (trans (∨-cong (sym (swap {x} {y})) refl) (Σ-lub _ h))
-          ; proj₂ = λ k i →
-              IsPreorder.trans ≤-isPreorder
-                (Σ-ub _ i)
-                (trans (∨-cong (swap {x} {y}) refl) (Σ-lub _ k))
+          { proj₁ = λ h j → ≤-trans (Σ-ub _ j) (trans (∨-cong (sym (swap {x} {y})) refl) (Σ-lub _ h))
+          ; proj₂ = λ k i → ≤-trans (Σ-ub _ i) (trans (∨-cong (swap {x} {y}) refl) (Σ-lub _ k))
           }
         }
         where
