@@ -58,7 +58,7 @@ Accordingly, the category $\Mat(S)$ has:
 \item as objects all natural numbers;
 \item as morphisms $m \to n$ all $n \times m$ matrices over $S$.
 \end{itemize}
-Composition $N \comp M$ is matrix multiplication $NM$, with $I$ as the identity on $m$.
+Composition $N \comp M$ is matrix multiplication $NM$, with $I_m$ as the identity on $m$.
 
 \subsubsection{Dagger structure}
 \label{sec:matrix:transpose}
@@ -71,11 +71,24 @@ $\Mat(S)$.
 \subsubsection{$\CMon$-enrichment and biproducts}
 \label{sec:matrix:cmon}
 
-Pointwise addition $(M +_m N)_{ij} = M_{ij} + N_{ij}$ and the zero matrix $0_m$ equip each hom-set of $\Mat(S)$
-with a commutative monoid; composition distributes pointwise over $+_m$, so that $\Mat(S)$ is
-$\CMon$-enriched. Moreover, $0 : \Mat(S)$ is a zero object (both terminal and initial), and the sum $m + n$ of
-natural numbers is the \emph{biproduct} of $m$ and $n$ in $\Mat(S)$, with injections and projections given by
-the appropriate ``block'' matrices. $\Mat(S)$ is therefore a concrete semi-additive category.
+Pointwise addition $(M + N)_{ij} = M_{ij} + N_{ij}$ and the zero matrix $0$ equip each hom-set of $\Mat(S)$
+with a commutative monoid; composition is bilinear (distributes over $+$ on both sides), so that $\Mat(S)$
+is $\CMon$-enriched.
+
+Moreover, the natural number $0$ is a zero object (both terminal and initial), and for natural numbers $m$
+and $n$, the biproduct $m \biprod n$ can be constructed as the sum $m + n$ with block-matrix projections
+and injections
+\begin{salign*}
+   p_1 &= \begin{bmatrix} I_m & 0 \end{bmatrix} : m+n \to m, &
+   p_2 &= \begin{bmatrix} 0 & I_n \end{bmatrix} : m+n \to n, \\
+   \iota_1 &= \begin{bmatrix} I_m \\ 0 \end{bmatrix} : m \to m+n, &
+   \iota_2 &= \begin{bmatrix} 0 \\ I_n \end{bmatrix} : n \to m+n,
+\end{salign*}
+\noindent where $I_m, I_n$ denote identity matrices and the $0$s are zero matrices of compatible size.
+Pairings and copairings are vertical and horizontal concatenation of matrices: for $M : k \to m$ and $N : k
+\to n$, the pairing $\prodM{M}{N} : k \to m+n$ stacks $M$ above $N$; for $M : m \to k$ and $N : n \to k$,
+the copairing $\coprodM{M}{N} : m+n \to k$ places $M$ and $N$ side by side. $\Mat(S)$ is therefore a
+semi-additive category.
 
 \subsection{Additional structure on $S$}
 \label{sec:matrix:additional-structure}
