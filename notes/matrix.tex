@@ -110,28 +110,25 @@ If $+$ is idempotent ($a + a = a$), then $(S, +, 0)$ is a join-semilattice with 
 b$, and $\sum_i$ becomes iterated join (both on scalars and pointwise on vectors). In this setting the basis
 decomposition of vectors (\secref{matrix:basis-decomp}) extends to \emph{linear} maps $f : S^m \to S^n$: those
 that preserve $+$ (so $f(u + v) = f(u) + f(v)$ and $f(0) = 0$) and commute with scalar multiplication ($f(a
-\cdot v) = a \cdot f(v)$), which is the usual notion of linearity extended to the semiring setting. Every such
-$f$ satisfies
+\cdot v) = a \cdot f(v)$), which is the usual notion of linearity extended to semirings. Every such $f$
+satisfies
 \begin{salign*}
    f(v) = \sum_i v_i \cdot f(e_i) \tag{basis decomposition of linear maps}
 \end{salign*}
-\noindent so $f$ is determined by the $m$ vectors $f(e_1), \ldots, f(e_m) \in S^n$. These form the columns
+\noindent i.e.\ $f(v)$ is a ``join of atomic slices''. So $f$ is determined by the $m$ vectors $f(e_1),
+\ldots, f(e_m) \in S^n$. These form the columns
 of an $n \times m$ matrix $M_f$, the \emph{matrix representation} of $f$; conversely every $n \times m$
 matrix is $M_f$ for a unique such $f$.
-
-\subsubsection{Bounded distributive lattice}
-\label{sec:matrix:additional-structure:lattice}
-
-If additionally $\cdot$ is the meet of a top element $1$ and distributes over $+$ — i.e.\ $(S, +, 0, \cdot,
-1, \le)$ is a bounded distributive lattice — we have a \emph{disjointness} relation $a \disj b$ iff $a
-\cdot b \le 0$, with pointwise lift to vectors.
 
 \subsubsection{Boolean algebra}
 \label{sec:matrix:additional-structure:boolean}
 
-If $S$ is furthermore a \emph{Boolean algebra}, equipped with a negation $\neg$ satisfying $1 \le a + \neg
-a$ (excluded middle) and $a \cdot \neg a \le 0$ (non-contradiction), then $\neg$ is involutive and
-disjointness reflects the order: $a \le b$ iff every $c$ disjoint from $b$ is disjoint from $a$.
+If additionally $\cdot$ is the meet of a top element $1$ and distributes over $+$ — i.e.\ $(S, +, 0, \cdot, 1,
+\le)$ is a bounded distributive lattice, then we have a \emph{disjointness} relation $a \disj b$ iff $a \cdot
+b \le 0$, with pointwise lift to vectors. If $S$ is furthermore a \emph{Boolean algebra}, equipped with a
+negation $\neg$ satisfying $1 \le a + \neg a$ (excluded middle) and $a \cdot \neg a \le 0$
+(non-contradiction), then $\neg$ is involutive and disjointness reflects the order: $a \le b$ iff every $c$
+disjoint from $b$ is disjoint from $a$.
 
 \subsection{Example: $\Mat(\Two)$ for Boolean analysis}
 \label{sec:matrix:two}
