@@ -130,30 +130,21 @@ negation $\neg$ satisfying $1 \le a + \neg a$ (excluded middle) and $a \cdot \ne
 (non-contradiction), then $\neg$ is involutive and disjointness reflects the order: $a \le b$ iff every $c$
 disjoint from $b$ is disjoint from $a$.
 
-\subsection{Example: $\Mat(\Two)$ for Boolean analysis}
+\subsection{$\Mat(\Two)$ and $\FinRel$}
 \label{sec:matrix:two}
 
-Take $S = \Two = (\{\bot, \top\}, \join, \bot, \meet, \top)$ with $+ := \join$, $\cdot := \meet$, $0 := \bot$, $1
-:= \top$; this is a commutative (in fact Boolean) semiring. $\Mat(\Two)$ has as its morphisms $m \to n$ the $n
-\times m$ Boolean matrices; matrix composition in the $(\Two, \join, \meet)$ semiring computes reachability
-in the dependency graph encoded by a matrix (\secref{matrix:two:matrices}). This was the starting point for
-the development and supplies the concrete semantics of interest for slicing-style analyses.
-
-\subsection{Morphisms as dependency relations}
-\label{sec:matrix:two:matrices}
-
-At $S = \Two$ each entry $M_{ij}$ is a bit, and $M$ can be read as the \emph{dependency relation} between two
-index sets: $M_{ij} = \top$ iff position $i$ in the codomain depends on position $j$ in the domain.
-Composition in the $(\Two, \join, \meet)$ semiring is reachability:
+Take $S$ to be the commutative (in fact Boolean) semiring $\Two = (\{\bot, \top\}, \join, \bot, \meet, \top)$
+with $+ := \join$, $\cdot := \meet$, $0 := \bot$ and $1 := \top$. $\Mat(\Two)$ is equivalent to the category
+$\FinRel$ of finite sets and binary relations: an $n \times m$ matrix $M : m \to n$ encodes the relation $R_M
+\subseteq [n] \times [m]$ via $i\, R_M\, j \iff M_{ij} = \top$, where $[n] = \{1, \ldots, n\}$. Under this
+equivalence, matrix multiplication is relational composition,
 \begin{salign*}
-   (N \comp M)_{ik} = \bigjoin_j N_{ij} \meet M_{jk}
+   (N \comp M)_{ik} = \bigjoin_j N_{ij} \meet M_{jk},
 \end{salign*}
-\noindent evaluates to $\top$ iff there is some intermediate position $j$ witnessing a chain $k \to j \to i$.
-Basis decomposition specialises to
-\begin{salign*}
-   f(v) = \bigjoin_{j \in J(v)} f(e_j) \qquad (J(v) = \{j : v_j = \top\})
-\end{salign*}
-\noindent --- the ``live'' positions of $v$ select which columns of $M_f$ contribute.
+\noindent which evaluates to $\top$ iff there is some intermediate $j$ with $k\, R_M\, j$ and $j\, R_N\, i$,
+or equivalently iff $i$ is reachable from $k$ via $R_M$ then $R_N$. The dagger $M \mapsto M^{\!\top}$
+corresponds to the relational \emph{converse}: $i\, R_{M^{\!\top}}\, j \iff j\, R_M\, i$, reversing the
+direction of reachability.
 
 \subsection{Relation to $\SemiLat$}
 \label{sec:matrix:two:semilat}
