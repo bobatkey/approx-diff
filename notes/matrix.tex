@@ -1,16 +1,9 @@
 \section{Matrices over a commutative semiring}
 \label{sec:matrix}
 
-Given any commutative semiring $S = (|S|, +, 0, \cdot, 1)$ we may form the category $\Mat(S)$ whose objects are
-the natural numbers and whose morphisms $m \to n$ are $n \times m$ matrices over $S$. Composition is matrix
-multiplication in $S$ and the identity $m \to m$ is the Kronecker $\delta$. Earlier drafts of these notes
-presented the Boolean case (\secref{matrix:two}) as a stand-alone construction; we now develop it as an
-instance of the semiring-generic story, which streamlines the formal development and isolates the precise
-amount of algebraic structure each property requires.
-Most of the material here is formalised in the Agda module \texttt{matrix}.\footnote{\url{agda/src/matrix.agda}}
-
-Throughout, $S$ is a fixed commutative semiring with underlying setoid $(|S|, \approx)$. We write $0$ and $1$
-for the additive and multiplicative identities and $+, \cdot$ for the operations.
+Given any commutative semiring $S = (|S|, +, 0, \cdot, 1)$, let $\Mat(S)$ denote the category whose objects
+are the natural numbers and whose morphisms $m \to n$ are $n \times m$ matrices over $S$. Composition is
+matrix multiplication in $S$ and the identity $m \to m$ is the Kronecker $\delta$.
 
 \subsection{Vectors and standard basis}
 \label{sec:matrix:vectors}
@@ -148,13 +141,13 @@ The following material is the Boolean-specific account of the two embeddings, to
 account (valid in the Boolean algebra tier of \secref{matrix:tiers}) in a later pass.
 
 We now treat $f: \Two^m \to \Two^n$ as the \emph{backward} direction of an analysis --- a map that propagates
-output demand back to input demand, and consider two contravariant embeddings: into $\HeytConj$ (a subcategory
+output demand back to input demand, and consider two contravariant embeddings: into $\BoolConj$ (a subcategory
 of $\LatGal$), and into $\LatGal$ directly. The two embeddings pair $f$ with a forward-direction counterpart
 in two different ways:
 
 \begin{enumerate}
 \item \emph{Conjugate pair.} The transpose $f^{\!\top}$ pairs with $f$ to form a conjugate pair $(f^{\!\top},
-f)$ in $\HeytConj$ (\secref{categories-with-biproducts:heytconj}): both maps are $\join$-preserving, linked by
+f)$ in $\BoolConj$ (\secref{categories-with-biproducts:boolconj}): both maps are $\join$-preserving, linked by
 the disjointness condition
 \begin{salign*}
    y \disj f^{\!\top}(x) \iff f(y) \disj x

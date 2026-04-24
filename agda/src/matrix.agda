@@ -162,7 +162,6 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
     trans (+-cong refl (Σ-interchange {m} {n} (λ i → f (suc i))))
           (Σ-+ {n} (f zero) (λ j → Σ {m} (λ i → f (suc i) j)))
 
-
   ≈ₘ-isEquiv : ∀ {m n} → IsEquivalence (_≈ₘ_ {m} {n})
   ≈ₘ-isEquiv .IsEquivalence.refl i j = refl
   ≈ₘ-isEquiv .IsEquivalence.sym p i j = sym (p i j)

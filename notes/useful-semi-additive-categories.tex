@@ -93,8 +93,8 @@ biproducts, with the trivial 1-point lattice as zero object and binary biproduct
 
 \noindent with product and coproduct of Galois connections computed component-wise.
 
-\subsection{Category of Heyting algebras and conjugate pairs}
-\label{sec:categories-with-biproducts:heytconj}
+\subsection{Category of Boolean algebras and conjugate pairs}
+\label{sec:categories-with-biproducts:boolconj}
 
 A second way of reversing the direction of a $\join$-preserving map uses \emph{conjugate pairs}, an idea
 going back to \citet{jonsson51}. Conjugate pairs are defined over bounded lattices using the
@@ -102,45 +102,46 @@ going back to \citet{jonsson51}. Conjugate pairs are defined over bounded lattic
 
 \begin{definition}[Conjugate pair]
 Suppose $X$ and $Y$ are bounded lattices. A \emph{conjugate pair} $(f, g) : X \to Y$ is a pair of
-monotone functions $f : X \to Y$ and $g : Y \to X$ satisfying
+functions $f : X \to Y$ and $g : Y \to X$ satisfying
 \begin{salign*}
    y \disj_Y f(x) \iff g(y) \disj_X x
 \end{salign*}
 \noindent for every $x \in X$ and $y \in Y$.
 \end{definition}
 
-\noindent In a general bounded lattice, a conjugate pair is an independent notion, not reducible to a
-Galois connection. But if each underlying lattice is a \emph{Heyting algebra} (a distributive lattice with a
-pseudocomplement $\neg$), then disjointness determines the order via $a \disj b \iff a \le \neg b$, which
-brings conjugate pairs and Galois connections into alignment. Since $(f, g)$ is a conjugate pair iff $(g,
-f)$ is (with source and target swapped), there are two faithful functors $\HeytConj \to \LatGal$, related by
-this symmetry:
-\begin{itemize}
-\item a covariant one sending $(f, g) : X \to Y$ to the Galois connection $g \adj (\neg \comp f \comp \neg)
-: X \to Y$, and
-\item a contravariant one sending $(f, g) : X \to Y$ to $f \adj (\neg \comp g \comp \neg) : Y \to X$.
-\end{itemize}
-\noindent This is why both components of a conjugate pair are forced to preserve joins: conjugation by
-$\neg$ converts a meet-preserving map into a join-preserving one. Neither functor is full in general,
-because a meet-preserving map need not have the form $\neg \comp f \comp \neg$ for any join-preserving $f$. Restricted to the full subcategory of $\HeytConj$ on \emph{Boolean}
-algebras (where $\neg\neg = \id$), both functors become full, and conjugate pairs and Galois connections are
-equivalent categorical presentations.
+\noindent The definition does not assume $f$ or $g$ to be monotone, nor to preserve any lattice structure.
+When $X$ and $Y$ are Boolean algebras, however, both components automatically preserve joins (and so are
+monotone).
+
+\begin{definition}[Boolean algebra]
+A \emph{Boolean algebra} is a bounded distributive lattice equipped with a complement $\neg$ satisfying
+$\top \le x \join \neg x$ and $x \meet \neg x \le \bot$.
+\end{definition}
+
+\noindent Write $\demorgan{f} = \neg \comp f \comp \neg$ for the \emph{De Morgan dual} of $f : X \to Y$;
+involutivity of $\neg$ gives $\demorgan{(\demorgan{f})} = f$. Over a Boolean algebra, disjointness
+determines the order via $a \disj b \iff a \le \neg b$, so the conjugate condition rewrites to $y \le
+\demorgan{f}(x) \iff \demorgan{g}(y) \le x$, exhibiting $g \adj \demorgan{f}$ and (symmetrically) $f \adj
+\demorgan{g}$. Both components are left adjoints, and so preserve joins.
 
 Conjugate pairs compose componentwise (with the second components composed in the opposite order), and
 $(\id_X, \id_X)$ is a conjugate pair, so the following is a category.
 
-\begin{definition}[Category $\HeytConj$]
-Define the category $\HeytConj$ which has:
+\begin{definition}[Category $\BoolConj$]
+Define the category $\BoolConj$ which has:
 \begin{itemize}
-\item as objects all Heyting algebras;
+\item as objects all Boolean algebras;
 \item as morphisms from $X$ to $Y$ all conjugate pairs $(f, g) : X \to Y$.
 \end{itemize}
 \end{definition}
 
-\noindent $\HeytConj$ inherits $\SemiLat$-enrichment from $\LatGal$ via the embeddings above: the zero
-morphism $0_{X,Y}$ is the constant-$\bot$ pair, and addition of morphisms is given componentwise by
-pointwise $\join$. Unlike $\LatGal$, however, both components of a $\HeytConj$ morphism preserve joins, so
-the category carries a dagger. We return to this point in \secref{matrix:two:embeddings}.
+\noindent Writing $\BoolGal$ for the full subcategory of $\LatGal$ on Boolean algebras, $\BoolConj$ is
+equivalent to $\BoolGal$ via $(f, g) \mapsto g \adj \demorgan{f}$, which is full and faithful since every
+meet-preserving map between Boolean algebras is $\demorgan{f}$ for some join-preserving $f$. $\BoolConj$
+accordingly inherits $\SemiLat$-enrichment from $\LatGal$: the zero morphism is the constant-$\bot$ pair,
+and addition is componentwise $\join$. The involution $(f, g) \mapsto (g, f)$ is identity-on-objects and
+contravariant, making $\BoolConj$ a dagger category with $(f, g)^\dagger = (g, f)$; under the equivalence
+this corresponds to the dagger $f \adj g \mapsto \demorgan{g} \adj \demorgan{f}$ on $\BoolGal$.
 
 \subsection{Category of finite-dimensional vector spaces}
 \label{sec:categories-with-biproducts:fdvect}
@@ -182,3 +183,11 @@ is an abelian group, where:
 W = (V \times W, +, \mult)$, with $+$ and $\mult$ defined component-wise, is a biproduct $(V \biprod W,
 \biinj_V, \biinj_W, \pi_1, \pi_2)$ with $\biinj_V = \prodM{\id_V}{0_{V,W}}$ and $\biinj_W =
 \prodM{0_{V,W}}{\id_W}$.
+
+\subsection{Category of matrices over a commutative semiring}
+\label{sec:categories-with-biproducts:mat}
+
+For any commutative semiring $S$, the category $\Mat(S)$ of natural numbers and $S$-valued matrices
+(\secref{matrix}) is semi-additive: pointwise addition of entries makes each hom-set a commutative monoid,
+composition distributes over this addition on both sides, and the sum $m + n$ of natural numbers serves as
+the biproduct of $m$ and $n$ via block-matrix injections and projections.
