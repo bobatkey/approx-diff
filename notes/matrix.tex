@@ -1,26 +1,29 @@
 \section{Matrices over a commutative semiring}
 \label{sec:matrix}
 
-Given any commutative semiring $S = (|S|, +, 0, \cdot, 1)$, let $\Mat(S)$ denote the category whose objects
-are the natural numbers and whose morphisms $m \to n$ are $n \times m$ matrices over $S$. Composition is
-matrix multiplication in $S$ and the identity $m \to m$ is the Kronecker $\delta$.
+Suppose $S = (S, +, 0, \cdot, 1)$ a commutative semiring. The category $\Mat(S)$ has:
+\begin{itemize}
+\item as objects all natural numbers;
+\item as morphisms $m \to n$, all $n \times m$ matrices over $S$.
+\end{itemize}
+Composition is matrix multiplication in $S$ and the identity $m \to m$ is the Kronecker $\delta$.
 
 \subsection{Vectors and standard basis}
 \label{sec:matrix:vectors}
 
-A \emph{length-$n$ vector} over $S$ is a function $v : \mathrm{Fin}(n) \to |S|$; we write $v_i$ for $v(i)$.
-The \emph{standard basis vector} $e_i : \mathrm{Fin}(n) \to |S|$ at index $i$ is the Kronecker $\delta$,
+A \emph{length-$n$ vector} over $S$ is a function $v : \mathrm{Fin}(n) \to S$; we write $v_i$ for $v(i)$.
+The \emph{standard basis vector} $e_i : \mathrm{Fin}(n) \to S$ at index $i$ is the Kronecker $\delta$,
 \begin{salign*}
    (e_i)_j = \begin{cases} 1 & i = j \\ 0 & \text{otherwise} \end{cases}
 \end{salign*}
 \noindent and the \emph{injection} of a scalar $z$ at index $i$ is $\mathsf{inj}_i(z)_j = (e_i)_j \cdot z$.
-The \emph{iterated sum} of a family $f : \mathrm{Fin}(n) \to |S|$ is defined by induction,
+The \emph{iterated sum} of a family $f : \mathrm{Fin}(n) \to S$ is defined by induction,
 \begin{salign*}
    \sum_{i : \mathrm{Fin}(0)} f(i) = 0 \qquad \sum_{i : \mathrm{Fin}(n+1)} f(i) = f(0) + \sum_{i : \mathrm{Fin}(n)} f(i{+}1)
 \end{salign*}
 \noindent and the \emph{dot product} of two length-$n$ vectors is $u \cdot v = \sum_i u_i \cdot v_i$. Iterated
 sum over vectors, written $\bigoplus$, is simply pointwise iterated sum: for $g : \mathrm{Fin}(m) \to
-\mathrm{Fin}(n) \to |S|$,
+\mathrm{Fin}(n) \to S$,
 \begin{salign*}
    \left(\bigoplus_{i} g(i)\right)_{\!j} = \sum_i g(i)_j.
 \end{salign*}
@@ -30,24 +33,24 @@ sum over vectors, written $\bigoplus$, is simply pointwise iterated sum: for $g 
 
 Every length-$m$ vector $v$ decomposes as an iterated sum of scaled basis vectors,
 \begin{salign*}
-   v \approx \bigoplus_{i} v_i \cdot e_i \tag{basis decomposition}
+   v = \bigoplus_{i} v_i \cdot e_i \tag{basis decomposition}
 \end{salign*}
 \noindent where $a \cdot w$ denotes scaling of vector $w$ by scalar $a$. This is the algebraic fact that the
 standard basis spans the vector space, and is the crucial identity enabling the representation of linear maps
-out of a free module as matrices. It is proved from the sum-of-basis lemma $\sum_j (e_i)_j \cdot f(j) \approx
-f(i)$ together with the symmetry $(e_i)_j \approx (e_j)_i$ of the Kronecker $\delta$. When $S$ has a
+out of a free module as matrices. It is proved from the sum-of-basis lemma $\sum_j (e_i)_j \cdot f(j) =
+f(i)$ together with the symmetry $(e_i)_j = (e_j)_i$ of the Kronecker $\delta$. When $S$ has a
 compatible order with joins (and scaling is additive in its scalar argument), basis decomposition extends to
-$\join$-preserving, scale-linear maps: every such $f : |S|^m \to |S|^n$ is determined by its action on basis
+$\join$-preserving, scale-linear maps: every such $f : S^m \to S^n$ is determined by its action on basis
 vectors via
 \begin{salign*}
-   f(v) \approx \bigoplus_i v_i \cdot f(e_i) \tag{map basis decomposition}
+   f(v) = \bigoplus_i v_i \cdot f(e_i) \tag{map basis decomposition}
 \end{salign*}
 \noindent i.e.\ as a ``join of atomic slices''.
 
 \subsection{The matrix category}
 \label{sec:matrix:category}
 
-A matrix $M : m \to n$ is a function $\mathrm{Fin}(n) \to \mathrm{Fin}(m) \to |S|$; the entry at row $i$ and
+A matrix $M : m \to n$ is a function $\mathrm{Fin}(n) \to \mathrm{Fin}(m) \to S$; the entry at row $i$ and
 column $j$ is $M_{ij}$. Equivalently, a matrix is an $m$-indexed family of length-$n$ vectors (its columns).
 Composition of $N : n \to k$ and $M : m \to n$ is matrix multiplication,
 \begin{salign*}
@@ -55,7 +58,7 @@ Composition of $N : n \to k$ and $M : m \to n$ is matrix multiplication,
 \end{salign*}
 \noindent and the identity $I : m \to m$ is the Kronecker $\delta$: $I_{ij} = (e_i)_j$. That $\Mat(S)$ satisfies
 the category laws reduces to standard identities about iterated sum: associativity of composition uses
-sum-distributivity of $\cdot$ on both sides together with the interchange law $\sum_i \sum_j f(i)(j) \approx
+sum-distributivity of $\cdot$ on both sides together with the interchange law $\sum_i \sum_j f(i)(j) =
 \sum_j \sum_i f(i)(j)$, and the identity laws use the sum-of-basis lemma.
 
 \subsection{Transpose}
@@ -77,12 +80,12 @@ the appropriate ``block'' matrices. $\Mat(S)$ is therefore a concrete semi-addit
 \subsection{Ordered tiers}
 \label{sec:matrix:tiers}
 
-When $|S|$ carries additional order-theoretic structure compatible with $(+, \cdot)$, further derived
+When $S$ carries additional order-theoretic structure compatible with $(+, \cdot)$, further derived
 constructions are available. The Agda formalisation factors these into \emph{tiers}, each parameterised by a
-preorder $\le$ on $|S|$ and axioms for how $+, \cdot$ interact with $\le$:
+preorder $\le$ on $S$ and axioms for how $+, \cdot$ interact with $\le$:
 
 \begin{itemize}
-\item \emph{Join} tier: $+$ is the join with bottom element $0$ (i.e.\ $(|S|, \le, +, 0)$ is a
+\item \emph{Join} tier: $+$ is the join with bottom element $0$ (i.e.\ $(S, \le, +, 0)$ is a
 join-semilattice). At this tier we obtain iterated-join laws $\Sigma$-ub, $\Sigma$-lub, $\Sigma$-mono on
 scalars; pointwise lifts $\le^{\!\wedge}$ and $\bigoplus$-ub, $\bigoplus$-lub, $\bigoplus$-mono on vectors; and
 the \emph{map basis decomposition} above for a join-preserving, scale-linear $f$.
