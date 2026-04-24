@@ -23,9 +23,10 @@ rows). The \emph{standard basis vector} $e_i \in S^n$ at index $i$ is the Kronec
 \end{salign*}
 \noindent The scalar \emph{dot product} of two same-length vectors is $u \cdot v = \sum_i u_i \cdot v_i$.
 Viewing vectors $w_1, \ldots, w_m \in S^n$ as the columns of an $n \times m$ matrix $W$ (so $W_{ji} =
-(w_i)_j$), the iterated sum $\bigoplus_i w_i \in S^n$ is the row-sum of $W$:
+(w_i)_j$), the iterated sum $\sum_i w_i \in S^n$ is the row-sum of $W$, defined componentwise from scalar
+sum:
 \begin{salign*}
-   \left(\bigoplus_{i} w_i\right)_{\!j} = \sum_i W_{ji}.
+   \left(\sum_{i} w_i\right)_{\!j} = \sum_i W_{ji}.
 \end{salign*}
 
 \subsection{Basis decomposition}
@@ -34,7 +35,7 @@ Viewing vectors $w_1, \ldots, w_m \in S^n$ as the columns of an $n \times m$ mat
 Write $a \cdot w$ for the pointwise product of a scalar $a$ with a vector $w$, i.e.\ $(a \cdot w)_i = a
 \cdot w_i$. Every $m$-length vector $v$ decomposes as an iterated sum of scaled basis vectors:
 \begin{salign*}
-   v = \bigoplus_{i} v_i \cdot e_i \tag{basis decomposition}
+   v = \sum_{i} v_i \cdot e_i \tag{basis decomposition}
 \end{salign*}
 \noindent This follows from the symmetry $(e_i)_j = (e_j)_i$ of the Kronecker $\delta$ together with the
 following lemma.
@@ -91,11 +92,11 @@ injections are correspondingly copairings and pairings of identity and zero:
 relationship $\biinj_i = \biproj_i^{\!\top}$ makes the injections the dagger images of the projections.
 $\Mat(S)$ is therefore a semi-additive category (\secref{biproduct}).
 
-The iterated sum notation $\bigoplus$ from \secref{matrix:vectors} aligns with the biproduct $\biprod$: a
-vector $w \in S^n$ is the same as a morphism $w : 1 \to n$ in $\Mat(S)$, and for $w_1, \ldots, w_m \in S^n$
-the iterated sum $\bigoplus_i w_i$ is their $\CMon$ addition in $\Mat(S)(1, n)$. Equivalently, $\bigoplus_i
-w_i = W \comp \diag_m$, where $W : m \to n$ has the $w_i$ as columns and $\diag_m : 1 \to m$ is the
-diagonal into the biproduct $1 \biprod \cdots \biprod 1$.
+The iterated sum $\sum_i w_i$ from \secref{matrix:vectors} fits into this picture by considering a vector $w
+\in S^n$ as a morphism $w : 1 \to n$ in $\Mat(S)$. For $w_1, \ldots, w_m \in S^n$, the iterated sum $\sum_i
+w_i$ is their $\CMon$ addition in $\Mat(S)(1, n)$. Equivalently, $\sum_i w_i = W \comp \diag_m$, where $W : m
+\to n$ has the $w_i$ as columns and $\diag_m : 1 \to m$ is the diagonal into the biproduct $1 \biprod \cdots
+\biprod 1$.
 
 \subsection{Additional structure on $S$}
 \label{sec:matrix:additional-structure}
@@ -105,14 +106,18 @@ Further constructions become available when $S$ carries compatible order-theoret
 \subsubsection{Join-semilattice}
 \label{sec:matrix:additional-structure:join}
 
-If $+$ is idempotent ($a + a = a$), then $(S, +, 0)$ is a join-semilattice with order $a \le b \iff a + b
-= b$, $\sum_i$ becomes iterated join (and $\bigoplus_i$ its pointwise lift), and basis decomposition
-extends to any $\join$-preserving, scale-linear $f : S^m \to S^n$:
+If $+$ is idempotent ($a + a = a$), then $(S, +, 0)$ is a join-semilattice with order $a \le b \iff a + b =
+b$, and $\sum_i$ becomes iterated join (both on scalars and pointwise on vectors). In this setting the basis
+decomposition of vectors (\secref{matrix:basis-decomp}) extends to \emph{linear} maps $f : S^m \to S^n$: those
+that preserve $+$ (so $f(u + v) = f(u) + f(v)$ and $f(0) = 0$) and commute with scalar multiplication ($f(a
+\cdot v) = a \cdot f(v)$), which is the usual notion of linearity extended to the semiring setting. Every such
+$f$ satisfies
 \begin{salign*}
-   f(v) = \bigoplus_i v_i \cdot f(e_i) \tag{map basis decomposition}
+   f(v) = \sum_i v_i \cdot f(e_i) \tag{basis decomposition of linear maps}
 \end{salign*}
-\noindent so $f$ is determined by its values on the basis vectors $e_i$ (the columns of its matrix
-representation).
+\noindent so $f$ is determined by the $m$ vectors $f(e_1), \ldots, f(e_m) \in S^n$. These form the columns
+of an $n \times m$ matrix $M_f$, the \emph{matrix representation} of $f$; conversely every $n \times m$
+matrix is $M_f$ for a unique such $f$.
 
 \subsubsection{Bounded distributive lattice}
 \label{sec:matrix:additional-structure:lattice}
