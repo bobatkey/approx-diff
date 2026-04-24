@@ -21,9 +21,9 @@ rows). The \emph{standard basis vector} $e_i \in S^n$ at index $i$ is the Kronec
          0 & \text{otherwise}
       \end{cases}
 \end{salign*}
-\noindent The scalar \emph{dot product} of two same-length vectors is $u \cdot v = \sum_i u_i \cdot v_i$. Viewing vectors $w_1, \ldots, w_m \in S^n$ as the columns of an
-$n \times m$ matrix $W$ (so $W_{ji} = (w_i)_j$), the iterated sum $\bigoplus_i w_i \in S^n$ is the row-sum of
-$W$:
+\noindent The scalar \emph{dot product} of two same-length vectors is $u \cdot v = \sum_i u_i \cdot v_i$.
+Viewing vectors $w_1, \ldots, w_m \in S^n$ as the columns of an $n \times m$ matrix $W$ (so $W_{ji} =
+(w_i)_j$), the iterated sum $\bigoplus_i w_i \in S^n$ is the row-sum of $W$:
 \begin{salign*}
    \left(\bigoplus_{i} w_i\right)_{\!j} = \sum_i W_{ji}.
 \end{salign*}
@@ -47,15 +47,18 @@ $\sum_j (e_i)_j \cdot v_j = v_i$.
 \subsection{The matrix category}
 \label{sec:matrix:category}
 
-The product $N \comp M$ of an $n \times p$ matrix $N$ with a $p \times m$ matrix $M$ is the $n \times m$
-matrix
+The product $NM$ of an $n \times p$ matrix $N$ with a $p \times m$ matrix $M$ is the $n \times m$ matrix
 \begin{salign*}
-   (N \comp M)_{ij} = \sum_k N_{ik} \cdot M_{kj}.
+   (NM)_{ij} = \sum_k N_{ik} \cdot M_{kj}.
 \end{salign*}
 \noindent This product is associative (using distributivity and the interchange law), with the $m \times m$
-Kronecker $\delta$ matrix $I_{ij} = (e_i)_j$ as left and right unit (by \lemref{matrix:sum-of-basis}). The category $\Mat(S)$ accordingly has as objects
-all natural numbers and as morphisms $m \to n$ all $n \times m$ matrices over $S$, with composition and
-identities given by this product.
+Kronecker $\delta$ matrix $I_{ij} = (e_i)_j$ as left and right unit (by \lemref{matrix:sum-of-basis}).
+Accordingly, the category $\Mat(S)$ has:
+\begin{itemize}
+\item as objects all natural numbers;
+\item as morphisms $m \to n$ all $n \times m$ matrices over $S$.
+\end{itemize}
+Composition $N \comp M$ is matrix multiplication $NM$, with $I$ as the identity on $m$.
 
 \subsubsection{Transpose}
 \label{sec:matrix:transpose}
