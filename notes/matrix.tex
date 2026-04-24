@@ -11,21 +11,21 @@ Composition is matrix multiplication in $S$ and the identity $m \to m$ is the Kr
 \subsection{Vectors and standard basis}
 \label{sec:matrix:vectors}
 
-A \emph{length-$n$ vector} over $S$ is a function $v : \mathrm{Fin}(n) \to S$; we write $v_i$ for $v(i)$.
-The \emph{standard basis vector} $e_i : \mathrm{Fin}(n) \to S$ at index $i$ is the Kronecker $\delta$,
+A \emph{length-$n$ vector} over $S$ is an element $v \in S^n$, with $i$-th component $v_i$. The \emph{standard
+basis vector} $e_i \in S^n$ at index $i$ is the Kronecker $\delta$,
 \begin{salign*}
-   (e_i)_j = \begin{cases} 1 & i = j \\ 0 & \text{otherwise} \end{cases}
+   (e_i)_j =
+      \begin{cases}
+         1 & \text{if }i = j; \\
+         0 & \text{otherwise}
+      \end{cases}
 \end{salign*}
 \noindent and the \emph{injection} of a scalar $z$ at index $i$ is $\mathsf{inj}_i(z)_j = (e_i)_j \cdot z$.
-The \emph{iterated sum} of a family $f : \mathrm{Fin}(n) \to S$ is defined by induction,
+Write $\sum_i a_i$ for the iterated semiring sum of $a_1, \ldots, a_n \in S$, and $u \cdot v = \sum_i u_i
+\cdot v_i$ for the \emph{dot product} of two length-$n$ vectors. Iterated sum lifts to vectors $w_1, \ldots,
+w_m \in S^n$ pointwise:
 \begin{salign*}
-   \sum_{i : \mathrm{Fin}(0)} f(i) = 0 \qquad \sum_{i : \mathrm{Fin}(n+1)} f(i) = f(0) + \sum_{i : \mathrm{Fin}(n)} f(i{+}1)
-\end{salign*}
-\noindent and the \emph{dot product} of two length-$n$ vectors is $u \cdot v = \sum_i u_i \cdot v_i$. Iterated
-sum over vectors, written $\bigoplus$, is simply pointwise iterated sum: for $g : \mathrm{Fin}(m) \to
-\mathrm{Fin}(n) \to S$,
-\begin{salign*}
-   \left(\bigoplus_{i} g(i)\right)_{\!j} = \sum_i g(i)_j.
+   \left(\bigoplus_{i} w_i\right)_{\!j} = \sum_i (w_i)_j.
 \end{salign*}
 
 \subsection{Basis decomposition}
@@ -37,8 +37,8 @@ Every length-$m$ vector $v$ decomposes as an iterated sum of scaled basis vector
 \end{salign*}
 \noindent where $a \cdot w$ denotes scaling of vector $w$ by scalar $a$. This is the algebraic fact that the
 standard basis spans the vector space, and is the crucial identity enabling the representation of linear maps
-out of a free module as matrices. It is proved from the sum-of-basis lemma $\sum_j (e_i)_j \cdot f(j) =
-f(i)$ together with the symmetry $(e_i)_j = (e_j)_i$ of the Kronecker $\delta$. When $S$ has a
+out of a free module as matrices. It is proved from the sum-of-basis lemma $\sum_j (e_i)_j \cdot v_j = v_i$
+together with the symmetry $(e_i)_j = (e_j)_i$ of the Kronecker $\delta$. When $S$ has a
 compatible order with joins (and scaling is additive in its scalar argument), basis decomposition extends to
 $\join$-preserving, scale-linear maps: every such $f : S^m \to S^n$ is determined by its action on basis
 vectors via
@@ -50,16 +50,16 @@ vectors via
 \subsection{The matrix category}
 \label{sec:matrix:category}
 
-A matrix $M : m \to n$ is a function $\mathrm{Fin}(n) \to \mathrm{Fin}(m) \to S$; the entry at row $i$ and
-column $j$ is $M_{ij}$. Equivalently, a matrix is an $m$-indexed family of length-$n$ vectors (its columns).
-Composition of $N : n \to k$ and $M : m \to n$ is matrix multiplication,
+A matrix $M : m \to n$ is an element $M \in S^{n \times m}$ with entry $M_{ij}$ at row $i$ and column $j$.
+Equivalently, a matrix is an $m$-indexed family of length-$n$ vectors (its columns). Composition of $N : n
+\to k$ and $M : m \to n$ is matrix multiplication,
 \begin{salign*}
    (N \comp M)_{ik} = \sum_{j} N_{ij} \cdot M_{jk}
 \end{salign*}
 \noindent and the identity $I : m \to m$ is the Kronecker $\delta$: $I_{ij} = (e_i)_j$. That $\Mat(S)$ satisfies
 the category laws reduces to standard identities about iterated sum: associativity of composition uses
-sum-distributivity of $\cdot$ on both sides together with the interchange law $\sum_i \sum_j f(i)(j) =
-\sum_j \sum_i f(i)(j)$, and the identity laws use the sum-of-basis lemma.
+sum-distributivity of $\cdot$ on both sides together with the interchange law $\sum_i \sum_j a_{ij} =
+\sum_j \sum_i a_{ij}$, and the identity laws use the sum-of-basis lemma.
 
 \subsection{Transpose}
 \label{sec:matrix:transpose}
