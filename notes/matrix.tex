@@ -91,23 +91,38 @@ injections are correspondingly copairings and pairings of identity and zero:
 relationship $\biinj_i = \biproj_i^{\!\top}$ makes the injections the dagger images of the projections.
 $\Mat(S)$ is therefore a semi-additive category (\secref{biproduct}).
 
+The iterated sum notation $\bigoplus$ from \secref{matrix:vectors} aligns with the biproduct $\biprod$: a
+vector $w \in S^n$ is the same as a morphism $w : 1 \to n$ in $\Mat(S)$, and for $w_1, \ldots, w_m \in S^n$
+the iterated sum $\bigoplus_i w_i$ is their $\CMon$ addition in $\Mat(S)(1, n)$. Equivalently, $\bigoplus_i
+w_i = W \comp \diag_m$, where $W : m \to n$ has the $w_i$ as columns and $\diag_m : 1 \to m$ is the
+diagonal into the biproduct $1 \biprod \cdots \biprod 1$.
+
 \subsection{Additional structure on $S$}
 \label{sec:matrix:additional-structure}
 
 Further constructions become available when $S$ carries compatible order-theoretic structure.
 
-If $+$ is the join of a bottom element $0$ — i.e.\ $(S, +, 0, \le)$ is a join-semilattice — then $\sum_i$
-is iterated join (and $\bigoplus_i$ its pointwise lift), and basis decomposition extends to any
-$\join$-preserving, scale-linear $f : S^m \to S^n$:
+\subsubsection{Join-semilattice}
+\label{sec:matrix:additional-structure:join}
+
+If $+$ is idempotent ($a + a = a$), then $(S, +, 0)$ is a join-semilattice with order $a \le b \iff a + b
+= b$, $\sum_i$ becomes iterated join (and $\bigoplus_i$ its pointwise lift), and basis decomposition
+extends to any $\join$-preserving, scale-linear $f : S^m \to S^n$:
 \begin{salign*}
    f(v) = \bigoplus_i v_i \cdot f(e_i) \tag{map basis decomposition}
 \end{salign*}
 \noindent so $f$ is determined by its values on the basis vectors $e_i$ (the columns of its matrix
 representation).
 
+\subsubsection{Bounded distributive lattice}
+\label{sec:matrix:additional-structure:lattice}
+
 If additionally $\cdot$ is the meet of a top element $1$ and distributes over $+$ — i.e.\ $(S, +, 0, \cdot,
 1, \le)$ is a bounded distributive lattice — we have a \emph{disjointness} relation $a \disj b$ iff $a
 \cdot b \le 0$, with pointwise lift to vectors.
+
+\subsubsection{Boolean algebra}
+\label{sec:matrix:additional-structure:boolean}
 
 If $S$ is furthermore a \emph{Boolean algebra}, equipped with a negation $\neg$ satisfying $1 \le a + \neg
 a$ (excluded middle) and $a \cdot \neg a \le 0$ (non-contradiction), then $\neg$ is involutive and
