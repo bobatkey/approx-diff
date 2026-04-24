@@ -76,19 +76,20 @@ with a commutative monoid; composition is bilinear (distributes over $+$ on both
 is $\CMon$-enriched.
 
 Moreover, the natural number $0$ is a zero object (both terminal and initial), and for natural numbers $m$
-and $n$, the biproduct $m \biprod n$ can be constructed as the sum $m + n$ with block-matrix projections
-and injections
+and $n$ the biproduct $m \biprod n$ can be constructed as the sum $m + n$, with pairings and copairings
+realised as vertical stacking and horizontal concatenation of matrices: for $M : k \to m$ and $N : k \to n$
+the pairing $\prodM{M}{N} : k \to m+n$ stacks $M$ above $N$, and for $M : m \to k$ and $N : n \to k$ the
+copairing $\coprodM{M}{N} : m+n \to k$ concatenates $M$ and $N$ side by side. The projections and
+injections are correspondingly copairings and pairings of identity and zero:
 \begin{salign*}
-   p_1 &= \begin{bmatrix} I_m & 0 \end{bmatrix} : m+n \to m, &
-   p_2 &= \begin{bmatrix} 0 & I_n \end{bmatrix} : m+n \to n, \\
-   \iota_1 &= \begin{bmatrix} I_m \\ 0 \end{bmatrix} : m \to m+n, &
-   \iota_2 &= \begin{bmatrix} 0 \\ I_n \end{bmatrix} : n \to m+n,
+   \biproj_1 &= \coprodM{I_m}{0} = \begin{bmatrix} I_m & 0 \end{bmatrix} : m+n \to m, &
+   \biproj_2 &= \coprodM{0}{I_n} = \begin{bmatrix} 0 & I_n \end{bmatrix} : m+n \to n, \\
+   \biinj_1 &= \prodM{I_m}{0} = \begin{bmatrix} I_m \\ 0 \end{bmatrix} : m \to m+n, &
+   \biinj_2 &= \prodM{0}{I_n} = \begin{bmatrix} 0 \\ I_n \end{bmatrix} : n \to m+n,
 \end{salign*}
-\noindent where $I_m, I_n$ denote identity matrices and the $0$s are zero matrices of compatible size.
-Pairings and copairings are vertical and horizontal concatenation of matrices: for $M : k \to m$ and $N : k
-\to n$, the pairing $\prodM{M}{N} : k \to m+n$ stacks $M$ above $N$; for $M : m \to k$ and $N : n \to k$,
-the copairing $\coprodM{M}{N} : m+n \to k$ places $M$ and $N$ side by side. $\Mat(S)$ is therefore a
-semi-additive category.
+\noindent where $I_m, I_n$ are identity matrices and the $0$s are zero matrices of compatible size; the
+relationship $\biinj_i = \biproj_i^{\!\top}$ makes the injections the dagger images of the projections.
+$\Mat(S)$ is therefore a semi-additive category (\secref{biproduct}).
 
 \subsection{Additional structure on $S$}
 \label{sec:matrix:additional-structure}

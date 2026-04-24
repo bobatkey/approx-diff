@@ -135,13 +135,13 @@ Define the category $\BoolConj$ which has:
 \end{itemize}
 \end{definition}
 
-\noindent Writing $\BoolGal$ for the full subcategory of $\LatGal$ on Boolean algebras, $\BoolConj$ is
-equivalent to $\BoolGal$ via $(f, g) \mapsto g \adj \demorgan{f}$, which is full and faithful since every
-meet-preserving map between Boolean algebras is $\demorgan{f}$ for some join-preserving $f$. $\BoolConj$
-accordingly inherits $\SemiLat$-enrichment from $\LatGal$: the zero morphism is the constant-$\bot$ pair,
-and addition is componentwise $\join$. The involution $(f, g) \mapsto (g, f)$ is identity-on-objects and
-contravariant, making $\BoolConj$ a dagger category with $(f, g)^\dagger = (g, f)$; under the equivalence
-this corresponds to the dagger $f \adj g \mapsto \demorgan{g} \adj \demorgan{f}$ on $\BoolGal$.
+\noindent Via the embedding $(f, g) \mapsto g \adj \demorgan{f}$, which is full since every meet-preserving
+map between Boolean algebras is $\demorgan{f}$ for some join-preserving $f$, $\BoolConj$ is equivalent to the
+full subcategory of $\LatGal$ on Boolean algebras. It thus inherits $\SemiLat$-enrichment from $\LatGal$: the
+zero morphism is the constant-$\bot$ pair, and addition is componentwise $\join$. The involution $(f, g)
+\mapsto (g, f)$ is identity-on-objects and contravariant, making $\BoolConj$ a dagger category with $(f,
+g)^\dagger = (g, f)$; under the equivalence this corresponds to the dagger $f \adj g \mapsto \demorgan{g} \adj
+\demorgan{f}$ on $\BoolGal$.
 
 \subsection{Category of finite-dimensional vector spaces}
 \label{sec:categories-with-biproducts:fdvect}
