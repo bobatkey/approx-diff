@@ -1,19 +1,18 @@
 \section{Matrices over a commutative semiring}
 \label{sec:matrix}
 
-Suppose $S = (S, +, 0, \cdot, 1)$ a commutative semiring. The category $\Mat(S)$ has:
-\begin{itemize}
-\item as objects all natural numbers;
-\item as morphisms $m \to n$, all $n \times m$ matrices over $S$.
-\end{itemize}
-Composition is matrix multiplication in $S$ and the identity $m \to m$ is the Kronecker $\delta$.
+Suppose $S = (S, +, 0, \cdot, 1)$ a commutative semiring. Write $\sum_i a_i$ for $a_1 + \cdots + a_n$. Two
+derived properties of $\sum$ will be useful: \emph{distributivity} of $\cdot$ over $\sum$, $a \cdot \sum_i b_i
+= \sum_i a \cdot b_i$ (and symmetrically on the right), which follows from the distributivity of $\cdot$ over
+$+$, and the \emph{interchange law} $\sum_i \sum_j a_{ij} = \sum_j \sum_i a_{ij}$, which follows from
+associativity and commutativity of $+$.
 
 \subsection{Vectors, matrices, and standard basis}
 \label{sec:matrix:vectors}
 
-A \emph{length-$n$ vector over $X$} is an element $v \in X^n$, with $i$-th component $v_i$. An \emph{$n
-\times m$ matrix over $S$} is a length-$m$ vector of length-$n$ vectors over $S$ (its columns), with entry
-$M_{ij}$ at row $i$ and column $j$; equivalently, a length-$n$ vector of length-$m$ vectors over $S$ (its
+An \emph{$n$-length vector over $X$} is an element $v \in X^n$, with $i$-th component $v_i$. An \emph{$n
+\times m$ matrix over $S$} is an $m$-length vector of $n$-length vectors over $S$ (its columns), with entry
+$M_{ij}$ at row $i$ and column $j$; equivalently, an $n$-length vector of $m$-length vectors over $S$ (its
 rows). The \emph{standard basis vector} $e_i \in S^n$ at index $i$ is the Kronecker $\delta$,
 \begin{salign*}
    (e_i)_j =
@@ -22,10 +21,9 @@ rows). The \emph{standard basis vector} $e_i \in S^n$ at index $i$ is the Kronec
          0 & \text{otherwise}
       \end{cases}
 \end{salign*}
-\noindent Write $\sum_i a_i$ for $a_1 + \cdots + a_n$, and $u \cdot v = \sum_i (u_i \cdot v_i)$ for the
-\emph{dot product} of two same-length vectors. Viewing vectors $w_1, \ldots, w_m \in S^n$ as the columns of
-an $n \times m$ matrix $W$ (so $W_{ji} = (w_i)_j$), the iterated sum $\bigoplus_i w_i \in S^n$ is the
-row-sum of $W$:
+\noindent The scalar \emph{dot product} of two same-length vectors is $u \cdot v = \sum_i u_i \cdot v_i$. Viewing vectors $w_1, \ldots, w_m \in S^n$ as the columns of an
+$n \times m$ matrix $W$ (so $W_{ji} = (w_i)_j$), the iterated sum $\bigoplus_i w_i \in S^n$ is the row-sum of
+$W$:
 \begin{salign*}
    \left(\bigoplus_{i} w_i\right)_{\!j} = \sum_i W_{ji}.
 \end{salign*}
@@ -33,40 +31,39 @@ row-sum of $W$:
 \subsection{Basis decomposition}
 \label{sec:matrix:basis-decomp}
 
-Every length-$m$ vector $v$ decomposes as an iterated sum of scaled basis vectors,
+Write $a \cdot w$ for the pointwise product of a scalar $a$ with a vector $w$, i.e.\ $(a \cdot w)_i = a
+\cdot w_i$. Every $m$-length vector $v$ decomposes as an iterated sum of scaled basis vectors:
 \begin{salign*}
    v = \bigoplus_{i} v_i \cdot e_i \tag{basis decomposition}
 \end{salign*}
-\noindent where $a \cdot w$ denotes scaling of vector $w$ by scalar $a$. This is the algebraic fact that the
-standard basis spans the vector space, and is the crucial identity enabling the representation of linear maps
-out of a free module as matrices. It is proved from the sum-of-basis lemma $\sum_j (e_i)_j \cdot v_j = v_i$
-together with the symmetry $(e_i)_j = (e_j)_i$ of the Kronecker $\delta$. When $S$ has a
-compatible order with joins (and scaling is additive in its scalar argument), basis decomposition extends to
-$\join$-preserving, scale-linear maps: every such $f : S^m \to S^n$ is determined by its action on basis
-vectors via
-\begin{salign*}
-   f(v) = \bigoplus_i v_i \cdot f(e_i) \tag{map basis decomposition}
-\end{salign*}
-\noindent i.e.\ as a ``join of atomic slices''.
+\noindent This follows from the symmetry $(e_i)_j = (e_j)_i$ of the Kronecker $\delta$ together with the
+following lemma.
+
+\begin{lemma}[Sum-of-basis]
+\label{lem:matrix:sum-of-basis}
+$\sum_j (e_i)_j \cdot v_j = v_i$.
+\end{lemma}
 
 \subsection{The matrix category}
 \label{sec:matrix:category}
 
-Composition of $N : n \to k$ and $M : m \to n$ in $\Mat(S)$ is matrix multiplication,
+The product $N \comp M$ of an $n \times p$ matrix $N$ with a $p \times m$ matrix $M$ is the $n \times m$
+matrix
 \begin{salign*}
-   (N \comp M)_{ik} = \sum_{j} N_{ij} \cdot M_{jk}
+   (N \comp M)_{ij} = \sum_k N_{ik} \cdot M_{kj}.
 \end{salign*}
-\noindent and the identity $I : m \to m$ is the Kronecker $\delta$: $I_{ij} = (e_i)_j$. That $\Mat(S)$ satisfies
-the category laws reduces to standard identities about iterated sum: associativity of composition uses
-sum-distributivity of $\cdot$ on both sides together with the interchange law $\sum_i \sum_j a_{ij} =
-\sum_j \sum_i a_{ij}$, and the identity laws use the sum-of-basis lemma.
+\noindent This product is associative (using distributivity and the interchange law), with the $m \times m$
+Kronecker $\delta$ matrix $I_{ij} = (e_i)_j$ as left and right unit (by \lemref{matrix:sum-of-basis}). The category $\Mat(S)$ accordingly has as objects
+all natural numbers and as morphisms $m \to n$ all $n \times m$ matrices over $S$, with composition and
+identities given by this product.
 
-\subsection{Transpose}
+\subsubsection{Transpose}
 \label{sec:matrix:transpose}
 
-The \emph{transpose} $M^{\!\top} : n \to m$ of $M : m \to n$ has entries $(M^{\!\top})_{ji} = M_{ij}$. The
-transpose is involutive, $(M^{\!\top})^{\!\top} = M$, and interacts with composition as $(N \comp M)^{\!\top} =
-M^{\!\top} \comp N^{\!\top}$. Both facts are immediate from the semiring's commutativity.
+The \emph{transpose} $M^{\!\top} : n \to m$ of $M : m \to n$ has entries $(M^{\!\top})_{ji} = M_{ij}$. It is
+involutive, $(M^{\!\top})^{\!\top} = M$, and interacts with composition as $(N \comp M)^{\!\top} = M^{\!\top}
+\comp N^{\!\top}$ (both immediate from commutativity of $\cdot$), so $(-)^{\!\top}$ is a dagger on
+$\Mat(S)$.
 
 \subsection{$\CMon$-enrichment and biproducts}
 \label{sec:matrix:cmon}
@@ -77,28 +74,27 @@ $\CMon$-enriched. Moreover, $0 : \Mat(S)$ is a zero object (both terminal and in
 natural numbers is the \emph{biproduct} of $m$ and $n$ in $\Mat(S)$, with injections and projections given by
 the appropriate ``block'' matrices. $\Mat(S)$ is therefore a concrete semi-additive category.
 
-\subsection{Ordered tiers}
-\label{sec:matrix:tiers}
+\subsection{Additional structure on $S$}
+\label{sec:matrix:additional-structure}
 
-When $S$ carries additional order-theoretic structure compatible with $(+, \cdot)$, further derived
-constructions are available. The Agda formalisation factors these into \emph{tiers}, each parameterised by a
-preorder $\le$ on $S$ and axioms for how $+, \cdot$ interact with $\le$:
+Further constructions become available when $S$ carries compatible order-theoretic structure.
 
-\begin{itemize}
-\item \emph{Join} tier: $+$ is the join with bottom element $0$ (i.e.\ $(S, \le, +, 0)$ is a
-join-semilattice). At this tier we obtain iterated-join laws $\Sigma$-ub, $\Sigma$-lub, $\Sigma$-mono on
-scalars; pointwise lifts $\le^{\!\wedge}$ and $\bigoplus$-ub, $\bigoplus$-lub, $\bigoplus$-mono on vectors; and
-the \emph{map basis decomposition} above for a join-preserving, scale-linear $f$.
+If $+$ is the join of a bottom element $0$ — i.e.\ $(S, +, 0, \le)$ is a join-semilattice — then $\sum_i$
+is iterated join (and $\bigoplus_i$ its pointwise lift), and basis decomposition extends to any
+$\join$-preserving, scale-linear $f : S^m \to S^n$:
+\begin{salign*}
+   f(v) = \bigoplus_i v_i \cdot f(e_i) \tag{map basis decomposition}
+\end{salign*}
+\noindent so $f$ is determined by its values on the basis vectors $e_i$ (the columns of its matrix
+representation).
 
-\item \emph{Distributive lattice} tier: additionally $\cdot$ is the meet with top element $1$, and
-$\cdot$ distributes over $+$. At this tier we obtain a notion of \emph{disjointness}, $u \disj v$
-iff $u \cdot v \le 0$, together with its pointwise lift to vectors.
+If additionally $\cdot$ is the meet of a top element $1$ and distributes over $+$ — i.e.\ $(S, +, 0, \cdot,
+1, \le)$ is a bounded distributive lattice — we have a \emph{disjointness} relation $a \disj b$ iff $a
+\cdot b \le 0$, with pointwise lift to vectors.
 
-\item \emph{Boolean algebra} tier: additionally equipped with a negation $\neg$ satisfying excluded middle ($1
-\le a + \neg a$) and non-contradiction ($a \cdot \neg a \le 0$). Here we derive the $\disj$-reflect principle
-($a \le b$ iff every $c$ disjoint from $b$ is disjoint from $a$), involutivity of $\neg$, and the two
-embeddings discussed below.
-\end{itemize}
+If $S$ is furthermore a \emph{Boolean algebra}, equipped with a negation $\neg$ satisfying $1 \le a + \neg
+a$ (excluded middle) and $a \cdot \neg a \le 0$ (non-contradiction), then $\neg$ is involutive and
+disjointness reflects the order: $a \le b$ iff every $c$ disjoint from $b$ is disjoint from $a$.
 
 \subsection{Example: $\Mat(\Two)$ for Boolean analysis}
 \label{sec:matrix:two}
@@ -141,7 +137,7 @@ the need for a direct case analysis.
 \label{sec:matrix:two:embeddings}
 
 The following material is the Boolean-specific account of the two embeddings, to be folded into a generic
-account (valid in the Boolean algebra tier of \secref{matrix:tiers}) in a later pass.
+account (valid in the Boolean algebra setting of \secref{matrix:additional-structure}) in a later pass.
 
 We now treat $f: \Two^m \to \Two^n$ as the \emph{backward} direction of an analysis --- a map that propagates
 output demand back to input demand, and consider two contravariant embeddings: into $\BoolConj$ (a subcategory
