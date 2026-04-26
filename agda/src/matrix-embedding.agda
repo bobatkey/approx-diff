@@ -339,7 +339,7 @@ module matrix-embedding
   -- Products on MatRep.cat, transported from Mat's biproduct-derived products via F.
   open import Data.Nat using () renaming (_+_ to _+ℕ_)
 
-  module ProductsImpl where
+  module _ where
     private
       module MP = HasProducts (biproducts→products Mat.cmon Mat.biproduct)
 
@@ -357,48 +357,24 @@ module matrix-embedding
 
     pair-cong : ∀ {k m n} {f₁ f₂ : X^ k ⇒ X^ m} {g₁ g₂ : X^ k ⇒ X^ n} →
                 f₁ ≈ f₂ → g₁ ≈ g₂ → pair f₁ g₁ ≈ pair f₂ g₂
-    pair-cong f≈ g≈ = F .fmor-cong (MP.pair-cong (F⁻¹ .fmor-cong f≈) (F⁻¹ .fmor-cong g≈))
+    pair-cong f≈ g≈ = ?
 
     pair-p₁ : ∀ {k m n} (f : X^ k ⇒ X^ m) (g : X^ k ⇒ X^ n) → (p₁ ∘ pair f g) ≈ f
-    pair-p₁ {k} {m} {n} f g =
-      begin
-        p₁ ∘ pair f g
-      ≈˘⟨ F .fmor-comp (MP.p₁) (MP.pair (F⁻¹ .fmor f) (F⁻¹ .fmor g)) ⟩
-        F .fmor (MP.p₁ Mat.∘ MP.pair (F⁻¹ .fmor f) (F⁻¹ .fmor g))
-      ≈⟨ F .fmor-cong (MP.pair-p₁ (F⁻¹ .fmor f) (F⁻¹ .fmor g)) ⟩
-        F .fmor (F⁻¹ .fmor f)
-      ≈⟨ F∘F⁻¹ f ⟩
-        f
-      ∎ where open ≈-Reasoning isEquiv
+    pair-p₁ f g = ?
 
     pair-p₂ : ∀ {k m n} (f : X^ k ⇒ X^ m) (g : X^ k ⇒ X^ n) → (p₂ ∘ pair f g) ≈ g
-    pair-p₂ {k} {m} {n} f g =
-      begin
-        p₂ ∘ pair f g
-      ≈˘⟨ F .fmor-comp (MP.p₂) (MP.pair (F⁻¹ .fmor f) (F⁻¹ .fmor g)) ⟩
-        F .fmor (MP.p₂ Mat.∘ MP.pair (F⁻¹ .fmor f) (F⁻¹ .fmor g))
-      ≈⟨ F .fmor-cong (MP.pair-p₂ (F⁻¹ .fmor f) (F⁻¹ .fmor g)) ⟩
-        F .fmor (F⁻¹ .fmor g)
-      ≈⟨ F∘F⁻¹ g ⟩
-        g
-      ∎ where open ≈-Reasoning isEquiv
+    pair-p₂ f g = ?
 
     pair-ext : ∀ {k m n} (f : X^ k ⇒ X^ (m +ℕ n)) → pair (p₁ ∘ f) (p₂ ∘ f) ≈ f
-    pair-ext {k} {m} {n} f =
-      begin
-        pair (p₁ ∘ f) (p₂ ∘ f)
-      ≈⟨ {!!} ⟩
-        f
-      ∎ where open ≈-Reasoning isEquiv
+    pair-ext f = ?
 
     products : HasProducts MatRep.cat
-    products .HasProducts.prod = prod
-    products .HasProducts.p₁ = p₁
-    products .HasProducts.p₂ = p₂
-    products .HasProducts.pair = pair
-    products .HasProducts.pair-cong = pair-cong
-    products .HasProducts.pair-p₁ = pair-p₁
-    products .HasProducts.pair-p₂ = pair-p₂
-    products .HasProducts.pair-ext = pair-ext
+    products .HasProducts.prod = ?
+    products .HasProducts.p₁ = ?
+    products .HasProducts.p₂ = ?
+    products .HasProducts.pair = ?
+    products .HasProducts.pair-cong = ?
+    products .HasProducts.pair-p₁ = ?
+    products .HasProducts.pair-p₂ = ?
+    products .HasProducts.pair-ext = ?
 
-  open ProductsImpl using (products) public
