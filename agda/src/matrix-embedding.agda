@@ -352,29 +352,16 @@ module matrix-embedding
     p₂ : ∀ {m n} → X^ (m +ℕ n) ⇒ X^ n
     p₂ {m} {n} = F .fmor (MP.p₂ {m} {n})
 
-    pair : ∀ {k m n} → X^ k ⇒ X^ m → X^ k ⇒ X^ n → X^ k ⇒ X^ (m +ℕ n)
-    pair {k} {m} {n} f g = F .fmor (MP.pair (F⁻¹ .fmor f) (F⁻¹ .fmor g))
-
-    pair-cong : ∀ {k m n} {f₁ f₂ : X^ k ⇒ X^ m} {g₁ g₂ : X^ k ⇒ X^ n} →
-                f₁ ≈ f₂ → g₁ ≈ g₂ → pair f₁ g₁ ≈ pair f₂ g₂
-    pair-cong f≈ g≈ = ?
-
-    pair-p₁ : ∀ {k m n} (f : X^ k ⇒ X^ m) (g : X^ k ⇒ X^ n) → (p₁ ∘ pair f g) ≈ f
-    pair-p₁ f g = ?
-
-    pair-p₂ : ∀ {k m n} (f : X^ k ⇒ X^ m) (g : X^ k ⇒ X^ n) → (p₂ ∘ pair f g) ≈ g
-    pair-p₂ f g = ?
-
-    pair-ext : ∀ {k m n} (f : X^ k ⇒ X^ (m +ℕ n)) → pair (p₁ ∘ f) (p₂ ∘ f) ≈ f
-    pair-ext f = ?
+    -- pair : ∀ {k m n} → X^ k ⇒ X^ m → X^ k ⇒ X^ n → X^ k ⇒ X^ (m +ℕ n)
+    -- pair {k} {m} {n} f g = F .fmor (MP.pair (F⁻¹ .fmor f) (F⁻¹ .fmor g))
 
     products : HasProducts MatRep.cat
-    products .HasProducts.prod = ?
-    products .HasProducts.p₁ = ?
-    products .HasProducts.p₂ = ?
-    products .HasProducts.pair = ?
-    products .HasProducts.pair-cong = ?
-    products .HasProducts.pair-p₁ = ?
-    products .HasProducts.pair-p₂ = ?
-    products .HasProducts.pair-ext = ?
+    products .HasProducts.prod = {!   !}
+    products .HasProducts.p₁ = {!   !}
+    products .HasProducts.p₂ = {!   !}
+    products .HasProducts.pair = {!   !}
+    products .HasProducts.pair-cong = {!   !}
+    products .HasProducts.pair-p₁ = {!   !}
+    products .HasProducts.pair-p₂ = {!   !}
+    products .HasProducts.pair-ext = {!   !}
 
