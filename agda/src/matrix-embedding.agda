@@ -25,13 +25,14 @@ module matrix-embedding
   (A : Setoid m e) (S : CommutativeSemiring A)
   (let open Category 𝒞)
   (let open CMonEnriched CM)
-  (let open CommutativeSemiring S using (Carrier; additive) renaming (ε to S-ε; ι to S-ι; _+_ to _+ₛ_; _·_ to _·ₛ_; _≈_ to _≈ₛ_; ·-comm to ·ₛ-comm; trans to ≈ₛ-trans))
+  (let module CS = CommutativeSemiring S)
+  (let open CS using () renaming (_+_ to _+ₛ_; _·_ to _·ₛ_))
   (scalar-iso : Category.Iso (SetoidCat m e) A (hom-setoid X X))
   (let open _⇒s_)
   (let open Category.Iso)
   (let scalar = scalar-iso .fwd)
-  (scalar-cmon : additive =[ scalar-iso .fwd ]> homCM X X)
-  (scalar-ι : scalar .func S-ι ≈ id X)
+  (scalar-cmon : CS.additive =[ scalar-iso .fwd ]> homCM X X)
+  (scalar-ι : scalar .func CS.ι ≈ id X)
   (scalar-· : ∀ {a b} → scalar .func (a ·ₛ b) ≈ scalar .func a ∘ scalar .func b)
   where
 
@@ -47,6 +48,10 @@ module matrix-embedding
   scalar⁻¹ = scalar-iso .bwd
   scalar∘scalar⁻¹≈id = scalar-iso .fwd∘bwd≈id
   scalar⁻¹∘scalar≈id = scalar-iso .bwd∘fwd≈id
+
+  import matrix
+  module Mat = matrix.Mat S
+  open Mat using (Matrix) public
 
   module _ where
     open Biproduct
@@ -119,12 +124,6 @@ module matrix-embedding
       ≈⟨ pair-ext (BP X (X^ n)) f ⟩
         f
       ∎ where open ≈-Reasoning isEquiv
-
-    tuple-ext0 : ∀ {n} → tuple {n} (λ i → π {n} i) ≈ id (X^ n)
-    tuple-ext0 {n} = ≈-trans (≈-sym (tuple-cong {n} _ _ (λ i → id-right))) (tuple-ext {n} (id (X^ n)))
-
-    bp-pair-ext0 : ∀ {x y} (bp : Biproduct CM x y) → pair bp (p₁ bp) (p₂ bp) ≈ id (prod bp)
-    bp-pair-ext0 bp = ≈-trans (≈-sym (pair-cong bp id-right id-right)) (pair-ext bp (id _))
 
     cotuple-cong : ∀ {n Z} (f g : Fin n → X ⇒ Z) → (∀ i → f i ≈ g i) → cotuple f ≈ cotuple g
     cotuple-cong {zero}  f g h = ≈-refl
@@ -218,36 +217,12 @@ module matrix-embedding
           ∎ where open ≈-Reasoning isEquiv
         open ≈-Reasoning isEquiv
 
-  -- Category MatRep(𝒞, X).
-  open import prop-setoid using (IsEquivalence)
-
-  cat : Category _ _ _
-  cat .Category.obj = ℕ
-  cat .Category._⇒_ m n = X^ m ⇒ X^ n
-  cat .Category._≈_ f g = f ≈ g
-  cat .Category.isEquiv = isEquiv
-  cat .Category.id n = id (X^ n)
-  cat .Category._∘_ f g = f ∘ g
-  cat .Category.∘-cong = ∘-cong
-  cat .Category.id-left = id-left
-  cat .Category.id-right = id-right
-  cat .Category.assoc f g h = assoc f g h
-
-  import matrix
-  module Mat = matrix.Mat S
-  open Mat using (Matrix) public
-
-  open Functor
-
-  module _ where
-    open Biproduct
-
     -- scalar preserves dot products.
-    scalar-Σ : ∀ {n} (f g : Fin n → Carrier) →
+    scalar-Σ : ∀ {n} (f g : Fin n → CS.Carrier) →
               scalar .func (Mat.Σ (λ k → f k ·ₛ g k)) ≈ (cotuple {n} (λ k → scalar .func (f k)) ∘ tuple {n} (λ k → scalar .func (g k)))
     scalar-Σ {zero} f g =
       begin
-        scalar .func S-ε
+        scalar .func CS.ε
       ≈⟨ scalar-cmon .preserve-ε ⟩
         εm
       ≈˘⟨ comp-bilinear-ε₁ to-terminal ⟩
@@ -287,13 +262,13 @@ module matrix-embedding
     scalar-e : ∀ {n} (i j : Fin n) → scalar .func (Mat.e i j) ≈ (π {n} i ∘ ι {n} j)
     scalar-e {suc n} zero zero =
       begin
-        scalar .func S-ι ≈⟨ scalar-ι ⟩ id X
+        scalar .func CS.ι ≈⟨ scalar-ι ⟩ id X
       ≈˘⟨ id-1 (BP X (X^ n)) ⟩
         p₁ (BP X (X^ n)) ∘ in₁ (BP X (X^ n))
       ∎ where open ≈-Reasoning isEquiv
     scalar-e {suc n} zero (suc j) =
       begin
-        scalar .func S-ε
+        scalar .func CS.ε
       ≈⟨ scalar-cmon .preserve-ε ⟩
         εm
       ≈˘⟨ comp-bilinear-ε₁ _ ⟩
@@ -305,7 +280,7 @@ module matrix-embedding
       ∎ where open ≈-Reasoning isEquiv
     scalar-e {suc n} (suc i) zero =
       begin
-        scalar .func S-ε
+        scalar .func CS.ε
       ≈⟨ scalar-cmon .preserve-ε ⟩
         εm
       ≈˘⟨ comp-bilinear-ε₂ _ ⟩
@@ -329,6 +304,23 @@ module matrix-embedding
       ≈˘⟨ assoc _ _ _ ⟩
         (π i ∘ p₂ (BP X (X^ n))) ∘ (in₂ (BP X (X^ n)) ∘ ι j)
       ∎ where open ≈-Reasoning isEquiv
+
+  -- Category MatRep(𝒞, X).
+  open import prop-setoid using (IsEquivalence)
+
+  cat : Category _ _ _
+  cat .Category.obj = ℕ
+  cat .Category._⇒_ m n = X^ m ⇒ X^ n
+  cat .Category._≈_ f g = f ≈ g
+  cat .Category.isEquiv = isEquiv
+  cat .Category.id n = id (X^ n)
+  cat .Category._∘_ f g = f ∘ g
+  cat .Category.∘-cong = ∘-cong
+  cat .Category.id-left = id-left
+  cat .Category.id-right = id-right
+  cat .Category.assoc f g h = assoc f g h
+
+  open Functor
 
   F-fmor : ∀ {m n} → Matrix n m → X^ m ⇒ X^ n
   F-fmor {m} {n} M = tuple {n} (λ i → cotuple {m} (λ j → scalar .func (M i j)))
@@ -435,7 +427,7 @@ module matrix-embedding
     begin
       entry {n} {m} (F .fmor {n} {m} (Mat.εₘ {m} {n})) i j
     ≈⟨ entry-F {n} {m} (Mat.εₘ {m} {n}) i j ⟩
-      scalar .func S-ε
+      scalar .func CS.ε
     ≈⟨ scalar-cmon .preserve-ε ⟩
       εm
     ≈˘⟨ comp-bilinear-ε₂ (π {m} i) ⟩

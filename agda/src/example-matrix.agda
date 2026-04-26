@@ -13,13 +13,13 @@ import ho-model
 open ho-model.Matrix
 
 private
-  module Mat = Category cat
+  module Cat = Category cat
 
 import example-signature-interpretation
-unit : Mat._⇒_ 0 1
+unit : Cat._⇒_ 0 1
 unit = HasInitial.from-initial initial {1}
 
-conjunct : Mat._⇒_ (HasProducts.prod products 1 1) 1
+conjunct : Cat._⇒_ (HasProducts.prod products 1 1) 1
 conjunct = HasProducts.p₁ products {1} {1} +m HasProducts.p₂ products {1} {1}
 
 open example-signature-interpretation cat products terminal 1 unit conjunct

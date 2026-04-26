@@ -3,7 +3,7 @@
 module ho-model where
 
 open import Level using (Level; 0ℓ; suc)
-open import categories using (Category; HasProducts; HasTerminal; HasInitial; IsTerminal; op-coproducts→products; op-initial→terminal; HasCoproducts)
+open import categories using (Category; HasProducts; HasTerminal; HasInitial; IsTerminal; IsInitial; op-coproducts→products; op-initial→terminal; HasCoproducts)
 open import product-category using (product; product-limit; product-products; product-terminal)
 open import cmon-enriched
   using (CMonEnriched; product-cmon-enriched; op-cmon-enriched; Biproduct; biproducts→products)
@@ -597,6 +597,13 @@ module Matrix where
     HasTerminal.to-terminal SemiLat.terminal
   terminal .HasTerminal.is-terminal .IsTerminal.to-terminal-ext f =
     HasTerminal.to-terminal-ext SemiLat.terminal f
+
+  initial : HasInitial cat
+  initial .HasInitial.witness = 0
+  initial .HasInitial.is-initial .IsInitial.from-initial =
+    HasInitial.from-initial SemiLat.initial
+  initial .HasInitial.is-initial .IsInitial.from-initial-ext f =
+    HasInitial.from-initial-ext SemiLat.initial f
 
   𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
   𝓕-preserve-terminal .inverse = id _
