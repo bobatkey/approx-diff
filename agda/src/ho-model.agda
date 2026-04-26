@@ -520,11 +520,13 @@ module Matrix where
             ((P.p₁ {m} {n} ∘ F .fmor {m} {P.prod m n} (in₁ (biproduct m n))) ∘ p₁ BP) +m
             ((P.p₁ {m} {n} ∘ F .fmor {n} {P.prod m n} (in₂ (biproduct m n))) ∘ p₂ BP)
           ≈⟨ homCM.+-cong
-               (∘-cong (≈-trans (≈-sym (F .fmor-comp {m} {prod (biproduct m n)} {m} (p₁ (biproduct m n)) (in₁ (biproduct m n))))
+               (∘-cong (≈-trans (≈-sym (F .fmor-comp {m} {P.prod m n} {m} (p₁ (biproduct m n)) (in₁ (biproduct m n))))
                        (≈-trans (F .fmor-cong (id-1 (biproduct m n))) (F .fmor-id {m}))) ≈-refl)
-               (∘-cong (≈-trans (≈-sym (F .fmor-comp {n} {prod (biproduct m n)} {m} (p₁ (biproduct m n)) (in₂ (biproduct m n))))
+               (∘-cong (≈-trans (≈-sym (F .fmor-comp {n} {P.prod m n} {m} (p₁ (biproduct m n)) (in₂ (biproduct m n))))
                       (≈-trans (F .fmor-cong (zero-1 (biproduct m n))) (Mat≃MatRep.F-εₘ {m} {n}))) ≈-refl) ⟩
             (id (X^ m) ∘ p₁ BP) +m (εm {X^ n} {X^ m} ∘ p₂ BP)
+          ≈⟨ homCM.+-cong id-left (comp-bilinear-ε₁ _) ⟩
+            p₁ BP +m εm
           ≈⟨ {!   !} ⟩
             p₁ BP
           ∎ where open ≈-Reasoning isEquiv
