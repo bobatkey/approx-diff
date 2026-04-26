@@ -495,7 +495,7 @@ module Matrix where
           (P.p₂ {m} {n} ∘ copair BP {X^ (P.prod m n)}
                             (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
                             (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))))
-      ≈⟨ pair-cong BP {prod BP} reduce-p₁ {!   !} ⟩
+      ≈⟨ pair-cong BP {prod BP} reduce-p₁ reduce-p₂ ⟩
         pair BP (p₁ BP) (p₂ BP)
       ≈⟨ pair-ext0 BP ⟩
         id (prod BP)
@@ -520,13 +520,18 @@ module Matrix where
                (∘-cong (≈-trans (≈-sym (F .fmor-comp {m} {P.prod m n} {m} (p₁ (biproduct m n)) (in₁ (biproduct m n))))
                        (≈-trans (F .fmor-cong (id-1 (biproduct m n))) (F .fmor-id {m}))) ≈-refl)
                (∘-cong (≈-trans (≈-sym (F .fmor-comp {n} {P.prod m n} {m} (p₁ (biproduct m n)) (in₂ (biproduct m n))))
-                      (≈-trans (F .fmor-cong (zero-1 (biproduct m n))) (Mat≃MatRep.F-εₘ {m} {n}))) ≈-refl) ⟩
+                       (≈-trans (F .fmor-cong (zero-1 (biproduct m n))) (Mat≃MatRep.F-εₘ {m} {n}))) ≈-refl) ⟩
             (id (X^ m) ∘ p₁ BP) +m (εm {X^ n} {X^ m} ∘ p₂ BP)
           ≈⟨ homCM.+-cong id-left (comp-bilinear-ε₁ _) ⟩
             p₁ BP +m εm
           ≈⟨ +m-runit ⟩
             p₁ BP
           ∎ where open ≈-Reasoning isEquiv
+
+        reduce-p₂ : (P.p₂ {m} {n} ∘ copair BP {X^ (P.prod m n)}
+                                      (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
+                                      (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))) ≈ p₂ BP
+        reduce-p₂ = {!   !}
 
         open ≈-Reasoning isEquiv
     𝓕-preserve-products {m} {n} .inverse∘f≈id = {!   !}
