@@ -4,7 +4,7 @@ open import Data.Nat using (ℕ; zero; suc) renaming (_+_ to _+ℕ_)
 open import Data.Fin using (Fin; zero; suc; splitAt; _↑ˡ_; _↑ʳ_)
 open import Data.Fin using (join)
 open import Data.Fin.Properties using (splitAt-↑ˡ; splitAt-↑ʳ; join-splitAt)
-open import Relation.Binary.PropositionalEquality as ≡ using (_≡_; refl; cong)
+open import Relation.Binary.PropositionalEquality using (cong)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import prop-setoid using (module ≈-Reasoning)
 open import categories using (Category; IsInitial; IsTerminal; HasInitial; HasTerminal; HasProducts)
@@ -156,123 +156,6 @@ module matrix-rep
   entry : ∀ {m n} → X^ m ⇒ X^ n → Fin n → Fin m → X ⇒ X
   entry f i j = π i ∘ (f ∘ ι j)
 
-  -- Requires commutativity of scalar multiplication (composition in X ⇒ X).
-  dot-comm : ∀ {n} (h k : Fin n → X ⇒ X) → (cotuple {n} h ∘ tuple {n} k) ≈ (cotuple {n} k ∘ tuple {n} h)
-  dot-comm {zero}  h k = ≈-refl
-  dot-comm {suc n} h k =
-    begin
-      copair (BP X (X^ n)) (h zero) (cotuple (λ i → h (suc i))) ∘ pair (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i)))
-    ≈⟨ comp-bilinear₁ _ _ _ ⟩
-      ((h zero ∘ p₁ (BP X (X^ n))) ∘ pair (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i))))
-      +m
-      ((cotuple (λ i → h (suc i)) ∘ p₂ (BP X (X^ n))) ∘ pair (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i))))
-    ≈⟨ homCM _ _ .+-cong (assoc _ _ _) (assoc _ _ _) ⟩
-      (h zero ∘ (p₁ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i)))))
-      +m
-      (cotuple (λ i → h (suc i)) ∘ (p₂ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i)))))
-    ≈⟨ homCM _ _ .+-cong
-         (∘-cong ≈-refl (pair-p₁ (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i)))))
-         (∘-cong ≈-refl (pair-p₂ (BP X (X^ n)) (k zero) (tuple (λ i → k (suc i))))) ⟩
-      (h zero ∘ k zero) +m (cotuple {n} (λ i → h (suc i)) ∘ tuple {n} (λ i → k (suc i)))
-    ≈⟨ homCM _ _ .+-cong (scalar-comm (h zero) (k zero)) (dot-comm (λ i → h (suc i)) (λ i → k (suc i))) ⟩
-      (k zero ∘ h zero) +m (cotuple {n} (λ i → k (suc i)) ∘ tuple {n} (λ i → h (suc i)))
-    ≈˘⟨ homCM _ _ .+-cong
-          (∘-cong ≈-refl (pair-p₁ (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i)))))
-          (∘-cong ≈-refl (pair-p₂ (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i))))) ⟩
-      (k zero ∘ (p₁ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i)))))
-      +m
-      (cotuple (λ i → k (suc i)) ∘ (p₂ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i)))))
-    ≈˘⟨ homCM _ _ .+-cong (assoc _ _ _) (assoc _ _ _) ⟩
-      ((k zero ∘ p₁ (BP X (X^ n))) ∘ pair (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i))))
-      +m
-      ((cotuple (λ i → k (suc i)) ∘ p₂ (BP X (X^ n))) ∘ pair (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i))))
-    ≈˘⟨ comp-bilinear₁ _ _ _ ⟩
-      copair (BP X (X^ n)) (k zero) (cotuple (λ i → k (suc i))) ∘ pair (BP X (X^ n)) (h zero) (tuple (λ i → h (suc i)))
-    ∎ where open ≈-Reasoning isEquiv
-
-  -- Dagger structure.
-  transpose : ∀ {m n} → X^ m ⇒ X^ n → X^ n ⇒ X^ m
-  transpose {m} {n} f = tuple {m} (λ j → cotuple {n} (λ i → entry f i j))
-
-  -- Sanity check that transpose does what we expect.
-  transpose-entry : ∀ {m n} (f : X^ m ⇒ X^ n) (i : Fin m) (j : Fin n) →
-                    entry (transpose {m} {n} f) i j ≈ entry f j i
-  transpose-entry {m} {n} f i j =
-    begin
-      π {m} i ∘ (transpose {m} {n} f ∘ ι {n} j)
-    ≈˘⟨ assoc _ _ _ ⟩
-      (π {m} i ∘ transpose {m} {n} f) ∘ ι {n} j
-    ≈⟨ ∘-cong (tuple-π {m} (λ k → cotuple {n} (λ l → entry f l k)) i) ≈-refl ⟩
-      cotuple {n} (λ l → entry f l i) ∘ ι {n} j
-    ≈⟨ cotuple-ι {n} (λ l → entry f l i) j ⟩
-      π {n} j ∘ (f ∘ ι {m} i)
-    ∎ where open ≈-Reasoning isEquiv
-
-  transpose-involutive : ∀ {m n} (f : X^ m ⇒ X^ n) → transpose {n} {m} (transpose {m} {n} f) ≈ f
-  transpose-involutive {m} {n} f =
-    begin
-      tuple {n} (λ j → cotuple {m} (λ i → entry (transpose {m} {n} f) i j))
-    ≈⟨ tuple-cong {n} _ _ (λ j → cotuple-cong {m} _ _ (λ i → transpose-entry f i j)) ⟩
-      tuple {n} (λ j → cotuple {m} (λ i → entry f j i))
-    ≡⟨⟩
-      tuple {n} (λ j → cotuple {m} (λ i → π {n} j ∘ (f ∘ ι {m} i)))
-    ≈⟨ tuple-cong {n} _ _ (λ j → ≈-sym (cotuple-natural (π {n} j) (λ i → f ∘ ι {m} i))) ⟩
-      tuple {n} (λ j → π {n} j ∘ cotuple {m} (λ i → f ∘ ι {m} i))
-    ≈⟨ tuple-cong {n} _ _ (λ j → ∘-cong ≈-refl (cotuple-ext {m} f)) ⟩
-      tuple {n} (λ j → π {n} j ∘ f)
-    ≈⟨ tuple-ext {n} f ⟩
-      f
-    ∎ where open ≈-Reasoning isEquiv
-
-  -- We have π i ∘ ι j is id when i = j and the zero morphism εm when i ≠ j; this is a trivial consequence.
-  kronecker-sym : ∀ {n} (i j : Fin n) → (π {n} i ∘ ι {n} j) ≈ (π {n} j ∘ ι {n} i)
-  kronecker-sym {suc n} zero zero = ≈-refl
-  kronecker-sym {suc n} zero (suc j) =
-    begin
-      p₁ (BP X (X^ n)) ∘ (in₂ (BP X (X^ n)) ∘ ι j)
-    ≈˘⟨ assoc _ _ _ ⟩
-      (p₁ (BP X (X^ n)) ∘ in₂ (BP X (X^ n))) ∘ ι j
-    ≈⟨ ∘-cong (zero-1 (BP X (X^ n))) ≈-refl ⟩
-      εm ∘ ι j
-    ≈⟨ comp-bilinear-ε₁ _ ⟩
-      εm
-    ≈˘⟨ comp-bilinear-ε₂ _ ⟩
-      π j ∘ εm
-    ≈˘⟨ ∘-cong ≈-refl (zero-2 (BP X (X^ n))) ⟩
-      π j ∘ (p₂ (BP X (X^ n)) ∘ in₁ (BP X (X^ n)))
-    ≈˘⟨ assoc _ _ _ ⟩
-      (π j ∘ p₂ (BP X (X^ n))) ∘ in₁ (BP X (X^ n))
-    ∎ where open ≈-Reasoning isEquiv
-  kronecker-sym {suc n} (suc i) zero = ≈-sym (kronecker-sym zero (suc i))
-  kronecker-sym {suc n} (suc i) (suc j) =
-    begin
-      π (suc i) ∘ ι (suc j)
-    ≈⟨ kronecker-suc i j ⟩
-      (π i ∘ ι j)
-    ≈⟨ kronecker-sym i j ⟩
-      (π j ∘ ι i)
-    ≈˘⟨ kronecker-suc j i ⟩
-       π (suc j) ∘ ι (suc i)
-    ∎ where
-    open ≈-Reasoning isEquiv
-
-    kronecker-suc : ∀ {n} (i j : Fin n) → (π {suc n} (suc i) ∘ ι {suc n} (suc j)) ≈ (π {n} i ∘ ι {n} j)
-    kronecker-suc {n} i j =
-      begin
-        (π i ∘ p₂ (BP X (X^ n))) ∘ (in₂ (BP X (X^ n)) ∘ ι j)
-      ≈⟨ assoc _ _ _ ⟩
-        π i ∘ (p₂ (BP X (X^ n)) ∘ (in₂ (BP X (X^ n)) ∘ ι j))
-      ≈⟨ ∘-cong ≈-refl (≈-sym (assoc _ _ _)) ⟩
-        π i ∘ ((p₂ (BP X (X^ n)) ∘ in₂ (BP X (X^ n))) ∘ ι j)
-      ≈⟨ ∘-cong ≈-refl (∘-cong (id-2 (BP X (X^ n))) ≈-refl) ⟩
-        π i ∘ (id _ ∘ ι j)
-      ≈⟨ ∘-cong ≈-refl id-left ⟩
-        π i ∘ ι j
-      ∎
-
-  transpose-comp : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) →
-                   transpose {m} {k} (g ∘ f) ≈ (transpose {m} {n} f ∘ transpose {n} {k} g)
-
   -- The entry of a composition is a dot product of entries (matrix multiplication).
   entry-comp : ∀ {m n k} (f : X^ m ⇒ X^ n) (g : X^ n ⇒ X^ k) (i : Fin k) (j : Fin m) →
                entry (g ∘ f) i j ≈ (cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j))
@@ -320,38 +203,6 @@ module matrix-rep
         ∎ where open ≈-Reasoning isEquiv
       open ≈-Reasoning isEquiv
 
-  transpose-comp {m} {n} {k} f g =
-    entry-ext (λ i j → let open ≈-Reasoning isEquiv in
-      begin
-        entry (transpose {m} {k} (g ∘ f)) i j
-      ≈⟨ transpose-entry {m} {k} (g ∘ f) i j ⟩
-        entry (g ∘ f) j i
-      ≈⟨ entry-comp {m} {n} {k} f g j i ⟩
-        cotuple {n} (λ l → entry g j l) ∘ tuple {n} (λ l → entry f l i)
-      ≈⟨ dot-comm {n} (λ l → entry g j l) (λ l → entry f l i) ⟩
-        cotuple {n} (λ l → entry f l i) ∘ tuple {n} (λ l → entry g j l)
-      ≈˘⟨ ∘-cong (cotuple-cong {n} _ _ (λ l → transpose-entry {m} {n} f i l))
-                  (tuple-cong {n} _ _ (λ l → transpose-entry {n} {k} g l j)) ⟩
-        cotuple {n} (λ l → entry (transpose {m} {n} f) i l) ∘ tuple {n} (λ l → entry (transpose {n} {k} g) l j)
-      ≈˘⟨ entry-comp {k} {n} {m} (transpose {n} {k} g) (transpose {m} {n} f) i j ⟩
-        entry (transpose {m} {n} f ∘ transpose {n} {k} g) i j
-      ∎)
-
-  transpose-id : ∀ {n} → transpose {n} {n} (id (X^ n)) ≈ id (X^ n)
-  transpose-id {n} =
-    begin
-      tuple {n} (λ j → cotuple {n} (λ i → π {n} i ∘ (id (X^ n) ∘ ι {n} j)))
-    ≈⟨ tuple-cong {n} _ _ (λ j → cotuple-cong {n} _ _ (λ i → ∘-cong ≈-refl id-left)) ⟩
-      tuple {n} (λ j → cotuple {n} (λ i → π {n} i ∘ ι {n} j))
-    ≈⟨ tuple-cong {n} _ _ (λ j → cotuple-cong {n} _ _ (λ i → kronecker-sym i j)) ⟩
-      tuple {n} (λ j → cotuple {n} (λ i → π {n} j ∘ ι {n} i))
-    ≈⟨ tuple-cong {n} _ _ (λ j → cotuple-ext {n} (π {n} j)) ⟩
-      tuple {n} (λ j → π {n} j)
-    ≈⟨ ≈-sym (tuple-cong {n} _ _ (λ j → id-right)) ⟩
-      tuple {n} (λ j → π {n} j ∘ id (X^ n))
-    ≈⟨ tuple-ext {n} (id (X^ n)) ⟩
-      id (X^ n)
-    ∎ where open ≈-Reasoning isEquiv
 
   -- MatRep(𝒞, X) as an Agda Category: objects are ℕ, morphisms m → n are X^m ⇒ X^n.
   open import prop-setoid using (IsEquivalence)
@@ -555,48 +406,4 @@ module matrix-rep
           ∎ where open ≈-Reasoning isEquiv
         open ≈-Reasoning isEquiv
 
-  -- The codiagonal (internal addition / join on X), from the biproduct + CMon enrichment.
-  ∨ : (X ⊕ X) ⇒ X
-  ∨ = copair (BP X X) (id X) (id X)
-
-  -- Additional structure when scalar addition is idempotent (End(X) is an idempotent semiring).
-  module WithIdempotence
-    (scalar-idem : (id X +m id X) ≈ id X)
-    where
-
-    -- 1 + 1 = 1 implies f + f = f for all morphisms into or out of X (and hence X^n).
-    idem-right : ∀ {A} (f : A ⇒ X) → (f +m f) ≈ f
-    idem-right f =
-      begin
-        f +m f
-      ≈˘⟨ +-cong (homCM _ _) id-left id-left ⟩
-        (id X ∘ f) +m (id X ∘ f)
-      ≈˘⟨ comp-bilinear₁ (id X) (id X) f ⟩
-        (id X +m id X) ∘ f
-      ≈⟨ ∘-cong scalar-idem ≈-refl ⟩
-        id X ∘ f
-      ≈⟨ id-left ⟩
-        f
-      ∎ where open ≈-Reasoning isEquiv
-
-    idem-left : ∀ {B} (f : X ⇒ B) → (f +m f) ≈ f
-    idem-left f =
-      begin
-        f +m f
-      ≈˘⟨ +-cong (homCM _ _) id-right id-right ⟩
-        (f ∘ id X) +m (f ∘ id X)
-      ≈˘⟨ comp-bilinear₂ f (id X) (id X) ⟩
-        f ∘ (id X +m id X)
-      ≈⟨ ∘-cong ≈-refl scalar-idem ⟩
-        f ∘ id X
-      ≈⟨ id-right ⟩
-        f
-      ∎ where open ≈-Reasoning isEquiv
-
-    -- The enrichment order.
-    _≤m_ : ∀ {A B} → A ⇒ B → A ⇒ B → Prop _
-    f ≤m g = (f +m g) ≈ g
-
-    ≤m-refl : ∀ {A} {f : A ⇒ X} → f ≤m f
-    ≤m-refl = idem-right _
 
