@@ -483,20 +483,18 @@ module Matrix where
       copair (SemiLat-BP (X^ m) (X^ n)) (F .fmor (in₁ (biproduct m n))) (F .fmor (in₂ (biproduct m n)))
     𝓕-preserve-products {m} {n} .f∘inverse≈id =
       begin
-        pair BP {X^ (P.prod m n)}
-          (𝓕 .fmor {P.prod m n} {m} (P.p₁ {m} {n})) (𝓕 .fmor {P.prod m n} {n} (P.p₂ {m} {n}))
+        pair BP {X^ (P.prod m n)} (𝓕 .fmor {P.prod m n} {m} (P.p₁ {m} {n})) (𝓕 .fmor {P.prod m n} {n} (P.p₂ {m} {n}))
         ∘ copair BP {X^ (P.prod m n)}
-            (F .fmor {m} {P.prod m n} (in₁ (biproduct m n))) (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))
+            (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
+            (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))
       ≈⟨ pair-natural BP _ _ _ ⟩
         pair BP
-          (𝓕 .fmor {P.prod m n} {m} (P.p₁ {m} {n}) ∘
-            copair BP {X^ (P.prod m n)}
-              (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
-              (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))))
-          (𝓕 .fmor {P.prod m n} {n} (P.p₂ {m} {n}) ∘
-            copair BP {X^ (P.prod m n)}
-              (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
-              (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))))
+          (P.p₁ {m} {n} ∘ copair BP {X^ (P.prod m n)}
+                            (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
+                            (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))))
+          (P.p₂ {m} {n} ∘ copair BP {X^ (P.prod m n)}
+                            (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
+                            (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))))
       ≈⟨ pair-cong BP {prod BP} reduce-p₁ {!   !} ⟩
         pair BP (p₁ BP) (p₂ BP)
       ≈⟨ pair-ext0 BP ⟩
@@ -504,10 +502,9 @@ module Matrix where
       ∎ where
         BP = SemiLat-BP (X^ m) (X^ n)
 
-        reduce-p₁ : (𝓕 .fmor {P.prod m n} {m} (P.p₁ {m} {n}) ∘
-                     copair BP {X^ (P.prod m n)}
-                       (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
-                       (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))) ≈ p₁ BP
+        reduce-p₁ : (P.p₁ {m} {n} ∘ copair BP {X^ (P.prod m n)}
+                                      (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
+                                      (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))) ≈ p₁ BP
         reduce-p₁ =
           begin
             P.p₁ {m} {n} ∘ copair BP {X^ (P.prod m n)}
@@ -527,7 +524,7 @@ module Matrix where
             (id (X^ m) ∘ p₁ BP) +m (εm {X^ n} {X^ m} ∘ p₂ BP)
           ≈⟨ homCM.+-cong id-left (comp-bilinear-ε₁ _) ⟩
             p₁ BP +m εm
-          ≈⟨ {!   !} ⟩
+          ≈⟨ +m-runit ⟩
             p₁ BP
           ∎ where open ≈-Reasoning isEquiv
 
