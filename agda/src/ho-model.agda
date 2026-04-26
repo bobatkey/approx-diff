@@ -479,7 +479,18 @@ module Matrix where
     𝓕-preserve-products : preserve-chosen-products 𝓕 products SemiLat-products
     𝓕-preserve-products {m} {n} .inverse =
       copair (SemiLat-BP (X^ m) (X^ n)) (F .fmor (in₁ (Mat.biproduct m n))) (F .fmor (in₂ (Mat.biproduct m n)))
-    𝓕-preserve-products {m} {n} .f∘inverse≈id = {!   !}
+    𝓕-preserve-products {m} {n} .f∘inverse≈id =
+      let bp = SemiLat-BP (X^ m) (X^ n) in
+      begin
+        pair bp {X^ (HasProducts.prod products m n)}
+                (𝓕 .fmor {HasProducts.prod products m n} {m} (HasProducts.p₁ products {m} {n}))
+                (𝓕 .fmor {HasProducts.prod products m n} {n} (HasProducts.p₂ products {m} {n}))
+          ∘ copair bp {X^ (HasProducts.prod products m n)}
+                     (F .fmor {m} {HasProducts.prod products m n} (in₁ (Mat.biproduct m n)))
+                     (F .fmor {n} {HasProducts.prod products m n} (in₂ (Mat.biproduct m n)))
+      ≈⟨ {!   !} ⟩
+        id (prod bp)
+      ∎ where open ≈-Reasoning isEquiv
     𝓕-preserve-products {m} {n} .inverse∘f≈id = {!   !}
 
   𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
