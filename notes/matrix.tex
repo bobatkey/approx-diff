@@ -101,19 +101,18 @@ w_i$ is their $\CMon$ addition in $\Mat(S)(1, n)$. Equivalently, $\sum_i w_i = W
 \subsection{$\Mat(S)$ in any biproduct category}
 \label{sec:matrix:representation}
 
-Suppose $\cat{C}$ is a $\CMon$-enriched category with biproducts and a zero object, $X \in \cat{C}$ a chosen
-object, and $S \cong \cat{C}(X, X)$ a semiring isomorphism between $S$ and the endomorphism semiring of $X$
-under composition. Then $\Mat(S)$ is $\CMon$-enriched equivalent to the full subcategory of $\cat{C}$ whose
-objects are the biproduct powers $X^n = X \biprod \cdots \biprod X$. The isomorphism lifts, via the matrix
-representation of morphisms, to the full categorical equivalence: an $n \times m$ matrix $M$ over $S$
-corresponds to the morphism $X^m \to X^n$ assembled from the entries $M_{ij} \in S \cong \cat{C}(X, X)$, and
-conversely every such morphism is determined by its $X^n$-indexed components. Commutativity of $\cdot$ in $S$
-corresponds to commutativity of composition in $\cat{C}(X, X)$.
+Suppose $\cat{C}$ is a $\CMon$-enriched category with finite biproducts, $X \in \cat{C}$ a chosen object, and
+$S \cong \cat{C}(X, X)$ a semiring isomorphism between $S$ and the endomorphism semiring of $X$ under
+composition. Then $\Mat(S)$ is $\CMon$-enriched equivalent to the full subcategory of $\cat{C}$ whose objects
+are the biproduct powers $X^n = X \biprod \cdots \biprod X$. An $n \times m$ matrix $M$ over $S$ corresponds
+to the morphism $X^m \to X^n$ assembled from the entries $M_{ij} \in S \cong \cat{C}(X, X)$, and conversely
+every such morphism is determined by its $X^n$-indexed components. Commutativity of $\cdot$ in $S$ means
+composition is commutative in $\cat{C}(X, X)$.
 
-For example, with $\cat{C} = \SemiLat$ and $X = \Two$, the iso $\Two \cong \SemiLat(\Two, \Two)$ identifies
-$\bot$ with the zero morphism and $\top$ with the identity; every join-preserving endomorphism of $\Two$ is
-determined by its value at $\top$, which must be either $\bot$ or $\top$. This yields $\Mat(\Two) \simeq$
-the full subcategory of $\SemiLat$ on objects $\Two^n$.
+For example, with $\cat{C} = \SemiLat$ and $X = \Two$, the isomorphism $\Two \cong \SemiLat(\Two, \Two)$
+identifies $\bot$ with the zero morphism and $\top$ with the identity; every join-preserving endomorphism of
+$\Two$ is determined by its value at $\top$. This yields $\Mat(\Two)$ as $\CMon$-enriched equivalent to the
+full subcategory of $\SemiLat$ on objects $\Two^n$.
 
 \subsection{Additional structure on $S$}
 \label{sec:matrix:additional-structure}
