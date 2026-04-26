@@ -6,7 +6,8 @@ open import Level using (0ℓ)
 open import prop-setoid using (Setoid)
 open import commutative-semiring using (CommutativeSemiring)
 
--- Matrices over a commutative semiring S.
+-- Matrices over a commutative semiring S. (Commutativity means the dot product is commutative, which means
+-- transpose preserves composition, i.e. AB^T = B^T A^T.)
 module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
 
   open CommutativeSemiring S public

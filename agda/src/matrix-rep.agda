@@ -11,12 +11,11 @@ open import categories using (Category; IsInitial; IsTerminal; HasInitial; HasTe
 open import cmon-enriched using (CMonEnriched; Biproduct)
 open import commutative-monoid using (CommutativeMonoid)
 
--- The category MatRep(𝒞, X): full subcategory of a (necessarily CMon-enriched) biproduct category
--- 𝒞 on iterated biproducts X^n of a chosen scalar object X. The endomorphisms End(X) act as the
--- "scalars", forming a semiring under composition (multiplication) and CMon addition. We need
--- multiplication to be commutative for the dot product to be commutative, in turn required for
--- transpose to preserve composition (i.e. for the usual AB^T = B^T A^T to hold).
--- Instantiating X to TWO in SemiLat recovers the "Boolean Jacobian" setting FDVect_2.
+-- Suppose 𝒞 a biproduct category with a chosen object X whose endomorphism hom 𝒞(X, X) is a commutative
+-- semiring (with composition as multiplication and addition of morphisms as addition). Then MatRep(𝒞, X) is
+-- the full subcategory of 𝒞 whose objects are iterated biproducts X^n, and is equivalent to Mat(S), with
+-- 𝒞(X, X) representing the scalars. Instantiating X to TWO in SemiLat recovers the "Boolean Jacobian"
+-- setting Mat(Bool).
 module matrix-rep
   {o m e} {𝒞 : Category o m e}
   (CM : CMonEnriched 𝒞)

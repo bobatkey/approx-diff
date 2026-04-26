@@ -130,20 +130,20 @@ negation $\neg$ satisfying $1 \le a + \neg a$ (excluded middle) and $a \cdot \ne
 (non-contradiction), then $\neg$ is involutive and disjointness reflects the order: $a \le b$ iff every $c$
 disjoint from $b$ is disjoint from $a$.
 
-\subsection{$\Mat(\Two)$ and $\FinRel$}
+\subsubsection{$\Mat(\Two)$ and $\FinRel$}
 \label{sec:matrix:two}
 
-Take $S$ to be the commutative (in fact Boolean) semiring $\Two = (\{\bot, \top\}, \join, \bot, \meet, \top)$
-with $+ := \join$, $\cdot := \meet$, $0 := \bot$ and $1 := \top$. $\Mat(\Two)$ is equivalent to the category
-$\FinRel$ of finite sets and binary relations: an $n \times m$ matrix $M : m \to n$ encodes the relation $R_M
-\subseteq [n] \times [m]$ via $i\, R_M\, j \iff M_{ij} = \top$, where $[n] = \{1, \ldots, n\}$. Under this
-equivalence, matrix multiplication is relational composition,
+If $S$ is the Boolean algebra $\Two = (\{\bot, \top\}, \join, \bot, \meet, \top)$ with $+ := \join$, $\cdot :=
+\meet$, $0 := \bot$ and $1 := \top$, then $\Mat(\Two)$ is equivalent to the category $\FinRel$ of finite sets
+and binary relations. An $n \times m$ matrix $M : m \to n$ encodes the relation $R_M \subseteq [n] \times [m]$
+via $i\, R_M\, j \iff M_{ij} = \top$, where $[n] = \{1, \ldots, n\}$. Matrix multiplication is relational
+composition,
 \begin{salign*}
    (N \comp M)_{ij} = \bigjoin_k N_{ik} \meet M_{kj},
 \end{salign*}
 \noindent which evaluates to $\top$ iff there is some intermediate $k$ with $j\, R_M\, k$ and $k\, R_N\, i$.
-The dagger $M \mapsto M^{\!\top}$ corresponds to the relational converse dagger $R \mapsto R^{-1}$ on
-$\FinRel$, so $R_{M^{\!\top}} = {R_M}^{-1}$.
+The dagger $M \mapsto M^{\!\top}$ is relational converse $R \mapsto R^{-1}$ on $\FinRel$, so $R_{M^{\!\top}} =
+{R_M}^{-1}$.
 
 \subsection{Relation to $\SemiLat$}
 \label{sec:matrix:two:semilat}

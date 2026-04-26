@@ -2,8 +2,9 @@
 
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Fin using (Fin; zero; suc)
-open import prop-setoid using (Setoid; module ≈-Reasoning)
+open import prop-setoid using (Setoid; module ≈-Reasoning) renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_)
 open import categories using (Category; IsInitial; IsTerminal)
+open import setoid-cat using (SetoidCat)
 open import cmon-enriched using (CMonEnriched; Biproduct)
 open import commutative-monoid using (CommutativeMonoid)
 open import commutative-semiring using (CommutativeSemiring)
@@ -13,28 +14,44 @@ open import functor using (Functor)
 -- The representation of S inside End(X) is faithful on both sides: scalar is a homomorphism with an
 -- inverse scalar-inv that is also a homomorphism (automatically, given scalar is bijective).
 module matrix-embedding
-  {o m e o' ℓ} {𝒞 : Category o m e}
+  {o m e} {𝒞 : Category o m e}
   (CM : CMonEnriched 𝒞)
   (BP : ∀ x y → Biproduct CM x y)
   (𝟘 : Category.obj 𝒞)
   (𝟘-initial : IsInitial 𝒞 𝟘)
   (𝟘-terminal : IsTerminal 𝒞 𝟘)
   (X : Category.obj 𝒞)
-  {A : Setoid o' ℓ} (S : CommutativeSemiring A)
+  (A : Setoid m e) (S : CommutativeSemiring A)
   (let open Category 𝒞)
   (let open CMonEnriched CM)
   (let open CommutativeSemiring S using (Carrier) renaming (ε to S-ε; ι to S-ι; _+_ to _+ₛ_; _·_ to _·ₛ_; _≈_ to _≈ₛ_; ·-comm to ·ₛ-comm; trans to ≈ₛ-trans))
-  (scalar : Carrier → X ⇒ X)
-  (scalar-cong : ∀ {a b} → a ≈ₛ b → scalar a ≈ scalar b)
+  (scalar-iso : Category.Iso (SetoidCat m e) A (hom-setoid X X))
+  (let open _⇒s_)
+  (let scalar = scalar-iso .Category.Iso.fwd .func)
   (scalar-ε : scalar S-ε ≈ εm)
   (scalar-ι : scalar S-ι ≈ id X)
   (scalar-+ : ∀ {a b} → scalar (a +ₛ b) ≈ scalar a +m scalar b)
   (scalar-· : ∀ {a b} → scalar (a ·ₛ b) ≈ scalar a ∘ scalar b)
-  (scalar-inv : X ⇒ X → Carrier)
-  (scalar-inv-cong : ∀ {f g : X ⇒ X} → f ≈ g → scalar-inv f ≈ₛ scalar-inv g)
-  (scalar-inv-scalar : ∀ a → scalar-inv (scalar a) ≈ₛ a)
-  (scalar-scalar-inv : ∀ (f : X ⇒ X) → scalar (scalar-inv f) ≈ f)
   where
+
+  -- Project the remaining iso pieces for use in the body.
+  open _⇒s_
+  open _≈s_
+
+  scalar-cong : ∀ {a b} → a ≈ₛ b → scalar a ≈ scalar b
+  scalar-cong = scalar-iso .Category.Iso.fwd .func-resp-≈
+
+  scalar-inv : X ⇒ X → Carrier
+  scalar-inv = scalar-iso .Category.Iso.bwd .func
+
+  scalar-inv-cong : ∀ {f g : X ⇒ X} → f ≈ g → scalar-inv f ≈ₛ scalar-inv g
+  scalar-inv-cong = scalar-iso .Category.Iso.bwd .func-resp-≈
+
+  scalar-inv-scalar : ∀ a → scalar-inv (scalar a) ≈ₛ a
+  scalar-inv-scalar a = scalar-iso .Category.Iso.bwd∘fwd≈id .func-eq (Setoid.refl A)
+
+  scalar-scalar-inv : ∀ (f : X ⇒ X) → scalar (scalar-inv f) ≈ f
+  scalar-scalar-inv f = scalar-iso .Category.Iso.fwd∘bwd≈id .func-eq ≈-refl
 
   open CommutativeMonoid
   open Biproduct

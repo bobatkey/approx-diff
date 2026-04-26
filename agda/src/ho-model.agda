@@ -397,6 +397,19 @@ module Matrix where
     ... | O = two.≃-refl {O}
     ... | I = two.≃-refl {I}
 
+    open import prop-setoid using () renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_)
+    open import setoid-cat using (SetoidCat)
+    open _⇒s_
+    open _≈s_
+
+    iso : Category.Iso (SetoidCat 0ℓ 0ℓ) two.Two-setoid (Category.hom-setoid SemiLat.cat TWO TWO)
+    iso .Category.Iso.fwd .func = to
+    iso .Category.Iso.fwd .func-resp-≈ = to-cong
+    iso .Category.Iso.bwd .func = from
+    iso .Category.Iso.bwd .func-resp-≈ = from-cong
+    iso .Category.Iso.fwd∘bwd≈id .func-eq {f₁} {f₂} f₁≈f₂ = ≈-trans (to∘from f₁) f₁≈f₂
+    iso .Category.Iso.bwd∘fwd≈id .func-eq {a₁} {a₂} a₁≈a₂ = two.≃-trans (from∘to a₁) a₁≈a₂
+
     -- Commutativity of End(TWO) transports along the iso from commutativity of (Two, ⊓).
     comm : ∀ (f g : TWO ⇒ TWO) → (f ∘ g) ≈ (g ∘ f)
     comm f g =
@@ -466,7 +479,8 @@ module Matrix where
     (HasInitial.is-initial SemiLat.initial)
     (HasTerminal.is-terminal SemiLat.terminal)
     TWO
+    two.Two-setoid
     two.semiring
-    scalar.to scalar.to-cong scalar.preserves-ε scalar.preserves-ι
+    scalar.iso
+    scalar.preserves-ε scalar.preserves-ι
     (λ {a} {b} → scalar.preserves-+ {a} {b}) (λ {a} {b} → scalar.preserves-· {a} {b})
-    scalar.from scalar.from-cong scalar.from∘to scalar.to∘from
