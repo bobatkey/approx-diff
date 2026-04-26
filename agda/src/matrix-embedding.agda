@@ -355,6 +355,10 @@ module matrix-embedding
     pair : ∀ {k m n} → X^ k ⇒ X^ m → X^ k ⇒ X^ n → X^ k ⇒ X^ (m +ℕ n)
     pair {k} {m} {n} f g = F .fmor (MP.pair {k} {m} {n} (F⁻¹ .fmor f) (F⁻¹ .fmor g))
 
+    pair-cong : ∀ {k m n} {f₁ f₂ : X^ k ⇒ X^ m} {g₁ g₂ : X^ k ⇒ X^ n} →
+                f₁ ≈ f₂ → g₁ ≈ g₂ → pair {k} {m} {n} f₁ g₁ ≈ pair {k} {m} {n} f₂ g₂
+    pair-cong {k} {m} {n} f≈ g≈ = F .fmor-cong (MP.pair-cong {k} {m} {n} (F⁻¹ .fmor-cong f≈) (F⁻¹ .fmor-cong g≈))
+
     products : HasProducts MatRep.cat
     products .HasProducts.prod = {!   !}
     products .HasProducts.p₁ = {!   !}
