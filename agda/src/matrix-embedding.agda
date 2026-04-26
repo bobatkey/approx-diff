@@ -384,8 +384,7 @@ module matrix-embedding
         g
       ∎ where open ≈-Reasoning isEquiv
 
-    pair-ext : ∀ {k m n} (f : X^ k ⇒ X^ (m +ℕ n)) →
-               pair {k} {m} {n} (p₁ {m} {n} ∘ f) (p₂ {m} {n} ∘ f) ≈ f
+    pair-ext : ∀ {k m n} (f : X^ k ⇒ X^ (m +ℕ n)) → pair {k} {m} {n} (p₁ {m} {n} ∘ f) (p₂ {m} {n} ∘ f) ≈ f
     pair-ext {k} {m} {n} f =
       begin
         pair {k} {m} {n} (p₁ {m} {n} ∘ f) (p₂ {m} {n} ∘ f)
@@ -394,8 +393,7 @@ module matrix-embedding
       ≈⟨ F∘F⁻¹ {k} {m +ℕ n} f ⟩
         f
       ∎ where
-        mat-eq : MP.pair {k} {m} {n} (F⁻¹ .fmor (p₁ {m} {n} ∘ f)) (F⁻¹ .fmor (p₂ {m} {n} ∘ f))
-                 Mat.≈ₘ F⁻¹ .fmor f
+        mat-eq : MP.pair {k} {m} {n} (F⁻¹ .fmor (p₁ {m} {n} ∘ f)) (F⁻¹ .fmor (p₂ {m} {n} ∘ f)) Mat.≈ₘ F⁻¹ .fmor f
         mat-eq =
           begin
             MP.pair {k} {m} {n} (F⁻¹ .fmor (p₁ {m} {n} ∘ f)) (F⁻¹ .fmor (p₂ {m} {n} ∘ f))

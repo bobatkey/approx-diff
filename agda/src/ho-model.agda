@@ -444,7 +444,24 @@ module Matrix where
     (HasTerminal.is-terminal SemiLat.terminal)
     TWO
     scalar.comm
-    public
+    hiding (products) public
+
+  -- Products on MatRep transported from Mat(Two) via the equivalence Mat(Two) ≃ MatRep(SemiLat, TWO).
+  import matrix-embedding
+  module Mat≃MatRep = matrix-embedding
+    SemiLat.cmon-enriched
+    (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
+    (HasTerminal.witness SemiLat.terminal)
+    (HasInitial.is-initial SemiLat.initial)
+    (HasTerminal.is-terminal SemiLat.terminal)
+    TWO
+    two.Two-setoid
+    two.semiring
+    scalar.iso
+    scalar.cmon-hom
+    scalar.preserves-ι
+    (λ {a} {b} → scalar.preserves-· {a} {b})
+  open Mat≃MatRep using (products) public
 
   𝓕 : Functor cat SemiLat.cat
   𝓕 .fobj = X^
@@ -460,9 +477,9 @@ module Matrix where
   SemiLat-products = biproducts→products _ SemiLat-BP
 
   𝓕-preserve-products : preserve-chosen-products 𝓕 products SemiLat-products
-  𝓕-preserve-products {m} {n} .inverse = X^-split m n .Iso.bwd
-  𝓕-preserve-products {m} {n} .f∘inverse≈id = X^-split m n .Iso.fwd∘bwd≈id
-  𝓕-preserve-products {m} {n} .inverse∘f≈id = X^-split m n .Iso.bwd∘fwd≈id
+  𝓕-preserve-products {m} {n} .inverse = {!   !}
+  𝓕-preserve-products {m} {n} .f∘inverse≈id = {!   !}
+  𝓕-preserve-products {m} {n} .inverse∘f≈id = {!   !}
 
   𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
   𝓕-preserve-terminal .inverse = id _
@@ -475,19 +492,3 @@ module Matrix where
     𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
     public
 
-  -- Sanity check: witness the equivalence Mat(Two) ≃ MatRep(SemiLat, TWO) by instantiating matrix-embedding
-  -- with the iso between Two and End(TWO).
-  import matrix-embedding
-  module Mat≃MatRep = matrix-embedding
-    SemiLat.cmon-enriched
-    (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
-    (HasTerminal.witness SemiLat.terminal)
-    (HasInitial.is-initial SemiLat.initial)
-    (HasTerminal.is-terminal SemiLat.terminal)
-    TWO
-    two.Two-setoid
-    two.semiring
-    scalar.iso
-    scalar.cmon-hom
-    scalar.preserves-ι
-    (λ {a} {b} → scalar.preserves-· {a} {b})
