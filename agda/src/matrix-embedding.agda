@@ -51,13 +51,13 @@ module matrix-embedding
     begin
       f ∘ g
     ≈˘⟨ ∘-cong (scalar∘scalar⁻¹≈id .func-eq ≈-refl) (scalar∘scalar⁻¹≈id .func-eq ≈-refl) ⟩
-      scalar .func (scalar-iso .bwd .func f) ∘ scalar .func (scalar-iso .bwd .func g)
+      scalar .func (scalar⁻¹ .func f) ∘ scalar .func (scalar⁻¹ .func g)
     ≈˘⟨ scalar-· ⟩
-      scalar .func (scalar-iso .bwd .func f ·ₛ scalar-iso .bwd .func g)
+      scalar .func (scalar⁻¹ .func f ·ₛ scalar⁻¹ .func g)
     ≈⟨ scalar-iso .fwd .func-resp-≈ ·ₛ-comm ⟩
-      scalar .func (scalar-iso .bwd .func g ·ₛ scalar-iso .bwd .func f)
+      scalar .func (scalar⁻¹ .func g ·ₛ scalar⁻¹ .func f)
     ≈⟨ scalar-· ⟩
-      scalar .func (scalar-iso .bwd .func g) ∘ scalar .func (scalar-iso .bwd .func f)
+      scalar .func (scalar⁻¹ .func g) ∘ scalar .func (scalar⁻¹ .func f)
     ≈⟨ ∘-cong (scalar∘scalar⁻¹≈id .func-eq ≈-refl) (scalar∘scalar⁻¹≈id .func-eq ≈-refl) ⟩
       g ∘ f
     ∎ where open ≈-Reasoning isEquiv
@@ -221,39 +221,39 @@ module matrix-embedding
   -- F⁻¹ : MatRep(𝒞, X) → Mat(S), the "extract matrix of entries" direction.
   F⁻¹ : Functor MatRep.cat Mat.cat
   F⁻¹ .fobj n = n
-  F⁻¹ .fmor {m} {n} f i j = scalar-iso .bwd .func (entry {m} {n} f i j)
-  F⁻¹ .fmor-cong p i j = scalar-iso .bwd .func-resp-≈ (∘-cong ≈-refl (∘-cong p ≈-refl))
+  F⁻¹ .fmor {m} {n} f i j = scalar⁻¹ .func (entry {m} {n} f i j)
+  F⁻¹ .fmor-cong p i j = scalar⁻¹ .func-resp-≈ (∘-cong ≈-refl (∘-cong p ≈-refl))
   F⁻¹ .fmor-id {n} i j =
     begin
-      scalar-iso .bwd .func (entry {n} {n} (id (X^ n)) i j)
-    ≈⟨ scalar-iso .bwd .func-resp-≈ (∘-cong ≈-refl id-left) ⟩
-      scalar-iso .bwd .func (π {n} i ∘ ι {n} j)
-    ≈˘⟨ scalar-iso .bwd .func-resp-≈ (scalar-e i j) ⟩
-      scalar-iso .bwd .func (scalar .func (Mat.e i j))
+      scalar⁻¹ .func (entry {n} {n} (id (X^ n)) i j)
+    ≈⟨ scalar⁻¹ .func-resp-≈ (∘-cong ≈-refl id-left) ⟩
+      scalar⁻¹ .func (π {n} i ∘ ι {n} j)
+    ≈˘⟨ scalar⁻¹ .func-resp-≈ (scalar-e i j) ⟩
+      scalar⁻¹ .func (scalar .func (Mat.e i j))
     ≈⟨ scalar⁻¹∘scalar≈id .func-eq (Setoid.refl A) ⟩
       Mat.e i j
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
   F⁻¹ .fmor-comp {x} {y} {z} g f i j =
     begin
-      scalar-iso .bwd .func (entry {x} {z} (g ∘ f) i j)
-    ≈⟨ scalar-iso .bwd .func-resp-≈ (entry-comp {x} {y} {z} f g i j) ⟩
-      scalar-iso .bwd .func (cotuple {y} (λ k → entry {y} {z} g i k) ∘ tuple {y} (λ k → entry {x} {y} f k j))
-    ≈˘⟨ scalar-iso .bwd .func-resp-≈ (∘-cong (cotuple-cong {y} _ _ (λ k → scalar∘scalar⁻¹≈id .func-eq ≈-refl))
+      scalar⁻¹ .func (entry {x} {z} (g ∘ f) i j)
+    ≈⟨ scalar⁻¹ .func-resp-≈ (entry-comp {x} {y} {z} f g i j) ⟩
+      scalar⁻¹ .func (cotuple {y} (λ k → entry {y} {z} g i k) ∘ tuple {y} (λ k → entry {x} {y} f k j))
+    ≈˘⟨ scalar⁻¹ .func-resp-≈ (∘-cong (cotuple-cong {y} _ _ (λ k → scalar∘scalar⁻¹≈id .func-eq ≈-refl))
                                  (tuple-cong {y} _ _ (λ k → scalar∘scalar⁻¹≈id .func-eq ≈-refl))) ⟩
-      scalar-iso .bwd .func (cotuple {y} (λ k → scalar .func (scalar-iso .bwd .func (entry {y} {z} g i k)))
-                  ∘ tuple {y} (λ k → scalar .func (scalar-iso .bwd .func (entry {x} {y} f k j))))
-    ≈˘⟨ scalar-iso .bwd .func-resp-≈ (scalar-Σ {y} (λ k → scalar-iso .bwd .func (entry {y} {z} g i k)) (λ k → scalar-iso .bwd .func (entry {x} {y} f k j))) ⟩
-      scalar-iso .bwd .func (scalar .func (Mat.Σ {y} (λ k → scalar-iso .bwd .func (entry {y} {z} g i k) ·ₛ scalar-iso .bwd .func (entry {x} {y} f k j))))
+      scalar⁻¹ .func (cotuple {y} (λ k → scalar .func (scalar⁻¹ .func (entry {y} {z} g i k)))
+                  ∘ tuple {y} (λ k → scalar .func (scalar⁻¹ .func (entry {x} {y} f k j))))
+    ≈˘⟨ scalar⁻¹ .func-resp-≈ (scalar-Σ {y} (λ k → scalar⁻¹ .func (entry {y} {z} g i k)) (λ k → scalar⁻¹ .func (entry {x} {y} f k j))) ⟩
+      scalar⁻¹ .func (scalar .func (Mat.Σ {y} (λ k → scalar⁻¹ .func (entry {y} {z} g i k) ·ₛ scalar⁻¹ .func (entry {x} {y} f k j))))
     ≈⟨ scalar⁻¹∘scalar≈id .func-eq (Setoid.refl A) ⟩
-      Mat.Σ {y} (λ k → scalar-iso .bwd .func (entry {y} {z} g i k) ·ₛ scalar-iso .bwd .func (entry {x} {y} f k j))
+      Mat.Σ {y} (λ k → scalar⁻¹ .func (entry {y} {z} g i k) ·ₛ scalar⁻¹ .func (entry {x} {y} f k j))
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
 
   F⁻¹∘F : ∀ {m n} (M : Matrix n m) → (F⁻¹ .fmor (F .fmor M)) Mat.≈ₘ M
   F⁻¹∘F {m} {n} M i j =
     begin
-      scalar-iso .bwd .func (entry {m} {n} (F .fmor {m} {n} M) i j)
-    ≈⟨ scalar-iso .bwd .func-resp-≈ (entry-F {m} {n} M i j) ⟩
-      scalar-iso .bwd .func (scalar .func (M i j))
+      scalar⁻¹ .func (entry {m} {n} (F .fmor {m} {n} M) i j)
+    ≈⟨ scalar⁻¹ .func-resp-≈ (entry-F {m} {n} M i j) ⟩
+      scalar⁻¹ .func (scalar .func (M i j))
     ≈⟨ scalar⁻¹∘scalar≈id .func-eq (Setoid.refl A) ⟩
       M i j
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
@@ -263,7 +263,7 @@ module matrix-embedding
     begin
       entry {m} {n} (F .fmor {m} {n} (F⁻¹ .fmor {m} {n} f)) i j
     ≈⟨ entry-F {m} {n} (F⁻¹ .fmor {m} {n} f) i j ⟩
-      scalar .func (scalar-iso .bwd .func (entry {m} {n} f i j))
+      scalar .func (scalar⁻¹ .func (entry {m} {n} f i j))
     ≈⟨ scalar∘scalar⁻¹≈id .func-eq ≈-refl ⟩
       entry {m} {n} f i j
     ∎) where open ≈-Reasoning isEquiv
@@ -304,9 +304,9 @@ module matrix-embedding
     begin
       M i j
     ≈˘⟨ F⁻¹∘F {m} {n} M i j ⟩
-      scalar-iso .bwd .func (entry {m} {n} (F .fmor {m} {n} M) i j)
-    ≈⟨ scalar-iso .bwd .func-resp-≈ (∘-cong ≈-refl (∘-cong eq ≈-refl)) ⟩
-      scalar-iso .bwd .func (entry {m} {n} (F .fmor {m} {n} N) i j)
+      scalar⁻¹ .func (entry {m} {n} (F .fmor {m} {n} M) i j)
+    ≈⟨ scalar⁻¹ .func-resp-≈ (∘-cong ≈-refl (∘-cong eq ≈-refl)) ⟩
+      scalar⁻¹ .func (entry {m} {n} (F .fmor {m} {n} N) i j)
     ≈⟨ F⁻¹∘F {m} {n} N i j ⟩
       N i j
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
