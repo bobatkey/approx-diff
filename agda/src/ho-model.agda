@@ -475,21 +475,20 @@ module Matrix where
 
   module _ where
     open Biproduct
+    open Mat using (biproduct)
+    module P = HasProducts products
 
     𝓕-preserve-products : preserve-chosen-products 𝓕 products SemiLat-products
     𝓕-preserve-products {m} {n} .inverse =
-      copair (SemiLat-BP (X^ m) (X^ n)) (F .fmor (in₁ (Mat.biproduct m n))) (F .fmor (in₂ (Mat.biproduct m n)))
+      copair (SemiLat-BP (X^ m) (X^ n)) (F .fmor (in₁ (biproduct m n))) (F .fmor (in₂ (biproduct m n)))
     𝓕-preserve-products {m} {n} .f∘inverse≈id =
-      let bp = SemiLat-BP (X^ m) (X^ n) in
       begin
-        pair bp {X^ (HasProducts.prod products m n)}
-                (𝓕 .fmor {HasProducts.prod products m n} {m} (HasProducts.p₁ products {m} {n}))
-                (𝓕 .fmor {HasProducts.prod products m n} {n} (HasProducts.p₂ products {m} {n}))
-          ∘ copair bp {X^ (HasProducts.prod products m n)}
-                     (F .fmor {m} {HasProducts.prod products m n} (in₁ (Mat.biproduct m n)))
-                     (F .fmor {n} {HasProducts.prod products m n} (in₂ (Mat.biproduct m n)))
+        pair (SemiLat-BP (X^ m) (X^ n)) {X^ (P.prod m n)}
+          (𝓕 .fmor {P.prod m n} {m} (P.p₁ {m} {n})) (𝓕 .fmor {P.prod m n} {n} (P.p₂ {m} {n}))
+        ∘ copair (SemiLat-BP (X^ m) (X^ n)) {X^ (P.prod m n)}
+            (F .fmor {m} {P.prod m n} (in₁ (biproduct m n))) (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))
       ≈⟨ {!   !} ⟩
-        id (prod bp)
+        id (prod (SemiLat-BP (X^ m) (X^ n)))
       ∎ where open ≈-Reasoning isEquiv
     𝓕-preserve-products {m} {n} .inverse∘f≈id = {!   !}
 
