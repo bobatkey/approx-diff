@@ -40,6 +40,8 @@ module matrix-embedding
   open Category.Iso
 
   open CommutativeMonoid
+  open IsInitial 𝟘-initial
+  open IsTerminal 𝟘-terminal
 
   scalar⁻¹ = scalar-iso .bwd
   scalar∘scalar⁻¹≈id = scalar-iso .fwd∘bwd≈id
@@ -62,12 +64,12 @@ module matrix-embedding
       g ∘ f
     ∎ where open ≈-Reasoning isEquiv
 
+  _⊕_ : obj → obj → obj
+  x ⊕ y = Biproduct.prod (BP x y)
+
   import matrix-rep
   module MatRep = matrix-rep CM BP 𝟘 𝟘-initial 𝟘-terminal X scalar-comm
-  open MatRep hiding (cat) public
-
-  open IsInitial 𝟘-initial
-  open IsTerminal 𝟘-terminal
+  open MatRep hiding (cat; _⊕_) public
 
   import matrix
   module Mat = matrix.Mat S
