@@ -563,6 +563,15 @@ module Matrix where
         ∘ pair BP {X^ (P.prod m n)}
             (𝓕 .fmor {P.prod m n} {m} (P.p₁ {m} {n}))
             (𝓕 .fmor {P.prod m n} {n} (P.p₂ {m} {n}))
+      ≈⟨ comp-bilinear₂ _ _ _ ⟩
+        (copair BP {X^ (P.prod m n)}
+           (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
+           (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))) ∘
+         (in₁ BP ∘ P.p₁ {m} {n})) +m
+        (copair BP {X^ (P.prod m n)}
+           (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
+           (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))) ∘
+         (in₂ BP ∘ P.p₂ {m} {n}))
       ≈⟨ {!   !} ⟩
         id (X^ (P.prod m n))
       ∎ where
