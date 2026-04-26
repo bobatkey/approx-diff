@@ -269,8 +269,7 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
   cmon .CMonEnriched.comp-bilinear-ε₁ = comp-bilinear-ε₁
   cmon .CMonEnriched.comp-bilinear-ε₂ = comp-bilinear-ε₂
 
-  -- Biproduct: m ⊕ n = m +ℕ n.
-
+  -- Biproducts.
   p₁ : ∀ {m n} → Matrix m (m +ℕ n)
   p₁ {suc m} zero zero = ι
   p₁ {suc m} zero (suc _) = ε
@@ -278,7 +277,7 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
   p₁ {suc m} (suc i) (suc j) = p₁ {m} i j
 
   p₂ : ∀ {m n} → Matrix n (m +ℕ n)
-  p₂ {zero}  i j = e i j
+  p₂ {zero} i j = e i j
   p₂ {suc m} i zero = ε
   p₂ {suc m} i (suc j) = p₂ {m} i j
 
@@ -301,46 +300,34 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
     ·ε-Σ {n} f = trans (Σ-cong {n} (λ j → ε-annihilᵣ)) (Σ-ε {n})
 
   id-1 : ∀ m n → p₁ {m} {n} ∘ in₁ {m} {n} ≈ₘ I
-  id-1 (suc m) n zero zero =
-    trans (+-cong ·-lunit (Σ-ε· {m +ℕ n} _)) (trans +-comm +-lunit)
-  id-1 (suc m) n zero (suc k) =
-    trans (+-cong ε-annihilᵣ (Σ-ε· {m +ℕ n} _)) +-lunit
-  id-1 (suc m) n (suc i) zero =
-    trans (+-cong ε-annihilₗ (·ε-Σ {m +ℕ n} _)) +-lunit
-  id-1 (suc m) n (suc i) (suc k) =
-    trans (+-cong ε-annihilₗ refl) (trans +-lunit (id-1 m n i k))
+  id-1 (suc m) n zero zero = trans (+-cong ·-lunit (Σ-ε· {m +ℕ n} _)) (trans +-comm +-lunit)
+  id-1 (suc m) n zero (suc k) = trans (+-cong ε-annihilᵣ (Σ-ε· {m +ℕ n} _)) +-lunit
+  id-1 (suc m) n (suc i) zero = trans (+-cong ε-annihilₗ (·ε-Σ {m +ℕ n} _)) +-lunit
+  id-1 (suc m) n (suc i) (suc k) = trans (+-cong ε-annihilₗ refl) (trans +-lunit (id-1 m n i k))
 
   id-2 : ∀ m n → p₂ {m} {n} ∘ in₂ {m} {n} ≈ₘ I
   id-2 zero n i j = Σ-unit i (λ k → e k j)
-  id-2 (suc m) n i j =
-    trans (+-cong ε-annihilₗ refl) (trans +-lunit (id-2 m n i j))
+  id-2 (suc m) n i j = trans (+-cong ε-annihilₗ refl) (trans +-lunit (id-2 m n i j))
 
   zero-1 : ∀ m n → p₁ {m} {n} ∘ in₂ {m} {n} ≈ₘ εₘ
   zero-1 zero n ()
-  zero-1 (suc m) n zero j =
-    trans (+-cong ε-annihilᵣ (Σ-ε· {m +ℕ n} _)) +-lunit
-  zero-1 (suc m) n (suc i) j =
-    trans (+-cong ε-annihilₗ refl) (trans +-lunit (zero-1 m n i j))
+  zero-1 (suc m) n zero j = trans (+-cong ε-annihilᵣ (Σ-ε· {m +ℕ n} _)) +-lunit
+  zero-1 (suc m) n (suc i) j = trans (+-cong ε-annihilₗ refl) (trans +-lunit (zero-1 m n i j))
 
   zero-2 : ∀ m n → p₂ {m} {n} ∘ in₁ {m} {n} ≈ₘ εₘ
   zero-2 zero n _ ()
-  zero-2 (suc m) n i zero =
-    trans (+-cong ε-annihilₗ (·ε-Σ {m +ℕ n} _)) +-lunit
-  zero-2 (suc m) n i (suc j) =
-    trans (+-cong ε-annihilₗ refl) (trans +-lunit (zero-2 m n i j))
+  zero-2 (suc m) n i zero = trans (+-cong ε-annihilₗ (·ε-Σ {m +ℕ n} _)) +-lunit
+  zero-2 (suc m) n i (suc j) = trans (+-cong ε-annihilₗ refl) (trans +-lunit (zero-2 m n i j))
 
   id-+ : ∀ m n → (in₁ {m} {n} ∘ p₁ {m} {n}) +ₘ (in₂ {m} {n} ∘ p₂ {m} {n}) ≈ₘ I {m +ℕ n}
-  id-+ zero n i j =
-    trans +-lunit (Σ-unit i (λ k → e k j))
+  id-+ zero n i j = trans +-lunit (Σ-unit i (λ k → e k j))
   id-+ (suc m) n zero zero =
     trans (+-cong (+-cong ·-lunit (Σ-ε· {m} _)) (Σ-ε· {n} _))
           (trans (+-cong (trans +-comm +-lunit) refl) (trans +-comm +-lunit))
   id-+ (suc m) n zero (suc j) =
-    trans (+-cong (+-cong ε-annihilᵣ (Σ-ε· {m} _)) (Σ-ε· {n} _))
-          (trans (+-cong +-lunit refl) +-lunit)
+    trans (+-cong (+-cong ε-annihilᵣ (Σ-ε· {m} _)) (Σ-ε· {n} _)) (trans (+-cong +-lunit refl) +-lunit)
   id-+ (suc m) n (suc i) zero =
-    trans (+-cong (+-cong ε-annihilₗ (·ε-Σ {m} _)) (·ε-Σ {n} _))
-          (trans (+-cong +-lunit refl) +-lunit)
+    trans (+-cong (+-cong ε-annihilₗ (·ε-Σ {m} _)) (·ε-Σ {n} _)) (trans (+-cong +-lunit refl) +-lunit)
   id-+ (suc m) n (suc i) (suc j) =
     trans (+-cong (+-cong ε-annihilₗ refl) refl) (trans (+-cong +-lunit refl) (id-+ m n i j))
 
