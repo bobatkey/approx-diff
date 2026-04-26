@@ -444,7 +444,7 @@ module Matrix where
     (HasTerminal.is-terminal SemiLat.terminal)
     TWO
     scalar.comm
-    hiding (products) public
+    public
 
   -- Products on MatRep transported from Mat(Two) via the equivalence Mat(Two) ≃ MatRep(SemiLat, TWO).
   import matrix-embedding

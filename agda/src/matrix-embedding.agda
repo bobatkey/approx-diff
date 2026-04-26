@@ -63,7 +63,7 @@ module matrix-embedding
 
   import matrix-rep
   module MatRep = matrix-rep CM BP 𝟘 𝟘-initial 𝟘-terminal X scalar-comm
-  open MatRep hiding (cat; products) public
+  open MatRep hiding (cat) public
 
   open IsInitial 𝟘-initial
   open IsTerminal 𝟘-terminal
