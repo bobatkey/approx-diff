@@ -14,8 +14,7 @@ open import commutative-monoid using (CommutativeMonoid)
 -- Suppose 𝒞 a biproduct category with a chosen object X whose endomorphism hom 𝒞(X, X) is a commutative
 -- semiring (with composition as multiplication and addition of morphisms as addition). Then MatRep(𝒞, X) is
 -- the full subcategory of 𝒞 whose objects are iterated biproducts X^n, and is equivalent to Mat(S), with
--- 𝒞(X, X) representing the scalars. Instantiating X to TWO in SemiLat recovers the "Boolean Jacobian"
--- setting Mat(Bool).
+-- 𝒞(X, X) representing the scalars.
 module matrix-rep
   {o m e} {𝒞 : Category o m e}
   (CM : CMonEnriched 𝒞)
@@ -405,5 +404,3 @@ module matrix-rep
             π {m +ℕ n} (m ↑ʳ j)
           ∎ where open ≈-Reasoning isEquiv
         open ≈-Reasoning isEquiv
-
-
