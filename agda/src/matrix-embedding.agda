@@ -352,8 +352,8 @@ module matrix-embedding
     p₂ : ∀ {m n} → X^ (m +ℕ n) ⇒ X^ n
     p₂ {m} {n} = F .fmor (MP.p₂ {m} {n})
 
-    -- pair : ∀ {k m n} → X^ k ⇒ X^ m → X^ k ⇒ X^ n → X^ k ⇒ X^ (m +ℕ n)
-    -- pair {k} {m} {n} f g = F .fmor (MP.pair (F⁻¹ .fmor f) (F⁻¹ .fmor g))
+    pair : ∀ {k m n} → X^ k ⇒ X^ m → X^ k ⇒ X^ n → X^ k ⇒ X^ (m +ℕ n)
+    pair {k} {m} {n} f g = F .fmor (MP.pair {k} {m} {n} (F⁻¹ .fmor f) (F⁻¹ .fmor g))
 
     products : HasProducts MatRep.cat
     products .HasProducts.prod = {!   !}
