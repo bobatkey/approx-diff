@@ -30,6 +30,7 @@ module matrix-embedding
   (let open Category.Iso)
   (let scalar = scalar-iso .fwd)
   (let scalar⁻¹ = scalar-iso .bwd)
+  (let scalar∘scalar⁻¹≈id = scalar-iso .fwd∘bwd≈id)
   (scalar-cmon : additive =[ scalar-iso .fwd ]> homCM X X)
   (scalar-ι : scalar .func S-ι ≈ id X)
   (scalar-· : ∀ {a b} → scalar .func (a ·ₛ b) ≈ scalar .func a ∘ scalar .func b)
@@ -48,7 +49,7 @@ module matrix-embedding
   scalar-comm f g =
     begin
       f ∘ g
-    ≈˘⟨ ∘-cong (scalar-iso .fwd∘bwd≈id .func-eq ≈-refl) (scalar-iso .fwd∘bwd≈id .func-eq ≈-refl) ⟩
+    ≈˘⟨ ∘-cong (scalar∘scalar⁻¹≈id .func-eq ≈-refl) (scalar∘scalar⁻¹≈id .func-eq ≈-refl) ⟩
       scalar .func (scalar-iso .bwd .func f) ∘ scalar .func (scalar-iso .bwd .func g)
     ≈˘⟨ scalar-· ⟩
       scalar .func (scalar-iso .bwd .func f ·ₛ scalar-iso .bwd .func g)
@@ -56,7 +57,7 @@ module matrix-embedding
       scalar .func (scalar-iso .bwd .func g ·ₛ scalar-iso .bwd .func f)
     ≈⟨ scalar-· ⟩
       scalar .func (scalar-iso .bwd .func g) ∘ scalar .func (scalar-iso .bwd .func f)
-    ≈⟨ ∘-cong (scalar-iso .fwd∘bwd≈id .func-eq ≈-refl) (scalar-iso .fwd∘bwd≈id .func-eq ≈-refl) ⟩
+    ≈⟨ ∘-cong (scalar∘scalar⁻¹≈id .func-eq ≈-refl) (scalar∘scalar⁻¹≈id .func-eq ≈-refl) ⟩
       g ∘ f
     ∎ where open ≈-Reasoning isEquiv
 
@@ -236,8 +237,8 @@ module matrix-embedding
       scalar-iso .bwd .func (entry {x} {z} (g ∘ f) i j)
     ≈⟨ scalar-iso .bwd .func-resp-≈ (entry-comp {x} {y} {z} f g i j) ⟩
       scalar-iso .bwd .func (cotuple {y} (λ k → entry {y} {z} g i k) ∘ tuple {y} (λ k → entry {x} {y} f k j))
-    ≈˘⟨ scalar-iso .bwd .func-resp-≈ (∘-cong (cotuple-cong {y} _ _ (λ k → scalar-iso .fwd∘bwd≈id .func-eq ≈-refl))
-                                 (tuple-cong {y} _ _ (λ k → scalar-iso .fwd∘bwd≈id .func-eq ≈-refl))) ⟩
+    ≈˘⟨ scalar-iso .bwd .func-resp-≈ (∘-cong (cotuple-cong {y} _ _ (λ k → scalar∘scalar⁻¹≈id .func-eq ≈-refl))
+                                 (tuple-cong {y} _ _ (λ k → scalar∘scalar⁻¹≈id .func-eq ≈-refl))) ⟩
       scalar-iso .bwd .func (cotuple {y} (λ k → scalar .func (scalar-iso .bwd .func (entry {y} {z} g i k)))
                   ∘ tuple {y} (λ k → scalar .func (scalar-iso .bwd .func (entry {x} {y} f k j))))
     ≈˘⟨ scalar-iso .bwd .func-resp-≈ (scalar-Σ {y} (λ k → scalar-iso .bwd .func (entry {y} {z} g i k)) (λ k → scalar-iso .bwd .func (entry {x} {y} f k j))) ⟩
@@ -262,7 +263,7 @@ module matrix-embedding
       entry {m} {n} (F .fmor {m} {n} (F⁻¹ .fmor {m} {n} f)) i j
     ≈⟨ entry-F {m} {n} (F⁻¹ .fmor {m} {n} f) i j ⟩
       scalar .func (scalar-iso .bwd .func (entry {m} {n} f i j))
-    ≈⟨ scalar-iso .fwd∘bwd≈id .func-eq ≈-refl ⟩
+    ≈⟨ scalar∘scalar⁻¹≈id .func-eq ≈-refl ⟩
       entry {m} {n} f i j
     ∎) where open ≈-Reasoning isEquiv
 
