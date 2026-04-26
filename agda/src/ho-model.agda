@@ -593,7 +593,9 @@ module Matrix where
         F .fmor {P.prod m n} {P.prod m n}
           ((in₁ (biproduct m n) Mat.∘ p₁ (biproduct m n)) Mat.+ₘ
            (in₂ (biproduct m n) Mat.∘ p₂ (biproduct m n)))
-      ≈⟨ {!   !} ⟩
+      ≈⟨ F .fmor-cong (id-+ (biproduct m n)) ⟩
+        F .fmor {P.prod m n} {P.prod m n} (Mat.I {P.prod m n})
+      ≈⟨ F .fmor-id {P.prod m n} ⟩
         id (X^ (P.prod m n))
       ∎ where
         BP = SemiLat-BP (X^ m) (X^ n)
