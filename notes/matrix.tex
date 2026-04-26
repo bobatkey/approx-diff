@@ -189,18 +189,15 @@ sufficient products, into which $\cat{C}$ embeds via a finite-product-preserving
 \item For $\Mat(\Two)$, the target is $\JoinSLat$ itself, and $F$ sends $n \mapsto \Two^n$.
 
 \item For $\BoolConj$, the target is $\JoinSLat \times \JoinSLat^{\op}$. $F$ forgets the Boolean structure
-   on objects; on morphisms it is the identity, since both conjugate-pair components are already
-   join-preserving.
+   on objects; on morphisms it is the identity.
 
-\item For $\BoolGal$ (and $\LatGal$), the target is $\MeetSLat \times \JoinSLat^{\op}$. $F$ forgets the
-   Boolean (or lattice) structure on objects; on morphisms it is the identity, since the right adjoint of
-   a Galois connection is meet-preserving and the left adjoint is join-preserving.
+\item For $\BoolGal$, the target is $\MeetSLat \times \JoinSLat^{\op}$. $F$ forgets the Boolean structure
+   on objects; on morphisms it is the identity.
 \end{itemize}
 
-In each case, base types interpret as objects of $\cat{D}$, operations as morphisms, and the higher-order
-machinery (function types, etc.) follows from the Cartesian closure of $\Fam(\cat{D})$. The construction
-generalises to any commutative semiring $S$ with a scalar iso into a suitable $\cat{C}$
-(\secref{matrix:representation}) that embeds into a set-indexed-product-complete $\cat{D}$.
+More generally, the construction applies to any $\Mat(S)$ embeddable into a biproduct category $\cat{C}$ as
+in \secref{matrix:representation}, provided $\cat{C}$ in turn embeds into a category $\cat{D}$ with
+set-indexed products.
 
 \subsection{Connection to forward- and reverse-mode AD}
 \label{sec:matrix:two:ad}
