@@ -587,6 +587,12 @@ module Matrix where
            (≈-sym (F .fmor-comp {P.prod m n} {n} {P.prod m n} (in₂ (biproduct m n)) (p₂ (biproduct m n)))) ⟩
         F .fmor {P.prod m n} {P.prod m n} (in₁ (biproduct m n) Mat.∘ p₁ (biproduct m n)) +m
         F .fmor {P.prod m n} {P.prod m n} (in₂ (biproduct m n) Mat.∘ p₂ (biproduct m n))
+      ≈⟨ ≈-sym (Mat≃MatRep.F-+ₘ {P.prod m n} {P.prod m n}
+                  (in₁ (biproduct m n) Mat.∘ p₁ (biproduct m n))
+                  (in₂ (biproduct m n) Mat.∘ p₂ (biproduct m n))) ⟩
+        F .fmor {P.prod m n} {P.prod m n}
+          ((in₁ (biproduct m n) Mat.∘ p₁ (biproduct m n)) Mat.+ₘ
+           (in₂ (biproduct m n) Mat.∘ p₂ (biproduct m n)))
       ≈⟨ {!   !} ⟩
         id (X^ (P.prod m n))
       ∎ where
