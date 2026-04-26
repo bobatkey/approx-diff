@@ -360,11 +360,11 @@ module matrix-embedding
     pair-cong {k} {m} {n} f≈ g≈ = F .fmor-cong (MP.pair-cong {k} {m} {n} (F⁻¹ .fmor-cong f≈) (F⁻¹ .fmor-cong g≈))
 
     products : HasProducts MatRep.cat
-    products .HasProducts.prod = {!   !}
-    products .HasProducts.p₁ = {!   !}
-    products .HasProducts.p₂ = {!   !}
-    products .HasProducts.pair = {!   !}
-    products .HasProducts.pair-cong = {!   !}
+    products .HasProducts.prod = prod
+    products .HasProducts.p₁ {x} {y} = p₁ {x} {y}
+    products .HasProducts.p₂ {x} {y} = p₂ {x} {y}
+    products .HasProducts.pair {x} {y} {z} = pair {x} {y} {z}
+    products .HasProducts.pair-cong {x} {y} {z} = pair-cong {x} {y} {z}
     products .HasProducts.pair-p₁ = {!   !}
     products .HasProducts.pair-p₂ = {!   !}
     products .HasProducts.pair-ext = {!   !}
