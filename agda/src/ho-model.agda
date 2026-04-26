@@ -483,13 +483,25 @@ module Matrix where
       copair (SemiLat-BP (X^ m) (X^ n)) (F .fmor (in₁ (biproduct m n))) (F .fmor (in₂ (biproduct m n)))
     𝓕-preserve-products {m} {n} .f∘inverse≈id =
       begin
-        pair (SemiLat-BP (X^ m) (X^ n)) {X^ (P.prod m n)}
+        pair BP {X^ (P.prod m n)}
           (𝓕 .fmor {P.prod m n} {m} (P.p₁ {m} {n})) (𝓕 .fmor {P.prod m n} {n} (P.p₂ {m} {n}))
-        ∘ copair (SemiLat-BP (X^ m) (X^ n)) {X^ (P.prod m n)}
+        ∘ copair BP {X^ (P.prod m n)}
             (F .fmor {m} {P.prod m n} (in₁ (biproduct m n))) (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))
+      ≈⟨ pair-natural BP _ _ _ ⟩
+        pair BP
+          (𝓕 .fmor {P.prod m n} {m} (P.p₁ {m} {n}) ∘
+            copair BP {X^ (P.prod m n)}
+              (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
+              (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))))
+          (𝓕 .fmor {P.prod m n} {n} (P.p₂ {m} {n}) ∘
+            copair BP {X^ (P.prod m n)}
+              (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
+              (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))))
       ≈⟨ {!   !} ⟩
-        id (prod (SemiLat-BP (X^ m) (X^ n)))
-      ∎ where open ≈-Reasoning isEquiv
+        id (prod BP)
+      ∎ where
+        BP = SemiLat-BP (X^ m) (X^ n)
+        open ≈-Reasoning isEquiv
     𝓕-preserve-products {m} {n} .inverse∘f≈id = {!   !}
 
   𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
