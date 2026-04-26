@@ -41,8 +41,8 @@ module example1 where
   input : ⟦ list (base label [×] base number) ⟧ty .idx .Carrier
   input = 3 , (label.a , 0) , (label.b , 1) , (label.a , 1) , _
 
-  back-slice : label.label → _
-  back-slice l = ⟦ example.ex.query l ⟧tm .famf .transf (_ , input) .proj₂ .*→* .func .fun ⊤ .proj₂
+  bwd-slice : label.label → _
+  bwd-slice l = ⟦ example.ex.query l ⟧tm .famf .transf (_ , input) .proj₂ .*→* .func .fun ⊤ .proj₂
     where
       open indexed-family._⇒f_
       open join-semilattice-category._⇒_
@@ -50,11 +50,11 @@ module example1 where
       open preorder._=>_
 
   -- Querying for the 'a' label uses the 1st and 3rd numbers
-  test1 : back-slice label.a ≡ ((· , ⊤) , (· , ⊥) , (· , ⊤) , _)
+  test1 : bwd-slice label.a ≡ ((· , ⊤) , (· , ⊥) , (· , ⊤) , _)
   test1 = ≡-refl
 
   -- Querying for the 'b' label uses the 2nd number
-  test2 : back-slice label.b ≡ ((· , ⊥) , (· , ⊤) , (· , ⊥) , _)
+  test2 : bwd-slice label.b ≡ ((· , ⊥) , (· , ⊤) , (· , ⊥) , _)
   test2 = ≡-refl
 
 -- Example with interval-approximated numbers (Example (3) in Section 4.3)
@@ -103,25 +103,25 @@ module example2 where
   extract-interval bottom = nothing
   extract-interval < x > = just (x .lower , x .upper)
 
-  back-slice : _
-  back-slice = ⟦ example.ex.query label.a ⟧tm .famf .transf (_ , input) .proj₂ .*→* .func .fun < interval > .proj₂
+  bwd-slice : _
+  bwd-slice = ⟦ example.ex.query label.a ⟧tm .famf .transf (_ , input) .proj₂ .*→* .func .fun < interval > .proj₂
     where
       open indexed-family._⇒f_
       open join-semilattice-category._⇒_
       open join-semilattice._=>_
       open preorder._=>_
 
-  -- Normalising 'back-slice' doesn't seem to work, possibly due to
+  -- Normalising 'bwd-slice' doesn't seem to work, possibly due to
   -- the use of records and/or the proofs attached to them. We have to
   -- project out the relevant bits individually and test them:
 
-  test1 : extract-interval (back-slice .proj₁ .proj₂) ≡ just (- (+ 1 / 10) , + 1 / 10)
+  test1 : extract-interval (bwd-slice .proj₁ .proj₂) ≡ just (- (+ 1 / 10) , + 1 / 10)
   test1 = ≡-refl
 
-  test2 : extract-interval (back-slice .proj₂ .proj₁ .proj₂) ≡ nothing
+  test2 : extract-interval (bwd-slice .proj₂ .proj₁ .proj₂) ≡ nothing
   test2 = ≡-refl
 
-  test3 : extract-interval (back-slice .proj₂ .proj₂ .proj₁ .proj₂) ≡ just (+ 9 / 10 , + 11 / 10)
+  test3 : extract-interval (bwd-slice .proj₂ .proj₂ .proj₁ .proj₂) ≡ just (+ 9 / 10 , + 11 / 10)
   test3 = ≡-refl
 
 ------------------------------------------------------------------------------
@@ -135,16 +135,16 @@ module cbn-example where
   input : ⟦ Tag (list (Tag (Tag (base label) [×] Tag (base number)))) ⟧ty .idx .Carrier
   input = _ , 3 , (_ , (_ , label.a) , (_ , 0)) , (_ , (_ , label.b) , (_ , 1)) , (_ , (_ , label.a) , (_ , 1)) , _
 
-  back-slice : label.label → _
-  back-slice l = ⟦ example.ex.cbn-query l ⟧tm .famf .transf (_ , input) .proj₂ .*→* .func .fun (⊤ , ·) .proj₂
+  bwd-slice : label.label → _
+  bwd-slice l = ⟦ example.ex.cbn-query l ⟧tm .famf .transf (_ , input) .proj₂ .*→* .func .fun (⊤ , ·) .proj₂
     where
       open indexed-family._⇒f_
       open join-semilattice-category._⇒_
       open join-semilattice._=>_
       open preorder._=>_
 
-  test1 : back-slice label.a ≡ (⊤ , (⊤ , (⊤ , ·) , ⊤ , ·) , (⊤ , (⊤ , ·) , ⊥ , ·) , (⊤ , (⊤ , ·) , ⊤ , ·) , ·)
+  test1 : bwd-slice label.a ≡ (⊤ , (⊤ , (⊤ , ·) , ⊤ , ·) , (⊤ , (⊤ , ·) , ⊥ , ·) , (⊤ , (⊤ , ·) , ⊤ , ·) , ·)
   test1 = ≡-refl
 
-  test2 : back-slice label.b ≡ (⊤ , (⊤ , (⊤ , ·) , ⊥ , ·) , (⊤ , (⊤ , ·) , ⊤ , ·) , (⊤ , (⊤ , ·) , ⊥ , ·) , ·)
+  test2 : bwd-slice label.b ≡ (⊤ , (⊤ , (⊤ , ·) , ⊥ , ·) , (⊤ , (⊤ , ·) , ⊤ , ·) , (⊤ , (⊤ , ·) , ⊥ , ·) , ·)
   test2 = ≡-refl

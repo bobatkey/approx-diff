@@ -58,21 +58,22 @@ module example1 where
   input = 3 , (label.a , 0) , (label.b , 1) , (label.a , 1) , _
 
   open indexed-family._⇒f_
-  open ho-model.Matrix.Fam⟨𝒟⟩.Mor
   open SemiLat._⇒_
   open join-semilattice._=>_
   open preorder._=>_
 
-  fwd-slice = λ supply → ⟦ example.ex.query label.a ⟧tm .famf .transf (_ , input) .*→* .func .fun supply
+  -- Reproduce example-conjugate (fwd direction only, but via the matrix model instead)
+  fwd-slice : _ → _
+  fwd-slice n = ⟦ example.ex.query label.a ⟧tm .famf .transf (_ , input) .*→* .func .fun n
 
   -- Output depends on 1st label (would be ⊥ in the Galois example)
-  test-fwd1 : fwd-slice (· , (· , ⊤ , ·) , (· , ⊥ , ·) , (· , ⊥ , ·) , _) ≡ (⊤ , ·)
-  test-fwd1 = ≡-refl
+  test-1 : fwd-slice (· , (· , ⊤ , ·) , (· , ⊥ , ·) , (· , ⊥ , ·) , _) ≡ (⊤ , ·)
+  test-1 = ≡-refl
 
   -- Output doesn't depend on 2nd label
-  test-fwd2 : fwd-slice (· , (· , ⊥ , ·) , (· , ⊤ , ·) , (· , ⊥ , ·) , _) ≡ (⊥ , ·)
-  test-fwd2 = ≡-refl
+  test-2 : fwd-slice (· , (· , ⊥ , ·) , (· , ⊤ , ·) , (· , ⊥ , ·) , _) ≡ (⊥ , ·)
+  test-2 = ≡-refl
 
   -- Output depends on 3rd label (would be ⊥ in the Galois example)
-  test-fwd3 : fwd-slice (· , (· , ⊥ , ·) , (· , ⊥ , ·) , (· , ⊤ , ·) , _) ≡ (⊤ , ·)
-  test-fwd3 = ≡-refl
+  test-3 : fwd-slice (· , (· , ⊥ , ·) , (· , ⊥ , ·) , (· , ⊤ , ·) , _) ≡ (⊤ , ·)
+  test-3 = ≡-refl

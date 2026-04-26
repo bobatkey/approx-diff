@@ -176,6 +176,32 @@ The dagger $M \mapsto M^{\!\top}$ is relational converse $R \mapsto R^{-1}$ on $
 {R_M}^{-1}$. (More generally $\Mat(S)$ is equivalent to a category of finite sets and \emph{$S$-weighted}
 relations, with matrix multiplication corresponding to weighted composition.)
 
+\subsection{Higher-order model}
+\label{sec:matrix:ho-model}
+
+The matrix presentation lifts to a higher-order interpretation via the $\Fam$ construction
+(\secref{fam}). $\Fam(\cat{C})$ is Cartesian closed only when $\cat{C}$ has set-indexed products, so the base
+category for the slicing interpretation is generally not $\cat{C}$ itself but a target $\cat{D}$ with
+sufficient products, into which $\cat{C}$ embeds via a finite-product-preserving functor $F : \cat{C} \to
+\cat{D}$:
+
+\begin{itemize}
+\item For $\Mat(\Two)$, the target is $\JoinSLat$ itself, and $F$ sends $n \mapsto \Two^n$.
+
+\item For $\BoolConj$, the target is $\JoinSLat \times \JoinSLat^{\op}$. $F$ forgets the Boolean structure
+   on objects; on morphisms it is the identity, since both conjugate-pair components are already
+   join-preserving.
+
+\item For $\BoolGal$ (and $\LatGal$), the target is $\MeetSLat \times \JoinSLat^{\op}$. $F$ forgets the
+   Boolean (or lattice) structure on objects; on morphisms it is the identity, since the right adjoint of
+   a Galois connection is meet-preserving and the left adjoint is join-preserving.
+\end{itemize}
+
+In each case, base types interpret as objects of $\cat{D}$, operations as morphisms, and the higher-order
+machinery (function types, etc.) follows from the Cartesian closure of $\Fam(\cat{D})$. The construction
+generalises to any commutative semiring $S$ with a scalar iso into a suitable $\cat{C}$
+(\secref{matrix:representation}) that embeds into a set-indexed-product-complete $\cat{D}$.
+
 \subsection{Connection to forward- and reverse-mode AD}
 \label{sec:matrix:two:ad}
 
