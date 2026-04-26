@@ -434,16 +434,6 @@ module Matrix where
         a = from f
         b = from g
 
-  import matrix-rep
-  open matrix-rep SemiLat.cmon-enriched
-    (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
-    (HasTerminal.witness SemiLat.terminal)
-    (HasInitial.is-initial SemiLat.initial)
-    (HasTerminal.is-terminal SemiLat.terminal)
-    TWO
-    scalar.comm
-    public
-
   import matrix-embedding
   module Mat≃MatRep = matrix-embedding
     SemiLat.cmon-enriched
@@ -458,7 +448,7 @@ module Matrix where
     scalar.cmon-hom
     scalar.preserves-ι
     (λ {a} {b} → scalar.preserves-· {a} {b})
-  open Mat≃MatRep using (products; F; module Mat) public
+  open Mat≃MatRep hiding (prod; p₁; p₂; pair; pair-cong; pair-p₁; pair-p₂; pair-ext) public
 
   𝓕 : Functor cat SemiLat.cat
   𝓕 .fobj = X^
