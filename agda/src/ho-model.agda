@@ -509,7 +509,8 @@ module Matrix where
                      copair BP {X^ (P.prod m n)}
                        (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
                        (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))) ≈ p₁ BP
-        reduce-p₁ = ≈-trans (comp-bilinear₂ _ _ _) {!   !}
+        reduce-p₁ = ≈-trans (comp-bilinear₂ _ _ _)
+                   (≈-trans (homCM.+-cong (≈-sym (assoc _ _ _)) (≈-sym (assoc _ _ _))) {!   !})
     𝓕-preserve-products {m} {n} .inverse∘f≈id = {!   !}
 
   𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
