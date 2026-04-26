@@ -151,7 +151,6 @@ module matrix-rep
       copair (BP X (X^ n)) (g ∘ f zero) (cotuple {n} (λ i → g ∘ f (suc i)))
     ∎ where open ≈-Reasoning isEquiv
 
-  -- Matrix entry: the (i, j)-entry of a morphism f : X^m → X^n.
   entry : ∀ {m n} → X^ m ⇒ X^ n → Fin n → Fin m → X ⇒ X
   entry f i j = π i ∘ (f ∘ ι j)
 
@@ -173,7 +172,6 @@ module matrix-rep
       cotuple {n} (λ l → entry g i l) ∘ tuple {n} (λ l → entry f l j)
     ∎ where open ≈-Reasoning isEquiv
 
-  -- Morphisms with equal entries are equal.
   entry-ext : ∀ {m n} {f g : X^ m ⇒ X^ n} → (∀ (i : Fin n) (j : Fin m) → entry f i j ≈ entry g i j) → f ≈ g
   entry-ext {m} {n} {f} {g} h =
     begin
@@ -202,8 +200,7 @@ module matrix-rep
         ∎ where open ≈-Reasoning isEquiv
       open ≈-Reasoning isEquiv
 
-
-  -- MatRep(𝒞, X) as an Agda Category: objects are ℕ, morphisms m → n are X^m ⇒ X^n.
+  -- Category MatRep(𝒞, X).
   open import prop-setoid using (IsEquivalence)
 
   cat : Category _ _ _
