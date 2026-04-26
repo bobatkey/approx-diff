@@ -148,14 +148,12 @@ $\FinRel$, so $R_{M^{\!\top}} = {R_M}^{-1}$.
 \subsection{Relation to $\SemiLat$}
 \label{sec:matrix:two:semilat}
 
-$\Mat(\Two)$ is equivalent (as a $\CMon$-enriched category) to the full subcategory of $\SemiLat$ spanned by
-the biproduct powers $\Two^n = \Two \biprod \cdots \biprod \Two$. The equivalence is witnessed by the
-\emph{scalar iso} $\Two \cong \SemiLat(\Two, \Two)$, identifying $\bot$ with the zero morphism and $\top$ with
-the identity; this lifts, via the semi-additive representation of morphisms as matrices, to the full
-equivalence. This is captured in Agda by the module \texttt{matrix-embedding}, instantiated at $\Two$ in
-\texttt{ho-model} (\secref{matrix:two:semilat}), which also exhibits that $\SemiLat(\Two, \Two)$ is commutative
-under composition --- a fact which transports across the iso from commutativity of $(\Two, \meet)$, removing
-the need for a direct case analysis.
+$\Mat(\Two)$ is $\CMon$-enriched equivalent to the full subcategory of $\SemiLat$ whose objects are the
+biproduct powers $\Two^n = \Two \biprod \cdots \biprod \Two$. The key ingredient is the isomorphism $\Two
+\cong \SemiLat(\Two, \Two)$, identifying $\bot$ with the zero morphism and $\top$ with the identity; this
+lifts, via the semi-additive representation of morphisms as matrices, to the full equivalence. The
+commutativity of $\meet$ in $\Two$ corresponds (under the isomorphism) to the commutativity of composition in
+$\SemiLat(\Two, \Two)$.
 
 \subsection{Two embeddings (to be generalised)}
 \label{sec:matrix:two:embeddings}
