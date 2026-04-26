@@ -179,14 +179,19 @@ relations, with matrix multiplication corresponding to weighted composition.)
 \subsection{Connection to forward- and reverse-mode AD}
 \label{sec:matrix:two:ad}
 
+For the two slicing columns, we take the given morphism $f$ to be the backward direction, since it's
+join-preserving in both cases.
+
 \begin{center}
+\vspace{2mm}
 \small
-\begin{tabular}{lll}
- & \textbf{Real-number AD in $\FinVect_\RR$} & \textbf{Boolean AD in $\Mat(\Two)$} \\
- forwards & Linear map $\pushf{\phi}_x: \RR^m \linearto \RR^n$ & $\join$-preserving transpose $f^{\!\top}:
- \Two^m \to \Two^n$ \\
- backwards & Linear transpose $\pullf{\phi}_x: \RR^n \linearto \RR^m$ & Given $\join$-preserving $f: \Two^n
- \to \Two^m$ \\
- composition & Matrix multiplication in $(\RR, +, \cdot)$ & Matrix multiplication in $(\Two, \join, \meet)$
+\begin{tabular}{llll}
+ & \textbf{Automatic differentiation} & \textbf{Conjugate slicing} & \textbf{Galois slicing} \\
+ fwd & $\pushf{\phi}_x: \RR^m \linearto \RR^n$ & $f^{\!\top}: \Two^m \to \Two^n$ & $f_*: \Two^m \to \Two^n$ \\
+ category & $\FinVect_\RR$ & $\JoinSLat$ & $\MeetSLat$ \\
+ via matrix mult in &$(\RR, +, \cdot)$ & $(\Two, \join, \meet)$ & $(\Two, \meet, \join)$ \\[2mm]
+ bwd & $\pullf{\phi}_x: \RR^n \linearto \RR^m$ & $f: \Two^n \to \Two^m$ & $f: \Two^n \to \Two^m$ \\
+ category & $\FinVect_\RR$ & $\JoinSLat$ & $\JoinSLat$ \\
+ via matrix mult in &$(\RR, +, \cdot)$ & $(\Two, \join, \meet)$ & $(\Two, \join, \meet)$
 \end{tabular}
 \end{center}
