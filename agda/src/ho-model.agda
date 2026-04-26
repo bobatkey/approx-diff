@@ -497,7 +497,9 @@ module Matrix where
             copair BP {X^ (P.prod m n)}
               (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
               (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))))
-      ≈⟨ {!   !} ⟩
+      ≈⟨ pair-cong BP {!   !} {!   !} ⟩
+        pair BP (p₁ BP) (p₂ BP)
+      ≈⟨ pair-ext0 BP ⟩
         id (prod BP)
       ∎ where
         BP = SemiLat-BP (X^ m) (X^ n)
