@@ -6,7 +6,7 @@ open import prop-setoid using (Setoid; module ≈-Reasoning) renaming (_⇒_ to 
 open import categories using (Category; IsInitial; IsTerminal)
 open import setoid-cat using (SetoidCat)
 open import cmon-enriched using (CMonEnriched; Biproduct)
-open import commutative-monoid using (CommutativeMonoid)
+open import commutative-monoid using (CommutativeMonoid; _=[_]>_)
 open import commutative-semiring using (CommutativeSemiring)
 open import functor using (Functor)
 
@@ -24,19 +24,19 @@ module matrix-embedding
   (A : Setoid m e) (S : CommutativeSemiring A)
   (let open Category 𝒞)
   (let open CMonEnriched CM)
-  (let open CommutativeSemiring S using (Carrier) renaming (ε to S-ε; ι to S-ι; _+_ to _+ₛ_; _·_ to _·ₛ_; _≈_ to _≈ₛ_; ·-comm to ·ₛ-comm; trans to ≈ₛ-trans))
+  (let open CommutativeSemiring S using (Carrier; additive) renaming (ε to S-ε; ι to S-ι; _+_ to _+ₛ_; _·_ to _·ₛ_; _≈_ to _≈ₛ_; ·-comm to ·ₛ-comm; trans to ≈ₛ-trans))
   (scalar-iso : Category.Iso (SetoidCat m e) A (hom-setoid X X))
   (let open _⇒s_)
   (let scalar = scalar-iso .Category.Iso.fwd .func)
-  (scalar-ε : scalar S-ε ≈ εm)
+  (scalar-cmon : additive =[ scalar-iso .Category.Iso.fwd ]> homCM X X)
   (scalar-ι : scalar S-ι ≈ id X)
-  (scalar-+ : ∀ {a b} → scalar (a +ₛ b) ≈ scalar a +m scalar b)
   (scalar-· : ∀ {a b} → scalar (a ·ₛ b) ≈ scalar a ∘ scalar b)
   where
 
   -- Project the remaining iso pieces for use in the body.
   open _⇒s_
   open _≈s_
+  open _=[_]>_ scalar-cmon renaming (preserve-ε to scalar-ε; preserve-+ to scalar-+)
 
   scalar-cong : ∀ {a b} → a ≈ₛ b → scalar a ≈ scalar b
   scalar-cong = scalar-iso .Category.Iso.fwd .func-resp-≈

@@ -410,6 +410,12 @@ module Matrix where
     iso .Category.Iso.fwd∘bwd≈id .func-eq {f₁} {f₂} f₁≈f₂ = ≈-trans (to∘from f₁) f₁≈f₂
     iso .Category.Iso.bwd∘fwd≈id .func-eq {a₁} {a₂} a₁≈a₂ = two.≃-trans (from∘to a₁) a₁≈a₂
 
+    open import commutative-monoid using (_=[_]>_)
+    open import commutative-semiring using (CommutativeSemiring)
+    cmon-hom : CommutativeSemiring.additive two.semiring =[ iso .Category.Iso.fwd ]> CMon.CMonEnriched.homCM SemiLat.cmon-enriched TWO TWO
+    cmon-hom ._=[_]>_.preserve-ε = preserves-ε
+    cmon-hom ._=[_]>_.preserve-+ {a} {b} = preserves-+ {a} {b}
+
     -- Commutativity of End(TWO) transports along the iso from commutativity of (Two, ⊓).
     comm : ∀ (f g : TWO ⇒ TWO) → (f ∘ g) ≈ (g ∘ f)
     comm f g =
@@ -482,5 +488,6 @@ module Matrix where
     two.Two-setoid
     two.semiring
     scalar.iso
-    scalar.preserves-ε scalar.preserves-ι
-    (λ {a} {b} → scalar.preserves-+ {a} {b}) (λ {a} {b} → scalar.preserves-· {a} {b})
+    scalar.cmon-hom
+    scalar.preserves-ι
+    (λ {a} {b} → scalar.preserves-· {a} {b})

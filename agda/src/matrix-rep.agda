@@ -600,29 +600,3 @@ module matrix-rep
     ≤m-refl : ∀ {A} {f : A ⇒ X} → f ≤m f
     ≤m-refl = idem-right _
 
-  -- Additional structure when X has meets.
-  module WithMeets
-    (∧ : (X ⊕ X) ⇒ X)
-    where
-
-    -- Componentwise meet on X^n.
-    ∧^ : ∀ {n} → (X^ n ⊕ X^ n) ⇒ X^ n
-    ∧^ {n} = tuple {n} (λ i → ∧ ∘ pair (BP X X) (π {n} i ∘ p₁ (BP (X^ n) (X^ n))) (π {n} i ∘ p₂ (BP (X^ n) (X^ n))))
-
-    -- Disjointness: f # g iff (f ∧ g) = 0.
-    _#_ : ∀ {A} → A ⇒ X → A ⇒ X → Prop _
-    f # g = (∧ ∘ pair (BP X X) f g) ≈ εm
-
-  -- Additional structure when X has a negation.
-  module WithNegation
-    (neg : X ⇒ X)
-    (neg-involutive : (neg ∘ neg) ≈ id X) -- neg also needs to invert the order, but we don't have that yet
-    where
-
-    neg^ : ∀ {n} → X^ n ⇒ X^ n
-    neg^ {n} = tuple {n} (λ i → neg ∘ π {n} i)
-
-    -- Adjoint: De Morgan dual of transpose.
-    adjoint : ∀ {m n} → X^ m ⇒ X^ n → X^ n ⇒ X^ m
-    adjoint {m} {n} f = neg^ {m} ∘ (transpose {m} {n} f ∘ neg^ {n})
-
