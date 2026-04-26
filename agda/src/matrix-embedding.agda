@@ -101,16 +101,20 @@ module matrix-embedding
     ≈˘⟨ homCM _ _ .+-cong
           (∘-cong ≈-refl (pair-p₁ (BP X (X^ n)) _ _))
           (∘-cong ≈-refl (pair-p₂ (BP X (X^ n)) _ _)) ⟩
-      (scalar .func (f zero) ∘ (p₁ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k))))))
+      (scalar .func (f zero) ∘
+       (p₁ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k))))))
       +m
-      (cotuple {n} (λ k → scalar .func (f (suc k))) ∘ (p₂ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k))))))
+      (cotuple {n} (λ k → scalar .func (f (suc k))) ∘
+       (p₂ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k))))))
     ≈˘⟨ homCM _ _ .+-cong (assoc _ _ _) (assoc _ _ _) ⟩
-      ((scalar .func (f zero) ∘ p₁ (BP X (X^ n))) ∘ pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k)))))
+      ((scalar .func (f zero) ∘ p₁ (BP X (X^ n))) ∘
+       pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k)))))
       +m
-      ((cotuple {n} (λ k → scalar .func (f (suc k))) ∘ p₂ (BP X (X^ n))) ∘ pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k)))))
+      ((cotuple {n} (λ k → scalar .func (f (suc k))) ∘ p₂ (BP X (X^ n))) ∘
+       pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k)))))
     ≈˘⟨ comp-bilinear₁ _ _ _ ⟩
-      copair (BP X (X^ n)) (scalar .func (f zero)) (cotuple {n} (λ k → scalar .func (f (suc k))))
-      ∘ pair (BP X (X^ n)) (scalar .func (g zero)) (tuple {n} (λ k → scalar .func (g (suc k))))
+      copair (BP X (X^ n)) (scalar .func (f zero)) (cotuple {n} (λ k → scalar .func (f (suc k)))) ∘
+      pair (BP X (X^ n)) (scalar .func (g zero)) (tuple {n} (λ k → scalar .func (g (suc k))))
     ∎ where open ≈-Reasoning isEquiv
 
   -- scalar applied to the Kronecker delta e matches projection-injection.
@@ -186,8 +190,7 @@ module matrix-embedding
       scalar .func (Mat.Σ (λ k → M i k ·ₛ N k j))
     ≈⟨ scalar-Σ (λ k → M i k) (λ k → N k j) ⟩
       cotuple {y} (λ k → scalar .func (M i k)) ∘ tuple {y} (λ k → scalar .func (N k j))
-    ≈˘⟨ ∘-cong (cotuple-cong {y} _ _ (λ k → entry-F M i k))
-               (tuple-cong {y} _ _ (λ k → entry-F N k j)) ⟩
+    ≈˘⟨ ∘-cong (cotuple-cong {y} _ _ (λ k → entry-F M i k)) (tuple-cong {y} _ _ (λ k → entry-F N k j)) ⟩
       cotuple {y} (λ k → entry (F .fmor M) i k) ∘ tuple {y} (λ k → entry (F .fmor N) k j)
     ≈˘⟨ entry-comp {x} {y} {z} (F .fmor N) (F .fmor M) i j ⟩
       π {z} i ∘ ((F .fmor M ∘ F .fmor N) ∘ ι {x} j)
