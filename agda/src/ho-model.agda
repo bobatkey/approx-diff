@@ -572,6 +572,13 @@ module Matrix where
            (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
            (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))) ∘
          (in₂ BP ∘ P.p₂ {m} {n}))
+      ≈⟨ homCM.+-cong (≈-sym (assoc _ _ _)) (≈-sym (assoc _ _ _)) ⟩
+        ((copair BP {X^ (P.prod m n)}
+            (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
+            (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))) ∘ in₁ BP) ∘ P.p₁ {m} {n}) +m
+        ((copair BP {X^ (P.prod m n)}
+            (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
+            (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))) ∘ in₂ BP) ∘ P.p₂ {m} {n})
       ≈⟨ {!   !} ⟩
         id (X^ (P.prod m n))
       ∎ where
