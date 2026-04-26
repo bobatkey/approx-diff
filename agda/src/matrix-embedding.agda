@@ -3,9 +3,9 @@
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Fin using (Fin; zero; suc)
 open import prop-setoid using (Setoid; module ≈-Reasoning) renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_)
-open import categories using (Category; IsInitial; IsTerminal)
+open import categories using (Category; IsInitial; IsTerminal; HasProducts)
 open import setoid-cat using (SetoidCat)
-open import cmon-enriched using (CMonEnriched; Biproduct)
+open import cmon-enriched using (CMonEnriched; Biproduct; biproducts→products)
 open import commutative-monoid using (CommutativeMonoid; _=[_]>_)
 open import commutative-semiring using (CommutativeSemiring)
 open import functor using (Functor)
@@ -43,7 +43,6 @@ module matrix-embedding
   open Category.Iso
 
   open CommutativeMonoid
-  open Biproduct
 
   -- Composition in End(X) is commutative, derived from S commutativity via the iso.
   scalar-comm : ∀ (f g : X ⇒ X) → (f ∘ g) ≈ (g ∘ f)
@@ -64,7 +63,7 @@ module matrix-embedding
 
   import matrix-rep
   module MatRep = matrix-rep CM BP 𝟘 𝟘-initial 𝟘-terminal X scalar-comm
-  open MatRep hiding (cat) public
+  open MatRep hiding (cat; products) public
 
   open IsInitial 𝟘-initial
   open IsTerminal 𝟘-terminal
@@ -76,93 +75,96 @@ module matrix-embedding
 
   open Functor
 
-  -- scalar preserves dot products.
-  scalar-Σ : ∀ {n} (f g : Fin n → Carrier) →
-    scalar .func (Mat.Σ (λ k → f k ·ₛ g k)) ≈ (cotuple {n} (λ k → scalar .func (f k)) ∘ tuple {n} (λ k → scalar .func (g k)))
-  scalar-Σ {zero} f g =
-    begin
-      scalar .func S-ε
-    ≈⟨ scalar-cmon .preserve-ε ⟩
-      εm
-    ≈˘⟨ comp-bilinear-ε₁ to-terminal ⟩
-      εm ∘ to-terminal
-    ≈˘⟨ ∘-cong (from-initial-ext εm) ≈-refl ⟩
-      from-initial ∘ to-terminal
-    ∎ where open ≈-Reasoning isEquiv
-  scalar-Σ {suc n} f g =
-    begin
-      scalar .func ((f zero ·ₛ g zero) +ₛ Mat.Σ (λ k → f (suc k) ·ₛ g (suc k)))
-    ≈⟨ scalar-cmon .preserve-+ ⟩
-      scalar .func (f zero ·ₛ g zero) +m scalar .func (Mat.Σ (λ k → f (suc k) ·ₛ g (suc k)))
-    ≈⟨ homCM _ _ .+-cong scalar-· (scalar-Σ (λ k → f (suc k)) (λ k → g (suc k))) ⟩
-      (scalar .func (f zero) ∘ scalar .func (g zero))
-      +m
-      (cotuple {n} (λ k → scalar .func (f (suc k))) ∘ tuple {n} (λ k → scalar .func (g (suc k))))
-    ≈˘⟨ homCM _ _ .+-cong
-          (∘-cong ≈-refl (pair-p₁ (BP X (X^ n)) _ _))
-          (∘-cong ≈-refl (pair-p₂ (BP X (X^ n)) _ _)) ⟩
-      (scalar .func (f zero) ∘
-       (p₁ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k))))))
-      +m
-      (cotuple {n} (λ k → scalar .func (f (suc k))) ∘
-       (p₂ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k))))))
-    ≈˘⟨ homCM _ _ .+-cong (assoc _ _ _) (assoc _ _ _) ⟩
-      ((scalar .func (f zero) ∘ p₁ (BP X (X^ n))) ∘
-       pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k)))))
-      +m
-      ((cotuple {n} (λ k → scalar .func (f (suc k))) ∘ p₂ (BP X (X^ n))) ∘
-       pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k)))))
-    ≈˘⟨ comp-bilinear₁ _ _ _ ⟩
-      copair (BP X (X^ n)) (scalar .func (f zero)) (cotuple {n} (λ k → scalar .func (f (suc k)))) ∘
-      pair (BP X (X^ n)) (scalar .func (g zero)) (tuple {n} (λ k → scalar .func (g (suc k))))
-    ∎ where open ≈-Reasoning isEquiv
+  module _ where
+    open Biproduct
 
-  -- scalar applied to the Kronecker delta e matches projection-injection.
-  scalar-e : ∀ {n} (i j : Fin n) → scalar .func (Mat.e i j) ≈ (π {n} i ∘ ι {n} j)
-  scalar-e {suc n} zero zero =
-    begin
-      scalar .func S-ι ≈⟨ scalar-ι ⟩ id X
-    ≈˘⟨ id-1 (BP X (X^ n)) ⟩
-      p₁ (BP X (X^ n)) ∘ in₁ (BP X (X^ n))
-    ∎ where open ≈-Reasoning isEquiv
-  scalar-e {suc n} zero (suc j) =
-    begin
-      scalar .func S-ε
-    ≈⟨ scalar-cmon .preserve-ε ⟩
-      εm
-    ≈˘⟨ comp-bilinear-ε₁ _ ⟩
-      εm ∘ ι j
-    ≈˘⟨ ∘-cong (zero-1 (BP X (X^ n))) ≈-refl ⟩
-      (p₁ (BP X (X^ n)) ∘ in₂ (BP X (X^ n))) ∘ ι j
-    ≈⟨ assoc _ _ _ ⟩
-      p₁ (BP X (X^ n)) ∘ (in₂ (BP X (X^ n)) ∘ ι j)
-    ∎ where open ≈-Reasoning isEquiv
-  scalar-e {suc n} (suc i) zero =
-    begin
-      scalar .func S-ε
-    ≈⟨ scalar-cmon .preserve-ε ⟩
-      εm
-    ≈˘⟨ comp-bilinear-ε₂ _ ⟩
-      π i ∘ εm
-    ≈˘⟨ ∘-cong ≈-refl (zero-2 (BP X (X^ n))) ⟩
-      π i ∘ (p₂ (BP X (X^ n)) ∘ in₁ (BP X (X^ n)))
-    ≈˘⟨ assoc _ _ _ ⟩
-      (π i ∘ p₂ (BP X (X^ n))) ∘ in₁ (BP X (X^ n))
-    ∎ where open ≈-Reasoning isEquiv
-  scalar-e {suc n} (suc i) (suc j) =
-    begin
-      scalar .func (Mat.e i j)
-    ≈⟨ scalar-e i j ⟩
-      π i ∘ ι j
-    ≈˘⟨ ∘-cong ≈-refl id-left ⟩
-      π i ∘ (id _ ∘ ι j)
-    ≈˘⟨ ∘-cong ≈-refl (∘-cong (id-2 (BP X (X^ n))) ≈-refl) ⟩
-      π i ∘ ((p₂ (BP X (X^ n)) ∘ in₂ (BP X (X^ n))) ∘ ι j)
-    ≈⟨ ∘-cong ≈-refl (assoc _ _ _) ⟩
-      π i ∘ (p₂ (BP X (X^ n)) ∘ (in₂ (BP X (X^ n)) ∘ ι j))
-    ≈˘⟨ assoc _ _ _ ⟩
-      (π i ∘ p₂ (BP X (X^ n))) ∘ (in₂ (BP X (X^ n)) ∘ ι j)
-    ∎ where open ≈-Reasoning isEquiv
+    -- scalar preserves dot products.
+    scalar-Σ : ∀ {n} (f g : Fin n → Carrier) →
+              scalar .func (Mat.Σ (λ k → f k ·ₛ g k)) ≈ (cotuple {n} (λ k → scalar .func (f k)) ∘ tuple {n} (λ k → scalar .func (g k)))
+    scalar-Σ {zero} f g =
+      begin
+        scalar .func S-ε
+      ≈⟨ scalar-cmon .preserve-ε ⟩
+        εm
+      ≈˘⟨ comp-bilinear-ε₁ to-terminal ⟩
+        εm ∘ to-terminal
+      ≈˘⟨ ∘-cong (from-initial-ext εm) ≈-refl ⟩
+        from-initial ∘ to-terminal
+      ∎ where open ≈-Reasoning isEquiv
+    scalar-Σ {suc n} f g =
+      begin
+        scalar .func ((f zero ·ₛ g zero) +ₛ Mat.Σ (λ k → f (suc k) ·ₛ g (suc k)))
+      ≈⟨ scalar-cmon .preserve-+ ⟩
+        scalar .func (f zero ·ₛ g zero) +m scalar .func (Mat.Σ (λ k → f (suc k) ·ₛ g (suc k)))
+      ≈⟨ homCM _ _ .+-cong scalar-· (scalar-Σ (λ k → f (suc k)) (λ k → g (suc k))) ⟩
+        (scalar .func (f zero) ∘ scalar .func (g zero))
+        +m
+        (cotuple {n} (λ k → scalar .func (f (suc k))) ∘ tuple {n} (λ k → scalar .func (g (suc k))))
+      ≈˘⟨ homCM _ _ .+-cong
+            (∘-cong ≈-refl (pair-p₁ (BP X (X^ n)) _ _))
+            (∘-cong ≈-refl (pair-p₂ (BP X (X^ n)) _ _)) ⟩
+        (scalar .func (f zero) ∘
+         (p₁ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k))))))
+        +m
+        (cotuple {n} (λ k → scalar .func (f (suc k))) ∘
+         (p₂ (BP X (X^ n)) ∘ pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k))))))
+      ≈˘⟨ homCM _ _ .+-cong (assoc _ _ _) (assoc _ _ _) ⟩
+        ((scalar .func (f zero) ∘ p₁ (BP X (X^ n))) ∘
+         pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k)))))
+        +m
+        ((cotuple {n} (λ k → scalar .func (f (suc k))) ∘ p₂ (BP X (X^ n))) ∘
+         pair (BP X (X^ n)) (scalar .func (g zero)) (tuple (λ k → scalar .func (g (suc k)))))
+      ≈˘⟨ comp-bilinear₁ _ _ _ ⟩
+        copair (BP X (X^ n)) (scalar .func (f zero)) (cotuple {n} (λ k → scalar .func (f (suc k)))) ∘
+        pair (BP X (X^ n)) (scalar .func (g zero)) (tuple {n} (λ k → scalar .func (g (suc k))))
+      ∎ where open ≈-Reasoning isEquiv
+
+    -- scalar applied to the Kronecker delta e matches projection-injection.
+    scalar-e : ∀ {n} (i j : Fin n) → scalar .func (Mat.e i j) ≈ (π {n} i ∘ ι {n} j)
+    scalar-e {suc n} zero zero =
+      begin
+        scalar .func S-ι ≈⟨ scalar-ι ⟩ id X
+      ≈˘⟨ id-1 (BP X (X^ n)) ⟩
+        p₁ (BP X (X^ n)) ∘ in₁ (BP X (X^ n))
+      ∎ where open ≈-Reasoning isEquiv
+    scalar-e {suc n} zero (suc j) =
+      begin
+        scalar .func S-ε
+      ≈⟨ scalar-cmon .preserve-ε ⟩
+        εm
+      ≈˘⟨ comp-bilinear-ε₁ _ ⟩
+        εm ∘ ι j
+      ≈˘⟨ ∘-cong (zero-1 (BP X (X^ n))) ≈-refl ⟩
+        (p₁ (BP X (X^ n)) ∘ in₂ (BP X (X^ n))) ∘ ι j
+      ≈⟨ assoc _ _ _ ⟩
+        p₁ (BP X (X^ n)) ∘ (in₂ (BP X (X^ n)) ∘ ι j)
+      ∎ where open ≈-Reasoning isEquiv
+    scalar-e {suc n} (suc i) zero =
+      begin
+        scalar .func S-ε
+      ≈⟨ scalar-cmon .preserve-ε ⟩
+        εm
+      ≈˘⟨ comp-bilinear-ε₂ _ ⟩
+        π i ∘ εm
+      ≈˘⟨ ∘-cong ≈-refl (zero-2 (BP X (X^ n))) ⟩
+        π i ∘ (p₂ (BP X (X^ n)) ∘ in₁ (BP X (X^ n)))
+      ≈˘⟨ assoc _ _ _ ⟩
+        (π i ∘ p₂ (BP X (X^ n))) ∘ in₁ (BP X (X^ n))
+      ∎ where open ≈-Reasoning isEquiv
+    scalar-e {suc n} (suc i) (suc j) =
+      begin
+        scalar .func (Mat.e i j)
+      ≈⟨ scalar-e i j ⟩
+        π i ∘ ι j
+      ≈˘⟨ ∘-cong ≈-refl id-left ⟩
+        π i ∘ (id _ ∘ ι j)
+      ≈˘⟨ ∘-cong ≈-refl (∘-cong (id-2 (BP X (X^ n))) ≈-refl) ⟩
+        π i ∘ ((p₂ (BP X (X^ n)) ∘ in₂ (BP X (X^ n))) ∘ ι j)
+      ≈⟨ ∘-cong ≈-refl (assoc _ _ _) ⟩
+        π i ∘ (p₂ (BP X (X^ n)) ∘ (in₂ (BP X (X^ n)) ∘ ι j))
+      ≈˘⟨ assoc _ _ _ ⟩
+        (π i ∘ p₂ (BP X (X^ n))) ∘ (in₂ (BP X (X^ n)) ∘ ι j)
+      ∎ where open ≈-Reasoning isEquiv
 
   F-fmor : ∀ {m n} → Matrix n m → X^ m ⇒ X^ n
   F-fmor {m} {n} M = tuple {n} (λ i → cotuple {m} (λ j → scalar .func (M i j)))
@@ -333,3 +335,70 @@ module matrix-embedding
     ≈˘⟨ F-+ₘ (F⁻¹ .fmor {m} {n} f) (F⁻¹ .fmor {m} {n} g) ⟩
       F .fmor {m} {n} (F⁻¹ .fmor {m} {n} f Mat.+ₘ F⁻¹ .fmor {m} {n} g)
     ∎) where open ≈-Reasoning isEquiv
+
+  -- Products on MatRep.cat, transported from Mat's biproduct-derived products via F.
+  open import Data.Nat using () renaming (_+_ to _+ℕ_)
+
+  module ProductsImpl where
+    private
+      module MP = HasProducts (biproducts→products Mat.cmon Mat.biproduct)
+
+    prod : ℕ → ℕ → ℕ
+    prod m n = m +ℕ n
+
+    p₁ : ∀ {m n} → X^ (m +ℕ n) ⇒ X^ m
+    p₁ {m} {n} = F .fmor (MP.p₁ {m} {n})
+
+    p₂ : ∀ {m n} → X^ (m +ℕ n) ⇒ X^ n
+    p₂ {m} {n} = F .fmor (MP.p₂ {m} {n})
+
+    pair : ∀ {k m n} → X^ k ⇒ X^ m → X^ k ⇒ X^ n → X^ k ⇒ X^ (m +ℕ n)
+    pair {k} {m} {n} f g = F .fmor (MP.pair (F⁻¹ .fmor f) (F⁻¹ .fmor g))
+
+    pair-cong : ∀ {k m n} {f₁ f₂ : X^ k ⇒ X^ m} {g₁ g₂ : X^ k ⇒ X^ n} →
+                f₁ ≈ f₂ → g₁ ≈ g₂ → pair f₁ g₁ ≈ pair f₂ g₂
+    pair-cong f≈ g≈ = F .fmor-cong (MP.pair-cong (F⁻¹ .fmor-cong f≈) (F⁻¹ .fmor-cong g≈))
+
+    pair-p₁ : ∀ {k m n} (f : X^ k ⇒ X^ m) (g : X^ k ⇒ X^ n) → (p₁ ∘ pair f g) ≈ f
+    pair-p₁ {k} {m} {n} f g =
+      begin
+        p₁ ∘ pair f g
+      ≈˘⟨ F .fmor-comp (MP.p₁) (MP.pair (F⁻¹ .fmor f) (F⁻¹ .fmor g)) ⟩
+        F .fmor (MP.p₁ Mat.∘ MP.pair (F⁻¹ .fmor f) (F⁻¹ .fmor g))
+      ≈⟨ F .fmor-cong (MP.pair-p₁ (F⁻¹ .fmor f) (F⁻¹ .fmor g)) ⟩
+        F .fmor (F⁻¹ .fmor f)
+      ≈⟨ F∘F⁻¹ f ⟩
+        f
+      ∎ where open ≈-Reasoning isEquiv
+
+    pair-p₂ : ∀ {k m n} (f : X^ k ⇒ X^ m) (g : X^ k ⇒ X^ n) → (p₂ ∘ pair f g) ≈ g
+    pair-p₂ {k} {m} {n} f g =
+      begin
+        p₂ ∘ pair f g
+      ≈˘⟨ F .fmor-comp (MP.p₂) (MP.pair (F⁻¹ .fmor f) (F⁻¹ .fmor g)) ⟩
+        F .fmor (MP.p₂ Mat.∘ MP.pair (F⁻¹ .fmor f) (F⁻¹ .fmor g))
+      ≈⟨ F .fmor-cong (MP.pair-p₂ (F⁻¹ .fmor f) (F⁻¹ .fmor g)) ⟩
+        F .fmor (F⁻¹ .fmor g)
+      ≈⟨ F∘F⁻¹ g ⟩
+        g
+      ∎ where open ≈-Reasoning isEquiv
+
+    pair-ext : ∀ {k m n} (f : X^ k ⇒ X^ (m +ℕ n)) → pair (p₁ ∘ f) (p₂ ∘ f) ≈ f
+    pair-ext {k} {m} {n} f =
+      begin
+        pair (p₁ ∘ f) (p₂ ∘ f)
+      ≈⟨ {!!} ⟩
+        f
+      ∎ where open ≈-Reasoning isEquiv
+
+    products : HasProducts MatRep.cat
+    products .HasProducts.prod = prod
+    products .HasProducts.p₁ = p₁
+    products .HasProducts.p₂ = p₂
+    products .HasProducts.pair = pair
+    products .HasProducts.pair-cong = pair-cong
+    products .HasProducts.pair-p₁ = pair-p₁
+    products .HasProducts.pair-p₂ = pair-p₂
+    products .HasProducts.pair-ext = pair-ext
+
+  open ProductsImpl using (products) public
