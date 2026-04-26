@@ -336,7 +336,7 @@ module matrix-embedding
       F .fmor {m} {n} (F⁻¹ .fmor {m} {n} f Mat.+ₘ F⁻¹ .fmor {m} {n} g)
     ∎) where open ≈-Reasoning isEquiv
 
-  -- Products on MatRep.cat, transported from Mat's biproduct-derived products via F.
+  -- FIXME: derive biproducts instead and have clients use biproducts→products.
   open import Data.Nat using () renaming (_+_ to _+ℕ_)
 
   module _ where
@@ -357,7 +357,8 @@ module matrix-embedding
 
     pair-cong : ∀ {k m n} {f₁ f₂ : X^ k ⇒ X^ m} {g₁ g₂ : X^ k ⇒ X^ n} →
                 f₁ ≈ f₂ → g₁ ≈ g₂ → pair {k} {m} {n} f₁ g₁ ≈ pair {k} {m} {n} f₂ g₂
-    pair-cong {k} {m} {n} f≈ g≈ = F .fmor-cong (MP.pair-cong {k} {m} {n} (F⁻¹ .fmor-cong f≈) (F⁻¹ .fmor-cong g≈))
+    pair-cong {k} {m} {n} f≈ g≈ =
+      F .fmor-cong (MP.pair-cong {k} {m} {n} (F⁻¹ .fmor-cong f≈) (F⁻¹ .fmor-cong g≈))
 
     pair-p₁ : ∀ {k m n} (f : X^ k ⇒ X^ m) (g : X^ k ⇒ X^ n) → (p₁ {m} {n} ∘ pair {k} {m} {n} f g) ≈ f
     pair-p₁ {k} {m} {n} f g =
@@ -371,6 +372,18 @@ module matrix-embedding
         f
       ∎ where open ≈-Reasoning isEquiv
 
+    pair-p₂ : ∀ {k m n} (f : X^ k ⇒ X^ m) (g : X^ k ⇒ X^ n) → (p₂ {m} {n} ∘ pair {k} {m} {n} f g) ≈ g
+    pair-p₂ {k} {m} {n} f g =
+      begin
+        p₂ {m} {n} ∘ pair {k} {m} {n} f g
+      ≈˘⟨ F .fmor-comp {k} {m +ℕ n} {n} (MP.p₂ {m} {n}) (MP.pair {k} {m} {n} (F⁻¹ .fmor f) (F⁻¹ .fmor g)) ⟩
+        F .fmor {k} {n} (MP.p₂ {m} {n} Mat.∘ MP.pair {k} {m} {n} (F⁻¹ .fmor f) (F⁻¹ .fmor g))
+      ≈⟨ F .fmor-cong {k} {n} (MP.pair-p₂ {k} {m} {n} (F⁻¹ .fmor f) (F⁻¹ .fmor g)) ⟩
+        F .fmor {k} {n} (F⁻¹ .fmor g)
+      ≈⟨ F∘F⁻¹ {k} {n} g ⟩
+        g
+      ∎ where open ≈-Reasoning isEquiv
+
     products : HasProducts MatRep.cat
     products .HasProducts.prod = prod
     products .HasProducts.p₁ {x} {y} = p₁ {x} {y}
@@ -378,6 +391,5 @@ module matrix-embedding
     products .HasProducts.pair {x} {y} {z} = pair {x} {y} {z}
     products .HasProducts.pair-cong {x} {y} {z} = pair-cong {x} {y} {z}
     products .HasProducts.pair-p₁ {x} {y} {z} = pair-p₁ {x} {y} {z}
-    products .HasProducts.pair-p₂ = {!   !}
+    products .HasProducts.pair-p₂ {x} {y} {z} = pair-p₂ {x} {y} {z}
     products .HasProducts.pair-ext = {!   !}
-
