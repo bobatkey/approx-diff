@@ -199,17 +199,17 @@ module matrix-embedding
     ≈˘⟨ ∘-cong ≈-refl id-left ⟩
       π {n} i ∘ (id (X^ n) ∘ ι {n} j)
     ∎) where open ≈-Reasoning isEquiv
-  F .fmor-comp {x} {y} {z} M N = entry-ext (λ i j →
+  F .fmor-comp {m} {n} {k} M N = entry-ext (λ i j →
     begin
       entry (F .fmor (M Mat.∘ N)) i j
     ≈⟨ entry-F (M Mat.∘ N) i j ⟩
-      scalar .func (Mat.Σ (λ k → M i k ·ₛ N k j))
-    ≈⟨ scalar-Σ (λ k → M i k) (λ k → N k j) ⟩
-      cotuple {y} (λ k → scalar .func (M i k)) ∘ tuple {y} (λ k → scalar .func (N k j))
-    ≈˘⟨ ∘-cong (cotuple-cong {y} _ _ (λ k → entry-F M i k)) (tuple-cong {y} _ _ (λ k → entry-F N k j)) ⟩
-      cotuple {y} (λ k → entry (F .fmor M) i k) ∘ tuple {y} (λ k → entry (F .fmor N) k j)
-    ≈˘⟨ entry-comp {x} {y} {z} (F .fmor N) (F .fmor M) i j ⟩
-      π {z} i ∘ ((F .fmor M ∘ F .fmor N) ∘ ι {x} j)
+      scalar .func (Mat.Σ (λ l → M i l ·ₛ N l j))
+    ≈⟨ scalar-Σ (λ l → M i l) (λ l → N l j) ⟩
+      cotuple {n} (λ l → scalar .func (M i l)) ∘ tuple {n} (λ l → scalar .func (N l j))
+    ≈˘⟨ ∘-cong (cotuple-cong {n} _ _ (λ l → entry-F M i l)) (tuple-cong {n} _ _ (λ l → entry-F N l j)) ⟩
+      cotuple {n} (λ l → entry (F .fmor M) i l) ∘ tuple {n} (λ l → entry (F .fmor N) l j)
+    ≈˘⟨ entry-comp {m} {n} {k} (F .fmor N) (F .fmor M) i j ⟩
+      π {k} i ∘ ((F .fmor M ∘ F .fmor N) ∘ ι {m} j)
     ∎) where open ≈-Reasoning isEquiv
 
   -- F⁻¹ : MatRep(𝒞, X) → Mat(S), the "extract matrix of entries" direction.
@@ -227,21 +227,21 @@ module matrix-embedding
     ≈⟨ scalar⁻¹∘scalar≈id .func-eq (Setoid.refl A) ⟩
       Mat.e i j
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
-  F⁻¹ .fmor-comp {x} {y} {z} g f i j =
+  F⁻¹ .fmor-comp {m} {n} {k} g f i j =
     begin
-      scalar⁻¹ .func (entry {x} {z} (g ∘ f) i j)
-    ≈⟨ scalar⁻¹ .func-resp-≈ (entry-comp {x} {y} {z} f g i j) ⟩
-      scalar⁻¹ .func (cotuple {y} (λ k → entry {y} {z} g i k) ∘ tuple {y} (λ k → entry {x} {y} f k j))
-    ≈˘⟨ scalar⁻¹ .func-resp-≈ (∘-cong (cotuple-cong {y} _ _ (λ k → scalar∘scalar⁻¹≈id .func-eq ≈-refl))
-                                 (tuple-cong {y} _ _ (λ k → scalar∘scalar⁻¹≈id .func-eq ≈-refl))) ⟩
-      scalar⁻¹ .func (cotuple {y} (λ k → scalar .func (scalar⁻¹ .func (entry {y} {z} g i k)))
-                  ∘ tuple {y} (λ k → scalar .func (scalar⁻¹ .func (entry {x} {y} f k j))))
+      scalar⁻¹ .func (entry {m} {k} (g ∘ f) i j)
+    ≈⟨ scalar⁻¹ .func-resp-≈ (entry-comp {m} {n} {k} f g i j) ⟩
+      scalar⁻¹ .func (cotuple {n} (λ l → entry {n} {k} g i l) ∘ tuple {n} (λ l → entry {m} {n} f l j))
+    ≈˘⟨ scalar⁻¹ .func-resp-≈ (∘-cong (cotuple-cong {n} _ _ (λ l → scalar∘scalar⁻¹≈id .func-eq ≈-refl))
+                                 (tuple-cong {n} _ _ (λ l → scalar∘scalar⁻¹≈id .func-eq ≈-refl))) ⟩
+      scalar⁻¹ .func (cotuple {n} (λ l → scalar .func (scalar⁻¹ .func (entry {n} {k} g i l)))
+                  ∘ tuple {n} (λ l → scalar .func (scalar⁻¹ .func (entry {m} {n} f l j))))
     ≈˘⟨ scalar⁻¹ .func-resp-≈
-          (scalar-Σ {y} (λ k → scalar⁻¹ .func (entry {y} {z} g i k)) (λ k → scalar⁻¹ .func (entry {x} {y} f k j))) ⟩
+          (scalar-Σ {n} (λ l → scalar⁻¹ .func (entry {n} {k} g i l)) (λ l → scalar⁻¹ .func (entry {m} {n} f l j))) ⟩
       scalar⁻¹ .func
-        (scalar .func (Mat.Σ {y} (λ k → scalar⁻¹ .func (entry {y} {z} g i k) ·ₛ scalar⁻¹ .func (entry {x} {y} f k j))))
+        (scalar .func (Mat.Σ {n} (λ l → scalar⁻¹ .func (entry {n} {k} g i l) ·ₛ scalar⁻¹ .func (entry {m} {n} f l j))))
     ≈⟨ scalar⁻¹∘scalar≈id .func-eq (Setoid.refl A) ⟩
-      Mat.Σ {y} (λ k → scalar⁻¹ .func (entry {y} {z} g i k) ·ₛ scalar⁻¹ .func (entry {x} {y} f k j))
+      Mat.Σ {n} (λ l → scalar⁻¹ .func (entry {n} {k} g i l) ·ₛ scalar⁻¹ .func (entry {m} {n} f l j))
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
 
   F⁻¹∘F : ∀ {m n} (M : Matrix n m) → (F⁻¹ .fmor (F .fmor M)) Mat.≈ₘ M
