@@ -503,20 +503,33 @@ module Matrix where
         id (prod BP)
       ∎ where
         BP = SemiLat-BP (X^ m) (X^ n)
-        open ≈-Reasoning isEquiv
 
         reduce-p₁ : (𝓕 .fmor {P.prod m n} {m} (P.p₁ {m} {n}) ∘
                      copair BP {X^ (P.prod m n)}
                        (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
                        (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))) ≈ p₁ BP
-        reduce-p₁ = ≈-trans (comp-bilinear₂ _ _ _)
-                   (≈-trans (homCM.+-cong (≈-sym (assoc _ _ _)) (≈-sym (assoc _ _ _)))
-                   (≈-trans (homCM.+-cong
-                              (∘-cong (≈-trans (≈-sym (F .fmor-comp {m} {prod (biproduct m n)} {m} (p₁ (biproduct m n)) (in₁ (biproduct m n))))
-                                       (≈-trans (F .fmor-cong (id-1 (biproduct m n))) (F .fmor-id {m}))) ≈-refl)
-                              (∘-cong (≈-trans (≈-sym (F .fmor-comp {n} {prod (biproduct m n)} {m} (p₁ (biproduct m n)) (in₂ (biproduct m n))))
-                                       (≈-trans (F .fmor-cong (zero-1 (biproduct m n))) (Mat≃MatRep.F-εₘ {m} {n}))) ≈-refl))
-                            {!   !}))
+        reduce-p₁ =
+          begin
+            P.p₁ {m} {n} ∘ copair BP {X^ (P.prod m n)}
+              (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
+              (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))
+          ≈⟨ comp-bilinear₂ _ _ _ ⟩
+            (P.p₁ {m} {n} ∘ (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)) ∘ p₁ BP)) +m
+            (P.p₁ {m} {n} ∘ (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)) ∘ p₂ BP))
+          ≈⟨ homCM.+-cong (≈-sym (assoc _ _ _)) (≈-sym (assoc _ _ _)) ⟩
+            ((P.p₁ {m} {n} ∘ F .fmor {m} {P.prod m n} (in₁ (biproduct m n))) ∘ p₁ BP) +m
+            ((P.p₁ {m} {n} ∘ F .fmor {n} {P.prod m n} (in₂ (biproduct m n))) ∘ p₂ BP)
+          ≈⟨ homCM.+-cong
+               (∘-cong (≈-trans (≈-sym (F .fmor-comp {m} {prod (biproduct m n)} {m} (p₁ (biproduct m n)) (in₁ (biproduct m n))))
+                       (≈-trans (F .fmor-cong (id-1 (biproduct m n))) (F .fmor-id {m}))) ≈-refl)
+               (∘-cong (≈-trans (≈-sym (F .fmor-comp {n} {prod (biproduct m n)} {m} (p₁ (biproduct m n)) (in₂ (biproduct m n))))
+                      (≈-trans (F .fmor-cong (zero-1 (biproduct m n))) (Mat≃MatRep.F-εₘ {m} {n}))) ≈-refl) ⟩
+            (id (X^ m) ∘ p₁ BP) +m (εm {X^ n} {X^ m} ∘ p₂ BP)
+          ≈⟨ {!   !} ⟩
+            p₁ BP
+          ∎ where open ≈-Reasoning isEquiv
+
+        open ≈-Reasoning isEquiv
     𝓕-preserve-products {m} {n} .inverse∘f≈id = {!   !}
 
   𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
