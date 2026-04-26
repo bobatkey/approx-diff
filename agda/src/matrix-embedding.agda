@@ -164,10 +164,26 @@ module matrix-embedding
       (π i ∘ p₂ (BP X (X^ n))) ∘ (in₂ (BP X (X^ n)) ∘ ι j)
     ∎ where open ≈-Reasoning isEquiv
 
+  F-fmor : ∀ {m n} → Matrix n m → X^ m ⇒ X^ n
+  F-fmor {m} {n} M = tuple {n} (λ i → cotuple {m} (λ j → scalar .func (M i j)))
+
+  -- Entry-wise characterisation of F's action on morphisms.
+  entry-F : ∀ {m n} (M : Matrix n m) (i : Fin n) (j : Fin m) → entry (F-fmor M) i j ≈ scalar .func (M i j)
+  entry-F {m} {n} M i j =
+    begin
+      π {n} i ∘ (tuple {n} (λ i' → cotuple {m} (λ j' → scalar .func (M i' j'))) ∘ ι {m} j)
+    ≈˘⟨ assoc _ _ _ ⟩
+      (π {n} i ∘ tuple {n} (λ i' → cotuple {m} (λ j' → scalar .func (M i' j')))) ∘ ι {m} j
+    ≈⟨ ∘-cong (tuple-π {n} _ i) ≈-refl ⟩
+      cotuple {m} (λ j' → scalar .func (M i j')) ∘ ι {m} j
+    ≈⟨ cotuple-ι {m} _ j ⟩
+      scalar .func (M i j)
+    ∎ where open ≈-Reasoning isEquiv
+
   -- F : Mat(S) → MatRep(𝒞, X), the "assemble matrix from entries" direction.
   F : Functor Mat.cat MatRep.cat
   F .fobj n = n
-  F .fmor {m} {n} M = tuple {n} (λ i → cotuple {m} (λ j → scalar .func (M i j)))
+  F .fmor = F-fmor
   F .fmor-cong p = tuple-cong _ _ (λ i → cotuple-cong _ _ (λ j → scalar-iso .fwd .func-resp-≈ (p i j)))
   F .fmor-id {n} = entry-ext (λ i j →
     begin
@@ -194,32 +210,7 @@ module matrix-embedding
       cotuple {y} (λ k → entry (F .fmor M) i k) ∘ tuple {y} (λ k → entry (F .fmor N) k j)
     ≈˘⟨ entry-comp {x} {y} {z} (F .fmor N) (F .fmor M) i j ⟩
       π {z} i ∘ ((F .fmor M ∘ F .fmor N) ∘ ι {x} j)
-    ∎) where
-      open ≈-Reasoning isEquiv
-      entry-F : ∀ {m n} (M : Matrix n m) (i : Fin n) (j : Fin m) → entry (F .fmor M) i j ≈ scalar .func (M i j)
-      entry-F {m} {n} M i j =
-        begin
-          π {n} i ∘ (tuple {n} (λ i' → cotuple {m} (λ j' → scalar .func (M i' j'))) ∘ ι {m} j)
-        ≈˘⟨ assoc _ _ _ ⟩
-          (π {n} i ∘ tuple {n} (λ i' → cotuple {m} (λ j' → scalar .func (M i' j')))) ∘ ι {m} j
-        ≈⟨ ∘-cong (tuple-π {n} _ i) ≈-refl ⟩
-          cotuple {m} (λ j' → scalar .func (M i j')) ∘ ι {m} j
-        ≈⟨ cotuple-ι {m} _ j ⟩
-          scalar .func (M i j)
-        ∎
-
-  -- Entry-wise characterization of F, re-stated at module level for use below.
-  entry-F : ∀ {m n} (M : Matrix n m) (i : Fin n) (j : Fin m) → entry (F .fmor M) i j ≈ scalar .func (M i j)
-  entry-F {m} {n} M i j =
-    begin
-      π {n} i ∘ (tuple {n} (λ i' → cotuple {m} (λ j' → scalar .func (M i' j'))) ∘ ι {m} j)
-    ≈˘⟨ assoc _ _ _ ⟩
-      (π {n} i ∘ tuple {n} (λ i' → cotuple {m} (λ j' → scalar .func (M i' j')))) ∘ ι {m} j
-    ≈⟨ ∘-cong (tuple-π {n} _ i) ≈-refl ⟩
-      cotuple {m} (λ j' → scalar .func (M i j')) ∘ ι {m} j
-    ≈⟨ cotuple-ι {m} _ j ⟩
-      scalar .func (M i j)
-    ∎ where open ≈-Reasoning isEquiv
+    ∎) where open ≈-Reasoning isEquiv
 
   -- F⁻¹ : MatRep(𝒞, X) → Mat(S), the "extract matrix of entries" direction.
   F⁻¹ : Functor MatRep.cat Mat.cat
@@ -245,8 +236,10 @@ module matrix-embedding
                                  (tuple-cong {y} _ _ (λ k → scalar∘scalar⁻¹≈id .func-eq ≈-refl))) ⟩
       scalar⁻¹ .func (cotuple {y} (λ k → scalar .func (scalar⁻¹ .func (entry {y} {z} g i k)))
                   ∘ tuple {y} (λ k → scalar .func (scalar⁻¹ .func (entry {x} {y} f k j))))
-    ≈˘⟨ scalar⁻¹ .func-resp-≈ (scalar-Σ {y} (λ k → scalar⁻¹ .func (entry {y} {z} g i k)) (λ k → scalar⁻¹ .func (entry {x} {y} f k j))) ⟩
-      scalar⁻¹ .func (scalar .func (Mat.Σ {y} (λ k → scalar⁻¹ .func (entry {y} {z} g i k) ·ₛ scalar⁻¹ .func (entry {x} {y} f k j))))
+    ≈˘⟨ scalar⁻¹ .func-resp-≈
+          (scalar-Σ {y} (λ k → scalar⁻¹ .func (entry {y} {z} g i k)) (λ k → scalar⁻¹ .func (entry {x} {y} f k j))) ⟩
+      scalar⁻¹ .func
+        (scalar .func (Mat.Σ {y} (λ k → scalar⁻¹ .func (entry {y} {z} g i k) ·ₛ scalar⁻¹ .func (entry {x} {y} f k j))))
     ≈⟨ scalar⁻¹∘scalar≈id .func-eq (Setoid.refl A) ⟩
       Mat.Σ {y} (λ k → scalar⁻¹ .func (entry {y} {z} g i k) ·ₛ scalar⁻¹ .func (entry {x} {y} f k j))
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
@@ -301,7 +294,7 @@ module matrix-embedding
       π {n} i ∘ ((F .fmor {m} {n} M +m F .fmor {m} {n} N) ∘ ι {m} j)
     ∎) where open ≈-Reasoning isEquiv
 
-  -- F is faithful: morphisms in Mat(S) are determined by their F-images.
+  -- Morphisms in Mat(S) are determined by their F-images.
   F-faithful : ∀ {m n} {M N : Matrix n m} → F .fmor {m} {n} M ≈ F .fmor {m} {n} N → M Mat.≈ₘ N
   F-faithful {m} {n} {M} {N} eq i j =
     begin
@@ -314,7 +307,6 @@ module matrix-embedding
       N i j
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
 
-  -- F⁻¹ preserves the zero morphism (derived via F's preservation + faithfulness).
   F⁻¹-εₘ : ∀ {m n} → (F⁻¹ .fmor {m} {n} (εm {X^ m} {X^ n})) Mat.≈ₘ (Mat.εₘ {n} {m})
   F⁻¹-εₘ {m} {n} = F-faithful {m} {n}
     {F⁻¹ .fmor {m} {n} (εm {X^ m} {X^ n})}
@@ -327,7 +319,6 @@ module matrix-embedding
       F .fmor {m} {n} (Mat.εₘ {n} {m})
     ∎) where open ≈-Reasoning isEquiv
 
-  -- F⁻¹ preserves addition (derived via F's preservation + faithfulness).
   F⁻¹-+ₘ : ∀ {m n} (f g : X^ m ⇒ X^ n) →
            F⁻¹ .fmor {m} {n} (f +m g) Mat.≈ₘ (F⁻¹ .fmor {m} {n} f Mat.+ₘ F⁻¹ .fmor {m} {n} g)
   F⁻¹-+ₘ {m} {n} f g = F-faithful {m} {n}
