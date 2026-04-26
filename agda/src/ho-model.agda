@@ -531,10 +531,43 @@ module Matrix where
         reduce-p₂ : (P.p₂ {m} {n} ∘ copair BP {X^ (P.prod m n)}
                                       (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
                                       (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))) ≈ p₂ BP
-        reduce-p₂ = {!   !}
+        reduce-p₂ =
+          begin
+            P.p₂ {m} {n} ∘ copair BP {X^ (P.prod m n)}
+              (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
+              (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))
+          ≈⟨ comp-bilinear₂ _ _ _ ⟩
+            (P.p₂ {m} {n} ∘ (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)) ∘ p₁ BP)) +m
+            (P.p₂ {m} {n} ∘ (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)) ∘ p₂ BP))
+          ≈⟨ homCM.+-cong (≈-sym (assoc _ _ _)) (≈-sym (assoc _ _ _)) ⟩
+            ((P.p₂ {m} {n} ∘ F .fmor {m} {P.prod m n} (in₁ (biproduct m n))) ∘ p₁ BP) +m
+            ((P.p₂ {m} {n} ∘ F .fmor {n} {P.prod m n} (in₂ (biproduct m n))) ∘ p₂ BP)
+          ≈⟨ homCM.+-cong
+               (∘-cong (≈-trans (≈-sym (F .fmor-comp {m} {P.prod m n} {n} (p₂ (biproduct m n)) (in₁ (biproduct m n))))
+                       (≈-trans (F .fmor-cong (zero-2 (biproduct m n))) (Mat≃MatRep.F-εₘ {n} {m}))) ≈-refl)
+               (∘-cong (≈-trans (≈-sym (F .fmor-comp {n} {P.prod m n} {n} (p₂ (biproduct m n)) (in₂ (biproduct m n))))
+                       (≈-trans (F .fmor-cong (id-2 (biproduct m n))) (F .fmor-id {n}))) ≈-refl) ⟩
+            (εm {X^ m} {X^ n} ∘ p₁ BP) +m (id (X^ n) ∘ p₂ BP)
+          ≈⟨ homCM.+-cong (comp-bilinear-ε₁ _) id-left ⟩
+            εm +m p₂ BP
+          ≈⟨ homCM.+-lunit ⟩
+            p₂ BP
+          ∎ where open ≈-Reasoning isEquiv
 
         open ≈-Reasoning isEquiv
-    𝓕-preserve-products {m} {n} .inverse∘f≈id = {!   !}
+    𝓕-preserve-products {m} {n} .inverse∘f≈id =
+      begin
+        copair BP {X^ (P.prod m n)}
+          (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
+          (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))
+        ∘ pair BP {X^ (P.prod m n)}
+            (𝓕 .fmor {P.prod m n} {m} (P.p₁ {m} {n}))
+            (𝓕 .fmor {P.prod m n} {n} (P.p₂ {m} {n}))
+      ≈⟨ {!   !} ⟩
+        id (X^ (P.prod m n))
+      ∎ where
+        BP = SemiLat-BP (X^ m) (X^ n)
+        open ≈-Reasoning isEquiv
 
   𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
   𝓕-preserve-terminal .inverse = id _
