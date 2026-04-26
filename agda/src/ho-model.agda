@@ -3,7 +3,7 @@
 module ho-model where
 
 open import Level using (Level; 0ℓ; suc)
-open import categories using (Category; HasProducts; HasTerminal; HasInitial; op-coproducts→products; op-initial→terminal; HasCoproducts)
+open import categories using (Category; HasProducts; HasTerminal; HasInitial; IsTerminal; op-coproducts→products; op-initial→terminal; HasCoproducts)
 open import product-category using (product; product-limit; product-products; product-terminal)
 open import cmon-enriched
   using (CMonEnriched; product-cmon-enriched; op-cmon-enriched; Biproduct; biproducts→products)
@@ -600,6 +600,13 @@ module Matrix where
       ∎ where
         BP = SemiLat-BP (X^ m) (X^ n)
         open ≈-Reasoning isEquiv
+
+  terminal : HasTerminal cat
+  terminal .HasTerminal.witness = 0
+  terminal .HasTerminal.is-terminal .IsTerminal.to-terminal =
+    HasTerminal.to-terminal SemiLat.terminal
+  terminal .HasTerminal.is-terminal .IsTerminal.to-terminal-ext f =
+    HasTerminal.to-terminal-ext SemiLat.terminal f
 
   𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
   𝓕-preserve-terminal .inverse = id _
