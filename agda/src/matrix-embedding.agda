@@ -29,9 +29,6 @@ module matrix-embedding
   (let open _⇒s_)
   (let open Category.Iso)
   (let scalar = scalar-iso .fwd)
-  (let scalar⁻¹ = scalar-iso .bwd)
-  (let scalar∘scalar⁻¹≈id = scalar-iso .fwd∘bwd≈id)
-  (let scalar⁻¹∘scalar≈id = scalar-iso .bwd∘fwd≈id)
   (scalar-cmon : additive =[ scalar-iso .fwd ]> homCM X X)
   (scalar-ι : scalar .func S-ι ≈ id X)
   (scalar-· : ∀ {a b} → scalar .func (a ·ₛ b) ≈ scalar .func a ∘ scalar .func b)
@@ -43,6 +40,10 @@ module matrix-embedding
   open Category.Iso
 
   open CommutativeMonoid
+
+  scalar⁻¹ = scalar-iso .bwd
+  scalar∘scalar⁻¹≈id = scalar-iso .fwd∘bwd≈id
+  scalar⁻¹∘scalar≈id = scalar-iso .bwd∘fwd≈id
 
   -- Composition in End(X) is commutative, derived from S commutativity via the iso.
   scalar-comm : ∀ (f g : X ⇒ X) → (f ∘ g) ≈ (g ∘ f)
@@ -69,9 +70,8 @@ module matrix-embedding
   open IsTerminal 𝟘-terminal
 
   import matrix
-  private
-    module Mat = matrix.Mat S
-    open matrix.Mat S using (Matrix) public
+  module Mat = matrix.Mat S
+  open Mat using (Matrix) public
 
   open Functor
 
