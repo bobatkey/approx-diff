@@ -141,10 +141,24 @@ matrix is $M_f$ for a unique such $f$.
 
 If additionally $\cdot$ is the meet of a top element $1$ and distributes over $+$, so that $(S, +, 0, \cdot,
 1, \le)$ is a bounded distributive lattice, then we have a \emph{disjointness} relation $a \disj b$ iff $a
-\cdot b \le 0$, with pointwise lift to vectors. If $S$ is furthermore a \emph{Boolean algebra}, equipped with a
-negation $\neg$ satisfying $1 \le a + \neg a$ (excluded middle) and $a \cdot \neg a \le 0$
+\cdot b \le 0$, with pointwise lift to vectors. If $S$ is furthermore a \emph{Boolean algebra} $B$, equipped
+with a negation $\neg$ satisfying $1 \le a + \neg a$ (excluded middle) and $a \cdot \neg a \le 0$
 (non-contradiction), then $\neg$ is involutive and disjointness reflects the order: $a \le b$ iff every $c$
 disjoint from $b$ is disjoint from $a$.
+
+A linear $f : B^m \to B^n$ in $\Mat(B)$ pairs naturally with two counterparts $B^n \to B^m$:
+
+\begin{enumerate}
+\item The transpose $f^{\!\top}$ makes $(f^{\!\top}, f)$ a conjugate pair in $\BoolConj$
+(\secref{categories-with-biproducts:boolconj}).
+
+\item The right adjoint $f_* = \demorgan{(f^{\!\top})}$ (De Morgan dual of the transpose) makes $f \adj f_*$ a
+Galois connection in $\BoolGal$.
+\end{enumerate}
+
+\noindent Concretely, $f_*(x)_i = \bigmeet_j (M_f[i,j] \to x_j)$, where $a \to b = \neg a \join b$ is Boolean
+implication. Under the equivalence $\BoolConj \simeq \BoolGal$ from
+\secref{categories-with-biproducts:boolconj}, these two presentations correspond.
 
 \subsubsection{$\Mat(\Two)$ and $\FinRel$}
 \label{sec:matrix:two}
@@ -162,69 +176,17 @@ The dagger $M \mapsto M^{\!\top}$ is relational converse $R \mapsto R^{-1}$ on $
 {R_M}^{-1}$. (More generally $\Mat(S)$ is equivalent to a category of finite sets and \emph{$S$-weighted}
 relations, with matrix multiplication corresponding to weighted composition.)
 
-\subsection{Two embeddings (to be generalised)}
-\label{sec:matrix:two:embeddings}
-
-The following material is the Boolean-specific account of the two embeddings, to be folded into a generic
-account (valid in the Boolean algebra setting of \secref{matrix:additional-structure}) in a later pass.
-
-We now treat $f: \Two^m \to \Two^n$ as the \emph{backward} direction of an analysis --- a map that propagates
-output demand back to input demand, and consider two contravariant embeddings: into $\BoolConj$ (a subcategory
-of $\LatGal$), and into $\LatGal$ directly. The two embeddings pair $f$ with a forward-direction counterpart
-in two different ways:
-
-\begin{enumerate}
-\item \emph{Conjugate pair.} The transpose $f^{\!\top}$ pairs with $f$ to form a conjugate pair $(f^{\!\top},
-f)$ in $\BoolConj$ (\secref{categories-with-biproducts:boolconj}): both maps are $\join$-preserving, linked by
-the disjointness condition
-\begin{salign*}
-   y \disj f^{\!\top}(x) \iff f(y) \disj x
-\end{salign*}
-
-\item \emph{Galois connection.} The right adjoint $f_*: \Two^n \to \Two^m$ (meet-preserving) pairs with $f$ to
-form a Galois connection $f \dashv f_*$ in $\LatGal$ (\secref{categories-with-biproducts:latgal}), with
-adjointness condition
-\begin{salign*}
-   y \le f_*(x) \iff f(y) \le x
-\end{salign*}
-\noindent Concretely, $f_*(x)_i = \bigmeet_j (M_f[i,j] \to x_j)$, where $a \to b = \neg a \join b$ is
-Boolean implication.
-\end{enumerate}
-
-\subsection{De Morgan duality}
-\label{sec:matrix:two:de-morgan}
-
-The two backward maps are De Morgan duals:
-\begin{salign*}
-   \neg\,f^{\!\top}(x) = f_*(\neg x)
-\end{salign*}
-\noindent This is the Boolean-algebra identity relating the transpose (in the $(\join, \meet)$-semiring) to
-the adjoint (in the dual $(\meet, \join)$-semiring). Combined with the Boolean-algebra fact that $a \disj b
-\iff a \le \neg b$, we obtain the following chain:
-\begin{salign*}
-   y \disj f^{\!\top}(x)
-   & \iff y \le \neg\,f^{\!\top}(x) \\
-   & \iff y \le f_*(\neg x) \\
-   & \iff f(y) \le \neg x \\
-   & \iff f(y) \disj x
-\end{salign*}
-\noindent This (and an analogous argument for the Galois connection) exhibits the conjugate and Galois
-embeddings as mutually derivable given the Boolean structure on $\Two^n$. This is specific to the Boolean
-case. In a general Heyting algebra the equivalence $a \disj b \iff a \le \neg b$ still holds (taking $\neg$ as
-the pseudo-complement), but the De Morgan identity $\neg f^{\!\top} = f_* \comp \neg$ relies on
-double-negation $\neg \comp \neg = \id$, which is Boolean-specific.
-
 \subsection{Connection to forward- and reverse-mode AD}
 \label{sec:matrix:two:ad}
 
 \begin{center}
 \small
-\begin{tabular}{ll}
- \textbf{Real-number AD in $\FinVect_\RR$} & \textbf{Boolean AD in $\Mat(\Two)$} \\
- Linear map $\pushf{\phi}_x: \RR^m \linearto \RR^n$ (forward mode) & $\join$-preserving transpose $f^{\!\top}: \Two^m \to \Two^n$ (demanded by) \\
- Linear transpose $\pullf{\phi}_x: \RR^n \linearto \RR^m$ (reverse mode) & Given $\join$-preserving $f: \Two^n
- \to \Two^m$ (demands) \\
- Matrix multiplication in $(\RR, +, \cdot)$ semiring & Matrix multiplication in $(\Two, \join,
- \meet)$ semiring
+\begin{tabular}{lll}
+ & \textbf{Real-number AD in $\FinVect_\RR$} & \textbf{Boolean AD in $\Mat(\Two)$} \\
+ forwards & Linear map $\pushf{\phi}_x: \RR^m \linearto \RR^n$ & $\join$-preserving transpose $f^{\!\top}:
+ \Two^m \to \Two^n$ \\
+ backwards & Linear transpose $\pullf{\phi}_x: \RR^n \linearto \RR^m$ & Given $\join$-preserving $f: \Two^n
+ \to \Two^m$ \\
+ composition & Matrix multiplication in $(\RR, +, \cdot)$ & Matrix multiplication in $(\Two, \join, \meet)$
 \end{tabular}
 \end{center}
