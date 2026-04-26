@@ -31,6 +31,7 @@ module matrix-embedding
   (let scalar = scalar-iso .fwd)
   (let scalar⁻¹ = scalar-iso .bwd)
   (let scalar∘scalar⁻¹≈id = scalar-iso .fwd∘bwd≈id)
+  (let scalar⁻¹∘scalar≈id = scalar-iso .bwd∘fwd≈id)
   (scalar-cmon : additive =[ scalar-iso .fwd ]> homCM X X)
   (scalar-ι : scalar .func S-ι ≈ id X)
   (scalar-· : ∀ {a b} → scalar .func (a ·ₛ b) ≈ scalar .func a ∘ scalar .func b)
@@ -229,7 +230,7 @@ module matrix-embedding
       scalar-iso .bwd .func (π {n} i ∘ ι {n} j)
     ≈˘⟨ scalar-iso .bwd .func-resp-≈ (scalar-e i j) ⟩
       scalar-iso .bwd .func (scalar .func (Mat.e i j))
-    ≈⟨ scalar-iso .bwd∘fwd≈id .func-eq (Setoid.refl A) ⟩
+    ≈⟨ scalar⁻¹∘scalar≈id .func-eq (Setoid.refl A) ⟩
       Mat.e i j
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
   F⁻¹ .fmor-comp {x} {y} {z} g f i j =
@@ -243,7 +244,7 @@ module matrix-embedding
                   ∘ tuple {y} (λ k → scalar .func (scalar-iso .bwd .func (entry {x} {y} f k j))))
     ≈˘⟨ scalar-iso .bwd .func-resp-≈ (scalar-Σ {y} (λ k → scalar-iso .bwd .func (entry {y} {z} g i k)) (λ k → scalar-iso .bwd .func (entry {x} {y} f k j))) ⟩
       scalar-iso .bwd .func (scalar .func (Mat.Σ {y} (λ k → scalar-iso .bwd .func (entry {y} {z} g i k) ·ₛ scalar-iso .bwd .func (entry {x} {y} f k j))))
-    ≈⟨ scalar-iso .bwd∘fwd≈id .func-eq (Setoid.refl A) ⟩
+    ≈⟨ scalar⁻¹∘scalar≈id .func-eq (Setoid.refl A) ⟩
       Mat.Σ {y} (λ k → scalar-iso .bwd .func (entry {y} {z} g i k) ·ₛ scalar-iso .bwd .func (entry {x} {y} f k j))
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
 
@@ -253,7 +254,7 @@ module matrix-embedding
       scalar-iso .bwd .func (entry {m} {n} (F .fmor {m} {n} M) i j)
     ≈⟨ scalar-iso .bwd .func-resp-≈ (entry-F {m} {n} M i j) ⟩
       scalar-iso .bwd .func (scalar .func (M i j))
-    ≈⟨ scalar-iso .bwd∘fwd≈id .func-eq (Setoid.refl A) ⟩
+    ≈⟨ scalar⁻¹∘scalar≈id .func-eq (Setoid.refl A) ⟩
       M i j
     ∎ where open ≈-Reasoning (CommutativeSemiring.isEquivalence S)
 
