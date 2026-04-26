@@ -458,7 +458,7 @@ module Matrix where
     scalar.cmon-hom
     scalar.preserves-ι
     (λ {a} {b} → scalar.preserves-· {a} {b})
-  open Mat≃MatRep using (products) public
+  open Mat≃MatRep using (products; F; module Mat) public
 
   𝓕 : Functor cat SemiLat.cat
   𝓕 .fobj = X^
@@ -473,10 +473,14 @@ module Matrix where
   SemiLat-BP = CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products
   SemiLat-products = biproducts→products _ SemiLat-BP
 
-  𝓕-preserve-products : preserve-chosen-products 𝓕 products SemiLat-products
-  𝓕-preserve-products {m} {n} .inverse = {!   !}
-  𝓕-preserve-products {m} {n} .f∘inverse≈id = {!   !}
-  𝓕-preserve-products {m} {n} .inverse∘f≈id = {!   !}
+  module _ where
+    open Biproduct
+
+    𝓕-preserve-products : preserve-chosen-products 𝓕 products SemiLat-products
+    𝓕-preserve-products {m} {n} .inverse =
+      copair (SemiLat-BP (X^ m) (X^ n)) (F .fmor (in₁ (Mat.biproduct m n))) (F .fmor (in₂ (Mat.biproduct m n)))
+    𝓕-preserve-products {m} {n} .f∘inverse≈id = {!   !}
+    𝓕-preserve-products {m} {n} .inverse∘f≈id = {!   !}
 
   𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
   𝓕-preserve-terminal .inverse = id _
