@@ -98,6 +98,23 @@ w_i$ is their $\CMon$ addition in $\Mat(S)(1, n)$. Equivalently, $\sum_i w_i = W
 \to n$ has the $w_i$ as columns and $\diag_m : 1 \to m$ is the diagonal into the biproduct $1 \biprod \cdots
 \biprod 1$.
 
+\subsection{$\Mat(S)$ in any biproduct category}
+\label{sec:matrix:representation}
+
+Suppose $\cat{C}$ is a $\CMon$-enriched category with biproducts and a zero object, $X \in \cat{C}$ a chosen
+object, and $S \cong \cat{C}(X, X)$ a semiring isomorphism between $S$ and the endomorphism semiring of $X$
+under composition. Then $\Mat(S)$ is $\CMon$-enriched equivalent to the full subcategory of $\cat{C}$ whose
+objects are the biproduct powers $X^n = X \biprod \cdots \biprod X$. The isomorphism lifts, via the matrix
+representation of morphisms, to the full categorical equivalence: an $n \times m$ matrix $M$ over $S$
+corresponds to the morphism $X^m \to X^n$ assembled from the entries $M_{ij} \in S \cong \cat{C}(X, X)$, and
+conversely every such morphism is determined by its $X^n$-indexed components. Commutativity of $\cdot$ in $S$
+corresponds to commutativity of composition in $\cat{C}(X, X)$.
+
+For example, with $\cat{C} = \SemiLat$ and $X = \Two$, the iso $\Two \cong \SemiLat(\Two, \Two)$ identifies
+$\bot$ with the zero morphism and $\top$ with the identity; every join-preserving endomorphism of $\Two$ is
+determined by its value at $\top$, which must be either $\bot$ or $\top$. This yields $\Mat(\Two) \simeq$
+the full subcategory of $\SemiLat$ on objects $\Two^n$.
+
 \subsection{Additional structure on $S$}
 \label{sec:matrix:additional-structure}
 
@@ -143,17 +160,9 @@ composition,
 \end{salign*}
 \noindent which evaluates to $\top$ iff there is some intermediate $k$ with $j\, R_M\, k$ and $k\, R_N\, i$.
 The dagger $M \mapsto M^{\!\top}$ is relational converse $R \mapsto R^{-1}$ on $\FinRel$, so $R_{M^{\!\top}} =
-{R_M}^{-1}$.
-
-\subsection{Relation to $\SemiLat$}
-\label{sec:matrix:two:semilat}
-
-$\Mat(\Two)$ is $\CMon$-enriched equivalent to the full subcategory of $\SemiLat$ whose objects are the
-biproduct powers $\Two^n = \Two \biprod \cdots \biprod \Two$. The key ingredient is the isomorphism $\Two
-\cong \SemiLat(\Two, \Two)$, identifying $\bot$ with the zero morphism and $\top$ with the identity; this
-lifts, via the semi-additive representation of morphisms as matrices, to the full equivalence. The
-commutativity of $\meet$ in $\Two$ corresponds (under the isomorphism) to the commutativity of composition in
-$\SemiLat(\Two, \Two)$.
+{R_M}^{-1}$. (More generally, for any commutative semiring $S$, $\Mat(S)$ is equivalent to a category of
+finite sets and \emph{$S$-weighted relations}, with matrix multiplication corresponding to weighted
+composition; the present case is the specialisation to $S = \Two$.)
 
 \subsection{Two embeddings (to be generalised)}
 \label{sec:matrix:two:embeddings}
