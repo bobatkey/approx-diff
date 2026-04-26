@@ -497,13 +497,19 @@ module Matrix where
             copair BP {X^ (P.prod m n)}
               (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
               (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))))
-      ≈⟨ pair-cong BP {!   !} {!   !} ⟩
+      ≈⟨ pair-cong BP reduce-p₁ {!   !} ⟩
         pair BP (p₁ BP) (p₂ BP)
       ≈⟨ pair-ext0 BP ⟩
         id (prod BP)
       ∎ where
         BP = SemiLat-BP (X^ m) (X^ n)
         open ≈-Reasoning isEquiv
+
+        reduce-p₁ : (𝓕 .fmor {P.prod m n} {m} (P.p₁ {m} {n}) ∘
+                     copair BP {X^ (P.prod m n)}
+                       (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
+                       (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))) ≈ p₁ BP
+        reduce-p₁ = {!   !}
     𝓕-preserve-products {m} {n} .inverse∘f≈id = {!   !}
 
   𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
