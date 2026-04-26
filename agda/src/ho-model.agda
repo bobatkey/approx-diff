@@ -333,7 +333,7 @@ module Matrix where
   open preorder._≃m_ using (eqfun)
 
   open Category SemiLat.cat
-  open CMon.CMonEnriched SemiLat.cmon-enriched using (_+m_; εm; +m-runit; comp-bilinear-ε₁)
+  open CMon.CMonEnriched SemiLat.cmon-enriched using (_+m_; εm; +m-runit; comp-bilinear-ε₁; comp-bilinear-ε₂; comp-bilinear₁; comp-bilinear₂)
   open import commutative-monoid using (CommutativeMonoid)
 
   TWO : SemiLat.Obj
@@ -509,7 +509,7 @@ module Matrix where
                      copair BP {X^ (P.prod m n)}
                        (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
                        (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))) ≈ p₁ BP
-        reduce-p₁ = ≈-trans (CMon.CMonEnriched.comp-bilinear₂ SemiLat.cmon-enriched _ _ _) {!   !}
+        reduce-p₁ = ≈-trans (comp-bilinear₂ _ _ _) {!   !}
     𝓕-preserve-products {m} {n} .inverse∘f≈id = {!   !}
 
   𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
