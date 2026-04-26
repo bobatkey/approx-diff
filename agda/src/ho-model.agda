@@ -342,9 +342,8 @@ module Matrix where
   private
     module homCM {x y} = CommutativeMonoid (CMon.CMonEnriched.homCM SemiLat.cmon-enriched x y)
 
-  -- Scalar iso Two ↔ End(TWO) in SemiLat. Each End(TWO) preserves ⊥, so is determined by its
-  -- value at I (either εm or id); `to`/`from` witness the bijection, and `to` is a semiring
-  -- homomorphism from two.semiring.
+  -- Semiring isomorphism Two ↔ End(TWO) in SemiLat. Each End(TWO) preserves ⊥, so is determined by its value
+  -- at I (either εm or id).
   module scalar where
     to : Two → TWO ⇒ TWO
     to O = εm
@@ -416,7 +415,6 @@ module Matrix where
     cmon-hom ._=[_]>_.preserve-ε = preserves-ε
     cmon-hom ._=[_]>_.preserve-+ {a} {b} = preserves-+ {a} {b}
 
-    -- Commutativity of End(TWO) transports along the iso from commutativity of (Two, ⊓).
     comm : ∀ (f g : TWO ⇒ TWO) → (f ∘ g) ≈ (g ∘ f)
     comm f g =
       begin
@@ -446,7 +444,6 @@ module Matrix where
     scalar.comm
     public
 
-  -- Products on MatRep transported from Mat(Two) via the equivalence Mat(Two) ≃ MatRep(SemiLat, TWO).
   import matrix-embedding
   module Mat≃MatRep = matrix-embedding
     SemiLat.cmon-enriched
