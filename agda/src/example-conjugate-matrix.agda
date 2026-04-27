@@ -14,7 +14,7 @@ import ho-model
 open ho-model.Matrix
 
 private
-  module Cat = Category cat
+  module MatRep = Category cat
 
   products : HasProducts cat
   products = biproducts→products cmon biproduct

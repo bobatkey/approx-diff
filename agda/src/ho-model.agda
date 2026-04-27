@@ -438,23 +438,25 @@ module Matrix where
         a = from f
         b = from g
 
-  import matrix-embedding
-  open matrix-embedding
-    SemiLat.cmon-enriched
-    (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
-    (HasTerminal.witness SemiLat.terminal)
-    (HasInitial.is-initial SemiLat.initial)
-    (HasTerminal.is-terminal SemiLat.terminal)
-    TWO
-    two.Two-setoid
-    two.semiring
-    scalar.iso
-    scalar.cmon-hom
-    scalar.preserves-ι
-    (λ {a} {b} → scalar.preserves-· {a} {b}) public
+  private
+    import matrix-embedding
+    module MatRep = matrix-embedding
+      SemiLat.cmon-enriched
+      (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
+      (HasTerminal.witness SemiLat.terminal)
+      (HasInitial.is-initial SemiLat.initial)
+      (HasTerminal.is-terminal SemiLat.terminal)
+      TWO
+      two.Two-setoid
+      two.semiring
+      scalar.iso
+      scalar.cmon-hom
+      scalar.preserves-ι
+      (λ {a} {b} → scalar.preserves-· {a} {b})
+  open MatRep public
 
   open Interpretation
-    cat terminal (biproducts→products cmon biproduct)
+    cat terminal (biproducts→products MatRep.cmon biproduct)
     SemiLat.cat SemiLat.cmon-enriched SemiLat.limits SemiLat.terminal
     (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
     𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
