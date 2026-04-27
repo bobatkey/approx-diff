@@ -528,7 +528,16 @@ module matrix-embedding
     open CMonEnriched
 
     cmon : CMonEnriched cat
-    cmon .homCM m n = {!   !}
+    cmon .homCM m n =
+      let CM-mn = CMonEnriched.homCM CM (X^ m) (X^ n) in
+      record
+        { ε = CommutativeMonoid.ε CM-mn
+        ; _+_ = CommutativeMonoid._+_ CM-mn
+        ; +-cong = CommutativeMonoid.+-cong CM-mn
+        ; +-lunit = CommutativeMonoid.+-lunit CM-mn
+        ; +-assoc = CommutativeMonoid.+-assoc CM-mn
+        ; +-comm = CommutativeMonoid.+-comm CM-mn
+        }
     cmon .comp-bilinear₁ = {!   !}
     cmon .comp-bilinear₂ = {!   !}
     cmon .comp-bilinear-ε₁ = {!   !}
