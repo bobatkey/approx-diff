@@ -528,16 +528,12 @@ module matrix-embedding
     open CMonEnriched
 
     cmon : CMonEnriched cat
-    cmon .homCM m n =
-      let CM-mn = CMonEnriched.homCM CM (X^ m) (X^ n) in
-      record
-        { ε = CommutativeMonoid.ε CM-mn
-        ; _+_ = CommutativeMonoid._+_ CM-mn
-        ; +-cong = CommutativeMonoid.+-cong CM-mn
-        ; +-lunit = CommutativeMonoid.+-lunit CM-mn
-        ; +-assoc = CommutativeMonoid.+-assoc CM-mn
-        ; +-comm = CommutativeMonoid.+-comm CM-mn
-        }
+    cmon .homCM m n .CommutativeMonoid.ε = CommutativeMonoid.ε (CMonEnriched.homCM CM (X^ m) (X^ n))
+    cmon .homCM m n .CommutativeMonoid._+_ = CommutativeMonoid._+_ (CMonEnriched.homCM CM (X^ m) (X^ n))
+    cmon .homCM m n .CommutativeMonoid.+-cong = CommutativeMonoid.+-cong (CMonEnriched.homCM CM (X^ m) (X^ n))
+    cmon .homCM m n .CommutativeMonoid.+-lunit = CommutativeMonoid.+-lunit (CMonEnriched.homCM CM (X^ m) (X^ n))
+    cmon .homCM m n .CommutativeMonoid.+-assoc = CommutativeMonoid.+-assoc (CMonEnriched.homCM CM (X^ m) (X^ n))
+    cmon .homCM m n .CommutativeMonoid.+-comm = CommutativeMonoid.+-comm (CMonEnriched.homCM CM (X^ m) (X^ n))
     cmon .comp-bilinear₁ = {!   !}
     cmon .comp-bilinear₂ = {!   !}
     cmon .comp-bilinear-ε₁ = {!   !}
