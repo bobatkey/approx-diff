@@ -3,7 +3,7 @@
 open import Data.Nat using (ℕ; zero; suc)
 open import Data.Fin using (Fin; zero; suc)
 open import prop-setoid using (Setoid; module ≈-Reasoning) renaming (_⇒_ to _⇒s_; _≃m_ to _≈s_)
-open import categories using (Category; IsInitial; IsTerminal; HasProducts)
+open import categories using (Category; IsInitial; IsTerminal; HasInitial; HasTerminal; HasProducts)
 open import setoid-cat using (SetoidCat)
 open import cmon-enriched using (CMonEnriched; Biproduct; biproducts→products)
 open import commutative-monoid using (CommutativeMonoid; _=[_]>_)
@@ -585,3 +585,13 @@ module matrix-embedding
   𝓕 .fmor-cong f≈ = f≈
   𝓕 .fmor-id = ≈-refl
   𝓕 .fmor-comp _ _ = ≈-refl
+
+  terminal : HasTerminal cat
+  terminal .HasTerminal.witness = 0
+  terminal .HasTerminal.is-terminal .IsTerminal.to-terminal = to-terminal
+  terminal .HasTerminal.is-terminal .IsTerminal.to-terminal-ext = to-terminal-ext
+
+  initial : HasInitial cat
+  initial .HasInitial.witness = 0
+  initial .HasInitial.is-initial .IsInitial.from-initial = from-initial
+  initial .HasInitial.is-initial .IsInitial.from-initial-ext = from-initial-ext
