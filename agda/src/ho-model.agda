@@ -455,7 +455,7 @@ module Matrix where
   open Mat≃MatRep public
 
   open Interpretation
-    cat terminal products
+    cat terminal (biproducts→products cmon biproduct)
     SemiLat.cat SemiLat.cmon-enriched SemiLat.limits SemiLat.terminal
     (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
     𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})

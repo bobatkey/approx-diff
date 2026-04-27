@@ -571,90 +571,6 @@ module matrix-embedding
               (≈-trans (≈-sym (F-+ₘ {m +ℕ n} {m +ℕ n} _ _))
                        (≈-trans (F .fmor-cong (Mat.biproduct m n .id-+)) (F .fmor-id {m +ℕ n})))
 
-  -- FIXME: derive biproducts instead and have clients use biproducts→products.
-  module _ where
-    private
-      module MP = HasProducts (biproducts→products Mat.cmon Mat.biproduct)
-
-      prod : ℕ → ℕ → ℕ
-      prod m n = m +ℕ n
-
-      p₁ : ∀ {m n} → X^ (m +ℕ n) ⇒ X^ m
-      p₁ {m} {n} = F .fmor (MP.p₁ {m} {n})
-
-      p₂ : ∀ {m n} → X^ (m +ℕ n) ⇒ X^ n
-      p₂ {m} {n} = F .fmor (MP.p₂ {m} {n})
-
-      pair : ∀ {k m n} → X^ k ⇒ X^ m → X^ k ⇒ X^ n → X^ k ⇒ X^ (m +ℕ n)
-      pair {k} {m} {n} f g = F .fmor (MP.pair {k} {m} {n} (F⁻¹ .fmor f) (F⁻¹ .fmor g))
-
-      pair-cong : ∀ {k m n} {f₁ f₂ : X^ k ⇒ X^ m} {g₁ g₂ : X^ k ⇒ X^ n} →
-                  f₁ ≈ f₂ → g₁ ≈ g₂ → pair {k} {m} {n} f₁ g₁ ≈ pair {k} {m} {n} f₂ g₂
-      pair-cong {k} {m} {n} f≈ g≈ =
-        F .fmor-cong (MP.pair-cong {k} {m} {n} (F⁻¹ .fmor-cong f≈) (F⁻¹ .fmor-cong g≈))
-
-      pair-p₁ : ∀ {k m n} (f : X^ k ⇒ X^ m) (g : X^ k ⇒ X^ n) → (p₁ {m} {n} ∘ pair {k} {m} {n} f g) ≈ f
-      pair-p₁ {k} {m} {n} f g =
-        begin
-          p₁ {m} {n} ∘ pair {k} {m} {n} f g
-        ≈˘⟨ F .fmor-comp {k} {m +ℕ n} {m} (MP.p₁ {m} {n}) (MP.pair {k} {m} {n} (F⁻¹ .fmor f) (F⁻¹ .fmor g)) ⟩
-          F .fmor {k} {m} (MP.p₁ {m} {n} Mat.∘ MP.pair {k} {m} {n} (F⁻¹ .fmor f) (F⁻¹ .fmor g))
-        ≈⟨ F .fmor-cong {k} {m} (MP.pair-p₁ {k} {m} {n} (F⁻¹ .fmor f) (F⁻¹ .fmor g)) ⟩
-          F .fmor {k} {m} (F⁻¹ .fmor f)
-        ≈⟨ F∘F⁻¹ {k} {m} f ⟩
-          f
-        ∎ where open ≈-Reasoning isEquiv
-
-      pair-p₂ : ∀ {k m n} (f : X^ k ⇒ X^ m) (g : X^ k ⇒ X^ n) → (p₂ {m} {n} ∘ pair {k} {m} {n} f g) ≈ g
-      pair-p₂ {k} {m} {n} f g =
-        begin
-          p₂ {m} {n} ∘ pair {k} {m} {n} f g
-        ≈˘⟨ F .fmor-comp {k} {m +ℕ n} {n} (MP.p₂ {m} {n}) (MP.pair {k} {m} {n} (F⁻¹ .fmor f) (F⁻¹ .fmor g)) ⟩
-          F .fmor {k} {n} (MP.p₂ {m} {n} Mat.∘ MP.pair {k} {m} {n} (F⁻¹ .fmor f) (F⁻¹ .fmor g))
-        ≈⟨ F .fmor-cong {k} {n} (MP.pair-p₂ {k} {m} {n} (F⁻¹ .fmor f) (F⁻¹ .fmor g)) ⟩
-          F .fmor {k} {n} (F⁻¹ .fmor g)
-        ≈⟨ F∘F⁻¹ {k} {n} g ⟩
-          g
-        ∎ where open ≈-Reasoning isEquiv
-
-      pair-ext : ∀ {k m n} (f : X^ k ⇒ X^ (m +ℕ n)) → pair {k} {m} {n} (p₁ {m} {n} ∘ f) (p₂ {m} {n} ∘ f) ≈ f
-      pair-ext {k} {m} {n} f =
-        begin
-          pair {k} {m} {n} (p₁ {m} {n} ∘ f) (p₂ {m} {n} ∘ f)
-        ≈⟨ F .fmor-cong {k} {m +ℕ n} mat-eq ⟩
-          F .fmor {k} {m +ℕ n} (F⁻¹ .fmor f)
-        ≈⟨ F∘F⁻¹ {k} {m +ℕ n} f ⟩
-          f
-        ∎ where
-          mat-eq : MP.pair {k} {m} {n} (F⁻¹ .fmor (p₁ {m} {n} ∘ f)) (F⁻¹ .fmor (p₂ {m} {n} ∘ f)) Mat.≈ₘ F⁻¹ .fmor f
-          mat-eq =
-            begin
-              MP.pair {k} {m} {n} (F⁻¹ .fmor (p₁ {m} {n} ∘ f)) (F⁻¹ .fmor (p₂ {m} {n} ∘ f))
-            ≈⟨ MP.pair-cong {k} {m} {n}
-                 (F⁻¹ .fmor-comp {k} {m +ℕ n} {m} (F .fmor (MP.p₁ {m} {n})) f)
-                 (F⁻¹ .fmor-comp {k} {m +ℕ n} {n} (F .fmor (MP.p₂ {m} {n})) f) ⟩
-              MP.pair {k} {m} {n}
-                (Mat._∘_ {m} {m +ℕ n} {k} (F⁻¹ .fmor (F .fmor (MP.p₁ {m} {n}))) (F⁻¹ .fmor f))
-                (Mat._∘_ {n} {m +ℕ n} {k} (F⁻¹ .fmor (F .fmor (MP.p₂ {m} {n}))) (F⁻¹ .fmor f))
-            ≈⟨ MP.pair-cong {k} {m} {n}
-                 (Mat.∘-cong {m} {m +ℕ n} {k} (F⁻¹∘F (MP.p₁ {m} {n})) (λ i j → Mat.refl {F⁻¹ .fmor f i j}))
-                 (Mat.∘-cong {n} {m +ℕ n} {k} (F⁻¹∘F (MP.p₂ {m} {n})) (λ i j → Mat.refl {F⁻¹ .fmor f i j})) ⟩
-              MP.pair {k} {m} {n} (MP.p₁ {m} {n} Mat.∘ F⁻¹ .fmor f) (MP.p₂ {m} {n} Mat.∘ F⁻¹ .fmor f)
-            ≈⟨ MP.pair-ext {k} {m} {n} (F⁻¹ .fmor f) ⟩
-              F⁻¹ .fmor f
-            ∎ where open ≈-Reasoning Mat.≈ₘ-isEquiv
-          open ≈-Reasoning isEquiv
-
-    products : HasProducts cat
-    products .HasProducts.prod = prod
-    products .HasProducts.p₁ {x} {y} = p₁ {x} {y}
-    products .HasProducts.p₂ {x} {y} = p₂ {x} {y}
-    products .HasProducts.pair {x} {y} {z} = pair {x} {y} {z}
-    products .HasProducts.pair-cong {x} {y} {z} = pair-cong {x} {y} {z}
-    products .HasProducts.pair-p₁ {x} {y} {z} = pair-p₁ {x} {y} {z}
-    products .HasProducts.pair-p₂ {x} {y} {z} = pair-p₂ {x} {y} {z}
-    products .HasProducts.pair-ext {x} {y} {z} = pair-ext {x} {y} {z}
-
   -- Inclusion of MatRep(𝒞, X) into 𝒞: identity on morphisms, sending object n to X^n.
   𝓕 : Functor cat 𝒞
   𝓕 .fobj = X^
@@ -688,5 +604,5 @@ module matrix-embedding
   𝓕-preserve-terminal .f∘inverse≈id = to-terminal-unique _ _
   𝓕-preserve-terminal .inverse∘f≈id = to-terminal-unique _ _
 
-  𝓕-preserve-products : preserve-chosen-products 𝓕 products 𝒞-products
+  𝓕-preserve-products : preserve-chosen-products 𝓕 (biproducts→products cmon biproduct) 𝒞-products
   𝓕-preserve-products {m} {n} = biproduct-iso CM (matrep-biproduct m n) (BP (X^ m) (X^ n))
