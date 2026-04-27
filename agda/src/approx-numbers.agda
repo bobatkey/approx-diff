@@ -180,43 +180,45 @@ _⊔I_ : ∀ {q} → Intv q → Intv q → Intv q
 ------------------------------------------------------------------------------
 -- Addition
 
-add-right : ∀ q₁ q₂ → Intv q₁ → Intv q₂ → Intv (q₁ + q₂)
-add-right q₁ q₂ x y .lower = (q₂ + x .lower) ⊓ (q₁ + y .lower)
-add-right q₁ q₂ x y .upper = (q₂ + x .upper) ⊔ (q₁ + y .upper)
-add-right q₁ q₂ x y .l≤q with y .l≤q
+-- Join-preserving backwards map.
+add : ∀ q₁ q₂ → Intv (q₁ + q₂) → Intv q₁ × Intv q₂
+add q₁ q₂ x .proj₁ .lower = x .lower - q₂
+add q₁ q₂ x .proj₁ .upper = x .upper - q₂
+add q₁ q₂ x .proj₁ .l≤q with (x .l≤q)
+... | liftS ϕ = liftS (adjoint₁ {x .lower} {q₂} {q₁} (≤-trans ϕ (≤-reflexive (+-comm q₁ q₂))))
+add q₁ q₂ x .proj₁ .q≤u with (x .q≤u)
+... | liftS ϕ = liftS (adjoint₂' {q₂} {q₁} {x .upper} (≤-trans (≤-reflexive (+-comm q₂ q₁)) ϕ))
+add q₁ q₂ x .proj₂ .lower = x .lower - q₁
+add q₁ q₂ x .proj₂ .upper = x .upper - q₁
+add q₁ q₂ x .proj₂ .l≤q with x .l≤q
+... | liftS ϕ = liftS (adjoint₁ {x .lower} {q₁} {q₂} ϕ)
+add q₁ q₂ x .proj₂ .q≤u with x .q≤u
+... | liftS ϕ = liftS (adjoint₂' {q₁} {q₂} {x .upper} ϕ)
+
+-- Meet-preserving forwards map (right adjoint).
+add⁎ : ∀ q₁ q₂ → Intv q₁ → Intv q₂ → Intv (q₁ + q₂)
+add⁎ q₁ q₂ x y .lower = (q₂ + x .lower) ⊓ (q₁ + y .lower)
+add⁎ q₁ q₂ x y .upper = (q₂ + x .upper) ⊔ (q₁ + y .upper)
+add⁎ q₁ q₂ x y .l≤q with y .l≤q
 ... | liftS ϕ = liftS (≤-trans (p⊓q≤q (q₂ + x .lower) (q₁ + y .lower)) (+-mono-≤ (≤-refl {q₁}) ϕ))
-add-right q₁ q₂ x y .q≤u with (y .q≤u)
+add⁎ q₁ q₂ x y .q≤u with (y .q≤u)
 ... | liftS ϕ = liftS (≤-trans (+-mono-≤ (≤-refl {q₁}) ϕ) (p≤q⊔p (q₂ + x .upper) _))
 
--- Join-preserving variant: takes the better (more informative) of the two single-sided bounds.
-add-right' : ∀ q₁ q₂ → Intv q₁ → Intv q₂ → Intv (q₁ + q₂)
-add-right' q₁ q₂ x y .lower = (q₂ + x .lower) ⊔ (q₁ + y .lower)
-add-right' q₁ q₂ x y .upper = (q₂ + x .upper) ⊓ (q₁ + y .upper)
-add-right' q₁ q₂ x y .l≤q with x .l≤q | y .l≤q
+-- Join-preserving forwards map (conjugate).
+addᵀ : ∀ q₁ q₂ → Intv q₁ → Intv q₂ → Intv (q₁ + q₂)
+addᵀ q₁ q₂ x y .lower = (q₂ + x .lower) ⊔ (q₁ + y .lower)
+addᵀ q₁ q₂ x y .upper = (q₂ + x .upper) ⊓ (q₁ + y .upper)
+addᵀ q₁ q₂ x y .l≤q with x .l≤q | y .l≤q
 ... | liftS ϕ | liftS ψ =
   liftS (⊔-lub (≤-trans (+-mono-≤ (≤-refl {q₂}) ϕ) (≤-reflexive (+-comm q₂ q₁)))
                (+-mono-≤ (≤-refl {q₁}) ψ))
-add-right' q₁ q₂ x y .q≤u with x .q≤u | y .q≤u
+addᵀ q₁ q₂ x y .q≤u with x .q≤u | y .q≤u
 ... | liftS ϕ | liftS ψ =
   liftS (⊓-glb (≤-trans (≤-reflexive (+-comm q₁ q₂)) (+-mono-≤ (≤-refl {q₂}) ϕ))
                (+-mono-≤ (≤-refl {q₁}) ψ))
 
-add-left : ∀ q₁ q₂ → Intv (q₁ + q₂) → Intv q₁ × Intv q₂
-add-left q₁ q₂ x .proj₁ .lower = x .lower - q₂
-add-left q₁ q₂ x .proj₁ .upper = x .upper - q₂
-add-left q₁ q₂ x .proj₁ .l≤q with (x .l≤q)
-... | liftS ϕ = liftS (adjoint₁ {x .lower} {q₂} {q₁} (≤-trans ϕ (≤-reflexive (+-comm q₁ q₂))))
-add-left q₁ q₂ x .proj₁ .q≤u with (x .q≤u)
-... | liftS ϕ = liftS (adjoint₂' {q₂} {q₁} {x .upper} (≤-trans (≤-reflexive (+-comm q₂ q₁)) ϕ))
-add-left q₁ q₂ x .proj₂ .lower = x .lower - q₁
-add-left q₁ q₂ x .proj₂ .upper = x .upper - q₁
-add-left q₁ q₂ x .proj₂ .l≤q with x .l≤q
-... | liftS ϕ = liftS (adjoint₁ {x .lower} {q₁} {q₂} ϕ)
-add-left q₁ q₂ x .proj₂ .q≤u with x .q≤u
-... | liftS ϕ = liftS (adjoint₂' {q₁} {q₂} {x .upper} ϕ)
-
 galois₁ : ∀ q₁ q₂ x y z →
-          z ⊑ (add-right q₁ q₂ x y) → (add-left q₁ q₂ z .proj₁ ⊑ x) ∧ (add-left q₁ q₂ z .proj₂ ⊑ y)
+          z ⊑ (add⁎ q₁ q₂ x y) → (add q₁ q₂ z .proj₁ ⊑ x) ∧ (add q₁ q₂ z .proj₂ ⊑ y)
 galois₁ q₁ q₂ x y z (liftS ϕ₁ , liftS ϕ₂) .proj₁ =
   liftS (adjoint₁ {z .lower} {q₂} {x .lower} (≤-trans ϕ₁ (p⊓q≤p _ _))) ,
   liftS (adjoint₂' {q₂} {x .upper} {z .upper} (≤-trans (p≤p⊔q (q₂ + x .upper) (q₁ + y .upper)) ϕ₂))
@@ -225,15 +227,15 @@ galois₁ q₁ q₂ x y z (liftS ϕ₁ , liftS ϕ₂) .proj₂ =
   liftS (adjoint₂' {q₁} {y .upper} {z .upper} (≤-trans (p≤q⊔p (q₂ + x .upper) (q₁ + y .upper)) ϕ₂))
 
 galois₂ : ∀ q₁ q₂ x y z →
-          (add-left q₁ q₂ z .proj₁ ⊑ x) ∧ (add-left q₁ q₂ z .proj₂ ⊑ y) → z ⊑ (add-right q₁ q₂ x y)
+          (add q₁ q₂ z .proj₁ ⊑ x) ∧ (add q₁ q₂ z .proj₂ ⊑ y) → z ⊑ (add⁎ q₁ q₂ x y)
 galois₂ q₁ q₂ x y z ((liftS ϕ₁ , liftS ϕ₂) , (liftS ψ₁ , liftS ψ₂)) =
   liftS (⊓-glb (adjoint₂ ϕ₁) (adjoint₂ ψ₁)) ,
   liftS (⊔-lub (adjoint₁' ϕ₂) (adjoint₁' ψ₂))
 
-add-right-mono : ∀ q₁ q₂ {x₁ x₂ y₁ y₂} →
+add⁎-mono : ∀ q₁ q₂ {x₁ x₂ y₁ y₂} →
                  x₁ ⊑ x₂ → y₁ ⊑ y₂ →
-                 add-right q₁ q₂ x₁ y₁ ⊑ add-right q₁ q₂ x₂ y₂
-add-right-mono q₁ q₂ (liftS ϕ₁ , liftS ϕ₂) (liftS ψ₁ , liftS ψ₂) =
+                 add⁎ q₁ q₂ x₁ y₁ ⊑ add⁎ q₁ q₂ x₂ y₂
+add⁎-mono q₁ q₂ (liftS ϕ₁ , liftS ϕ₂) (liftS ψ₁ , liftS ψ₂) =
   (liftS (⊓-mono-≤ (+-mono-≤ (≤-refl {q₂}) ϕ₁) (+-mono-≤ (≤-refl {q₁}) ψ₁))) ,
   (liftS (⊔-mono-≤ (+-mono-≤ (≤-refl {q₂}) ϕ₂) (+-mono-≤ (≤-refl {q₁}) ψ₂)))
 
@@ -247,14 +249,14 @@ add-interval : ∀ q₁ q₂ → (Interval q₁ ⊕ Interval q₂) ⇒g Interval
 add-interval q₁ q₂ ._⇒g_.right ._=>_.fun (bottom , bottom) = bottom
 add-interval q₁ q₂ ._⇒g_.right ._=>_.fun (bottom , < x >) = bottom
 add-interval q₁ q₂ ._⇒g_.right ._=>_.fun (< x > , bottom) = bottom
-add-interval q₁ q₂ ._⇒g_.right ._=>_.fun (< x > , < y >) = < add-right q₁ q₂ x y >
+add-interval q₁ q₂ ._⇒g_.right ._=>_.fun (< x > , < y >) = < add⁎ q₁ q₂ x y >
 add-interval q₁ q₂ ._⇒g_.right ._=>_.mono {bottom , bottom} {x₂ , y₂} ϕ = tt
 add-interval q₁ q₂ ._⇒g_.right ._=>_.mono {bottom , < x >} {x₂ , y₂} ϕ = tt
 add-interval q₁ q₂ ._⇒g_.right ._=>_.mono {< x > , bottom} {x₂ , y₂} ϕ = tt
 add-interval q₁ q₂ ._⇒g_.right ._=>_.mono {< x₁ > , < y₁ >} {< x₂ > , < y₂ >} (x₁≤x₂ , y₁≤y₂) =
-  add-right-mono q₁ q₂ {x₁} {x₂} {y₁} {y₂} x₁≤x₂ y₁≤y₂
+  add⁎-mono q₁ q₂ {x₁} {x₂} {y₁} {y₂} x₁≤x₂ y₁≤y₂
 add-interval q₁ q₂ ._⇒g_.left ._=>_.fun bottom = bottom , bottom
-add-interval q₁ q₂ ._⇒g_.left ._=>_.fun < x > = < add-left q₁ q₂ x .proj₁ > , < add-left q₁ q₂ x .proj₂ >
+add-interval q₁ q₂ ._⇒g_.left ._=>_.fun < x > = < add q₁ q₂ x .proj₁ > , < add q₁ q₂ x .proj₂ >
 add-interval q₁ q₂ ._⇒g_.left ._=>_.mono {bottom} {y} ϕ = tt , tt
 add-interval q₁ q₂ ._⇒g_.left ._=>_.mono {< x >} {< y >} (liftS ϕ₁ , liftS ϕ₂) .proj₁ =
   (liftS (+-mono-≤ ϕ₁ ≤-refl)) ,
@@ -330,17 +332,16 @@ open preorder._≃m_
 ℚ-intv .fam .trans* (liftS ≡-refl) (liftS ≡-refl) .left-eq .eqfun bottom = tt , tt
 ℚ-intv .fam .trans* (liftS ≡-refl) (liftS ≡-refl) .left-eq .eqfun < x > = (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
 
-add : (ℚ-intv ⊗ ℚ-intv) C.⇒ ℚ-intv
-add .idxf .prop-setoid._⇒_.func (q₁ , q₂) = q₁ + q₂
-add .idxf .prop-setoid._⇒_.func-resp-≈ (liftS ≡-refl , liftS ≡-refl) = liftS ≡-refl
-add .famf .transf (q₁ , q₂) = add-interval q₁ q₂
-add .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (bottom , bottom) = tt , tt
-add .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (bottom , < x >) = tt , tt
-add .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (< x > , bottom) = tt , tt
-add .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (< x > , < x₁ >) = (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
-add .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .left-eq .eqfun bottom = (tt , tt) , tt , tt
-add .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .left-eq .eqfun < x > = ((liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl) ,
-                                                                                                (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
+add-mor : (ℚ-intv ⊗ ℚ-intv) C.⇒ ℚ-intv
+add-mor .idxf .prop-setoid._⇒_.func (q₁ , q₂) = q₁ + q₂
+add-mor .idxf .prop-setoid._⇒_.func-resp-≈ (liftS ≡-refl , liftS ≡-refl) = liftS ≡-refl
+add-mor .famf .transf (q₁ , q₂) = add-interval q₁ q₂
+add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (bottom , bottom) = tt , tt
+add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (bottom , < x >) = tt , tt
+add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (< x > , bottom) = tt , tt
+add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (< x > , < x₁ >) = (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
+add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .left-eq .eqfun bottom = (tt , tt) , tt , tt
+add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .left-eq .eqfun < x > = ((liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl) , (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
 
 zero : 𝟙 C.⇒ ℚ-intv
 zero .idxf .prop-setoid._⇒_.func _ = 0ℚ

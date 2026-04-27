@@ -63,7 +63,7 @@ module example2 where
   open import example-signature-interpretation galois.cat galois.products galois.terminal galois.TWO galois.unit galois.conjunct
   open import prop-setoid using (idS)
     renaming (𝟙 to 𝟙ₛ; const to constₛ)
-  open import approx-numbers using (ℚ-intv; add; zero)
+  open import approx-numbers using (ℚ-intv; zero)
   open import categories using (Category; HasProducts; HasTerminal)
 
   BaseInterp2 : Model PFPC[ cat , terminal , products , 𝟚 ] Sig
@@ -71,7 +71,7 @@ module example2 where
   BaseInterp2 .Model.⟦sort⟧ label = simple[ label.Label , galois.𝟙 ]
   BaseInterp2 .Model.⟦sort⟧ approx = simple[ 𝟙ₛ , galois.TWO ]
   BaseInterp2 .Model.⟦op⟧ zero = approx-numbers.zero
-  BaseInterp2 .Model.⟦op⟧ add = approx-numbers.add C.∘ binary2
+  BaseInterp2 .Model.⟦op⟧ add = approx-numbers.add-mor C.∘ binary2
   BaseInterp2 .Model.⟦op⟧ (lbl l) = simplef[ constₛ _ l , galois.cat .Category.id _ ]
   BaseInterp2 .Model.⟦rel⟧ equal-label = predicate label.equal-label C.∘ binary
   BaseInterp2 .Model.⟦op⟧ approx-unit = simplef[ idS _ , galois.unit ]
@@ -82,7 +82,7 @@ module example2 where
   open import Data.Rational renaming (_≤_ to _≤ℚ_; show to ℚ-show)
   open import Data.Integer hiding (_/_; show; -_)
   open import preorder using (bottom; <_>; LCarrier)
-  open import approx-numbers using (Intv; add-left)
+  open import approx-numbers using (Intv)
   open import prop using (liftS)
   open import Data.Product using (Σ) renaming (_×_ to _×ₜ_)
 
