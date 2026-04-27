@@ -498,25 +498,25 @@ module matrix-embedding
   module _ where
     open Biproduct
 
-    matrep-biproduct : ∀ m n → Biproduct CM (X^ m) (X^ n)
-    matrep-biproduct m n .prod = X^ (m +ℕ n)
-    matrep-biproduct m n .p₁ = F .fmor (p₁ (Mat.biproduct m n))
-    matrep-biproduct m n .p₂ = F .fmor (p₂ (Mat.biproduct m n))
-    matrep-biproduct m n .in₁ = F .fmor (in₁ (Mat.biproduct m n))
-    matrep-biproduct m n .in₂ = F .fmor (in₂ (Mat.biproduct m n))
-    matrep-biproduct m n .id-1 =
+    biproduct𝒞 : ∀ m n → Biproduct CM (X^ m) (X^ n)
+    biproduct𝒞 m n .prod = X^ (m +ℕ n)
+    biproduct𝒞 m n .p₁ = F .fmor (p₁ (Mat.biproduct m n))
+    biproduct𝒞 m n .p₂ = F .fmor (p₂ (Mat.biproduct m n))
+    biproduct𝒞 m n .in₁ = F .fmor (in₁ (Mat.biproduct m n))
+    biproduct𝒞 m n .in₂ = F .fmor (in₂ (Mat.biproduct m n))
+    biproduct𝒞 m n .id-1 =
       ≈-trans (≈-sym (F .fmor-comp {m} {m +ℕ n} {m} (p₁ (Mat.biproduct m n)) (in₁ (Mat.biproduct m n))))
               (≈-trans (F .fmor-cong (id-1 (Mat.biproduct m n))) (F .fmor-id {m}))
-    matrep-biproduct m n .id-2 =
+    biproduct𝒞 m n .id-2 =
       ≈-trans (≈-sym (F .fmor-comp {n} {m +ℕ n} {n} (p₂ (Mat.biproduct m n)) (in₂ (Mat.biproduct m n))))
               (≈-trans (F .fmor-cong (id-2 (Mat.biproduct m n))) (F .fmor-id {n}))
-    matrep-biproduct m n .zero-1 =
+    biproduct𝒞 m n .zero-1 =
       ≈-trans (≈-sym (F .fmor-comp {n} {m +ℕ n} {m} (p₁ (Mat.biproduct m n)) (in₂ (Mat.biproduct m n))))
               (≈-trans (F .fmor-cong (zero-1 (Mat.biproduct m n))) (F-εₘ {m} {n}))
-    matrep-biproduct m n .zero-2 =
+    biproduct𝒞 m n .zero-2 =
       ≈-trans (≈-sym (F .fmor-comp {m} {m +ℕ n} {n} (p₂ (Mat.biproduct m n)) (in₁ (Mat.biproduct m n))))
               (≈-trans (F .fmor-cong (zero-2 (Mat.biproduct m n))) (F-εₘ {n} {m}))
-    matrep-biproduct m n .id-+ =
+    biproduct𝒞 m n .id-+ =
       ≈-trans (homCM _ _ .+-cong
                  (≈-sym (F .fmor-comp {m +ℕ n} {m} {m +ℕ n} (in₁ (Mat.biproduct m n)) (p₁ (Mat.biproduct m n))))
                  (≈-sym (F .fmor-comp {m +ℕ n} {n} {m +ℕ n} (in₂ (Mat.biproduct m n)) (p₂ (Mat.biproduct m n)))))
@@ -571,14 +571,6 @@ module matrix-embedding
               (≈-trans (≈-sym (F-+ₘ {m +ℕ n} {m +ℕ n} _ _))
                        (≈-trans (F .fmor-cong (Mat.biproduct m n .id-+)) (F .fmor-id {m +ℕ n})))
 
-  -- Inclusion of MatRep(𝒞, X) into 𝒞: identity on morphisms, sending object n to X^n.
-  𝓕 : Functor cat 𝒞
-  𝓕 .fobj = X^
-  𝓕 .fmor f = f
-  𝓕 .fmor-cong f≈ = f≈
-  𝓕 .fmor-id = ≈-refl
-  𝓕 .fmor-comp _ _ = ≈-refl
-
   terminal : HasTerminal cat
   terminal .HasTerminal.witness = 0
   terminal .HasTerminal.is-terminal .IsTerminal.to-terminal = to-terminal
@@ -589,20 +581,21 @@ module matrix-embedding
   initial .HasInitial.is-initial .IsInitial.from-initial = from-initial
   initial .HasInitial.is-initial .IsInitial.from-initial-ext = from-initial-ext
 
-  𝒞-terminal : HasTerminal 𝒞
-  𝒞-terminal .HasTerminal.witness = 𝟘
-  𝒞-terminal .HasTerminal.is-terminal = 𝟘-terminal
-
-  𝒞-products : HasProducts 𝒞
-  𝒞-products = biproducts→products CM BP
+  -- Inclusion of MatRep(𝒞, X) into 𝒞: identity on morphisms, sending object n to X^n.
+  𝓕 : Functor cat 𝒞
+  𝓕 .fobj = X^
+  𝓕 .fmor f = f
+  𝓕 .fmor-cong f≈ = f≈
+  𝓕 .fmor-id = ≈-refl
+  𝓕 .fmor-comp _ _ = ≈-refl
 
   open import finite-product-functor using (preserve-chosen-terminal; preserve-chosen-products)
   open Category.IsIso
 
-  𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal 𝒞-terminal
+  𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal (record { witness = 𝟘 ; is-terminal = 𝟘-terminal })
   𝓕-preserve-terminal .inverse = id _
   𝓕-preserve-terminal .f∘inverse≈id = to-terminal-unique _ _
   𝓕-preserve-terminal .inverse∘f≈id = to-terminal-unique _ _
 
-  𝓕-preserve-products : preserve-chosen-products 𝓕 (biproducts→products cmon biproduct) 𝒞-products
-  𝓕-preserve-products {m} {n} = biproduct-iso CM (matrep-biproduct m n) (BP (X^ m) (X^ n))
+  𝓕-preserve-products : preserve-chosen-products 𝓕 (biproducts→products cmon biproduct) (biproducts→products CM BP)
+  𝓕-preserve-products {m} {n} = biproduct-iso CM (biproduct𝒞 m n) (BP (X^ m) (X^ n))
