@@ -1,6 +1,6 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
-module example-matrix where
+module example-conjugate-matrix where
 
 open import Level using (0ℓ)
 open import categories using (Category; HasTerminal; HasInitial; IsInitial; IsTerminal; HasProducts)

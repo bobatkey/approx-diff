@@ -12,12 +12,13 @@ import meet-semilattice-category
 import join-semilattice-category
 import fam
 import indexed-family
+open Category using (opposite)
 
 ------------------------------------------------------------------------------
 -- Construct Meet × Join^op
 
 M×Jop : Category (suc 0ℓ) 0ℓ 0ℓ
-M×Jop = product meet-semilattice-category.cat (Category.opposite join-semilattice-category.cat)
+M×Jop = product meet-semilattice-category.cat (opposite join-semilattice-category.cat)
 
 private
   module M×Jop = Category M×Jop
@@ -32,7 +33,7 @@ M×Jop-limits : ∀ (𝒮 : Category 0ℓ 0ℓ 0ℓ) → HasLimits 𝒮 M×Jop
 M×Jop-limits 𝒮 D =
   product-limit _ _ 𝒮 D
     (meet-semilattice-category.limits 𝒮 _)
-    (op-colimit _ (join-semilattice-category.colimits (Category.opposite 𝒮) _))
+    (op-colimit _ (join-semilattice-category.colimits (opposite 𝒮) _))
 
 -- We make the products and terminal object "by hand" so that the
 -- representations used for programs are nice.
@@ -56,7 +57,7 @@ M×Jop-products = biproducts→products _ M×Jop-biproducts
 -- Construct Join × Join^op
 
 J×Jop : Category (suc 0ℓ) 0ℓ 0ℓ
-J×Jop = product join-semilattice-category.cat (Category.opposite join-semilattice-category.cat)
+J×Jop = product join-semilattice-category.cat (opposite join-semilattice-category.cat)
 
 J×Jop-cmon-enriched : CMonEnriched J×Jop
 J×Jop-cmon-enriched =
@@ -68,7 +69,7 @@ J×Jop-limits : ∀ (𝒮 : Category 0ℓ 0ℓ 0ℓ) → HasLimits 𝒮 J×Jop
 J×Jop-limits 𝒮 D =
   product-limit _ _ 𝒮 D
     (join-semilattice-category.limits 𝒮 _)
-    (op-colimit _ (join-semilattice-category.colimits (Category.opposite 𝒮) _))
+    (op-colimit _ (join-semilattice-category.colimits (opposite 𝒮) _))
 
 J×Jop-terminal : HasTerminal J×Jop
 J×Jop-terminal =
@@ -411,7 +412,10 @@ module Matrix where
 
     open import commutative-monoid using (_=[_]>_)
     open import commutative-semiring using (CommutativeSemiring)
-    cmon-hom : CommutativeSemiring.additive two.semiring =[ iso .Category.Iso.fwd ]> CMon.CMonEnriched.homCM SemiLat.cmon-enriched TWO TWO
+    open CommutativeSemiring two.semiring using (additive)
+    open CMon.CMonEnriched
+
+    cmon-hom : additive =[ iso .Category.Iso.fwd ]> homCM SemiLat.cmon-enriched TWO TWO
     cmon-hom ._=[_]>_.preserve-ε = preserves-ε
     cmon-hom ._=[_]>_.preserve-+ {a} {b} = preserves-+ {a} {b}
 
