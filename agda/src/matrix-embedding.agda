@@ -523,6 +523,17 @@ module matrix-embedding
               (≈-trans (≈-sym (F-+ₘ {m +ℕ n} {m +ℕ n} _ _))
                        (≈-trans (F .fmor-cong (id-+ (Mat.biproduct m n))) (F .fmor-id {m +ℕ n})))
 
+  -- Inherit CMon-enrichment from 𝒞.
+  module _ where
+    open CMonEnriched
+
+    cmon : CMonEnriched cat
+    cmon .homCM m n = {!   !}
+    cmon .comp-bilinear₁ = {!   !}
+    cmon .comp-bilinear₂ = {!   !}
+    cmon .comp-bilinear-ε₁ = {!   !}
+    cmon .comp-bilinear-ε₂ = {!   !}
+
   -- FIXME: derive biproducts instead and have clients use biproducts→products.
   module _ where
     private
