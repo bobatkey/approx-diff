@@ -595,3 +595,15 @@ module matrix-embedding
   initial .HasInitial.witness = 0
   initial .HasInitial.is-initial .IsInitial.from-initial = from-initial
   initial .HasInitial.is-initial .IsInitial.from-initial-ext = from-initial-ext
+
+  𝒞-terminal : HasTerminal 𝒞
+  𝒞-terminal .HasTerminal.witness = 𝟘
+  𝒞-terminal .HasTerminal.is-terminal = 𝟘-terminal
+
+  open import finite-product-functor using (preserve-chosen-terminal)
+  open Category.IsIso
+
+  𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal 𝒞-terminal
+  𝓕-preserve-terminal .inverse = id _
+  𝓕-preserve-terminal .f∘inverse≈id = to-terminal-unique _ _
+  𝓕-preserve-terminal .inverse∘f≈id = to-terminal-unique _ _
