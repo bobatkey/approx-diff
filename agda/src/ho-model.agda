@@ -454,11 +454,10 @@ module Matrix where
     (λ {a} {b} → scalar.preserves-· {a} {b})
   open Mat≃MatRep public
 
-  SemiLat-BP = CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products
-
   open Interpretation
     cat terminal products
-    SemiLat.cat SemiLat.cmon-enriched SemiLat.limits SemiLat.terminal SemiLat-BP
+    SemiLat.cat SemiLat.cmon-enriched SemiLat.limits SemiLat.terminal
+    (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
     𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
     public
 
