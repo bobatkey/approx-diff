@@ -600,10 +600,142 @@ module matrix-embedding
   𝒞-terminal .HasTerminal.witness = 𝟘
   𝒞-terminal .HasTerminal.is-terminal = 𝟘-terminal
 
-  open import finite-product-functor using (preserve-chosen-terminal)
+  𝒞-products : HasProducts 𝒞
+  𝒞-products = biproducts→products CM BP
+
+  open import finite-product-functor using (preserve-chosen-terminal; preserve-chosen-products)
   open Category.IsIso
 
   𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal 𝒞-terminal
   𝓕-preserve-terminal .inverse = id _
   𝓕-preserve-terminal .f∘inverse≈id = to-terminal-unique _ _
   𝓕-preserve-terminal .inverse∘f≈id = to-terminal-unique _ _
+
+  module _ where
+    open Biproduct renaming (prod to BP-prod; p₁ to BP-p₁; p₂ to BP-p₂; in₁ to BP-in₁; in₂ to BP-in₂; pair to BP-pair; copair to BP-copair; pair-cong to BP-pair-cong; pair-natural to BP-pair-natural; pair-ext0 to BP-pair-ext0; copair-in₁ to BP-copair-in₁; copair-in₂ to BP-copair-in₂)
+    private
+      module P = HasProducts products
+      module hCM {x y} = CommutativeMonoid (homCM x y)
+
+    𝓕-preserve-products : preserve-chosen-products 𝓕 products 𝒞-products
+    𝓕-preserve-products {m} {n} .inverse =
+      BP-copair (BP (X^ m) (X^ n)) (F .fmor (BP-in₁ (Mat.biproduct m n))) (F .fmor (BP-in₂ (Mat.biproduct m n)))
+    𝓕-preserve-products {m} {n} .f∘inverse≈id =
+      begin
+        BP-pair BP-mn {X^ (P.prod m n)} (𝓕 .fmor {P.prod m n} {m} (P.p₁ {m} {n})) (𝓕 .fmor {P.prod m n} {n} (P.p₂ {m} {n}))
+        ∘ BP-copair BP-mn {X^ (P.prod m n)}
+            (F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)))
+            (F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n)))
+      ≈⟨ BP-pair-natural BP-mn _ _ _ ⟩
+        BP-pair BP-mn
+          (P.p₁ {m} {n} ∘ BP-copair BP-mn {X^ (P.prod m n)}
+                            (F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)))
+                            (F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n))))
+          (P.p₂ {m} {n} ∘ BP-copair BP-mn {X^ (P.prod m n)}
+                            (F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)))
+                            (F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n))))
+      ≈⟨ BP-pair-cong BP-mn {BP-prod BP-mn} reduce-p₁ reduce-p₂ ⟩
+        BP-pair BP-mn (BP-p₁ BP-mn) (BP-p₂ BP-mn)
+      ≈⟨ BP-pair-ext0 BP-mn ⟩
+        id (BP-prod BP-mn)
+      ∎ where
+        BP-mn = BP (X^ m) (X^ n)
+
+        reduce-p₁ : (P.p₁ {m} {n} ∘ BP-copair BP-mn {X^ (P.prod m n)}
+                                      (F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)))
+                                      (F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n)))) ≈ BP-p₁ BP-mn
+        reduce-p₁ =
+          begin
+            P.p₁ {m} {n} ∘ BP-copair BP-mn {X^ (P.prod m n)}
+              (F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)))
+              (F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n)))
+          ≈⟨ comp-bilinear₂ _ _ _ ⟩
+            (P.p₁ {m} {n} ∘ (F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)) ∘ BP-p₁ BP-mn)) +m
+            (P.p₁ {m} {n} ∘ (F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n)) ∘ BP-p₂ BP-mn))
+          ≈⟨ hCM.+-cong (≈-sym (assoc _ _ _)) (≈-sym (assoc _ _ _)) ⟩
+            ((P.p₁ {m} {n} ∘ F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n))) ∘ BP-p₁ BP-mn) +m
+            ((P.p₁ {m} {n} ∘ F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n))) ∘ BP-p₂ BP-mn)
+          ≈⟨ hCM.+-cong
+               (∘-cong (≈-trans (≈-sym (F .fmor-comp {m} {P.prod m n} {m} (BP-p₁ (Mat.biproduct m n)) (BP-in₁ (Mat.biproduct m n))))
+                       (≈-trans (F .fmor-cong (id-1 (Mat.biproduct m n))) (F .fmor-id {m}))) ≈-refl)
+               (∘-cong (≈-trans (≈-sym (F .fmor-comp {n} {P.prod m n} {m} (BP-p₁ (Mat.biproduct m n)) (BP-in₂ (Mat.biproduct m n))))
+                       (≈-trans (F .fmor-cong (zero-1 (Mat.biproduct m n))) (F-εₘ {m} {n}))) ≈-refl) ⟩
+            (id (X^ m) ∘ BP-p₁ BP-mn) +m (εm {X^ n} {X^ m} ∘ BP-p₂ BP-mn)
+          ≈⟨ hCM.+-cong id-left (comp-bilinear-ε₁ _) ⟩
+            BP-p₁ BP-mn +m εm
+          ≈⟨ +m-runit ⟩
+            BP-p₁ BP-mn
+          ∎ where open ≈-Reasoning isEquiv
+
+        reduce-p₂ : (P.p₂ {m} {n} ∘ BP-copair BP-mn {X^ (P.prod m n)}
+                                      (F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)))
+                                      (F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n)))) ≈ BP-p₂ BP-mn
+        reduce-p₂ =
+          begin
+            P.p₂ {m} {n} ∘ BP-copair BP-mn {X^ (P.prod m n)}
+              (F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)))
+              (F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n)))
+          ≈⟨ comp-bilinear₂ _ _ _ ⟩
+            (P.p₂ {m} {n} ∘ (F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)) ∘ BP-p₁ BP-mn)) +m
+            (P.p₂ {m} {n} ∘ (F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n)) ∘ BP-p₂ BP-mn))
+          ≈⟨ hCM.+-cong (≈-sym (assoc _ _ _)) (≈-sym (assoc _ _ _)) ⟩
+            ((P.p₂ {m} {n} ∘ F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n))) ∘ BP-p₁ BP-mn) +m
+            ((P.p₂ {m} {n} ∘ F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n))) ∘ BP-p₂ BP-mn)
+          ≈⟨ hCM.+-cong
+               (∘-cong (≈-trans (≈-sym (F .fmor-comp {m} {P.prod m n} {n} (BP-p₂ (Mat.biproduct m n)) (BP-in₁ (Mat.biproduct m n))))
+                       (≈-trans (F .fmor-cong (zero-2 (Mat.biproduct m n))) (F-εₘ {n} {m}))) ≈-refl)
+               (∘-cong (≈-trans (≈-sym (F .fmor-comp {n} {P.prod m n} {n} (BP-p₂ (Mat.biproduct m n)) (BP-in₂ (Mat.biproduct m n))))
+                       (≈-trans (F .fmor-cong (id-2 (Mat.biproduct m n))) (F .fmor-id {n}))) ≈-refl) ⟩
+            (εm {X^ m} {X^ n} ∘ BP-p₁ BP-mn) +m (id (X^ n) ∘ BP-p₂ BP-mn)
+          ≈⟨ hCM.+-cong (comp-bilinear-ε₁ _) id-left ⟩
+            εm +m BP-p₂ BP-mn
+          ≈⟨ hCM.+-lunit ⟩
+            BP-p₂ BP-mn
+          ∎ where open ≈-Reasoning isEquiv
+
+        open ≈-Reasoning isEquiv
+    𝓕-preserve-products {m} {n} .inverse∘f≈id =
+      begin
+        BP-copair BP-mn {X^ (P.prod m n)}
+          (F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)))
+          (F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n)))
+        ∘ BP-pair BP-mn {X^ (P.prod m n)}
+            (𝓕 .fmor {P.prod m n} {m} (P.p₁ {m} {n}))
+            (𝓕 .fmor {P.prod m n} {n} (P.p₂ {m} {n}))
+      ≈⟨ comp-bilinear₂ _ _ _ ⟩
+        (BP-copair BP-mn {X^ (P.prod m n)}
+           (F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)))
+           (F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n))) ∘
+         (BP-in₁ BP-mn ∘ P.p₁ {m} {n})) +m
+        (BP-copair BP-mn {X^ (P.prod m n)}
+           (F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)))
+           (F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n))) ∘
+         (BP-in₂ BP-mn ∘ P.p₂ {m} {n}))
+      ≈⟨ hCM.+-cong (≈-sym (assoc _ _ _)) (≈-sym (assoc _ _ _)) ⟩
+        ((BP-copair BP-mn {X^ (P.prod m n)}
+            (F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)))
+            (F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n))) ∘ BP-in₁ BP-mn) ∘ P.p₁ {m} {n}) +m
+        ((BP-copair BP-mn {X^ (P.prod m n)}
+            (F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)))
+            (F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n))) ∘ BP-in₂ BP-mn) ∘ P.p₂ {m} {n})
+      ≈⟨ hCM.+-cong (∘-cong (BP-copair-in₁ BP-mn _ _) ≈-refl) (∘-cong (BP-copair-in₂ BP-mn _ _) ≈-refl) ⟩
+        (F .fmor {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)) ∘ P.p₁ {m} {n}) +m
+        (F .fmor {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n)) ∘ P.p₂ {m} {n})
+      ≈⟨ hCM.+-cong
+           (≈-sym (F .fmor-comp {P.prod m n} {m} {P.prod m n} (BP-in₁ (Mat.biproduct m n)) (BP-p₁ (Mat.biproduct m n))))
+           (≈-sym (F .fmor-comp {P.prod m n} {n} {P.prod m n} (BP-in₂ (Mat.biproduct m n)) (BP-p₂ (Mat.biproduct m n)))) ⟩
+        F .fmor {P.prod m n} {P.prod m n} (BP-in₁ (Mat.biproduct m n) Mat.∘ BP-p₁ (Mat.biproduct m n)) +m
+        F .fmor {P.prod m n} {P.prod m n} (BP-in₂ (Mat.biproduct m n) Mat.∘ BP-p₂ (Mat.biproduct m n))
+      ≈⟨ ≈-sym (F-+ₘ {P.prod m n} {P.prod m n}
+                  (BP-in₁ (Mat.biproduct m n) Mat.∘ BP-p₁ (Mat.biproduct m n))
+                  (BP-in₂ (Mat.biproduct m n) Mat.∘ BP-p₂ (Mat.biproduct m n))) ⟩
+        F .fmor {P.prod m n} {P.prod m n}
+          ((BP-in₁ (Mat.biproduct m n) Mat.∘ BP-p₁ (Mat.biproduct m n)) Mat.+ₘ
+           (BP-in₂ (Mat.biproduct m n) Mat.∘ BP-p₂ (Mat.biproduct m n)))
+      ≈⟨ F .fmor-cong (id-+ (Mat.biproduct m n)) ⟩
+        F .fmor {P.prod m n} {P.prod m n} (Mat.I {P.prod m n})
+      ≈⟨ F .fmor-id {P.prod m n} ⟩
+        id (X^ (P.prod m n))
+      ∎ where
+        BP-mn = BP (X^ m) (X^ n)
+        open ≈-Reasoning isEquiv
