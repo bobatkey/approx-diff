@@ -543,6 +543,34 @@ module matrix-embedding
     cmon .comp-bilinear-ε₁ = CM .comp-bilinear-ε₁
     cmon .comp-bilinear-ε₂ = CM .comp-bilinear-ε₂
 
+  module _ where
+    open Biproduct
+
+    biproduct : ∀ m n → Biproduct cmon m n
+    biproduct m n .prod = m +ℕ n
+    biproduct m n .p₁ = F .fmor (Mat.biproduct m n .p₁)
+    biproduct m n .p₂ = F .fmor (Mat.biproduct m n .p₂)
+    biproduct m n .in₁ = F .fmor (Mat.biproduct m n .in₁)
+    biproduct m n .in₂ = F .fmor (Mat.biproduct m n .in₂)
+    biproduct m n .id-1 =
+      ≈-trans (≈-sym (F .fmor-comp {m} {m +ℕ n} {m} (Mat.biproduct m n .p₁) (Mat.biproduct m n .in₁)))
+              (≈-trans (F .fmor-cong (Mat.biproduct m n .id-1)) (F .fmor-id {m}))
+    biproduct m n .id-2 =
+      ≈-trans (≈-sym (F .fmor-comp {n} {m +ℕ n} {n} (Mat.biproduct m n .p₂) (Mat.biproduct m n .in₂)))
+              (≈-trans (F .fmor-cong (Mat.biproduct m n .id-2)) (F .fmor-id {n}))
+    biproduct m n .zero-1 =
+      ≈-trans (≈-sym (F .fmor-comp {n} {m +ℕ n} {m} (Mat.biproduct m n .p₁) (Mat.biproduct m n .in₂)))
+              (≈-trans (F .fmor-cong (Mat.biproduct m n .zero-1)) (F-εₘ {m} {n}))
+    biproduct m n .zero-2 =
+      ≈-trans (≈-sym (F .fmor-comp {m} {m +ℕ n} {n} (Mat.biproduct m n .p₂) (Mat.biproduct m n .in₁)))
+              (≈-trans (F .fmor-cong (Mat.biproduct m n .zero-2)) (F-εₘ {n} {m}))
+    biproduct m n .id-+ =
+      ≈-trans (homCM _ _ .+-cong
+                 (≈-sym (F .fmor-comp {m +ℕ n} {m} {m +ℕ n} (Mat.biproduct m n .in₁) (Mat.biproduct m n .p₁)))
+                 (≈-sym (F .fmor-comp {m +ℕ n} {n} {m +ℕ n} (Mat.biproduct m n .in₂) (Mat.biproduct m n .p₂))))
+              (≈-trans (≈-sym (F-+ₘ {m +ℕ n} {m +ℕ n} _ _))
+                       (≈-trans (F .fmor-cong (Mat.biproduct m n .id-+)) (F .fmor-id {m +ℕ n})))
+
   -- FIXME: derive biproducts instead and have clients use biproducts→products.
   module _ where
     private
