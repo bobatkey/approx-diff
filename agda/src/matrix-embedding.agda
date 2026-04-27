@@ -494,7 +494,7 @@ module matrix-embedding
 
   open import Data.Nat using () renaming (_+_ to _+ℕ_)
 
-  -- Image of m +ℕ n (biproduct of m and n in Mat) in F followed by the subcategory embedding, i.e. X^ (m +ℕ n).
+  -- Mat biproduct (m +ℕ n) viewed as a 𝒞 biproduct X^ (m +ℕ n).
   module _ where
     open Biproduct
 
