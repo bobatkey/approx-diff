@@ -20,10 +20,10 @@ private
   products = biproducts→products cmon biproduct
 
 import example-signature-interpretation
-unit : Cat._⇒_ 0 1
+unit : MatRep._⇒_ 0 1
 unit = HasInitial.from-initial initial {1}
 
-conjunct : Cat._⇒_ (HasProducts.prod products 1 1) 1
+conjunct : MatRep._⇒_ (HasProducts.prod products 1 1) 1
 conjunct = HasProducts.p₁ products {1} {1} +m HasProducts.p₂ products {1} {1}
 
 open example-signature-interpretation cat products terminal 1 unit conjunct

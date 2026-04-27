@@ -274,10 +274,10 @@ module Conjugate where
   𝓕 : Functor conjugate.cat J×Jop
   𝓕 .fobj X .proj₁ = record { carrier = X .conjugate.Obj.carrier ; joins = X .conjugate.Obj.joins }
   𝓕 .fobj X .proj₂ = record { carrier = X .conjugate.Obj.carrier ; joins = X .conjugate.Obj.joins }
-  𝓕 .fmor f .proj₁ .*→* = conjugate._⇒c_.right-∨ f
-  𝓕 .fmor f .proj₂ .*→* = conjugate._⇒c_.left-∨ f
-  𝓕 .fmor-cong f≃g .proj₁ .f≃f .eqfunc = f≃g .conjugate._≃c_.right-eq
-  𝓕 .fmor-cong f≃g .proj₂ .f≃f .eqfunc = f≃g .conjugate._≃c_.left-eq
+  𝓕 .fmor f .proj₁ .*→* = conjugate._⇒c_.right f
+  𝓕 .fmor f .proj₂ .*→* = conjugate._⇒c_.left f
+  𝓕 .fmor-cong f≃g .proj₁ .f≃f = f≃g .conjugate._≃c_.right-eq
+  𝓕 .fmor-cong f≃g .proj₂ .f≃f = f≃g .conjugate._≃c_.left-eq
   𝓕 .fmor-id .proj₁ .f≃f .eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl
   𝓕 .fmor-id .proj₂ .f≃f .eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl
   𝓕 .fmor-comp f g .proj₁ .f≃f .eqfunc = preorder.≃m-isEquivalence .IsEquivalence.refl

@@ -612,7 +612,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
           ≤-trans (≈→≤ (sym (⋅-inj u i z)))
             (h (inj i z) (≤-trans (≈→≤ (⋅-inj v i z)) vi#z))
 
-      open import conjugate using (Obj; _⇒c_)
+      open import conjugate using (Obj; _⇒c_; BooleanAlgebra; boolean-⇒c)
       open _⇒c_
       open preorder._=>_ using (fun; mono)
 
@@ -620,10 +620,12 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       BoolAlg n .Obj.carrier = vec.preorder preorder n
       BoolAlg n .Obj.meets = vec.meet preorder n meets
       BoolAlg n .Obj.joins = vec.join preorder n joins
-      BoolAlg n .Obj.¬ = ¬^
       BoolAlg n .Obj.∧-∨-distrib _ _ _ _ = ∧-∨-distrib
-      BoolAlg n .Obj.complement-∨ _ = complement-∨
-      BoolAlg n .Obj.complement-∧ _ = complement-∧
+
+      BoolAlg-boolean : ∀ n → BooleanAlgebra (BoolAlg n)
+      BoolAlg-boolean n .BooleanAlgebra.¬ = ¬^
+      BoolAlg-boolean n .BooleanAlgebra.complement-∨ _ = complement-∨
+      BoolAlg-boolean n .BooleanAlgebra.complement-∧ _ = complement-∧
 
       -- Push y inside, interchange, pull x out.
       swap : ∀ {m n} (M : Matrix n m) {x : Vec m} {y : Vec n} →
@@ -637,14 +639,19 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
 
       -- Target arrow has direction of Mᵀ for consistency with to-gal.
       to-conj : ∀ {m n} → Matrix n m → BoolAlg n ⇒c BoolAlg m
-      to-conj M .right .fun x j = (M ᵀ) j ⋅ x
-      to-conj M .right .mono x≤x' j = Σ-mono (λ i → ∧-mono ≤-refl (x≤x' i))
-      to-conj M .left .fun y i = M i ⋅ y
-      to-conj M .left .mono y≤y' i = Σ-mono (λ j → ∧-mono ≤-refl (y≤y' j))
-      to-conj M .conjugate {x} {y} .proj₁ h i =
-        ≤-trans (Σ-ub _ i) (≤-trans (≈→≤ (sym (swap (M ᵀ) {x} {y}))) (Σ-lub _ h))
-      to-conj M .conjugate {x} {y} .proj₂ k j =
-        ≤-trans (Σ-ub _ j) (≤-trans (≈→≤ (swap (M ᵀ) {x} {y})) (Σ-lub _ k))
+      to-conj {m} {n} M = boolean-⇒c (BoolAlg-boolean n) (BoolAlg-boolean m) r l c
+        where
+          r : preorder._=>_ (vec.preorder preorder n) (vec.preorder preorder m)
+          r .fun x j = (M ᵀ) j ⋅ x
+          r .mono x≤x' j = Σ-mono (λ i → ∧-mono ≤-refl (x≤x' i))
+          l : preorder._=>_ (vec.preorder preorder m) (vec.preorder preorder n)
+          l .fun y i = M i ⋅ y
+          l .mono y≤y' i = Σ-mono (λ j → ∧-mono ≤-refl (y≤y' j))
+          c : ∀ {x y} → Obj._#_ (BoolAlg m) y (r .fun x) ⇔ Obj._#_ (BoolAlg n) (l .fun y) x
+          c {x} {y} .proj₁ h i =
+            ≤-trans (Σ-ub _ i) (≤-trans (≈→≤ (sym (swap (M ᵀ) {x} {y}))) (Σ-lub _ h))
+          c {x} {y} .proj₂ k j =
+            ≤-trans (Σ-ub _ j) (≤-trans (≈→≤ (swap (M ᵀ) {x} {y})) (Σ-lub _ k))
 
       -- De Morgan dual of the transpose. Meet-preserving; right adjoint of M · _.
       adjoint : ∀ {m n} → Matrix n m → Vec n → Vec m
