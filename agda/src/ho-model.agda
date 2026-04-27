@@ -439,7 +439,7 @@ module Matrix where
         b = from g
 
   import matrix-embedding
-  module Mat≃MatRep = matrix-embedding
+  open matrix-embedding
     SemiLat.cmon-enriched
     (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
     (HasTerminal.witness SemiLat.terminal)
@@ -451,8 +451,7 @@ module Matrix where
     scalar.iso
     scalar.cmon-hom
     scalar.preserves-ι
-    (λ {a} {b} → scalar.preserves-· {a} {b})
-  open Mat≃MatRep public
+    (λ {a} {b} → scalar.preserves-· {a} {b}) public
 
   open Interpretation
     cat terminal (biproducts→products cmon biproduct)
