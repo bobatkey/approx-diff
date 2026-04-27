@@ -492,10 +492,9 @@ module matrix-embedding
       F .fmor {m} {n} (F⁻¹ .fmor {m} {n} f Mat.+ₘ F⁻¹ .fmor {m} {n} g)
     ∎) where open ≈-Reasoning isEquiv
 
-  -- FIXME: derive biproducts instead and have clients use biproducts→products.
   open import Data.Nat using () renaming (_+_ to _+ℕ_)
 
-  -- F-transport of Mat's biproduct on (m, n) to a biproduct in 𝒞 on (X^ m, X^ n) with prod = X^ (m +ℕ n).
+  -- Image of m +ℕ n (biproduct of m and n in Mat) in F followed by the subcategory embedding, i.e. X^ (m +ℕ n).
   module _ where
     open Biproduct
 
@@ -524,6 +523,7 @@ module matrix-embedding
               (≈-trans (≈-sym (F-+ₘ {m +ℕ n} {m +ℕ n} _ _))
                        (≈-trans (F .fmor-cong (id-+ (Mat.biproduct m n))) (F .fmor-id {m +ℕ n})))
 
+  -- FIXME: derive biproducts instead and have clients use biproducts→products.
   module _ where
     private
       module MP = HasProducts (biproducts→products Mat.cmon Mat.biproduct)
