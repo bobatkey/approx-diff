@@ -18,7 +18,7 @@ open import galois using (Obj; _⊕_; _⇒g_)
 import fam
 
 open import Data.Rational using (ℚ; _≤_; _⊔_; _⊓_; _+_; _-_; 0ℚ; -_; Positive; _*_; _÷_; NonZero)
-open import Data.Rational.Properties using (≤-refl; ≤-trans; ⊓-glb; ⊔-lub; p⊓q≤p; p⊓q≤q; +-mono-≤; module ≤-Reasoning; +-comm; ≤-reflexive; +-assoc; +-inverseʳ; +-inverseˡ; +-identityʳ; +-identityˡ; ⊓-mono-≤; p≤p⊔q; p≤q⊔p; neg-antimono-≤; pos⇒nonZero; pos⇒nonNeg; *-monoˡ-≤-nonNeg; ⊔-mono-≤)
+open import Data.Rational.Properties using (≤-refl; ≤-trans; ⊓-glb; ⊔-lub; p⊓q≤p; p⊓q≤q; +-mono-≤; module ≤-Reasoning; +-comm; ≤-reflexive; +-assoc; +-inverseʳ; +-inverseˡ; +-identityʳ; +-identityˡ; ⊓-mono-≤; p≤p⊔q; p≤q⊔p; neg-antimono-≤; pos⇒nonZero; pos⇒nonNeg; *-monoˡ-≤-nonNeg; ⊔-mono-≤; ⊓-distribˡ-⊔; ⊔-distribˡ-⊓)
 open import Relation.Binary.PropositionalEquality using (cong; _≡_)
   renaming (refl to ≡-refl; sym to ≡-sym; trans to ≡-trans)
 
@@ -240,12 +240,27 @@ add⁎-mono q₁ q₂ (liftS ϕ₁ , liftS ϕ₂) (liftS ψ₁ , liftS ψ₂) =
   (liftS (⊔-mono-≤ (+-mono-≤ (≤-refl {q₂}) ϕ₂) (+-mono-≤ (≤-refl {q₁}) ψ₂)))
 
 ------------------------------------------------------------------------------
-Interval : ℚ → Obj
-Interval q .galois.Obj.carrier = preorder.L (IntvPreorder q)
-Interval q .galois.Obj.meets = meet-semilattice.L (meets q)
-Interval q .galois.Obj.joins = join-semilattice.L₀ ⊔I-isJoin
+IntervalG : ℚ → Obj
+IntervalG q .galois.Obj.carrier = preorder.L (IntvPreorder q)
+IntervalG q .galois.Obj.meets = meet-semilattice.L (meets q)
+IntervalG q .galois.Obj.joins = join-semilattice.L₀ ⊔I-isJoin
 
-add-interval : ∀ q₁ q₂ → (Interval q₁ ⊕ Interval q₂) ⇒g Interval (q₁ + q₂)
+import conjugate
+
+IntervalC : ℚ → conjugate.Obj
+IntervalC q .conjugate.Obj.carrier = preorder.L (IntvPreorder q)
+IntervalC q .conjugate.Obj.meets = meet-semilattice.L (meets q)
+IntervalC q .conjugate.Obj.joins = join-semilattice.L₀ ⊔I-isJoin
+IntervalC q .conjugate.Obj.∧-∨-distrib bottom _ _ = tt
+IntervalC q .conjugate.Obj.∧-∨-distrib < _ > bottom bottom = tt
+IntervalC q .conjugate.Obj.∧-∨-distrib < x > bottom < z > = ⊑I-isPreorder .refl {x ⊓I z}
+IntervalC q .conjugate.Obj.∧-∨-distrib < x > < y > bottom = ⊑I-isPreorder .refl {x ⊓I y}
+IntervalC q .conjugate.Obj.∧-∨-distrib < x > < y >  < z > .proj₁ =
+  liftS (≤-reflexive (⊓-distribˡ-⊔ (x .lower) (y .lower) (z .lower)))
+IntervalC q .conjugate.Obj.∧-∨-distrib < x > < y >  < z > .proj₂ =
+  liftS (≤-reflexive (≡-sym (⊔-distribˡ-⊓ (x .upper) (y .upper) (z .upper))))
+
+add-interval : ∀ q₁ q₂ → (IntervalG q₁ ⊕ IntervalG q₂) ⇒g IntervalG (q₁ + q₂)
 add-interval q₁ q₂ ._⇒g_.right ._=>_.fun (bottom , bottom) = bottom
 add-interval q₁ q₂ ._⇒g_.right ._=>_.fun (bottom , < x >) = bottom
 add-interval q₁ q₂ ._⇒g_.right ._=>_.fun (< x > , bottom) = bottom
@@ -300,7 +315,7 @@ subst-Intv q₁ q₂ eq x .upper = x .upper
 subst-Intv q₁ q₂ (liftS ≡-refl) x .l≤q = x .l≤q
 subst-Intv q₁ q₂ (liftS ≡-refl) x .q≤u = x .q≤u
 
-subst-Interval : ∀ q₁ q₂ → LiftS 0ℓ (q₁ ≡ q₂) → Interval q₁ ⇒g Interval q₂
+subst-Interval : ∀ q₁ q₂ → LiftS 0ℓ (q₁ ≡ q₂) → IntervalG q₁ ⇒g IntervalG q₂
 subst-Interval q₁ q₂ eq ._⇒g_.right ._=>_.fun bottom = bottom
 subst-Interval q₁ q₂ eq ._⇒g_.right ._=>_.fun < x > = < subst-Intv q₁ q₂ eq x >
 subst-Interval q₁ q₂ eq ._⇒g_.right ._=>_.mono {bottom} {x₂} _ = tt
@@ -321,7 +336,7 @@ open preorder._≃m_
 
 ℚ-intv : C.obj
 ℚ-intv .idx = ℚ-setoid
-ℚ-intv .fam .fm = Interval
+ℚ-intv .fam .fm = IntervalG
 ℚ-intv .fam .subst eq = subst-Interval _ _ eq
 ℚ-intv .fam .refl* .right-eq .eqfun bottom = tt , tt
 ℚ-intv .fam .refl* .right-eq .eqfun < x > = (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
