@@ -218,6 +218,30 @@ module _ {o m e} {𝒞 : Category o m e} (CM : CMonEnriched 𝒞) where
     biproducts→products bp .HasProducts.pair-p₂ {x} {y} {z} = pair-p₂ (bp y z)
     biproducts→products bp .HasProducts.pair-ext {x} {y} {z} = pair-ext (bp y z)
 
+    -- Any two biproducts on the same pair are canonically isomorphic.
+    biproduct-iso : ∀ {A B} (bp₁ bp₂ : Biproduct A B) → Category.IsIso 𝒞 (pair bp₂ (p₁ bp₁) (p₂ bp₁))
+    biproduct-iso bp₁ bp₂ .Category.IsIso.inverse = pair bp₁ (p₁ bp₂) (p₂ bp₂)
+    biproduct-iso bp₁ bp₂ .Category.IsIso.f∘inverse≈id =
+      begin
+        pair bp₂ (p₁ bp₁) (p₂ bp₁) ∘ pair bp₁ (p₁ bp₂) (p₂ bp₂)
+      ≈⟨ pair-natural bp₂ _ _ _ ⟩
+        pair bp₂ (p₁ bp₁ ∘ pair bp₁ (p₁ bp₂) (p₂ bp₂)) (p₂ bp₁ ∘ pair bp₁ (p₁ bp₂) (p₂ bp₂))
+      ≈⟨ pair-cong bp₂ (pair-p₁ bp₁ _ _) (pair-p₂ bp₁ _ _) ⟩
+        pair bp₂ (p₁ bp₂) (p₂ bp₂)
+      ≈⟨ pair-ext0 bp₂ ⟩
+        id (prod bp₂)
+      ∎ where open ≈-Reasoning isEquiv
+    biproduct-iso bp₁ bp₂ .Category.IsIso.inverse∘f≈id =
+      begin
+        pair bp₁ (p₁ bp₂) (p₂ bp₂) ∘ pair bp₂ (p₁ bp₁) (p₂ bp₁)
+      ≈⟨ pair-natural bp₁ _ _ _ ⟩
+        pair bp₁ (p₁ bp₂ ∘ pair bp₂ (p₁ bp₁) (p₂ bp₁)) (p₂ bp₂ ∘ pair bp₂ (p₁ bp₁) (p₂ bp₁))
+      ≈⟨ pair-cong bp₁ (pair-p₁ bp₂ _ _) (pair-p₂ bp₂ _ _) ⟩
+        pair bp₁ (p₁ bp₁) (p₂ bp₁)
+      ≈⟨ pair-ext0 bp₁ ⟩
+        id (prod bp₁)
+      ∎ where open ≈-Reasoning isEquiv
+
     biproducts→coproducts : (∀ x y → Biproduct x y) → HasCoproducts 𝒞
     biproducts→coproducts bp .HasCoproducts.coprod x y = prod (bp x y)
     biproducts→coproducts bp .HasCoproducts.in₁ {x} {y} = in₁ (bp x y)

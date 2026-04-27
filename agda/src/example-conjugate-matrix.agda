@@ -1,6 +1,6 @@
 {-# OPTIONS --prop --postfix-projections --safe #-}
 
-module example-matrix where
+module example-conjugate-matrix where
 
 open import Level using (0ℓ)
 open import categories using (Category; HasTerminal; HasInitial; IsInitial; IsTerminal; HasProducts)
@@ -8,12 +8,16 @@ open import categories using (Category; HasTerminal; HasInitial; IsInitial; IsTe
 import join-semilattice-category as SemiLat
 import cmon-enriched as CMon
 open CMon.CMonEnriched SemiLat.cmon-enriched using (_+m_)
+open CMon using (biproducts→products)
 
 import ho-model
 open ho-model.Matrix
 
 private
   module Cat = Category cat
+
+  products : HasProducts cat
+  products = biproducts→products cmon biproduct
 
 import example-signature-interpretation
 unit : Cat._⇒_ 0 1

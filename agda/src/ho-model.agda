@@ -12,12 +12,13 @@ import meet-semilattice-category
 import join-semilattice-category
 import fam
 import indexed-family
+open Category using (opposite)
 
 ------------------------------------------------------------------------------
 -- Construct Meet × Join^op
 
 M×Jop : Category (suc 0ℓ) 0ℓ 0ℓ
-M×Jop = product meet-semilattice-category.cat (Category.opposite join-semilattice-category.cat)
+M×Jop = product meet-semilattice-category.cat (opposite join-semilattice-category.cat)
 
 private
   module M×Jop = Category M×Jop
@@ -32,7 +33,7 @@ M×Jop-limits : ∀ (𝒮 : Category 0ℓ 0ℓ 0ℓ) → HasLimits 𝒮 M×Jop
 M×Jop-limits 𝒮 D =
   product-limit _ _ 𝒮 D
     (meet-semilattice-category.limits 𝒮 _)
-    (op-colimit _ (join-semilattice-category.colimits (Category.opposite 𝒮) _))
+    (op-colimit _ (join-semilattice-category.colimits (opposite 𝒮) _))
 
 -- We make the products and terminal object "by hand" so that the
 -- representations used for programs are nice.
@@ -56,7 +57,7 @@ M×Jop-products = biproducts→products _ M×Jop-biproducts
 -- Construct Join × Join^op
 
 J×Jop : Category (suc 0ℓ) 0ℓ 0ℓ
-J×Jop = product join-semilattice-category.cat (Category.opposite join-semilattice-category.cat)
+J×Jop = product join-semilattice-category.cat (opposite join-semilattice-category.cat)
 
 J×Jop-cmon-enriched : CMonEnriched J×Jop
 J×Jop-cmon-enriched =
@@ -68,7 +69,7 @@ J×Jop-limits : ∀ (𝒮 : Category 0ℓ 0ℓ 0ℓ) → HasLimits 𝒮 J×Jop
 J×Jop-limits 𝒮 D =
   product-limit _ _ 𝒮 D
     (join-semilattice-category.limits 𝒮 _)
-    (op-colimit _ (join-semilattice-category.colimits (Category.opposite 𝒮) _))
+    (op-colimit _ (join-semilattice-category.colimits (opposite 𝒮) _))
 
 J×Jop-terminal : HasTerminal J×Jop
 J×Jop-terminal =
@@ -411,7 +412,10 @@ module Matrix where
 
     open import commutative-monoid using (_=[_]>_)
     open import commutative-semiring using (CommutativeSemiring)
-    cmon-hom : CommutativeSemiring.additive two.semiring =[ iso .Category.Iso.fwd ]> CMon.CMonEnriched.homCM SemiLat.cmon-enriched TWO TWO
+    open CommutativeSemiring two.semiring using (additive)
+    open CMon.CMonEnriched
+
+    cmon-hom : additive =[ iso .Category.Iso.fwd ]> homCM SemiLat.cmon-enriched TWO TWO
     cmon-hom ._=[_]>_.preserve-ε = preserves-ε
     cmon-hom ._=[_]>_.preserve-+ {a} {b} = preserves-+ {a} {b}
 
@@ -448,170 +452,12 @@ module Matrix where
     scalar.cmon-hom
     scalar.preserves-ι
     (λ {a} {b} → scalar.preserves-· {a} {b})
-  open Mat≃MatRep hiding (prod; p₁; p₂; pair; pair-cong; pair-p₁; pair-p₂; pair-ext) public
-
-  𝓕 : Functor cat SemiLat.cat
-  𝓕 .fobj = X^
-  𝓕 .fmor f = f
-  𝓕 .fmor-cong f≈ = f≈
-  𝓕 .fmor-id = ≈-refl
-  𝓕 .fmor-comp _ _ = ≈-refl
-
-  open import finite-product-functor using (preserve-chosen-terminal; preserve-chosen-products)
-  open IsIso
-
-  SemiLat-BP = CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products
-  SemiLat-products = biproducts→products _ SemiLat-BP
-
-  module _ where
-    open Biproduct
-    open Mat using (biproduct)
-    module P = HasProducts products
-
-    𝓕-preserve-products : preserve-chosen-products 𝓕 products SemiLat-products
-    𝓕-preserve-products {m} {n} .inverse =
-      copair (SemiLat-BP (X^ m) (X^ n)) (F .fmor (in₁ (biproduct m n))) (F .fmor (in₂ (biproduct m n)))
-    𝓕-preserve-products {m} {n} .f∘inverse≈id =
-      begin
-        pair BP {X^ (P.prod m n)} (𝓕 .fmor {P.prod m n} {m} (P.p₁ {m} {n})) (𝓕 .fmor {P.prod m n} {n} (P.p₂ {m} {n}))
-        ∘ copair BP {X^ (P.prod m n)}
-            (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
-            (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))
-      ≈⟨ pair-natural BP _ _ _ ⟩
-        pair BP
-          (P.p₁ {m} {n} ∘ copair BP {X^ (P.prod m n)}
-                            (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
-                            (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))))
-          (P.p₂ {m} {n} ∘ copair BP {X^ (P.prod m n)}
-                            (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
-                            (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))))
-      ≈⟨ pair-cong BP {prod BP} reduce-p₁ reduce-p₂ ⟩
-        pair BP (p₁ BP) (p₂ BP)
-      ≈⟨ pair-ext0 BP ⟩
-        id (prod BP)
-      ∎ where
-        BP = SemiLat-BP (X^ m) (X^ n)
-
-        reduce-p₁ : (P.p₁ {m} {n} ∘ copair BP {X^ (P.prod m n)}
-                                      (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
-                                      (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))) ≈ p₁ BP
-        reduce-p₁ =
-          begin
-            P.p₁ {m} {n} ∘ copair BP {X^ (P.prod m n)}
-              (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
-              (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))
-          ≈⟨ comp-bilinear₂ _ _ _ ⟩
-            (P.p₁ {m} {n} ∘ (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)) ∘ p₁ BP)) +m
-            (P.p₁ {m} {n} ∘ (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)) ∘ p₂ BP))
-          ≈⟨ homCM.+-cong (≈-sym (assoc _ _ _)) (≈-sym (assoc _ _ _)) ⟩
-            ((P.p₁ {m} {n} ∘ F .fmor {m} {P.prod m n} (in₁ (biproduct m n))) ∘ p₁ BP) +m
-            ((P.p₁ {m} {n} ∘ F .fmor {n} {P.prod m n} (in₂ (biproduct m n))) ∘ p₂ BP)
-          ≈⟨ homCM.+-cong
-               (∘-cong (≈-trans (≈-sym (F .fmor-comp {m} {P.prod m n} {m} (p₁ (biproduct m n)) (in₁ (biproduct m n))))
-                       (≈-trans (F .fmor-cong (id-1 (biproduct m n))) (F .fmor-id {m}))) ≈-refl)
-               (∘-cong (≈-trans (≈-sym (F .fmor-comp {n} {P.prod m n} {m} (p₁ (biproduct m n)) (in₂ (biproduct m n))))
-                       (≈-trans (F .fmor-cong (zero-1 (biproduct m n))) (Mat≃MatRep.F-εₘ {m} {n}))) ≈-refl) ⟩
-            (id (X^ m) ∘ p₁ BP) +m (εm {X^ n} {X^ m} ∘ p₂ BP)
-          ≈⟨ homCM.+-cong id-left (comp-bilinear-ε₁ _) ⟩
-            p₁ BP +m εm
-          ≈⟨ +m-runit ⟩
-            p₁ BP
-          ∎ where open ≈-Reasoning isEquiv
-
-        reduce-p₂ : (P.p₂ {m} {n} ∘ copair BP {X^ (P.prod m n)}
-                                      (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
-                                      (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))) ≈ p₂ BP
-        reduce-p₂ =
-          begin
-            P.p₂ {m} {n} ∘ copair BP {X^ (P.prod m n)}
-              (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
-              (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))
-          ≈⟨ comp-bilinear₂ _ _ _ ⟩
-            (P.p₂ {m} {n} ∘ (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)) ∘ p₁ BP)) +m
-            (P.p₂ {m} {n} ∘ (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)) ∘ p₂ BP))
-          ≈⟨ homCM.+-cong (≈-sym (assoc _ _ _)) (≈-sym (assoc _ _ _)) ⟩
-            ((P.p₂ {m} {n} ∘ F .fmor {m} {P.prod m n} (in₁ (biproduct m n))) ∘ p₁ BP) +m
-            ((P.p₂ {m} {n} ∘ F .fmor {n} {P.prod m n} (in₂ (biproduct m n))) ∘ p₂ BP)
-          ≈⟨ homCM.+-cong
-               (∘-cong (≈-trans (≈-sym (F .fmor-comp {m} {P.prod m n} {n} (p₂ (biproduct m n)) (in₁ (biproduct m n))))
-                       (≈-trans (F .fmor-cong (zero-2 (biproduct m n))) (Mat≃MatRep.F-εₘ {n} {m}))) ≈-refl)
-               (∘-cong (≈-trans (≈-sym (F .fmor-comp {n} {P.prod m n} {n} (p₂ (biproduct m n)) (in₂ (biproduct m n))))
-                       (≈-trans (F .fmor-cong (id-2 (biproduct m n))) (F .fmor-id {n}))) ≈-refl) ⟩
-            (εm {X^ m} {X^ n} ∘ p₁ BP) +m (id (X^ n) ∘ p₂ BP)
-          ≈⟨ homCM.+-cong (comp-bilinear-ε₁ _) id-left ⟩
-            εm +m p₂ BP
-          ≈⟨ homCM.+-lunit ⟩
-            p₂ BP
-          ∎ where open ≈-Reasoning isEquiv
-
-        open ≈-Reasoning isEquiv
-    𝓕-preserve-products {m} {n} .inverse∘f≈id =
-      begin
-        copair BP {X^ (P.prod m n)}
-          (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
-          (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)))
-        ∘ pair BP {X^ (P.prod m n)}
-            (𝓕 .fmor {P.prod m n} {m} (P.p₁ {m} {n}))
-            (𝓕 .fmor {P.prod m n} {n} (P.p₂ {m} {n}))
-      ≈⟨ comp-bilinear₂ _ _ _ ⟩
-        (copair BP {X^ (P.prod m n)}
-           (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
-           (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))) ∘
-         (in₁ BP ∘ P.p₁ {m} {n})) +m
-        (copair BP {X^ (P.prod m n)}
-           (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
-           (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))) ∘
-         (in₂ BP ∘ P.p₂ {m} {n}))
-      ≈⟨ homCM.+-cong (≈-sym (assoc _ _ _)) (≈-sym (assoc _ _ _)) ⟩
-        ((copair BP {X^ (P.prod m n)}
-            (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
-            (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))) ∘ in₁ BP) ∘ P.p₁ {m} {n}) +m
-        ((copair BP {X^ (P.prod m n)}
-            (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)))
-            (F .fmor {n} {P.prod m n} (in₂ (biproduct m n))) ∘ in₂ BP) ∘ P.p₂ {m} {n})
-      ≈⟨ homCM.+-cong (∘-cong (copair-in₁ BP _ _) ≈-refl) (∘-cong (copair-in₂ BP _ _) ≈-refl) ⟩
-        (F .fmor {m} {P.prod m n} (in₁ (biproduct m n)) ∘ P.p₁ {m} {n}) +m
-        (F .fmor {n} {P.prod m n} (in₂ (biproduct m n)) ∘ P.p₂ {m} {n})
-      ≈⟨ homCM.+-cong
-           (≈-sym (F .fmor-comp {P.prod m n} {m} {P.prod m n} (in₁ (biproduct m n)) (p₁ (biproduct m n))))
-           (≈-sym (F .fmor-comp {P.prod m n} {n} {P.prod m n} (in₂ (biproduct m n)) (p₂ (biproduct m n)))) ⟩
-        F .fmor {P.prod m n} {P.prod m n} (in₁ (biproduct m n) Mat.∘ p₁ (biproduct m n)) +m
-        F .fmor {P.prod m n} {P.prod m n} (in₂ (biproduct m n) Mat.∘ p₂ (biproduct m n))
-      ≈⟨ ≈-sym (Mat≃MatRep.F-+ₘ {P.prod m n} {P.prod m n}
-                  (in₁ (biproduct m n) Mat.∘ p₁ (biproduct m n))
-                  (in₂ (biproduct m n) Mat.∘ p₂ (biproduct m n))) ⟩
-        F .fmor {P.prod m n} {P.prod m n}
-          ((in₁ (biproduct m n) Mat.∘ p₁ (biproduct m n)) Mat.+ₘ
-           (in₂ (biproduct m n) Mat.∘ p₂ (biproduct m n)))
-      ≈⟨ F .fmor-cong (id-+ (biproduct m n)) ⟩
-        F .fmor {P.prod m n} {P.prod m n} (Mat.I {P.prod m n})
-      ≈⟨ F .fmor-id {P.prod m n} ⟩
-        id (X^ (P.prod m n))
-      ∎ where
-        BP = SemiLat-BP (X^ m) (X^ n)
-        open ≈-Reasoning isEquiv
-
-  terminal : HasTerminal cat
-  terminal .HasTerminal.witness = 0
-  terminal .HasTerminal.is-terminal .IsTerminal.to-terminal =
-    HasTerminal.to-terminal SemiLat.terminal
-  terminal .HasTerminal.is-terminal .IsTerminal.to-terminal-ext f =
-    HasTerminal.to-terminal-ext SemiLat.terminal f
-
-  initial : HasInitial cat
-  initial .HasInitial.witness = 0
-  initial .HasInitial.is-initial .IsInitial.from-initial =
-    HasInitial.from-initial SemiLat.initial
-  initial .HasInitial.is-initial .IsInitial.from-initial-ext f =
-    HasInitial.from-initial-ext SemiLat.initial f
-
-  𝓕-preserve-terminal : preserve-chosen-terminal 𝓕 terminal SemiLat.terminal
-  𝓕-preserve-terminal .inverse = id _
-  𝓕-preserve-terminal .f∘inverse≈id = HasTerminal.to-terminal-unique SemiLat.terminal _ _
-  𝓕-preserve-terminal .inverse∘f≈id = HasTerminal.to-terminal-unique SemiLat.terminal _ _
+  open Mat≃MatRep public
 
   open Interpretation
-    cat terminal products
-    SemiLat.cat SemiLat.cmon-enriched SemiLat.limits SemiLat.terminal SemiLat-BP
+    cat terminal (biproducts→products cmon biproduct)
+    SemiLat.cat SemiLat.cmon-enriched SemiLat.limits SemiLat.terminal
+    (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
     𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
     public
+
