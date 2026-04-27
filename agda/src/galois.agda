@@ -24,18 +24,7 @@ open import join-semilattice
             ≃m-isEquivalence to ≃J-isEquivalence)
 open import cmon-enriched
 
--- The category of bounded lattices and Galois connections between
--- them.
---
--- We define the objects as being partially ordered sets that have a
--- meet structure and a join structure. The morphisms are pairs of
--- adjoint monotone functions.
---
--- Fam(Galois) is our basic setting for approximation. Objects are
--- sets indexing bounded lattices of approximations. Morphisms are
--- functions between the sets, equipped with a forward derivative and
--- a reverse derivative.
-
+-- Category LatGal of bounded lattices and Galois connections between them.
 record Obj : Set (suc 0ℓ) where
   no-eta-equality
   field

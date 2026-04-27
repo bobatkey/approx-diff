@@ -17,7 +17,7 @@ open import join-semilattice
   renaming (_=>_ to _=>J_; _≃m_ to _≃J_; _⊕_ to _⊕J_)
 open import cmon-enriched
 
--- Category of distributive lattices (with bounded meet and join) and Tarski conjugates between them.
+-- Category LatConj of distributive lattices (with bounded meet and join) and Tarski conjugates between them.
 record Obj : Set (suc 0ℓ) where
   no-eta-equality
   field
