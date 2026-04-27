@@ -188,6 +188,19 @@ add-right q₁ q₂ x y .l≤q with y .l≤q
 add-right q₁ q₂ x y .q≤u with (y .q≤u)
 ... | liftS ϕ = liftS (≤-trans (+-mono-≤ (≤-refl {q₁}) ϕ) (p≤q⊔p (q₂ + x .upper) _))
 
+-- Join-preserving variant: takes the better (more informative) of the two single-sided bounds.
+add-right' : ∀ q₁ q₂ → Intv q₁ → Intv q₂ → Intv (q₁ + q₂)
+add-right' q₁ q₂ x y .lower = (q₂ + x .lower) ⊔ (q₁ + y .lower)
+add-right' q₁ q₂ x y .upper = (q₂ + x .upper) ⊓ (q₁ + y .upper)
+add-right' q₁ q₂ x y .l≤q with x .l≤q | y .l≤q
+... | liftS ϕ | liftS ψ =
+  liftS (⊔-lub (≤-trans (+-mono-≤ (≤-refl {q₂}) ϕ) (≤-reflexive (+-comm q₂ q₁)))
+               (+-mono-≤ (≤-refl {q₁}) ψ))
+add-right' q₁ q₂ x y .q≤u with x .q≤u | y .q≤u
+... | liftS ϕ | liftS ψ =
+  liftS (⊓-glb (≤-trans (≤-reflexive (+-comm q₁ q₂)) (+-mono-≤ (≤-refl {q₂}) ϕ))
+               (+-mono-≤ (≤-refl {q₁}) ψ))
+
 add-left : ∀ q₁ q₂ → Intv (q₁ + q₂) → Intv q₁ × Intv q₂
 add-left q₁ q₂ x .proj₁ .lower = x .lower - q₂
 add-left q₁ q₂ x .proj₁ .upper = x .upper - q₂
