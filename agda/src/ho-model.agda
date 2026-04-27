@@ -452,7 +452,7 @@ module Matrix where
     scalar.cmon-hom
     scalar.preserves-ι
     (λ {a} {b} → scalar.preserves-· {a} {b})
-  open Mat≃MatRep hiding (prod; p₁; p₂; pair; pair-cong; pair-p₁; pair-p₂; pair-ext) public
+  open Mat≃MatRep hiding (prod; p₁; p₂; pair; pair-cong; pair-p₁; pair-p₂; pair-ext; 𝓕) public
 
   𝓕 : Functor cat SemiLat.cat
   𝓕 .fobj = X^

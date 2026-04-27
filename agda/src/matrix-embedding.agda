@@ -577,3 +577,11 @@ module matrix-embedding
     products .HasProducts.pair-p₁ {x} {y} {z} = pair-p₁ {x} {y} {z}
     products .HasProducts.pair-p₂ {x} {y} {z} = pair-p₂ {x} {y} {z}
     products .HasProducts.pair-ext {x} {y} {z} = pair-ext {x} {y} {z}
+
+  -- Inclusion of MatRep(𝒞, X) into 𝒞: identity on morphisms, sending object n to X^n.
+  𝓕 : Functor cat 𝒞
+  𝓕 .fobj = X^
+  𝓕 .fmor f = f
+  𝓕 .fmor-cong f≈ = f≈
+  𝓕 .fmor-id = ≈-refl
+  𝓕 .fmor-comp _ _ = ≈-refl
