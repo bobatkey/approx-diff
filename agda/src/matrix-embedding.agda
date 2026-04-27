@@ -528,16 +528,16 @@ module matrix-embedding
     open CMonEnriched
 
     private
-      M : ∀ m n → CommutativeMonoid (Category.hom-setoid 𝒞 (X^ m) (X^ n))
-      M m n = CMonEnriched.homCM CM (X^ m) (X^ n)
+      homCM𝒞 : ∀ m n → CommutativeMonoid (Category.hom-setoid 𝒞 (X^ m) (X^ n))
+      homCM𝒞 m n = CMonEnriched.homCM CM (X^ m) (X^ n)
 
     cmon : CMonEnriched cat
-    cmon .homCM m n .ε = M m n .ε
-    cmon .homCM m n ._+_ = M m n ._+_
-    cmon .homCM m n .+-cong = M m n .+-cong
-    cmon .homCM m n .+-lunit = M m n .+-lunit
-    cmon .homCM m n .+-assoc = M m n .+-assoc
-    cmon .homCM m n .+-comm = M m n .+-comm
+    cmon .homCM m n .ε = homCM𝒞 m n .ε
+    cmon .homCM m n ._+_ = homCM𝒞 m n ._+_
+    cmon .homCM m n .+-cong = homCM𝒞 m n .+-cong
+    cmon .homCM m n .+-lunit = homCM𝒞 m n .+-lunit
+    cmon .homCM m n .+-assoc = homCM𝒞 m n .+-assoc
+    cmon .homCM m n .+-comm = homCM𝒞 m n .+-comm
     cmon .comp-bilinear₁ = CM .comp-bilinear₁
     cmon .comp-bilinear₂ = CM .comp-bilinear₂
     cmon .comp-bilinear-ε₁ = CM .comp-bilinear-ε₁
