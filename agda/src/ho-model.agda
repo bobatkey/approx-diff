@@ -460,4 +460,3 @@ module Matrix where
     (CMon.cmon+products→biproducts SemiLat.cmon-enriched SemiLat.products)
     𝓕 𝓕-preserve-terminal (λ {X} {Y} → 𝓕-preserve-products {X} {Y})
     public
-
