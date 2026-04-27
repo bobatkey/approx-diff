@@ -528,12 +528,16 @@ module matrix-embedding
     open CMonEnriched
 
     cmon : CMonEnriched cat
-    cmon .homCM m n .ε = ε (CMonEnriched.homCM CM (X^ m) (X^ n))
-    cmon .homCM m n ._+_ = _+_ (CMonEnriched.homCM CM (X^ m) (X^ n))
-    cmon .homCM m n .+-cong = +-cong (CMonEnriched.homCM CM (X^ m) (X^ n))
-    cmon .homCM m n .+-lunit = +-lunit (CMonEnriched.homCM CM (X^ m) (X^ n))
-    cmon .homCM m n .+-assoc = +-assoc (CMonEnriched.homCM CM (X^ m) (X^ n))
-    cmon .homCM m n .+-comm = +-comm (CMonEnriched.homCM CM (X^ m) (X^ n))
+    cmon .homCM m n =
+      record
+        { ε = M .ε
+        ; _+_ = M ._+_
+        ; +-cong = M .+-cong
+        ; +-lunit = M .+-lunit
+        ; +-assoc = M .+-assoc
+        ; +-comm = M .+-comm
+        }
+      where M = CMonEnriched.homCM CM (X^ m) (X^ n)
     cmon .comp-bilinear₁ = CM .comp-bilinear₁
     cmon .comp-bilinear₂ = CM .comp-bilinear₂
     cmon .comp-bilinear-ε₁ = CM .comp-bilinear-ε₁
