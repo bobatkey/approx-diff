@@ -821,8 +821,9 @@ module _
   (∧-idem    : ∀ {x} → x · x ≈ x)
   (⊤-add-top : ∀ {x} → ι + x ≈ ι)
   (let module L = DistributiveLattice2 S ∨-idem ∧-idem ⊤-add-top)
-  (_⊃_   : Setoid.Carrier A → Setoid.Carrier A → Setoid.Carrier A)
-  (⊃-adj : ∀ {a x y} → a · x L.≤ y ⇔ x L.≤ (a ⊃ y))
+  (¬ : Setoid.Carrier A → Setoid.Carrier A)
+  (complement-∨ : ∀ {x} → ι L.≤ (x + ¬ x))
+  (complement-∧ : ∀ {x} → (x · ¬ x) L.≤ ε)
   where
   module L-op = DistributiveLattice2 L.opposite ∧-idem ∨-idem ε-annihilₗ
 
@@ -837,25 +838,16 @@ module _
 
   open import galois using () renaming (Obj to Obj-g; _⇒g_ to _=>g_)
 
-  -- Same carrier/meets/joins as L.DistribLattice n, but without the ∧-∨-distrib field
-  -- (LatGal's Obj doesn't carry it).
   BoundedLattice : ℕ → Obj-g
   BoundedLattice n .Obj-g.carrier = L.DistribLattice n .conjugate.Obj.carrier
   BoundedLattice n .Obj-g.meets = L.DistribLattice n .conjugate.Obj.meets
   BoundedLattice n .Obj-g.joins = L.DistribLattice n .conjugate.Obj.joins
 
-  -- With Heyting implication available, M induces a Galois pair sharing its "backward" map with
-  -- `to-conj`. The left adjoint (V_m → V_n, backward, join-preserving) is `L.to-conj M .left` —
-  -- the same backward decomposition `λ y i → Σⱼ M i j · y j` underlies both embeddings. The right
-  -- adjoint (V_n → V_m, forward, meet-preserving) is `λ x j → Π_i (M i j ⊃ x i)`. Π is meet
-  -- iteration in L = Σ in L-op (dual's `+` is original's `·`), expressed via `Mat.Σ L.opposite`.
-  -- Direction: `to-gal M : BoundedLattice n =>g BoundedLattice m`, matching `to-conj`'s direction.
-  to-gal-right : ∀ {m n} → Mat.Matrix S n m →
-                 preorder._=>_ (BoundedLattice n .Obj-g.carrier) (BoundedLattice m .Obj-g.carrier)
-  to-gal-right {m} {n} M .fun x j = Mat.Σ L.opposite {n} (λ i → M i j ⊃ x i)
-  to-gal-right {m} {n} M .mono x≤x' j = {!   !}
+  ¬ₘ : ∀ {m n} → Matrix S n m → Matrix S n m
+  ¬ₘ M i j = ¬ (M i j)
 
-  to-gal : ∀ {m n} → Mat.Matrix S n m → BoundedLattice n =>g BoundedLattice m
+  -- Direction matching `to-conj`.
+  to-gal : ∀ {m n} → Matrix S n m → BoundedLattice n =>g BoundedLattice m
   to-gal M ._=>g_.left = L.to-conj M .left .func
-  to-gal M ._=>g_.right = to-gal-right M
+  to-gal M ._=>g_.right = {!   !}
   to-gal M ._=>g_.left⊣right = {!   !}
