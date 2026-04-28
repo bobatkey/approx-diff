@@ -348,8 +348,10 @@ module Galois where
 -- Conjugate (forward) interpretation
 module Conjugate where
 
-  open import conjugate using (_⇒c_; module _⇒c_; _⊕_)
+  open import conjugate using (_⇒c_; module _⇒c_; _⊕_; _≃c_; module _≃c_)
     renaming (module Obj to ObjC)
+  open import join-semilattice using () renaming (module _≃m_ to _≃J_)
+  open preorder using (module _≃m_)
 
   module Fam = fam.CategoryOfFamilies 0ℓ 0ℓ conjugate.cat
 
@@ -604,14 +606,24 @@ module Conjugate where
   ℚ-intv .idx = ℚ-setoid
   ℚ-intv .fam .fm = Interval
   ℚ-intv .fam .subst eq = subst-Interval _ _ eq
-  ℚ-intv .fam .refl* = {!!}
-  ℚ-intv .fam .trans* eq₁ eq₂ = {!!}
+  ℚ-intv .fam .refl* ._≃c_.right-eq ._≃J_.eqfunc ._≃m_.eqfun bottom = tt , tt
+  ℚ-intv .fam .refl* ._≃c_.right-eq ._≃J_.eqfunc ._≃m_.eqfun < x > =
+    (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
+  ℚ-intv .fam .refl* ._≃c_.left-eq ._≃J_.eqfunc ._≃m_.eqfun bottom = tt , tt
+  ℚ-intv .fam .refl* ._≃c_.left-eq ._≃J_.eqfunc ._≃m_.eqfun < x > =
+    (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
+  ℚ-intv .fam .trans* (liftS ≡-refl) (liftS ≡-refl) ._≃c_.right-eq ._≃J_.eqfunc ._≃m_.eqfun bottom = tt , tt
+  ℚ-intv .fam .trans* (liftS ≡-refl) (liftS ≡-refl) ._≃c_.right-eq ._≃J_.eqfunc ._≃m_.eqfun < x > =
+    (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
+  ℚ-intv .fam .trans* (liftS ≡-refl) (liftS ≡-refl) ._≃c_.left-eq ._≃J_.eqfunc ._≃m_.eqfun bottom = tt , tt
+  ℚ-intv .fam .trans* (liftS ≡-refl) (liftS ≡-refl) ._≃c_.left-eq ._≃J_.eqfunc ._≃m_.eqfun < x > =
+    (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
 
   zero-mor : Fam.Mor 𝟙 ℚ-intv
   zero-mor .idxf .prop-setoid._⇒_.func _ = 0ℚ
   zero-mor .idxf .prop-setoid._⇒_.func-resp-≈ _ = liftS ≡-refl
-  zero-mor .famf .transf _ ._⇒c_.right ._=>J_.func ._=>_.fun _ = bottom
-  zero-mor .famf .transf _ ._⇒c_.right ._=>J_.func ._=>_.mono _ = tt
+  zero-mor .famf .transf _ ._⇒c_.right ._=>J_.func ._=>_.fun tt = bottom
+  zero-mor .famf .transf _ ._⇒c_.right ._=>J_.func ._=>_.mono {tt} {tt} _ = tt
   zero-mor .famf .transf _ ._⇒c_.right ._=>J_.∨-preserving = tt
   zero-mor .famf .transf _ ._⇒c_.right ._=>J_.⊥-preserving = tt
   zero-mor .famf .transf _ ._⇒c_.left ._=>J_.func ._=>_.fun _ = tt
@@ -619,8 +631,11 @@ module Conjugate where
   zero-mor .famf .transf _ ._⇒c_.left ._=>J_.∨-preserving = tt
   zero-mor .famf .transf _ ._⇒c_.left ._=>J_.⊥-preserving = tt
   zero-mor .famf .transf _ ._⇒c_.conjugate .proj₁ _ = tt
-  zero-mor .famf .transf _ ._⇒c_.conjugate .proj₂ _ = {!!}
-  zero-mor .famf .natural e = {!!}
+  zero-mor .famf .transf _ ._⇒c_.conjugate {x = tt} {y = bottom} .proj₂ _ = tt
+  zero-mor .famf .transf _ ._⇒c_.conjugate {x = tt} {y = < _ >} .proj₂ _ = tt
+  zero-mor .famf .natural e ._≃c_.right-eq ._≃J_.eqfunc ._≃m_.eqfun tt = tt , tt
+  zero-mor .famf .natural e ._≃c_.left-eq ._≃J_.eqfunc ._≃m_.eqfun bottom = tt , tt
+  zero-mor .famf .natural e ._≃c_.left-eq ._≃J_.eqfunc ._≃m_.eqfun < x > = tt , tt
 
 {-
 ------------------------------------------------------------------------------
