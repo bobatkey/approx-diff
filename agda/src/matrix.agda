@@ -684,15 +684,15 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
   -- idempotent and ⊤ (= 1) is the additive top. The induced order is x ≤ y iff x ∨ y ≈ y; ∨ becomes the
   -- join, ∧ the meet, ⊥ (= 0) the bottom, ⊤ the top. Will eventually replace DistributiveLattice.
   module DistributiveLattice2
-    (∨-idem    : ∀ {x} → (x ∨ x) ≈ x)
-    (∧-idem    : ∀ {x} → (x ∧ x) ≈ x)
-    (⊤-add-top : ∀ {x} → (⊤ ∨ x) ≈ ⊤)
+    (∨-idem    : ∀ {x} → x ∨ x ≈ x)
+    (∧-idem    : ∀ {x} → x ∧ x ≈ x)
+    (⊤-add-top : ∀ {x} → ⊤ ∨ x ≈ ⊤)
     where
 
     open import prop using (proj₁; proj₂)
 
     _≤_ : Carrier → Carrier → Prop _
-    x ≤ y = (x ∨ y) ≈ y
+    x ≤ y = x ∨ y ≈ y
 
     ≤-isPreorder : IsPreorder _≤_
     ≤-isPreorder .IsPreorder.refl = ∨-idem
@@ -714,15 +714,15 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     ⊤-isTop : IsTop ≤-isPreorder ⊤
     ⊤-isTop .IsTop.≤-top = trans ∨-comm ⊤-add-top
 
-    ∨-∧-absorption : ∀ {a b} → (a ∨ (a ∧ b)) ≈ a
+    ∨-∧-absorption : ∀ {a b} → a ∨ (a ∧ b) ≈ a
     ∨-∧-absorption {a} {b} =
       trans (∨-cong (trans (sym ∧-lunit) ∧-comm) refl)
             (trans (sym ∧-∨-distribₗ) (trans (∧-cong refl ⊤-add-top) (trans ∧-comm ∧-lunit)))
 
-    ∧-monoʳ : ∀ {a b c} → a ≤ b → (c ∧ a) ≤ (c ∧ b)
+    ∧-monoʳ : ∀ {a b c} → a ≤ b → c ∧ a ≤ c ∧ b
     ∧-monoʳ a≤b = trans (sym ∧-∨-distribₗ) (∧-cong refl a≤b)
 
-    ∧-monoˡ : ∀ {a b c} → a ≤ b → (a ∧ c) ≤ (b ∧ c)
+    ∧-monoˡ : ∀ {a b c} → a ≤ b → a ∧ c ≤ b ∧ c
     ∧-monoˡ a≤b = trans (sym ∧-∨-distribᵣ) (∧-cong a≤b refl)
 
     ∧-isMeet : IsMeet ≤-isPreorder _∧_
@@ -732,10 +732,10 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       ≤-isPreorder .IsPreorder.trans
         (trans (∨-cong (sym ∧-idem) refl) (∧-monoʳ x≤z)) (∧-monoˡ x≤y)
 
-    ∧-∨-distrib : ∀ {x y z} → (x ∧ (y ∨ z)) ≤ ((x ∧ y) ∨ (x ∧ z))
+    ∧-∨-distrib : ∀ {x y z} → x ∧ (y ∨ z) ≤ (x ∧ y) ∨ (x ∧ z)
     ∧-∨-distrib = ≈→≤ ∧-∨-distribₗ
 
-    ∨-∧-distribₗ : ∀ {a b c} → ((a ∨ b) ∧ (a ∨ c)) ≈ (a ∨ (b ∧ c))
+    ∨-∧-distribₗ : ∀ {a b c} → (a ∨ b) ∧ (a ∨ c) ≈ a ∨ (b ∧ c)
     ∨-∧-distribₗ {a} {b} {c} =
       trans ∧-∨-distribᵣ
             (trans (∨-cong ∧-∨-distribₗ ∧-∨-distribₗ)
