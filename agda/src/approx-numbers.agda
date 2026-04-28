@@ -23,7 +23,8 @@ open import Data.Rational.Properties
   using (
     ≤-refl; ≤-trans; ⊓-glb; ⊔-lub; p⊓q≤p; p⊓q≤q; +-mono-≤; module ≤-Reasoning; +-comm; ≤-reflexive; +-assoc;
     +-inverseʳ; +-inverseˡ; +-identityʳ; +-identityˡ; ⊓-mono-≤; p≤p⊔q; p≤q⊔p; neg-antimono-≤; pos⇒nonZero; pos⇒nonNeg;
-    *-monoˡ-≤-nonNeg; ⊔-mono-≤; ⊓-distribˡ-⊔; ⊔-distribˡ-⊓; mono-≤-distrib-⊔; mono-≤-distrib-⊓; ⊔-comm; ⊓-comm
+    *-monoˡ-≤-nonNeg; ⊔-mono-≤; ⊓-distribˡ-⊔; ⊔-distribˡ-⊓; mono-≤-distrib-⊔; mono-≤-distrib-⊓; ⊔-comm; ⊓-comm;
+    ⊔-assoc; ⊓-assoc
   )
 open import Relation.Binary.PropositionalEquality using (cong; _≡_)
   renaming (refl to ≡-refl; sym to ≡-sym; trans to ≡-trans)
@@ -358,7 +359,13 @@ add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {< 
   liftS (≤-reflexive (≡-sym (mono-≤-distrib-⊓ (+-mono-≤ (≤-refl {q₂})) (a .upper) (c .upper))))
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {bottom , < d >} =
   ⊑I-isPreorder .refl {addᵀ q₁ q₂ a d}
-add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {< c > , < d >} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {< c > , < d >} =
+  liftS (≤-reflexive (≡-trans (cong (_⊔ (q₁ + d .lower))
+                                    (mono-≤-distrib-⊔ (+-mono-≤ (≤-refl {q₂})) (a .lower) (c .lower)))
+                              (⊔-assoc (q₂ + a .lower) (q₂ + c .lower) (q₁ + d .lower)))) ,
+  liftS (≤-reflexive (≡-trans (≡-sym (⊓-assoc (q₂ + a .upper) (q₂ + c .upper) (q₁ + d .upper)))
+                              (cong (_⊓ (q₁ + d .upper))
+                                    (≡-sym (mono-≤-distrib-⊓ (+-mono-≤ (≤-refl {q₂})) (a .upper) (c .upper))))))
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {bottom , bottom} =
   ⊑I-isPreorder .refl {addᵀ-l q₁ q₂ b}
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {< c > , bottom} =
