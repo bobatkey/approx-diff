@@ -735,23 +735,13 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     ∧-∨-distrib : ∀ {x y z} → (x ∧ (y ∨ z)) ≤ ((x ∧ y) ∨ (x ∧ z))
     ∧-∨-distrib = ≈→≤ ∧-∨-distribₗ
 
-    -- Dual distributivity, as ≈. Standard distributive-lattice derivation using the dual absorption
-    -- a ∨ (a ∧ b) ≈ a:
-    --   (a ∨ b) ∧ (a ∨ c)
-    --   ≈ (a ∧ (a ∨ c)) ∨ (b ∧ (a ∨ c))                         [∧-∨-distribᵣ]
-    --   ≈ ((a ∧ a) ∨ (a ∧ c)) ∨ ((b ∧ a) ∨ (b ∧ c))             [∧-∨-distribₗ ×2]
-    --   ≈ (a ∨ (a ∧ c)) ∨ ((a ∧ b) ∨ (b ∧ c))                   [∧-idem; ∧-comm]
-    --   ≈ a ∨ ((a ∧ b) ∨ (b ∧ c))                                [absorption]
-    --   ≈ (a ∨ (a ∧ b)) ∨ (b ∧ c)                                [reassociate]
-    --   ≈ a ∨ (b ∧ c)                                            [absorption]
     ∨-∧-distribₗ : ∀ {a b c} → ((a ∨ b) ∧ (a ∨ c)) ≈ (a ∨ (b ∧ c))
     ∨-∧-distribₗ {a} {b} {c} =
       trans ∧-∨-distribᵣ
-      (trans (∨-cong ∧-∨-distribₗ ∧-∨-distribₗ)
-      (trans (∨-cong (∨-cong ∧-idem refl) (∨-cong ∧-comm refl))
-      (trans (∨-cong ∨-∧-absorption refl)
-      (trans (sym ∨-assoc)
-             (∨-cong ∨-∧-absorption refl)))))
+            (trans (∨-cong ∧-∨-distribₗ ∧-∨-distribₗ)
+                  (trans (∨-cong (∨-cong ∧-idem refl) (∨-cong ∧-comm refl))
+                          (trans (∨-cong ∨-∧-absorption refl)
+                                (trans (sym ∨-assoc) (∨-cong ∨-∧-absorption refl)))))
 
     preorder : Preorder
     preorder .Preorder.Carrier = Carrier
@@ -821,3 +811,13 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     opposite .CommutativeSemiring.multiplicative = additive
     opposite .CommutativeSemiring.·-+-distribₗ = sym ∨-∧-distribₗ
     opposite .CommutativeSemiring.ε-annihilₗ = ⊤-add-top
+
+module _
+  {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A)
+  (let open CommutativeSemiring S hiding (_≈_); _≈_ = Setoid._≈_ A)
+  (∨-idem    : ∀ {x} → (x + x) ≈ x)
+  (∧-idem    : ∀ {x} → (x · x) ≈ x)
+  (⊤-add-top : ∀ {x} → (ι + x) ≈ ι)
+  where
+  module L = DistributiveLattice2 S ∨-idem ∧-idem ⊤-add-top
+  module L-op = DistributiveLattice2 L.opposite ∧-idem ∨-idem ε-annihilₗ
