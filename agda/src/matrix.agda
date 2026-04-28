@@ -668,6 +668,30 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     opposite .CommutativeSemiring.·-+-distribₗ = sym ∨-∧-distribₗ
     opposite .CommutativeSemiring.ε-annihilₗ = ⊤-add-top
 
+    -- The action of the transpose Mᵀ over the opposite semiring: a meet-preserving map given by y ↦ (j ↦ ⊓ᵢ
+    -- (M i j ∨ y i)). Distinct from the conjugate (which uses joins-of-meets). Athough this requires only
+    -- distributivity, not anything Boolean, we can think of this as the adjoint of ¬M; but neither ¬M nor the
+    -- right adjoint of M can themselves be defined for such a structure. Under additional Boolean (perhaps
+    -- only Heyting) assumptions, applying this construction to ¬M recovers the right adjoint of M.
+    private
+      module M-op = Mat opposite
+      open meet-semilattice using (MeetSemilattice)
+
+    open IsTop ⊤-isTop using () renaming (≤-top to ≤-⊤)
+
+    to-adj-candidate : ∀ {m n} → Matrix n m →
+                   meet-semilattice._=>_ (DistribLattice n .Obj.meets) (DistribLattice m .Obj.meets)
+    to-adj-candidate {m} {n} M .meet-semilattice._=>_.func .preorder._=>_.fun y j =
+      M-op.Σ {n} (λ i → M i j ∨ y i)
+    to-adj-candidate {m} {n} M .meet-semilattice._=>_.func .preorder._=>_.mono y≤y' j =
+      M-op.+-to-Σ.Σ-preserves _≤_ ≤-refl (IsMeet.mono ∧-isMeet)
+        (λ i → IsJoin.mono ∨-isJoin ≤-refl (y≤y' i))
+    to-adj-candidate {m} {n} M .meet-semilattice._=>_.∧-preserving {y₁} {y₂} j =
+      ≈→≤ (trans (M-op.Σ-+ {n} (λ i → M i j ∨ y₁ i) (λ i → M i j ∨ y₂ i))
+                 (M-op.Σ-cong {n} (λ i → ∨-∧-distribₗ)))
+    to-adj-candidate {m} {n} M .meet-semilattice._=>_.⊤-preserving j =
+      ≈→≤ (sym (trans (M-op.Σ-cong {n} (λ i → trans ∨-comm ⊤-add-top)) (M-op.Σ-ε {n})))
+
 open import prop using (_⇔_; proj₁; proj₂)
 
 -- I think we can actually derive this just from a Heyting implication.
@@ -691,6 +715,7 @@ module BooleanAlgebra
   import preorder
   open import conjugate using (_⇒c_)
   open import join-semilattice using () renaming (_=>_ to _=>J_)
+  import meet-semilattice
   open _⇒c_
   open _=>J_
   open preorder._=>_
@@ -719,13 +744,11 @@ module BooleanAlgebra
   open IsMeet L.∧-isMeet using (π₂)
   open L using (∧-monoʳ; ≈→≤; Σ-ub; Σ-lub)
 
-  -- Direction matching `to-conj`.
+  -- Direction matching `to-conj`. The right adjoint is the meet-preserving "adjoint to ¬M candidate" that we
+  -- were able to compute using the tranpose on the opposite semiring.
   to-gal : ∀ {m n} → Matrix n m → BoundedLattice n =>g BoundedLattice m
   to-gal M ._=>g_.left = L.to-conj M .left .func
-  to-gal M ._=>g_.right .fun = L-op.to-conj (¬ₘ M) .right .func .fun
-  to-gal M ._=>g_.right .mono x≤x' j =
-    +-to-Σ-op.Σ-preserves L._≤_
-      (IsPreorder.refl L.≤-isPreorder) (IsMeet.mono L.∧-isMeet) (λ i → ∨-mono ≤-refl (x≤x' i))
+  to-gal M ._=>g_.right = L.to-adj-candidate (¬ₘ M) .meet-semilattice._=>_.func
   to-gal M ._=>g_.left⊣right {x} {y} .proj₁ y≤rx i =
     Σ-lub _ (λ j →
       ≤-trans (∧-monoʳ (≤-trans (y≤rx j) (L-op⇔L .proj₁ (L-op.Σ-ub _ i))))

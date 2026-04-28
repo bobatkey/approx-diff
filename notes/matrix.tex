@@ -136,15 +136,49 @@ satisfies
 of an $n \times m$ matrix $M_f$, the \emph{matrix representation} of $f$; conversely every $n \times m$
 matrix is $M_f$ for a unique such $f$.
 
+\subsubsection{Distributive lattice and the opposite-semiring dual}
+\label{sec:matrix:additional-structure:distrib}
+
+If additionally $\cdot$ is the meet of a top element $1$ and distributes over $+$, so that $(S, +, 0, \cdot,
+1, \le)$ is a bounded distributive lattice, then $\cdot$ is also idempotent and the \emph{opposite semiring}
+$S^\op = (S, \cdot, 1, +, 0)$ is itself a bounded distributive lattice, with the roles of $+$ and $\cdot$
+(equivalently, $\join$ and $\meet$) swapped. Disjointness $a \disj b \iff a \cdot b \le 0$ lifts pointwise to
+vectors.
+
+Given a matrix $M$, the transpose $M^{\!\top}$ has two natural matrix-action interpretations:
+\begin{itemize}
+\item Over $S$, $M^{\!\top}$ acts as $V_n \to V_m$ via $M^{\!\top}(y)_j = \bigjoin_i M_{ij} \cdot y_i$. With
+the conjugacy condition this realises the conjugate pair $(M^{\!\top}, M)$ in $\LatConj$ on the appropriate
+lattices. Join-preserving.
+\item Over $S^\op$, the same transpose acts as $V_n \to V_m$ via
+\begin{salign*}
+   M^{\!\top}_{S^\op}(y)_j \;=\; \bigmeet_i (M_{ij} \join y_i),
+\end{salign*}
+\noindent obtained by interpreting matrix multiplication in $\Mat(S^\op)$ (where $+$ becomes $\meet$ and
+$\cdot$ becomes $\join$). Distributivity ensures this map is meet-preserving and top-preserving:
+\begin{salign*}
+   M^{\!\top}_{S^\op}(y_1 \meet y_2)_j
+   &= \bigmeet_i (M_{ij} \join (y_{1i} \meet y_{2i}))
+   = \bigmeet_i \big((M_{ij} \join y_{1i}) \meet (M_{ij} \join y_{2i})\big) \\
+   &= M^{\!\top}_{S^\op}(y_1)_j \meet M^{\!\top}_{S^\op}(y_2)_j.
+\end{salign*}
+\end{itemize}
+
+\noindent So $M^{\!\top}_{S^\op}$ is a well-defined meet-semilattice morphism $V_n \to V_m$ in any bounded
+distributive lattice setting — extensionally distinct from the conjugate $M^{\!\top}$ (which is
+join-preserving and uses joins-of-meets rather than meets-of-joins).
+
+This operation is purely lattice-theoretic and requires no negation. It is, however, only \emph{adjoint} to
+$M$ under additional Boolean structure, where the relationship to the Galois right adjoint becomes precise
+(\secref{matrix:additional-structure:boolean}). The point is that the \emph{operation} can be defined and
+reasoned about at the distributive-lattice level; whether it is the right adjoint is a downstream question.
+
 \subsubsection{Boolean algebra}
 \label{sec:matrix:additional-structure:boolean}
 
-If additionally $\cdot$ is the meet of a top element $1$ and distributes over $+$, so that $(S, +, 0, \cdot,
-1, \le)$ is a bounded distributive lattice, then we have a \emph{disjointness} relation $a \disj b$ iff $a
-\cdot b \le 0$, with pointwise lift to vectors. If $S$ is furthermore a \emph{Boolean algebra} $B$, equipped
-with a negation $\neg$ satisfying $1 \le a + \neg a$ (excluded middle) and $a \cdot \neg a \le 0$
-(non-contradiction), then $\neg$ is involutive and disjointness reflects the order: $a \le b$ iff every $c$
-disjoint from $b$ is disjoint from $a$.
+If $S$ is furthermore a \emph{Boolean algebra} $B$, equipped with a negation $\neg$ satisfying $1 \le a + \neg
+a$ (excluded middle) and $a \cdot \neg a \le 0$ (non-contradiction), then $\neg$ is involutive and
+disjointness reflects the order: $a \le b$ iff every $c$ disjoint from $b$ is disjoint from $a$.
 
 A linear $f : B^m \to B^n$ in $\Mat(B)$ pairs naturally with two counterparts $B^n \to B^m$:
 
@@ -159,6 +193,19 @@ Galois connection in $\BoolGal$.
 \noindent Concretely, $f_*(x)_i = \bigmeet_j (M_f[i,j] \to x_j)$, where $a \to b = \neg a \join b$ is Boolean
 implication. Under the equivalence $\BoolConj \simeq \BoolGal$ from
 \secref{categories-with-biproducts:boolconj}, these two presentations correspond.
+
+The opposite-semiring construction $M^{\!\top}_{S^\op}$ from
+\secref{matrix:additional-structure:distrib} now upgrades to capture the Galois right adjoint:
+\begin{salign*}
+   f_*(x) \;=\; (\neg M)^{\!\top}_{S^\op}(x)
+   \qquad \text{i.e.\ }\;\; f_*(x)_i = \bigmeet_j (\neg M_{ij} \join x_j).
+\end{salign*}
+
+\noindent So the Galois right adjoint of $f$ is the opposite-semiring action of the \emph{complemented}
+transpose $(\neg M)^{\!\top}$. The Boolean step is exactly the entrywise complementation; everything else
+(transposition, opposite semiring, meet-preservation) is already given by the distributive-lattice
+construction. Mat(S)-natively, then, Galois slicing factors as ``compute the $S^\op$-action of $M^{\!\top}$''
+plus ``apply $\neg$ to the matrix entries''.
 
 \subsubsection{$\Mat(\Two)$ and $\FinRel$}
 \label{sec:matrix:two}
@@ -240,9 +287,9 @@ since it's join-preserving in both cases:
 \subsection{Example: rational intervals}
 \label{sec:matrix:rational-intervals}
 
-We now consider the 4 entries in the adjoint/conjugate grid concretely on intervals over the rationals $q \in
-\QQ$. Let $\Intv(q) = \{[l, u] : l \leq q \leq u\}$ be the set of \emph{intervals} on $q$ ordered by reverse
-inclusion (so a tighter interval is higher in the information order); $\Intv(q)$ is a distributive
+As an example, we will consider the 4 entries in the adjoint/conjugate grid on intervals over the rationals
+$\QQ$. Let $\Intv(q) = \{[l, u] : l \leq q \leq u\}$ be the set of \emph{intervals} on $q \in $ ordered by
+reverse inclusion (so a tighter interval is higher in the information order). $\Intv(q)$ is a distributive
 upper-bounded lattice with top $[q, q]$, meet $[l_1, u_1] \meet [l_2, u_2] = [\max(l_1, l_2), \min(u_1, u_2)]$
 and join $[l_1, u_1] \join [l_2, u_2] = [\min(l_1, l_2), \max(u_1, u_2)]$. The lifting $\IntvL(q) =
 \Intv(q)_{\bot}$ which adjoins an explicit least element $\bot$ is a bounded distributive lattice, with $\bot$
@@ -254,7 +301,7 @@ For any $q_1, q_2 \in \QQ$, the addition $q_1 + q_2$ has four associated maps:
 \small
 \begin{tabular}{ll}
 \hline
-\textbf{operation} & \textbf{definition on $\IntvL$} \\
+\textbf{operation} & \textbf{behaviour} \\
 \hline
 $\add: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$ &
   $\add([l, u]) = $ \\
@@ -272,15 +319,13 @@ $\addT_*: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$ &
 \end{tabular}
 \end{center}
 
-\noindent (where $\min$ and $\max$ are the lattice operations on $\QQ$). The two input intervals each encode a
-constraint of the form ``this summand lies in the interval $[x.l, x.u]$''; the forward maps $\add^*$ and
-$\addT$ shift each input by the \emph{other} summand's index to obtain candidate ranges for the result, and
-then combine them: by union for $\add^*$, or by intersection for $\addT$.
+\noindent The two input intervals each encode a constraint of the form ``this summand $q$ lies in the interval
+$[l, u]$''; the forward maps $\add^*$ and $\addT$ shift each input by the \emph{other} summand $q'$ to obtain
+candidate ranges for the result, and then combine them: by union for $\add^*$, or by intersection for $\addT$.
 
-Note that $\addT_* = \add$: solving the universal property $\addT(x, y) \leq z \iff (x, y) \leq \addT_*(z)$ in
-the information order yields exactly the subtraction-split. So the four-map grid has only three distinct
-functions, with $\add$ being both left adjoint to $\add^*$ and right adjoint to $\addT$. This is possible
-because $\add$ is a lattice homomorphism (preserves both joins and meets), and so can play both roles.
+Note that $\addT_* = \add$, so in this case the four-map grid has only three distinct functions, with $\add$
+being both left adjoint to $\add^*$ and right adjoint to $\addT$. This is possible because $\add$ is a lattice
+homomorphism (preserves both joins and meets), and so can play both roles.
 
 \paragraph{Comparison.} On overlapping but non-nested input intervals (e.g.\ $\IntvL$-shifted ranges $[1/2,
 1]$ and $[4/5, 3/2]$):
