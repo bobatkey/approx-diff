@@ -769,7 +769,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     DistribLattice n .Obj.joins = vec.join preorder n joins
     DistribLattice n .Obj.∧-∨-distrib _ _ _ _ = ∧-∨-distrib
 
-    open Join _≤_ ≤-isPreorder ∨-isJoin ⊥-isBottom ≈→≤ using (Σ-mono; Σ-ub; Σ-lub)
+    open Join _≤_ ≤-isPreorder ∨-isJoin ⊥-isBottom ≈→≤ using (Σ-mono; Σ-ub; Σ-lub) public
     open IsPreorder ≤-isPreorder using () renaming (refl to ≤-refl; trans to ≤-trans)
     open IsMeet ∧-isMeet using () renaming (mono to ∧-mono)
 
@@ -851,11 +851,22 @@ module _
   Σ-L-op-mono : ∀ {k} {f g : Fin k → Setoid.Carrier A} → (∀ i → f i L.≤ g i) → Σ L.opposite {k} f L.≤ Σ L.opposite {k} g
   Σ-L-op-mono = +-to-Σ.Σ-preserves L.opposite L._≤_ (IsPreorder.refl L.≤-isPreorder) (IsMeet.mono L.∧-isMeet)
 
+  L-op→L : ∀ {a b} → a L-op.≤ b → b L.≤ a
+  L-op→L a·b≈b =
+    Setoid.trans A (+-cong (Setoid.sym A a·b≈b) (Setoid.refl A)) (Setoid.trans A +-comm L.∨-∧-absorption)
+
+  open IsPreorder L.≤-isPreorder using () renaming (refl to ≤-refl; trans to ≤-trans)
+
   -- Direction matching `to-conj`.
   to-gal : ∀ {m n} → Matrix S n m → BoundedLattice n =>g BoundedLattice m
   to-gal M ._=>g_.left = L.to-conj M .left .func
   to-gal M ._=>g_.right .fun = L-op.to-conj (¬ₘ M) .right .func .fun
   to-gal M ._=>g_.right .mono x≤x' j =
-    Σ-L-op-mono (λ i → IsJoin.mono L.∨-isJoin (IsPreorder.refl L.≤-isPreorder) (x≤x' i))
-  to-gal M ._=>g_.left⊣right .proj₁ y≤rx i = {!   !}
+    Σ-L-op-mono (λ i → IsJoin.mono L.∨-isJoin ≤-refl (x≤x' i))
+  to-gal M ._=>g_.left⊣right {x} {y} .proj₁ y≤rx i =
+    L.Σ-lub _ (λ j →
+      ≤-trans (L.∧-monoʳ (≤-trans (y≤rx j) (L-op→L (L-op.Σ-ub _ i))))
+              (≤-trans (L.≈→≤ ·-+-distribₗ)
+                       (≤-trans (IsJoin.mono L.∨-isJoin complement-∧ ≤-refl)
+                                (≤-trans (L.≈→≤ +-lunit) (IsMeet.π₂ L.∧-isMeet)))))
   to-gal M ._=>g_.left⊣right .proj₂ ly≤x j = {!   !}
