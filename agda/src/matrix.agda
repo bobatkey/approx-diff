@@ -563,7 +563,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     _#^_ : ∀ {n} → Vec n → Vec n → Prop _
     u #^ v = (u ⋅ v) ≤ ⊥
 
-    open import prop using (_⇔_)
+    open import prop using (_⇔_; proj₁; proj₂)
 
     module BooleanAlgebra
       (¬ : Carrier → Carrier)
@@ -812,7 +812,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     opposite .CommutativeSemiring.·-+-distribₗ = sym ∨-∧-distribₗ
     opposite .CommutativeSemiring.ε-annihilₗ = ⊤-add-top
 
-open import prop using (_⇔_)
+open import prop using (_⇔_; proj₁; proj₂)
 
 module _
   {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A)
@@ -846,8 +846,16 @@ module _
   ¬ₘ : ∀ {m n} → Matrix S n m → Matrix S n m
   ¬ₘ M i j = ¬ (M i j)
 
+  open import basics using (IsPreorder; IsMeet; IsJoin)
+
+  Σ-L-op-mono : ∀ {k} {f g : Fin k → Setoid.Carrier A} → (∀ i → f i L.≤ g i) → Σ L.opposite {k} f L.≤ Σ L.opposite {k} g
+  Σ-L-op-mono = +-to-Σ.Σ-preserves L.opposite L._≤_ (IsPreorder.refl L.≤-isPreorder) (IsMeet.mono L.∧-isMeet)
+
   -- Direction matching `to-conj`.
   to-gal : ∀ {m n} → Matrix S n m → BoundedLattice n =>g BoundedLattice m
   to-gal M ._=>g_.left = L.to-conj M .left .func
-  to-gal M ._=>g_.right = {!   !}
-  to-gal M ._=>g_.left⊣right = {!   !}
+  to-gal M ._=>g_.right .fun = L-op.to-conj (¬ₘ M) .right .func .fun
+  to-gal M ._=>g_.right .mono x≤x' j =
+    Σ-L-op-mono (λ i → IsJoin.mono L.∨-isJoin (IsPreorder.refl L.≤-isPreorder) (x≤x' i))
+  to-gal M ._=>g_.left⊣right .proj₁ y≤rx i = {!   !}
+  to-gal M ._=>g_.left⊣right .proj₂ ly≤x j = {!   !}
