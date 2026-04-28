@@ -612,7 +612,7 @@ module Conjugate where
   zero-mor .famf .transf _ ._⇒c_.left ._=>J_.func ._=>_.mono _ = tt
   zero-mor .famf .transf _ ._⇒c_.left ._=>J_.∨-preserving = tt
   zero-mor .famf .transf _ ._⇒c_.left ._=>J_.⊥-preserving = tt
-  zero-mor .famf .transf _ ._⇒c_.conjugate .proj₁ _ = {!!}
+  zero-mor .famf .transf _ ._⇒c_.conjugate .proj₁ _ = tt
   zero-mor .famf .transf _ ._⇒c_.conjugate .proj₂ _ = {!!}
   zero-mor .famf .natural e = {!!}
 
