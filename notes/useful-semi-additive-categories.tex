@@ -93,8 +93,8 @@ biproducts, with the trivial 1-point lattice as zero object and binary biproduct
 
 \noindent with product and coproduct of Galois connections computed component-wise.
 
-\subsection{Category of Boolean algebras and conjugate pairs}
-\label{sec:categories-with-biproducts:boolconj}
+\subsection{Category of bounded distributive lattices and conjugate pairs}
+\label{sec:categories-with-biproducts:latconj}
 
 A second way of reversing the direction of a $\join$-preserving map uses \emph{conjugate pairs}, an idea
 going back to \citet{jonsson51}. Conjugate pairs are defined over bounded lattices using the
@@ -109,39 +109,39 @@ functions $f : X \to Y$ and $g : Y \to X$ satisfying
 \noindent for every $x \in X$ and $y \in Y$.
 \end{definition}
 
-\noindent The definition does not assume $f$ or $g$ to be monotone, nor to preserve any lattice structure.
-When $X$ and $Y$ are Boolean algebras, however, both components automatically preserve joins (and so are
-monotone).
+\noindent The definition does not by itself force $f$ or $g$ to be monotone or to preserve any lattice
+structure. Conjugate pairs of \emph{join-preserving} maps compose componentwise (with the second components
+composed in the opposite order), and $(\id_X, \id_X)$ is such a pair, giving the following category.
+
+\begin{definition}[Category $\LatConj$]
+Define the category $\LatConj$ which has:
+\begin{itemize}
+\item as objects all bounded distributive lattices;
+\item as morphisms from $X$ to $Y$ all conjugate pairs $(f, g) : X \to Y$ in which $f$ and $g$ are
+join-preserving.
+\end{itemize}
+\end{definition}
+
+\noindent The involution $(f, g) \mapsto (g, f)$ is identity-on-objects and contravariant, making $\LatConj$
+a dagger category with $(f, g)^\dagger = (g, f)$.
 
 \begin{definition}[Boolean algebra]
 A \emph{Boolean algebra} is a bounded distributive lattice equipped with a complement $\neg$ satisfying
 $\top \le x \join \neg x$ and $x \meet \neg x \le \bot$.
 \end{definition}
 
-\noindent Write $\demorgan{f} = \neg \comp f \comp \neg$ for the \emph{De Morgan dual} of $f : X \to Y$;
-involutivity of $\neg$ gives $\demorgan{(\demorgan{f})} = f$. Over a Boolean algebra, disjointness
-determines the order via $a \disj b \iff a \le \neg b$, so the conjugate condition rewrites to $y \le
-\demorgan{f}(x) \iff \demorgan{g}(y) \le x$, exhibiting $g \adj \demorgan{f}$ and (symmetrically) $f \adj
-\demorgan{g}$. Both components are left adjoints, and so preserve joins.
-
-Conjugate pairs compose componentwise (with the second components composed in the opposite order), and
-$(\id_X, \id_X)$ is a conjugate pair, so the following is a category.
-
-\begin{definition}[Category $\BoolConj$]
-Define the category $\BoolConj$ which has:
-\begin{itemize}
-\item as objects all Boolean algebras;
-\item as morphisms from $X$ to $Y$ all conjugate pairs $(f, g) : X \to Y$.
-\end{itemize}
-\end{definition}
-
-\noindent Via the embedding $(f, g) \mapsto g \adj \demorgan{f}$, which is full since every meet-preserving
-map between Boolean algebras is $\demorgan{f}$ for some join-preserving $f$, $\BoolConj$ is equivalent to the
-full subcategory of $\LatGal$ on Boolean algebras. It thus inherits $\SemiLat$-enrichment from $\LatGal$: the
-zero morphism is the constant-$\bot$ pair, and addition is componentwise $\join$. The involution $(f, g)
-\mapsto (g, f)$ is identity-on-objects and contravariant, making $\BoolConj$ a dagger category with $(f,
-g)^\dagger = (g, f)$; under the equivalence this corresponds to the dagger $f \adj g \mapsto \demorgan{g} \adj
-\demorgan{f}$ on $\BoolGal$.
+\noindent When $X$ and $Y$ are Boolean algebras, the join-preservation of conjugate-pair components is
+automatic. Write $\demorgan{f} = \neg \comp f \comp \neg$ for the \emph{De Morgan dual} of $f : X \to Y$;
+involutivity of $\neg$ gives $\demorgan{(\demorgan{f})} = f$. Over a Boolean algebra, disjointness determines
+the order via $a \disj b \iff a \le \neg b$, so the conjugate condition rewrites to $y \le \demorgan{f}(x)
+\iff \demorgan{g}(y) \le x$, exhibiting $g \adj \demorgan{f}$ and (symmetrically) $f \adj \demorgan{g}$. The
+embedding $(f, g) \mapsto g \adj \demorgan{f}$ is full, since every meet-preserving map between Boolean
+algebras is $\demorgan{f}$ for some join-preserving $f$. So the full subcategory of $\LatConj$ on Boolean
+algebras is equivalent to the full subcategory of $\LatGal$ on Boolean algebras, and the dagger on the
+Boolean-restricted $\LatConj$ corresponds to $f \adj g \mapsto \demorgan{g} \adj \demorgan{f}$ on the
+Boolean-restricted $\LatGal$. $\LatConj$ inherits $\SemiLat$-enrichment from $\LatGal$ via this equivalence
+(restricted to Boolean objects): the zero morphism is the constant-$\bot$ pair, addition is componentwise
+$\join$.
 
 \subsection{Category of finite-dimensional vector spaces}
 \label{sec:categories-with-biproducts:fdvect}

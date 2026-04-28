@@ -136,76 +136,73 @@ satisfies
 of an $n \times m$ matrix $M_f$, the \emph{matrix representation} of $f$; conversely every $n \times m$
 matrix is $M_f$ for a unique such $f$.
 
-\subsubsection{Distributive lattice and the opposite-semiring dual}
+\subsubsection{Distributive lattice}
 \label{sec:matrix:additional-structure:distrib}
 
-If additionally $\cdot$ is the meet of a top element $1$ and distributes over $+$, so that $(S, +, 0, \cdot,
-1, \le)$ is a bounded distributive lattice, then $\cdot$ is also idempotent and the \emph{opposite semiring}
-$S^\op = (S, \cdot, 1, +, 0)$ is itself a bounded distributive lattice, with the roles of $+$ and $\cdot$
-(equivalently, $\join$ and $\meet$) swapped. Disjointness $a \disj b \iff a \cdot b \le 0$ lifts pointwise to
-vectors.
+If additionally $\cdot$ is also idempotent and $1 + a = 1$ for all $a$ (so $1$ is the additive top), then
+$(S, +, 0, \cdot, 1, \le)$ is a bounded distributive lattice: $\cdot$ is the binary meet, $1$ is the top, $+$
+is the binary join (from \secref{matrix:additional-structure:join}), and $0$ is the bottom. Distributivity
+of $\cdot$ over $+$ is already a semiring axiom. To make the lattice perspective explicit, we use $\join =
++$, $\meet = \cdot$, $\bot = 0$ and $\top = 1$ in what follows; for iterated joins we write $\bigjoin_i a_i
+= \sum_i a_i$ and $\bigmeet_i a_i$ for the iterated meet (= iterated $\sum$ in $\Mat(S^\op)$). Disjointness
+$a \disj b \iff a \meet b \le \bot$ lifts pointwise to vectors.
 
-Given a matrix $M$, the transpose $M^{\!\top}$ has two natural matrix-action interpretations:
-\begin{itemize}
-\item Over $S$, $M^{\!\top}$ acts as $V_n \to V_m$ via $M^{\!\top}(y)_j = \bigjoin_i M_{ij} \cdot y_i$. With
-the conjugacy condition this realises the conjugate pair $(M^{\!\top}, M)$ in $\LatConj$ on the appropriate
-lattices. Join-preserving.
-\item Over $S^\op$, the same transpose acts as $V_n \to V_m$ via
+\paragraph{Conjugate pair in $\LatConj$.} A linear $f : S^m \to S^n$ in $\Mat(S)$ has a transpose $f^{\!\top}
+: S^n \to S^m$ acting as $f^{\!\top}(y)_j = \bigjoin_i M_{ij} \meet y_i$. The conjugacy condition
+\[ y \disj f(x) \iff f^{\!\top}(y) \disj x \] holds for any matrix $M$ via distributivity, so $(f^{\!\top},
+f)$ is a conjugate pair in $\LatConj$ on the appropriate lattices. Both directions preserve joins.
+
+\paragraph{Opposite semiring and the adjoint candidate.} The \emph{opposite semiring} $S^\op = (S, \meet,
+\top, \join, \bot)$ is itself a bounded distributive lattice, with the roles of $\join$ and $\meet$ swapped.
+Interpreting matrix multiplication in $\Mat(S^\op)$ on $M^{\!\top}$ gives a different action $V_n \to V_m$:
 \begin{salign*}
    M^{\!\top}_{S^\op}(y)_j \;=\; \bigmeet_i (M_{ij} \join y_i),
 \end{salign*}
-\noindent obtained by interpreting matrix multiplication in $\Mat(S^\op)$ (where $+$ becomes $\meet$ and
-$\cdot$ becomes $\join$). Distributivity ensures this map is meet-preserving and top-preserving:
+\noindent obtained by replacing $\join$ with $\meet$ and $\meet$ with $\join$ in the matrix-multiplication
+formula. Distributivity ensures this map is meet-preserving and top-preserving:
 \begin{salign*}
    M^{\!\top}_{S^\op}(y_1 \meet y_2)_j
    &= \bigmeet_i (M_{ij} \join (y_{1i} \meet y_{2i}))
    = \bigmeet_i \big((M_{ij} \join y_{1i}) \meet (M_{ij} \join y_{2i})\big) \\
    &= M^{\!\top}_{S^\op}(y_1)_j \meet M^{\!\top}_{S^\op}(y_2)_j.
 \end{salign*}
-\end{itemize}
 
 \noindent So $M^{\!\top}_{S^\op}$ is a well-defined meet-semilattice morphism $V_n \to V_m$ in any bounded
-distributive lattice setting — extensionally distinct from the conjugate $M^{\!\top}$ (which is
-join-preserving and uses joins-of-meets rather than meets-of-joins).
+distributive lattice — extensionally distinct from the conjugate $f^{\!\top}$ above (which is join-preserving
+and uses joins-of-meets rather than meets-of-joins). It is purely lattice-theoretic; no negation required.
 
-This operation is purely lattice-theoretic and requires no negation. It is, however, only \emph{adjoint} to
-$M$ under additional Boolean structure, where the relationship to the Galois right adjoint becomes precise
-(\secref{matrix:additional-structure:boolean}). The point is that the \emph{operation} can be defined and
-reasoned about at the distributive-lattice level; whether it is the right adjoint is a downstream question.
+Being meet-preserving, $M^{\!\top}_{S^\op}$ is the right adjoint of \emph{some} join-preserving map. Whether
+it is the right adjoint of $M$ is a downstream question that depends on whether the lattice supports the
+necessary scalar structure (Heyting implication, or in particular Boolean negation): see
+\secref{matrix:additional-structure:boolean}. As an operation, $M^{\!\top}_{S^\op}$ is best read as an
+\emph{adjoint candidate} — the structurally-natural meet-preserving dual of $M$ that becomes a genuine right
+adjoint once enough scalar structure is present.
 
-\subsubsection{Boolean algebra}
+\subsubsection{Boolean algebra and the Galois adjunction}
 \label{sec:matrix:additional-structure:boolean}
 
 If $S$ is furthermore a \emph{Boolean algebra} $B$, equipped with a negation $\neg$ satisfying $1 \le a + \neg
 a$ (excluded middle) and $a \cdot \neg a \le 0$ (non-contradiction), then $\neg$ is involutive and
-disjointness reflects the order: $a \le b$ iff every $c$ disjoint from $b$ is disjoint from $a$.
+disjointness reflects the order. The conjugate pair $(f^{\!\top}, f)$ from
+\secref{matrix:additional-structure:distrib} now lives inside the full subcategory of $\LatConj$ on Boolean
+algebras, where the De~Morgan duality gives an equivalent presentation as a Galois adjunction in $\LatGal$:
 
-A linear $f : B^m \to B^n$ in $\Mat(B)$ pairs naturally with two counterparts $B^n \to B^m$:
-
-\begin{enumerate}
-\item The transpose $f^{\!\top}$ makes $(f^{\!\top}, f)$ a conjugate pair in $\BoolConj$
-(\secref{categories-with-biproducts:boolconj}).
-
-\item The right adjoint $f_* = \demorgan{(f^{\!\top})}$ (De Morgan dual of the transpose) makes $f \adj f_*$ a
-Galois connection in $\BoolGal$.
-\end{enumerate}
-
-\noindent Concretely, $f_*(x)_i = \bigmeet_j (M_f[i,j] \to x_j)$, where $a \to b = \neg a \join b$ is Boolean
-implication. Under the equivalence $\BoolConj \simeq \BoolGal$ from
-\secref{categories-with-biproducts:boolconj}, these two presentations correspond.
-
-The opposite-semiring construction $M^{\!\top}_{S^\op}$ from
-\secref{matrix:additional-structure:distrib} now upgrades to capture the Galois right adjoint:
+\begin{salign*}
+   f \adj f_*, \qquad f_*(x)_i = \bigmeet_j (M_{ij} \to x_j),
+\end{salign*}
+\noindent where $a \to b = \neg a \join b$ is Boolean implication. The right adjoint $f_*$ is
+\emph{extensionally equal} to the opposite-semiring action $M^{\!\top}_{S^\op}$ applied to the
+\emph{entrywise-complemented} transpose:
 \begin{salign*}
    f_*(x) \;=\; (\neg M)^{\!\top}_{S^\op}(x)
    \qquad \text{i.e.\ }\;\; f_*(x)_i = \bigmeet_j (\neg M_{ij} \join x_j).
 \end{salign*}
 
-\noindent So the Galois right adjoint of $f$ is the opposite-semiring action of the \emph{complemented}
-transpose $(\neg M)^{\!\top}$. The Boolean step is exactly the entrywise complementation; everything else
-(transposition, opposite semiring, meet-preservation) is already given by the distributive-lattice
-construction. Mat(S)-natively, then, Galois slicing factors as ``compute the $S^\op$-action of $M^{\!\top}$''
-plus ``apply $\neg$ to the matrix entries''.
+\noindent So the Boolean ingredient is precisely the entrywise complementation $\neg M$; everything else
+(transposition, opposite-semiring action, meet-preservation) is already given by the distributive-lattice
+construction. $\Mat(S)$-natively, then, Galois slicing factors as ``compute the $S^\op$-action of
+$M^{\!\top}$'' plus ``apply $\neg$ to the matrix entries''. Without the Boolean structure, neither of these
+two steps is available — the matrix-level analogue of the scalar-adjunction obstruction.
 
 \subsubsection{$\Mat(\Two)$ and $\FinRel$}
 \label{sec:matrix:two}
@@ -235,11 +232,11 @@ sufficient products, into which $\cat{C}$ embeds via a finite-product-preserving
 \begin{itemize}
 \item For $\Mat(\Two)$, the target is $\JoinSLat$ itself, and $F$ sends $n \mapsto \Two^n$.
 
-\item For $\BoolConj$, the target is $\JoinSLat \times \JoinSLat^{\op}$. $F$ forgets the Boolean structure
-   on objects; on morphisms it is the identity.
+\item For $\LatConj$ (or its full subcategory on Boolean algebras), the target is $\JoinSLat \times
+   \JoinSLat^{\op}$. $F$ forgets the lattice structure on objects; on morphisms it is the identity.
 
-\item For $\BoolGal$, the target is $\MeetSLat \times \JoinSLat^{\op}$. $F$ forgets the Boolean structure
-   on objects; on morphisms it is the identity.
+\item For $\LatGal$ (or its full subcategory on Boolean algebras), the target is $\MeetSLat \times
+   \JoinSLat^{\op}$. $F$ forgets the lattice structure on objects; on morphisms it is the identity.
 \end{itemize}
 
 More generally, the construction applies to any $\Mat(S)$ embeddable into a biproduct category $\cat{C}$ as
