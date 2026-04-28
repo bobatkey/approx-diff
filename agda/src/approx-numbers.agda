@@ -342,22 +342,26 @@ add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.func ._=>_.mono {bottom , < b >} {<
   liftS (≤-trans (p⊓q≤q (q₂ + a' .upper) (q₁ + b' .upper)) (+-mono-≤ (≤-refl {q₁}) ψ₂))
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.func ._=>_.mono {< a > , < b >} {< a' > , < b' >} (ϕ , ψ) =
   addᵀ-mono q₁ q₂ {a} {a'} {b} {b'} ϕ ψ
--- ∨-preserving: 16 cases of pairs of inputs. Trivial cases: when one input is (bottom,bottom)
--- the result is the value itself; reflexivity. Hard cases (marked with ?): when both inputs
--- have a non-bottom in the same component, requires + distributing over ⊔/⊓ in ℚ.
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , bottom} {bottom , bottom} = tt
-add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , bottom} {< c > , bottom} = {!!}
-add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , bottom} {bottom , < d >} = {!!}
-add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , bottom} {< c > , < d >} = {!!}
-add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {bottom , bottom} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , bottom} {< c > , bottom} =
+  ⊑I-isPreorder .refl {addᵀ-r q₁ q₂ c}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , bottom} {bottom , < d >} =
+  ⊑I-isPreorder .refl {addᵀ-l q₁ q₂ d}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , bottom} {< c > , < d >} =
+  ⊑I-isPreorder .refl {addᵀ q₁ q₂ c d}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {bottom , bottom} =
+  ⊑I-isPreorder .refl {addᵀ-r q₁ q₂ a}
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {< c > , bottom} = {!!}
-add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {bottom , < d >} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {bottom , < d >} =
+  ⊑I-isPreorder .refl {addᵀ q₁ q₂ a d}
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {< c > , < d >} = {!!}
-add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {bottom , bottom} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {bottom , bottom} =
+  ⊑I-isPreorder .refl {addᵀ-l q₁ q₂ b}
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {< c > , bottom} = {!!}
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {bottom , < d >} = {!!}
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {< c > , < d >} = {!!}
-add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , < b >} {bottom , bottom} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , < b >} {bottom , bottom} =
+  ⊑I-isPreorder .refl {addᵀ q₁ q₂ a b}
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , < b >} {< c > , bottom} = {!!}
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , < b >} {bottom , < d >} = {!!}
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , < b >} {< c > , < d >} = {!!}
