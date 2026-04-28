@@ -178,26 +178,26 @@ only if enough scalar structure is present.
 
 If $S$ is furthermore a \emph{Boolean algebra} $B$, equipped with an operation $\neg$ satisfying $1 \le a +
 \neg a$ (excluded middle) and $a \cdot \neg a \le 0$ (non-contradiction), then $\neg$ is involutive and
-disjointness reflects the order. The conjugate pair $(f^{\!\top}, f)$ from
-\secref{matrix:additional-structure:distrib} now lives inside the full subcategory of $\LatConj$ on Boolean
-algebras, where the De~Morgan duality gives an equivalent presentation as a Galois adjunction in $\LatGal$:
+disjointness reflects the order: $a \le b$ iff every $c$ disjoint from $b$ is also disjoint from $a$. The
+conjugate pair $(f^{\!\top}, f)$ from \secref{matrix:additional-structure:distrib} now lives inside the full
+subcategory of $\LatConj$ on Boolean algebras, with the De~Morgan duality giving an equivalent presentation as
+a Galois connection in $\LatGal$:
 
 \begin{salign*}
    f \adj f_*, \qquad f_*(x)_i = \bigmeet_j (M_{ij} \to x_j),
 \end{salign*}
 \noindent where $a \to b = \neg a \join b$ is Boolean implication. The right adjoint $f_*$ is
 \emph{extensionally equal} to the opposite-semiring action $M^{\!\top}_{S^\op}$ applied to the
-\emph{entrywise-complemented} transpose:
+\emph{pointwise-complemented} transpose:
 \begin{salign*}
    f_*(x) \;=\; (\neg M)^{\!\top}_{S^\op}(x)
    \qquad \text{i.e.\ }\;\; f_*(x)_i = \bigmeet_j (\neg M_{ij} \join x_j).
 \end{salign*}
 
-\noindent So the Boolean ingredient is precisely the entrywise complementation $\neg M$; everything else
-(transposition, opposite-semiring action, meet-preservation) is already given by the distributive-lattice
-construction. $\Mat(S)$-natively, then, Galois slicing factors as ``compute the $S^\op$-action of
-$M^{\!\top}$'' plus ``apply $\neg$ to the matrix entries''. Without the Boolean structure, neither of these
-two steps is available — the matrix-level analogue of the scalar-adjunction obstruction.
+\noindent So the Boolean ingredient is purely the pointwise complement $\neg M$, with everything else
+(transposition, opposite-semiring action, and meet-preservation) already given by the distributive lattice
+setting. $\Mat(S)$-natively, then, Galois slicing factors as ``compute the $S^\op$-action of $M^{\!\top}$''
+plus ``negate the matrix entries''.
 
 \subsubsection{$\Mat(\Two)$ and $\FinRel$}
 \label{sec:matrix:two}
