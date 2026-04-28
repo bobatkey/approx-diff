@@ -697,9 +697,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     ≤-isPreorder : IsPreorder _≤_
     ≤-isPreorder .IsPreorder.refl = ∨-idem
     ≤-isPreorder .IsPreorder.trans {x} {y} {z} x≤y y≤z =
-      -- x ∨ z ≈ x ∨ (y ∨ z) ≈ (x ∨ y) ∨ z ≈ y ∨ z ≈ z
-      trans (∨-cong refl (sym y≤z))
-            (trans (sym ∨-assoc) (trans (∨-cong x≤y refl) y≤z))
+      trans (∨-cong refl (sym y≤z)) (trans (sym ∨-assoc) (trans (∨-cong x≤y refl) y≤z))
 
     ≈→≤ : ∀ {x y} → x ≈ y → x ≤ y
     ≈→≤ x≈y = trans (∨-cong x≈y refl) ∨-idem
@@ -736,6 +734,24 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
 
     ∧-∨-distrib : ∀ {x y z} → (x ∧ (y ∨ z)) ≤ ((x ∧ y) ∨ (x ∧ z))
     ∧-∨-distrib = ≈→≤ ∧-∨-distribₗ
+
+    -- Dual distributivity, as ≈. Standard distributive-lattice derivation using the dual absorption
+    -- a ∨ (a ∧ b) ≈ a:
+    --   (a ∨ b) ∧ (a ∨ c)
+    --   ≈ (a ∧ (a ∨ c)) ∨ (b ∧ (a ∨ c))                         [∧-∨-distribᵣ]
+    --   ≈ ((a ∧ a) ∨ (a ∧ c)) ∨ ((b ∧ a) ∨ (b ∧ c))             [∧-∨-distribₗ ×2]
+    --   ≈ (a ∨ (a ∧ c)) ∨ ((a ∧ b) ∨ (b ∧ c))                   [∧-idem; ∧-comm]
+    --   ≈ a ∨ ((a ∧ b) ∨ (b ∧ c))                                [absorption]
+    --   ≈ (a ∨ (a ∧ b)) ∨ (b ∧ c)                                [reassociate]
+    --   ≈ a ∨ (b ∧ c)                                            [absorption]
+    ∨-∧-distribₗ : ∀ {a b c} → ((a ∨ b) ∧ (a ∨ c)) ≈ (a ∨ (b ∧ c))
+    ∨-∧-distribₗ {a} {b} {c} =
+      trans ∧-∨-distribᵣ
+      (trans (∨-cong ∧-∨-distribₗ ∧-∨-distribₗ)
+      (trans (∨-cong (∨-cong ∧-idem refl) (∨-cong ∧-comm refl))
+      (trans (∨-cong ∨-∧-absorption refl)
+      (trans (sym ∨-assoc)
+             (∨-cong ∨-∧-absorption refl)))))
 
     preorder : Preorder
     preorder .Preorder.Carrier = Carrier
@@ -798,3 +814,10 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       ≤-trans (Σ-ub _ i) (≤-trans (≈→≤ (sym (swap (M ᵀ) {x} {y}))) (Σ-lub _ h))
     to-conj {m} {n} M .conjugate {x} {y} .proj₂ k j =
       ≤-trans (Σ-ub _ j) (≤-trans (≈→≤ (swap (M ᵀ) {x} {y})) (Σ-lub _ k))
+
+    -- The opposite semiring, with + and · swapped.
+    opposite : CommutativeSemiring A
+    opposite .CommutativeSemiring.additive = multiplicative
+    opposite .CommutativeSemiring.multiplicative = additive
+    opposite .CommutativeSemiring.·-+-distribₗ = sym ∨-∧-distribₗ
+    opposite .CommutativeSemiring.ε-annihilₗ = ⊤-add-top
