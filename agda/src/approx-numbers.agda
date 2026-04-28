@@ -23,8 +23,12 @@ open import Data.Rational.Properties
   using (
     ≤-refl; ≤-trans; ⊓-glb; ⊔-lub; p⊓q≤p; p⊓q≤q; +-mono-≤; module ≤-Reasoning; +-comm; ≤-reflexive; +-assoc;
     +-inverseʳ; +-inverseˡ; +-identityʳ; +-identityˡ; ⊓-mono-≤; p≤p⊔q; p≤q⊔p; neg-antimono-≤; pos⇒nonZero; pos⇒nonNeg;
-    *-monoˡ-≤-nonNeg; ⊔-mono-≤; ⊓-distribˡ-⊔; ⊔-distribˡ-⊓; mono-≤-distrib-⊔; mono-≤-distrib-⊓; ⊔-comm; ⊓-comm;
-    ⊔-assoc; ⊓-assoc
+    *-monoˡ-≤-nonNeg; ⊔-mono-≤; ⊓-distribˡ-⊔; ⊔-distribˡ-⊓; mono-≤-distrib-⊔; mono-≤-distrib-⊓;
+    ⊔-commutativeSemigroup; ⊓-commutativeSemigroup
+  )
+open import Algebra.Properties.CommutativeSemigroup ⊔-commutativeSemigroup using () renaming (interchange to ⊔-interchange)
+open import Algebra.Properties.CommutativeSemigroup ⊓-commutativeSemigroup using () renaming (interchange to ⊓-interchange)
+open import Data.Rational.Properties using (⊔-comm; ⊓-comm; ⊔-assoc; ⊓-assoc
   )
 open import Relation.Binary.PropositionalEquality using (cong; _≡_)
   renaming (refl to ≡-refl; sym to ≡-sym; trans to ≡-trans)
@@ -413,7 +417,19 @@ add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , < b >} {bot
     (≡-trans (⊓-assoc (q₂ + a .upper) (q₁ + b .upper) (q₁ + d .upper))
              (cong ((q₂ + a .upper) ⊓_)
                    (≡-sym (mono-≤-distrib-⊓ (+-mono-≤ (≤-refl {q₁})) (b .upper) (d .upper))))))
-add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , < b >} {< c > , < d >} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , < b >} {< c > , < d >} =
+  liftS (≤-reflexive
+    (≡-trans (cong (_⊔ (q₁ + (b .lower ⊔ d .lower)))
+                   (mono-≤-distrib-⊔ (+-mono-≤ (≤-refl {q₂})) (a .lower) (c .lower)))
+    (≡-trans (cong (((q₂ + a .lower) ⊔ (q₂ + c .lower)) ⊔_)
+                   (mono-≤-distrib-⊔ (+-mono-≤ (≤-refl {q₁})) (b .lower) (d .lower)))
+             (⊔-interchange (q₂ + a .lower) (q₂ + c .lower) (q₁ + b .lower) (q₁ + d .lower))))) ,
+  liftS (≤-reflexive
+    (≡-trans (⊓-interchange (q₂ + a .upper) (q₁ + b .upper) (q₂ + c .upper) (q₁ + d .upper))
+    (≡-trans (cong (_⊓ ((q₁ + b .upper) ⊓ (q₁ + d .upper)))
+                   (≡-sym (mono-≤-distrib-⊓ (+-mono-≤ (≤-refl {q₂})) (a .upper) (c .upper))))
+             (cong ((q₂ + (a .upper ⊓ c .upper)) ⊓_)
+                   (≡-sym (mono-≤-distrib-⊓ (+-mono-≤ (≤-refl {q₁})) (b .upper) (d .upper)))))))
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.⊥-preserving = tt
 add-intervalC q₁ q₂ ._⇒c_.left ._=>J_.func ._=>_.fun bottom = bottom , bottom
 add-intervalC q₁ q₂ ._⇒c_.left ._=>J_.func ._=>_.fun < z > = < add q₁ q₂ z .proj₁ > , < add q₁ q₂ z .proj₂ >
