@@ -147,12 +147,12 @@ of $\cdot$ over $+$ is already a semiring axiom. To make the lattice perspective
 = \sum_i a_i$ and $\bigmeet_i a_i$ for the iterated meet (= iterated $\sum$ in $\Mat(S^\op)$). Disjointness
 $a \disj b \iff a \meet b \le \bot$ lifts pointwise to vectors.
 
-\paragraph{Conjugate pair in $\LatConj$.} A linear $f : S^m \to S^n$ in $\Mat(S)$ has a transpose $f^{\!\top}
+\paragraph{Conjugate pair in $\LatConj$} A linear $f : S^m \to S^n$ in $\Mat(S)$ has a transpose $f^{\!\top}
 : S^n \to S^m$ acting as $f^{\!\top}(y)_j = \bigjoin_i M_{ij} \meet y_i$. The conjugacy condition
 \[ y \disj f(x) \iff f^{\!\top}(y) \disj x \] holds for any matrix $M$ via distributivity, so $(f^{\!\top},
 f)$ is a conjugate pair in $\LatConj$ on the appropriate lattices. Both directions preserve joins.
 
-\paragraph{Opposite semiring and the adjoint candidate.} The opposite semiring $S^\op = (S, \meet, \top,
+\paragraph{Opposite semiring and the adjoint candidate} The opposite semiring $S^\op = (S, \meet, \top,
 \join, \bot)$ is itself a bounded distributive lattice, with the roles of $\join$ and $\meet$ swapped.
 Interpreting matrix multiplication in $\Mat(S^\op)$ on $M^{\!\top}$ gives the corresponding action $V_n \to V_m$:
 \begin{salign*}
@@ -186,18 +186,17 @@ a Galois connection in $\LatGal$:
 \begin{salign*}
    f \adj f_*, \qquad f_*(x)_i = \bigmeet_j (M_{ij} \to x_j),
 \end{salign*}
-\noindent where $a \to b = \neg a \join b$ is Boolean implication. The right adjoint $f_*$ is
-\emph{extensionally equal} to the opposite-semiring action $M^{\!\top}_{S^\op}$ applied to the
-\emph{pointwise-complemented} transpose:
+\noindent where $a \to b = \neg a \join b$ is Boolean implication. The right adjoint $f_*$ is extensionally
+ equal to the opposite-semiring action $M^{\!\top}_{S^\op}$ applied to the pointwise-complemented transpose:
 \begin{salign*}
    f_*(x) \;=\; (\neg M)^{\!\top}_{S^\op}(x)
    \qquad \text{i.e.\ }\;\; f_*(x)_i = \bigmeet_j (\neg M_{ij} \join x_j).
 \end{salign*}
 
 \noindent So the Boolean ingredient is purely the pointwise complement $\neg M$, with everything else
-(transposition, opposite-semiring action, and meet-preservation) already given by the distributive lattice
-setting. $\Mat(S)$-natively, then, Galois slicing factors as ``compute the $S^\op$-action of $M^{\!\top}$''
-plus ``negate the matrix entries''.
+(transposition, opposite-semiring action, and meet-preservation) already given by $S$ being a distributive
+lattice. In $\Mat(S)$, then, Galois slicing factors as ``compute the $S^\op$-action of $M^{\!\top}$'' plus
+``negate the matrix entries''.
 
 \subsubsection{$\Mat(\Two)$ and $\FinRel$}
 \label{sec:matrix:two}
@@ -289,27 +288,23 @@ as bottom.
 
 For any $q_1, q_2 \in \QQ$, the addition $q_1 + q_2$ has four associated maps:
 
+\vspace{1mm}
 \begin{center}
 \small
-\begin{tabular}{ll}
-\hline
-\textbf{operation} & \textbf{behaviour} \\
-\hline
-$\add: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$ &
-  $\add([l, u]) = $ \\
-\emph{join-preserving backward map} & \quad $([l - q_2, u - q_2], [l - q_1, u - q_1])$ \\[1ex]
-$\add^*: \IntvL(q_1) \times \IntvL(q_2) \to \IntvL(q_1 + q_2)$ &
-  $\add^*([l_1, u_1], [l_2, u_2]) = $ \\
-\emph{meet-preserving forward map} & \quad $[\min(q_2 + l_1, q_1 + l_2),\; \max(q_2 + u_1, q_1 + u_2)]$ \\[1ex]
-$\addT: \IntvL(q_1) \times \IntvL(q_2) \to \IntvL(q_1 + q_2)$ &
-  $\addT([l_1, u_1], [l_2, u_2]) = $ \\
-\emph{join-preserving forward map} & \quad $[\max(q_2 + l_1, q_1 + l_2),\; \min(q_2 + u_1, q_1 + u_2)]$\\[1ex]
-$\addT_*: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$ &
-  $\addT_*([l, u]) = \add([l, u])$ \\
-  \emph{meet-preserving backward map} & \\
-\hline
+\begin{tabular}{@{}l@{\hspace{2em}}l@{}}
+\textbf{operation} & \textbf{behaviour} \\[0.3ex]
+\hline \\[-1.5ex]
+$\add: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$ & $\add([l, u]) =$ \\
+\emph{(join-preserving backward map)} & \quad $([l - q_2, u - q_2], [l - q_1, u - q_1])$ \\[0.5ex]
+$\add^*: \IntvL(q_1) \times \IntvL(q_2) \to \IntvL(q_1 + q_2)$ & $\add^*([l_1, u_1], [l_2, u_2]) =$ \\
+\emph{(meet-preserving forward map)} & \quad $[\min(q_2 + l_1, q_1 + l_2),\; \max(q_2 + u_1, q_1 + u_2)]$ \\[0.5ex]
+$\addT: \IntvL(q_1) \times \IntvL(q_2) \to \IntvL(q_1 + q_2)$ & $\addT([l_1, u_1], [l_2, u_2]) =$ \\
+\emph{(join-preserving forward map)} & \quad $[\max(q_2 + l_1, q_1 + l_2),\; \min(q_2 + u_1, q_1 + u_2)]$ \\[0.5ex]
+$\addT_*: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$ & $\addT_*([l, u]) =$ \\
+\emph{(meet-preserving backward map)} & \quad $\add([l, u])$ \\
 \end{tabular}
 \end{center}
+\vspace{2mm}
 
 \noindent The two input intervals each encode a constraint of the form ``this summand $q$ lies in the interval
 $[l, u]$''; the forward maps $\add^*$ and $\addT$ shift each input by the \emph{other} summand $q'$ to obtain
@@ -319,17 +314,21 @@ Note that $\addT_* = \add$, so in this case the four-map grid has only three dis
 being both left adjoint to $\add^*$ and right adjoint to $\addT$. This is possible because $\add$ is a lattice
 homomorphism (preserves both joins and meets), and so can play both roles.
 
-\paragraph{Comparison.} On overlapping but non-nested input intervals (e.g.\ $\IntvL$-shifted ranges $[1/2,
-1]$ and $[4/5, 3/2]$):
-\[
-  \addT\colon\quad [\max(1/2, 4/5),\; \min(1, 3/2)] = [4/5, 1] \qquad \text{(intersection)}
-\]
-\[
-  \add^*\colon\quad [\min(1/2, 4/5),\; \max(1, 3/2)] = [1/2, 3/2] \qquad \text{(union)}
-\]
+\paragraph{Example} Take $q_1 = 0$, $q_2 = 1$, with inputs $[-\tfrac{1}{2}, 0] \in \IntvL(0)$ and
+$[\tfrac{4}{5}, \tfrac{3}{2}] \in \IntvL(1)$. The forward maps first shift each input by the \emph{other}
+summand's index ($q_2 = 1$ for the first, $q_1 = 0$ for the second) to give candidate ranges in $\IntvL(q_1 +
+q_2) = \IntvL(1)$, and then combine them:
 
-\paragraph{Connection to AD.} Forward-mode AD propagates tangents through addition by $dy = dx_1 + dx_2$.
-Modulo idempotence of $+$ (replacing it by $\join$ in the information order), this corresponds to $\addT$:
-each input contributes a constraint on the output, and the constraints are joined into the strongest
-common refinement — exactly mirroring the role of $f^{\!\top}$ in the matrix-slicing comparison above.
-$\add^*$ is the abstract-interpretation dual, mirroring $f_*$.
+\vspace{2mm}
+\begin{center}
+\small
+\begin{tabular}{l@{\hspace{2em}}l}
+input & shifted range \\[0.3ex]
+\hline \\[-1.5ex]
+$[-\tfrac{1}{2}, 0] \in \IntvL(0)$ & $[\tfrac{1}{2}, 1] \in \IntvL(1)$ \quad (shift by $q_2 = 1$) \\[0.3ex]
+$[\tfrac{4}{5}, \tfrac{3}{2}] \in \IntvL(1)$ & $[\tfrac{4}{5}, \tfrac{3}{2}] \in \IntvL(1)$ \quad (shift by $q_1 = 0$) \\[1.5ex]
+\hline \\[-1.5ex]
+$\addT$ (intersection) & $[\max(\tfrac{1}{2}, \tfrac{4}{5}),\; \min(1, \tfrac{3}{2})] = [\tfrac{4}{5}, 1]$ \\[0.3ex]
+$\add^*$ (union) & $[\min(\tfrac{1}{2}, \tfrac{4}{5}),\; \max(1, \tfrac{3}{2})] = [\tfrac{1}{2}, \tfrac{3}{2}]$ \\
+\end{tabular}
+\end{center}
