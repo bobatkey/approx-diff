@@ -637,6 +637,28 @@ module Conjugate where
   zero-mor .famf .natural e ._≃c_.left-eq ._≃J_.eqfunc ._≃m_.eqfun bottom = tt , tt
   zero-mor .famf .natural e ._≃c_.left-eq ._≃J_.eqfunc ._≃m_.eqfun < x > = tt , tt
 
+  add-mor : Fam.Mor (ℚ-intv ⊗ ℚ-intv) ℚ-intv
+  add-mor .idxf .prop-setoid._⇒_.func (q₁ , q₂) = q₁ + q₂
+  add-mor .idxf .prop-setoid._⇒_.func-resp-≈ (liftS ≡-refl , liftS ≡-refl) = liftS ≡-refl
+  add-mor .famf .transf (q₁ , q₂) = add-interval q₁ q₂
+  add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl)
+    ._≃c_.right-eq ._≃J_.eqfunc ._≃m_.eqfun (bottom , bottom) = tt , tt
+  add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl)
+    ._≃c_.right-eq ._≃J_.eqfunc ._≃m_.eqfun (bottom , < y >) =
+    (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
+  add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl)
+    ._≃c_.right-eq ._≃J_.eqfunc ._≃m_.eqfun (< x > , bottom) =
+    (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
+  add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl)
+    ._≃c_.right-eq ._≃J_.eqfunc ._≃m_.eqfun (< x > , < y >) =
+    (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
+  add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl)
+    ._≃c_.left-eq ._≃J_.eqfunc ._≃m_.eqfun bottom = (tt , tt) , tt , tt
+  add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl)
+    ._≃c_.left-eq ._≃J_.eqfunc ._≃m_.eqfun < z > =
+    ((liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl) ,
+    (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
+
 {-
 ------------------------------------------------------------------------------
 -- Negation
