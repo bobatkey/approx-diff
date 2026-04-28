@@ -10,6 +10,7 @@ open import prop-setoid using (Setoid; IsEquivalence)
 open import preorder using (Preorder; _=>_; bottom; <_>)
 open import meet-semilattice using (MeetSemilattice)
 open import join-semilattice using (JoinSemilattice)
+  renaming (_=>_ to _=>J_; module _=>_ to _=>J_)
 open import basics using (IsPreorder; IsMeet; IsTop; IsJoin; IsBottom)
 
 open import categories using (HasTerminal; Category)
@@ -306,21 +307,89 @@ add-intervalG q₁ q₂ ._⇒g_.left⊣right {< x > , < y >} {bottom} = (λ _ �
 add-intervalG q₁ q₂ ._⇒g_.left⊣right {< x > , < y >} {< z >} .proj₁ = galois₁ q₁ q₂ x y z
 add-intervalG q₁ q₂ ._⇒g_.left⊣right {< x > , < y >} {< z >} .proj₂ = galois₂ q₁ q₂ x y z
 
-import conjugate
+open import conjugate
+  using (_⇒c_; module _⇒c_)
+  renaming (Obj to ObjC; module Obj to ObjC; _⊕_ to _⊕c_)
 
-IntervalC : ℚ → conjugate.Obj
-IntervalC q .conjugate.Obj.carrier = preorder.L (IntvPreorder q)
-IntervalC q .conjugate.Obj.meets = meet-semilattice.L (meets q)
-IntervalC q .conjugate.Obj.joins = join-semilattice.L₀ ⊔I-isJoin
-IntervalC q .conjugate.Obj.∧-∨-distrib bottom _ _ = tt
-IntervalC q .conjugate.Obj.∧-∨-distrib < _ > bottom bottom = tt
-IntervalC q .conjugate.Obj.∧-∨-distrib < x > bottom < z > = ⊑I-isPreorder .refl {x ⊓I z}
-IntervalC q .conjugate.Obj.∧-∨-distrib < x > < y > bottom = ⊑I-isPreorder .refl {x ⊓I y}
-IntervalC q .conjugate.Obj.∧-∨-distrib < x > < y >  < z > .proj₁ =
+IntervalC : ℚ → ObjC
+IntervalC q .ObjC.carrier = preorder.L (IntvPreorder q)
+IntervalC q .ObjC.meets = meet-semilattice.L (meets q)
+IntervalC q .ObjC.joins = join-semilattice.L₀ ⊔I-isJoin
+IntervalC q .ObjC.∧-∨-distrib bottom _ _ = tt
+IntervalC q .ObjC.∧-∨-distrib < _ > bottom bottom = tt
+IntervalC q .ObjC.∧-∨-distrib < x > bottom < z > = ⊑I-isPreorder .refl {x ⊓I z}
+IntervalC q .ObjC.∧-∨-distrib < x > < y > bottom = ⊑I-isPreorder .refl {x ⊓I y}
+IntervalC q .ObjC.∧-∨-distrib < x > < y >  < z > .proj₁ =
   liftS (≤-reflexive (⊓-distribˡ-⊔ (x .lower) (y .lower) (z .lower)))
-IntervalC q .conjugate.Obj.∧-∨-distrib < x > < y >  < z > .proj₂ =
+IntervalC q .ObjC.∧-∨-distrib < x > < y >  < z > .proj₂ =
   liftS (≤-reflexive (≡-sym (⊔-distribˡ-⊓ (x .upper) (y .upper) (z .upper))))
 
+add-intervalC : ∀ q₁ q₂ → (IntervalC q₁ ⊕c IntervalC q₂) ⇒c IntervalC (q₁ + q₂)
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.func ._=>_.fun (bottom , bottom) = bottom
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.func ._=>_.fun (< x > , bottom) = < addᵀ-r q₁ q₂ x >
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.func ._=>_.fun (bottom , < y >) = < addᵀ-l q₁ q₂ y >
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.func ._=>_.fun (< x > , < y >) = < addᵀ q₁ q₂ x y >
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.func ._=>_.mono {bottom , bottom} _ = tt
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.func ._=>_.mono {< a > , bottom} {< a' > , bottom} (ϕ , _) =
+  addᵀ-r-mono q₁ q₂ {a} {a'} ϕ
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.func ._=>_.mono {< a > , bottom} {< a' > , < b' >} ((liftS ϕ₁ , liftS ϕ₂) , _) =
+  liftS (≤-trans (+-mono-≤ (≤-refl {q₂}) ϕ₁) (p≤p⊔q (q₂ + a' .lower) (q₁ + b' .lower))) ,
+  liftS (≤-trans (p⊓q≤p (q₂ + a' .upper) (q₁ + b' .upper)) (+-mono-≤ (≤-refl {q₂}) ϕ₂))
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.func ._=>_.mono {bottom , < b >} {bottom , < b' >} (_ , ψ) =
+  addᵀ-l-mono q₁ q₂ {b} {b'} ψ
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.func ._=>_.mono {bottom , < b >} {< a' > , < b' >} (_ , liftS ψ₁ , liftS ψ₂) =
+  liftS (≤-trans (+-mono-≤ (≤-refl {q₁}) ψ₁) (p≤q⊔p (q₂ + a' .lower) (q₁ + b' .lower))) ,
+  liftS (≤-trans (p⊓q≤q (q₂ + a' .upper) (q₁ + b' .upper)) (+-mono-≤ (≤-refl {q₁}) ψ₂))
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.func ._=>_.mono {< a > , < b >} {< a' > , < b' >} (ϕ , ψ) =
+  addᵀ-mono q₁ q₂ {a} {a'} {b} {b'} ϕ ψ
+-- ∨-preserving: 16 cases of pairs of inputs. Trivial cases: when one input is (bottom,bottom)
+-- the result is the value itself; reflexivity. Hard cases (marked with ?): when both inputs
+-- have a non-bottom in the same component, requires + distributing over ⊔/⊓ in ℚ.
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , bottom} {bottom , bottom} = tt
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , bottom} {< c > , bottom} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , bottom} {bottom , < d >} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , bottom} {< c > , < d >} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {bottom , bottom} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {< c > , bottom} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {bottom , < d >} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {< c > , < d >} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {bottom , bottom} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {< c > , bottom} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {bottom , < d >} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {< c > , < d >} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , < b >} {bottom , bottom} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , < b >} {< c > , bottom} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , < b >} {bottom , < d >} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , < b >} {< c > , < d >} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.⊥-preserving = tt
+add-intervalC q₁ q₂ ._⇒c_.left ._=>J_.func ._=>_.fun bottom = bottom , bottom
+add-intervalC q₁ q₂ ._⇒c_.left ._=>J_.func ._=>_.fun < z > = < add q₁ q₂ z .proj₁ > , < add q₁ q₂ z .proj₂ >
+add-intervalC q₁ q₂ ._⇒c_.left ._=>J_.func ._=>_.mono {bottom} {_} _ = tt , tt
+add-intervalC q₁ q₂ ._⇒c_.left ._=>J_.func ._=>_.mono {< x >} {< y >} (liftS ϕ₁ , liftS ϕ₂) .proj₁ =
+  liftS (+-mono-≤ ϕ₁ ≤-refl) , liftS (+-mono-≤ ϕ₂ ≤-refl)
+add-intervalC q₁ q₂ ._⇒c_.left ._=>J_.func ._=>_.mono {< x >} {< y >} (liftS ϕ₁ , liftS ϕ₂) .proj₂ =
+  liftS (+-mono-≤ ϕ₁ ≤-refl) , liftS (+-mono-≤ ϕ₂ ≤-refl)
+add-intervalC q₁ q₂ ._⇒c_.left ._=>J_.∨-preserving {bottom} {bottom} = tt , tt
+add-intervalC q₁ q₂ ._⇒c_.left ._=>J_.∨-preserving {bottom} {< x >} = {!!} , {!!}
+add-intervalC q₁ q₂ ._⇒c_.left ._=>J_.∨-preserving {< x >} {bottom} = {!!} , {!!}
+add-intervalC q₁ q₂ ._⇒c_.left ._=>J_.∨-preserving {< x >} {< y >} = {!!} , {!!}
+add-intervalC q₁ q₂ ._⇒c_.left ._=>J_.⊥-preserving = tt , tt
+add-intervalC q₁ q₂ ._⇒c_.conjugate {bottom , bottom} {bottom} .proj₁ _ = tt , tt
+add-intervalC q₁ q₂ ._⇒c_.conjugate {bottom , bottom} {bottom} .proj₂ _ = tt
+add-intervalC q₁ q₂ ._⇒c_.conjugate {bottom , bottom} {< _ >} .proj₁ _ = tt , tt
+add-intervalC q₁ q₂ ._⇒c_.conjugate {bottom , bottom} {< _ >} .proj₂ _ = tt
+add-intervalC q₁ q₂ ._⇒c_.conjugate {bottom , < _ >} {bottom} .proj₁ _ = tt , tt
+add-intervalC q₁ q₂ ._⇒c_.conjugate {bottom , < _ >} {bottom} .proj₂ _ = tt
+add-intervalC q₁ q₂ ._⇒c_.conjugate {bottom , < _ >} {< _ >} .proj₁ ()
+add-intervalC q₁ q₂ ._⇒c_.conjugate {bottom , < _ >} {< _ >} .proj₂ (_ , ())
+add-intervalC q₁ q₂ ._⇒c_.conjugate {< _ > , bottom} {bottom} .proj₁ _ = tt , tt
+add-intervalC q₁ q₂ ._⇒c_.conjugate {< _ > , bottom} {bottom} .proj₂ _ = tt
+add-intervalC q₁ q₂ ._⇒c_.conjugate {< _ > , bottom} {< _ >} .proj₁ ()
+add-intervalC q₁ q₂ ._⇒c_.conjugate {< _ > , bottom} {< _ >} .proj₂ (() , _)
+add-intervalC q₁ q₂ ._⇒c_.conjugate {< _ > , < _ >} {bottom} .proj₁ _ = tt , tt
+add-intervalC q₁ q₂ ._⇒c_.conjugate {< _ > , < _ >} {bottom} .proj₂ _ = tt
+add-intervalC q₁ q₂ ._⇒c_.conjugate {< _ > , < _ >} {< _ >} .proj₁ ()
+add-intervalC q₁ q₂ ._⇒c_.conjugate {< _ > , < _ >} {< _ >} .proj₂ (() , _)
 
 ------------------------------------------------------------------------------
 --

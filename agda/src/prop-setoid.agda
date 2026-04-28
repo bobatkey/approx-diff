@@ -102,8 +102,10 @@ module _ {o e} where
 
   ≃m-isEquivalence : ∀ {X Y : Setoid o e} → IsEquivalence (_≃m_ {X} {Y})
   ≃m-isEquivalence {X} {Y} .refl {f} .func-eq = f .func-resp-≈
-  ≃m-isEquivalence {X} {Y} .sym {f} {g} f≈g .func-eq x₁≈x₂ = Y .sym (f≈g .func-eq (X .sym x₁≈x₂))
-  ≃m-isEquivalence {X} {Y} .trans {f} {g} {h} f≈g g≈h .func-eq x₁≈x₂ = Y .trans (f≈g .func-eq x₁≈x₂) (g≈h .func-eq (X .refl))
+  ≃m-isEquivalence {X} {Y} .sym {f} {g} f≈g .func-eq x₁≈x₂ =
+    Setoid.sym Y (f≈g .func-eq (Setoid.sym X x₁≈x₂))
+  ≃m-isEquivalence {X} {Y} .trans {f} {g} {h} f≈g g≈h .func-eq x₁≈x₂ =
+    Setoid.trans Y (f≈g .func-eq x₁≈x₂) (g≈h .func-eq (Setoid.refl X))
 
   idS : ∀ (X : Setoid o e) → X ⇒ X
   idS X .func x = x
