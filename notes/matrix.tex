@@ -152,14 +152,13 @@ $a \disj b \iff a \meet b \le \bot$ lifts pointwise to vectors.
 \[ y \disj f(x) \iff f^{\!\top}(y) \disj x \] holds for any matrix $M$ via distributivity, so $(f^{\!\top},
 f)$ is a conjugate pair in $\LatConj$ on the appropriate lattices. Both directions preserve joins.
 
-\paragraph{Opposite semiring and the adjoint candidate.} The \emph{opposite semiring} $S^\op = (S, \meet,
-\top, \join, \bot)$ is itself a bounded distributive lattice, with the roles of $\join$ and $\meet$ swapped.
-Interpreting matrix multiplication in $\Mat(S^\op)$ on $M^{\!\top}$ gives a different action $V_n \to V_m$:
+\paragraph{Opposite semiring and the adjoint candidate.} The opposite semiring $S^\op = (S, \meet, \top,
+\join, \bot)$ is itself a bounded distributive lattice, with the roles of $\join$ and $\meet$ swapped.
+Interpreting matrix multiplication in $\Mat(S^\op)$ on $M^{\!\top}$ gives the corresponding action $V_n \to V_m$:
 \begin{salign*}
    M^{\!\top}_{S^\op}(y)_j \;=\; \bigmeet_i (M_{ij} \join y_i),
 \end{salign*}
-\noindent obtained by replacing $\join$ with $\meet$ and $\meet$ with $\join$ in the matrix-multiplication
-formula. Distributivity ensures this map is meet-preserving and top-preserving:
+\noindent Distributivity ensures this map is meet-preserving:
 \begin{salign*}
    M^{\!\top}_{S^\op}(y_1 \meet y_2)_j
    &= \bigmeet_i (M_{ij} \join (y_{1i} \meet y_{2i}))
@@ -167,22 +166,18 @@ formula. Distributivity ensures this map is meet-preserving and top-preserving:
    &= M^{\!\top}_{S^\op}(y_1)_j \meet M^{\!\top}_{S^\op}(y_2)_j.
 \end{salign*}
 
-\noindent So $M^{\!\top}_{S^\op}$ is a well-defined meet-semilattice morphism $V_n \to V_m$ in any bounded
-distributive lattice — extensionally distinct from the conjugate $f^{\!\top}$ above (which is join-preserving
-and uses joins-of-meets rather than meets-of-joins). It is purely lattice-theoretic; no negation required.
-
-Being meet-preserving, $M^{\!\top}_{S^\op}$ is the right adjoint of \emph{some} join-preserving map. Whether
-it is the right adjoint of $M$ is a downstream question that depends on whether the lattice supports the
-necessary scalar structure (Heyting implication, or in particular Boolean negation): see
-\secref{matrix:additional-structure:boolean}. As an operation, $M^{\!\top}_{S^\op}$ is best read as an
-\emph{adjoint candidate} — the structurally-natural meet-preserving dual of $M$ that becomes a genuine right
-adjoint once enough scalar structure is present.
+\noindent So $M^{\!\top}_{S^\op}$ is a meet-semilattice homomorphism $V_n \to V_m$, and therefore right
+adjoint to \emph{some} join-preserving map. Whether it is the right adjoint of $M$ depends on whether the
+lattice supports the additional scalar structure (Heyting implication); see
+\secref{matrix:additional-structure:boolean}. $M^{\!\top}_{S^\op}$ is perhaps best read as an adjoint
+``candidate'': the automatically obtained meet-preserving dual of $M$ that becomes a genuine right adjoint
+only if enough scalar structure is present.
 
 \subsubsection{Boolean algebra and the Galois adjunction}
 \label{sec:matrix:additional-structure:boolean}
 
-If $S$ is furthermore a \emph{Boolean algebra} $B$, equipped with a negation $\neg$ satisfying $1 \le a + \neg
-a$ (excluded middle) and $a \cdot \neg a \le 0$ (non-contradiction), then $\neg$ is involutive and
+If $S$ is furthermore a \emph{Boolean algebra} $B$, equipped with an operation $\neg$ satisfying $1 \le a +
+\neg a$ (excluded middle) and $a \cdot \neg a \le 0$ (non-contradiction), then $\neg$ is involutive and
 disjointness reflects the order. The conjugate pair $(f^{\!\top}, f)$ from
 \secref{matrix:additional-structure:distrib} now lives inside the full subcategory of $\LatConj$ on Boolean
 algebras, where the De~Morgan duality gives an equivalent presentation as a Galois adjunction in $\LatGal$:
