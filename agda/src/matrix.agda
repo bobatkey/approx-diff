@@ -841,8 +841,8 @@ module _
   -- (LatGal's Obj doesn't carry it).
   BoundedLattice : ℕ → Obj-g
   BoundedLattice n .Obj-g.carrier = L.DistribLattice n .conjugate.Obj.carrier
-  BoundedLattice n .Obj-g.meets   = L.DistribLattice n .conjugate.Obj.meets
-  BoundedLattice n .Obj-g.joins   = L.DistribLattice n .conjugate.Obj.joins
+  BoundedLattice n .Obj-g.meets = L.DistribLattice n .conjugate.Obj.meets
+  BoundedLattice n .Obj-g.joins = L.DistribLattice n .conjugate.Obj.joins
 
   -- With Heyting implication available, M induces a Galois pair sharing its "backward" map with
   -- `to-conj`. The left adjoint (V_m → V_n, backward, join-preserving) is `L.to-conj M .left` —
