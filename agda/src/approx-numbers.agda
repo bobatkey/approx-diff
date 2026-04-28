@@ -19,7 +19,12 @@ open import galois using (Obj; _⊕_; _⇒g_)
 import fam
 
 open import Data.Rational using (ℚ; _≤_; _⊔_; _⊓_; _+_; _-_; 0ℚ; -_; Positive; _*_; _÷_; NonZero)
-open import Data.Rational.Properties using (≤-refl; ≤-trans; ⊓-glb; ⊔-lub; p⊓q≤p; p⊓q≤q; +-mono-≤; module ≤-Reasoning; +-comm; ≤-reflexive; +-assoc; +-inverseʳ; +-inverseˡ; +-identityʳ; +-identityˡ; ⊓-mono-≤; p≤p⊔q; p≤q⊔p; neg-antimono-≤; pos⇒nonZero; pos⇒nonNeg; *-monoˡ-≤-nonNeg; ⊔-mono-≤; ⊓-distribˡ-⊔; ⊔-distribˡ-⊓)
+open import Data.Rational.Properties
+  using (
+    ≤-refl; ≤-trans; ⊓-glb; ⊔-lub; p⊓q≤p; p⊓q≤q; +-mono-≤; module ≤-Reasoning; +-comm; ≤-reflexive; +-assoc;
+    +-inverseʳ; +-inverseˡ; +-identityʳ; +-identityˡ; ⊓-mono-≤; p≤p⊔q; p≤q⊔p; neg-antimono-≤; pos⇒nonZero; pos⇒nonNeg;
+    *-monoˡ-≤-nonNeg; ⊔-mono-≤; ⊓-distribˡ-⊔; ⊔-distribˡ-⊓; mono-≤-distrib-⊔; mono-≤-distrib-⊓; ⊔-comm; ⊓-comm
+  )
 open import Relation.Binary.PropositionalEquality using (cong; _≡_)
   renaming (refl to ≡-refl; sym to ≡-sym; trans to ≡-trans)
 
@@ -89,9 +94,6 @@ adjoint₂' {x} {y} {z} ϕ = begin
     z - x
   ∎
   where open ≤-Reasoning
-
-
--- ≤-trans (adjoint₂ {y} { - x} {z} (≤-trans (≤-reflexive (+-comm y (- (- x)))) (≤-trans (+-mono-≤ {!!} (≤-refl {y})) ϕ))) (≤-reflexive (+-comm (- x) z))
 
 adjoint₁' : ∀ {x y z} → x ≤ y - z → z + x ≤ y
 adjoint₁' {x} {y} {z} ϕ = begin
@@ -357,7 +359,9 @@ add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {bo
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {< c > , < d >} = {!!}
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {bottom , bottom} =
   ⊑I-isPreorder .refl {addᵀ-l q₁ q₂ b}
-add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {< c > , bottom} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {< c > , bottom} =
+  liftS (≤-reflexive (⊔-comm (q₂ + c .lower) (q₁ + b .lower))) ,
+  liftS (≤-reflexive (⊓-comm (q₁ + b .upper) (q₂ + c .upper)))
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {bottom , < d >} = {!!}
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , < b >} {< c > , < d >} = {!!}
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , < b >} {bottom , bottom} =
