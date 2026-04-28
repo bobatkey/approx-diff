@@ -756,11 +756,38 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     joins .JoinSemilattice.∨-isJoin = ∨-isJoin
     joins .JoinSemilattice.⊥-isBottom = ⊥-isBottom
 
-    -- LatConj.Obj construction for Vec n. No Boolean structure required.
-    open import conjugate using (Obj)
+    open import conjugate using (Obj; _⇒c_)
+    open _⇒c_
 
-    LatConjObj : ℕ → Obj
-    LatConjObj n .Obj.carrier = vec.preorder preorder n
-    LatConjObj n .Obj.meets = vec.meet preorder n meets
-    LatConjObj n .Obj.joins = vec.join preorder n joins
-    LatConjObj n .Obj.∧-∨-distrib _ _ _ _ = ∧-∨-distrib
+    DistribLattice : ℕ → Obj
+    DistribLattice n .Obj.carrier = vec.preorder preorder n
+    DistribLattice n .Obj.meets = vec.meet preorder n meets
+    DistribLattice n .Obj.joins = vec.join preorder n joins
+    DistribLattice n .Obj.∧-∨-distrib _ _ _ _ = ∧-∨-distrib
+
+    -- Helpers for the morphism: Σ-mono, plus aliases for ≤-refl and ∧-mono.
+    open Join _≤_ ≤-isPreorder ∨-isJoin ⊥-isBottom ≈→≤ using (Σ-mono)
+    open IsPreorder ≤-isPreorder using () renaming (refl to ≤-refl)
+    open IsMeet ∧-isMeet using () renaming (mono to ∧-mono)
+
+    open import join-semilattice using () renaming (_=>_ to _=>J_)
+    open _=>J_
+    open preorder._=>_ using (fun; mono)
+
+    -- Conjugate-pair morphism induced by a matrix M : Matrix n m. The right map sends x : Vec n
+    -- to the column-wise dot product (Mᵀ)_j ⋅ x; the left map symmetrically uses M directly. Both
+    -- are join-preserving by linearity (distributivity of ∧ over ∨ + Σ-+). Conjugacy postponed.
+    to-conj : ∀ {m n} → Matrix n m → DistribLattice n ⇒c DistribLattice m
+    to-conj {m} {n} M .right .func .fun x j = (M ᵀ) j ⋅ x
+    to-conj {m} {n} M .right .func .mono x≤x' j = Σ-mono (λ i → ∧-mono ≤-refl (x≤x' i))
+    to-conj {m} {n} M .right .∨-preserving {x} {x'} j =
+      ≈→≤ (trans (Σ-cong {n} (λ i → ∧-∨-distribₗ)) (sym (Σ-+ {n} _ _)))
+    to-conj {m} {n} M .right .⊥-preserving j =
+      ≈→≤ (trans (Σ-cong {n} (λ i → ⊥-annihilᵣ)) (Σ-ε {n}))
+    to-conj {m} {n} M .left .func .fun y i = M i ⋅ y
+    to-conj {m} {n} M .left .func .mono y≤y' i = Σ-mono (λ j → ∧-mono ≤-refl (y≤y' j))
+    to-conj {m} {n} M .left .∨-preserving {y} {y'} i =
+      ≈→≤ (trans (Σ-cong {m} (λ j → ∧-∨-distribₗ)) (sym (Σ-+ {m} _ _)))
+    to-conj {m} {n} M .left .⊥-preserving i =
+      ≈→≤ (trans (Σ-cong {m} (λ j → ⊥-annihilᵣ)) (Σ-ε {m}))
+    to-conj {m} {n} M .conjugate = {!   !}
