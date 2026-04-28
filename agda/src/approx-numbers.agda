@@ -311,9 +311,11 @@ module Galois where
   ℚ-intv .fam .refl* .left-eq .eqfun bottom = tt , tt
   ℚ-intv .fam .refl* .left-eq .eqfun < x > = (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
   ℚ-intv .fam .trans* (liftS ≡-refl) (liftS ≡-refl) .right-eq .eqfun bottom = tt , tt
-  ℚ-intv .fam .trans* (liftS ≡-refl) (liftS ≡-refl) .right-eq .eqfun < x > = (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
+  ℚ-intv .fam .trans* (liftS ≡-refl) (liftS ≡-refl) .right-eq .eqfun < x > =
+    (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
   ℚ-intv .fam .trans* (liftS ≡-refl) (liftS ≡-refl) .left-eq .eqfun bottom = tt , tt
-  ℚ-intv .fam .trans* (liftS ≡-refl) (liftS ≡-refl) .left-eq .eqfun < x > = (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
+  ℚ-intv .fam .trans* (liftS ≡-refl) (liftS ≡-refl) .left-eq .eqfun < x > =
+    (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
 
   add-mor : Fam.Mor (ℚ-intv ⊗ ℚ-intv) ℚ-intv
   add-mor .idxf .prop-setoid._⇒_.func (q₁ , q₂) = q₁ + q₂
@@ -322,14 +324,17 @@ module Galois where
   add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (bottom , bottom) = tt , tt
   add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (bottom , < x >) = tt , tt
   add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (< x > , bottom) = tt , tt
-  add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (< x > , < x₁ >) = (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
+  add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (< x > , < x₁ >) =
+    (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
   add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .left-eq .eqfun bottom = (tt , tt) , tt , tt
-  add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .left-eq .eqfun < x > = ((liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl) , (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
+  add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .left-eq .eqfun < x > =
+    ((liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl) , (liftS ≤-refl , liftS ≤-refl) , liftS ≤-refl , liftS ≤-refl
 
   zero-mor : Fam.Mor 𝟙 ℚ-intv
   zero-mor .idxf .prop-setoid._⇒_.func _ = 0ℚ
   zero-mor .idxf .prop-setoid._⇒_.func-resp-≈ _ = liftS ≡-refl
-  zero-mor .famf .transf _ ._⇒g_.right ._=>_.fun _ = < record { lower = 0ℚ ; upper = 0ℚ ; l≤q = liftS ≤-refl ; q≤u = liftS ≤-refl } >
+  zero-mor .famf .transf _ ._⇒g_.right ._=>_.fun _ =
+    < record { lower = 0ℚ ; upper = 0ℚ ; l≤q = liftS ≤-refl ; q≤u = liftS ≤-refl } >
   zero-mor .famf .transf _ ._⇒g_.right ._=>_.mono _ = liftS ≤-refl , liftS ≤-refl
   zero-mor .famf .transf _ ._⇒g_.left ._=>_.fun _ = tt
   zero-mor .famf .transf _ ._⇒g_.left ._=>_.mono _ = tt
@@ -582,6 +587,34 @@ module Conjugate where
   subst-Interval q₁ q₂ eq ._⇒c_.conjugate {< _ >} {bottom} .proj₂ _ = tt
   subst-Interval q₁ q₂ eq ._⇒c_.conjugate {< _ >} {< _ >} .proj₁ ()
   subst-Interval q₁ q₂ eq ._⇒c_.conjugate {< _ >} {< _ >} .proj₂ ()
+
+  open Fam.Obj
+  open Fam.Mor
+  import indexed-family
+  open indexed-family.Fam
+  open indexed-family._⇒f_
+
+  ℚ-intv : Fam.Obj
+  ℚ-intv .idx = ℚ-setoid
+  ℚ-intv .fam .fm = Interval
+  ℚ-intv .fam .subst eq = subst-Interval _ _ eq
+  ℚ-intv .fam .refl* = {!!}
+  ℚ-intv .fam .trans* eq₁ eq₂ = {!!}
+
+  zero-mor : Fam.Mor 𝟙 ℚ-intv
+  zero-mor .idxf .prop-setoid._⇒_.func _ = 0ℚ
+  zero-mor .idxf .prop-setoid._⇒_.func-resp-≈ _ = liftS ≡-refl
+  zero-mor .famf .transf _ ._⇒c_.right ._=>J_.func ._=>_.fun _ = bottom
+  zero-mor .famf .transf _ ._⇒c_.right ._=>J_.func ._=>_.mono _ = tt
+  zero-mor .famf .transf _ ._⇒c_.right ._=>J_.∨-preserving = tt
+  zero-mor .famf .transf _ ._⇒c_.right ._=>J_.⊥-preserving = tt
+  zero-mor .famf .transf _ ._⇒c_.left ._=>J_.func ._=>_.fun _ = tt
+  zero-mor .famf .transf _ ._⇒c_.left ._=>J_.func ._=>_.mono _ = tt
+  zero-mor .famf .transf _ ._⇒c_.left ._=>J_.∨-preserving = tt
+  zero-mor .famf .transf _ ._⇒c_.left ._=>J_.⊥-preserving = tt
+  zero-mor .famf .transf _ ._⇒c_.conjugate .proj₁ _ = {!!}
+  zero-mor .famf .transf _ ._⇒c_.conjugate .proj₂ _ = {!!}
+  zero-mor .famf .natural e = {!!}
 
 {-
 ------------------------------------------------------------------------------
