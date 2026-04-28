@@ -353,7 +353,9 @@ add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {bottom , bottom} {<
   ⊑I-isPreorder .refl {addᵀ q₁ q₂ c d}
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {bottom , bottom} =
   ⊑I-isPreorder .refl {addᵀ-r q₁ q₂ a}
-add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {< c > , bottom} = {!!}
+add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {< c > , bottom} =
+  liftS (≤-reflexive (mono-≤-distrib-⊔ (+-mono-≤ (≤-refl {q₂})) (a .lower) (c .lower))) ,
+  liftS (≤-reflexive (≡-sym (mono-≤-distrib-⊓ (+-mono-≤ (≤-refl {q₂})) (a .upper) (c .upper))))
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {bottom , < d >} =
   ⊑I-isPreorder .refl {addᵀ q₁ q₂ a d}
 add-intervalC q₁ q₂ ._⇒c_.right ._=>J_.∨-preserving {< a > , bottom} {< c > , < d >} = {!!}
