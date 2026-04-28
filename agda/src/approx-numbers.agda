@@ -553,6 +553,36 @@ module Conjugate where
   add-interval q₁ q₂ ._⇒c_.conjugate {< _ > , < _ >} {< _ >} .proj₁ ()
   add-interval q₁ q₂ ._⇒c_.conjugate {< _ > , < _ >} {< _ >} .proj₂ (() , _)
 
+  subst-Interval : ∀ q₁ q₂ → LiftS 0ℓ (q₁ ≡ q₂) → Interval q₁ ⇒c Interval q₂
+  subst-Interval q₁ q₂ eq ._⇒c_.right ._=>J_.func ._=>_.fun bottom = bottom
+  subst-Interval q₁ q₂ eq ._⇒c_.right ._=>J_.func ._=>_.fun < x > = < subst-Intv q₁ q₂ eq x >
+  subst-Interval q₁ q₂ eq ._⇒c_.right ._=>J_.func ._=>_.mono {bottom} {bottom} _ = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.right ._=>J_.func ._=>_.mono {bottom} {< _ >} _ = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.right ._=>J_.func ._=>_.mono {< _ >} {< _ >} ϕ = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.right ._=>J_.∨-preserving {bottom} {bottom} = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.right ._=>J_.∨-preserving {bottom} {< x >} = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.right ._=>J_.∨-preserving {< x >} {bottom} = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.right ._=>J_.∨-preserving {< x >} {< y >} = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.right ._=>J_.⊥-preserving = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.left ._=>J_.func ._=>_.fun bottom = bottom
+  subst-Interval q₁ q₂ eq ._⇒c_.left ._=>J_.func ._=>_.fun < x > = < subst-Intv q₂ q₁ (ℚ-setoid .sym eq) x >
+  subst-Interval q₁ q₂ eq ._⇒c_.left ._=>J_.func ._=>_.mono {bottom} {bottom} _ = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.left ._=>J_.func ._=>_.mono {bottom} {< _ >} _ = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.left ._=>J_.func ._=>_.mono {< _ >} {< _ >} ϕ = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.left ._=>J_.∨-preserving {bottom} {bottom} = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.left ._=>J_.∨-preserving {bottom} {< x >} = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.left ._=>J_.∨-preserving {< x >} {bottom} = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.left ._=>J_.∨-preserving {< x >} {< y >} = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.left ._=>J_.⊥-preserving = {!!}
+  subst-Interval q₁ q₂ eq ._⇒c_.conjugate {bottom} {bottom} .proj₁ _ = tt
+  subst-Interval q₁ q₂ eq ._⇒c_.conjugate {bottom} {bottom} .proj₂ _ = tt
+  subst-Interval q₁ q₂ eq ._⇒c_.conjugate {bottom} {< _ >} .proj₁ _ = tt
+  subst-Interval q₁ q₂ eq ._⇒c_.conjugate {bottom} {< _ >} .proj₂ _ = tt
+  subst-Interval q₁ q₂ eq ._⇒c_.conjugate {< _ >} {bottom} .proj₁ _ = tt
+  subst-Interval q₁ q₂ eq ._⇒c_.conjugate {< _ >} {bottom} .proj₂ _ = tt
+  subst-Interval q₁ q₂ eq ._⇒c_.conjugate {< _ >} {< _ >} .proj₁ ()
+  subst-Interval q₁ q₂ eq ._⇒c_.conjugate {< _ >} {< _ >} .proj₂ ()
+
 {-
 ------------------------------------------------------------------------------
 -- Negation
