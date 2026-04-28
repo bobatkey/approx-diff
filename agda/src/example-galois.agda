@@ -149,7 +149,7 @@ module example3 where
   open import Data.Rational
   open import Data.Rational.Properties using (≤-refl)
   open import preorder using (bottom; <_>; LCarrier)
-  open import approx-numbers using (Intv) renaming (add to Intv-add)
+  open import approx-numbers using (Intv)
   open import prop using (liftS)
   open import Data.Nat hiding (_/_)
   open import Data.Integer hiding (_/_; show; -_)
@@ -159,23 +159,17 @@ module example3 where
 
   open Intv
 
-  -- Slack interval [0.9, 1.1] at 1ℚ — same as example2's `interval`.
   intv1 : Intv 1ℚ
-  intv1 .lower = + 9 / 10
-  intv1 .upper = + 11 / 10
-  intv1 .l≤q = liftS (*≤* (+≤+ (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n)))))))))))
-  intv1 .q≤u = liftS (*≤* (+≤+ (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))))))))
+  intv1 .lower = + 4 / 5
+  intv1 .upper = + 3 / 2
+  intv1 .l≤q = liftS (*≤* (+≤+ (s≤s (s≤s (s≤s (s≤s z≤n))))))
+  intv1 .q≤u = liftS (*≤* (+≤+ (s≤s (s≤s z≤n))))
 
-  -- Wider slack interval [0.5, 1.5] at 1ℚ — used as a parent to derive a wider intv0.
-  intv2 : Intv 1ℚ
-  intv2 .lower = + 1 / 2
-  intv2 .upper = + 3 / 2
-  intv2 .l≤q = liftS (*≤* (+≤+ (s≤s z≤n)))
-  intv2 .q≤u = liftS (*≤* (+≤+ (s≤s (s≤s z≤n))))
-
-  -- Slack interval [-0.5, 0.5] at 0ℚ, derived from intv2 via the backward `add` map.
   intv0 : Intv 0ℚ
-  intv0 = Intv-add 0ℚ 1ℚ intv2 .proj₁
+  intv0 .lower = - (+ 1 / 2)
+  intv0 .upper = 0ℚ
+  intv0 .l≤q = liftS (*≤* -≤+)
+  intv0 .q≤u = liftS Data.Rational.Properties.≤-refl
 
   open import Data.Maybe
   open import Data.Product using (Σ) renaming (_×_ to _×ₜ_)
@@ -184,9 +178,8 @@ module example3 where
   extract-interval bottom = nothing
   extract-interval < x > = just (x .lower , x .upper)
 
-  -- Forward analysis: feed precise input at entry 1 (label.a, 0ℚ), slack at entry 3
-  -- (label.a, 1ℚ); entry 2 (label.b) is filtered out by `query label.a` so its info is
-  -- irrelevant.
+  -- Unfortunately this is a bit slow to normalise, so not using at the moment; instead have simpler isolated
+  -- tests using the 'add' conjugate pair and Galois connection directly.
   fwd-slice : _
   fwd-slice = ⟦ example.ex.query label.a ⟧tm .famf .transf (_ , input) .proj₁ .*→* .func .fun
     (_ , (_ , < intv0 >) , (_ , bottom) , (_ , < intv1 >) , _)
@@ -196,25 +189,19 @@ module example3 where
       open join-semilattice._=>_
       open preorder._=>_
 
-  -- Simpler isolated test: directly apply Conjugate.add-mor at indices (0ℚ, 1ℚ) to two
-  -- specific lifted input intervals, observing the propagated output interval at 1ℚ.
   fwd-addᵀ : _
   fwd-addᵀ = Conjugate.add-interval 0ℚ 1ℚ .conjugate._⇒c_.right .join-semilattice._=>_.func .preorder._=>_.fun
     (< intv0 > , < intv1 >)
 
-  -- intv0 = [-0.5, 0.5] at 0 (wider) and intv1 = [0.9, 1.1] at 1 (narrower). After
-  -- shifting both by the other's q, addᵀ takes the intersection (q₂-shifted intv0 =
-  -- [0.5, 1.5], q₁-shifted intv1 = [0.9, 1.1]; ∩ = [0.9, 1.1]) — the narrower wins.
-  test-addᵀ : extract-interval fwd-addᵀ ≡ just (+ 9 / 10 , + 11 / 10)
-  test-addᵀ = ≡-refl
-
-  -- Compare: the Galois forward (meet-preserving, right adjoint) uses add⁎ instead.
-  -- This is the "set of possibilities" view that broadens.
   fwd-add⁎ : _
   fwd-add⁎ = Galois.add-interval 0ℚ 1ℚ .galois._⇒g_.right .preorder._=>_.fun
     (< intv0 > , < intv1 >)
 
-  -- Galois forward takes the union of the shifted ranges = [0.5, 1.5] — the wider wins.
+  -- q₂-shifted intv0 = [1/2, 1]; q₁-shifted intv1 = [4/5, 3/2]. addᵀ takes the intersection.
+  test-addᵀ : extract-interval fwd-addᵀ ≡ just (+ 4 / 5 , + 1 / 1)
+  test-addᵀ = ≡-refl
+
+  -- And add⁎ takes the union.
   test-add⁎ : extract-interval fwd-add⁎ ≡ just (+ 1 / 2 , + 3 / 2)
   test-add⁎ = ≡-refl
 

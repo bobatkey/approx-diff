@@ -40,3 +40,49 @@ since $(\reindex{\partial g}{f} \comp \partial f)_x = {\partial g}_{f(x)} \comp 
 
 Similarly, $\Diff^*$ is equivalent to a full subcategory of $\Fam(\FinVect^\op)$ with composition
 corresponding to the backward chain rule.
+
+\subsection{Rational intervals and two forward analyses}
+\label{sec:galois-slicing-auto-diff-via-fam:rational-intervals}
+
+A concrete instance illustrating the contrast between the Galois (right adjoint) forward map and the Tarski
+conjugate forward map is given by intervals over the rationals. For each $q \in \QQ$ let $\Intv(q) = \{[l, u] :
+l \leq q \leq u\}$ ordered by reverse inclusion (so a tighter interval is \emph{higher} in the order, i.e.\ the
+information order). Lifting by an explicit bottom yields a bounded distributive lattice $\IntvL(q) =
+\Intv(q)_\bot$, and the family $q \mapsto \IntvL(q)$ is an object of both $\Fam(\LatGal)$ and $\Fam(\LatConj)$.
+
+Addition has three associated maps for any $q_1, q_2$:
+\begin{itemize}
+\item $\add: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$ — the
+  \emph{join-preserving backward} map, defined by subtraction: $\add(z).\proj_1 = [z.l - q_2, z.u - q_2]$. This
+  is shared between Galois and conjugate (left of both adjoints).
+\item $\add^*: \IntvL(q_1) \times \IntvL(q_2) \to \IntvL(q_1 + q_2)$ — the \emph{meet-preserving forward}
+  (Galois right adjoint), with $\add^*(x, y).l = (q_2 + x.l) \meet (q_1 + y.l)$, $\add^*(x, y).u = (q_2 + x.u)
+  \join (q_1 + y.u)$.
+\item $\addT: \IntvL(q_1) \times \IntvL(q_2) \to \IntvL(q_1 + q_2)$ — the \emph{join-preserving forward}
+  (Tarski conjugate of $\add$), with $\addT(x, y).l = (q_2 + x.l) \join (q_1 + y.l)$, $\addT(x, y).u = (q_2 +
+  x.u) \meet (q_1 + y.u)$.
+\end{itemize}
+
+\noindent Each input interval $x \in \Intv(q_i)$ encodes a constraint of the form ``the $i$-th summand lies in
+$[x.l, x.u]$''; the maps $\add^*$ and $\addT$ shift each input by the \emph{other} summand's index to obtain
+candidate ranges for the result, then combine them.
+
+\paragraph{Comparison.} On overlapping but non-nested input intervals (e.g. $\IntvL$-shifted ranges $[1/2, 1]$
+and $[4/5, 3/2]$):
+\[
+  \addT\colon\quad \big[\max(1/2, 4/5),\; \min(1, 3/2)\big] = [4/5, 1] \qquad \text{(intersection)}
+\]
+\[
+  \add^*\colon\quad \big[\min(1/2, 4/5),\; \max(1, 3/2)\big] = [1/2, 3/2] \qquad \text{(union)}
+\]
+
+\noindent So $\addT$ \emph{tightens}: it returns the smallest interval simultaneously consistent with all
+inputs (the join in the information order), modelling ``each input is evidence; combine evidence by joining
+constraints''. $\add^*$ \emph{broadens}: it returns the smallest interval covering all inputs (the meet),
+modelling ``each input is one possibility; combine possibilities by overapproximation''.
+
+\paragraph{Connection to AD.} Forward-mode AD propagates tangents through addition by $dy = dx_1 + dx_2$.
+Modulo idempotence of $+$ (replacing it by $\join$ in the information order), this corresponds to $\addT$:
+each input contributes a constraint on the output, and the constraints are joined into the strongest
+common refinement. By contrast, $\add^*$ is the abstract-interpretation flavour, propagating sets of possible
+values via overapproximation.
