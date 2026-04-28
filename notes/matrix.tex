@@ -248,31 +248,43 @@ and join $[l_1, u_1] \join [l_2, u_2] = [\min(l_1, l_2), \max(u_1, u_2)]$. The l
 \Intv(q)_{\bot}$ which adjoins an explicit least element $\bot$ is a bounded distributive lattice, with $\bot$
 as bottom.
 
-For any $q_1, q_2 \in \QQ$, the addition $q_1 + q_2$ has the four associated maps:
-\begin{itemize}
-\item $\add: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$, the join-preserving backward map with
-$\add([l, u]) = ([l - q_2, u - q_2], [l - q_1, u - q_1])$.
-\item $\add^*: \IntvL(q_1) \times \IntvL(q_2) \to \IntvL(q_1 + q_2)$, the meet-preserving forward map with
-  $\add^*([l_1, u_1], [l_2, u_2]) = [(q_2 + l_1) \meet (q_1 + l_2), (q_2 + u_1) \join (q_1 + u_2)]$.
-\item $\addT: \IntvL(q_1) \times \IntvL(q_2) \to \IntvL(q_1 + q_2)$ — the \emph{join-preserving forward}
-  (Tarski conjugate of $\add$), with $\addT(x, y).l = (q_2 + x.l) \join (q_1 + y.l)$, $\addT(x, y).u =
-  (q_2 + x.u) \meet (q_1 + y.u)$.
-\item $\addT_*: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$ — the \emph{meet-preserving backward}
-  (right adjoint of $\addT$).
-\end{itemize}
+For any $q_1, q_2 \in \QQ$, the addition $q_1 + q_2$ has four associated maps:
 
-\noindent Each input interval encodes a constraint of the form ``the $i$-th summand lies in $[x.l, x.u]$''.
-The forward maps $\add^*$ and $\addT$ shift each input by the \emph{other} summand's index to obtain candidate
-ranges for the result, then combine them — by union ($\add^*$, the abstract-interpretation overapproximation)
-or by intersection ($\addT$, the join-of-evidence in the information order).
+\begin{center}
+\small
+\begin{tabular}{ll}
+\hline
+\textbf{operation} & \textbf{definition on $\IntvL$} \\
+\hline
+$\add: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$ &
+  $\add([l, u]) = $ \\
+\quad join-preserving backward map & \quad $([l - q_2, u - q_2], [l - q_1, u - q_1])$ \\[1ex]
+$\add^*: \IntvL(q_1) \times \IntvL(q_2) \to \IntvL(q_1 + q_2)$ &
+  $\add^*([l_1, u_1], [l_2, u_2]) = $ \\
+\quad meet-preserving forward map & \quad $[\min(q_2 + l_1, q_1 + l_2),\; \max(q_2 + u_1, q_1 + u_2)]$ \\[1ex]
+$\addT: \IntvL(q_1) \times \IntvL(q_2) \to \IntvL(q_1 + q_2)$ &
+  $\addT([l_1, u_1], [l_2, u_2]) = $ \\
+\quad join-preserving forward map & \quad $[\max(q_2 + l_1, q_1 + l_2),\; \min(q_2 + u_1, q_1 + u_2)]$\\[1ex]
+$\addT_*: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$ & \\
+  \quad meet-preserving backward map \\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent (where $\min$ and $\max$ are operations on $\QQ$; on $\IntvL$ itself they correspond to the lattice
+join $\join$ and meet $\meet$ respectively, but at the bound level the standard $\QQ$ names are clearer.)
+Each input interval encodes a constraint of the form ``the $i$-th summand lies in $[x.l, x.u]$''. The forward
+maps $\add^*$ and $\addT$ shift each input by the \emph{other} summand's index to obtain candidate ranges
+for the result, then combine them — by union ($\add^*$, the abstract-interpretation overapproximation) or by
+intersection ($\addT$, the join-of-evidence in the information order).
 
 \paragraph{Comparison.} On overlapping but non-nested input intervals (e.g.\ $\IntvL$-shifted ranges $[1/2,
 1]$ and $[4/5, 3/2]$):
 \[
-  \addT\colon\quad \big[\max(1/2, 4/5),\; \min(1, 3/2)\big] = [4/5, 1] \qquad \text{(intersection)}
+  \addT\colon\quad [\max(1/2, 4/5),\; \min(1, 3/2)] = [4/5, 1] \qquad \text{(intersection)}
 \]
 \[
-  \add^*\colon\quad \big[\min(1/2, 4/5),\; \max(1, 3/2)\big] = [1/2, 3/2] \qquad \text{(union)}
+  \add^*\colon\quad [\min(1/2, 4/5),\; \max(1, 3/2)] = [1/2, 3/2] \qquad \text{(union)}
 \]
 
 \paragraph{Connection to AD.} Forward-mode AD propagates tangents through addition by $dy = dx_1 + dx_2$.
