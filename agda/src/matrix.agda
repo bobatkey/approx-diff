@@ -544,7 +544,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     (⊤-isTop      : IsTop  ≤-isPreorder ⊤)
     (∨-isJoin     : IsJoin ≤-isPreorder _∨_)
     (⊥-isBottom   : IsBottom ≤-isPreorder ⊥)
-    (∧-∨-distrib  : ∀ {x y z} → (x ∧ (y ∨ z)) ≤ ((x ∧ y) ∨ (x ∧ z)))
+    (∧-∨-distrib  : ∀ {x y z} → x ∧ (y ∨ z) ≤ (x ∧ y) ∨ (x ∧ z))
     (≈→≤          : ∀ {x y} → x ≈ y → x ≤ y) -- S setoid equivalence compatible with the preorder
     where
 
