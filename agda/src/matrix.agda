@@ -765,7 +765,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     DistribLattice n .Obj.joins = vec.join preorder n joins
     DistribLattice n .Obj.∧-∨-distrib _ _ _ _ = ∧-∨-distrib
 
-    -- Helpers for the morphism: Σ-mono, plus aliases for ≤-refl and ∧-mono.
     open Join _≤_ ≤-isPreorder ∨-isJoin ⊥-isBottom ≈→≤ using (Σ-mono)
     open IsPreorder ≤-isPreorder using () renaming (refl to ≤-refl)
     open IsMeet ∧-isMeet using () renaming (mono to ∧-mono)
@@ -774,9 +773,6 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     open _=>J_
     open preorder._=>_ using (fun; mono)
 
-    -- Conjugate-pair morphism induced by a matrix M : Matrix n m. The right map sends x : Vec n
-    -- to the column-wise dot product (Mᵀ)_j ⋅ x; the left map symmetrically uses M directly. Both
-    -- are join-preserving by linearity (distributivity of ∧ over ∨ + Σ-+). Conjugacy postponed.
     to-conj : ∀ {m n} → Matrix n m → DistribLattice n ⇒c DistribLattice m
     to-conj {m} {n} M .right .func .fun x j = (M ᵀ) j ⋅ x
     to-conj {m} {n} M .right .func .mono x≤x' j = Σ-mono (λ i → ∧-mono ≤-refl (x≤x' i))
