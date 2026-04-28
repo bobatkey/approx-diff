@@ -36,7 +36,7 @@ import example
 open import Relation.Binary.PropositionalEquality using (_≡_) renaming (refl to ≡-refl)
 
 -- Backward analysis (Galois). Example (3) in Section 4.3.
-module galois-example where
+module backward where
   open import ho-model
   open import example-signature-interpretation galois.cat galois.products galois.terminal galois.TWO galois.unit galois.conjunct
   open import prop-setoid using (idS)
@@ -103,7 +103,7 @@ module galois-example where
   test3 = ≡-refl
 
 -- Forward analysis using addᵀ (Tarski conjugate).
-module conjugate-example where
+module forward where
   open import ho-model
   open import example-signature-interpretation conjugate.cat conjugate.products conjugate.terminal conjugate.TWO conjugate.unit conjugate.conjunct
   open import prop-setoid using (idS)

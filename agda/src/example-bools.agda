@@ -2,7 +2,7 @@
 
 -- Examples with Two-valued (Bool) approximation.
 
-module example-bool where
+module example-bools where
 
 open import Level using (0ℓ; lift)
 open import Data.List using (List; []; _∷_)
@@ -36,7 +36,7 @@ import example
 open import Relation.Binary.PropositionalEquality using (_≡_) renaming (refl to ≡-refl)
 
 -- Backward analysis (Galois). Example (2) in Section 4.3.
-module galois-example where
+module backward where
   open import ho-model
   open import example-signature-interpretation galois.cat galois.products galois.terminal galois.TWO galois.unit galois.conjunct
   open Galois.interp Sig BaseInterp1
@@ -61,7 +61,7 @@ module galois-example where
   test2 = ≡-refl
 
 -- Forward analysis (Conjugate).
-module conjugate-example where
+module forward where
   open import ho-model
   open import example-signature-interpretation conjugate.cat conjugate.products conjugate.terminal conjugate.TWO conjugate.unit conjugate.conjunct
   open Conjugate.interp Sig BaseInterp1
@@ -90,8 +90,8 @@ module conjugate-example where
   test-3 : fwd-slice ((· , ⊥) , (· , ⊥) , (· , ⊤) , _) ≡ ⊤
   test-3 = ≡-refl
 
--- Forward analysis via the matrix model (variant of conjugate).
-module conjugate-matrix-example where
+-- Matrix model variant.
+module backward-matrix where
   open import categories using (Category; HasTerminal; HasInitial; IsInitial; IsTerminal; HasProducts)
 
   import join-semilattice-category as SemiLat
