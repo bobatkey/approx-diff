@@ -60,6 +60,30 @@ module backward where
   test2 : bwd-slice label.b ≡ ((· , ⊥) , (· , ⊤) , (· , ⊥) , _)
   test2 = ≡-refl
 
+-- Backward analysis using CBN lifting.
+module backward-cbn where
+  open import ho-model
+  open import example-signature-interpretation galois.cat galois.products galois.terminal galois.TWO galois.unit galois.conjunct
+  open Galois.interp Sig BaseInterp0
+  open example.ex using (Tag; cbn-query)
+
+  input : ⟦ Tag (list (Tag (Tag (base label) [×] Tag (base number)))) ⟧ty .idx .Carrier
+  input = _ , 3 , (_ , (_ , label.a) , (_ , 0)) , (_ , (_ , label.b) , (_ , 1)) , (_ , (_ , label.a) , (_ , 1)) , _
+
+  bwd-slice : label.label → _
+  bwd-slice l = ⟦ example.ex.cbn-query l ⟧tm .famf .transf (_ , input) .proj₂ .*→* .func .fun (⊤ , ·) .proj₂
+    where
+      open indexed-family._⇒f_
+      open join-semilattice-category._⇒_
+      open join-semilattice._=>_
+      open preorder._=>_
+
+  test1 : bwd-slice label.a ≡ (⊤ , (⊤ , (⊤ , ·) , ⊤ , ·) , (⊤ , (⊤ , ·) , ⊥ , ·) , (⊤ , (⊤ , ·) , ⊤ , ·) , ·)
+  test1 = ≡-refl
+
+  test2 : bwd-slice label.b ≡ (⊤ , (⊤ , (⊤ , ·) , ⊥ , ·) , (⊤ , (⊤ , ·) , ⊤ , ·) , (⊤ , (⊤ , ·) , ⊥ , ·) , ·)
+  test2 = ≡-refl
+
 -- Forward analysis (Conjugate).
 module forward where
   open import ho-model
@@ -91,7 +115,7 @@ module forward where
   test-3 = ≡-refl
 
 -- Matrix model variant.
-module backward-matrix where
+module forward-matrix where
   open import categories using (Category; HasTerminal; HasInitial; IsInitial; IsTerminal; HasProducts)
 
   import join-semilattice-category as SemiLat
@@ -140,27 +164,3 @@ module backward-matrix where
   -- Output depends on 3rd label (would be ⊥ in the Galois example)
   test-3 : fwd-slice (· , (· , ⊥ , ·) , (· , ⊥ , ·) , (· , ⊤ , ·) , _) ≡ (⊤ , ·)
   test-3 = ≡-refl
-
--- Backward analysis using CBN lifting.
-module cbn-example where
-  open import ho-model
-  open import example-signature-interpretation galois.cat galois.products galois.terminal galois.TWO galois.unit galois.conjunct
-  open Galois.interp Sig BaseInterp0
-  open example.ex using (Tag; cbn-query)
-
-  input : ⟦ Tag (list (Tag (Tag (base label) [×] Tag (base number)))) ⟧ty .idx .Carrier
-  input = _ , 3 , (_ , (_ , label.a) , (_ , 0)) , (_ , (_ , label.b) , (_ , 1)) , (_ , (_ , label.a) , (_ , 1)) , _
-
-  bwd-slice : label.label → _
-  bwd-slice l = ⟦ example.ex.cbn-query l ⟧tm .famf .transf (_ , input) .proj₂ .*→* .func .fun (⊤ , ·) .proj₂
-    where
-      open indexed-family._⇒f_
-      open join-semilattice-category._⇒_
-      open join-semilattice._=>_
-      open preorder._=>_
-
-  test1 : bwd-slice label.a ≡ (⊤ , (⊤ , (⊤ , ·) , ⊤ , ·) , (⊤ , (⊤ , ·) , ⊥ , ·) , (⊤ , (⊤ , ·) , ⊤ , ·) , ·)
-  test1 = ≡-refl
-
-  test2 : bwd-slice label.b ≡ (⊤ , (⊤ , (⊤ , ·) , ⊥ , ·) , (⊤ , (⊤ , ·) , ⊤ , ·) , (⊤ , (⊤ , ·) , ⊥ , ·) , ·)
-  test2 = ≡-refl
