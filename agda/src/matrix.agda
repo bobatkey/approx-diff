@@ -39,6 +39,7 @@ module Mat {o ℓ} {A : Setoid o ℓ} (S : CommutativeSemiring A) where
   Σ {suc n} f = f zero + Σ {n} (λ i → f (suc i))
 
   -- Dot product (sum of multiplications).
+  infixl 21 _⋅_
   _⋅_ : ∀ {n} → Vec n → Vec n → Carrier
   _⋅_ {n} u v = Σ {n} λ i → u i · v i
 
@@ -634,8 +635,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     open preorder._=>_ using (fun; mono)
 
     -- Push y inside, interchange, pull x out.
-    swap : ∀ {m n} (M : Matrix n m) {x : Vec m} {y : Vec n} →
-           (y ⋅ (λ i → M i ⋅ x)) ≈ ((λ j → (M ᵀ) j ⋅ y) ⋅ x)
+    swap : ∀ {m n} (M : Matrix n m) {x : Vec m} {y : Vec n} → y ⋅ (λ i → M i ⋅ x) ≈ (λ j → (M ᵀ) j ⋅ y) ⋅ x
     swap {m} {n} M {x} {y} =
       trans (Σ-cong {n} (λ i → Σ-·-distribₗ (y i) (λ j → M i j ∧ x j)))
             (trans (Σ-interchange {n} {m} (λ i j → y i ∧ (M i j ∧ x j)))

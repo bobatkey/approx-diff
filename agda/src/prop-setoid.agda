@@ -72,6 +72,7 @@ module ≈-Reasoning {o e} {A : Set o} {_≈_ : A → A → Prop e} (equiv : IsE
 
 record Setoid o e : Set (suc (o ⊔ e)) where
   no-eta-equality
+  infix 4 _≈_
   field
     Carrier : Set o
     _≈_     : Carrier → Carrier → Prop e
