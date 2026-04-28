@@ -258,25 +258,29 @@ For any $q_1, q_2 \in \QQ$, the addition $q_1 + q_2$ has four associated maps:
 \hline
 $\add: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$ &
   $\add([l, u]) = $ \\
-\quad join-preserving backward map & \quad $([l - q_2, u - q_2], [l - q_1, u - q_1])$ \\[1ex]
+\emph{join-preserving backward map} & \quad $([l - q_2, u - q_2], [l - q_1, u - q_1])$ \\[1ex]
 $\add^*: \IntvL(q_1) \times \IntvL(q_2) \to \IntvL(q_1 + q_2)$ &
   $\add^*([l_1, u_1], [l_2, u_2]) = $ \\
-\quad meet-preserving forward map & \quad $[\min(q_2 + l_1, q_1 + l_2),\; \max(q_2 + u_1, q_1 + u_2)]$ \\[1ex]
+\emph{meet-preserving forward map} & \quad $[\min(q_2 + l_1, q_1 + l_2),\; \max(q_2 + u_1, q_1 + u_2)]$ \\[1ex]
 $\addT: \IntvL(q_1) \times \IntvL(q_2) \to \IntvL(q_1 + q_2)$ &
   $\addT([l_1, u_1], [l_2, u_2]) = $ \\
-\quad join-preserving forward map & \quad $[\max(q_2 + l_1, q_1 + l_2),\; \min(q_2 + u_1, q_1 + u_2)]$\\[1ex]
-$\addT_*: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$ & \\
-  \quad meet-preserving backward map \\
+\emph{join-preserving forward map} & \quad $[\max(q_2 + l_1, q_1 + l_2),\; \min(q_2 + u_1, q_1 + u_2)]$\\[1ex]
+$\addT_*: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$ &
+  $\addT_*([l, u]) = \add([l, u])$ \\
+  \emph{meet-preserving backward map} & \\
 \hline
 \end{tabular}
 \end{center}
 
-\noindent (where $\min$ and $\max$ are operations on $\QQ$; on $\IntvL$ itself they correspond to the lattice
-join $\join$ and meet $\meet$ respectively, but at the bound level the standard $\QQ$ names are clearer.)
-Each input interval encodes a constraint of the form ``the $i$-th summand lies in $[x.l, x.u]$''. The forward
-maps $\add^*$ and $\addT$ shift each input by the \emph{other} summand's index to obtain candidate ranges
-for the result, then combine them — by union ($\add^*$, the abstract-interpretation overapproximation) or by
-intersection ($\addT$, the join-of-evidence in the information order).
+\noindent (where $\min$ and $\max$ are the lattice operations on $\QQ$). The two input intervals each encode a
+constraint of the form ``this summand lies in the interval $[x.l, x.u]$''; the forward maps $\add^*$ and
+$\addT$ shift each input by the \emph{other} summand's index to obtain candidate ranges for the result, and
+then combine them: by union for $\add^*$, or by intersection for $\addT$.
+
+Note that $\addT_* = \add$: solving the universal property $\addT(x, y) \leq z \iff (x, y) \leq \addT_*(z)$ in
+the information order yields exactly the subtraction-split. So the four-map grid has only three distinct
+functions, with $\add$ being both left adjoint to $\add^*$ and right adjoint to $\addT$. This is possible
+because $\add$ is a lattice homomorphism (preserves both joins and meets), and so can play both roles.
 
 \paragraph{Comparison.} On overlapping but non-nested input intervals (e.g.\ $\IntvL$-shifted ranges $[1/2,
 1]$ and $[4/5, 3/2]$):
