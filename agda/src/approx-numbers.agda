@@ -232,12 +232,46 @@ galois₂ q₁ q₂ x y z ((liftS ϕ₁ , liftS ϕ₂) , (liftS ψ₁ , liftS ψ
   liftS (⊓-glb (adjoint₂ ϕ₁) (adjoint₂ ψ₁)) ,
   liftS (⊔-lub (adjoint₁' ϕ₂) (adjoint₁' ψ₂))
 
-add⁎-mono : ∀ q₁ q₂ {x₁ x₂ y₁ y₂} →
-                 x₁ ⊑ x₂ → y₁ ⊑ y₂ →
-                 add⁎ q₁ q₂ x₁ y₁ ⊑ add⁎ q₁ q₂ x₂ y₂
+add⁎-mono : ∀ q₁ q₂ {x₁ x₂ y₁ y₂} → x₁ ⊑ x₂ → y₁ ⊑ y₂ → add⁎ q₁ q₂ x₁ y₁ ⊑ add⁎ q₁ q₂ x₂ y₂
 add⁎-mono q₁ q₂ (liftS ϕ₁ , liftS ϕ₂) (liftS ψ₁ , liftS ψ₂) =
-  (liftS (⊓-mono-≤ (+-mono-≤ (≤-refl {q₂}) ϕ₁) (+-mono-≤ (≤-refl {q₁}) ψ₁))) ,
-  (liftS (⊔-mono-≤ (+-mono-≤ (≤-refl {q₂}) ϕ₂) (+-mono-≤ (≤-refl {q₁}) ψ₂)))
+  liftS (⊓-mono-≤ (+-mono-≤ (≤-refl {q₂}) ϕ₁) (+-mono-≤ (≤-refl {q₁}) ψ₁)) ,
+  liftS (⊔-mono-≤ (+-mono-≤ (≤-refl {q₂}) ϕ₂) (+-mono-≤ (≤-refl {q₁}) ψ₂))
+
+addᵀ-mono : ∀ q₁ q₂ {x₁ x₂ y₁ y₂} → x₁ ⊑ x₂ → y₁ ⊑ y₂ → addᵀ q₁ q₂ x₁ y₁ ⊑ addᵀ q₁ q₂ x₂ y₂
+addᵀ-mono q₁ q₂ (liftS ϕ₁ , liftS ϕ₂) (liftS ψ₁ , liftS ψ₂) =
+  liftS (⊔-mono-≤ (+-mono-≤ (≤-refl {q₂}) ϕ₁) (+-mono-≤ (≤-refl {q₁}) ψ₁)) ,
+  liftS (⊓-mono-≤ (+-mono-≤ (≤-refl {q₂}) ϕ₂) (+-mono-≤ (≤-refl {q₁}) ψ₂))
+
+addᵀ-r : ∀ q₁ q₂ → Intv q₁ → Intv (q₁ + q₂)
+addᵀ-r q₁ q₂ x .lower = q₂ + x .lower
+addᵀ-r q₁ q₂ x .upper = q₂ + x .upper
+addᵀ-r q₁ q₂ x .l≤q with x .l≤q
+... | liftS ϕ = liftS (≤-trans (+-mono-≤ (≤-refl {q₂}) ϕ) (≤-reflexive (+-comm q₂ q₁)))
+addᵀ-r q₁ q₂ x .q≤u with x .q≤u
+... | liftS ϕ = liftS (≤-trans (≤-reflexive (+-comm q₁ q₂)) (+-mono-≤ (≤-refl {q₂}) ϕ))
+
+addᵀ-l : ∀ q₁ q₂ → Intv q₂ → Intv (q₁ + q₂)
+addᵀ-l q₁ q₂ y .lower = q₁ + y .lower
+addᵀ-l q₁ q₂ y .upper = q₁ + y .upper
+addᵀ-l q₁ q₂ y .l≤q with y .l≤q
+... | liftS ϕ = liftS (+-mono-≤ (≤-refl {q₁}) ϕ)
+addᵀ-l q₁ q₂ y .q≤u with y .q≤u
+... | liftS ϕ = liftS (+-mono-≤ (≤-refl {q₁}) ϕ)
+
+addᵀ-r-mono : ∀ q₁ q₂ {x₁ x₂} → x₁ ⊑ x₂ → addᵀ-r q₁ q₂ x₁ ⊑ addᵀ-r q₁ q₂ x₂
+addᵀ-r-mono q₁ q₂ (liftS ϕ₁ , liftS ϕ₂) =
+  liftS (+-mono-≤ (≤-refl {q₂}) ϕ₁) , liftS (+-mono-≤ (≤-refl {q₂}) ϕ₂)
+
+addᵀ-l-mono : ∀ q₁ q₂ {y₁ y₂} → y₁ ⊑ y₂ → addᵀ-l q₁ q₂ y₁ ⊑ addᵀ-l q₁ q₂ y₂
+addᵀ-l-mono q₁ q₂ (liftS ϕ₁ , liftS ϕ₂) =
+  liftS (+-mono-≤ (≤-refl {q₁}) ϕ₁) , liftS (+-mono-≤ (≤-refl {q₁}) ϕ₂)
+
+-- addᵀ as the join of the two partial-input contributions; basis of join-preservation.
+addᵀ-split-≤ : ∀ q₁ q₂ x y → addᵀ q₁ q₂ x y ⊑ (addᵀ-r q₁ q₂ x ⊔I addᵀ-l q₁ q₂ y)
+addᵀ-split-≤ q₁ q₂ x y = ⊑I-isPreorder .refl {addᵀ q₁ q₂ x y}
+
+addᵀ-split-≥ : ∀ q₁ q₂ x y → (addᵀ-r q₁ q₂ x ⊔I addᵀ-l q₁ q₂ y) ⊑ addᵀ q₁ q₂ x y
+addᵀ-split-≥ q₁ q₂ x y = ⊑I-isPreorder .refl {addᵀ q₁ q₂ x y}
 
 ------------------------------------------------------------------------------
 IntervalG : ℚ → Obj
