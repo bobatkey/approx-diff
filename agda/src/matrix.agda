@@ -719,9 +719,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     ∨-∧-absorption : ∀ {a b} → (a ∨ (a ∧ b)) ≈ a
     ∨-∧-absorption {a} {b} =
       trans (∨-cong (trans (sym ∧-lunit) ∧-comm) refl)
-            (trans (sym ∧-∨-distribₗ)
-              (trans (∧-cong refl ⊤-add-top)
-                     (trans ∧-comm ∧-lunit)))
+            (trans (sym ∧-∨-distribₗ) (trans (∧-cong refl ⊤-add-top) (trans ∧-comm ∧-lunit)))
 
     ∧-monoʳ : ∀ {a b c} → a ≤ b → (c ∧ a) ≤ (c ∧ b)
     ∧-monoʳ a≤b = trans (sym ∧-∨-distribₗ) (∧-cong refl a≤b)
@@ -765,13 +763,23 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     DistribLattice n .Obj.joins = vec.join preorder n joins
     DistribLattice n .Obj.∧-∨-distrib _ _ _ _ = ∧-∨-distrib
 
-    open Join _≤_ ≤-isPreorder ∨-isJoin ⊥-isBottom ≈→≤ using (Σ-mono)
-    open IsPreorder ≤-isPreorder using () renaming (refl to ≤-refl)
+    open Join _≤_ ≤-isPreorder ∨-isJoin ⊥-isBottom ≈→≤ using (Σ-mono; Σ-ub; Σ-lub)
+    open IsPreorder ≤-isPreorder using () renaming (refl to ≤-refl; trans to ≤-trans)
     open IsMeet ∧-isMeet using () renaming (mono to ∧-mono)
 
     open import join-semilattice using () renaming (_=>_ to _=>J_)
     open _=>J_
     open preorder._=>_ using (fun; mono)
+
+    -- Push y inside, interchange, pull x out.
+    swap : ∀ {m n} (M : Matrix n m) {x : Vec m} {y : Vec n} →
+           (y ⋅ (λ i → M i ⋅ x)) ≈ ((λ j → (M ᵀ) j ⋅ y) ⋅ x)
+    swap {m} {n} M {x} {y} =
+      trans (Σ-cong {n} (λ i → Σ-·-distribₗ (y i) (λ j → M i j ∧ x j)))
+            (trans (Σ-interchange {n} {m} (λ i j → y i ∧ (M i j ∧ x j)))
+                   (Σ-cong {m} (λ j →
+                     trans (Σ-cong {n} (λ i → trans (sym ∧-assoc) (∧-cong ∧-comm refl)))
+                           (sym (Σ-·-distribᵣ (λ i → M i j ∧ y i) (x j))))))
 
     to-conj : ∀ {m n} → Matrix n m → DistribLattice n ⇒c DistribLattice m
     to-conj {m} {n} M .right .func .fun x j = (M ᵀ) j ⋅ x
@@ -786,4 +794,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
       ≈→≤ (trans (Σ-cong {m} (λ j → ∧-∨-distribₗ)) (sym (Σ-+ {m} _ _)))
     to-conj {m} {n} M .left .⊥-preserving i =
       ≈→≤ (trans (Σ-cong {m} (λ j → ⊥-annihilᵣ)) (Σ-ε {m}))
-    to-conj {m} {n} M .conjugate = {!   !}
+    to-conj {m} {n} M .conjugate {x} {y} .proj₁ h i =
+      ≤-trans (Σ-ub _ i) (≤-trans (≈→≤ (sym (swap (M ᵀ) {x} {y}))) (Σ-lub _ h))
+    to-conj {m} {n} M .conjugate {x} {y} .proj₂ k j =
+      ≤-trans (Σ-ub _ j) (≤-trans (≈→≤ (swap (M ᵀ) {x} {y})) (Σ-lub _ k))
