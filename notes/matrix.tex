@@ -202,8 +202,26 @@ set-indexed products.
 \subsection{Connection to forward- and reverse-mode AD}
 \label{sec:matrix:two:ad}
 
-For the two slicing columns, we take the given morphism $f$ to be the backward direction, since it's
-join-preserving in both cases.
+The conjugate and Galois slicing settings each give a forward and a backward map; together they populate the
+cells of the following grid:
+
+\begin{center}
+\small
+\begin{tabular}{lll}
+ & \textbf{join-preserving} & \textbf{meet-preserving} \\
+ fwd & $f^{\!\top}: \Two^m \to \Two^n$ \quad (Conjugate) & $f_*: \Two^m \to \Two^n$ \quad (Galois) \\
+ bwd & $f: \Two^n \to \Two^m$ \quad (Galois) & $f^{\!\top}_*: \Two^n \to \Two^m$ \quad (Conjugate)
+\end{tabular}
+\end{center}
+
+\noindent The diagonal pairs are adjunctions $f \dashv f_*$ and $f^{\!\top} \dashv f^{\!\top}_*$. The
+intuition for the meet-preserving backward $f^{\!\top}_*$: where the join-preserving forward $f^{\!\top}$
+propagates availability (``which inputs are present, hence which outputs are determined''), its right adjoint
+asks a dual ``demand-relaxation'' question — \emph{``which inputs become unneeded if we no longer need these
+outputs?''}.
+
+For the AD comparison, we take the given morphism $f$ to be the backward direction in both slicing columns,
+since it's join-preserving in both cases:
 
 \begin{center}
 \vspace{2mm}
@@ -218,3 +236,47 @@ join-preserving in both cases.
  via matrix mult in &$(\RR, +, \cdot)$ & $(\Two, \join, \meet)$ & $(\Two, \join, \meet)$
 \end{tabular}
 \end{center}
+
+\subsection{Example: rational intervals}
+\label{sec:matrix:rational-intervals}
+
+We now consider the 4 entries in the adjoint/conjugate grid concretely on intervals over the rationals $q \in
+\QQ$. Let $\Intv(q) = \{[l, u] : l \leq q \leq u\}$ be the set of \emph{intervals} on $q$ ordered by reverse
+inclusion (so a tighter interval is higher in the information order); $\Intv(q)$ is a distributive
+upper-bounded lattice with top $[q, q]$, meet $[l_1, u_1] \meet [l_2, u_2] = [\max(l_1, l_2), \min(u_1, u_2)]$
+and join $[l_1, u_1] \join [l_2, u_2] = [\min(l_1, l_2), \max(u_1, u_2)]$. The lifting $\IntvL(q) =
+\Intv(q)_{\bot}$ which adjoins an explicit least element $\bot$ is a bounded distributive lattice, with $\bot$
+as bottom.
+
+For any $q_1, q_2 \in \QQ$, the addition $q_1 + q_2$ has the four associated maps:
+\begin{itemize}
+\item $\add: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$, the join-preserving backward map with
+$\add([l, u]) = ([l - q_2, u - q_2], [l - q_1, u - q_1])$.
+\item $\add^*: \IntvL(q_1) \times \IntvL(q_2) \to \IntvL(q_1 + q_2)$, the meet-preserving forward map with
+  $\add^*([l_1, u_1], [l_2, u_2]) = [(q_2 + l_1) \meet (q_1 + l_2), (q_2 + u_1) \join (q_1 + u_2)]$.
+\item $\addT: \IntvL(q_1) \times \IntvL(q_2) \to \IntvL(q_1 + q_2)$ — the \emph{join-preserving forward}
+  (Tarski conjugate of $\add$), with $\addT(x, y).l = (q_2 + x.l) \join (q_1 + y.l)$, $\addT(x, y).u =
+  (q_2 + x.u) \meet (q_1 + y.u)$.
+\item $\addT_*: \IntvL(q_1 + q_2) \to \IntvL(q_1) \times \IntvL(q_2)$ — the \emph{meet-preserving backward}
+  (right adjoint of $\addT$).
+\end{itemize}
+
+\noindent Each input interval encodes a constraint of the form ``the $i$-th summand lies in $[x.l, x.u]$''.
+The forward maps $\add^*$ and $\addT$ shift each input by the \emph{other} summand's index to obtain candidate
+ranges for the result, then combine them — by union ($\add^*$, the abstract-interpretation overapproximation)
+or by intersection ($\addT$, the join-of-evidence in the information order).
+
+\paragraph{Comparison.} On overlapping but non-nested input intervals (e.g.\ $\IntvL$-shifted ranges $[1/2,
+1]$ and $[4/5, 3/2]$):
+\[
+  \addT\colon\quad \big[\max(1/2, 4/5),\; \min(1, 3/2)\big] = [4/5, 1] \qquad \text{(intersection)}
+\]
+\[
+  \add^*\colon\quad \big[\min(1/2, 4/5),\; \max(1, 3/2)\big] = [1/2, 3/2] \qquad \text{(union)}
+\]
+
+\paragraph{Connection to AD.} Forward-mode AD propagates tangents through addition by $dy = dx_1 + dx_2$.
+Modulo idempotence of $+$ (replacing it by $\join$ in the information order), this corresponds to $\addT$:
+each input contributes a constraint on the output, and the constraints are joined into the strongest
+common refinement — exactly mirroring the role of $f^{\!\top}$ in the matrix-slicing comparison above.
+$\add^*$ is the abstract-interpretation dual, mirroring $f_*$.
