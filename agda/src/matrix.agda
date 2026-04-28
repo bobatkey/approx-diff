@@ -439,7 +439,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
     meet M .∧-isMeet .IsMeet.⟨_,_⟩ x≤y x≤z i = IsMeet.⟨_,_⟩ (M .∧-isMeet) (x≤y i) (x≤z i)
     meet M .⊤-isTop .IsTop.≤-top i = IsTop.≤-top (M .⊤-isTop)
 
-  open Mat S public
+  open Mat S
     renaming (
       _·_ to _∧_;
       _+_ to _∨_;
@@ -816,11 +816,7 @@ open import prop using (_⇔_; proj₁; proj₂)
 
 module _
   {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A)
-  (let open CommutativeSemiring S hiding (_≈_; trans; sym; refl)
-       _≈_   = Setoid._≈_ A
-       trans = Setoid.trans A
-       sym   = Setoid.sym A
-       refl  = Setoid.refl A)
+  (let open CommutativeSemiring S hiding (_≈_; trans; sym; refl); open Setoid A)
   (∨-idem    : ∀ {x} → x + x ≈ x)
   (∧-idem    : ∀ {x} → x · x ≈ x)
   (⊤-add-top : ∀ {x} → ι + x ≈ ι)
@@ -831,6 +827,7 @@ module _
   where
   module L-op = DistributiveLattice2 L.opposite ∧-idem ∨-idem ε-annihilₗ
 
+  open Mat S using (Matrix; Σ; module +-to-Σ)
   open import Data.Nat using (ℕ)
   open import Data.Fin using (Fin)
   import preorder
@@ -847,23 +844,21 @@ module _
   BoundedLattice n .Obj-g.meets = L.DistribLattice n .conjugate.Obj.meets
   BoundedLattice n .Obj-g.joins = L.DistribLattice n .conjugate.Obj.joins
 
-  ¬ₘ : ∀ {m n} → Matrix S n m → Matrix S n m
+  ¬ₘ : ∀ {m n} → Matrix n m → Matrix n m
   ¬ₘ M i j = ¬ (M i j)
 
   open import basics using (IsPreorder; IsMeet; IsJoin)
 
   Σ-L-op-mono : ∀ {k} {f g : Fin k → Setoid.Carrier A} →
-                (∀ i → f i L.≤ g i) → Σ L.opposite {k} f L.≤ Σ L.opposite {k} g
+                (∀ i → f i L.≤ g i) → Mat.Σ L.opposite {k} f L.≤ Mat.Σ L.opposite {k} g
   Σ-L-op-mono =
-    +-to-Σ.Σ-preserves L.opposite L._≤_ (IsPreorder.refl L.≤-isPreorder) (IsMeet.mono L.∧-isMeet)
+    Mat.+-to-Σ.Σ-preserves L.opposite L._≤_ (IsPreorder.refl L.≤-isPreorder) (IsMeet.mono L.∧-isMeet)
 
   -- L-op's order is L's order reversed (up to the absorption-derived equivalence).
   L-op⇔L : ∀ {a b} → (a L-op.≤ b) ⇔ (b L.≤ a)
-  L-op⇔L .proj₁ a·b≈b =
-    trans (+-cong (sym a·b≈b) refl) (trans +-comm L.∨-∧-absorption)
+  L-op⇔L .proj₁ a·b≈b = trans (+-cong (sym a·b≈b) refl) (trans +-comm L.∨-∧-absorption)
   L-op⇔L .proj₂ b+a≈a =
-    trans (·-cong (sym b+a≈a) refl)
-    (trans ·-+-distribᵣ (trans (+-cong ∧-idem ·-comm) L.∨-∧-absorption))
+    trans (·-cong (sym b+a≈a) refl) (trans ·-+-distribᵣ (trans (+-cong ∧-idem ·-comm) L.∨-∧-absorption))
 
   open IsPreorder L.≤-isPreorder using () renaming (refl to ≤-refl; trans to ≤-trans)
   open IsJoin L.∨-isJoin using () renaming (mono to ∨-mono)
@@ -871,7 +866,7 @@ module _
   open L using (∧-monoʳ; ≈→≤; Σ-ub; Σ-lub)
 
   -- Direction matching `to-conj`.
-  to-gal : ∀ {m n} → Matrix S n m → BoundedLattice n =>g BoundedLattice m
+  to-gal : ∀ {m n} → Matrix n m → BoundedLattice n =>g BoundedLattice m
   to-gal M ._=>g_.left = L.to-conj M .left .func
   to-gal M ._=>g_.right .fun = L-op.to-conj (¬ₘ M) .right .func .fun
   to-gal M ._=>g_.right .mono x≤x' j =
@@ -882,11 +877,6 @@ module _
               (≤-trans (≈→≤ ·-+-distribₗ)
                        (≤-trans (∨-mono complement-∧ ≤-refl)
                                 (≤-trans (≈→≤ +-lunit) π₂))))
-  -- proj₂ at index j: from `∀ i → Σⱼ' M i j' · y j' ≤ x i`, derive `y j ≤ Π_i (¬M i j + x i)`.
-  -- Per i: y j ≃ ι · y j ≃ y j · ι ≤ y j · (M i j + ¬M i j) ≃ y j · M i j + y j · ¬M i j
-  --            ≤ x i + ¬M i j ≃ ¬M i j + x i (using complement-∨, distrib, π₂, +-comm).
-  -- The Σ-step y j · M i j ≤ x i is via Σ-ub on `λ j' → M i j' · y j'` at j, then ly≤x i.
-  -- Then L-op.Σ-lub (via L-op⇔L .proj₂ coercion of each per-i statement) bundles to y j ≤ Π_i (...).
   to-gal M ._=>g_.left⊣right {x} {y} .proj₂ ly≤x j =
     L-op⇔L .proj₁ (L-op.Σ-lub _ (λ i → L-op⇔L .proj₂ (helper i)))
     where
