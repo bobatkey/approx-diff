@@ -9,6 +9,7 @@ open import signature
 import language-syntax
 import label
 import galois
+import conjugate
 
 open import example-signature
 
@@ -66,18 +67,18 @@ module example2 where
   open import approx-numbers using (module Galois)
   open import categories using (Category; HasProducts; HasTerminal)
 
-  BaseInterp2 : Model PFPC[ cat , terminal , products , 𝟚 ] Sig
-  BaseInterp2 .Model.⟦sort⟧ number = Galois.ℚ-intv
-  BaseInterp2 .Model.⟦sort⟧ label = simple[ label.Label , galois.𝟙 ]
-  BaseInterp2 .Model.⟦sort⟧ approx = simple[ 𝟙ₛ , galois.TWO ]
-  BaseInterp2 .Model.⟦op⟧ zero = Galois.zero-mor
-  BaseInterp2 .Model.⟦op⟧ add = Galois.add-mor C.∘ binary2
-  BaseInterp2 .Model.⟦op⟧ (lbl l) = simplef[ constₛ _ l , galois.cat .Category.id _ ]
-  BaseInterp2 .Model.⟦rel⟧ equal-label = predicate label.equal-label C.∘ binary
-  BaseInterp2 .Model.⟦op⟧ approx-unit = simplef[ idS _ , galois.unit ]
-  BaseInterp2 .Model.⟦op⟧ approx-mult = simplef[ prop-setoid.to-𝟙 , galois.conjunct ] C.∘ binary
+  BaseInterp : Model PFPC[ cat , terminal , products , 𝟚 ] Sig
+  BaseInterp .Model.⟦sort⟧ number = Galois.ℚ-intv
+  BaseInterp .Model.⟦sort⟧ label = simple[ label.Label , galois.𝟙 ]
+  BaseInterp .Model.⟦sort⟧ approx = simple[ 𝟙ₛ , galois.TWO ]
+  BaseInterp .Model.⟦op⟧ zero = Galois.zero-mor
+  BaseInterp .Model.⟦op⟧ add = Galois.add-mor C.∘ binary2
+  BaseInterp .Model.⟦op⟧ (lbl l) = simplef[ constₛ _ l , galois.cat .Category.id _ ]
+  BaseInterp .Model.⟦rel⟧ equal-label = predicate label.equal-label C.∘ binary
+  BaseInterp .Model.⟦op⟧ approx-unit = simplef[ idS _ , galois.unit ]
+  BaseInterp .Model.⟦op⟧ approx-mult = simplef[ prop-setoid.to-𝟙 , galois.conjunct ] C.∘ binary
 
-  open Galois.interp Sig BaseInterp2
+  open Galois.interp Sig BaseInterp
   open import Data.Nat hiding (_/_)
   open import Data.Rational renaming (_≤_ to _≤ℚ_; show to ℚ-show)
   open import Data.Integer hiding (_/_; show; -_)
@@ -123,6 +124,45 @@ module example2 where
 
   test3 : extract-interval (bwd-slice .proj₂ .proj₂ .proj₁ .proj₂) ≡ just (+ 9 / 10 , + 11 / 10)
   test3 = ≡-refl
+
+-- Forward analysis using addᵀ (Tarski conjugate)
+module example3 where
+  open import ho-model
+  open import example-signature-interpretation conjugate.cat conjugate.products conjugate.terminal conjugate.TWO conjugate.unit conjugate.conjunct
+  open import prop-setoid using (idS)
+    renaming (𝟙 to 𝟙ₛ; const to constₛ)
+  open import approx-numbers using (module Conjugate)
+  open import categories using (Category; HasProducts; HasTerminal)
+
+  BaseInterp : Model PFPC[ cat , terminal , products , 𝟚 ] Sig
+  BaseInterp .Model.⟦sort⟧ number = Conjugate.ℚ-intv
+  BaseInterp .Model.⟦sort⟧ label = simple[ label.Label , conjugate.𝟙 ]
+  BaseInterp .Model.⟦sort⟧ approx = simple[ 𝟙ₛ , conjugate.TWO ]
+  BaseInterp .Model.⟦op⟧ zero = Conjugate.zero-mor
+  BaseInterp .Model.⟦op⟧ add = Conjugate.add-mor C.∘ binary2
+  BaseInterp .Model.⟦op⟧ (lbl l) = simplef[ constₛ _ l , conjugate.cat .Category.id _ ]
+  BaseInterp .Model.⟦rel⟧ equal-label = predicate label.equal-label C.∘ binary
+  BaseInterp .Model.⟦op⟧ approx-unit = simplef[ idS _ , conjugate.unit ]
+  BaseInterp .Model.⟦op⟧ approx-mult = simplef[ prop-setoid.to-𝟙 , conjugate.conjunct ] C.∘ binary
+
+  open Conjugate.interp Sig BaseInterp
+  open import Data.Rational
+  open import preorder using (bottom; <_>; LCarrier)
+  open import approx-numbers using (Intv)
+  open import prop using (liftS)
+  open import Data.Nat hiding (_/_)
+  open import Data.Integer hiding (_/_; show; -_)
+
+  input : ⟦ list (base label [×] base number) ⟧ty .idx .Carrier
+  input = 3 , (label.a , 0ℚ) , (label.b , 1ℚ) , (label.a , 1ℚ) , _
+
+  fwd-slice : _
+  fwd-slice = ⟦ example.ex.query label.a ⟧tm .famf .transf (_ , input) .proj₁ .*→* .func .fun (_ , (_ , bottom) , (_ , bottom) , (_ , bottom) , _)
+    where
+      open indexed-family._⇒f_
+      open join-semilattice-category._⇒_
+      open join-semilattice._=>_
+      open preorder._=>_
 
 ------------------------------------------------------------------------------
 -- Example using CBN lifting
