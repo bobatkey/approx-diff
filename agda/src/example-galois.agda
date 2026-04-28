@@ -131,7 +131,7 @@ module example3 where
   open import example-signature-interpretation conjugate.cat conjugate.products conjugate.terminal conjugate.TWO conjugate.unit conjugate.conjunct
   open import prop-setoid using (idS)
     renaming (𝟙 to 𝟙ₛ; const to constₛ)
-  open import approx-numbers using (module Conjugate)
+  open import approx-numbers using (module Conjugate; module Galois)
   open import categories using (Category; HasProducts; HasTerminal)
 
   BaseInterp : Model PFPC[ cat , terminal , products , 𝟚 ] Sig
@@ -147,6 +147,7 @@ module example3 where
 
   open Conjugate.interp Sig BaseInterp
   open import Data.Rational
+  open import Data.Rational.Properties using (≤-refl)
   open import preorder using (bottom; <_>; LCarrier)
   open import approx-numbers using (Intv)
   open import prop using (liftS)
@@ -156,13 +157,64 @@ module example3 where
   input : ⟦ list (base label [×] base number) ⟧ty .idx .Carrier
   input = 3 , (label.a , 0ℚ) , (label.b , 1ℚ) , (label.a , 1ℚ) , _
 
+  open Intv
+
+  -- Precise interval at 0ℚ.
+  intv0 : Intv 0ℚ
+  intv0 .lower = 0ℚ
+  intv0 .upper = 0ℚ
+  intv0 .l≤q = liftS Data.Rational.Properties.≤-refl
+  intv0 .q≤u = liftS Data.Rational.Properties.≤-refl
+
+  -- Slack interval [0.9, 1.1] at 1ℚ — same as example2's `interval`.
+  intv1 : Intv 1ℚ
+  intv1 .lower = + 9 / 10
+  intv1 .upper = + 11 / 10
+  intv1 .l≤q = liftS (*≤* (+≤+ (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n)))))))))))
+  intv1 .q≤u = liftS (*≤* (+≤+ (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))))))))
+
+  open import Data.Maybe
+  open import Data.Product using (Σ) renaming (_×_ to _×ₜ_)
+
+  extract-interval : ∀ {q} → LCarrier (Intv q) → Maybe (ℚ ×ₜ ℚ)
+  extract-interval bottom = nothing
+  extract-interval < x > = just (x .lower , x .upper)
+
+  -- Forward analysis: feed precise input at entry 1 (label.a, 0ℚ), slack at entry 3
+  -- (label.a, 1ℚ); entry 2 (label.b) is filtered out by `query label.a` so its info is
+  -- irrelevant.
   fwd-slice : _
-  fwd-slice = ⟦ example.ex.query label.a ⟧tm .famf .transf (_ , input) .proj₁ .*→* .func .fun (_ , (_ , bottom) , (_ , bottom) , (_ , bottom) , _)
+  fwd-slice = ⟦ example.ex.query label.a ⟧tm .famf .transf (_ , input) .proj₁ .*→* .func .fun
+    (_ , (_ , < intv0 >) , (_ , bottom) , (_ , < intv1 >) , _)
     where
       open indexed-family._⇒f_
       open join-semilattice-category._⇒_
       open join-semilattice._=>_
       open preorder._=>_
+
+  -- Simpler isolated test: directly apply Conjugate.add-mor at indices (0ℚ, 1ℚ) to two
+  -- specific lifted input intervals, observing the propagated output interval at 1ℚ.
+  fwd-addᵀ : _
+  fwd-addᵀ = Conjugate.add-interval 0ℚ 1ℚ .conjugate._⇒c_.right .join-semilattice._=>_.func .preorder._=>_.fun
+    (< intv0 > , < intv1 >)
+
+  -- Because intv0 = [0,0] is precise, addᵀ tightens to the precise sum [1,1] (rather
+  -- than [0.9, 1.1] of intv1) — addᵀ is the conjugate join, which intersects consistent
+  -- shifted ranges.
+  test-addᵀ : extract-interval fwd-addᵀ ≡ just (+ 1 / 1 , + 1 / 1)
+  test-addᵀ = ≡-refl
+
+  -- Compare: the Galois forward (meet-preserving, right adjoint) uses add⁎ instead.
+  -- This is the "set of possibilities" view that broadens.
+  fwd-add⁎ : _
+  fwd-add⁎ = Galois.add-interval 0ℚ 1ℚ .galois._⇒g_.right .preorder._=>_.fun
+    (< intv0 > , < intv1 >)
+
+  -- Galois forward yields [0.9, 1.1] — the union of (q₂-shifted intv0) = [1,1] and
+  -- (q₁-shifted intv1) = [0.9, 1.1].
+  test-add⁎ : extract-interval fwd-add⁎ ≡ just (+ 9 / 10 , + 11 / 10)
+  test-add⁎ = ≡-refl
+
 
 ------------------------------------------------------------------------------
 -- Example using CBN lifting
