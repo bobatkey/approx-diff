@@ -245,6 +245,35 @@ IntervalG q .galois.Obj.carrier = preorder.L (IntvPreorder q)
 IntervalG q .galois.Obj.meets = meet-semilattice.L (meets q)
 IntervalG q .galois.Obj.joins = join-semilattice.L₀ ⊔I-isJoin
 
+add-intervalG : ∀ q₁ q₂ → (IntervalG q₁ ⊕ IntervalG q₂) ⇒g IntervalG (q₁ + q₂)
+add-intervalG q₁ q₂ ._⇒g_.right ._=>_.fun (bottom , bottom) = bottom
+add-intervalG q₁ q₂ ._⇒g_.right ._=>_.fun (bottom , < x >) = bottom
+add-intervalG q₁ q₂ ._⇒g_.right ._=>_.fun (< x > , bottom) = bottom
+add-intervalG q₁ q₂ ._⇒g_.right ._=>_.fun (< x > , < y >) = < add⁎ q₁ q₂ x y >
+add-intervalG q₁ q₂ ._⇒g_.right ._=>_.mono {bottom , bottom} {x₂ , y₂} ϕ = tt
+add-intervalG q₁ q₂ ._⇒g_.right ._=>_.mono {bottom , < x >} {x₂ , y₂} ϕ = tt
+add-intervalG q₁ q₂ ._⇒g_.right ._=>_.mono {< x > , bottom} {x₂ , y₂} ϕ = tt
+add-intervalG q₁ q₂ ._⇒g_.right ._=>_.mono {< x₁ > , < y₁ >} {< x₂ > , < y₂ >} (x₁≤x₂ , y₁≤y₂) =
+  add⁎-mono q₁ q₂ {x₁} {x₂} {y₁} {y₂} x₁≤x₂ y₁≤y₂
+add-intervalG q₁ q₂ ._⇒g_.left ._=>_.fun bottom = bottom , bottom
+add-intervalG q₁ q₂ ._⇒g_.left ._=>_.fun < x > = < add q₁ q₂ x .proj₁ > , < add q₁ q₂ x .proj₂ >
+add-intervalG q₁ q₂ ._⇒g_.left ._=>_.mono {bottom} {y} ϕ = tt , tt
+add-intervalG q₁ q₂ ._⇒g_.left ._=>_.mono {< x >} {< y >} (liftS ϕ₁ , liftS ϕ₂) .proj₁ =
+  (liftS (+-mono-≤ ϕ₁ ≤-refl)) ,
+  (liftS (+-mono-≤ ϕ₂ ≤-refl))
+add-intervalG q₁ q₂ ._⇒g_.left ._=>_.mono {< x >} {< y >} (liftS ϕ₁ , liftS ϕ₂) .proj₂ =
+  (liftS (+-mono-≤ ϕ₁ ≤-refl)) ,
+  (liftS (+-mono-≤ ϕ₂ ≤-refl))
+add-intervalG q₁ q₂ ._⇒g_.left⊣right {bottom , bottom} {bottom} = (λ _ → tt , tt) , (λ _ → tt)
+add-intervalG q₁ q₂ ._⇒g_.left⊣right {bottom , bottom} {< x >} = (λ ()) , λ ()
+add-intervalG q₁ q₂ ._⇒g_.left⊣right {bottom , < y >} {bottom} = (λ _ → tt , tt) , (λ _ → tt)
+add-intervalG q₁ q₂ ._⇒g_.left⊣right {bottom , < y >} {< z >} = (λ ()) , (λ ())
+add-intervalG q₁ q₂ ._⇒g_.left⊣right {< x > , bottom} {bottom} = (λ _ → tt , tt) , (λ _ → tt)
+add-intervalG q₁ q₂ ._⇒g_.left⊣right {< x > , bottom} {< z >} = (λ ()) , (λ ())
+add-intervalG q₁ q₂ ._⇒g_.left⊣right {< x > , < y >} {bottom} = (λ _ → tt , tt) , (λ _ → tt)
+add-intervalG q₁ q₂ ._⇒g_.left⊣right {< x > , < y >} {< z >} .proj₁ = galois₁ q₁ q₂ x y z
+add-intervalG q₁ q₂ ._⇒g_.left⊣right {< x > , < y >} {< z >} .proj₂ = galois₂ q₁ q₂ x y z
+
 import conjugate
 
 IntervalC : ℚ → conjugate.Obj
@@ -260,34 +289,6 @@ IntervalC q .conjugate.Obj.∧-∨-distrib < x > < y >  < z > .proj₁ =
 IntervalC q .conjugate.Obj.∧-∨-distrib < x > < y >  < z > .proj₂ =
   liftS (≤-reflexive (≡-sym (⊔-distribˡ-⊓ (x .upper) (y .upper) (z .upper))))
 
-add-interval : ∀ q₁ q₂ → (IntervalG q₁ ⊕ IntervalG q₂) ⇒g IntervalG (q₁ + q₂)
-add-interval q₁ q₂ ._⇒g_.right ._=>_.fun (bottom , bottom) = bottom
-add-interval q₁ q₂ ._⇒g_.right ._=>_.fun (bottom , < x >) = bottom
-add-interval q₁ q₂ ._⇒g_.right ._=>_.fun (< x > , bottom) = bottom
-add-interval q₁ q₂ ._⇒g_.right ._=>_.fun (< x > , < y >) = < add⁎ q₁ q₂ x y >
-add-interval q₁ q₂ ._⇒g_.right ._=>_.mono {bottom , bottom} {x₂ , y₂} ϕ = tt
-add-interval q₁ q₂ ._⇒g_.right ._=>_.mono {bottom , < x >} {x₂ , y₂} ϕ = tt
-add-interval q₁ q₂ ._⇒g_.right ._=>_.mono {< x > , bottom} {x₂ , y₂} ϕ = tt
-add-interval q₁ q₂ ._⇒g_.right ._=>_.mono {< x₁ > , < y₁ >} {< x₂ > , < y₂ >} (x₁≤x₂ , y₁≤y₂) =
-  add⁎-mono q₁ q₂ {x₁} {x₂} {y₁} {y₂} x₁≤x₂ y₁≤y₂
-add-interval q₁ q₂ ._⇒g_.left ._=>_.fun bottom = bottom , bottom
-add-interval q₁ q₂ ._⇒g_.left ._=>_.fun < x > = < add q₁ q₂ x .proj₁ > , < add q₁ q₂ x .proj₂ >
-add-interval q₁ q₂ ._⇒g_.left ._=>_.mono {bottom} {y} ϕ = tt , tt
-add-interval q₁ q₂ ._⇒g_.left ._=>_.mono {< x >} {< y >} (liftS ϕ₁ , liftS ϕ₂) .proj₁ =
-  (liftS (+-mono-≤ ϕ₁ ≤-refl)) ,
-  (liftS (+-mono-≤ ϕ₂ ≤-refl))
-add-interval q₁ q₂ ._⇒g_.left ._=>_.mono {< x >} {< y >} (liftS ϕ₁ , liftS ϕ₂) .proj₂ =
-  (liftS (+-mono-≤ ϕ₁ ≤-refl)) ,
-  (liftS (+-mono-≤ ϕ₂ ≤-refl))
-add-interval q₁ q₂ ._⇒g_.left⊣right {bottom , bottom} {bottom} = (λ _ → tt , tt) , (λ _ → tt)
-add-interval q₁ q₂ ._⇒g_.left⊣right {bottom , bottom} {< x >} = (λ ()) , λ ()
-add-interval q₁ q₂ ._⇒g_.left⊣right {bottom , < y >} {bottom} = (λ _ → tt , tt) , (λ _ → tt)
-add-interval q₁ q₂ ._⇒g_.left⊣right {bottom , < y >} {< z >} = (λ ()) , (λ ())
-add-interval q₁ q₂ ._⇒g_.left⊣right {< x > , bottom} {bottom} = (λ _ → tt , tt) , (λ _ → tt)
-add-interval q₁ q₂ ._⇒g_.left⊣right {< x > , bottom} {< z >} = (λ ()) , (λ ())
-add-interval q₁ q₂ ._⇒g_.left⊣right {< x > , < y >} {bottom} = (λ _ → tt , tt) , (λ _ → tt)
-add-interval q₁ q₂ ._⇒g_.left⊣right {< x > , < y >} {< z >} .proj₁ = galois₁ q₁ q₂ x y z
-add-interval q₁ q₂ ._⇒g_.left⊣right {< x > , < y >} {< z >} .proj₂ = galois₂ q₁ q₂ x y z
 
 ------------------------------------------------------------------------------
 --
@@ -350,7 +351,7 @@ open preorder._≃m_
 add-mor : (ℚ-intv ⊗ ℚ-intv) C.⇒ ℚ-intv
 add-mor .idxf .prop-setoid._⇒_.func (q₁ , q₂) = q₁ + q₂
 add-mor .idxf .prop-setoid._⇒_.func-resp-≈ (liftS ≡-refl , liftS ≡-refl) = liftS ≡-refl
-add-mor .famf .transf (q₁ , q₂) = add-interval q₁ q₂
+add-mor .famf .transf (q₁ , q₂) = add-intervalG q₁ q₂
 add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (bottom , bottom) = tt , tt
 add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (bottom , < x >) = tt , tt
 add-mor .famf .natural {q₁ , q₂} {q₁' , q₂'} (liftS ≡-refl , liftS ≡-refl) .right-eq .eqfun (< x > , bottom) = tt , tt

@@ -679,3 +679,88 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
           (to-conj M .conjugate {¬^ x} {y} .proj₂ (λ i → #-mono (k i) _ (#-sym (#-↔-≤¬ .proj₂ ≤-refl))) j)
 
       -- FIXME: functor properties of the two embeddings.
+
+  -- A commutative semiring is exactly a (bounded) distributive lattice when both ∨ (= +) and ∧ (= ·) are
+  -- idempotent and ⊤ (= 1) is the additive top. The induced order is x ≤ y iff x ∨ y ≈ y; ∨ becomes the
+  -- join, ∧ the meet, ⊥ (= 0) the bottom, ⊤ the top. Will eventually replace DistributiveLattice.
+  module IdempotentSemiring
+    (∨-idem    : ∀ {x} → (x ∨ x) ≈ x)
+    (∧-idem    : ∀ {x} → (x ∧ x) ≈ x)
+    (⊤-add-top : ∀ {x} → (⊤ ∨ x) ≈ ⊤)
+    where
+
+    open import prop using (proj₁; proj₂)
+
+    _≤_ : Carrier → Carrier → Prop _
+    x ≤ y = (x ∨ y) ≈ y
+
+    ≤-isPreorder : IsPreorder _≤_
+    ≤-isPreorder .IsPreorder.refl = ∨-idem
+    ≤-isPreorder .IsPreorder.trans {x} {y} {z} x≤y y≤z =
+      -- x ∨ z ≈ x ∨ (y ∨ z) ≈ (x ∨ y) ∨ z ≈ y ∨ z ≈ z
+      trans (∨-cong refl (sym y≤z))
+            (trans (sym ∨-assoc) (trans (∨-cong x≤y refl) y≤z))
+
+    ≈→≤ : ∀ {x y} → x ≈ y → x ≤ y
+    ≈→≤ x≈y = trans (∨-cong x≈y refl) ∨-idem
+
+    ∨-isJoin : IsJoin ≤-isPreorder _∨_
+    ∨-isJoin .IsJoin.inl = trans (sym ∨-assoc) (∨-cong ∨-idem refl)
+    ∨-isJoin .IsJoin.inr =
+      trans (∨-cong refl ∨-comm) (trans (sym ∨-assoc) (trans (∨-cong ∨-idem refl) ∨-comm))
+    ∨-isJoin .IsJoin.[_,_] x≤z y≤z = trans ∨-assoc (trans (∨-cong refl y≤z) x≤z)
+
+    ⊥-isBottom : IsBottom ≤-isPreorder ⊥
+    ⊥-isBottom .IsBottom.≤-bottom = ∨-lunit
+
+    ⊤-isTop : IsTop ≤-isPreorder ⊤
+    ⊤-isTop .IsTop.≤-top = trans ∨-comm ⊤-add-top
+
+    ∨-∧-absorption : ∀ {a b} → (a ∨ (a ∧ b)) ≈ a
+    ∨-∧-absorption {a} {b} =
+      trans (∨-cong (trans (sym ∧-lunit) ∧-comm) refl)
+            (trans (sym ∧-∨-distribₗ)
+              (trans (∧-cong refl ⊤-add-top)
+                     (trans ∧-comm ∧-lunit)))
+
+    ∧-monoʳ : ∀ {a b c} → a ≤ b → (c ∧ a) ≤ (c ∧ b)
+    ∧-monoʳ a≤b = trans (sym ∧-∨-distribₗ) (∧-cong refl a≤b)
+
+    ∧-monoˡ : ∀ {a b c} → a ≤ b → (a ∧ c) ≤ (b ∧ c)
+    ∧-monoˡ a≤b = trans (sym ∧-∨-distribᵣ) (∧-cong a≤b refl)
+
+    ∧-isMeet : IsMeet ≤-isPreorder _∧_
+    ∧-isMeet .IsMeet.π₁ = trans ∨-comm ∨-∧-absorption
+    ∧-isMeet .IsMeet.π₂ = trans (∨-cong ∧-comm refl) (trans ∨-comm ∨-∧-absorption)
+    ∧-isMeet .IsMeet.⟨_,_⟩ {x} {y} {z} x≤y x≤z =
+      ≤-isPreorder .IsPreorder.trans
+        (trans (∨-cong (sym ∧-idem) refl) (∧-monoʳ x≤z)) (∧-monoˡ x≤y)
+
+    ∧-∨-distrib : ∀ {x y z} → (x ∧ (y ∨ z)) ≤ ((x ∧ y) ∨ (x ∧ z))
+    ∧-∨-distrib = ≈→≤ ∧-∨-distribₗ
+
+    preorder : Preorder
+    preorder .Preorder.Carrier = Carrier
+    preorder .Preorder._≤_ = _≤_
+    preorder .Preorder.≤-isPreorder = ≤-isPreorder
+
+    meets : MeetSemilattice preorder
+    meets .MeetSemilattice._∧_ = _∧_
+    meets .MeetSemilattice.⊤ = ⊤
+    meets .MeetSemilattice.∧-isMeet = ∧-isMeet
+    meets .MeetSemilattice.⊤-isTop = ⊤-isTop
+
+    joins : JoinSemilattice preorder
+    joins .JoinSemilattice._∨_ = _∨_
+    joins .JoinSemilattice.⊥ = ⊥
+    joins .JoinSemilattice.∨-isJoin = ∨-isJoin
+    joins .JoinSemilattice.⊥-isBottom = ⊥-isBottom
+
+    -- LatConj.Obj construction for Vec n. No Boolean structure required.
+    open import conjugate using (Obj)
+
+    LatConjObj : ℕ → Obj
+    LatConjObj n .Obj.carrier = vec.preorder preorder n
+    LatConjObj n .Obj.meets = vec.meet preorder n meets
+    LatConjObj n .Obj.joins = vec.join preorder n joins
+    LatConjObj n .Obj.∧-∨-distrib _ _ _ _ = ∧-∨-distrib
