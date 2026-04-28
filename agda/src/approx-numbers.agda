@@ -259,11 +259,9 @@ add-intervalG q₁ q₂ ._⇒g_.left ._=>_.fun bottom = bottom , bottom
 add-intervalG q₁ q₂ ._⇒g_.left ._=>_.fun < x > = < add q₁ q₂ x .proj₁ > , < add q₁ q₂ x .proj₂ >
 add-intervalG q₁ q₂ ._⇒g_.left ._=>_.mono {bottom} {y} ϕ = tt , tt
 add-intervalG q₁ q₂ ._⇒g_.left ._=>_.mono {< x >} {< y >} (liftS ϕ₁ , liftS ϕ₂) .proj₁ =
-  (liftS (+-mono-≤ ϕ₁ ≤-refl)) ,
-  (liftS (+-mono-≤ ϕ₂ ≤-refl))
+  liftS (+-mono-≤ ϕ₁ ≤-refl) , liftS (+-mono-≤ ϕ₂ ≤-refl)
 add-intervalG q₁ q₂ ._⇒g_.left ._=>_.mono {< x >} {< y >} (liftS ϕ₁ , liftS ϕ₂) .proj₂ =
-  (liftS (+-mono-≤ ϕ₁ ≤-refl)) ,
-  (liftS (+-mono-≤ ϕ₂ ≤-refl))
+  liftS (+-mono-≤ ϕ₁ ≤-refl) , liftS (+-mono-≤ ϕ₂ ≤-refl)
 add-intervalG q₁ q₂ ._⇒g_.left⊣right {bottom , bottom} {bottom} = (λ _ → tt , tt) , (λ _ → tt)
 add-intervalG q₁ q₂ ._⇒g_.left⊣right {bottom , bottom} {< x >} = (λ ()) , λ ()
 add-intervalG q₁ q₂ ._⇒g_.left⊣right {bottom , < y >} {bottom} = (λ _ → tt , tt) , (λ _ → tt)

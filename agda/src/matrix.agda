@@ -540,7 +540,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
 
   -- A commutative semiring is exactly a (bounded) distributive lattice when both ∨ (= +) and ∧ (= ·) are
   -- idempotent and ⊤ (= 1) is the additive top. The (shared) induced order is x ≤ y iff x ∨ y ≈ y.
-  module DistributiveLattice2
+  module DistributiveLattice
     (∨-idem    : ∀ {x} → x ∨ x ≈ x)
     (∧-idem    : ∀ {x} → x ∧ x ≈ x)
     (⊤-add-top : ∀ {x} → ⊤ ∨ x ≈ ⊤)
@@ -670,18 +670,19 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
 
 open import prop using (_⇔_; proj₁; proj₂)
 
-module _
+-- I think we can actually derive this just from a Heyting implication.
+module BooleanAlgebra
   {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A)
   (let open CommutativeSemiring S hiding (_≈_; trans; sym; refl); open Setoid A)
   (∨-idem    : ∀ {x} → x + x ≈ x)
   (∧-idem    : ∀ {x} → x · x ≈ x)
   (⊤-add-top : ∀ {x} → ι + x ≈ ι)
-  (let module L = DistributiveLattice2 S ∨-idem ∧-idem ⊤-add-top)
+  (let module L = DistributiveLattice S ∨-idem ∧-idem ⊤-add-top)
   (¬ : Setoid.Carrier A → Setoid.Carrier A)
   (complement-∨ : ∀ {x} → ι L.≤ (x + ¬ x))
   (complement-∧ : ∀ {x} → (x · ¬ x) L.≤ ε)
   where
-  module L-op = DistributiveLattice2 L.opposite ∧-idem ∨-idem ε-annihilₗ
+  module L-op = DistributiveLattice L.opposite ∧-idem ∨-idem ε-annihilₗ
 
   open Mat S using (Matrix; Σ)
   open Mat L.opposite using () renaming (Σ to Σ-op; module +-to-Σ to +-to-Σ-op)
