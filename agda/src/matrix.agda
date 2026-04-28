@@ -815,9 +815,9 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
 module _
   {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A)
   (let open CommutativeSemiring S hiding (_≈_); _≈_ = Setoid._≈_ A)
-  (∨-idem    : ∀ {x} → (x + x) ≈ x)
-  (∧-idem    : ∀ {x} → (x · x) ≈ x)
-  (⊤-add-top : ∀ {x} → (ι + x) ≈ ι)
+  (∨-idem    : ∀ {x} → x + x ≈ x)
+  (∧-idem    : ∀ {x} → x · x ≈ x)
+  (⊤-add-top : ∀ {x} → ι + x ≈ ι)
   where
   module L = DistributiveLattice2 S ∨-idem ∧-idem ⊤-add-top
   module L-op = DistributiveLattice2 L.opposite ∧-idem ∨-idem ε-annihilₗ
