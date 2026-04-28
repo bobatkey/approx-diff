@@ -827,7 +827,8 @@ module _
   where
   module L-op = DistributiveLattice2 L.opposite ∧-idem ∨-idem ε-annihilₗ
 
-  open Mat S using (Matrix; Σ; module +-to-Σ)
+  open Mat S using (Matrix; Σ)
+  open Mat L.opposite using () renaming (Σ to Σ-op; module +-to-Σ to +-to-Σ-op)
   open import Data.Nat using (ℕ)
   open import Data.Fin using (Fin)
   import preorder
@@ -849,14 +850,14 @@ module _
 
   open import basics using (IsPreorder; IsMeet; IsJoin)
 
-  Σ-L-op-mono : ∀ {k} {f g : Fin k → Setoid.Carrier A} →
-                (∀ i → f i L.≤ g i) → Mat.Σ L.opposite {k} f L.≤ Mat.Σ L.opposite {k} g
+  Σ-L-op-mono : ∀ {k} {f g : Fin k → Setoid.Carrier A} → (∀ i → f i L.≤ g i) → Σ-op {k} f L.≤ Σ-op {k} g
   Σ-L-op-mono =
     Mat.+-to-Σ.Σ-preserves L.opposite L._≤_ (IsPreorder.refl L.≤-isPreorder) (IsMeet.mono L.∧-isMeet)
 
-  -- L-op's order is L's order reversed (up to the absorption-derived equivalence).
+  -- L-op's order is L's order reversed (up to the idempotence-derived equivalence).
   L-op⇔L : ∀ {a b} → (a L-op.≤ b) ⇔ (b L.≤ a)
-  L-op⇔L .proj₁ a·b≈b = trans (+-cong (sym a·b≈b) refl) (trans +-comm L.∨-∧-absorption)
+  L-op⇔L .proj₁ a·b≈b =
+    trans (+-cong (sym a·b≈b) refl) (trans +-comm L.∨-∧-absorption)
   L-op⇔L .proj₂ b+a≈a =
     trans (·-cong (sym b+a≈a) refl) (trans ·-+-distribᵣ (trans (+-cong ∧-idem ·-comm) L.∨-∧-absorption))
 
@@ -883,9 +884,7 @@ module _
       helper : ∀ i → y j L.≤ ¬ (M i j) + x i
       helper i =
         ≤-trans (≈→≤ (trans (sym ·-lunit) ·-comm))
-        (≤-trans (∧-monoʳ complement-∨)
-        (≤-trans (≈→≤ ·-+-distribₗ)
-        (≤-trans (∨-mono
-                    (≤-trans (≈→≤ ·-comm) (≤-trans (Σ-ub _ j) (ly≤x i)))
-                    π₂)
-                  (≈→≤ +-comm))))
+                (≤-trans (∧-monoʳ complement-∨)
+                (≤-trans (≈→≤ ·-+-distribₗ)
+                        (≤-trans (∨-mono (≤-trans (≈→≤ ·-comm) (≤-trans (Σ-ub _ j) (ly≤x i))) π₂)
+                                 (≈→≤ +-comm))))
