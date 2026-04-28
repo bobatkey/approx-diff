@@ -683,7 +683,7 @@ module _ {A : Setoid 0ℓ 0ℓ} (S : CommutativeSemiring A) where
   -- A commutative semiring is exactly a (bounded) distributive lattice when both ∨ (= +) and ∧ (= ·) are
   -- idempotent and ⊤ (= 1) is the additive top. The induced order is x ≤ y iff x ∨ y ≈ y; ∨ becomes the
   -- join, ∧ the meet, ⊥ (= 0) the bottom, ⊤ the top. Will eventually replace DistributiveLattice.
-  module IdempotentSemiring
+  module DistributiveLattice2
     (∨-idem    : ∀ {x} → (x ∨ x) ≈ x)
     (∧-idem    : ∀ {x} → (x ∧ x) ≈ x)
     (⊤-add-top : ∀ {x} → (⊤ ∨ x) ≈ ⊤)
