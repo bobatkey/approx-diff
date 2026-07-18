@@ -1,28 +1,21 @@
 {-# OPTIONS --safe #-}
 
 ------------------------------------------------------------------------------
--- Prototype for the shape-based mu-type carrier (notes section on positions
--- and reindexing): shapes, positions, index assignments, reindexing and the
--- fold, to test whether the structure is workable in Agda before adding the
--- setoid and fibre layers.
+-- Shape-based μ-type carrier: shapes, positions, index assignments,
+-- reindexing and the fold.
 --
--- Two naive encodings fail. An inductive family (shapes indexed by polynomial
--- and assignment, positions indexed over shapes) needs equation constructors
--- rho i = inj_ ..., and dependent matching on positions then hits green slime.
--- Computing the set of shapes by recursion fails termination, because sorts
--- are mutually recursive (a shape of one sort contains shapes of others), so
--- the recursion has no structural decrease.
---
--- The encoding below is the one already used for trees in
--- fam-mu-types/sort.agda: a datatype W with a single constructor wrapping a
--- computed one-level unfolding. W is inductive, so the recursion bottoms out;
--- the unfolding is matched on the polynomial, so there is no green slime. The
--- shape design reuses that carrier structure, with the leaf data moved out
--- into the index assignment.
+-- An inductive family of shapes needs equation constructors rho i = inj_ ...,
+-- whose computed indices dependent matching on positions cannot unify;
+-- computing the set of shapes by recursion fails termination, because sorts
+-- are mutually recursive. Instead W has a single constructor wrapping a
+-- computed one-level unfolding: W is inductive, so recursion on trees bottoms
+-- out, and the unfolding is computed by matching on the polynomial, so no
+-- computed indices arise. Shapes carry no leaf data; the data lives in the
+-- index assignment.
 --
 -- n is the number of parameters (the outer context Delta); shapes and
--- positions are parameter-indexed but environment-free. The kinding
--- environment delta enters only through the index assignment of a tree.
+-- positions are environment-free. The kinding environment delta enters only
+-- through the index assignment of a tree.
 ------------------------------------------------------------------------------
 
 open import Level using (Level)
@@ -76,15 +69,12 @@ module Shapes (n : ℕ) where
     El (inj₁ p)            = ⊤                      -- parameter leaf, no data
     El (inj₂ (mkSort Q ρ)) = W Q ρ
 
-  ------------------------------------------------------------------------------
-  -- Positions of a shape.
-  ------------------------------------------------------------------------------
   mutual
     PosW : ∀ {k} {Q : Poly (suc k)} {ρ} → W Q ρ → Set
     PosW {Q = Q} {ρ = ρ} (sup s) = PosSh Q (extend ρ (inj₂ (mkSort Q ρ))) s
 
     PosSh : ∀ {k} (Q : Poly k) (η : Fin k → Fin n ⊎ Sort n) → Shape Q η → Set
-    PosSh (const X) η s        = ⊤                  -- the single leaf position
+    PosSh (const X) η s        = ⊤
     PosSh (var j)   η s        = PosEl (η j) s
     PosSh (P ⊕ Q)   η (inj₁ s) = PosSh P η s
     PosSh (P ⊕ Q)   η (inj₂ s) = PosSh Q η s
@@ -92,7 +82,7 @@ module Shapes (n : ℕ) where
     PosSh (μ Q')    η s        = PosW s
 
     PosEl : (r : Fin n ⊎ Sort n) → El r → Set
-    PosEl (inj₁ p)            s = ⊤                 -- the parameter-leaf position
+    PosEl (inj₁ p)            s = ⊤
     PosEl (inj₂ (mkSort Q ρ)) s = PosW s
 
   ------------------------------------------------------------------------------
