@@ -183,3 +183,66 @@ module InMap {n} (ι : Fin n → Setoid os (os ⊔ es)) (P : Poly (suc n)) where
   out-inMap : (t : Tᵢ.TreeSh P params) →
               Eᵢ.Sh≈ P params (proj₁ (out (inMap t))) (proj₁ t) (proj₂ (out (inMap t))) (proj₂ t)
   out-inMap (s , a) = oi-shape P fbase s a
+
+------------------------------------------------------------------------------
+-- Reindexing commutes with the algebra map: assembling and then reindexing
+-- along g equals reindexing the unfolding pointwise (along g extended by the
+-- reindexing of whole trees at the α-entry) and then assembling. Leaf-refl
+-- induction; the α-case is definitional on both sides.
+------------------------------------------------------------------------------
+module ReindexInMap {n} {ι ι' : Fin n → Setoid os (os ⊔ es)}
+                    (g : ∀ i → ι i prop-setoid.⇒ ι' i) (P : Poly (suc n)) where
+  open prop-setoid._⇒_
+
+  module I  = InMap ι P
+  module I' = InMap ι' P
+  module Rg = Reindex g
+
+  ĝ : ∀ v → I.ιᵢ v prop-setoid.⇒ I'.ιᵢ v
+  ĝ zero .func t = Rg.reindex t
+  ĝ zero .func-resp-≈ {t₁} {t₂} p = Rg.reindex-resp {t₁ = t₁} {t₂ = t₂} p
+  ĝ (suc i) = g i
+
+  module Rĝ = Reindex ĝ
+
+  mutual
+    ri-tree : ∀ {k} {Q : Poly (suc k)} {ρ ρ'} (fm : FMor P ρ ρ') (w : I.S'.W Q ρ')
+              (a : I.Tᵢ.Assign w) →
+              I'.E.Tree≈ (Rg.reindex (I.in-tree fm w a))
+                (I'.in-tree fm w (λ p → Rĝ.reindexIx (I.S'.labelW w p) (a p)))
+    ri-tree {Q = Q} fm (I.S'.sup s) a = ri-shape Q (fbind Q fm) s a
+
+    ri-shape : ∀ {j} (R : Poly j) {ηA ηB} (fm : FMor P ηA ηB) (s : I.S'.Shape R ηB)
+               (a : I.Tᵢ.AssignSh R ηB s) →
+               I'.E.Sh≈ R ηA
+                 (proj₁ (I.in-shape R fm s a))
+                 (proj₁ (I'.in-shape R fm s (λ p → Rĝ.reindexIx (I.S'.labelSh R ηB s p) (a p))))
+                 (λ p → Rg.reindexIx (I.S.labelSh R ηA (proj₁ (I.in-shape R fm s a)) p)
+                          (proj₂ (I.in-shape R fm s a) p))
+                 (proj₂ (I'.in-shape R fm s (λ p → Rĝ.reindexIx (I.S'.labelSh R ηB s p) (a p))))
+    ri-shape (const S) fm s a = S .Setoid.isEquivalence .refl
+    ri-shape (var v)   fm s a = ri-el fm v s a
+    ri-shape (R₁ + R₂) fm (inj₁ s) a = ri-shape R₁ fm s a
+    ri-shape (R₁ + R₂) fm (inj₂ s) a = ri-shape R₂ fm s a
+    ri-shape (R₁ × R₂) fm (s₁ , s₂) a =
+      ri-shape R₁ fm s₁ (λ p → a (inj₁ p)) , ri-shape R₂ fm s₂ (λ p → a (inj₂ p))
+    ri-shape (μ Q')    fm s a = ri-tree fm s a
+
+    ri-el : ∀ {k} {ρ ρ'} (fm : FMor P ρ ρ') (v : Fin k) (s : I.S'.El (ρ' v))
+            (a : I.Tᵢ.AssignEl (ρ' v) s) →
+            I'.E.El≈ (ρ v)
+              (proj₁ (I.in-el fm v s a))
+              (proj₁ (I'.in-el fm v s (λ p → Rĝ.reindexIx (I.S'.labelEl (ρ' v) s p) (a p))))
+              (λ p → Rg.reindexIx (I.S.labelEl (ρ v) (proj₁ (I.in-el fm v s a)) p)
+                       (proj₂ (I.in-el fm v s a) p))
+              (proj₂ (I'.in-el fm v s (λ p → Rĝ.reindexIx (I.S'.labelEl (ρ' v) s p) (a p))))
+    ri-el fbase        zero    s a =
+      I'.EE.W≈-refl (proj₁ (Rg.reindex (a tt))) (proj₂ (Rg.reindex (a tt)))
+    ri-el fbase        (suc i) s a = ι' i .Setoid.isEquivalence .refl
+    ri-el (fbind Q fm) zero    w a = ri-tree fm w a
+    ri-el (fbind Q fm) (suc v) s a = ri-el fm v s a
+
+  reindex-inMap : (t : I.Tᵢ.TreeSh P params) →
+                  I'.E.Tree≈ (Rg.reindex (I.inMap t))
+                    (I'.inMap (Rĝ.reindexSh {Q = P} {η = params} t))
+  reindex-inMap (s , a) = ri-shape P fbase s a
