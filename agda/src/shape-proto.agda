@@ -18,14 +18,14 @@
 -- through the index assignment of a tree.
 ------------------------------------------------------------------------------
 
-open import Level using (Level)
+open import Level using (Level; Lift; lift) renaming (zero to lzero; suc to lsuc)
 open import Data.Nat using (ℕ; zero; suc; _+_)
 open import Data.Fin using (Fin; zero; suc)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤; tt)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; subst)
 
 module shape-proto where
 
@@ -292,6 +292,125 @@ module Reindex {n} {δ δ' : Fin n → Set} (g : ∀ i → δ i → δ' i) where
   reindex-resp : ∀ {k} {Q : Poly (suc k)} {ρ} {t₁ t₂ : Trees.Tree δ Q ρ} →
                  E.Tree≈ t₁ t₂ → E'.Tree≈ (reindex t₁) (reindex t₂)
   reindex-resp {t₁ = w₁ , a₁} {w₂ , a₂} p = reindex-W-resp {w₁ = w₁} {w₂ = w₂} p
+
+------------------------------------------------------------------------------
+-- Decorations: the data the fibre layer adds over a shape. A decorated
+-- polynomial is indexed by its erasure, so a decoration of a sort needs no
+-- erasure equations; parameters carry no decoration, their fibres coming from
+-- the environment.
+------------------------------------------------------------------------------
+data Deco {k : ℕ} : Poly k → Set₁ where
+  const : (X : Set) (∂X : X → Set) → Deco (const X)
+  var   : (j : Fin k) → Deco (var j)
+  _⊕_   : ∀ {P Q} → Deco P → Deco Q → Deco (P ⊕ Q)
+  _⊗_   : ∀ {P Q} → Deco P → Deco Q → Deco (P ⊗ Q)
+  μ     : ∀ {Q'} → Deco Q' → Deco (μ Q')
+
+module Decos (n : ℕ) where
+  mutual
+    data DecoSort : Sort n → Set₁ where
+      mkDeco : ∀ {k} {Q : Poly (suc k)} {ρ : Fin k → Fin n ⊎ Sort n} →
+               Deco Q → (∀ v → DecoRef (ρ v)) → DecoSort (mkSort Q ρ)
+
+    DecoRef : Fin n ⊎ Sort n → Set₁
+    DecoRef (inj₁ i) = Lift (lsuc lzero) ⊤
+    DecoRef (inj₂ σ) = DecoSort σ
+
+  DecoEnv : ∀ {k} → (Fin k → Fin n ⊎ Sort n) → Set₁
+  DecoEnv η = ∀ v → DecoRef (η v)
+
+  extendD : ∀ {k} {η : Fin k → Fin n ⊎ Sort n} {r} → DecoEnv η → DecoRef r → DecoEnv (extend η r)
+  extendD dη d zero    = d
+  extendD dη d (suc v) = dη v
+
+------------------------------------------------------------------------------
+-- The fibre of a tree: the product over its positions of the fibre named
+-- there, the decoration's at a constant position and the environment's (δ∂)
+-- at a parameter position, computed by recursion on the shape. Transport
+-- along tree equality substitutes at the leaves.
+------------------------------------------------------------------------------
+module Fibre {n} (δ : Fin n → Set) (δ∂ : ∀ i → δ i → Set) where
+  open Shapes n
+  open Trees δ
+  open Decos n
+
+  mutual
+    ∂W : ∀ {k} {Q : Poly (suc k)} {ρ} → Deco Q → DecoEnv ρ → (w : W Q ρ) → Assign w → Set
+    ∂W Q̂ dρ (sup s) a = ∂Sh Q̂ (extendD dρ (mkDeco Q̂ dρ)) s a
+
+    ∂Sh : ∀ {j} {R : Poly j} (R̂ : Deco R) {η} (dη : DecoEnv η) (s : Shape R η) →
+          AssignSh R η s → Set
+    ∂Sh (const X ∂X) dη s a = ∂X (a tt)
+    ∂Sh (var j)      dη s a = ∂El (dη j) s a
+    ∂Sh (R̂₁ ⊕ R̂₂)   dη (inj₁ s) a = ∂Sh R̂₁ dη s a
+    ∂Sh (R̂₁ ⊕ R̂₂)   dη (inj₂ s) a = ∂Sh R̂₂ dη s a
+    ∂Sh (R̂₁ ⊗ R̂₂)   dη (s₁ , s₂) a =
+      ∂Sh R̂₁ dη s₁ (λ p → a (inj₁ p)) × ∂Sh R̂₂ dη s₂ (λ p → a (inj₂ p))
+    ∂Sh (μ Q̂')      dη s a = ∂W Q̂' dη s a
+
+    ∂El : ∀ {r} → DecoRef r → (s : El r) → AssignEl r s → Set
+    ∂El {inj₁ i}            _              s a = δ∂ i (a tt)
+    ∂El {inj₂ (mkSort Q ρ)} (mkDeco Q̂ dρ) w a = ∂W Q̂ dρ w a
+
+  module E = TreeEq δ (λ i → _≡_)
+
+  mutual
+    ∂W-subst : ∀ {k} {Q : Poly (suc k)} {ρ} (Q̂ : Deco Q) (dρ : DecoEnv ρ) {w₁ w₂ : W Q ρ} {a₁ a₂} →
+               E.W≈ w₁ w₂ a₁ a₂ → ∂W Q̂ dρ w₁ a₁ → ∂W Q̂ dρ w₂ a₂
+    ∂W-subst Q̂ dρ {sup s₁} {sup s₂} p x = ∂Sh-subst Q̂ (extendD dρ (mkDeco Q̂ dρ)) p x
+
+    ∂Sh-subst : ∀ {j} {R : Poly j} (R̂ : Deco R) {η} (dη : DecoEnv η) {s₁ s₂ : Shape R η} {a₁ a₂} →
+                E.Sh≈ R η s₁ s₂ a₁ a₂ → ∂Sh R̂ dη s₁ a₁ → ∂Sh R̂ dη s₂ a₂
+    ∂Sh-subst (const X ∂X) dη p x = subst ∂X p x
+    ∂Sh-subst (var j)      dη p x = ∂El-subst (dη j) p x
+    ∂Sh-subst (R̂₁ ⊕ R̂₂)   dη {inj₁ _} {inj₁ _} p x = ∂Sh-subst R̂₁ dη p x
+    ∂Sh-subst (R̂₁ ⊕ R̂₂)   dη {inj₁ _} {inj₂ _} ()
+    ∂Sh-subst (R̂₁ ⊕ R̂₂)   dη {inj₂ _} {inj₁ _} ()
+    ∂Sh-subst (R̂₁ ⊕ R̂₂)   dη {inj₂ _} {inj₂ _} p x = ∂Sh-subst R̂₂ dη p x
+    ∂Sh-subst (R̂₁ ⊗ R̂₂)   dη {_ , _} {_ , _} (p , q) (x , y) =
+      ∂Sh-subst R̂₁ dη p x , ∂Sh-subst R̂₂ dη q y
+    ∂Sh-subst (μ Q̂')      dη {w₁} {w₂} p x = ∂W-subst Q̂' dη {w₁ = w₁} {w₂ = w₂} p x
+
+    ∂El-subst : ∀ {r} (d : DecoRef r) {s₁ s₂ : El r} {a₁ a₂} →
+                E.El≈ r s₁ s₂ a₁ a₂ → ∂El d s₁ a₁ → ∂El d s₂ a₂
+    ∂El-subst {inj₁ i}            _              p x = subst (δ∂ i) p x
+    ∂El-subst {inj₂ (mkSort Q ρ)} (mkDeco Q̂ dρ) {w₁} {w₂} p x = ∂W-subst Q̂ dρ {w₁ = w₁} {w₂ = w₂} p x
+
+------------------------------------------------------------------------------
+-- The fibre action of reindexing: constant positions are untouched, parameter
+-- positions map by the fibre part g∂ of the environment morphism; the shape
+-- and the product structure are left fixed.
+------------------------------------------------------------------------------
+module FibreReindex {n} {δ δ' : Fin n → Set} (g : ∀ i → δ i → δ' i)
+                    (δ∂ : ∀ i → δ i → Set) (δ∂' : ∀ i → δ' i → Set)
+                    (g∂ : ∀ i (x : δ i) → δ∂ i x → δ∂' i (g i x)) where
+  open Shapes n
+  open Decos n
+  module Fδ = Fibre δ δ∂
+  module Fδ' = Fibre δ' δ∂'
+  module Rg = Reindex g
+
+  mutual
+    reindex-∂W : ∀ {k} {Q : Poly (suc k)} {ρ} (Q̂ : Deco Q) (dρ : DecoEnv ρ)
+                 (w : W Q ρ) (a : Trees.Assign δ w) →
+                 Fδ.∂W Q̂ dρ w a → Fδ'.∂W Q̂ dρ w (λ p → Rg.reindexIx (labelW w p) (a p))
+    reindex-∂W Q̂ dρ (sup s) a x = reindex-∂Sh Q̂ (extendD dρ (mkDeco Q̂ dρ)) s a x
+
+    reindex-∂Sh : ∀ {j} {R : Poly j} (R̂ : Deco R) {η} (dη : DecoEnv η) (s : Shape R η)
+                  (a : Trees.AssignSh δ R η s) →
+                  Fδ.∂Sh R̂ dη s a → Fδ'.∂Sh R̂ dη s (λ p → Rg.reindexIx (labelSh R η s p) (a p))
+    reindex-∂Sh (const X ∂X) dη s a x = x
+    reindex-∂Sh (var j)      dη s a x = reindex-∂El (dη j) s a x
+    reindex-∂Sh (R̂₁ ⊕ R̂₂)   dη (inj₁ s) a x = reindex-∂Sh R̂₁ dη s a x
+    reindex-∂Sh (R̂₁ ⊕ R̂₂)   dη (inj₂ s) a x = reindex-∂Sh R̂₂ dη s a x
+    reindex-∂Sh (R̂₁ ⊗ R̂₂)   dη (s₁ , s₂) a (x , y) =
+      reindex-∂Sh R̂₁ dη s₁ (λ p → a (inj₁ p)) x , reindex-∂Sh R̂₂ dη s₂ (λ p → a (inj₂ p)) y
+    reindex-∂Sh (μ Q̂')      dη s a x = reindex-∂W Q̂' dη s a x
+
+    reindex-∂El : ∀ {r} (d : DecoRef r) (s : El r) (a : Trees.AssignEl δ r s) →
+                  Fδ.∂El d s a → Fδ'.∂El d s (λ p → Rg.reindexIx (labelEl r s p) (a p))
+    reindex-∂El {inj₁ i}            _              s a x = g∂ i (a tt) x
+    reindex-∂El {inj₂ (mkSort Q ρ)} (mkDeco Q̂ dρ) w a x = reindex-∂W Q̂ dρ w a x
 
 -- The identity assignment, sending each variable to the matching parameter.
 ι : ∀ {n} → Fin n → Fin n ⊎ Sort n
@@ -721,4 +840,26 @@ module Example-rose where
   countRose (w , a) = fold algCount w a
 
   _ : countRose (node2 5 (leaf 1) (leaf 2)) ≡ 3
+  _ = refl
+
+  -- Fibre smoke test: decorate the label constant with Fin, the list constant
+  -- trivially; the fibre of a tree computes to the product of its label
+  -- fibres and units.
+  open Decos 0
+
+  listB̂ : Deco listB
+  listB̂ = const ⊤ (λ _ → ⊤) ⊕ (var (suc zero) ⊗ var zero)
+
+  roseP̂ : Deco roseP
+  roseP̂ = const ℕ Fin ⊗ μ listB̂
+
+  δ∂₀ : ∀ i → δ₀ i → Set
+  δ∂₀ ()
+
+  dι : DecoEnv ι
+  dι ()
+
+  module Fb = Fibre δ₀ δ∂₀
+
+  _ : Fb.∂W roseP̂ dι (proj₁ (leaf 1)) (proj₂ (leaf 1)) ≡ (Fin 1 × ⊤)
   _ = refl
