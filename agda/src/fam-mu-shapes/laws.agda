@@ -455,3 +455,148 @@ module BetaLaw {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
       famStep = FF.unembed-resp P (FF.uncoe-Sh-resp ∣ P ∣ IX.params
         (IX.ReindexCong.reindex-Sh-cong (IN.g algIx algIxR γ₁) (K.gI γ₁) g≈pt
           ∣ P ∣ IX.params (EqI.Sh≈-refl ∣ P ∣ IX.params (proj₁ t̂₁) (proj₂ t̂₁))))
+
+------------------------------------------------------------------------------
+-- Round trip through the bridges: unembedding a tree-form unfolding into
+-- fobj's structure and embedding it back is the identity up to tree equality.
+-- Leaf-refl; the inner-μ case collapses the two pointwise coercions.
+------------------------------------------------------------------------------
+module RoundTrip {n} (Γ : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj) where
+  module FFμ = FoldFam Γ (μObj P δ) P δ
+  module IM = InMapFam P δ
+
+  private
+    module EqI = IM.I.Eᵢ.Equiv
+      (λ v x → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x})
+      (λ v p → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym p)
+      (λ v p q → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans p q)
+
+  mutual
+    rtμ-W : ∀ {k} {Q̄ : Sh.Poly (suc k)} {ρ̄} (w : IM.I.S'.W Q̄ ρ̄)
+            (a : Sh.Trees.Assign IM.I.ιᵢ w) →
+            IM.I.Eᵢ.W≈ w w
+              (λ p → IM.coeIx (IM.I.S'.labelW w p)
+                       (FFμ.uncoeIx (IM.I.S'.labelW w p) (a p)))
+              a
+    rtμ-W {Q̄ = Q̄} {ρ̄ = ρ̄} (IM.I.S'.sup s) a =
+      rtμ-Sh Q̄ (extend ρ̄ (inj₂ (Sh.mkSort Q̄ ρ̄))) s a
+
+    rtμ-Sh : ∀ {k} (Q̄ : Sh.Poly k) (η̄ : Fin k → Fin (suc n) ⊎ Sh.Sort (suc n))
+             (s : IM.I.S'.Shape Q̄ η̄) (a : Sh.Trees.AssignSh IM.I.ιᵢ Q̄ η̄ s) →
+             IM.I.Eᵢ.Sh≈ Q̄ η̄ s s
+               (λ p → IM.coeIx (IM.I.S'.labelSh Q̄ η̄ s p)
+                        (FFμ.uncoeIx (IM.I.S'.labelSh Q̄ η̄ s p) (a p)))
+               a
+    rtμ-Sh (const S) η̄ s a = S .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a tt}
+    rtμ-Sh (var j)   η̄ s a = rtμ-El (η̄ j) s a
+    rtμ-Sh (Q₁ + Q₂) η̄ (inj₁ s) a = rtμ-Sh Q₁ η̄ s a
+    rtμ-Sh (Q₁ + Q₂) η̄ (inj₂ s) a = rtμ-Sh Q₂ η̄ s a
+    rtμ-Sh (Q₁ × Q₂) η̄ (s₁ , s₂) a =
+      rtμ-Sh Q₁ η̄ s₁ (λ p → a (inj₁ p)) , rtμ-Sh Q₂ η̄ s₂ (λ p → a (inj₂ p))
+    rtμ-Sh (μ Q̄')   η̄ s a = rtμ-W s a
+
+    rtμ-El : ∀ (r : Fin (suc n) ⊎ Sh.Sort (suc n)) (s : IM.I.S'.El r)
+             (a : Sh.Trees.AssignEl IM.I.ιᵢ r s) →
+             IM.I.Eᵢ.El≈ r s s
+               (λ p → IM.coeIx (IM.I.S'.labelEl r s p)
+                        (FFμ.uncoeIx (IM.I.S'.labelEl r s p) (a p)))
+               a
+    rtμ-El (inj₁ zero)    s a =
+      IM.I.TreeSetoid .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a tt}
+    rtμ-El (inj₁ (suc i)) s a =
+      δ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a tt}
+    rtμ-El (inj₂ (Sh.mkSort Q̄ ρ̄)) w a = rtμ-W w a
+
+  rt : (R : Poly-C (suc n)) (x : IM.I.Tᵢ.TreeSh ∣ R ∣ IX.params) →
+       IM.I.Eᵢ.Sh≈ ∣ R ∣ IX.params
+         (proj₁ (IM.coe-treeSh {Q = ∣ R ∣} {η̄ = IX.params}
+           (IM.embed-idx R (FFμ.unembed-idx R (FFμ.uncoe-treeSh ∣ R ∣ IX.params x)))))
+         (proj₁ x)
+         (proj₂ (IM.coe-treeSh {Q = ∣ R ∣} {η̄ = IX.params}
+           (IM.embed-idx R (FFμ.unembed-idx R (FFμ.uncoe-treeSh ∣ R ∣ IX.params x)))))
+         (proj₂ x)
+  rt (const A') (s , a) =
+    A' .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a tt}
+  rt (var zero) (s , a) =
+    IM.I.TreeSetoid .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a tt}
+  rt (var (suc i)) (s , a) =
+    δ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a tt}
+  rt (R₁ + R₂) (inj₁ s , a) = rt R₁ (s , a)
+  rt (R₁ + R₂) (inj₂ s , a) = rt R₂ (s , a)
+  rt (R₁ × R₂) ((s₁ , s₂) , a) =
+    rt R₁ (s₁ , λ p → a (inj₁ p)) , rt R₂ (s₂ , λ p → a (inj₂ p))
+  rt (μ Q'') (w , a) = rtμ-W w a
+
+------------------------------------------------------------------------------
+-- The index half of the η law: any h satisfying the β square agrees with the
+-- fold. The square is transported through the round trip so the index-level
+-- uniqueness law applies, with one ReindexCong step crossing from KLaw's
+-- family to the uniqueness law's own.
+------------------------------------------------------------------------------
+module EtaLaw {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
+              (alg : Fam𝒞._⇒_ (Fam𝒞-P.prod Γ (fobj μObj P (extend δ A))) A)
+              (h : Fam𝒞._⇒_ (Fam𝒞-P.prod Γ (μObj P δ)) A) where
+  module FF = FoldFam Γ A P δ
+  module IM = InMapFam P δ
+  module IN = IX.Initiality (λ i → δ i .idx) (Γ .idx) (A .idx) ∣ P ∣
+  module K = KLaw Γ A P δ h
+  module RT = RoundTrip Γ P δ
+
+  algIx = FF.algIx alg
+  algIxR = FF.algIx-resp alg
+
+  hcur : (γ : Γ .idx .Setoid.Carrier) → μObj P δ .idx .Setoid.Carrier → A .idx .Setoid.Carrier
+  hcur γ t = h .idxf .func (γ , t)
+
+  hR : ∀ {γ₁ γ₂} (γ≈ : Setoid._≈_ (Γ .idx) γ₁ γ₂) {t₁ t₂ : μObj P δ .idx .Setoid.Carrier} →
+       IN.I.E.Tree≈ t₁ t₂ → Setoid._≈_ (A .idx) (hcur γ₁ t₁) (hcur γ₂ t₂)
+  hR γ≈ p = h .idxf .func-resp-≈ (γ≈ , p)
+
+  module _ (hyp : ∀ (γ : Γ .idx .Setoid.Carrier)
+                  (m : fobj μObj P (extend δ (μObj P δ)) .idx .Setoid.Carrier) →
+                  Setoid._≈_ (A .idx)
+                    (h .idxf .func (γ , IM.I.inMap (IM.coe-treeSh {Q = ∣ P ∣} {η̄ = IX.params}
+                                                     (IM.embed-idx P m))))
+                    (alg .idxf .func (γ , strong-fmor P K.fsβ .idxf .func (γ , m)))) where
+
+    private
+      module AE = prop-setoid.IsEquivalence (A .idx .Setoid.isEquivalence)
+      module ΓE = prop-setoid.IsEquivalence (Γ .idx .Setoid.isEquivalence)
+      module EqI = IM.I.Eᵢ.Equiv
+        (λ v x → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x})
+        (λ v p → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym p)
+        (λ v p q → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans p q)
+
+    h-β : (γ : Γ .idx .Setoid.Carrier) (t̂ : IM.I.Tᵢ.TreeSh ∣ P ∣ IX.params) →
+          Setoid._≈_ (A .idx)
+            (hcur γ (IM.I.inMap t̂))
+            (algIx γ (IX.Reindex.reindexSh (IN.hg algIx algIxR hcur hR γ)
+                       {Q = ∣ P ∣} {η = IX.params} t̂))
+    h-β γ t̂ =
+      AE.trans (h .idxf .func-resp-≈
+          (ΓE.refl {x = γ}
+          , IM.I.in-shape-resp ∣ P ∣ IX.fbase
+              (EqI.Sh≈-sym ∣ P ∣ IX.params (RT.rt P t̂))))
+        (AE.trans (hyp γ m̂)
+          (AE.trans (alg .idxf .func-resp-≈ (ΓE.refl {x = γ} , K.β-idx P γ m̂))
+            (alg .idxf .func-resp-≈ (ΓE.refl {x = γ} , famStep))))
+      where
+        m̂ = RT.FFμ.unembed-idx P (RT.FFμ.uncoe-treeSh ∣ P ∣ IX.params t̂)
+
+        g≈pt : ∀ v x → Setoid._≈_ (FF.F.ι' v) (K.gI γ v .func x)
+                 (IN.hg algIx algIxR hcur hR γ v .func x)
+        g≈pt zero x = AE.refl {x = h .idxf .func (γ , x)}
+        g≈pt (suc i) x = δ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
+
+        famStep = FF.unembed-resp P (FF.uncoe-Sh-resp ∣ P ∣ IX.params
+          (IX.ReindexCong.reindex-Sh-cong (K.gI γ) (IN.hg algIx algIxR hcur hR γ) g≈pt
+            ∣ P ∣ IX.params (RT.rt P t̂)))
+
+    ⦅⦆-η-idx : ∀ {γ₁ γ₂ : Γ .idx .Setoid.Carrier} {t₁ t₂ : μObj P δ .idx .Setoid.Carrier}
+               (γ≈ : Setoid._≈_ (Γ .idx) γ₁ γ₂) (t≈ : IN.I.E.Tree≈ t₁ t₂) →
+               Setoid._≈_ (A .idx)
+                 (h .idxf .func (γ₁ , t₁))
+                 (FF.F.fold algIx γ₂ (proj₁ t₂) (proj₂ t₂))
+    ⦅⦆-η-idx {γ₁} {γ₂} {t₁} {t₂} γ≈ t≈ =
+      AE.trans (IN.η algIx algIxR hcur hR h-β γ₁ t₁)
+        (FF.F.fold-resp algIx algIxR γ≈ {w₁ = proj₁ t₁} {w₂ = proj₁ t₂} t≈)
