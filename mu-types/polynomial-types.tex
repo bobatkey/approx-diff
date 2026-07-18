@@ -367,6 +367,11 @@ positions of $s$ of the family $Q_p$ at the assigned index:
   \partial W_\sigma(s, a) = \prod_{p} \partial(Q_p)_{a(p)}.
 \]
 \end{definition}
+
+Splitting a tree into a shape and an index assignment keeps the shape free of the environment, so a
+morphism of kinding environments acts on the index assignment and the fibres alone, leaving the
+shape fixed. Reindexing the carrier along such a morphism is therefore lightweight, and the
+functorial action of \secref{polynomial-types:mu-operator} rests on it.
 \end{AddedBlock}
 
 \paragraph{Worked example: rose trees.}
@@ -377,10 +382,10 @@ The inner body mentions the outer variable $\alpha$, so
 the naive construction is circular, because the list carrier must be instantiated at $\mu_{\alpha.P}$
 while the latter is still being defined. $P$ has two sorts (\defref{polynomial-types:sort}),
 \[
-  s_0 = \bigl(|A| \times \mu\beta.(1 + \alpha \times \beta),\; \cdot\,\bigr) \qquad
-  s_1 = \bigl(1 + \alpha \times \beta,\; \alpha \mapsto s_0\bigr)
+  s_0 = \bigl(\alpha.(|A| \times \mu\beta.(1 + \alpha \times \beta)),\; \cdot\,\bigr) \qquad
+  s_1 = \bigl(\beta.(1 + \alpha \times \beta),\; \alpha \mapsto s_0\bigr)
 \]
-the root sort and the sort of the inner $\mu$-body. Each sort's own bound variable ($\alpha$
+the root sort and the sort of the inner $\mu$-body. Each sort's own recursion variable ($\alpha$
 in $s_0$, $\beta$ in $s_1$) refers to that sort itself; the entry $\alpha \mapsto s_0$ of $s_1$
 records symbolically that the inner body uses the outer binder, with no need for the outer carrier
 to exist yet. By \defref{polynomial-types:trees}, a tree of sort $s_0$ is an element of $|A|$ paired
@@ -405,9 +410,9 @@ the product of its label fibres; the algebra map builds a tree from a label and 
 fibres it is the identity, both sides being the same node-wise product.
 
 \begin{proof}[Proof of \propref{polynomial-types:fam-has-poly}]
-Take $\mu_{\alpha.P}(\delta) = (W_{s_0}, \partial W_{s_0})$, the family at the root sort $s_0 = (|P|,
-\rho_0)$ decorated by $P$, where $\rho_0$ takes the free variables of $P$ to the parameters
-$\Delta$. \Added{The sorts arising are those reachable from $s_0$, following the sort assigned at
+Take $\mu_{\alpha.P}(\delta) = (W_{s_0}, \partial W_{s_0})$, the family at the root sort $s_0 =
+(\alpha.|P|, \rho_0)$ decorated by $P$, where $\rho_0$ takes the free variables of $P$ to the
+parameters $\Delta$. \Added{The sorts arising are those reachable from $s_0$, following the sort assigned at
 each nested $\mu$.}
 
 For the algebra map $\inMap : P(\delta[\alpha \mapsto \mu_{\alpha.P}(\delta)]) \to
@@ -415,9 +420,12 @@ For the algebra map $\inMap : P(\delta[\alpha \mapsto \mu_{\alpha.P}(\delta)]) \
 tuple of arguments to one application of the tree constructor: a label at each constant, a tag at each sum,
 a pair at each product, an $s_0$-subtree at each occurrence of $\alpha$, and at each inner
 $\mu$-body a subtree of its sort in which the $\alpha$-positions again hold $s_0$-subtrees.
-\defref{polynomial-types:trees} admits exactly these arguments under the root of an $s_0$-tree, so
-on index sets $\inMap$ forms the tree with the arguments beneath a new root node, invertibly,
-decomposition at the root being its inverse; in the rose-tree example
+\Replaced{On index sets $\inMap$ assembles a shape of sort $s_0$, a new root above the argument
+shapes, together with the index assignment collecting the arguments' assignments and the
+const-labels; this is invertible, decomposition at the root being its inverse. In the rose-tree
+example}{\defref{polynomial-types:trees} admits exactly these arguments under the root of an
+$s_0$-tree, so on index sets $\inMap$ forms the tree with the arguments beneath a new root node,
+invertibly, decomposition at the root being its inverse; in the rose-tree example}
 \begin{center}
 $\inMap : \bigl(x_0,\ [\,T_1,\ T_2\,]\bigr) \;\longmapsto\;$
 \begin{tikzpicture}[baseline=-8mm, level distance=7mm, sibling distance=12mm,
@@ -426,32 +434,39 @@ $\inMap : \bigl(x_0,\ [\,T_1,\ T_2\,]\bigr) \;\longmapsto\;$
 \end{tikzpicture}
 \end{center}
 \noindent
-with the triangles standing for the subtrees $T_1$ and $T_2$. On fibres $\inMap$ is the identity,
-because \defref{polynomial-types:fibres} computes the fibre of the new tree by the same product
-structure that the action of $P$ computes on the arguments; in the example, both sides are the same node-wise
-product of label fibres.
+with the triangles standing for the subtrees $T_1$ and $T_2$. \Replaced{On fibres $\inMap$ is
+the identity: the positions of the assembled shape are exactly those of the argument shapes, so its
+fibre (\defref{polynomial-types:fibres}) is the same product that the action of $P$ forms on the
+argument fibres; in the example, both sides are the same node-wise product of label
+fibres.}{On fibres $\inMap$ is the identity, because \defref{polynomial-types:fibres} computes the
+fibre of the new tree by the same product structure that the action of $P$ computes on the
+arguments; in the example, both sides are the same node-wise product of label fibres.}
 
 For an algebra $a : \Gamma \times P(\delta[\alpha \mapsto Y]) \to Y$, the catamorphism
-$\cata{a} : \Gamma \times \mu_{\alpha.P}(\delta) \to Y$ is defined by structural recursion over
-trees, simultaneously over all sorts, threading the $\Gamma$-component unchanged. In the rose-tree
-example, on index sets,
+$\cata{a} : \Gamma \times \mu_{\alpha.P}(\delta) \to Y$ is defined by \Replaced{recursion over
+the shape of its tree argument}{structural recursion over trees}, simultaneously over all sorts,
+threading the $\Gamma$-component unchanged. In the rose-tree example, on index sets,
 \[
   \cata{a}\bigl(\gamma,\ \inMap(x_0,\ [\,T_1,\ T_2\,])\bigr) \;=\;
   a\bigl(\gamma,\ (x_0,\ [\,\cata{a}(\gamma, T_1),\ \cata{a}(\gamma, T_2)\,])\bigr).
 \]
 \noindent
-In general, the root is decomposed into its arguments, the recursion is applied to each
-$s_0$-subtree, and $a$ combines the results. The recursion at an inner sort translates its trees from
-the environment $\delta$ to the environment $\delta[\alpha \mapsto Y]$, replacing each
-$s_0$-subtree by its folded value and leaving the surrounding structure intact (the list over $Y$
-in the equation above), so that the translated arguments land in the domain of $a$. The same recursion is
-performed on fibres.
+In general, the root shape is decomposed into its arguments, the recursion is applied to each
+$s_0$-subtree, and $a$ combines the results. \Replaced{At an inner sort the recursion reindexes the
+subtree from $\delta$ to $\delta[\alpha \mapsto Y]$, replacing each $s_0$-subtree by its folded
+value and leaving the rest of the shape fixed (the list over $Y$ in the equation above), so the
+result lands in the domain of $a$.}{The recursion at an inner sort translates its trees from the
+environment $\delta$ to the environment $\delta[\alpha \mapsto Y]$, replacing each $s_0$-subtree
+by its folded value and leaving the surrounding structure intact (the list over $Y$ in the equation
+above), so that the translated arguments land in the domain of $a$.} The fibres transform
+alongside.
 
 The law $\beta$ is the unfolded initiality square of \defref{polynomial-types:has-poly},
-taken at the concrete carriers. The upper path forms the tree with the arguments as its immediate
-subtrees and then folds it; the lower path folds the $s_0$-subtrees inside the arguments and then
-applies $a$. Both compute the same recursion on trees, and the equation above is $\beta$ at the
-example. For $\eta$, let $h$ satisfy $\beta$ in place of $\cata{a}$; by induction on trees
+taken at the concrete carriers. \Replaced{The upper path assembles the shape from the arguments
+and folds it}{The upper path forms the tree with the arguments as its immediate subtrees and then
+folds it}; the lower path folds the $s_0$-subtrees inside the arguments and then applies $a$. Both
+compute the same recursion, and the equation above is $\beta$ at the example. For $\eta$, let $h$
+satisfy $\beta$ in place of $\cata{a}$; by \Replaced{induction on shapes}{induction on trees}
 (simultaneously over all sorts), $h$ agrees with $\cata{a}$ at every tree, the inductive
 hypothesis covering the $s_0$-subtrees among the arguments.
 \end{proof}
