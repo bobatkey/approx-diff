@@ -104,3 +104,37 @@ module ReindexCong {n} {ι ι' : Fin n → Setoid os (os ⊔ es)} (g₁ g₂ : �
       ι' i .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans
         (g₁ i .func-resp-≈ p) (g≈ i (a₂ tt))
     reindex-El-cong (inj₂ (mkSort Q ρ)) {w₁} {w₂} p = reindex-W-cong {w₁ = w₁} {w₂ = w₂} p
+
+-- Two successive reindexings collapse to one along any pointwise composite.
+module ReindexComp {n} {ι ι' ι'' : Fin n → Setoid os (os ⊔ es)}
+                   (g₁ : ∀ i → ι i ⇒ ι' i) (g₂ : ∀ i → ι' i ⇒ ι'' i) (k : ∀ i → ι i ⇒ ι'' i)
+                   (k≈ : ∀ i x → Setoid._≈_ (ι'' i) (g₂ i .func (g₁ i .func x)) (k i .func x)) where
+  open Shapes n
+  module R₁ = Reindex g₁
+  module R₂ = Reindex g₂
+  module Rk = Reindex k
+  module E'' = TreeEq ι'' (λ i → Setoid._≈_ (ι'' i))
+
+  mutual
+    comp-W : ∀ {k'} {Q : Poly (suc k')} {ρ} (w : W Q ρ) (a : Trees.Assign ι w) →
+             E''.W≈ w w (λ p → R₂.reindexIx (labelW w p) (R₁.reindexIx (labelW w p) (a p)))
+               (λ p → Rk.reindexIx (labelW w p) (a p))
+    comp-W {Q = Q} {ρ = ρ} (sup s) a = comp-Sh Q (extend ρ (inj₂ (mkSort Q ρ))) s a
+
+    comp-Sh : ∀ {k'} (Q : Poly k') (η : Fin k' → Fin n ⊎ Sort n) (s : Shape Q η)
+              (a : Trees.AssignSh ι Q η s) →
+              E''.Sh≈ Q η s s (λ p → R₂.reindexIx (labelSh Q η s p) (R₁.reindexIx (labelSh Q η s p) (a p)))
+                (λ p → Rk.reindexIx (labelSh Q η s p) (a p))
+    comp-Sh (const S) η s a = S .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl
+    comp-Sh (var j)   η s a = comp-El (η j) s a
+    comp-Sh (P + Q)   η (inj₁ s) a = comp-Sh P η s a
+    comp-Sh (P + Q)   η (inj₂ s) a = comp-Sh Q η s a
+    comp-Sh (P × Q)   η (s₁ , s₂) a =
+      comp-Sh P η s₁ (λ p → a (inj₁ p)) , comp-Sh Q η s₂ (λ p → a (inj₂ p))
+    comp-Sh (μ Q')    η s a = comp-W s a
+
+    comp-El : ∀ (r : Fin n ⊎ Sort n) (s : El r) (a : Trees.AssignEl ι r s) →
+              E''.El≈ r s s (λ p → R₂.reindexIx (labelEl r s p) (R₁.reindexIx (labelEl r s p) (a p)))
+                (λ p → Rk.reindexIx (labelEl r s p) (a p))
+    comp-El (inj₁ i)            s a = k≈ i (a tt)
+    comp-El (inj₂ (mkSort Q ρ)) w a = comp-W w a
