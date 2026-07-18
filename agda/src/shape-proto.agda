@@ -535,13 +535,20 @@ module InMap {n} (δ : Fin n → Set) (P : Poly (suc n)) where
   out-inMap (s , a) = oi-shape P fbase s a
 
 ------------------------------------------------------------------------------
+-- The initial-algebra laws at the index level.
+--
 -- β: folding an assembled tree equals the algebra applied to the strong
 -- action of the fold, which is reindexing along g (fold at the α-entry,
 -- identity at the parameters). The shape is left fixed on both sides, so the
 -- proof is a leaf-refl induction: at an α-position both sides are the fold of
 -- the spliced subtree, by definition of g.
+--
+-- η: any h satisfying the β square agrees with the fold, by tree induction.
+-- Each tree is rounded through the root decomposition so that both β squares
+-- apply; the two strong actions then agree pointwise by the induction
+-- hypothesis at the subtrees bundled at α-positions.
 ------------------------------------------------------------------------------
-module Beta {n} (δ : Fin n → Set) (Y : Set) (P : Poly (suc n)) where
+module Initiality {n} (δ : Fin n → Set) (Y : Set) (P : Poly (suc n)) where
   module S' = Shapes (suc n)
   module F = Fold δ Y P
   module I = InMap δ P
@@ -589,6 +596,57 @@ module Beta {n} (δ : Fin n → Set) (Y : Set) (P : Poly (suc n)) where
       β : (t : I.Tᵢ.TreeSh P ι) →
           F.fold alg (proj₁ (I.inMap t)) (proj₂ (I.inMap t)) ≡ alg (Rg.reindexSh {Q = P} {η = ι} t)
       β (s , a) = alg-resp (β-shape P fbase s a)
+
+      module _ (h : I.Carrier → Y) where
+        hg : ∀ v → I.δᵢ v → F.δ' v
+        hg zero    t = h t
+        hg (suc i) x = x
+
+        module Rh = Reindex hg
+
+        module _ (h-resp : ∀ {t₁ t₂ : I.Carrier} → I.E.Tree≈ t₁ t₂ → h t₁ ≡ h t₂)
+                 (h-β : (t : I.Tᵢ.TreeSh P ι) → h (I.inMap t) ≡ alg (Rh.reindexSh {Q = P} {η = ι} t)) where
+          mutual
+            η-tree : (w : F.S.W P ι) (a : F.T.Assign w) → h (w , a) ≡ F.fold alg w a
+            η-tree (F.S.sup s) a =
+              trans (sym (h-resp (I.inMap-out (F.S.sup s , a))))
+                (trans (h-β (I.out (F.S.sup s , a)))
+                  (trans (alg-resp (η-out-shape P fbase s a))
+                    (trans (sym (β (I.out (F.S.sup s , a))))
+                      (F.fold-resp alg alg-resp (I.inMap-out (F.S.sup s , a))))))
+
+            η-out-tree : ∀ {k} {Q : Poly (suc k)} {ρ ρ'} (fm : FMor P ρ ρ') (w : F.S.W Q ρ)
+                         (a : F.T.Assign w) →
+                         F.E'.W≈ (proj₁ (I.out-tree fm w a)) (proj₁ (I.out-tree fm w a))
+                           (λ p → Rh.reindexIx (S'.labelW (proj₁ (I.out-tree fm w a)) p) (proj₂ (I.out-tree fm w a) p))
+                           (λ p → Rg.reindexIx (S'.labelW (proj₁ (I.out-tree fm w a)) p) (proj₂ (I.out-tree fm w a) p))
+            η-out-tree {Q = Q} fm (F.S.sup s) a = η-out-shape Q (fbind Q fm) s a
+
+            η-out-shape : ∀ {j} (R : Poly j) {ηA ηB} (fm : FMor P ηA ηB) (s : F.S.Shape R ηA)
+                          (a : F.T.AssignSh R ηA s) →
+                          F.E'.Sh≈ R ηB (proj₁ (I.out-shape R fm s a)) (proj₁ (I.out-shape R fm s a))
+                            (λ p → Rh.reindexIx (S'.labelSh R ηB (proj₁ (I.out-shape R fm s a)) p) (proj₂ (I.out-shape R fm s a) p))
+                            (λ p → Rg.reindexIx (S'.labelSh R ηB (proj₁ (I.out-shape R fm s a)) p) (proj₂ (I.out-shape R fm s a) p))
+            η-out-shape (const X) fm s a = refl
+            η-out-shape (var v)   fm s a = η-out-el fm v s a
+            η-out-shape (R₁ ⊕ R₂) fm (inj₁ s) a = η-out-shape R₁ fm s a
+            η-out-shape (R₁ ⊕ R₂) fm (inj₂ s) a = η-out-shape R₂ fm s a
+            η-out-shape (R₁ ⊗ R₂) fm (s₁ , s₂) a =
+              η-out-shape R₁ fm s₁ (λ p → a (inj₁ p)) , η-out-shape R₂ fm s₂ (λ p → a (inj₂ p))
+            η-out-shape (μ Q')    fm s a = η-out-tree fm s a
+
+            η-out-el : ∀ {k} {ρ ρ'} (fm : FMor P ρ ρ') (v : Fin k) (s : F.S.El (ρ v))
+                       (a : F.T.AssignEl (ρ v) s) →
+                       F.E'.El≈ (ρ' v) (proj₁ (I.out-el fm v s a)) (proj₁ (I.out-el fm v s a))
+                         (λ p → Rh.reindexIx (S'.labelEl (ρ' v) (proj₁ (I.out-el fm v s a)) p) (proj₂ (I.out-el fm v s a) p))
+                         (λ p → Rg.reindexIx (S'.labelEl (ρ' v) (proj₁ (I.out-el fm v s a)) p) (proj₂ (I.out-el fm v s a) p))
+            η-out-el fbase        zero    w a = η-tree w a
+            η-out-el fbase        (suc i) s a = refl
+            η-out-el (fbind Q fm) zero    w a = η-out-tree fm w a
+            η-out-el (fbind Q fm) (suc v) s a = η-out-el fm v s a
+
+          η : (t : I.Carrier) → h t ≡ F.fold alg (proj₁ t) (proj₂ t)
+          η (w , a) = η-tree w a
 
 ------------------------------------------------------------------------------
 -- Smoke test: naturals as μα. ⊤ + α; the fold to ℕ computes by refl.
