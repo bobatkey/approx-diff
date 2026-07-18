@@ -318,8 +318,8 @@ $|\delta|(\rho(\alpha))$ for a parameter-position referencing variable $\alpha$.
 \end{definition}
 \end{AddedBlock}
 
+\begin{DeletedBlock}
 \begin{definition}[Decoration]
-\label{def:polynomial-types:decoration}
 A \emph{decoration} of a sort $(R, \rho)$ is a $\mu$-body $Q$ with $|Q| = R$, together with a
 decoration of each sort in the range of $\rho$. Decorations are data over the sorts, so the trees do
 not depend on them, and a decoration determines the sort it decorates. The root sort $(|P|, \rho_0)$
@@ -328,7 +328,6 @@ sort, each inner $\mu$-body decorating the sort it erases to.
 \end{definition}
 
 \begin{definition}[Fibres]
-\label{def:polynomial-types:fibres}
 For a decorated sort $s$, the \emph{fibre} $\partial W_s(t) \in \cat{C}$ of a tree $t \in W_s$
 recovers the erased objects, by structural recursion on $t$:
 \begin{itemize}
@@ -343,6 +342,32 @@ recovers the erased objects, by structural recursion on $t$:
   decorated by the corresponding $\mu$-body of the decoration.
 \end{itemize}
 \end{definition}
+\end{DeletedBlock}
+
+\begin{AddedBlock}
+\begin{definition}[Decoration]
+\label{def:polynomial-types:decoration}
+A \emph{decoration} $Q$ of a sort $(\alpha.R, \rho)$ is a polynomial over $\Fam(\cat{C})$ with
+$|Q| = R$, together with a decoration of each sort in the range of $\rho$.
+\end{definition}
+
+A decoration $Q$, together with a kinding environment $\delta$, assigns to each position $p$ of a
+shape of the sort a family $Q_p \in \Fam(\cat{C})$: the family $\const(X, \partial X)$ of $Q$ that
+the position comes from, at a $\const$-position, and the environment entry $\delta(\rho(\alpha))$, at
+a parameter-position referencing $\alpha$. Decorations are data over the sorts, so the shapes and
+trees do not depend on them. The root sort is decorated by $P$, and a decoration induces decorations
+of the sorts reachable from its sort, each inner $\mu$-body decorating the sort it erases to.
+
+\begin{definition}[Fibres]
+\label{def:polynomial-types:fibres}
+Given a decoration $Q$ of a sort $\sigma$ and a kinding environment $\delta$, the \emph{fibre}
+$\partial W_\sigma(s, a) \in \cat{C}$ of a tree $(s, a)$ of sort $\sigma$ is the product over the
+positions of $s$ of the family $Q_p$ at the assigned index:
+\[
+  \partial W_\sigma(s, a) = \prod_{p} \partial(Q_p)_{a(p)}.
+\]
+\end{definition}
+\end{AddedBlock}
 
 \paragraph{Worked example: rose trees.}
 Take $P = \const(A) \times \mu\beta.(\const(\One_{\!F}) + \alpha \times \beta) \in
