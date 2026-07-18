@@ -33,6 +33,22 @@ private
   ℓD : Level
   ℓD = o ⊔ m ⊔ e ⊔ lsuc os ⊔ lsuc es
 
+-- The canonical root decoration, and decorations of the two sides of an FMor
+-- translation. Decorations are environment-free, so these are shared by the
+-- algebra map (target environment ι[α ↦ carrier]) and the fold (target
+-- environment ι[α ↦ Y]).
+module DecoDefs {n} (P : Poly-C (suc n)) where
+  d₀ : ∀ i → Decos.DecoAssign n (IX.params i)
+  d₀ i = lift tt
+
+  data DecoF : ∀ {k} {ρ : Fin k → Fin n ⊎ Sh.Sort n} {ρ'} → IX.FMor ∣ P ∣ ρ ρ' →
+               ((v : Fin k) → Decos.DecoAssign n (ρ v)) →
+               ((v : Fin k) → Decos.DecoAssign (suc n) (ρ' v)) → Set ℓD where
+    dbase : DecoF IX.fbase (Decos.deco-ext n P d₀) (λ v → lift tt)
+    dbind : ∀ {k} {ρ ρ'} {fm : IX.FMor ∣ P ∣ ρ ρ'} {d d'} (Q : Poly-C (suc k)) →
+            DecoF fm d d' →
+            DecoF (IX.fbind ∣ Q ∣ fm) (Decos.deco-ext n Q d) (Decos.deco-ext (suc n) Q d')
+
 module InMapFam {n} (P : Poly-C (suc n)) (δ : Fin n → Obj) where
   ι : Fin n → Setoid os (os ⊔ es)
   ι i = δ i .idx
@@ -48,18 +64,7 @@ module InMapFam {n} (P : Poly-C (suc n)) (δ : Fin n → Obj) where
 
   module Fδ' = Fibre I.ιᵢ δf'
 
-  -- The canonical root decoration: parameters carry none.
-  d₀ : ∀ i → Fδ.DecoAssign (IX.params i)
-  d₀ i = lift tt
-
-  -- Decorations of the two sides of an FMor translation.
-  data DecoF : ∀ {k} {ρ : Fin k → Fin n ⊎ Sh.Sort n} {ρ'} → IX.FMor ∣ P ∣ ρ ρ' →
-               ((v : Fin k) → Fδ.DecoAssign (ρ v)) →
-               ((v : Fin k) → Fδ'.DecoAssign (ρ' v)) → Set ℓD where
-    dbase : DecoF IX.fbase (Fδ.deco-ext P d₀) (λ v → lift tt)
-    dbind : ∀ {k} {ρ ρ'} {fm : IX.FMor ∣ P ∣ ρ ρ'} {d d'} (Q : Poly-C (suc k)) →
-            DecoF fm d d' →
-            DecoF (IX.fbind ∣ Q ∣ fm) (Fδ.deco-ext Q d) (Fδ'.deco-ext Q d')
+  open DecoDefs P
 
   mutual
     in-fam-tree : ∀ {k} {Q : Poly-C (suc k)} {ρ ρ'} {fm : IX.FMor ∣ P ∣ ρ ρ'} {d d'}
