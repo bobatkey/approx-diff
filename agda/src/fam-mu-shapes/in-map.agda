@@ -102,6 +102,32 @@ module InMap {n} (ι : Fin n → Setoid os (os ⊔ es)) (P : Poly (suc n)) where
   out (S.sup s , a) = out-shape P fbase s a
 
   mutual
+    in-tree-resp : ∀ {k} {Q : Poly (suc k)} {ρ ρ'} (fm : FMor P ρ ρ') {w₁ w₂ : S'.W Q ρ'} {a₁ a₂} →
+                   Eᵢ.W≈ w₁ w₂ a₁ a₂ → E.Tree≈ (in-tree fm w₁ a₁) (in-tree fm w₂ a₂)
+    in-tree-resp {Q = Q} fm {S'.sup s₁} {S'.sup s₂} p = in-shape-resp Q (fbind Q fm) p
+
+    in-shape-resp : ∀ {j} (R : Poly j) {ηA ηB} (fm : FMor P ηA ηB) {s₁ s₂ : S'.Shape R ηB} {a₁ a₂} →
+                    Eᵢ.Sh≈ R ηB s₁ s₂ a₁ a₂ →
+                    E.Sh≈ R ηA (proj₁ (in-shape R fm s₁ a₁)) (proj₁ (in-shape R fm s₂ a₂))
+                      (proj₂ (in-shape R fm s₁ a₁)) (proj₂ (in-shape R fm s₂ a₂))
+    in-shape-resp (const S) fm p = p
+    in-shape-resp (var v)   fm p = in-el-resp fm v p
+    in-shape-resp (R₁ + R₂) fm {inj₁ _} {inj₁ _} p = in-shape-resp R₁ fm p
+    in-shape-resp (R₁ + R₂) fm {inj₂ _} {inj₂ _} p = in-shape-resp R₂ fm p
+    in-shape-resp (R₁ × R₂) fm {_ , _} {_ , _} (p , q) =
+      in-shape-resp R₁ fm p , in-shape-resp R₂ fm q
+    in-shape-resp (μ Q')    fm {w₁} {w₂} p = in-tree-resp fm {w₁ = w₁} {w₂ = w₂} p
+
+    in-el-resp : ∀ {k} {ρ ρ'} (fm : FMor P ρ ρ') (v : Fin k) {s₁ s₂ : S'.El (ρ' v)} {a₁ a₂} →
+                 Eᵢ.El≈ (ρ' v) s₁ s₂ a₁ a₂ →
+                 E.El≈ (ρ v) (proj₁ (in-el fm v s₁ a₁)) (proj₁ (in-el fm v s₂ a₂))
+                   (proj₂ (in-el fm v s₁ a₁)) (proj₂ (in-el fm v s₂ a₂))
+    in-el-resp fbase        zero    p = p
+    in-el-resp fbase        (suc i) p = p
+    in-el-resp (fbind Q fm) zero    {w₁} {w₂} p = in-tree-resp fm {w₁ = w₁} {w₂ = w₂} p
+    in-el-resp (fbind Q fm) (suc v) p = in-el-resp fm v p
+
+  mutual
     io-tree : ∀ {k} {Q : Poly (suc k)} {ρ ρ'} (fm : FMor P ρ ρ') (w : S.W Q ρ) (a : T.Assign w) →
               E.Tree≈ (in-tree fm (proj₁ (out-tree fm w a)) (proj₂ (out-tree fm w a))) (w , a)
     io-tree {Q = Q} fm (S.sup s) a = io-shape Q (fbind Q fm) s a
