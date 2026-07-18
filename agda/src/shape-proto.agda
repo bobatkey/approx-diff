@@ -256,6 +256,9 @@ module Reindex {n} {δ δ' : Fin n → Set} (g : ∀ i → δ i → δ' i) where
   reindex : ∀ {k} {Q : Poly (suc k)} {ρ} → Trees.Tree δ Q ρ → Trees.Tree δ' Q ρ
   reindex (w , a) = w , λ p → reindexIx (labelW w p) (a p)
 
+  reindexSh : ∀ {k} {Q : Poly k} {η} → Trees.TreeSh δ Q η → Trees.TreeSh δ' Q η
+  reindexSh {Q = Q} {η = η} (s , a) = s , λ p → reindexIx (labelSh Q η s p) (a p)
+
   module E = TreeEq δ (λ i → _≡_)
   module E' = TreeEq δ' (λ i → _≡_)
 
@@ -530,6 +533,62 @@ module InMap {n} (δ : Fin n → Set) (P : Poly (suc n)) where
   out-inMap : (t : Tᵢ.TreeSh P ι) →
               Eᵢ.Sh≈ P ι (proj₁ (out (inMap t))) (proj₁ t) (proj₂ (out (inMap t))) (proj₂ t)
   out-inMap (s , a) = oi-shape P fbase s a
+
+------------------------------------------------------------------------------
+-- β: folding an assembled tree equals the algebra applied to the strong
+-- action of the fold, which is reindexing along g (fold at the α-entry,
+-- identity at the parameters). The shape is left fixed on both sides, so the
+-- proof is a leaf-refl induction: at an α-position both sides are the fold of
+-- the spliced subtree, by definition of g.
+------------------------------------------------------------------------------
+module Beta {n} (δ : Fin n → Set) (Y : Set) (P : Poly (suc n)) where
+  module S' = Shapes (suc n)
+  module F = Fold δ Y P
+  module I = InMap δ P
+
+  module _ (alg : F.T'.TreeSh P ι → Y) where
+    g : ∀ v → I.δᵢ v → F.δ' v
+    g zero    t = F.fold alg (proj₁ t) (proj₂ t)
+    g (suc i) x = x
+
+    module Rg = Reindex g
+
+    mutual
+      β-tree : ∀ {k} {Q : Poly (suc k)} {ρ ρ'} (fm : FMor P ρ ρ') (w : S'.W Q ρ') (a : I.Tᵢ.Assign w) →
+               F.E'.W≈ (proj₁ (F.fold-reindex alg fm (proj₁ (I.in-tree fm w a)) (proj₂ (I.in-tree fm w a)))) w
+                 (proj₂ (F.fold-reindex alg fm (proj₁ (I.in-tree fm w a)) (proj₂ (I.in-tree fm w a))))
+                 (λ p → Rg.reindexIx (S'.labelW w p) (a p))
+      β-tree {Q = Q} fm (S'.sup s) a = β-shape Q (fbind Q fm) s a
+
+      β-shape : ∀ {j} (R : Poly j) {ηA ηB} (fm : FMor P ηA ηB) (s : S'.Shape R ηB)
+                (a : I.Tᵢ.AssignSh R ηB s) →
+                F.E'.Sh≈ R ηB
+                  (proj₁ (F.fold-shape alg R fm (proj₁ (I.in-shape R fm s a)) (proj₂ (I.in-shape R fm s a)))) s
+                  (proj₂ (F.fold-shape alg R fm (proj₁ (I.in-shape R fm s a)) (proj₂ (I.in-shape R fm s a))))
+                  (λ p → Rg.reindexIx (S'.labelSh R ηB s p) (a p))
+      β-shape (const X) fm s a = refl
+      β-shape (var v)   fm s a = β-el fm v s a
+      β-shape (R₁ ⊕ R₂) fm (inj₁ s) a = β-shape R₁ fm s a
+      β-shape (R₁ ⊕ R₂) fm (inj₂ s) a = β-shape R₂ fm s a
+      β-shape (R₁ ⊗ R₂) fm (s₁ , s₂) a =
+        β-shape R₁ fm s₁ (λ p → a (inj₁ p)) , β-shape R₂ fm s₂ (λ p → a (inj₂ p))
+      β-shape (μ Q')    fm s a = β-tree fm s a
+
+      β-el : ∀ {k} {ρ ρ'} (fm : FMor P ρ ρ') (v : Fin k) (s : S'.El (ρ' v)) (a : I.Tᵢ.AssignEl (ρ' v) s) →
+             F.E'.El≈ (ρ' v)
+               (proj₁ (F.fold-apply alg fm v (proj₁ (I.in-el fm v s a)) (proj₂ (I.in-el fm v s a)))) s
+               (proj₂ (F.fold-apply alg fm v (proj₁ (I.in-el fm v s a)) (proj₂ (I.in-el fm v s a))))
+               (λ p → Rg.reindexIx (S'.labelEl (ρ' v) s p) (a p))
+      β-el fbase        zero    s a = refl
+      β-el fbase        (suc i) s a = refl
+      β-el (fbind Q fm) zero    w a = β-tree fm w a
+      β-el (fbind Q fm) (suc v) s a = β-el fm v s a
+
+    module _ (alg-resp : ∀ {s₁ s₂ : S'.Shape P ι} {a₁ a₂} →
+                         F.E'.Sh≈ P ι s₁ s₂ a₁ a₂ → alg (s₁ , a₁) ≡ alg (s₂ , a₂)) where
+      β : (t : I.Tᵢ.TreeSh P ι) →
+          F.fold alg (proj₁ (I.inMap t)) (proj₂ (I.inMap t)) ≡ alg (Rg.reindexSh {Q = P} {η = ι} t)
+      β (s , a) = alg-resp (β-shape P fbase s a)
 
 ------------------------------------------------------------------------------
 -- Smoke test: naturals as μα. ⊤ + α; the fold to ℕ computes by refl.
