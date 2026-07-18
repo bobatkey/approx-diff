@@ -129,3 +129,192 @@ module InMapFam {n} (P : Poly-C (suc n)) (δ : Fin n → Obj) where
     in-fam-el-nat dbase        (suc i) p = ≈-trans id-left (≈-sym id-right)
     in-fam-el-nat (dbind Q df) zero    {w₁} {w₂} p = in-fam-tree-nat df {w₁ = w₁} {w₂ = w₂} p
     in-fam-el-nat (dbind Q df) (suc v) p = in-fam-el-nat df v p
+
+  ------------------------------------------------------------------------------
+  -- The object-level extended environment, which fobj interprets over, and
+  -- the coercion from its trees to the setoid-extended spelling used by the
+  -- algebra map. The two agree at every applied index, so the coercion is the
+  -- identity at each label; it exists only because the two spellings of the
+  -- environment are not convertible at a neutral index.
+  ------------------------------------------------------------------------------
+  δ'F : Fin (suc n) → Obj
+  δ'F = extend δ (μObj P δ)
+
+  ιᵐ : Fin (suc n) → Setoid os (os ⊔ es)
+  ιᵐ v = δ'F v .idx
+
+  module Fμ' = Fibre ιᵐ (λ v → δ'F v .fam)
+  module Eᵐ = Sh.TreeEq ιᵐ (λ v → Setoid._≈_ (ιᵐ v))
+
+  open Decos (suc n) using (mkDeco)
+
+  coeIx : (l : Setoid os (os ⊔ es) ⊎ Fin (suc n)) → Sh.Trees.Ix ιᵐ l → Sh.Trees.Ix I.ιᵢ l
+  coeIx (inj₁ S)       x = x
+  coeIx (inj₂ zero)    x = x
+  coeIx (inj₂ (suc i)) x = x
+
+  mutual
+    coe-W-resp : ∀ {k} {Q : Sh.Poly (suc k)} {ρ̄} {w₁ w₂ : I.S'.W Q ρ̄} {a₁ a₂} →
+                 Eᵐ.W≈ w₁ w₂ a₁ a₂ →
+                 I.Eᵢ.W≈ w₁ w₂ (λ p → coeIx (I.S'.labelW w₁ p) (a₁ p))
+                   (λ p → coeIx (I.S'.labelW w₂ p) (a₂ p))
+    coe-W-resp {Q = Q} {ρ̄} {I.S'.sup s₁} {I.S'.sup s₂} p =
+      coe-Sh-resp Q (extend ρ̄ (inj₂ (Sh.mkSort Q ρ̄))) p
+
+    coe-Sh-resp : ∀ {k} (Q : Sh.Poly k) (η̄ : Fin k → Fin (suc n) ⊎ Sh.Sort (suc n))
+                  {s₁ s₂ : I.S'.Shape Q η̄} {a₁ a₂} → Eᵐ.Sh≈ Q η̄ s₁ s₂ a₁ a₂ →
+                  I.Eᵢ.Sh≈ Q η̄ s₁ s₂ (λ p → coeIx (I.S'.labelSh Q η̄ s₁ p) (a₁ p))
+                    (λ p → coeIx (I.S'.labelSh Q η̄ s₂ p) (a₂ p))
+    coe-Sh-resp (const S) η̄ p = p
+    coe-Sh-resp (var j)   η̄ p = coe-El-resp (η̄ j) p
+    coe-Sh-resp (Q₁ + Q₂) η̄ {inj₁ _} {inj₁ _} p = coe-Sh-resp Q₁ η̄ p
+    coe-Sh-resp (Q₁ + Q₂) η̄ {inj₂ _} {inj₂ _} p = coe-Sh-resp Q₂ η̄ p
+    coe-Sh-resp (Q₁ × Q₂) η̄ {_ , _} {_ , _} (p , q) = coe-Sh-resp Q₁ η̄ p , coe-Sh-resp Q₂ η̄ q
+    coe-Sh-resp (μ Q')    η̄ {w₁} {w₂} p = coe-W-resp {w₁ = w₁} {w₂ = w₂} p
+
+    coe-El-resp : ∀ (r : Fin (suc n) ⊎ Sh.Sort (suc n)) {s₁ s₂ : I.S'.El r} {a₁ a₂} →
+                  Eᵐ.El≈ r s₁ s₂ a₁ a₂ →
+                  I.Eᵢ.El≈ r s₁ s₂ (λ p → coeIx (I.S'.labelEl r s₁ p) (a₁ p))
+                    (λ p → coeIx (I.S'.labelEl r s₂ p) (a₂ p))
+    coe-El-resp (inj₁ zero)    p = p
+    coe-El-resp (inj₁ (suc i)) p = p
+    coe-El-resp (inj₂ (Sh.mkSort Q ρ̄)) {w₁} {w₂} p = coe-W-resp {w₁ = w₁} {w₂ = w₂} p
+
+  mutual
+    coe-fam-tree : ∀ {k} {Q : Poly-C (suc k)} {ρ̄} (d : ∀ v → Fδ'.DecoAssign (ρ̄ v))
+                   (w : I.S'.W ∣ Q ∣ ρ̄) (a : Sh.Trees.Assign ιᵐ w) →
+                   Fμ'.fib Q d w a ⇒ Fδ'.fib Q d w (λ p → coeIx (I.S'.labelW w p) (a p))
+    coe-fam-tree {Q = Q} d (I.S'.sup s) a = coe-fam-shape Q (Fδ'.deco-ext Q d) s a
+
+    coe-fam-shape : ∀ {j} (Q : Poly-C j) {η̄} (d : ∀ v → Fδ'.DecoAssign (η̄ v))
+                    (s : I.S'.Shape ∣ Q ∣ η̄) (a : Sh.Trees.AssignSh ιᵐ ∣ Q ∣ η̄ s) →
+                    Fμ'.fib-shape Q d s a ⇒
+                      Fδ'.fib-shape Q d s (λ p → coeIx (I.S'.labelSh ∣ Q ∣ η̄ s p) (a p))
+    coe-fam-shape (const A) d s a = id _
+    coe-fam-shape (var j)   d s a = coe-fam-el _ (d j) s a
+    coe-fam-shape (Q₁ + Q₂) d (inj₁ s) a = coe-fam-shape Q₁ d s a
+    coe-fam-shape (Q₁ + Q₂) d (inj₂ s) a = coe-fam-shape Q₂ d s a
+    coe-fam-shape (Q₁ × Q₂) d (s₁ , s₂) a =
+      prod-m (coe-fam-shape Q₁ d s₁ (λ p → a (inj₁ p))) (coe-fam-shape Q₂ d s₂ (λ p → a (inj₂ p)))
+    coe-fam-shape (μ Q')    d s a = coe-fam-tree d s a
+
+    coe-fam-el : ∀ (r : Fin (suc n) ⊎ Sh.Sort (suc n)) (dr : Fδ'.DecoAssign r)
+                 (s : I.S'.El r) (a : Sh.Trees.AssignEl ιᵐ r s) →
+                 Fμ'.fib-el r dr s a ⇒ Fδ'.fib-el r dr s (λ p → coeIx (I.S'.labelEl r s p) (a p))
+    coe-fam-el (inj₁ zero)    _ s a = id _
+    coe-fam-el (inj₁ (suc i)) _ s a = id _
+    coe-fam-el (inj₂ _) (mkDeco Q ρd) w a = coe-fam-tree ρd w a
+
+  coe-treeSh : ∀ {k} {Q : Sh.Poly k} {η̄} → Sh.Trees.TreeSh ιᵐ Q η̄ → Sh.Trees.TreeSh I.ιᵢ Q η̄
+  coe-treeSh {Q = Q} {η̄ = η̄} (s , a) = s , λ p → coeIx (I.S'.labelSh Q η̄ s p) (a p)
+
+  mutual
+    coe-fam-tree-nat : ∀ {k} {Q : Poly-C (suc k)} {ρ̄} (d : ∀ v → Fδ'.DecoAssign (ρ̄ v))
+                       {w₁ w₂ : I.S'.W ∣ Q ∣ ρ̄} {a₁ a₂} (p : Eᵐ.W≈ w₁ w₂ a₁ a₂) →
+                       (coe-fam-tree d w₂ a₂ ∘ Fμ'.fib-subst Q d {w₁ = w₁} {w₂ = w₂} p)
+                         ≈ (Fδ'.fib-subst Q d {w₁ = w₁} {w₂ = w₂} (coe-W-resp {w₁ = w₁} {w₂ = w₂} p)
+                              ∘ coe-fam-tree d w₁ a₁)
+    coe-fam-tree-nat {Q = Q} d {I.S'.sup s₁} {I.S'.sup s₂} p =
+      coe-fam-shape-nat Q (Fδ'.deco-ext Q d) p
+
+    coe-fam-shape-nat : ∀ {j} (Q : Poly-C j) {η̄} (d : ∀ v → Fδ'.DecoAssign (η̄ v))
+                        {s₁ s₂ : I.S'.Shape ∣ Q ∣ η̄} {a₁ a₂} (p : Eᵐ.Sh≈ ∣ Q ∣ η̄ s₁ s₂ a₁ a₂) →
+                        (coe-fam-shape Q d s₂ a₂ ∘ Fμ'.fib-shape-subst Q d p)
+                          ≈ (Fδ'.fib-shape-subst Q d (coe-Sh-resp ∣ Q ∣ η̄ p)
+                               ∘ coe-fam-shape Q d s₁ a₁)
+    coe-fam-shape-nat (const A) d p = ≈-trans id-left (≈-sym id-right)
+    coe-fam-shape-nat (var v)   d p = coe-fam-el-nat _ (d v) p
+    coe-fam-shape-nat (Q₁ + Q₂) d {inj₁ _} {inj₁ _} p = coe-fam-shape-nat Q₁ d p
+    coe-fam-shape-nat (Q₁ + Q₂) d {inj₂ _} {inj₂ _} p = coe-fam-shape-nat Q₂ d p
+    coe-fam-shape-nat (Q₁ × Q₂) d {_ , _} {_ , _} (p₁ , p₂) =
+      ≈-trans (≈-sym (prod-m-comp _ _ _ _))
+        (≈-trans (prod-m-cong (coe-fam-shape-nat Q₁ d p₁) (coe-fam-shape-nat Q₂ d p₂))
+          (prod-m-comp _ _ _ _))
+    coe-fam-shape-nat (μ Q')    d {w₁} {w₂} p = coe-fam-tree-nat d {w₁ = w₁} {w₂ = w₂} p
+
+    coe-fam-el-nat : ∀ (r : Fin (suc n) ⊎ Sh.Sort (suc n)) (dr : Fδ'.DecoAssign r)
+                     {s₁ s₂ : I.S'.El r} {a₁ a₂} (p : Eᵐ.El≈ r s₁ s₂ a₁ a₂) →
+                     (coe-fam-el r dr s₂ a₂ ∘ Fμ'.fib-el-subst r dr p)
+                       ≈ (Fδ'.fib-el-subst r dr (coe-El-resp r p) ∘ coe-fam-el r dr s₁ a₁)
+    coe-fam-el-nat (inj₁ zero)    _ p = ≈-trans id-left (≈-sym id-right)
+    coe-fam-el-nat (inj₁ (suc i)) _ p = ≈-trans id-left (≈-sym id-right)
+    coe-fam-el-nat (inj₂ _) (mkDeco Q ρd) {w₁} {w₂} p = coe-fam-tree-nat ρd {w₁ = w₁} {w₂ = w₂} p
+
+  ------------------------------------------------------------------------------
+  -- Bridge fobj's native structure to shapes with assignments over the
+  -- object-level environment: leaves become the one-position shape with the
+  -- element as its assignment, and an inner μ is the identity, both sides
+  -- being the same trees.
+  ------------------------------------------------------------------------------
+  embed-idx : (Q : Poly-C (suc n)) → fobj μObj Q δ'F .idx .Setoid.Carrier →
+              Sh.Trees.TreeSh ιᵐ ∣ Q ∣ IX.params
+  embed-idx (const A) a = tt , λ _ → a
+  embed-idx (var v)   a = tt , λ _ → a
+  embed-idx (Q₁ + Q₂) (inj₁ x) = let (s , a) = embed-idx Q₁ x in inj₁ s , a
+  embed-idx (Q₁ + Q₂) (inj₂ y) = let (s , a) = embed-idx Q₂ y in inj₂ s , a
+  embed-idx (Q₁ × Q₂) (x , y) =
+    let (s₁ , a₁) = embed-idx Q₁ x
+        (s₂ , a₂) = embed-idx Q₂ y
+    in (s₁ , s₂) , λ { (inj₁ p) → a₁ p ; (inj₂ p) → a₂ p }
+  embed-idx (μ Q')    t = t
+
+  embed-resp : (Q : Poly-C (suc n)) {x y : fobj μObj Q δ'F .idx .Setoid.Carrier} →
+               Setoid._≈_ (fobj μObj Q δ'F .idx) x y →
+               Eᵐ.Sh≈ ∣ Q ∣ IX.params (proj₁ (embed-idx Q x)) (proj₁ (embed-idx Q y))
+                 (proj₂ (embed-idx Q x)) (proj₂ (embed-idx Q y))
+  embed-resp (const A) p = p
+  embed-resp (var v)   p = p
+  embed-resp (Q₁ + Q₂) {inj₁ _} {inj₁ _} p = embed-resp Q₁ p
+  embed-resp (Q₁ + Q₂) {inj₂ _} {inj₂ _} p = embed-resp Q₂ p
+  embed-resp (Q₁ × Q₂) {_ , _} {_ , _} (p₁ , p₂) = embed-resp Q₁ p₁ , embed-resp Q₂ p₂
+  embed-resp (μ Q')    p = p
+
+  embed-fam : (Q : Poly-C (suc n)) (x : fobj μObj Q δ'F .idx .Setoid.Carrier) →
+              fobj μObj Q δ'F .fam .fm x ⇒
+                Fμ'.fib-shape Q (λ v → lift tt) (proj₁ (embed-idx Q x)) (proj₂ (embed-idx Q x))
+  embed-fam (const A) a = id _
+  embed-fam (var v)   a = id _
+  embed-fam (Q₁ + Q₂) (inj₁ x) = embed-fam Q₁ x
+  embed-fam (Q₁ + Q₂) (inj₂ y) = embed-fam Q₂ y
+  embed-fam (Q₁ × Q₂) (x , y) = prod-m (embed-fam Q₁ x) (embed-fam Q₂ y)
+  embed-fam (μ Q')    t = id _
+
+  embed-fam-natural : (Q : Poly-C (suc n)) {x y : fobj μObj Q δ'F .idx .Setoid.Carrier}
+                      (e : Setoid._≈_ (fobj μObj Q δ'F .idx) x y) →
+                      (embed-fam Q y ∘ fobj μObj Q δ'F .fam .subst e)
+                        ≈ (Fμ'.fib-shape-subst Q (λ v → lift tt) (embed-resp Q e) ∘ embed-fam Q x)
+  embed-fam-natural (const A) e = ≈-trans id-left (≈-sym id-right)
+  embed-fam-natural (var v)   e = ≈-trans id-left (≈-sym id-right)
+  embed-fam-natural (Q₁ + Q₂) {inj₁ _} {inj₁ _} e = embed-fam-natural Q₁ e
+  embed-fam-natural (Q₁ + Q₂) {inj₂ _} {inj₂ _} e = embed-fam-natural Q₂ e
+  embed-fam-natural (Q₁ × Q₂) {_ , _} {_ , _} (e₁ , e₂) =
+    ≈-trans (≈-sym (prod-m-comp _ _ _ _))
+      (≈-trans (prod-m-cong (embed-fam-natural Q₁ e₁) (embed-fam-natural Q₂ e₂))
+        (prod-m-comp _ _ _ _))
+  embed-fam-natural (μ Q')    e = ≈-trans id-left (≈-sym id-right)
+
+  ------------------------------------------------------------------------------
+  -- The algebra map as a Fam-morphism: embed fobj's element, coerce, and
+  -- assemble; on fibres, the three actions compose, each built from
+  -- identities and products.
+  ------------------------------------------------------------------------------
+  open prop-setoid._⇒_
+
+  inMor : Fam𝒞._⇒_ (fobj μObj P δ'F) (μObj P δ)
+  inMor .idxf .func x = I.inMap (coe-treeSh {Q = ∣ P ∣} {η̄ = IX.params} (embed-idx P x))
+  inMor .idxf .func-resp-≈ p =
+    I.in-shape-resp ∣ P ∣ IX.fbase (coe-Sh-resp ∣ P ∣ IX.params (embed-resp P p))
+  inMor .famf .transf x =
+    in-fam-shape P dbase (proj₁ (coe-treeSh {Q = ∣ P ∣} {η̄ = IX.params} (embed-idx P x))) (proj₂ (coe-treeSh {Q = ∣ P ∣} {η̄ = IX.params} (embed-idx P x)))
+      ∘ (coe-fam-shape P (λ v → lift tt) (proj₁ (embed-idx P x)) (proj₂ (embed-idx P x))
+         ∘ embed-fam P x)
+  inMor .famf .natural {x₁} {x₂} e =
+    ≈-trans (assoc _ _ _)
+      (≈-trans (∘-cong₂ (assoc _ _ _))
+        (≈-trans (∘-cong₂ (∘-cong₂ (embed-fam-natural P e)))
+          (≈-trans (∘-cong₂ (≈-sym (assoc _ _ _)))
+            (≈-trans (∘-cong₂ (∘-cong₁ (coe-fam-shape-nat P (λ v → lift tt) (embed-resp P e))))
+              (≈-trans (∘-cong₂ (assoc _ _ _))
+                (≈-trans (≈-sym (assoc _ _ _))
+                  (≈-trans (∘-cong₁ (in-fam-shape-nat P dbase (coe-Sh-resp ∣ P ∣ IX.params (embed-resp P e))))
+                    (assoc _ _ _))))))))

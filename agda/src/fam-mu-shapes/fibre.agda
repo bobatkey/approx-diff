@@ -75,16 +75,10 @@ extendF : ∀ {n} {ι : Fin n → Setoid os (os ⊔ es)} {S : Setoid os (os ⊔ 
 extendF δf F Fin.zero    = F
 extendF δf F (Fin.suc i) = δf i
 
-module Fibre {n} (ι : Fin n → Setoid os (os ⊔ es)) (δf : ∀ i → Fam (ι i) 𝒞) where
-  open Sh.Shapes n
-  open Sh.Trees ι
-  module E = Sh.TreeEq ι (λ i → Setoid._≈_ (ι i))
-  module EE = E.Equiv (λ i x → ι i .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl)
-                      (λ i p → ι i .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym p)
-                      (λ i p q → ι i .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans p q)
-
-  -- A decoration of a sort: a μ-body erasing to it, with the sorts in its
-  -- assignment decorated in turn.
+-- A decoration of a sort: a μ-body erasing to it, with the sorts in its
+-- assignment decorated in turn. Decorations mention no environment, so they
+-- are shared by every fibre instantiation at the same context.
+module Decos (n : ℕ) where
   data Deco : Sh.Sort n → Set ℓD
 
   DecoAssign : Fin n ⊎ Sh.Sort n → Set ℓD
@@ -102,6 +96,15 @@ module Fibre {n} (ι : Fin n → Setoid os (os ⊔ es)) (δf : ∀ i → Fam (ι
              ∀ i → DecoAssign (extend ρ̄ (inj₂ (mkSort ∣ Q ∣ ρ̄)) i)
   deco-ext Q d Fin.zero = mkDeco Q d
   deco-ext Q d (Fin.suc i) = d i
+
+module Fibre {n} (ι : Fin n → Setoid os (os ⊔ es)) (δf : ∀ i → Fam (ι i) 𝒞) where
+  open Sh.Shapes n
+  open Sh.Trees ι
+  open Decos n public
+  module E = Sh.TreeEq ι (λ i → Setoid._≈_ (ι i))
+  module EE = E.Equiv (λ i x → ι i .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl)
+                      (λ i p → ι i .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym p)
+                      (λ i p q → ι i .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans p q)
 
   -- The fibre object at each tree: 𝒞-products at ×, the named family's object
   -- at the assigned index at each leaf.
