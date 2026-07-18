@@ -105,36 +105,33 @@ module ReindexCong {n} {ι ι' : Fin n → Setoid os (os ⊔ es)} (g₁ g₂ : �
         (g₁ i .func-resp-≈ p) (g≈ i (a₂ tt))
     reindex-El-cong (inj₂ (mkSort Q ρ)) {w₁} {w₂} p = reindex-W-cong {w₁ = w₁} {w₂ = w₂} p
 
--- Two successive reindexings collapse to one along any pointwise composite.
-module ReindexComp {n} {ι ι' ι'' : Fin n → Setoid os (os ⊔ es)}
-                   (g₁ : ∀ i → ι i ⇒ ι' i) (g₂ : ∀ i → ι' i ⇒ ι'' i) (k : ∀ i → ι i ⇒ ι'' i)
-                   (k≈ : ∀ i x → Setoid._≈_ (ι'' i) (g₂ i .func (g₁ i .func x)) (k i .func x)) where
+-- Two label-indexed maps of assignments agree pointwise: the generic
+-- leaf-reflexivity induction, diagonal in the shape. Instances collapse
+-- composite coercion/reindex layers against a single family.
+module Pointwise {n} {ιA ιB : Fin n → Setoid os (os ⊔ es)}
+                 (F G : (l : Setoid os (os ⊔ es) ⊎ Fin n) → Trees.Ix ιA l → Trees.Ix ιB l)
+                 (hS : ∀ S x → Setoid._≈_ S (F (inj₁ S) x) (G (inj₁ S) x))
+                 (hV : ∀ v x → Setoid._≈_ (ιB v) (F (inj₂ v) x) (G (inj₂ v) x)) where
   open Shapes n
-  module R₁ = Reindex g₁
-  module R₂ = Reindex g₂
-  module Rk = Reindex k
-  module E'' = TreeEq ι'' (λ i → Setoid._≈_ (ι'' i))
+  module EB = TreeEq ιB (λ v → Setoid._≈_ (ιB v))
 
   mutual
-    comp-W : ∀ {k'} {Q : Poly (suc k')} {ρ} (w : W Q ρ) (a : Trees.Assign ι w) →
-             E''.W≈ w w (λ p → R₂.reindexIx (labelW w p) (R₁.reindexIx (labelW w p) (a p)))
-               (λ p → Rk.reindexIx (labelW w p) (a p))
-    comp-W {Q = Q} {ρ = ρ} (sup s) a = comp-Sh Q (extend ρ (inj₂ (mkSort Q ρ))) s a
+    agree-W : ∀ {k} {Q : Poly (suc k)} {ρ} (w : W Q ρ) (a : Trees.Assign ιA w) →
+              EB.W≈ w w (λ p → F (labelW w p) (a p)) (λ p → G (labelW w p) (a p))
+    agree-W {Q = Q} {ρ = ρ} (sup s) a = agree-Sh Q (extend ρ (inj₂ (mkSort Q ρ))) s a
 
-    comp-Sh : ∀ {k'} (Q : Poly k') (η : Fin k' → Fin n ⊎ Sort n) (s : Shape Q η)
-              (a : Trees.AssignSh ι Q η s) →
-              E''.Sh≈ Q η s s (λ p → R₂.reindexIx (labelSh Q η s p) (R₁.reindexIx (labelSh Q η s p) (a p)))
-                (λ p → Rk.reindexIx (labelSh Q η s p) (a p))
-    comp-Sh (const S) η s a = S .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl
-    comp-Sh (var j)   η s a = comp-El (η j) s a
-    comp-Sh (P + Q)   η (inj₁ s) a = comp-Sh P η s a
-    comp-Sh (P + Q)   η (inj₂ s) a = comp-Sh Q η s a
-    comp-Sh (P × Q)   η (s₁ , s₂) a =
-      comp-Sh P η s₁ (λ p → a (inj₁ p)) , comp-Sh Q η s₂ (λ p → a (inj₂ p))
-    comp-Sh (μ Q')    η s a = comp-W s a
+    agree-Sh : ∀ {k} (Q : Poly k) (η : Fin k → Fin n ⊎ Sort n) (s : Shape Q η)
+               (a : Trees.AssignSh ιA Q η s) →
+               EB.Sh≈ Q η s s (λ p → F (labelSh Q η s p) (a p)) (λ p → G (labelSh Q η s p) (a p))
+    agree-Sh (const S) η s a = hS S (a tt)
+    agree-Sh (var j)   η s a = agree-El (η j) s a
+    agree-Sh (P + Q)   η (inj₁ s) a = agree-Sh P η s a
+    agree-Sh (P + Q)   η (inj₂ s) a = agree-Sh Q η s a
+    agree-Sh (P × Q)   η (s₁ , s₂) a =
+      agree-Sh P η s₁ (λ p → a (inj₁ p)) , agree-Sh Q η s₂ (λ p → a (inj₂ p))
+    agree-Sh (μ Q')    η s a = agree-W s a
 
-    comp-El : ∀ (r : Fin n ⊎ Sort n) (s : El r) (a : Trees.AssignEl ι r s) →
-              E''.El≈ r s s (λ p → R₂.reindexIx (labelEl r s p) (R₁.reindexIx (labelEl r s p) (a p)))
-                (λ p → Rk.reindexIx (labelEl r s p) (a p))
-    comp-El (inj₁ i)            s a = k≈ i (a tt)
-    comp-El (inj₂ (mkSort Q ρ)) w a = comp-W w a
+    agree-El : ∀ (r : Fin n ⊎ Sort n) (s : El r) (a : Trees.AssignEl ιA r s) →
+               EB.El≈ r s s (λ p → F (labelEl r s p) (a p)) (λ p → G (labelEl r s p) (a p))
+    agree-El (inj₁ v)            s a = hV v (a tt)
+    agree-El (inj₂ (mkSort Q ρ)) w a = agree-W w a

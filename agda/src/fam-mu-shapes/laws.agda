@@ -8,7 +8,7 @@
 -- (by ReindexInMap and fuse-poly), so the two agree. fuse-poly relates the
 -- action's one-level behaviour to pointwise reindexing behind the bridges, by
 -- induction on the polynomial; its μ-case recurses into fuse-μ at the
--- extended environments, and the reindex layers collapse by ReindexComp.
+-- extended environments, and the layers collapse pointwise.
 ------------------------------------------------------------------------------
 
 open import Level using (Level; _⊔_; lift) renaming (suc to lsuc)
@@ -30,63 +30,6 @@ module fam-mu-shapes.laws {o m e} (os es : Level) {𝒞 : Category o m e}
 open fam-mu-shapes.fold-fam os es T CP public
 open HasMu hasMu using (strong-fmor; strong-μ-fmor; strong-extend-mor)
 open prop-setoid._⇒_
-
--- The coercions between the two spellings of an extended environment, as
--- morphism families: identity after matching the index.
-module CoeFams {n} (P : Poly-C (suc n)) (δ : Fin n → Obj) (A : Obj) where
-  module IS = IX.InMap (λ i → δ i .idx) ∣ P ∣
-
-  ιᴬ' : Fin (suc n) → Setoid os (os ⊔ es)
-  ιᴬ' = extend (λ i → δ i .idx) (A .idx)
-
-  ιᴬμ : Fin (suc n) → Setoid os (os ⊔ es)
-  ιᴬμ v = extend δ A v .idx
-
-  uncoeF : ∀ v → ιᴬ' v prop-setoid.⇒ ιᴬμ v
-  uncoeF zero .func x = x
-  uncoeF zero .func-resp-≈ p = p
-  uncoeF (suc i) .func x = x
-  uncoeF (suc i) .func-resp-≈ p = p
-
-  coeF : ∀ v → ιᴬμ v prop-setoid.⇒ ιᴬ' v
-  coeF zero .func x = x
-  coeF zero .func-resp-≈ p = p
-  coeF (suc i) .func x = x
-  coeF (suc i) .func-resp-≈ p = p
-
--- The label-matched coercions agree pointwise with reindexing along the
--- identity families.
-module CoeAgree {n} (ι : Fin n → Setoid os (os ⊔ es))
-                {ιA ιB : Fin n → Setoid os (os ⊔ es)} (cF : ∀ v → ιA v prop-setoid.⇒ ιB v)
-                (cIx : (l : Setoid os (os ⊔ es) ⊎ Fin n) → Sh.Trees.Ix ιA l → Sh.Trees.Ix ιB l)
-                (agree : ∀ v x → Setoid._≈_ (ιB v) (cIx (inj₂ v) x) (cF v .func x))
-                (agreeS : ∀ S x → Setoid._≈_ S (cIx (inj₁ S) x) x) where
-  open Sh.Shapes n
-  module RB = IX.Reindex cF
-  module EB = Sh.TreeEq ιB (λ v → Setoid._≈_ (ιB v))
-
-  mutual
-    agree-W : ∀ {k} {Q : Sh.Poly (suc k)} {ρ} (w : W Q ρ) (a : Sh.Trees.Assign ιA w) →
-              EB.W≈ w w (λ p → cIx (labelW w p) (a p)) (λ p → RB.reindexIx (labelW w p) (a p))
-    agree-W {Q = Q} {ρ = ρ} (sup s) a = agree-Sh Q (extend ρ (inj₂ (Sh.mkSort Q ρ))) s a
-
-    agree-Sh : ∀ {k} (Q : Sh.Poly k) (η : Fin k → Fin n ⊎ Sh.Sort n) (s : Shape Q η)
-               (a : Sh.Trees.AssignSh ιA Q η s) →
-               EB.Sh≈ Q η s s (λ p → cIx (labelSh Q η s p) (a p))
-                 (λ p → RB.reindexIx (labelSh Q η s p) (a p))
-    agree-Sh (const S) η s a = agreeS S (a tt)
-    agree-Sh (var j)   η s a = agree-El (η j) s a
-    agree-Sh (P + Q)   η (inj₁ s) a = agree-Sh P η s a
-    agree-Sh (P + Q)   η (inj₂ s) a = agree-Sh Q η s a
-    agree-Sh (P × Q)   η (s₁ , s₂) a =
-      agree-Sh P η s₁ (λ p → a (inj₁ p)) , agree-Sh Q η s₂ (λ p → a (inj₂ p))
-    agree-Sh (μ Q')    η s a = agree-W s a
-
-    agree-El : ∀ (r : Fin n ⊎ Sh.Sort n) (s : El r) (a : Sh.Trees.AssignEl ιA r s) →
-               EB.El≈ r s s (λ p → cIx (labelEl r s p) (a p))
-                 (λ p → RB.reindexIx (labelEl r s p) (a p))
-    agree-El (inj₁ v)               s a = agree v (a tt)
-    agree-El (inj₂ (Sh.mkSort Q ρ)) w a = agree-W w a
 
 private
   ℓF : Level
@@ -243,53 +186,28 @@ mutual
       module RG' = IX.Reindex (ext-data D Q .gγ γ)
       module RH = IX.Reindex rh
 
-      mutual
-        clp-W : ∀ {k} {Q̄ : Sh.Poly (suc k)} {ρ̄} (w' : FI.ISs.S'.W Q̄ ρ̄)
-                (a' : FI.ISs.Tᵢ.Assign w') →
-                FI.ISt.Eᵢ.W≈ w' w'
-                  (λ p → RGH.reindexIx (FI.ISs.S'.labelW w' p) (a' p))
-                  (λ p → FI.IM.coeIx (FI.ISs.S'.labelW w' p)
-                           (RG'.reindexIx (FI.ISs.S'.labelW w' p)
-                             (FI.FF.uncoeIx (FI.ISs.S'.labelW w' p)
-                               (RH.reindexIx (FI.ISs.S'.labelW w' p) (a' p)))))
-        clp-W {Q̄ = Q̄} {ρ̄ = ρ̄} (FI.ISs.S'.sup s') a' =
-          clp-Sh Q̄ (extend ρ̄ (inj₂ (Sh.mkSort Q̄ ρ̄))) s' a'
+      hSf : ∀ S x → Setoid._≈_ S x x
+      hSf S x = S .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
 
-        clp-Sh : ∀ {k} (Q̄ : Sh.Poly k) (η̄ : Fin k → Fin (suc N) ⊎ Sh.Sort (suc N))
-                 (s' : FI.ISs.S'.Shape Q̄ η̄) (a' : FI.ISs.Tᵢ.AssignSh Q̄ η̄ s') →
-                 FI.ISt.Eᵢ.Sh≈ Q̄ η̄ s' s'
-                   (λ p → RGH.reindexIx (FI.ISs.S'.labelSh Q̄ η̄ s' p) (a' p))
-                   (λ p → FI.IM.coeIx (FI.ISs.S'.labelSh Q̄ η̄ s' p)
-                            (RG'.reindexIx (FI.ISs.S'.labelSh Q̄ η̄ s' p)
-                              (FI.FF.uncoeIx (FI.ISs.S'.labelSh Q̄ η̄ s' p)
-                                (RH.reindexIx (FI.ISs.S'.labelSh Q̄ η̄ s' p) (a' p)))))
-        clp-Sh (const S) η̄ s' a' =
-          S .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a' tt}
-        clp-Sh (var j)   η̄ s' a' = clp-El (η̄ j) s' a'
-        clp-Sh (Q₁ + Q₂) η̄ (inj₁ s') a' = clp-Sh Q₁ η̄ s' a'
-        clp-Sh (Q₁ + Q₂) η̄ (inj₂ s') a' = clp-Sh Q₂ η̄ s' a'
-        clp-Sh (Q₁ × Q₂) η̄ (s₁ , s₂) a' =
-          clp-Sh Q₁ η̄ s₁ (λ p → a' (inj₁ p)) , clp-Sh Q₂ η̄ s₂ (λ p → a' (inj₂ p))
-        clp-Sh (μ Q̄')   η̄ s' a' = clp-W s' a'
+      hVf : ∀ v x → Setoid._≈_ (FI.ISt.ιᵢ v)
+              (RGH.reindexIx (inj₂ v) x)
+              (FI.IM.coeIx (inj₂ v) (RG'.reindexIx (inj₂ v) (FI.FF.uncoeIx (inj₂ v) (RH.reindexIx (inj₂ v) x))))
+      hVf zero x =
+        μObj Q (D .sₜ) .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym
+          {x = rh zero .func x}
+          {y = IX.Reindex.reindex {ι = λ v → D .sₛ v .idx} {ι' = λ v → D .sₜ v .idx}
+                 (D .gγ γ) {Q = ∣ Q ∣} {ρ = λ i → inj₁ i} x}
+          (rh0 x)
+      hVf (suc i) x =
+        D .gγ γ i .func-resp-≈
+          (D .sₛ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym (rh1 i x))
 
-        clp-El : ∀ (r : Fin (suc N) ⊎ Sh.Sort (suc N)) (s' : FI.ISs.S'.El r)
-                 (a' : FI.ISs.Tᵢ.AssignEl r s') →
-                 FI.ISt.Eᵢ.El≈ r s' s'
-                   (λ p → RGH.reindexIx (FI.ISs.S'.labelEl r s' p) (a' p))
-                   (λ p → FI.IM.coeIx (FI.ISs.S'.labelEl r s' p)
-                            (RG'.reindexIx (FI.ISs.S'.labelEl r s' p)
-                              (FI.FF.uncoeIx (FI.ISs.S'.labelEl r s' p)
-                                (RH.reindexIx (FI.ISs.S'.labelEl r s' p) (a' p)))))
-        clp-El (inj₁ zero)    s' a' =
-          μObj Q (D .sₜ) .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym
-            {x = rh zero .func (a' tt)}
-            {y = IX.Reindex.reindex {ι = λ v → D .sₛ v .idx} {ι' = λ v → D .sₜ v .idx}
-                   (D .gγ γ) {Q = ∣ Q ∣} {ρ = λ i → inj₁ i} (a' tt)}
-            (rh0 (a' tt))
-        clp-El (inj₁ (suc i)) s' a' =
-          D .gγ γ i .func-resp-≈
-            (D .sₛ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym (rh1 i (a' tt)))
-        clp-El (inj₂ (Sh.mkSort Q̄ ρ̄)) w' a' = clp-W w' a'
+      module CLP = IX.Pointwise
+        (λ l x → RGH.reindexIx l x)
+        (λ l x → FI.IM.coeIx l (RG'.reindexIx l (FI.FF.uncoeIx l (RH.reindexIx l x))))
+        hSf hVf
+
+      clp-W = CLP.agree-W
 
 ------------------------------------------------------------------------------
 -- The index half of the β law: the strong action of the fold agrees with the
@@ -363,47 +281,24 @@ module KLaw {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
       module RGβ = IX.Reindex (gI γ)
       module RGp = IX.Reindex (Dβ .gγ γ)
 
-      mutual
-        clpβ-W : ∀ {k} {Q̄ : Sh.Poly (suc k)} {ρ̄} (w' : IM.I.S'.W Q̄ ρ̄)
-                 (a' : Sh.Trees.Assign (λ v → extend δ (μObj P δ) v .idx) w')
-                 → FF.EAμ.W≈ w' w'
-                     (λ p → RGp.reindexIx (IM.I.S'.labelW w' p) (a' p))
-                     (λ p → FF.uncoeIx (IM.I.S'.labelW w' p)
-                              (RGβ.reindexIx (IM.I.S'.labelW w' p)
-                                (IM.coeIx (IM.I.S'.labelW w' p) (a' p))))
-        clpβ-W {Q̄ = Q̄} {ρ̄ = ρ̄} (IM.I.S'.sup s') a' =
-          clpβ-Sh Q̄ (extend ρ̄ (inj₂ (Sh.mkSort Q̄ ρ̄))) s' a'
+      hSb : ∀ S x → Setoid._≈_ S x x
+      hSb S x = S .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
 
-        clpβ-Sh : ∀ {k} (Q̄ : Sh.Poly k) (η̄ : Fin k → Fin (suc n) ⊎ Sh.Sort (suc n))
-                  (s' : IM.I.S'.Shape Q̄ η̄)
-                  (a' : Sh.Trees.AssignSh (λ v → extend δ (μObj P δ) v .idx) Q̄ η̄ s')
-                  → FF.EAμ.Sh≈ Q̄ η̄ s' s'
-                      (λ p → RGp.reindexIx (IM.I.S'.labelSh Q̄ η̄ s' p) (a' p))
-                      (λ p → FF.uncoeIx (IM.I.S'.labelSh Q̄ η̄ s' p)
-                               (RGβ.reindexIx (IM.I.S'.labelSh Q̄ η̄ s' p)
-                                 (IM.coeIx (IM.I.S'.labelSh Q̄ η̄ s' p) (a' p))))
-        clpβ-Sh (const S) η̄ s' a' =
-          S .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a' tt}
-        clpβ-Sh (var j)   η̄ s' a' = clpβ-El (η̄ j) s' a'
-        clpβ-Sh (Q₁ + Q₂) η̄ (inj₁ s') a' = clpβ-Sh Q₁ η̄ s' a'
-        clpβ-Sh (Q₁ + Q₂) η̄ (inj₂ s') a' = clpβ-Sh Q₂ η̄ s' a'
-        clpβ-Sh (Q₁ × Q₂) η̄ (s₁ , s₂) a' =
-          clpβ-Sh Q₁ η̄ s₁ (λ p → a' (inj₁ p)) , clpβ-Sh Q₂ η̄ s₂ (λ p → a' (inj₂ p))
-        clpβ-Sh (μ Q̄')   η̄ s' a' = clpβ-W s' a'
+      hVb : ∀ v x → Setoid._≈_ (FF.ιᴬμ v)
+              (RGp.reindexIx (inj₂ v) x)
+              (FF.uncoeIx (inj₂ v) (RGβ.reindexIx (inj₂ v) (IM.coeIx (inj₂ v) x)))
+      hVb zero x =
+        A .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl
+          {x = k .idxf .func (γ , x)}
+      hVb (suc i) x =
+        δ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
 
-        clpβ-El : ∀ (r : Fin (suc n) ⊎ Sh.Sort (suc n)) (s' : IM.I.S'.El r)
-                  (a' : Sh.Trees.AssignEl (λ v → extend δ (μObj P δ) v .idx) r s')
-                  → FF.EAμ.El≈ r s' s'
-                      (λ p → RGp.reindexIx (IM.I.S'.labelEl r s' p) (a' p))
-                      (λ p → FF.uncoeIx (IM.I.S'.labelEl r s' p)
-                               (RGβ.reindexIx (IM.I.S'.labelEl r s' p)
-                                 (IM.coeIx (IM.I.S'.labelEl r s' p) (a' p))))
-        clpβ-El (inj₁ zero)    s' a' =
-          A .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl
-            {x = k .idxf .func (γ , a' tt)}
-        clpβ-El (inj₁ (suc i)) s' a' =
-          δ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a' tt}
-        clpβ-El (inj₂ (Sh.mkSort Q̄ ρ̄)) w' a' = clpβ-W w' a'
+      module CLPB = IX.Pointwise
+        (λ l x → RGp.reindexIx l x)
+        (λ l x → FF.uncoeIx l (RGβ.reindexIx l (IM.coeIx l x)))
+        hSb hVb
+
+      clpβ-W = CLPB.agree-W
 
 module BetaLaw {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
                (alg : Fam𝒞._⇒_ (Fam𝒞-P.prod Γ (fobj μObj P (extend δ A))) A) where
@@ -471,41 +366,21 @@ module RoundTrip {n} (Γ : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj) where
       (λ v p → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym p)
       (λ v p q → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans p q)
 
-  mutual
-    rtμ-W : ∀ {k} {Q̄ : Sh.Poly (suc k)} {ρ̄} (w : IM.I.S'.W Q̄ ρ̄)
-            (a : Sh.Trees.Assign IM.I.ιᵢ w) →
-            IM.I.Eᵢ.W≈ w w
-              (λ p → IM.coeIx (IM.I.S'.labelW w p)
-                       (FFμ.uncoeIx (IM.I.S'.labelW w p) (a p)))
-              a
-    rtμ-W {Q̄ = Q̄} {ρ̄ = ρ̄} (IM.I.S'.sup s) a =
-      rtμ-Sh Q̄ (extend ρ̄ (inj₂ (Sh.mkSort Q̄ ρ̄))) s a
+  private
+    hSr : ∀ (S : Setoid os (os ⊔ es)) x → Setoid._≈_ S x x
+    hSr S x = S .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
 
-    rtμ-Sh : ∀ {k} (Q̄ : Sh.Poly k) (η̄ : Fin k → Fin (suc n) ⊎ Sh.Sort (suc n))
-             (s : IM.I.S'.Shape Q̄ η̄) (a : Sh.Trees.AssignSh IM.I.ιᵢ Q̄ η̄ s) →
-             IM.I.Eᵢ.Sh≈ Q̄ η̄ s s
-               (λ p → IM.coeIx (IM.I.S'.labelSh Q̄ η̄ s p)
-                        (FFμ.uncoeIx (IM.I.S'.labelSh Q̄ η̄ s p) (a p)))
-               a
-    rtμ-Sh (const S) η̄ s a = S .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a tt}
-    rtμ-Sh (var j)   η̄ s a = rtμ-El (η̄ j) s a
-    rtμ-Sh (Q₁ + Q₂) η̄ (inj₁ s) a = rtμ-Sh Q₁ η̄ s a
-    rtμ-Sh (Q₁ + Q₂) η̄ (inj₂ s) a = rtμ-Sh Q₂ η̄ s a
-    rtμ-Sh (Q₁ × Q₂) η̄ (s₁ , s₂) a =
-      rtμ-Sh Q₁ η̄ s₁ (λ p → a (inj₁ p)) , rtμ-Sh Q₂ η̄ s₂ (λ p → a (inj₂ p))
-    rtμ-Sh (μ Q̄')   η̄ s a = rtμ-W s a
+    hVr : ∀ v x → Setoid._≈_ (IM.I.ιᵢ v)
+            (IM.coeIx (inj₂ v) (FFμ.uncoeIx (inj₂ v) x)) x
+    hVr zero x =
+      IM.I.TreeSetoid .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
+    hVr (suc i) x =
+      δ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
 
-    rtμ-El : ∀ (r : Fin (suc n) ⊎ Sh.Sort (suc n)) (s : IM.I.S'.El r)
-             (a : Sh.Trees.AssignEl IM.I.ιᵢ r s) →
-             IM.I.Eᵢ.El≈ r s s
-               (λ p → IM.coeIx (IM.I.S'.labelEl r s p)
-                        (FFμ.uncoeIx (IM.I.S'.labelEl r s p) (a p)))
-               a
-    rtμ-El (inj₁ zero)    s a =
-      IM.I.TreeSetoid .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a tt}
-    rtμ-El (inj₁ (suc i)) s a =
-      δ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a tt}
-    rtμ-El (inj₂ (Sh.mkSort Q̄ ρ̄)) w a = rtμ-W w a
+  module RTP = IX.Pointwise
+    (λ l x → IM.coeIx l (FFμ.uncoeIx l x)) (λ l x → x) hSr hVr
+
+  rtμ-W = RTP.agree-W
 
   rt : (R : Poly-C (suc n)) (x : IM.I.Tᵢ.TreeSh ∣ R ∣ IX.params) →
        IM.I.Eᵢ.Sh≈ ∣ R ∣ IX.params
@@ -600,3 +475,81 @@ module EtaLaw {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
     ⦅⦆-η-idx {γ₁} {γ₂} {t₁} {t₂} γ≈ t≈ =
       AE.trans (IN.η algIx algIxR hcur hR h-β γ₁ t₁)
         (FF.F.fold-resp algIx algIxR γ≈ {w₁ = proj₁ t₁} {w₂ = proj₁ t₂} t≈)
+
+------------------------------------------------------------------------------
+-- The fibre action of a pointwise environment family, in an ambient context:
+-- constant positions are untouched, parameter positions map by the supplied
+-- fibre morphisms, the shape and product structure are left fixed.
+------------------------------------------------------------------------------
+module FibreReindexS {N} (Γ : Obj) {ιA ιB : Fin N → Setoid os (os ⊔ es)}
+                     {δfA : ∀ v → Fam (ιA v) 𝒞} {δfB : ∀ v → Fam (ιB v) 𝒞}
+                     (g : ∀ v → ιA v prop-setoid.⇒ ιB v)
+                     (γ : Γ .idx .Setoid.Carrier)
+                     (gf : ∀ v (x : ιA v .Setoid.Carrier) →
+                           prod (Γ .fam .fm γ) (δfA v .fm x) ⇒ δfB v .fm (g v .func x)) where
+  module FA = Fibre ιA δfA
+  module FB = Fibre ιB δfB
+  module Rg = IX.Reindex g
+
+  mutual
+    rf-W : ∀ {k} {Q : Poly-C (suc k)} {ρ̄} (d : ∀ v → Decos.DecoAssign N (ρ̄ v))
+           (w : Sh.Shapes.W N ∣ Q ∣ ρ̄) (a : Sh.Trees.Assign ιA w) →
+           prod (Γ .fam .fm γ) (FA.fib Q d w a) ⇒
+             FB.fib Q d w (λ p → Rg.reindexIx (Sh.Shapes.labelW N w p) (a p))
+    rf-W {Q = Q} d (Sh.Shapes.sup s) a = rf-Sh Q (FA.deco-ext Q d) s a
+
+    rf-Sh : ∀ {j} (Q : Poly-C j) {η̄} (d : ∀ v → Decos.DecoAssign N (η̄ v))
+            (s : Sh.Shapes.Shape N ∣ Q ∣ η̄) (a : Sh.Trees.AssignSh ιA ∣ Q ∣ η̄ s) →
+            prod (Γ .fam .fm γ) (FA.fib-shape Q d s a) ⇒
+              FB.fib-shape Q d s (λ p → Rg.reindexIx (Sh.Shapes.labelSh N ∣ Q ∣ η̄ s p) (a p))
+    rf-Sh (const A') d s a = p₂
+    rf-Sh (var j)    d s a = rf-El _ (d j) s a
+    rf-Sh (Q₁ + Q₂)  d (inj₁ s) a = rf-Sh Q₁ d s a
+    rf-Sh (Q₁ + Q₂)  d (inj₂ s) a = rf-Sh Q₂ d s a
+    rf-Sh (Q₁ × Q₂)  d (s₁ , s₂) a =
+      strong-prod-m (rf-Sh Q₁ d s₁ (λ p → a (inj₁ p))) (rf-Sh Q₂ d s₂ (λ p → a (inj₂ p)))
+    rf-Sh (μ Q')     d s a = rf-W d s a
+
+    rf-El : ∀ (r : Fin N ⊎ Sh.Sort N) (dr : Decos.DecoAssign N r)
+            (s : Sh.Shapes.El N r) (a : Sh.Trees.AssignEl ιA r s) →
+            prod (Γ .fam .fm γ) (FA.fib-el r dr s a) ⇒
+              FB.fib-el r dr s (λ p → Rg.reindexIx (Sh.Shapes.labelEl N r s p) (a p))
+    rf-El (inj₁ v)            _ s a = gf v (a tt)
+    rf-El (inj₂ _) (Decos.mkDeco Q ρd) w a = rf-W ρd w a
+
+------------------------------------------------------------------------------
+-- Fibre side of the fusion theorem: the pointwise fibre action along the
+-- fusion family, transported along the index-level fusion, equals the strong
+-- action's fibre part. Direct tree induction; the transported proofs are
+-- Prop-valued, so only their endpoints matter.
+------------------------------------------------------------------------------
+module FuseFam {N} (D : FuseData N) (Q : Poly-C (suc N)) (γ : D .Γ .idx .Setoid.Carrier) where
+  module FI = FuseInst D Q
+
+  ALG : Fam𝒞._⇒_ (Fam𝒞-P.prod (D .Γ) (fobj μObj Q (extend (D .sₛ) (μObj Q (D .sₜ)))))
+                 (μObj Q (D .sₜ))
+  ALG = Fam𝒞._∘_ (hasMu .HasMu.inMap Q (D .sₜ)) (strong-fmor Q FI.fs★)
+
+  -- The fibre part of the fusion family: the Fam-morphism's fibre map,
+  -- transported to sit over the pointwise index family.
+  gfD : ∀ v (x : D .sₛ v .idx .Setoid.Carrier) →
+        prod (D .Γ .fam .fm γ) (D .sₛ v .fam .fm x) ⇒ D .sₜ v .fam .fm (D .gγ γ v .func x)
+  gfD v x =
+    D .sₜ v .fam .subst
+      (D .sₜ v .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym (D .corr γ v x))
+      ∘ D .fs v .famf .transf (γ , x)
+
+  module RFμ = FibreReindexS (D .Γ) {ιA = λ v → D .sₛ v .idx} {ιB = λ v → D .sₜ v .idx}
+                 {δfA = λ v → D .sₛ v .fam} {δfB = λ v → D .sₜ v .fam}
+                 (D .gγ γ) γ gfD
+
+  fuse-fam-μ : (w : Sh.Shapes.W N ∣ Q ∣ (λ i → inj₁ i))
+               (a : Sh.Trees.Assign (λ v → D .sₛ v .idx) w) →
+               (μObj Q (D .sₜ) .fam .subst
+                  {x = IX.Reindex.reindex {ι = λ v → D .sₛ v .idx} {ι' = λ v → D .sₜ v .idx}
+                         (D .gγ γ) {Q = ∣ Q ∣} {ρ = λ i → inj₁ i} (w , a)}
+                  {y = strong-μ-fmor Q (D .fs) .idxf .func (γ , (w , a))}
+                  (fuse-μ D Q γ (w , a))
+                ∘ RFμ.rf-W (λ v → lift tt) w a)
+                 ≈ strong-μ-fmor Q (D .fs) .famf .transf (γ , (w , a))
+  fuse-fam-μ w a = {!!}
