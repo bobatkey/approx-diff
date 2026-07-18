@@ -229,3 +229,12 @@ module TreeEq {n} (ι : Fin n → Setoid os (os ⊔ es))
                   El≈ r s₁ s₂ a₁ a₂ → El≈ r s₂ s₃ a₂ a₃ → El≈ r s₁ s₃ a₁ a₃
       El≈-trans (inj₁ i)            p q = R-trans i p q
       El≈-trans (inj₂ (mkSort Q ρ)) {w₁} {w₂} {w₃} p q = W≈-trans {w₁ = w₁} {w₂ = w₂} {w₃ = w₃} p q
+
+    -- The setoid of trees at a sort.
+    TreeSetoid : ∀ {k} (Q : Poly (suc k)) (ρ : Fin k → Fin n ⊎ Sort n) → Setoid os (os ⊔ es)
+    TreeSetoid Q ρ .Setoid.Carrier = Tree Q ρ
+    TreeSetoid Q ρ .Setoid._≈_ = Tree≈
+    TreeSetoid Q ρ .Setoid.isEquivalence .refl {w , a} = W≈-refl w a
+    TreeSetoid Q ρ .Setoid.isEquivalence .sym {w₁ , a₁} {w₂ , a₂} = W≈-sym {w₁ = w₁} {w₂ = w₂}
+    TreeSetoid Q ρ .Setoid.isEquivalence .trans {w₁ , a₁} {w₂ , a₂} {w₃ , a₃} =
+      W≈-trans {w₁ = w₁} {w₂ = w₂} {w₃ = w₃}

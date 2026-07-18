@@ -37,13 +37,7 @@ module InMap {n} (ι : Fin n → Setoid os (os ⊔ es)) (P : Poly (suc n)) where
 
   -- The carrier setoid of the μ-type at the root sort.
   TreeSetoid : Setoid os (os ⊔ es)
-  TreeSetoid .Setoid.Carrier = T.Tree P params
-  TreeSetoid .Setoid._≈_ = E.Tree≈
-  TreeSetoid .Setoid.isEquivalence .refl {w , a} = EE.W≈-refl w a
-  TreeSetoid .Setoid.isEquivalence .sym {w₁ , a₁} {w₂ , a₂} =
-    EE.W≈-sym {w₁ = w₁} {w₂ = w₂}
-  TreeSetoid .Setoid.isEquivalence .trans {w₁ , a₁} {w₂ , a₂} {w₃ , a₃} =
-    EE.W≈-trans {w₁ = w₁} {w₂ = w₂} {w₃ = w₃}
+  TreeSetoid = EE.TreeSetoid P params
 
   ιᵢ : Fin (suc n) → Setoid os (os ⊔ es)
   ιᵢ = extend ι TreeSetoid
