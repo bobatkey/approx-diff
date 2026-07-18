@@ -7,7 +7,7 @@
 -- first-order morphism data for the recursion to be structural over.
 ------------------------------------------------------------------------------
 
-open import Level using (Level; _⊔_)
+open import Level using (Level; _⊔_) renaming (suc to lsuc)
 open import Data.Nat using (ℕ; suc)
 import Data.Fin as Fin
 open Fin using (Fin)
@@ -135,3 +135,22 @@ module Pointwise {n} {ιA ιB : Fin n → Setoid os (os ⊔ es)}
                EB.El≈ r s s (λ p → F (labelEl r s p) (a p)) (λ p → G (labelEl r s p) (a p))
     agree-El (inj₁ v)            s a = hV v (a tt)
     agree-El (inj₂ (mkSort Q ρ)) w a = agree-W w a
+
+-- The identity assignment, sending each variable to the matching parameter,
+-- and the body environment of a root binder.
+params : ∀ {n} → Fin n → Fin n ⊎ Sort n
+params i = inj₁ i
+
+η₀ : ∀ {n} → Poly (suc n) → Fin (suc n) → Fin n ⊎ Sort n
+η₀ P = extend params (inj₂ (mkSort P params))
+
+-- Relates a source assignment over n to its translation over suc n: fbase
+-- sends the root binder of P to the fresh parameter, fbind records descent
+-- under an inner binder. First-order so that recursion over it is structural;
+-- shared by the fold and the algebra map.
+data FMor {n} (P : Poly (suc n)) : ∀ {k} → (Fin k → Fin n ⊎ Sort n) →
+                                   (Fin k → Fin (suc n) ⊎ Sort (suc n)) →
+                                   Set (lsuc os ⊔ lsuc es) where
+  fbase : FMor P (η₀ P) params
+  fbind : ∀ {k} {ρ ρ'} (Q : Poly (suc k)) → FMor P ρ ρ' →
+          FMor P (extend ρ (inj₂ (mkSort Q ρ))) (extend ρ' (inj₂ (mkSort Q ρ')))

@@ -6,9 +6,9 @@
 -- HasMu operations. fuse-μ is an instance of the index-level uniqueness law:
 -- the reindexing satisfies the algebra square of the action's defining fold
 -- (by ReindexInMap and fuse-poly), so the two agree. fuse-poly relates the
--- action's one-level behaviour to pointwise reindexing behind the bridges, by
--- induction on the polynomial; its μ-case recurses into fuse-μ at the
--- extended environments, and the layers collapse pointwise.
+-- action's one-level behaviour to pointwise reindexing, by induction on the
+-- polynomial; its μ-case recurses into fuse-μ at the extended environments,
+-- and the reindexing layers collapse pointwise.
 ------------------------------------------------------------------------------
 
 open import Level using (Level; _⊔_; lift) renaming (suc to lsuc)
@@ -22,12 +22,12 @@ open import prop using (_,_)
 open import prop-setoid using (Setoid)
 open import categories using (Category; HasTerminal; HasProducts)
 open import indexed-family using (Fam)
-import fam-mu-shapes.fold-fam
+import fam-mu-shapes.initiality
 
 module fam-mu-shapes.laws {o m e} (os es : Level) {𝒞 : Category o m e}
     (T : HasTerminal 𝒞) (CP : HasProducts 𝒞) where
 
-open fam-mu-shapes.fold-fam os es T CP public
+open fam-mu-shapes.initiality os es T CP public
 open HasMu hasMu using (strong-fmor; strong-μ-fmor; strong-extend-mor)
 open prop-setoid._⇒_
 
@@ -62,27 +62,24 @@ ext-data D Q .corr γ zero x =
   μObj Q (D .sₜ) .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
 ext-data D Q .corr γ (suc i) x = D .corr γ i x
 
--- The instance-level bridges and the one-level pipeline of the strong
+-- The instance-level modules and the one-level pipeline of the strong
 -- action's defining algebra.
 module FuseInst {N} (D : FuseData N) (Q : Poly-C (suc N)) where
-  module ISs = IX.InMap (λ v → D .sₛ v .idx) ∣ Q ∣
-  module ISt = IX.InMap (λ v → D .sₜ v .idx) ∣ Q ∣
-  module FF = FoldFam (D .Γ) (μObj Q (D .sₜ)) Q (D .sₛ)
-  module IM = InMapFam Q (D .sₜ)
-  module IN = IX.Initiality (λ v → D .sₛ v .idx) (D .Γ .idx) (μObj Q (D .sₜ) .idx) ∣ Q ∣
+  module ISs = InMap Q (D .sₛ)
+  module ISt = InMap Q (D .sₜ)
+  module FF = Fold (D .Γ) (μObj Q (D .sₜ)) Q (D .sₛ)
+  module IN = Initiality (D .Γ) (μObj Q (D .sₜ)) Q (D .sₛ)
 
   fs★ : ∀ v → Fam𝒞._⇒_ (Fam𝒞-P.prod (D .Γ) (extend (D .sₛ) (μObj Q (D .sₜ)) v))
                         (extend (D .sₜ) (μObj Q (D .sₜ)) v)
   fs★ = strong-extend-mor (D .fs) Fam𝒞-P.p₂
 
-  pipe : (R : Poly-C (suc N)) (rh : ∀ v → ISs.ιᵢ v prop-setoid.⇒ FF.F.ι' v)
+  pipe : (R : Poly-C (suc N)) (rh : ∀ v → ISs.ιᵢ v prop-setoid.⇒ FF.ι' v)
          (γ : D .Γ .idx .Setoid.Carrier) →
          ISs.Tᵢ.TreeSh ∣ R ∣ IX.params → ISt.Tᵢ.TreeSh ∣ R ∣ IX.params
   pipe R rh γ x =
-    IM.coe-treeSh {Q = ∣ R ∣} {η̄ = IX.params}
-      (IM.embed-idx R (strong-fmor R fs★ .idxf .func
-        (γ , FF.unembed-idx R (FF.uncoe-treeSh ∣ R ∣ IX.params
-               (IX.Reindex.reindexSh rh {Q = ∣ R ∣} {η = IX.params} x)))))
+    ISt.embed-idx R (strong-fmor R fs★ .idxf .func
+      (γ , FF.unembed-idx R (IX.Reindex.reindexSh rh {Q = ∣ R ∣} {η = IX.params} x)))
 
 mutual
   fuse-μ : ∀ {N} (D : FuseData N) (Q : Poly-C (suc N)) (γ : D .Γ .idx .Setoid.Carrier)
@@ -128,7 +125,7 @@ mutual
                          {Q = ∣ Q ∣} {η = IX.params} t'))
       hβ γ' t' =
         Yμ.trans
-          (IX.ReindexInMap.reindex-inMap (D .gγ γ') ∣ Q ∣ t')
+          (ReindexInMap.reindex-inMap (D .sₛ) (D .sₜ) (D .gγ γ') Q t')
           (FI.ISt.in-shape-resp ∣ Q ∣ IX.fbase
             (fuse-poly D Q Q γ' (FI.IN.hg ALGIx ALGIxR h hR γ')
               (λ t'' → Yμ.refl {x = h γ' t''})
@@ -137,17 +134,17 @@ mutual
 
   fuse-poly : ∀ {N} (D : FuseData N) (Q : Poly-C (suc N)) (R : Poly-C (suc N))
               (γ : D .Γ .idx .Setoid.Carrier)
-              (rh : ∀ v → FuseInst.ISs.ιᵢ D Q v prop-setoid.⇒ FuseInst.FF.F.ι' D Q v)
+              (rh : ∀ v → FuseInst.ISs.ιᵢ D Q v prop-setoid.⇒ FuseInst.FF.ι' D Q v)
               (rh0 : ∀ t'' → Setoid._≈_ (μObj Q (D .sₜ) .idx) (rh zero .func t'')
                        (IX.Reindex.reindex {ι = λ v → D .sₛ v .idx} {ι' = λ v → D .sₜ v .idx}
                           (D .gγ γ) {Q = ∣ Q ∣} {ρ = λ i → inj₁ i} t''))
               (rh1 : ∀ i x → Setoid._≈_ (D .sₛ i .idx) (rh (suc i) .func x) x)
               (x : FuseInst.ISs.Tᵢ.TreeSh D Q ∣ R ∣ IX.params) →
               FuseInst.ISt.Eᵢ.Sh≈ D Q ∣ R ∣ IX.params
-                (proj₁ (IX.Reindex.reindexSh (IX.ReindexInMap.ĝ (D .gγ γ) ∣ Q ∣)
+                (proj₁ (IX.Reindex.reindexSh (ReindexInMap.ĝ (D .sₛ) (D .sₜ) (D .gγ γ) Q)
                           {Q = ∣ R ∣} {η = IX.params} x))
                 (proj₁ (FuseInst.pipe D Q R rh γ x))
-                (proj₂ (IX.Reindex.reindexSh (IX.ReindexInMap.ĝ (D .gγ γ) ∣ Q ∣)
+                (proj₂ (IX.Reindex.reindexSh (ReindexInMap.ĝ (D .sₛ) (D .sₜ) (D .gγ γ) Q)
                           {Q = ∣ R ∣} {η = IX.params} x))
                 (proj₂ (FuseInst.pipe D Q R rh γ x))
   fuse-poly D Q (const A') γ rh rh0 rh1 (s , a) =
@@ -172,17 +169,15 @@ mutual
   fuse-poly {N} D Q (μ Q'') γ rh rh0 rh1 (w , a) =
     EqIt.W≈-trans {w₁ = w} {w₂ = w} {w₃ = proj₁ (FuseInst.pipe D Q (μ Q'') rh γ (w , a))}
       (clp-W w a)
-      (FI.IM.coe-W-resp {w₁ = w} {w₂ = proj₁ (FuseInst.pipe D Q (μ Q'') rh γ (w , a))}
-        (fuse-μ (ext-data D Q) Q'' γ (w , λ p →
-          FI.FF.uncoeIx (FI.ISs.S'.labelW w p)
-            (IX.Reindex.reindexIx rh (FI.ISs.S'.labelW w p) (a p)))))
+      (fuse-μ (ext-data D Q) Q'' γ (w , λ p →
+        IX.Reindex.reindexIx rh (FI.ISs.S'.labelW w p) (a p)))
     where
       module FI = FuseInst D Q
       module EqIt = FI.ISt.Eᵢ.Equiv
         (λ v x → FI.ISt.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x})
         (λ v p → FI.ISt.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym p)
         (λ v p q → FI.ISt.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans p q)
-      module RGH = IX.Reindex (IX.ReindexInMap.ĝ (D .gγ γ) ∣ Q ∣)
+      module RGH = IX.Reindex (ReindexInMap.ĝ (D .sₛ) (D .sₜ) (D .gγ γ) Q)
       module RG' = IX.Reindex (ext-data D Q .gγ γ)
       module RH = IX.Reindex rh
 
@@ -191,7 +186,7 @@ mutual
 
       hVf : ∀ v x → Setoid._≈_ (FI.ISt.ιᵢ v)
               (RGH.reindexIx (inj₂ v) x)
-              (FI.IM.coeIx (inj₂ v) (RG'.reindexIx (inj₂ v) (FI.FF.uncoeIx (inj₂ v) (RH.reindexIx (inj₂ v) x))))
+              (RG'.reindexIx (inj₂ v) (RH.reindexIx (inj₂ v) x))
       hVf zero x =
         μObj Q (D .sₜ) .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym
           {x = rh zero .func x}
@@ -204,23 +199,23 @@ mutual
 
       module CLP = IX.Pointwise
         (λ l x → RGH.reindexIx l x)
-        (λ l x → FI.IM.coeIx l (RG'.reindexIx l (FI.FF.uncoeIx l (RH.reindexIx l x))))
+        (λ l x → RG'.reindexIx l (RH.reindexIx l x))
         hSf hVf
 
       clp-W = CLP.agree-W
 
 ------------------------------------------------------------------------------
 -- The index half of the β law: the strong action of the fold agrees with the
--- fold's own translation behind the bridges. The fusion data is the
--- Initiality g-family at the actual fold, so the correspondence holds by
--- reflexivity; the μ-case is fuse-μ plus an all-reflexivity collapse of the
--- three bridge layers.
+-- fold's own translation behind unembed. The fusion data is the Initiality
+-- g-family at the actual fold, so the correspondence holds by reflexivity;
+-- the μ-case is fuse-μ plus a pointwise collapse of the two reindexing
+-- families.
 ------------------------------------------------------------------------------
 module KLaw {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
             (k : Fam𝒞._⇒_ (Fam𝒞-P.prod Γ (μObj P δ)) A) where
-  module FF = FoldFam Γ A P δ
-  module IM = InMapFam P δ
-  module IN = IX.Initiality (λ i → δ i .idx) (Γ .idx) (A .idx) ∣ P ∣
+  module FF = Fold Γ A P δ
+  module IM = InMap P δ
+  module IN = Initiality Γ A P δ
 
   fsβ : ∀ v → Fam𝒞._⇒_ (Fam𝒞-P.prod Γ (extend δ (μObj P δ) v)) (extend δ A v)
   fsβ = strong-extend-mor (λ i → Fam𝒞-P.p₂) k
@@ -244,8 +239,9 @@ module KLaw {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
   Dβ .corr γ (suc i) x =
     δ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
 
-  -- The same family at the setoid-extended spelling, for the bridges.
-  gI : (γ : Γ .idx .Setoid.Carrier) → ∀ v → IM.I.ιᵢ v prop-setoid.⇒ FF.F.ι' v
+  -- The same family as a single dependent function over the extended
+  -- environments.
+  gI : (γ : Γ .idx .Setoid.Carrier) → ∀ v → IM.ιᵢ v prop-setoid.⇒ FF.ι' v
   gI γ zero = kγ γ
   gI γ (suc i) = prop-setoid.idS _
 
@@ -253,9 +249,8 @@ module KLaw {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
           (m : fobj μObj R (extend δ (μObj P δ)) .idx .Setoid.Carrier) →
           Setoid._≈_ (fobj μObj R (extend δ A) .idx)
             (strong-fmor R fsβ .idxf .func (γ , m))
-            (FF.unembed-idx R (FF.uncoe-treeSh ∣ R ∣ IX.params
-              (IX.Reindex.reindexSh (gI γ) {Q = ∣ R ∣} {η = IX.params}
-                (IM.coe-treeSh {Q = ∣ R ∣} {η̄ = IX.params} (IM.embed-idx R m)))))
+            (FF.unembed-idx R (IX.Reindex.reindexSh (gI γ) {Q = ∣ R ∣} {η = IX.params}
+              (IM.embed-idx R m)))
   β-idx (const A') γ m = A' .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = m}
   β-idx (var zero) γ m =
     A .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl
@@ -274,19 +269,19 @@ module KLaw {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
         (fuse-μ Dβ Q'' γ m))
       (clpβ-W (proj₁ m) (proj₂ m))
     where
-      module EqAμ = FF.EAμ.Equiv
-        (λ v x → FF.ιᴬμ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x})
-        (λ v p → FF.ιᴬμ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym p)
-        (λ v p q → FF.ιᴬμ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans p q)
-      module RGβ = IX.Reindex (gI γ)
+      module EqAμ = FF.E'.Equiv
+        (λ v x → FF.ι' v .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x})
+        (λ v p → FF.ι' v .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym p)
+        (λ v p q → FF.ι' v .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans p q)
       module RGp = IX.Reindex (Dβ .gγ γ)
+      module RGβ = IX.Reindex (gI γ)
 
       hSb : ∀ S x → Setoid._≈_ S x x
       hSb S x = S .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
 
-      hVb : ∀ v x → Setoid._≈_ (FF.ιᴬμ v)
+      hVb : ∀ v x → Setoid._≈_ (FF.ι' v)
               (RGp.reindexIx (inj₂ v) x)
-              (FF.uncoeIx (inj₂ v) (RGβ.reindexIx (inj₂ v) (IM.coeIx (inj₂ v) x)))
+              (RGβ.reindexIx (inj₂ v) x)
       hVb zero x =
         A .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl
           {x = k .idxf .func (γ , x)}
@@ -295,16 +290,16 @@ module KLaw {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
 
       module CLPB = IX.Pointwise
         (λ l x → RGp.reindexIx l x)
-        (λ l x → FF.uncoeIx l (RGβ.reindexIx l (IM.coeIx l x)))
+        (λ l x → RGβ.reindexIx l x)
         hSb hVb
 
       clpβ-W = CLPB.agree-W
 
 module BetaLaw {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
                (alg : Fam𝒞._⇒_ (Fam𝒞-P.prod Γ (fobj μObj P (extend δ A))) A) where
-  module FF = FoldFam Γ A P δ
-  module IM = InMapFam P δ
-  module IN = IX.Initiality (λ i → δ i .idx) (Γ .idx) (A .idx) ∣ P ∣
+  module FF = Fold Γ A P δ
+  module IM = InMap P δ
+  module IN = Initiality Γ A P δ
 
   algIx = FF.algIx alg
   algIxR = FF.algIx-resp alg
@@ -322,9 +317,9 @@ module BetaLaw {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
              (γ≈ : Setoid._≈_ (Γ .idx) γ₁ γ₂)
              (m≈ : Setoid._≈_ (fobj μObj P (extend δ (μObj P δ)) .idx) m₁ m₂) →
              Setoid._≈_ (A .idx)
-               (FF.F.fold algIx γ₁
-                 (proj₁ (IM.I.inMap (IM.coe-treeSh {Q = ∣ P ∣} {η̄ = IX.params} (IM.embed-idx P m₁))))
-                 (proj₂ (IM.I.inMap (IM.coe-treeSh {Q = ∣ P ∣} {η̄ = IX.params} (IM.embed-idx P m₁)))))
+               (FF.fold algIx γ₁
+                 (proj₁ (IM.inMap (IM.embed-idx P m₁)))
+                 (proj₂ (IM.inMap (IM.embed-idx P m₁))))
                (alg .idxf .func (γ₂ , strong-fmor P fsβ .idxf .func (γ₂ , m₂)))
   ⦅⦆-β-idx {γ₁} {γ₂} {m₁} {m₂} γ≈ m≈ =
     AE.trans (IN.β algIx algIxR γ₁ t̂₁)
@@ -336,71 +331,53 @@ module BetaLaw {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
       module ΓE = prop-setoid.IsEquivalence (Γ .idx .Setoid.isEquivalence)
       module FE = prop-setoid.IsEquivalence (fobj μObj P (extend δ A) .idx .Setoid.isEquivalence)
 
-      t̂₁ = IM.coe-treeSh {Q = ∣ P ∣} {η̄ = IX.params} (IM.embed-idx P m₁)
+      t̂₁ = IM.embed-idx P m₁
 
-      module EqI = IM.I.Eᵢ.Equiv
-        (λ v x → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x})
-        (λ v p → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym p)
-        (λ v p q → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans p q)
+      module EqI = IM.Eᵢ.Equiv
+        (λ v x → IM.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x})
+        (λ v p → IM.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym p)
+        (λ v p q → IM.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans p q)
 
-      g≈pt : ∀ v x → Setoid._≈_ (FF.F.ι' v) (IN.g algIx algIxR γ₁ v .func x) (K.gI γ₁ v .func x)
-      g≈pt zero x = AE.refl {x = FF.F.fold algIx γ₁ (proj₁ x) (proj₂ x)}
+      g≈pt : ∀ v x → Setoid._≈_ (FF.ι' v) (IN.g algIx algIxR γ₁ v .func x) (K.gI γ₁ v .func x)
+      g≈pt zero x = AE.refl {x = FF.fold algIx γ₁ (proj₁ x) (proj₂ x)}
       g≈pt (suc i) x = δ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
 
-      famStep = FF.unembed-resp P (FF.uncoe-Sh-resp ∣ P ∣ IX.params
+      famStep = FF.unembed-resp P
         (IX.ReindexCong.reindex-Sh-cong (IN.g algIx algIxR γ₁) (K.gI γ₁) g≈pt
-          ∣ P ∣ IX.params (EqI.Sh≈-refl ∣ P ∣ IX.params (proj₁ t̂₁) (proj₂ t̂₁))))
+          ∣ P ∣ IX.params (EqI.Sh≈-refl ∣ P ∣ IX.params (proj₁ t̂₁) (proj₂ t̂₁)))
 
 ------------------------------------------------------------------------------
--- Round trip through the bridges: unembedding a tree-form unfolding into
--- fobj's structure and embedding it back is the identity up to tree equality.
--- Leaf-refl; the inner-μ case collapses the two pointwise coercions.
+-- Round trip through the bridge: unembedding a tree-form unfolding into
+-- fobj's structure and embedding it back is the identity up to tree
+-- equality. Leaf-refl induction; the inner-μ case is definitional.
 ------------------------------------------------------------------------------
 module RoundTrip {n} (Γ : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj) where
-  module FFμ = FoldFam Γ (μObj P δ) P δ
-  module IM = InMapFam P δ
+  module FFμ = Fold Γ (μObj P δ) P δ
+  module IM = InMap P δ
 
   private
-    module EqI = IM.I.Eᵢ.Equiv
-      (λ v x → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x})
-      (λ v p → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym p)
-      (λ v p q → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans p q)
+    module EqI = IM.Eᵢ.Equiv
+      (λ v x → IM.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x})
+      (λ v p → IM.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym p)
+      (λ v p q → IM.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans p q)
 
-  private
-    hSr : ∀ (S : Setoid os (os ⊔ es)) x → Setoid._≈_ S x x
-    hSr S x = S .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
-
-    hVr : ∀ v x → Setoid._≈_ (IM.I.ιᵢ v)
-            (IM.coeIx (inj₂ v) (FFμ.uncoeIx (inj₂ v) x)) x
-    hVr zero x =
-      IM.I.TreeSetoid .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
-    hVr (suc i) x =
-      δ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
-
-  module RTP = IX.Pointwise
-    (λ l x → IM.coeIx l (FFμ.uncoeIx l x)) (λ l x → x) hSr hVr
-
-  rtμ-W = RTP.agree-W
-
-  rt : (R : Poly-C (suc n)) (x : IM.I.Tᵢ.TreeSh ∣ R ∣ IX.params) →
-       IM.I.Eᵢ.Sh≈ ∣ R ∣ IX.params
-         (proj₁ (IM.coe-treeSh {Q = ∣ R ∣} {η̄ = IX.params}
-           (IM.embed-idx R (FFμ.unembed-idx R (FFμ.uncoe-treeSh ∣ R ∣ IX.params x)))))
+  rt : (R : Poly-C (suc n)) (x : IM.Tᵢ.TreeSh ∣ R ∣ IX.params) →
+       IM.Eᵢ.Sh≈ ∣ R ∣ IX.params
+         (proj₁ (IM.embed-idx R (FFμ.unembed-idx R x)))
          (proj₁ x)
-         (proj₂ (IM.coe-treeSh {Q = ∣ R ∣} {η̄ = IX.params}
-           (IM.embed-idx R (FFμ.unembed-idx R (FFμ.uncoe-treeSh ∣ R ∣ IX.params x)))))
+         (proj₂ (IM.embed-idx R (FFμ.unembed-idx R x)))
          (proj₂ x)
   rt (const A') (s , a) =
     A' .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a tt}
   rt (var zero) (s , a) =
-    IM.I.TreeSetoid .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a tt}
+    IM.TreeSetoid .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a tt}
   rt (var (suc i)) (s , a) =
     δ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a tt}
   rt (R₁ + R₂) (inj₁ s , a) = rt R₁ (s , a)
   rt (R₁ + R₂) (inj₂ s , a) = rt R₂ (s , a)
   rt (R₁ × R₂) ((s₁ , s₂) , a) =
     rt R₁ (s₁ , λ p → a (inj₁ p)) , rt R₂ (s₂ , λ p → a (inj₂ p))
-  rt (μ Q'') (w , a) = rtμ-W w a
+  rt (μ Q'') (w , a) = EqI.W≈-refl w a
 
 ------------------------------------------------------------------------------
 -- The index half of the η law: any h satisfying the β square agrees with the
@@ -411,9 +388,9 @@ module RoundTrip {n} (Γ : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj) where
 module EtaLaw {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
               (alg : Fam𝒞._⇒_ (Fam𝒞-P.prod Γ (fobj μObj P (extend δ A))) A)
               (h : Fam𝒞._⇒_ (Fam𝒞-P.prod Γ (μObj P δ)) A) where
-  module FF = FoldFam Γ A P δ
-  module IM = InMapFam P δ
-  module IN = IX.Initiality (λ i → δ i .idx) (Γ .idx) (A .idx) ∣ P ∣
+  module FF = Fold Γ A P δ
+  module IM = InMap P δ
+  module IN = Initiality Γ A P δ
   module K = KLaw Γ A P δ h
   module RT = RoundTrip Γ P δ
 
@@ -430,51 +407,50 @@ module EtaLaw {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
   module _ (hyp : ∀ (γ : Γ .idx .Setoid.Carrier)
                   (m : fobj μObj P (extend δ (μObj P δ)) .idx .Setoid.Carrier) →
                   Setoid._≈_ (A .idx)
-                    (h .idxf .func (γ , IM.I.inMap (IM.coe-treeSh {Q = ∣ P ∣} {η̄ = IX.params}
-                                                     (IM.embed-idx P m))))
+                    (h .idxf .func (γ , IM.inMap (IM.embed-idx P m)))
                     (alg .idxf .func (γ , strong-fmor P K.fsβ .idxf .func (γ , m)))) where
 
     private
       module AE = prop-setoid.IsEquivalence (A .idx .Setoid.isEquivalence)
       module ΓE = prop-setoid.IsEquivalence (Γ .idx .Setoid.isEquivalence)
-      module EqI = IM.I.Eᵢ.Equiv
-        (λ v x → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x})
-        (λ v p → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym p)
-        (λ v p q → IM.I.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans p q)
+      module EqI = IM.Eᵢ.Equiv
+        (λ v x → IM.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x})
+        (λ v p → IM.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym p)
+        (λ v p q → IM.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans p q)
 
-    h-β : (γ : Γ .idx .Setoid.Carrier) (t̂ : IM.I.Tᵢ.TreeSh ∣ P ∣ IX.params) →
+    h-β : (γ : Γ .idx .Setoid.Carrier) (t̂ : IM.Tᵢ.TreeSh ∣ P ∣ IX.params) →
           Setoid._≈_ (A .idx)
-            (hcur γ (IM.I.inMap t̂))
+            (hcur γ (IM.inMap t̂))
             (algIx γ (IX.Reindex.reindexSh (IN.hg algIx algIxR hcur hR γ)
                        {Q = ∣ P ∣} {η = IX.params} t̂))
     h-β γ t̂ =
       AE.trans (h .idxf .func-resp-≈
           (ΓE.refl {x = γ}
-          , IM.I.in-shape-resp ∣ P ∣ IX.fbase
+          , IM.in-shape-resp ∣ P ∣ IX.fbase
               (EqI.Sh≈-sym ∣ P ∣ IX.params (RT.rt P t̂))))
         (AE.trans (hyp γ m̂)
           (AE.trans (alg .idxf .func-resp-≈ (ΓE.refl {x = γ} , K.β-idx P γ m̂))
             (alg .idxf .func-resp-≈ (ΓE.refl {x = γ} , famStep))))
       where
-        m̂ = RT.FFμ.unembed-idx P (RT.FFμ.uncoe-treeSh ∣ P ∣ IX.params t̂)
+        m̂ = RT.FFμ.unembed-idx P t̂
 
-        g≈pt : ∀ v x → Setoid._≈_ (FF.F.ι' v) (K.gI γ v .func x)
+        g≈pt : ∀ v x → Setoid._≈_ (FF.ι' v) (K.gI γ v .func x)
                  (IN.hg algIx algIxR hcur hR γ v .func x)
         g≈pt zero x = AE.refl {x = h .idxf .func (γ , x)}
         g≈pt (suc i) x = δ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
 
-        famStep = FF.unembed-resp P (FF.uncoe-Sh-resp ∣ P ∣ IX.params
+        famStep = FF.unembed-resp P
           (IX.ReindexCong.reindex-Sh-cong (K.gI γ) (IN.hg algIx algIxR hcur hR γ) g≈pt
-            ∣ P ∣ IX.params (RT.rt P t̂)))
+            ∣ P ∣ IX.params (RT.rt P t̂))
 
     ⦅⦆-η-idx : ∀ {γ₁ γ₂ : Γ .idx .Setoid.Carrier} {t₁ t₂ : μObj P δ .idx .Setoid.Carrier}
                (γ≈ : Setoid._≈_ (Γ .idx) γ₁ γ₂) (t≈ : IN.I.E.Tree≈ t₁ t₂) →
                Setoid._≈_ (A .idx)
                  (h .idxf .func (γ₁ , t₁))
-                 (FF.F.fold algIx γ₂ (proj₁ t₂) (proj₂ t₂))
+                 (FF.fold algIx γ₂ (proj₁ t₂) (proj₂ t₂))
     ⦅⦆-η-idx {γ₁} {γ₂} {t₁} {t₂} γ≈ t≈ =
       AE.trans (IN.η algIx algIxR hcur hR h-β γ₁ t₁)
-        (FF.F.fold-resp algIx algIxR γ≈ {w₁ = proj₁ t₁} {w₂ = proj₁ t₂} t≈)
+        (FF.fold-resp algIx algIxR γ≈ {w₁ = proj₁ t₁} {w₂ = proj₁ t₂} t≈)
 
 ------------------------------------------------------------------------------
 -- The fibre action of a pointwise environment family, in an ambient context:
@@ -518,12 +494,10 @@ module FibreReindexS {N} (Γ : Obj) {ιA ιB : Fin N → Setoid os (os ⊔ es)}
     rf-El (inj₂ _) (Decos.mkDeco Q ρd) w a = rf-W ρd w a
 
 ------------------------------------------------------------------------------
--- Fibre side of the fusion theorem: the pointwise fibre action along the
--- fusion family, transported along the index-level fusion, equals the strong
--- action's fibre part. Direct tree induction; the transported proofs are
--- Prop-valued, so only their endpoints matter.
+-- Fibre data of a fusion instance: the fibre maps sitting over the pointwise
+-- index family and over its α-extension by tree reindexing.
 ------------------------------------------------------------------------------
-module FuseFam {N} (D : FuseData N) (Q : Poly-C (suc N)) (γ : D .Γ .idx .Setoid.Carrier) where
+module FuseFib {N} (D : FuseData N) (Q : Poly-C (suc N)) (γ : D .Γ .idx .Setoid.Carrier) where
   module FI = FuseInst D Q
 
   ALG : Fam𝒞._⇒_ (Fam𝒞-P.prod (D .Γ) (fobj μObj Q (extend (D .sₛ) (μObj Q (D .sₜ)))))
@@ -543,13 +517,77 @@ module FuseFam {N} (D : FuseData N) (Q : Poly-C (suc N)) (γ : D .Γ .idx .Setoi
                  {δfA = λ v → D .sₛ v .fam} {δfB = λ v → D .sₜ v .fam}
                  (D .gγ γ) γ gfD
 
-  fuse-fam-μ : (w : Sh.Shapes.W N ∣ Q ∣ (λ i → inj₁ i))
+  -- The fibre action over ĝ: reindexing of whole trees at the α-entry, the
+  -- fusion family's fibre maps at the parameters.
+  ĝf : ∀ v (x : FI.ISs.ιᵢ v .Setoid.Carrier) →
+       prod (D .Γ .fam .fm γ) (FI.ISs.δᵢ v .fam .fm x) ⇒
+         FI.ISt.δᵢ v .fam .fm (ReindexInMap.ĝ (D .sₛ) (D .sₜ) (D .gγ γ) Q v .func x)
+  ĝf zero t = RFμ.rf-W (λ v → lift tt) (proj₁ t) (proj₂ t)
+  ĝf (suc i) x = gfD i x
+
+  module RĜ = FibreReindexS (D .Γ) {ιA = FI.ISs.ιᵢ} {ιB = FI.ISt.ιᵢ}
+                {δfA = λ v → FI.ISs.δᵢ v .fam} {δfB = λ v → FI.ISt.δᵢ v .fam}
+                (ReindexInMap.ĝ (D .sₛ) (D .sₜ) (D .gγ γ) Q) γ ĝf
+
+------------------------------------------------------------------------------
+-- Fibre side of the fusion theorem, mirroring the index-level mutual pair.
+-- fuse-fam-μ: the pointwise fibre action along the fusion family, transported
+-- along the index-level fusion, equals the strong action's fibre part; direct
+-- tree induction (the transported proofs are Prop-valued, so only their
+-- endpoints matter). fuse-fam-poly: the fibre action along ĝ on a one-level
+-- unfolding, transported along index-level fuse-poly, equals the pipeline's
+-- fibre part; the rhf family carries the fibre maps over rh, agreeing with
+-- tree reindexing at α (rhf0) and trivial at the parameters (rhf1).
+------------------------------------------------------------------------------
+mutual
+  fuse-fam-μ : ∀ {N} (D : FuseData N) (Q : Poly-C (suc N)) (γ : D .Γ .idx .Setoid.Carrier)
+               (w : Sh.Shapes.W N ∣ Q ∣ (λ i → inj₁ i))
                (a : Sh.Trees.Assign (λ v → D .sₛ v .idx) w) →
                (μObj Q (D .sₜ) .fam .subst
                   {x = IX.Reindex.reindex {ι = λ v → D .sₛ v .idx} {ι' = λ v → D .sₜ v .idx}
                          (D .gγ γ) {Q = ∣ Q ∣} {ρ = λ i → inj₁ i} (w , a)}
                   {y = strong-μ-fmor Q (D .fs) .idxf .func (γ , (w , a))}
                   (fuse-μ D Q γ (w , a))
-                ∘ RFμ.rf-W (λ v → lift tt) w a)
+                ∘ FuseFib.RFμ.rf-W D Q γ (λ v → lift tt) w a)
                  ≈ strong-μ-fmor Q (D .fs) .famf .transf (γ , (w , a))
-  fuse-fam-μ w a = {!!}
+  fuse-fam-μ D Q γ w a = {!!}
+
+  fuse-fam-poly : ∀ {N} (D : FuseData N) (Q : Poly-C (suc N)) (R : Poly-C (suc N))
+                  (γ : D .Γ .idx .Setoid.Carrier)
+                  (rh : ∀ v → FuseInst.ISs.ιᵢ D Q v prop-setoid.⇒ FuseInst.FF.ι' D Q v)
+                  (rh0 : ∀ t'' → Setoid._≈_ (μObj Q (D .sₜ) .idx) (rh zero .func t'')
+                           (IX.Reindex.reindex {ι = λ v → D .sₛ v .idx} {ι' = λ v → D .sₜ v .idx}
+                              (D .gγ γ) {Q = ∣ Q ∣} {ρ = λ i → inj₁ i} t''))
+                  (rh1 : ∀ i x → Setoid._≈_ (D .sₛ i .idx) (rh (suc i) .func x) x)
+                  (rhf : ∀ v (x : FuseInst.ISs.ιᵢ D Q v .Setoid.Carrier) →
+                         prod (D .Γ .fam .fm γ) (FuseInst.ISs.δᵢ D Q v .fam .fm x) ⇒
+                           FuseInst.FF.δᴬ D Q v .fam .fm (rh v .func x))
+                  (rhf0 : ∀ t'' → (μObj Q (D .sₜ) .fam .subst
+                            {x = rh zero .func t''}
+                            {y = IX.Reindex.reindex {ι = λ v → D .sₛ v .idx} {ι' = λ v → D .sₜ v .idx}
+                                   (D .gγ γ) {Q = ∣ Q ∣} {ρ = λ i → inj₁ i} t''}
+                            (rh0 t'')
+                          ∘ rhf zero t'')
+                           ≈ FuseFib.RFμ.rf-W D Q γ (λ v → lift tt) (proj₁ t'') (proj₂ t''))
+                  (rhf1 : ∀ i x → (D .sₛ i .fam .subst (rh1 i x) ∘ rhf (suc i) x) ≈ p₂)
+                  (x : FuseInst.ISs.Tᵢ.TreeSh D Q ∣ R ∣ IX.params) →
+                  (FuseInst.ISt.Fδ'.fib-shape-subst D Q R (λ v → lift tt)
+                     (fuse-poly D Q R γ rh rh0 rh1 x)
+                   ∘ FuseFib.RĜ.rf-Sh D Q γ R (λ v → lift tt) (proj₁ x) (proj₂ x))
+                    ≈ (FuseInst.ISt.embed-fam D Q R
+                         (strong-fmor R (FuseInst.fs★ D Q) .idxf .func
+                           (γ , FuseInst.FF.unembed-idx D Q R
+                                  (IX.Reindex.reindexSh rh {Q = ∣ R ∣} {η = IX.params} x)))
+                       ∘ (strong-fmor R (FuseInst.fs★ D Q) .famf .transf
+                            (γ , FuseInst.FF.unembed-idx D Q R
+                                   (IX.Reindex.reindexSh rh {Q = ∣ R ∣} {η = IX.params} x))
+                          ∘ pair p₁
+                              (FuseInst.FF.unembed-fam D Q R
+                                 (proj₁ (IX.Reindex.reindexSh rh {Q = ∣ R ∣} {η = IX.params} x))
+                                 (proj₂ (IX.Reindex.reindexSh rh {Q = ∣ R ∣} {η = IX.params} x))
+                               ∘ FibreReindexS.rf-Sh (D .Γ)
+                                   {ιA = FuseInst.ISs.ιᵢ D Q} {ιB = FuseInst.FF.ι' D Q}
+                                   {δfA = λ v → FuseInst.ISs.δᵢ D Q v .fam}
+                                   {δfB = λ v → FuseInst.FF.δᴬ D Q v .fam}
+                                   rh γ rhf R (λ v → lift tt) (proj₁ x) (proj₂ x))))
+  fuse-fam-poly D Q R γ rh rh0 rh1 rhf rhf0 rhf1 x = {!!}
