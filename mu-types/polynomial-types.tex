@@ -191,7 +191,9 @@ substituting into $s$, and $\eta$ says $\syn{fold}\,t\,\syn{with}\,x.\syn{roll}\
 If $\cat{C}$ has finite products $(\times, 1)$ then $\Fam(\cat{C})$ has $\Poly$-types.
 \end{proposition}
 
-Nested $\mu$s make the naive construction circular: when an inner binder's body mentions an outer binder,
+\Added{The proof builds the initial algebras directly, and runs to the end of the subsection; the
+definitions below supply its carrier and the fibres over it.} Nested $\mu$s make the naive
+construction circular: when an inner binder's body mentions an outer binder,
 the inner carrier must be instantiated at the outer carrier while the latter is still being defined.
 Following \citet{abbott2004} we instead construct the initial algebras of $P$ and of all its inner
 $\mu$-bodies simultaneously, as a single family of trees indexed by sorts.
@@ -199,10 +201,18 @@ $\mu$-bodies simultaneously, as a single family of trees indexed by sorts.
 The construction separates into two layers, and the first uses index data only. The separation
 is possible because $\Fam(\cat{C})$ is the free coproduct completion of $\cat{C}$, so an object is a
 set-indexed collection of $\cat{C}$-objects and nothing more. Write $|A|$ for the
-index set of a $\Fam(\cat{C})$-object $A$. The \emph{index erasure} $|Q|$ of a polynomial replaces
-each constant $\const(X, \partial X)$ by the constant on its index set $X$ and fixes the variable,
-sum, product and $\mu$ structure. The erasure $|\delta|$ of a kinding environment replaces each entry
-by its index set.
+index set of a $\Fam(\cat{C})$-object $A$.
+
+\begin{AddedBlock}
+\begin{definition}[Index erasure]
+\label{def:polynomial-types:erasure}
+The \emph{index erasure} $|Q|$ of a polynomial $Q$ over $\Fam(\cat{C})$ replaces each constant
+$\const(X, \partial X)$ by $\const(X)$ and keeps the rest unchanged, giving a polynomial over
+$\Set$. The index erasure $|\delta|$ of a kinding
+environment $\delta \in \Fam(\cat{C})^\Delta$ replaces each entry by its index set, giving $|\delta|
+\in \Set^\Delta$.
+\end{definition}
+\end{AddedBlock}
 
 The sorts and trees below are defined over $|Q|$ and $|\delta|$, so they make no reference to
 $\cat{C}$. The fibres form the second layer, assigning to each tree an object of $\cat{C}$. Two
@@ -211,12 +221,19 @@ same sorts and trees.
 
 \begin{definition}[Sort]
 \label{def:polynomial-types:sort}
-A \emph{sort} over $\Delta$ is a pair $(R, \rho)$ of an index-erased $\mu$-body $R$, that is a
-$\mu$-body whose constants are index sets, and an \emph{assignment} $\rho$ taking each free
-variable to either a parameter in $\Delta$ or another sort. The collection of sorts is inductively
-generated; those of $P$ are the sorts reachable from $|P|$.
+\Replaced{A \emph{sort} $\sigma = (\alpha.R, \rho)$ over $\Delta$ is a pair of an \emph{abstraction}
+$\alpha.R$, an index-erased polynomial $R$ with a distinguished \emph{recursion variable} $\alpha$,
+and an \emph{assignment} $\rho$ taking each other free variable of $R$ to a parameter in $\Delta$ or
+another sort.}{A \emph{sort} over $\Delta$ is a pair
+$(R, \rho)$ of an index-erased $\mu$-body $R$, that is a $\mu$-body whose constants are index sets,
+and an \emph{assignment} $\rho$ taking each free variable to either a parameter in $\Delta$ or
+another sort. The collection of sorts is inductively generated; those of $P$ are the sorts reachable
+from $|P|$.}
 \end{definition}
 
+\Added{Since an assignment may send a variable to another sort, this definition is inductive.}
+
+\begin{DeletedBlock}
 \begin{definition}[Trees of a sort]
 \label{def:polynomial-types:trees}
 Work over the erased environment $|\delta|$. For each sort $(R, \rho)$ the set $W_{(R,\rho)}$ of
@@ -234,6 +251,72 @@ of its variables the set of \emph{$R'$-trees}, are defined by a single simultane
 \item a $\mu\beta.R'$-tree is a tree of sort $(R', \rho')$.
 \end{itemize}
 \end{definition}
+\end{DeletedBlock}
+
+\begin{AddedBlock}
+\begin{definition}[Shapes of a sort]
+\label{def:polynomial-types:shapes}
+Two mutually inductive judgements generate the shapes \citep{abbott2004}, by the rules in
+\figref{polynomial-types:shapes}. The first, $\Delta; \rho \vdash s : R$, reads $s$ is an
+\emph{$R$-shape} under a parameter context $\Delta$ and an assignment $\rho$ of the variables of
+the index-erased polynomial $R$; the second, $\Delta \vdash s : \sigma$, reads $s$ is a
+\emph{shape of sort $\sigma$}, the sort carrying its own assignment, so only $\Delta$ is needed.
+A \emph{position} of a shape is a leaf $\bullet$; it is \emph{labelled} by the
+set $X$ in the \textsc{const} rule and by the parameter $\rho(\alpha)$ in the \textsc{var-par} rule.
+\end{definition}
+
+\begin{figure}
+\small
+\makebox[\linewidth][l]{\jform{\Delta; \rho \vdash s : R}}
+\begin{mathpar}
+\inferrule*[right=const]
+  { }
+  {\Delta; \rho \vdash \bullet : \const(X)}
+\and
+\inferrule*[right=var-par]
+  {\rho(\alpha) \in \Delta}
+  {\Delta; \rho \vdash \bullet : \alpha}
+\and
+\inferrule*[right=var-sort]
+  {\rho(\alpha) = \sigma \\ \Delta \vdash s : \sigma}
+  {\Delta; \rho \vdash s : \alpha}
+\and
+\inferrule*[right={$+$L}]
+  {\Delta; \rho \vdash s : R_1}
+  {\Delta; \rho \vdash \mathsf{inl}\,s : R_1 + R_2}
+\and
+\inferrule*[right={$+$R}]
+  {\Delta; \rho \vdash s : R_2}
+  {\Delta; \rho \vdash \mathsf{inr}\,s : R_1 + R_2}
+\and
+\inferrule*[right={$\times$}]
+  {\Delta; \rho \vdash s_1 : R_1 \\ \Delta; \rho \vdash s_2 : R_2}
+  {\Delta; \rho \vdash \langle s_1, s_2 \rangle : R_1 \times R_2}
+\and
+\inferrule*[right={$\mu$}]
+  {\Delta \vdash s : (\alpha.R, \rho)}
+  {\Delta; \rho \vdash s : \mu\alpha.R}
+\end{mathpar}
+
+\medskip
+\makebox[\linewidth][l]{\jform{\Delta \vdash s : \sigma}}
+\begin{mathpar}
+\inferrule*[right=sort]
+  {\Delta; \rho[\alpha \mapsto (\alpha.R, \rho)] \vdash s : R}
+  {\Delta \vdash s : (\alpha.R, \rho)}
+\end{mathpar}
+\caption{Shapes of a sort: $R$-shapes under an assignment (upper), and shapes of a sort (lower).}
+\label{fig:polynomial-types:shapes}
+\end{figure}
+
+\begin{definition}[Trees of a sort]
+\label{def:polynomial-types:trees}
+Fix a kinding environment $\delta \in \Fam(\cat{C})^\Delta$. A \emph{tree of sort $\sigma$} over
+$\delta$ is a pair $(s, a)$ of a shape $s$ of sort $\sigma$ and an \emph{index assignment} $a$
+sending each position of $s$ to an element of the set naming it: $X$ for a $\const$-position, and
+$|\delta|(\rho(\alpha))$ for a parameter-position referencing variable $\alpha$. The set of such trees is $W_\sigma(\delta)$.
+\end{definition}
+\end{AddedBlock}
 
 \begin{definition}[Decoration]
 \label{def:polynomial-types:decoration}
@@ -299,7 +382,8 @@ fibres it is the identity, both sides being the same node-wise product.
 \begin{proof}[Proof of \propref{polynomial-types:fam-has-poly}]
 Take $\mu_{\alpha.P}(\delta) = (W_{s_0}, \partial W_{s_0})$, the family at the root sort $s_0 = (|P|,
 \rho_0)$ decorated by $P$, where $\rho_0$ takes the free variables of $P$ to the parameters
-$\Delta$.
+$\Delta$. \Added{The sorts arising are those reachable from $s_0$, following the sort assigned at
+each nested $\mu$.}
 
 For the algebra map $\inMap : P(\delta[\alpha \mapsto \mu_{\alpha.P}(\delta)]) \to
 \mu_{\alpha.P}(\delta)$, compute the domain by induction on $P$. An element of its index set is the
