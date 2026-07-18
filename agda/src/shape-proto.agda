@@ -140,9 +140,10 @@ module Trees {n} (δ : Fin n → Set) where
 ------------------------------------------------------------------------------
 -- Tree equality: shapes agree constructor by constructor and the assignments
 -- agree pointwise, defined by simultaneous recursion on the two shapes so no
--- transport along a shape equality is needed.
+-- transport along a shape equality is needed. Values at parameter leaves are
+-- compared by a supplied relation R, values at constant leaves by ≡.
 ------------------------------------------------------------------------------
-module TreeEq {n} (δ : Fin n → Set) where
+module TreeEq {n} (δ : Fin n → Set) (R : ∀ i → δ i → δ i → Set) where
   open Shapes n
   open Trees δ
 
@@ -165,7 +166,7 @@ module TreeEq {n} (δ : Fin n → Set) where
     Sh≈ (μ Q')    η w₁ w₂ a₁ a₂ = W≈ w₁ w₂ a₁ a₂
 
     El≈ : (r : Fin n ⊎ Sort n) (s₁ s₂ : El r) → AssignEl r s₁ → AssignEl r s₂ → Set
-    El≈ (inj₁ i)            s₁ s₂ a₁ a₂ = a₁ tt ≡ a₂ tt
+    El≈ (inj₁ i)            s₁ s₂ a₁ a₂ = R i (a₁ tt) (a₂ tt)
     El≈ (inj₂ (mkSort Q ρ)) w₁ w₂ a₁ a₂ = W≈ w₁ w₂ a₁ a₂
 
   Tree≈ : ∀ {k} {Q : Poly (suc k)} {ρ} → Tree Q ρ → Tree Q ρ → Set
@@ -174,69 +175,72 @@ module TreeEq {n} (δ : Fin n → Set) where
   TreeEl≈ : (r : Fin n ⊎ Sort n) → TreeEl r → TreeEl r → Set
   TreeEl≈ r (s₁ , a₁) (s₂ , a₂) = El≈ r s₁ s₂ a₁ a₂
 
-  mutual
-    W≈-refl : ∀ {k} {Q : Poly (suc k)} {ρ} (w : W Q ρ) (a : Assign w) → W≈ w w a a
-    W≈-refl {Q = Q} {ρ = ρ} (sup s) a = Sh≈-refl Q (extend ρ (inj₂ (mkSort Q ρ))) s a
+  module Equiv (R-refl : ∀ i (x : δ i) → R i x x)
+               (R-sym : ∀ i {x y : δ i} → R i x y → R i y x)
+               (R-trans : ∀ i {x y z : δ i} → R i x y → R i y z → R i x z) where
+    mutual
+      W≈-refl : ∀ {k} {Q : Poly (suc k)} {ρ} (w : W Q ρ) (a : Assign w) → W≈ w w a a
+      W≈-refl {Q = Q} {ρ = ρ} (sup s) a = Sh≈-refl Q (extend ρ (inj₂ (mkSort Q ρ))) s a
 
-    Sh≈-refl : ∀ {k} (Q : Poly k) (η : Fin k → Fin n ⊎ Sort n) (s : Shape Q η)
-               (a : AssignSh Q η s) → Sh≈ Q η s s a a
-    Sh≈-refl (const X) η s a = refl
-    Sh≈-refl (var j)   η s a = El≈-refl (η j) s a
-    Sh≈-refl (P ⊕ Q)   η (inj₁ s) a = Sh≈-refl P η s a
-    Sh≈-refl (P ⊕ Q)   η (inj₂ s) a = Sh≈-refl Q η s a
-    Sh≈-refl (P ⊗ Q)   η (s₁ , s₂) a =
-      Sh≈-refl P η s₁ (λ p → a (inj₁ p)) , Sh≈-refl Q η s₂ (λ p → a (inj₂ p))
-    Sh≈-refl (μ Q')    η w a = W≈-refl w a
+      Sh≈-refl : ∀ {k} (Q : Poly k) (η : Fin k → Fin n ⊎ Sort n) (s : Shape Q η)
+                 (a : AssignSh Q η s) → Sh≈ Q η s s a a
+      Sh≈-refl (const X) η s a = refl
+      Sh≈-refl (var j)   η s a = El≈-refl (η j) s a
+      Sh≈-refl (P ⊕ Q)   η (inj₁ s) a = Sh≈-refl P η s a
+      Sh≈-refl (P ⊕ Q)   η (inj₂ s) a = Sh≈-refl Q η s a
+      Sh≈-refl (P ⊗ Q)   η (s₁ , s₂) a =
+        Sh≈-refl P η s₁ (λ p → a (inj₁ p)) , Sh≈-refl Q η s₂ (λ p → a (inj₂ p))
+      Sh≈-refl (μ Q')    η w a = W≈-refl w a
 
-    El≈-refl : (r : Fin n ⊎ Sort n) (s : El r) (a : AssignEl r s) → El≈ r s s a a
-    El≈-refl (inj₁ i)            s a = refl
-    El≈-refl (inj₂ (mkSort Q ρ)) w a = W≈-refl w a
+      El≈-refl : (r : Fin n ⊎ Sort n) (s : El r) (a : AssignEl r s) → El≈ r s s a a
+      El≈-refl (inj₁ i)            s a = R-refl i (a tt)
+      El≈-refl (inj₂ (mkSort Q ρ)) w a = W≈-refl w a
 
-  mutual
-    W≈-sym : ∀ {k} {Q : Poly (suc k)} {ρ} {w₁ w₂ : W Q ρ} {a₁ a₂} →
-             W≈ w₁ w₂ a₁ a₂ → W≈ w₂ w₁ a₂ a₁
-    W≈-sym {Q = Q} {ρ = ρ} {sup s₁} {sup s₂} p = Sh≈-sym Q (extend ρ (inj₂ (mkSort Q ρ))) p
+    mutual
+      W≈-sym : ∀ {k} {Q : Poly (suc k)} {ρ} {w₁ w₂ : W Q ρ} {a₁ a₂} →
+               W≈ w₁ w₂ a₁ a₂ → W≈ w₂ w₁ a₂ a₁
+      W≈-sym {Q = Q} {ρ = ρ} {sup s₁} {sup s₂} p = Sh≈-sym Q (extend ρ (inj₂ (mkSort Q ρ))) p
 
-    Sh≈-sym : ∀ {k} (Q : Poly k) (η : Fin k → Fin n ⊎ Sort n) {s₁ s₂ : Shape Q η} {a₁ a₂} →
-              Sh≈ Q η s₁ s₂ a₁ a₂ → Sh≈ Q η s₂ s₁ a₂ a₁
-    Sh≈-sym (const X) η p = sym p
-    Sh≈-sym (var j)   η p = El≈-sym (η j) p
-    Sh≈-sym (P ⊕ Q)   η {inj₁ _} {inj₁ _} p = Sh≈-sym P η p
-    Sh≈-sym (P ⊕ Q)   η {inj₁ _} {inj₂ _} ()
-    Sh≈-sym (P ⊕ Q)   η {inj₂ _} {inj₁ _} ()
-    Sh≈-sym (P ⊕ Q)   η {inj₂ _} {inj₂ _} p = Sh≈-sym Q η p
-    Sh≈-sym (P ⊗ Q)   η {_ , _} {_ , _} (p , q) = Sh≈-sym P η p , Sh≈-sym Q η q
-    Sh≈-sym (μ Q')    η {w₁} {w₂} p = W≈-sym {w₁ = w₁} {w₂ = w₂} p
+      Sh≈-sym : ∀ {k} (Q : Poly k) (η : Fin k → Fin n ⊎ Sort n) {s₁ s₂ : Shape Q η} {a₁ a₂} →
+                Sh≈ Q η s₁ s₂ a₁ a₂ → Sh≈ Q η s₂ s₁ a₂ a₁
+      Sh≈-sym (const X) η p = sym p
+      Sh≈-sym (var j)   η p = El≈-sym (η j) p
+      Sh≈-sym (P ⊕ Q)   η {inj₁ _} {inj₁ _} p = Sh≈-sym P η p
+      Sh≈-sym (P ⊕ Q)   η {inj₁ _} {inj₂ _} ()
+      Sh≈-sym (P ⊕ Q)   η {inj₂ _} {inj₁ _} ()
+      Sh≈-sym (P ⊕ Q)   η {inj₂ _} {inj₂ _} p = Sh≈-sym Q η p
+      Sh≈-sym (P ⊗ Q)   η {_ , _} {_ , _} (p , q) = Sh≈-sym P η p , Sh≈-sym Q η q
+      Sh≈-sym (μ Q')    η {w₁} {w₂} p = W≈-sym {w₁ = w₁} {w₂ = w₂} p
 
-    El≈-sym : ∀ (r : Fin n ⊎ Sort n) {s₁ s₂ : El r} {a₁ a₂} →
-              El≈ r s₁ s₂ a₁ a₂ → El≈ r s₂ s₁ a₂ a₁
-    El≈-sym (inj₁ i)            p = sym p
-    El≈-sym (inj₂ (mkSort Q ρ)) {w₁} {w₂} p = W≈-sym {w₁ = w₁} {w₂ = w₂} p
+      El≈-sym : ∀ (r : Fin n ⊎ Sort n) {s₁ s₂ : El r} {a₁ a₂} →
+                El≈ r s₁ s₂ a₁ a₂ → El≈ r s₂ s₁ a₂ a₁
+      El≈-sym (inj₁ i)            p = R-sym i p
+      El≈-sym (inj₂ (mkSort Q ρ)) {w₁} {w₂} p = W≈-sym {w₁ = w₁} {w₂ = w₂} p
 
-  mutual
-    W≈-trans : ∀ {k} {Q : Poly (suc k)} {ρ} {w₁ w₂ w₃ : W Q ρ} {a₁ a₂ a₃} →
-               W≈ w₁ w₂ a₁ a₂ → W≈ w₂ w₃ a₂ a₃ → W≈ w₁ w₃ a₁ a₃
-    W≈-trans {Q = Q} {ρ = ρ} {sup s₁} {sup s₂} {sup s₃} p q =
-      Sh≈-trans Q (extend ρ (inj₂ (mkSort Q ρ))) p q
+    mutual
+      W≈-trans : ∀ {k} {Q : Poly (suc k)} {ρ} {w₁ w₂ w₃ : W Q ρ} {a₁ a₂ a₃} →
+                 W≈ w₁ w₂ a₁ a₂ → W≈ w₂ w₃ a₂ a₃ → W≈ w₁ w₃ a₁ a₃
+      W≈-trans {Q = Q} {ρ = ρ} {sup s₁} {sup s₂} {sup s₃} p q =
+        Sh≈-trans Q (extend ρ (inj₂ (mkSort Q ρ))) p q
 
-    Sh≈-trans : ∀ {k} (Q : Poly k) (η : Fin k → Fin n ⊎ Sort n) {s₁ s₂ s₃ : Shape Q η} {a₁ a₂ a₃} →
-                Sh≈ Q η s₁ s₂ a₁ a₂ → Sh≈ Q η s₂ s₃ a₂ a₃ → Sh≈ Q η s₁ s₃ a₁ a₃
-    Sh≈-trans (const X) η p q = trans p q
-    Sh≈-trans (var j)   η p q = El≈-trans (η j) p q
-    Sh≈-trans (P ⊕ Q)   η {inj₁ _} {inj₁ _} {inj₁ _} p q = Sh≈-trans P η p q
-    Sh≈-trans (P ⊕ Q)   η {inj₁ _} {inj₁ _} {inj₂ _} p ()
-    Sh≈-trans (P ⊕ Q)   η {inj₁ _} {inj₂ _} ()
-    Sh≈-trans (P ⊕ Q)   η {inj₂ _} {inj₁ _} ()
-    Sh≈-trans (P ⊕ Q)   η {inj₂ _} {inj₂ _} {inj₁ _} p ()
-    Sh≈-trans (P ⊕ Q)   η {inj₂ _} {inj₂ _} {inj₂ _} p q = Sh≈-trans Q η p q
-    Sh≈-trans (P ⊗ Q)   η {_ , _} {_ , _} {_ , _} (p₁ , p₂) (q₁ , q₂) =
-      Sh≈-trans P η p₁ q₁ , Sh≈-trans Q η p₂ q₂
-    Sh≈-trans (μ Q')    η {w₁} {w₂} {w₃} p q = W≈-trans {w₁ = w₁} {w₂ = w₂} {w₃ = w₃} p q
+      Sh≈-trans : ∀ {k} (Q : Poly k) (η : Fin k → Fin n ⊎ Sort n) {s₁ s₂ s₃ : Shape Q η} {a₁ a₂ a₃} →
+                  Sh≈ Q η s₁ s₂ a₁ a₂ → Sh≈ Q η s₂ s₃ a₂ a₃ → Sh≈ Q η s₁ s₃ a₁ a₃
+      Sh≈-trans (const X) η p q = trans p q
+      Sh≈-trans (var j)   η p q = El≈-trans (η j) p q
+      Sh≈-trans (P ⊕ Q)   η {inj₁ _} {inj₁ _} {inj₁ _} p q = Sh≈-trans P η p q
+      Sh≈-trans (P ⊕ Q)   η {inj₁ _} {inj₁ _} {inj₂ _} p ()
+      Sh≈-trans (P ⊕ Q)   η {inj₁ _} {inj₂ _} ()
+      Sh≈-trans (P ⊕ Q)   η {inj₂ _} {inj₁ _} ()
+      Sh≈-trans (P ⊕ Q)   η {inj₂ _} {inj₂ _} {inj₁ _} p ()
+      Sh≈-trans (P ⊕ Q)   η {inj₂ _} {inj₂ _} {inj₂ _} p q = Sh≈-trans Q η p q
+      Sh≈-trans (P ⊗ Q)   η {_ , _} {_ , _} {_ , _} (p₁ , p₂) (q₁ , q₂) =
+        Sh≈-trans P η p₁ q₁ , Sh≈-trans Q η p₂ q₂
+      Sh≈-trans (μ Q')    η {w₁} {w₂} {w₃} p q = W≈-trans {w₁ = w₁} {w₂ = w₂} {w₃ = w₃} p q
 
-    El≈-trans : ∀ (r : Fin n ⊎ Sort n) {s₁ s₂ s₃ : El r} {a₁ a₂ a₃} →
-                El≈ r s₁ s₂ a₁ a₂ → El≈ r s₂ s₃ a₂ a₃ → El≈ r s₁ s₃ a₁ a₃
-    El≈-trans (inj₁ i)            p q = trans p q
-    El≈-trans (inj₂ (mkSort Q ρ)) {w₁} {w₂} {w₃} p q = W≈-trans {w₁ = w₁} {w₂ = w₂} {w₃ = w₃} p q
+      El≈-trans : ∀ (r : Fin n ⊎ Sort n) {s₁ s₂ s₃ : El r} {a₁ a₂ a₃} →
+                  El≈ r s₁ s₂ a₁ a₂ → El≈ r s₂ s₃ a₂ a₃ → El≈ r s₁ s₃ a₁ a₃
+      El≈-trans (inj₁ i)            p q = R-trans i p q
+      El≈-trans (inj₂ (mkSort Q ρ)) {w₁} {w₂} {w₃} p q = W≈-trans {w₁ = w₁} {w₂ = w₂} {w₃ = w₃} p q
 
 ------------------------------------------------------------------------------
 -- Reindexing along g : δ → δ' leaves the shape fixed and postcomposes the
@@ -252,8 +256,8 @@ module Reindex {n} {δ δ' : Fin n → Set} (g : ∀ i → δ i → δ' i) where
   reindex : ∀ {k} {Q : Poly (suc k)} {ρ} → Trees.Tree δ Q ρ → Trees.Tree δ' Q ρ
   reindex (w , a) = w , λ p → reindexIx (labelW w p) (a p)
 
-  module E = TreeEq δ
-  module E' = TreeEq δ'
+  module E = TreeEq δ (λ i → _≡_)
+  module E' = TreeEq δ' (λ i → _≡_)
 
   mutual
     reindex-W-resp : ∀ {k} {Q : Poly (suc k)} {ρ} {w₁ w₂ : W Q ρ} {a₁ a₂} → E.W≈ w₁ w₂ a₁ a₂ →
@@ -286,13 +290,25 @@ module Reindex {n} {δ δ' : Fin n → Set} (g : ∀ i → δ i → δ' i) where
                  E.Tree≈ t₁ t₂ → E'.Tree≈ (reindex t₁) (reindex t₂)
   reindex-resp {t₁ = w₁ , a₁} {w₂ , a₂} p = reindex-W-resp {w₁ = w₁} {w₂ = w₂} p
 
+-- The identity assignment, sending each variable to the matching parameter.
+ι : ∀ {n} → Fin n → Fin n ⊎ Sort n
+ι i = inj₁ i
+
+-- Relates a source assignment over n to its translation over suc n: fbase
+-- sends the root binder of P to the fresh parameter, fbind records descent
+-- under an inner binder. First-order so that recursion over it is structural;
+-- shared by the fold and the algebra map.
+data FMor {n} (P : Poly (suc n)) : ∀ {k} → (Fin k → Fin n ⊎ Sort n) →
+                                   (Fin k → Fin (suc n) ⊎ Sort (suc n)) → Set₁ where
+  fbase : FMor P (extend ι (inj₂ (mkSort P ι))) ι
+  fbind : ∀ {k} {ρ ρ'} (Q : Poly (suc k)) → FMor P ρ ρ' →
+          FMor P (extend ρ (inj₂ (mkSort Q ρ))) (extend ρ' (inj₂ (mkSort Q ρ')))
+
 ------------------------------------------------------------------------------
 -- The fold at the index level. The algebra consumes a one-level unfolding
 -- over δ[α ↦ Y]: a shape of P over context (suc n) whose α-positions hold
 -- folded values. Inner sorts are translated to the extended context by
--- fold-shape; FMor relates a source assignment to its translation, fbase
--- sending the root binder to the fresh parameter and fbind recording descent
--- under an inner binder, so every recursive call is structural.
+-- fold-shape, with every recursive call structural.
 ------------------------------------------------------------------------------
 module Fold {n} (δ : Fin n → Set) (Y : Set) (P : Poly (suc n)) where
   module S = Shapes n
@@ -304,31 +320,20 @@ module Fold {n} (δ : Fin n → Set) (Y : Set) (P : Poly (suc n)) where
   module T = Trees δ
   module T' = Trees δ'
 
-  module E = TreeEq δ
-  module E' = TreeEq δ'
+  module E = TreeEq δ (λ i → _≡_)
+  module E' = TreeEq δ' (λ i → _≡_)
 
-  ρ₀ : Fin n → Fin n ⊎ Sort n
-  ρ₀ i = inj₁ i
-
-  ι' : Fin (suc n) → Fin (suc n) ⊎ Sort (suc n)
-  ι' v = inj₁ v
-
-  data FMor : ∀ {k} → (Fin k → Fin n ⊎ Sort n) → (Fin k → Fin (suc n) ⊎ Sort (suc n)) → Set₁ where
-    fbase : FMor (extend ρ₀ (inj₂ (mkSort P ρ₀))) ι'
-    fbind : ∀ {k} {ρ ρ'} (Q : Poly (suc k)) → FMor ρ ρ' →
-            FMor (extend ρ (inj₂ (mkSort Q ρ))) (extend ρ' (inj₂ (mkSort Q ρ')))
-
-  module _ (alg : T'.TreeSh P ι' → Y) where
+  module _ (alg : T'.TreeSh P ι → Y) where
     mutual
-      fold : (w : S.W P ρ₀) → T.Assign w → Y
+      fold : (w : S.W P ι) → T.Assign w → Y
       fold (S.sup s) a = alg (fold-shape P fbase s a)
 
-      fold-reindex : ∀ {k} {Q : Poly (suc k)} {ρ ρ'} (fm : FMor ρ ρ') (w : S.W Q ρ) →
+      fold-reindex : ∀ {k} {Q : Poly (suc k)} {ρ ρ'} (fm : FMor P ρ ρ') (w : S.W Q ρ) →
                      T.Assign w → Σ (S'.W Q ρ') T'.Assign
       fold-reindex {Q = Q} fm (S.sup s) a =
         let (s' , a') = fold-shape Q (fbind Q fm) s a in S'.sup s' , a'
 
-      fold-shape : ∀ {j} (R : Poly j) {ηA ηB} (fm : FMor ηA ηB) (s : S.Shape R ηA) →
+      fold-shape : ∀ {j} (R : Poly j) {ηA ηB} (fm : FMor P ηA ηB) (s : S.Shape R ηA) →
                    T.AssignSh R ηA s → T'.TreeSh R ηB
       fold-shape (const X) fm s a = tt , a
       fold-shape (var v)   fm s a = fold-apply fm v s a
@@ -340,26 +345,26 @@ module Fold {n} (δ : Fin n → Set) (Y : Set) (P : Poly (suc n)) where
         in (s₁' , s₂') , λ { (inj₁ p) → a₁' p ; (inj₂ p) → a₂' p }
       fold-shape (μ Q')    fm s a = fold-reindex fm s a
 
-      fold-apply : ∀ {k} {ρ ρ'} (fm : FMor ρ ρ') (v : Fin k) (s : S.El (ρ v)) →
+      fold-apply : ∀ {k} {ρ ρ'} (fm : FMor P ρ ρ') (v : Fin k) (s : S.El (ρ v)) →
                    T.AssignEl (ρ v) s → Σ (S'.El (ρ' v)) (T'.AssignEl (ρ' v))
       fold-apply fbase        zero    t a = tt , λ _ → fold t a
       fold-apply fbase        (suc i) s a = tt , a
       fold-apply (fbind Q fm) zero    w a = fold-reindex fm w a
       fold-apply (fbind Q fm) (suc v) s a = fold-apply fm v s a
 
-    module _ (alg-resp : ∀ {s₁ s₂ : S'.Shape P ι'} {a₁ a₂} →
-                         E'.Sh≈ P ι' s₁ s₂ a₁ a₂ → alg (s₁ , a₁) ≡ alg (s₂ , a₂)) where
+    module _ (alg-resp : ∀ {s₁ s₂ : S'.Shape P ι} {a₁ a₂} →
+                         E'.Sh≈ P ι s₁ s₂ a₁ a₂ → alg (s₁ , a₁) ≡ alg (s₂ , a₂)) where
       mutual
-        fold-resp : ∀ {w₁ w₂ : S.W P ρ₀} {a₁ a₂} → E.W≈ w₁ w₂ a₁ a₂ → fold w₁ a₁ ≡ fold w₂ a₂
+        fold-resp : ∀ {w₁ w₂ : S.W P ι} {a₁ a₂} → E.W≈ w₁ w₂ a₁ a₂ → fold w₁ a₁ ≡ fold w₂ a₂
         fold-resp {S.sup s₁} {S.sup s₂} p = alg-resp (fold-shape-resp P fbase p)
 
-        fold-reindex-resp : ∀ {k} {Q : Poly (suc k)} {ρ ρ'} (fm : FMor ρ ρ')
+        fold-reindex-resp : ∀ {k} {Q : Poly (suc k)} {ρ ρ'} (fm : FMor P ρ ρ')
                             {w₁ w₂ : S.W Q ρ} {a₁ a₂} → E.W≈ w₁ w₂ a₁ a₂ →
                             E'.Tree≈ (fold-reindex fm w₁ a₁) (fold-reindex fm w₂ a₂)
         fold-reindex-resp {Q = Q} fm {S.sup s₁} {S.sup s₂} p =
           fold-shape-resp Q (fbind Q fm) p
 
-        fold-shape-resp : ∀ {j} (R : Poly j) {ηA ηB} (fm : FMor ηA ηB)
+        fold-shape-resp : ∀ {j} (R : Poly j) {ηA ηB} (fm : FMor P ηA ηB)
                           {s₁ s₂ : S.Shape R ηA} {a₁ a₂} → E.Sh≈ R ηA s₁ s₂ a₁ a₂ →
                           E'.Sh≈ R ηB (proj₁ (fold-shape R fm s₁ a₁)) (proj₁ (fold-shape R fm s₂ a₂))
                             (proj₂ (fold-shape R fm s₁ a₁)) (proj₂ (fold-shape R fm s₂ a₂))
@@ -373,7 +378,7 @@ module Fold {n} (δ : Fin n → Set) (Y : Set) (P : Poly (suc n)) where
           fold-shape-resp R₁ fm p , fold-shape-resp R₂ fm q
         fold-shape-resp (μ Q')    fm {w₁} {w₂} p = fold-reindex-resp fm {w₁ = w₁} {w₂ = w₂} p
 
-        fold-apply-resp : ∀ {k} {ρ ρ'} (fm : FMor ρ ρ') (v : Fin k)
+        fold-apply-resp : ∀ {k} {ρ ρ'} (fm : FMor P ρ ρ') (v : Fin k)
                           {s₁ s₂ : S.El (ρ v)} {a₁ a₂} → E.El≈ (ρ v) s₁ s₂ a₁ a₂ →
                           E'.El≈ (ρ' v) (proj₁ (fold-apply fm v s₁ a₁)) (proj₁ (fold-apply fm v s₂ a₂))
                             (proj₂ (fold-apply fm v s₁ a₁)) (proj₂ (fold-apply fm v s₂ a₂))
@@ -381,6 +386,150 @@ module Fold {n} (δ : Fin n → Set) (Y : Set) (P : Poly (suc n)) where
         fold-apply-resp fbase        (suc i) p = p
         fold-apply-resp (fbind Q fm) zero    {w₁} {w₂} p = fold-reindex-resp fm {w₁ = w₁} {w₂ = w₂} p
         fold-apply-resp (fbind Q fm) (suc v) p = fold-apply-resp fm v p
+
+------------------------------------------------------------------------------
+-- The algebra map at the index level: assemble a tree of the root sort from a
+-- one-level unfolding over δ[α ↦ Carrier], whose α-positions hold whole
+-- trees; in-el splices them in without traversing them. out decomposes at the
+-- root; the two are mutually inverse up to tree equality, the trees at
+-- α-positions compared by Tree≈.
+------------------------------------------------------------------------------
+module InMap {n} (δ : Fin n → Set) (P : Poly (suc n)) where
+  module S = Shapes n
+  module S' = Shapes (suc n)
+
+  module T = Trees δ
+  module E = TreeEq δ (λ i → _≡_)
+  module EE = E.Equiv (λ i x → refl) (λ i p → sym p) (λ i p q → trans p q)
+
+  Carrier : Set
+  Carrier = T.Tree P ι
+
+  δᵢ : Fin (suc n) → Set
+  δᵢ = extend δ Carrier
+
+  module Tᵢ = Trees δᵢ
+
+  mutual
+    in-tree : ∀ {k} {Q : Poly (suc k)} {ρ ρ'} (fm : FMor P ρ ρ') (w : S'.W Q ρ') →
+              Tᵢ.Assign w → T.Tree Q ρ
+    in-tree {Q = Q} fm (S'.sup s) a =
+      let (s' , a') = in-shape Q (fbind Q fm) s a in S.sup s' , a'
+
+    in-shape : ∀ {j} (R : Poly j) {ηA ηB} (fm : FMor P ηA ηB) (s : S'.Shape R ηB) →
+               Tᵢ.AssignSh R ηB s → T.TreeSh R ηA
+    in-shape (const X) fm s a = tt , a
+    in-shape (var v)   fm s a = in-el fm v s a
+    in-shape (R₁ ⊕ R₂) fm (inj₁ s) a = let (s' , a') = in-shape R₁ fm s a in inj₁ s' , a'
+    in-shape (R₁ ⊕ R₂) fm (inj₂ s) a = let (s' , a') = in-shape R₂ fm s a in inj₂ s' , a'
+    in-shape (R₁ ⊗ R₂) fm (s₁ , s₂) a =
+      let (s₁' , a₁') = in-shape R₁ fm s₁ (λ p → a (inj₁ p))
+          (s₂' , a₂') = in-shape R₂ fm s₂ (λ p → a (inj₂ p))
+      in (s₁' , s₂') , λ { (inj₁ p) → a₁' p ; (inj₂ p) → a₂' p }
+    in-shape (μ Q')    fm s a = in-tree fm s a
+
+    in-el : ∀ {k} {ρ ρ'} (fm : FMor P ρ ρ') (v : Fin k) (s : S'.El (ρ' v)) →
+            Tᵢ.AssignEl (ρ' v) s → T.TreeEl (ρ v)
+    in-el fbase        zero    s a = a tt
+    in-el fbase        (suc i) s a = tt , a
+    in-el (fbind Q fm) zero    w a = in-tree fm w a
+    in-el (fbind Q fm) (suc v) s a = in-el fm v s a
+
+  inMap : Tᵢ.TreeSh P ι → Carrier
+  inMap (s , a) = let (s' , a') = in-shape P fbase s a in S.sup s' , a'
+
+  mutual
+    out-tree : ∀ {k} {Q : Poly (suc k)} {ρ ρ'} (fm : FMor P ρ ρ') (w : S.W Q ρ) →
+               T.Assign w → Tᵢ.Tree Q ρ'
+    out-tree {Q = Q} fm (S.sup s) a =
+      let (s' , a') = out-shape Q (fbind Q fm) s a in S'.sup s' , a'
+
+    out-shape : ∀ {j} (R : Poly j) {ηA ηB} (fm : FMor P ηA ηB) (s : S.Shape R ηA) →
+                T.AssignSh R ηA s → Tᵢ.TreeSh R ηB
+    out-shape (const X) fm s a = tt , a
+    out-shape (var v)   fm s a = out-el fm v s a
+    out-shape (R₁ ⊕ R₂) fm (inj₁ s) a = let (s' , a') = out-shape R₁ fm s a in inj₁ s' , a'
+    out-shape (R₁ ⊕ R₂) fm (inj₂ s) a = let (s' , a') = out-shape R₂ fm s a in inj₂ s' , a'
+    out-shape (R₁ ⊗ R₂) fm (s₁ , s₂) a =
+      let (s₁' , a₁') = out-shape R₁ fm s₁ (λ p → a (inj₁ p))
+          (s₂' , a₂') = out-shape R₂ fm s₂ (λ p → a (inj₂ p))
+      in (s₁' , s₂') , λ { (inj₁ p) → a₁' p ; (inj₂ p) → a₂' p }
+    out-shape (μ Q')    fm s a = out-tree fm s a
+
+    out-el : ∀ {k} {ρ ρ'} (fm : FMor P ρ ρ') (v : Fin k) (s : S.El (ρ v)) →
+             T.AssignEl (ρ v) s → Tᵢ.TreeEl (ρ' v)
+    out-el fbase        zero    w a = tt , λ _ → (w , a)
+    out-el fbase        (suc i) s a = tt , a
+    out-el (fbind Q fm) zero    w a = out-tree fm w a
+    out-el (fbind Q fm) (suc v) s a = out-el fm v s a
+
+  out : Carrier → Tᵢ.TreeSh P ι
+  out (S.sup s , a) = out-shape P fbase s a
+
+  -- Equality at the extended environment: the α-entry compared by Tree≈,
+  -- parameters by ≡.
+  Rᵢ : ∀ v → δᵢ v → δᵢ v → Set
+  Rᵢ zero    = E.Tree≈ {Q = P} {ρ = ι}
+  Rᵢ (suc i) = _≡_
+
+  module Eᵢ = TreeEq δᵢ Rᵢ
+
+  mutual
+    io-tree : ∀ {k} {Q : Poly (suc k)} {ρ ρ'} (fm : FMor P ρ ρ') (w : S.W Q ρ) (a : T.Assign w) →
+              E.Tree≈ (in-tree fm (proj₁ (out-tree fm w a)) (proj₂ (out-tree fm w a))) (w , a)
+    io-tree {Q = Q} fm (S.sup s) a = io-shape Q (fbind Q fm) s a
+
+    io-shape : ∀ {j} (R : Poly j) {ηA ηB} (fm : FMor P ηA ηB) (s : S.Shape R ηA)
+               (a : T.AssignSh R ηA s) →
+               E.Sh≈ R ηA (proj₁ (in-shape R fm (proj₁ (out-shape R fm s a)) (proj₂ (out-shape R fm s a)))) s
+                 (proj₂ (in-shape R fm (proj₁ (out-shape R fm s a)) (proj₂ (out-shape R fm s a)))) a
+    io-shape (const X) fm s a = refl
+    io-shape (var v)   fm s a = io-el fm v s a
+    io-shape (R₁ ⊕ R₂) fm (inj₁ s) a = io-shape R₁ fm s a
+    io-shape (R₁ ⊕ R₂) fm (inj₂ s) a = io-shape R₂ fm s a
+    io-shape (R₁ ⊗ R₂) fm (s₁ , s₂) a =
+      io-shape R₁ fm s₁ (λ p → a (inj₁ p)) , io-shape R₂ fm s₂ (λ p → a (inj₂ p))
+    io-shape (μ Q')    fm s a = io-tree fm s a
+
+    io-el : ∀ {k} {ρ ρ'} (fm : FMor P ρ ρ') (v : Fin k) (s : S.El (ρ v)) (a : T.AssignEl (ρ v) s) →
+            E.El≈ (ρ v) (proj₁ (in-el fm v (proj₁ (out-el fm v s a)) (proj₂ (out-el fm v s a)))) s
+              (proj₂ (in-el fm v (proj₁ (out-el fm v s a)) (proj₂ (out-el fm v s a)))) a
+    io-el fbase        zero    w a = EE.W≈-refl w a
+    io-el fbase        (suc i) s a = refl
+    io-el (fbind Q fm) zero    w a = io-tree fm w a
+    io-el (fbind Q fm) (suc v) s a = io-el fm v s a
+
+  inMap-out : (t : Carrier) → E.Tree≈ (inMap (out t)) t
+  inMap-out (S.sup s , a) = io-shape P fbase s a
+
+  mutual
+    oi-tree : ∀ {k} {Q : Poly (suc k)} {ρ ρ'} (fm : FMor P ρ ρ') (w : S'.W Q ρ') (a : Tᵢ.Assign w) →
+              Eᵢ.Tree≈ (out-tree fm (proj₁ (in-tree fm w a)) (proj₂ (in-tree fm w a))) (w , a)
+    oi-tree {Q = Q} fm (S'.sup s) a = oi-shape Q (fbind Q fm) s a
+
+    oi-shape : ∀ {j} (R : Poly j) {ηA ηB} (fm : FMor P ηA ηB) (s : S'.Shape R ηB)
+               (a : Tᵢ.AssignSh R ηB s) →
+               Eᵢ.Sh≈ R ηB (proj₁ (out-shape R fm (proj₁ (in-shape R fm s a)) (proj₂ (in-shape R fm s a)))) s
+                 (proj₂ (out-shape R fm (proj₁ (in-shape R fm s a)) (proj₂ (in-shape R fm s a)))) a
+    oi-shape (const X) fm s a = refl
+    oi-shape (var v)   fm s a = oi-el fm v s a
+    oi-shape (R₁ ⊕ R₂) fm (inj₁ s) a = oi-shape R₁ fm s a
+    oi-shape (R₁ ⊕ R₂) fm (inj₂ s) a = oi-shape R₂ fm s a
+    oi-shape (R₁ ⊗ R₂) fm (s₁ , s₂) a =
+      oi-shape R₁ fm s₁ (λ p → a (inj₁ p)) , oi-shape R₂ fm s₂ (λ p → a (inj₂ p))
+    oi-shape (μ Q')    fm s a = oi-tree fm s a
+
+    oi-el : ∀ {k} {ρ ρ'} (fm : FMor P ρ ρ') (v : Fin k) (s : S'.El (ρ' v)) (a : Tᵢ.AssignEl (ρ' v) s) →
+            Eᵢ.El≈ (ρ' v) (proj₁ (out-el fm v (proj₁ (in-el fm v s a)) (proj₂ (in-el fm v s a)))) s
+              (proj₂ (out-el fm v (proj₁ (in-el fm v s a)) (proj₂ (in-el fm v s a)))) a
+    oi-el fbase        zero    s a = EE.W≈-refl (proj₁ (a tt)) (proj₂ (a tt))
+    oi-el fbase        (suc i) s a = refl
+    oi-el (fbind Q fm) zero    w a = oi-tree fm w a
+    oi-el (fbind Q fm) (suc v) s a = oi-el fm v s a
+
+  out-inMap : (t : Tᵢ.TreeSh P ι) →
+              Eᵢ.Sh≈ P ι (proj₁ (out (inMap t))) (proj₁ t) (proj₂ (out (inMap t))) (proj₂ t)
+  out-inMap (s , a) = oi-shape P fbase s a
 
 ------------------------------------------------------------------------------
 -- Smoke test: naturals as μα. ⊤ + α; the fold to ℕ computes by refl.
@@ -395,7 +544,7 @@ module Example-nat where
   open Fold δ₀ ℕ natP
 
   Nat : Set
-  Nat = T.Tree natP ρ₀
+  Nat = T.Tree natP ι
 
   zeroT : Nat
   zeroT = S.sup (inj₁ tt) , λ _ → tt
@@ -403,7 +552,7 @@ module Example-nat where
   sucT : Nat → Nat
   sucT (w , a) = S.sup (inj₂ w) , a
 
-  algℕ : T'.TreeSh natP ι' → ℕ
+  algℕ : T'.TreeSh natP ι → ℕ
   algℕ (inj₁ s , a) = 0
   algℕ (inj₂ s , a) = suc (a tt)
 
@@ -430,7 +579,7 @@ module Example-rose where
   open Fold δ₀ ℕ roseP
 
   Rose : Set
-  Rose = T.Tree roseP ρ₀
+  Rose = T.Tree roseP ι
 
   leaf : ℕ → Rose
   leaf x = S.sup (tt , S.sup (inj₁ tt)) , λ { (inj₁ _) → x ; (inj₂ _) → tt }
@@ -444,11 +593,11 @@ module Example-rose where
       ; (inj₂ (inj₂ (inj₂ _))) → tt }
 
   -- Sum the folded values sitting at the α-positions of a translated forest.
-  sumF : (f : S'.W listB ι') → T'.Assign f → ℕ
+  sumF : (f : S'.W listB ι) → T'.Assign f → ℕ
   sumF (S'.sup (inj₁ _)) a = 0
   sumF (S'.sup (inj₂ (t , f))) a = a (inj₁ tt) + sumF f (λ p → a (inj₂ p))
 
-  algCount : T'.TreeSh roseP ι' → ℕ
+  algCount : T'.TreeSh roseP ι → ℕ
   algCount ((tt , f) , a) = suc (sumF f (λ p → a (inj₂ p)))
 
   countRose : Rose → ℕ
