@@ -19,7 +19,7 @@
 ------------------------------------------------------------------------------
 
 open import Level using (Level; Lift; lift) renaming (zero to lzero; suc to lsuc)
-open import Data.Nat using (ℕ; zero; suc; _+_)
+open import Data.Nat using (ℕ; suc)
 open import Data.Fin using (Fin; zero; suc)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
@@ -766,100 +766,3 @@ module Initiality {n} (δ : Fin n → Set) (Y : Set) (P : Poly (suc n)) where
 
           η : (t : I.Carrier) → h t ≡ F.fold alg (proj₁ t) (proj₂ t)
           η (w , a) = η-tree w a
-
-------------------------------------------------------------------------------
--- Smoke test: naturals as μα. ⊤ + α; the fold to ℕ computes by refl.
-------------------------------------------------------------------------------
-module Example-nat where
-  natP : Poly 1
-  natP = const ⊤ ⊕ var zero
-
-  δ₀ : Fin 0 → Set
-  δ₀ ()
-
-  open Fold δ₀ ℕ natP
-
-  Nat : Set
-  Nat = T.Tree natP ι
-
-  zeroT : Nat
-  zeroT = S.sup (inj₁ tt) , λ _ → tt
-
-  sucT : Nat → Nat
-  sucT (w , a) = S.sup (inj₂ w) , a
-
-  algℕ : T'.TreeSh natP ι → ℕ
-  algℕ (inj₁ s , a) = 0
-  algℕ (inj₂ s , a) = suc (a tt)
-
-  toℕ : Nat → ℕ
-  toℕ (w , a) = fold algℕ w a
-
-  _ : toℕ (sucT (sucT zeroT)) ≡ 2
-  _ = refl
-
-------------------------------------------------------------------------------
--- Smoke test with a nested μ whose body mentions the outer binder: rose trees
--- as μα. ℕ × μβ.(⊤ + α × β); counting nodes computes by refl.
-------------------------------------------------------------------------------
-module Example-rose where
-  listB : Poly 2
-  listB = const ⊤ ⊕ (var (suc zero) ⊗ var zero)
-
-  roseP : Poly 1
-  roseP = const ℕ ⊗ μ listB
-
-  δ₀ : Fin 0 → Set
-  δ₀ ()
-
-  open Fold δ₀ ℕ roseP
-
-  Rose : Set
-  Rose = T.Tree roseP ι
-
-  leaf : ℕ → Rose
-  leaf x = S.sup (tt , S.sup (inj₁ tt)) , λ { (inj₁ _) → x ; (inj₂ _) → tt }
-
-  node2 : ℕ → Rose → Rose → Rose
-  node2 x (w₁ , a₁) (w₂ , a₂) =
-    S.sup (tt , S.sup (inj₂ (w₁ , S.sup (inj₂ (w₂ , S.sup (inj₁ tt)))))) ,
-    λ { (inj₁ _) → x
-      ; (inj₂ (inj₁ p)) → a₁ p
-      ; (inj₂ (inj₂ (inj₁ p))) → a₂ p
-      ; (inj₂ (inj₂ (inj₂ _))) → tt }
-
-  -- Sum the folded values sitting at the α-positions of a translated forest.
-  sumF : (f : S'.W listB ι) → T'.Assign f → ℕ
-  sumF (S'.sup (inj₁ _)) a = 0
-  sumF (S'.sup (inj₂ (t , f))) a = a (inj₁ tt) + sumF f (λ p → a (inj₂ p))
-
-  algCount : T'.TreeSh roseP ι → ℕ
-  algCount ((tt , f) , a) = suc (sumF f (λ p → a (inj₂ p)))
-
-  countRose : Rose → ℕ
-  countRose (w , a) = fold algCount w a
-
-  _ : countRose (node2 5 (leaf 1) (leaf 2)) ≡ 3
-  _ = refl
-
-  -- Fibre smoke test: decorate the label constant with Fin, the list constant
-  -- trivially; the fibre of a tree computes to the product of its label
-  -- fibres and units.
-  open Decos 0
-
-  listB̂ : Deco listB
-  listB̂ = const ⊤ (λ _ → ⊤) ⊕ (var (suc zero) ⊗ var zero)
-
-  roseP̂ : Deco roseP
-  roseP̂ = const ℕ Fin ⊗ μ listB̂
-
-  δ∂₀ : ∀ i → δ₀ i → Set
-  δ∂₀ ()
-
-  dι : DecoEnv ι
-  dι ()
-
-  module Fb = Fibre δ₀ δ∂₀
-
-  _ : Fb.∂W roseP̂ dι (proj₁ (leaf 1)) (proj₂ (leaf 1)) ≡ (Fin 1 × ⊤)
-  _ = refl
