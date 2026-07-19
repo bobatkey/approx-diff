@@ -1129,6 +1129,173 @@ module KDirect {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
     where
       module Yβ = prop-setoid.IsEquivalence (μObj R'' (extend δ A) .idx .Setoid.isEquivalence)
 
+-- Fibre half of the β law, standalone so each step elaborates against an
+-- ascribed statement.
+β-famf : ∀ {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
+         (alg : Fam𝒞._⇒_ (Fam𝒞-P.prod Γ (fobj μObj P (extend δ A))) A)
+         (γ : Γ .idx .Setoid.Carrier)
+         (m : fobj μObj P (extend δ (μObj P δ)) .idx .Setoid.Carrier) →
+         (A .fam .subst
+            (BetaLaw.⦅⦆-β-idx Γ A P δ alg
+              (Γ .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = γ})
+              (fobj μObj P (extend δ (μObj P δ)) .idx .Setoid.isEquivalence
+                 .prop-setoid.IsEquivalence.refl {x = m}))
+          ∘ Fam𝒞._∘_ (hasMu .HasMu.⦅_⦆ alg)
+              (Fam𝒞-P.pair Fam𝒞-P.p₁ (Fam𝒞._∘_ (hasMu .HasMu.inMap P δ) Fam𝒞-P.p₂))
+              .famf .transf (γ , m))
+          ≈ Fam𝒞._∘_ alg
+              (Fam𝒞-P.pair Fam𝒞-P.p₁
+                (strong-fmor P (strong-extend-mor (λ i → Fam𝒞-P.p₂) (hasMu .HasMu.⦅_⦆ alg))))
+              .famf .transf (γ , m)
+β-famf {n} Γ A P δ alg γ m =
+  ≈-trans (∘-cong₂ id-left)
+    (≈-trans (∘-cong₂ (∘-cong₂ (pair-cong (≈-sym id-left) id-left)))
+      (≈-trans (∘-cong₂ (∘-cong₂ (≈-trans (prod-m-cong (≈-sym id-left) ≈-refl)
+                  (prod-m-comp _ _ _ _))))
+        (≈-trans (∘-cong₂ (≈-sym (assoc _ _ _)))
+          (≈-trans (∘-cong₁ (A .fam .trans*
+                      {x = FFm.fold algIx' γ (proj₁ (IM.inMap t̂₁)) (proj₂ (IM.inMap t̂₁))}
+                      {y = algIx' γ (IX.Reindex.reindexSh (BF.IN.g BF.algIx BF.algIxR γ)
+                             {Q = ∣ P ∣} {η = IX.params} t̂₁)}
+                      {z = alg .idxf .func (γ , strong-fmor P (KD.K.fsβ) .idxf .func (γ , m))}
+                      P₂₃ P₁))
+            (≈-trans (assoc _ _ _)
+              (≈-trans (∘-cong₂ (≈-trans (≈-sym (assoc _ _ _)) (∘-cong₁ rootβA)))
+                (≈-trans (∘-cong₂ (≈-trans (assoc _ _ _) (∘-cong₂ tailFold)))
+                  (≈-trans (∘-cong₁ (A .fam .trans*
+                              {x = algIx' γ (IX.Reindex.reindexSh (BF.IN.g BF.algIx BF.algIxR γ)
+                                     {Q = ∣ P ∣} {η = IX.params} t̂₁)}
+                              {y = alg .idxf .func (γ , FFm.unembed-idx P
+                                     (IX.Reindex.reindexSh (KD.K.gI γ) {Q = ∣ P ∣} {η = IX.params} t̂₁))}
+                              {z = alg .idxf .func (γ , strong-fmor P (KD.K.fsβ) .idxf .func (γ , m))}
+                              PK Pfs))
+                    (≈-trans (assoc _ _ _)
+                      (≈-trans (∘-cong₂ (≈-trans (≈-sym (assoc _ _ _))
+                                  (≈-trans (∘-cong₁ legA)
+                                    (≈-trans (assoc _ _ _)
+                                      (∘-cong₂ (≈-trans (pair-compose _ _ _ _)
+                                        (pair-cong (≈-trans (∘-cong₁ (Γ .fam .refl*)) id-left)
+                                          pwStep)))))))
+                        (≈-trans (≈-sym (assoc _ _ _))
+                          (≈-trans (∘-cong₁ legB)
+                            (≈-trans (assoc _ _ _)
+                              (≈-trans (∘-cong₂ (≈-trans (pair-compose _ _ _ _)
+                                          (pair-cong (≈-trans (∘-cong₁ (Γ .fam .refl*)) id-left)
+                                            kbStep)))
+                                (≈-sym id-left)))))))))))))))
+  where
+    module FFm = Fold Γ A P δ
+    module IM = InMap P δ
+    module BF = BetaFam Γ A P δ alg γ
+    module KD = KDirect Γ A P δ (FFm.foldMor alg) γ
+    module ΓE = prop-setoid.IsEquivalence (Γ .idx .Setoid.isEquivalence)
+    module AE = prop-setoid.IsEquivalence (A .idx .Setoid.isEquivalence)
+    module FE = prop-setoid.IsEquivalence (fobj μObj P (extend δ A) .idx .Setoid.isEquivalence)
+
+    algIx' = FFm.algIx alg
+
+    t̂₁ = IM.embed-idx P m
+
+    module EqI = IM.Eᵢ.Equiv
+      (λ v x → IM.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x})
+      (λ v p → IM.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym p)
+      (λ v p q → IM.ιᵢ v .Setoid.isEquivalence .prop-setoid.IsEquivalence.trans p q)
+
+    g≈pt : ∀ v x → Setoid._≈_ (FFm.ι' v)
+             (BF.IN.g BF.algIx BF.algIxR γ v .func x) (KD.K.gI γ v .func x)
+    g≈pt zero x = AE.refl {x = FFm.fold algIx' γ (proj₁ x) (proj₂ x)}
+    g≈pt (suc i) x = δ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
+
+    famStepP = FFm.unembed-resp P
+      (IX.ReindexCong.reindex-Sh-cong (BF.IN.g BF.algIx BF.algIxR γ) (KD.K.gI γ) g≈pt
+        ∣ P ∣ IX.params (EqI.Sh≈-refl ∣ P ∣ IX.params (proj₁ t̂₁) (proj₂ t̂₁)))
+
+    P₁ = BF.IN.β BF.algIx BF.algIxR γ t̂₁
+
+    Pfs = alg .idxf .func-resp-≈ (ΓE.refl {x = γ} , famStepP)
+    PK = alg .idxf .func-resp-≈ (ΓE.refl {x = γ} , FE.sym (KD.K.β-idx P γ m))
+    P₂₃ = AE.trans Pfs PK
+
+    βshP = BF.IN.β-shape BF.algIx BF.algIxR γ ∣ P ∣ IX.fbase (proj₁ t̂₁) (proj₂ t̂₁)
+
+    rootβA : (A .fam .subst P₁
+              ∘ (FFm.fold-fam alg γ (proj₁ (IM.inMap t̂₁)) (proj₂ (IM.inMap t̂₁))
+                 ∘ prod-m (id _) (IM.in-fam-shape P DecoDefs.dbase (proj₁ t̂₁) (proj₂ t̂₁))))
+               ≈ (alg .famf .transf (γ , FFm.unembed-idx P
+                     (IX.Reindex.reindexSh (BF.IN.g BF.algIx BF.algIxR γ) {Q = ∣ P ∣} {η = IX.params} t̂₁))
+                  ∘ pair p₁ (FFm.unembed-fam P
+                       (proj₁ (IX.Reindex.reindexSh (BF.IN.g BF.algIx BF.algIxR γ) {Q = ∣ P ∣} {η = IX.params} t̂₁))
+                       (proj₂ (IX.Reindex.reindexSh (BF.IN.g BF.algIx BF.algIxR γ) {Q = ∣ P ∣} {η = IX.params} t̂₁))
+                     ∘ BF.Gf.rf-Sh P (λ v → lift tt) (proj₁ t̂₁) (proj₂ t̂₁)))
+    rootβA =
+      ≈-trans (∘-cong₂ (≈-trans (assoc _ _ _)
+                 (∘-cong₂ (≈-trans (pair-natural _ _ _)
+                   (pair-cong (≈-trans (pair-p₁ _ _) id-left) (assoc _ _ _))))))
+        (≈-trans (≈-sym (assoc _ _ _))
+          (≈-trans (∘-cong₁ (≈-sym (alg .famf .natural
+                      (ΓE.refl {x = γ} , FFm.unembed-resp P βshP))))
+            (≈-trans (assoc _ _ _)
+              (∘-cong₂ (≈-trans (pair-compose _ _ _ _)
+                (pair-cong (≈-trans (∘-cong₁ (Γ .fam .refl*)) id-left)
+                  (≈-trans (≈-sym (assoc _ _ _))
+                    (≈-trans (∘-cong₁ (≈-sym (FFm.unembed-fam-natural P βshP)))
+                      (≈-trans (assoc _ _ _)
+                        (∘-cong₂ (BF.β-fam-shape P DecoDefs.dbase (proj₁ t̂₁) (proj₂ t̂₁))))))))))))
+
+    tailFold : (pair p₁ (FFm.unembed-fam P _ _ ∘ BF.Gf.rf-Sh P (λ v → lift tt) (proj₁ t̂₁) (proj₂ t̂₁))
+                ∘ prod-m (id _) (IM.embed-fam P m))
+                 ≈ pair p₁ ((FFm.unembed-fam P _ _ ∘ BF.Gf.rf-Sh P (λ v → lift tt) (proj₁ t̂₁) (proj₂ t̂₁))
+                            ∘ pair p₁ (IM.embed-fam P m ∘ p₂))
+    tailFold =
+      ≈-trans (pair-natural _ _ _)
+        (pair-cong (≈-trans (pair-p₁ _ _) id-left)
+          (∘-cong₂ (pair-cong id-left ≈-refl)))
+
+    legA = ≈-sym (alg .famf .natural (ΓE.refl {x = γ} , famStepP))
+
+    module PWs = PointwiseFam Γ {ιA = IM.ιᵢ} {ιB = FFm.ι'}
+                   {δfA = λ v → IM.δᵢ v .fam} {δfB = λ v → FFm.δᴬ v .fam}
+                   (BF.IN.g BF.algIx BF.algIxR γ) (KD.K.gI γ) γ
+                   BF.gfg KD.kf g≈pt
+                   (λ { zero t → ≈-trans (∘-cong₁ (A .fam .refl*
+                                    {x = FFm.fold algIx' γ (proj₁ t) (proj₂ t)})) id-left
+                      ; (suc i) x → ≈-trans (∘-cong₁ (δ i .fam .refl* {x = x})) id-left })
+
+    pwStep : (fobj μObj P (extend δ A) .fam .subst famStepP
+              ∘ ((FFm.unembed-fam P _ _ ∘ BF.Gf.rf-Sh P (λ v → lift tt) (proj₁ t̂₁) (proj₂ t̂₁))
+                 ∘ pair p₁ (IM.embed-fam P m ∘ p₂)))
+               ≈ (FFm.unembed-fam P _ _
+                  ∘ (KD.GIf.rf-Sh P (λ v → lift tt) (proj₁ t̂₁) (proj₂ t̂₁)
+                     ∘ pair p₁ (IM.embed-fam P m ∘ p₂)))
+    pwStep =
+      ≈-trans (≈-sym (assoc _ _ _))
+        (≈-trans (∘-cong₁ (≈-trans (≈-sym (assoc _ _ _))
+                   (≈-trans (∘-cong₁ (≈-sym (FFm.unembed-fam-natural P
+                               (IX.ReindexCong.reindex-Sh-cong (BF.IN.g BF.algIx BF.algIxR γ)
+                                 (KD.K.gI γ) g≈pt ∣ P ∣ IX.params
+                                 (EqI.Sh≈-refl ∣ P ∣ IX.params (proj₁ t̂₁) (proj₂ t̂₁))))))
+                     (≈-trans (assoc _ _ _)
+                       (∘-cong₂ (PWs.pw-Sh P (λ v → lift tt) (proj₁ t̂₁) (proj₂ t̂₁)))))))
+          (assoc _ _ _))
+
+    legB = ≈-sym (alg .famf .natural (ΓE.refl {x = γ} , FE.sym (KD.K.β-idx P γ m)))
+
+    kbStep : (fobj μObj P (extend δ A) .fam .subst (FE.sym (KD.K.β-idx P γ m))
+              ∘ (FFm.unembed-fam P _ _
+                 ∘ (KD.GIf.rf-Sh P (λ v → lift tt) (proj₁ t̂₁) (proj₂ t̂₁)
+                    ∘ pair p₁ (IM.embed-fam P m ∘ p₂))))
+               ≈ strong-fmor P (KD.K.fsβ) .famf .transf (γ , m)
+    kbStep =
+      ≈-trans (∘-cong₂ (≈-sym (KD.KB-fam P m)))
+        (≈-trans (≈-sym (assoc _ _ _))
+          (≈-trans (∘-cong₁ (≈-trans (≈-sym (fobj μObj P (extend δ A) .fam .trans*
+                      {x = strong-fmor P (KD.K.fsβ) .idxf .func (γ , m)}
+                      {y = FFm.unembed-idx P (IX.Reindex.reindexSh (KD.K.gI γ) {Q = ∣ P ∣} {η = IX.params} t̂₁)}
+                      {z = strong-fmor P (KD.K.fsβ) .idxf .func (γ , m)} _ _))
+                    (fobj μObj P (extend δ A) .fam .refl*
+                      {x = strong-fmor P (KD.K.fsβ) .idxf .func (γ , m)})))
+            id-left))
+
 ------------------------------------------------------------------------------
 -- The initiality laws for the Fam μ-type structure. Index halves are the
 -- proven -idx lemmas; fibre halves under construction.
@@ -1137,8 +1304,13 @@ hasMuLaws : HasMuLaws hasMu
 hasMuLaws .HasMuLaws.⦅⦆-β {n} {Γ} {A} {P} {δ} alg ._≃_.idxf-eq .prop-setoid._≃m_.func-eq (γ≈ , m≈) =
   BetaLaw.⦅⦆-β-idx Γ A P δ alg γ≈ m≈
 hasMuLaws .HasMuLaws.⦅⦆-β {n} {Γ} {A} {P} {δ} alg ._≃_.famf-eq .indexed-family._≃f_.transf-eq {γ , m} =
-  {!!}
+  β-famf Γ A P δ alg γ m
+
 hasMuLaws .HasMuLaws.⦅⦆-η {n} {Γ} {A} {P} {δ} alg h eq ._≃_.idxf-eq .prop-setoid._≃m_.func-eq (γ≈ , t≈) =
-  {!!}
+  EtaLaw.⦅⦆-η-idx Γ A P δ alg h
+    (λ γ m → eq ._≃_.idxf-eq .prop-setoid._≃m_.func-eq
+       (Γ .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = γ}
+       , fobj μObj P (extend δ (μObj P δ)) .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = m}))
+    γ≈ t≈
 hasMuLaws .HasMuLaws.⦅⦆-η {n} {Γ} {A} {P} {δ} alg h eq ._≃_.famf-eq .indexed-family._≃f_.transf-eq {γ , t} =
   {!!}
