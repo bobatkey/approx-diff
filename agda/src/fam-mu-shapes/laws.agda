@@ -1319,6 +1319,202 @@ rootβ-fam {n} Γ A P δ alg γ t̂ =
             id-left))
 
 ------------------------------------------------------------------------------
+-- Fibre half of the η law: any Fam-morphism satisfying the fibre β square
+-- agrees with the fibre fold, transported along the index-level uniqueness
+-- proof. One tree induction, module-local since the candidate is fixed: the
+-- out-bridge compares the candidate's and the fold's fibre actions on
+-- decomposed trees, with the main statement as the hypothesis at subtree
+-- positions.
+------------------------------------------------------------------------------
+module EtaFam {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
+              (alg : Fam𝒞._⇒_ (Fam𝒞-P.prod Γ (fobj μObj P (extend δ A))) A)
+              (h : Fam𝒞._⇒_ (Fam𝒞-P.prod Γ (μObj P δ)) A)
+              (hyp : ∀ (γ' : Γ .idx .Setoid.Carrier)
+                     (m : fobj μObj P (extend δ (μObj P δ)) .idx .Setoid.Carrier) →
+                     Setoid._≈_ (A .idx)
+                       (h .idxf .func (γ' , InMap.inMap P δ (InMap.embed-idx P δ P m)))
+                       (alg .idxf .func (γ' , strong-fmor P (KLaw.fsβ Γ A P δ h) .idxf .func (γ' , m))))
+              (γ : Γ .idx .Setoid.Carrier) where
+  module FFm = Fold Γ A P δ
+  module IM = InMap P δ
+  module IN = Initiality Γ A P δ
+  module BF = BetaFam Γ A P δ alg γ
+  module KD = KDirect Γ A P δ h γ
+  module EL = EtaLaw Γ A P δ alg h
+  module ΓE = prop-setoid.IsEquivalence (Γ .idx .Setoid.isEquivalence)
+  module AE = prop-setoid.IsEquivalence (A .idx .Setoid.isEquivalence)
+
+  algIx' = FFm.algIx alg
+  algIxR' = FFm.algIx-resp alg
+
+  hβI = EL.h-β hyp
+
+  -- The candidate's fibre action over the hg-family.
+  hf : ∀ v (x : IM.ιᵢ v .Setoid.Carrier) →
+       prod (Γ .fam .fm γ) (IM.δᵢ v .fam .fm x) ⇒
+         FFm.δᴬ v .fam .fm (IN.hg algIx' algIxR' EL.hcur EL.hR γ v .func x)
+  hf zero t = h .famf .transf (γ , t)
+  hf (suc i) x = p₂
+
+  module Hf = FibreReindexS Γ {ιA = IM.ιᵢ} {ιB = FFm.ι'}
+                {δfA = λ v → IM.δᵢ v .fam} {δfB = λ v → FFm.δᴬ v .fam}
+                (IN.hg algIx' algIxR' EL.hcur EL.hR γ) γ hf
+
+  -- Statement formers for the out-bridge, elaborated once.
+  aH-W aG-W : ∀ {k} {Q₀ : Poly-C (suc k)} {ρ ρ'} (fmr : IX.FMor ∣ P ∣ ρ ρ')
+              (w : FFm.S.W ∣ Q₀ ∣ ρ) (a : FFm.T.Assign w) →
+              Sh.Trees.Assign FFm.ι' (proj₁ (IM.out-tree fmr w a))
+  aH-W fmr w a q = IX.Reindex.reindexIx (IN.hg algIx' algIxR' EL.hcur EL.hR γ)
+                     (IM.S'.labelW (proj₁ (IM.out-tree fmr w a)) q)
+                     (proj₂ (IM.out-tree fmr w a) q)
+  aG-W fmr w a q = IX.Reindex.reindexIx (IN.g algIx' algIxR' γ)
+                     (IM.S'.labelW (proj₁ (IM.out-tree fmr w a)) q)
+                     (proj₂ (IM.out-tree fmr w a) q)
+
+  PoW : ∀ {k} (Q₀ : Poly-C (suc k)) {ρ ρ'} (fmr : IX.FMor ∣ P ∣ ρ ρ')
+        (w : FFm.S.W ∣ Q₀ ∣ ρ) (a : FFm.T.Assign w) → Prop (os ⊔ es)
+  PoW Q₀ fmr w a = FFm.E'.W≈ {Q = ∣ Q₀ ∣}
+                     (proj₁ (IM.out-tree fmr w a)) (proj₁ (IM.out-tree fmr w a))
+                     (aH-W fmr w a) (aG-W fmr w a)
+
+  HoW : ∀ {k} {Q₀ : Poly-C (suc k)} {ρ ρ'} (d' : ∀ v → Decos.DecoAssign (suc n) (ρ' v))
+        (fmr : IX.FMor ∣ P ∣ ρ ρ') (w : FFm.S.W ∣ Q₀ ∣ ρ) (a : FFm.T.Assign w) →
+        prod (Γ .fam .fm γ)
+          (Hf.FA.fib Q₀ d' (proj₁ (IM.out-tree fmr w a)) (proj₂ (IM.out-tree fmr w a)))
+          ⇒ Hf.FB.fib Q₀ d' (proj₁ (IM.out-tree fmr w a)) (aH-W fmr w a)
+  HoW {Q₀ = Q₀} d' fmr w a =
+    Hf.rf-W {Q = Q₀} d' (proj₁ (IM.out-tree fmr w a)) (proj₂ (IM.out-tree fmr w a))
+
+  GoW : ∀ {k} {Q₀ : Poly-C (suc k)} {ρ ρ'} (d' : ∀ v → Decos.DecoAssign (suc n) (ρ' v))
+        (fmr : IX.FMor ∣ P ∣ ρ ρ') (w : FFm.S.W ∣ Q₀ ∣ ρ) (a : FFm.T.Assign w) →
+        prod (Γ .fam .fm γ)
+          (Hf.FA.fib Q₀ d' (proj₁ (IM.out-tree fmr w a)) (proj₂ (IM.out-tree fmr w a)))
+          ⇒ Hf.FB.fib Q₀ d' (proj₁ (IM.out-tree fmr w a)) (aG-W fmr w a)
+  GoW {Q₀ = Q₀} d' fmr w a =
+    BF.Gf.rf-W {Q = Q₀} d' (proj₁ (IM.out-tree fmr w a)) (proj₂ (IM.out-tree fmr w a))
+
+  aH-Sh aG-Sh : ∀ {j} (R : Poly-C j) {ηA ηB} (fmr : IX.FMor ∣ P ∣ ηA ηB)
+                (s : FFm.S.Shape ∣ R ∣ ηA) (a : FFm.T.AssignSh ∣ R ∣ ηA s) →
+                Sh.Trees.AssignSh FFm.ι' ∣ R ∣ ηB (proj₁ (IM.out-shape ∣ R ∣ fmr s a))
+  aH-Sh R {ηB = ηB} fmr s a q =
+    IX.Reindex.reindexIx (IN.hg algIx' algIxR' EL.hcur EL.hR γ)
+      (IM.S'.labelSh ∣ R ∣ ηB (proj₁ (IM.out-shape ∣ R ∣ fmr s a)) q)
+      (proj₂ (IM.out-shape ∣ R ∣ fmr s a) q)
+  aG-Sh R {ηB = ηB} fmr s a q =
+    IX.Reindex.reindexIx (IN.g algIx' algIxR' γ)
+      (IM.S'.labelSh ∣ R ∣ ηB (proj₁ (IM.out-shape ∣ R ∣ fmr s a)) q)
+      (proj₂ (IM.out-shape ∣ R ∣ fmr s a) q)
+
+  PoSh : ∀ {j} (R : Poly-C j) {ηA ηB} (fmr : IX.FMor ∣ P ∣ ηA ηB)
+         (s : FFm.S.Shape ∣ R ∣ ηA) (a : FFm.T.AssignSh ∣ R ∣ ηA s) → Prop (os ⊔ es)
+  PoSh R {ηB = ηB} fmr s a =
+    FFm.E'.Sh≈ ∣ R ∣ ηB
+      (proj₁ (IM.out-shape ∣ R ∣ fmr s a)) (proj₁ (IM.out-shape ∣ R ∣ fmr s a))
+      (aH-Sh R fmr s a) (aG-Sh R fmr s a)
+
+  HoSh : ∀ {j} (R : Poly-C j) {ηA ηB} (d' : ∀ v → Decos.DecoAssign (suc n) (ηB v))
+         (fmr : IX.FMor ∣ P ∣ ηA ηB) (s : FFm.S.Shape ∣ R ∣ ηA)
+         (a : FFm.T.AssignSh ∣ R ∣ ηA s) →
+         prod (Γ .fam .fm γ)
+           (Hf.FA.fib-shape R d' (proj₁ (IM.out-shape ∣ R ∣ fmr s a)) (proj₂ (IM.out-shape ∣ R ∣ fmr s a)))
+           ⇒ Hf.FB.fib-shape R d' (proj₁ (IM.out-shape ∣ R ∣ fmr s a)) (aH-Sh R fmr s a)
+  HoSh R d' fmr s a =
+    Hf.rf-Sh R d' (proj₁ (IM.out-shape ∣ R ∣ fmr s a)) (proj₂ (IM.out-shape ∣ R ∣ fmr s a))
+
+  GoSh : ∀ {j} (R : Poly-C j) {ηA ηB} (d' : ∀ v → Decos.DecoAssign (suc n) (ηB v))
+         (fmr : IX.FMor ∣ P ∣ ηA ηB) (s : FFm.S.Shape ∣ R ∣ ηA)
+         (a : FFm.T.AssignSh ∣ R ∣ ηA s) →
+         prod (Γ .fam .fm γ)
+           (Hf.FA.fib-shape R d' (proj₁ (IM.out-shape ∣ R ∣ fmr s a)) (proj₂ (IM.out-shape ∣ R ∣ fmr s a)))
+           ⇒ Hf.FB.fib-shape R d' (proj₁ (IM.out-shape ∣ R ∣ fmr s a)) (aG-Sh R fmr s a)
+  GoSh R d' fmr s a =
+    BF.Gf.rf-Sh R d' (proj₁ (IM.out-shape ∣ R ∣ fmr s a)) (proj₂ (IM.out-shape ∣ R ∣ fmr s a))
+
+  aH-El aG-El : ∀ {k} {ρ ρ'} (fmr : IX.FMor ∣ P ∣ ρ ρ') (v : Fin k)
+                (s : FFm.S.El (ρ v)) (a : FFm.T.AssignEl (ρ v) s) →
+                Sh.Trees.AssignEl FFm.ι' (ρ' v) (proj₁ (IM.out-el fmr v s a))
+  aH-El {ρ' = ρ'} fmr v s a q =
+    IX.Reindex.reindexIx (IN.hg algIx' algIxR' EL.hcur EL.hR γ)
+      (IM.S'.labelEl (ρ' v) (proj₁ (IM.out-el fmr v s a)) q)
+      (proj₂ (IM.out-el fmr v s a) q)
+  aG-El {ρ' = ρ'} fmr v s a q =
+    IX.Reindex.reindexIx (IN.g algIx' algIxR' γ)
+      (IM.S'.labelEl (ρ' v) (proj₁ (IM.out-el fmr v s a)) q)
+      (proj₂ (IM.out-el fmr v s a) q)
+
+  PoEl : ∀ {k} {ρ ρ'} (fmr : IX.FMor ∣ P ∣ ρ ρ') (v : Fin k)
+         (s : FFm.S.El (ρ v)) (a : FFm.T.AssignEl (ρ v) s) → Prop (os ⊔ es)
+  PoEl {ρ' = ρ'} fmr v s a =
+    FFm.E'.El≈ (ρ' v)
+      (proj₁ (IM.out-el fmr v s a)) (proj₁ (IM.out-el fmr v s a))
+      (aH-El fmr v s a) (aG-El fmr v s a)
+
+  HoEl : ∀ {k} {ρ ρ'} (d' : ∀ v → Decos.DecoAssign (suc n) (ρ' v))
+         (fmr : IX.FMor ∣ P ∣ ρ ρ') (v : Fin k)
+         (s : FFm.S.El (ρ v)) (a : FFm.T.AssignEl (ρ v) s) →
+         prod (Γ .fam .fm γ)
+           (Hf.FA.fib-el (ρ' v) (d' v) (proj₁ (IM.out-el fmr v s a)) (proj₂ (IM.out-el fmr v s a)))
+           ⇒ Hf.FB.fib-el (ρ' v) (d' v) (proj₁ (IM.out-el fmr v s a)) (aH-El fmr v s a)
+  HoEl {ρ' = ρ'} d' fmr v s a =
+    Hf.rf-El (ρ' v) (d' v) (proj₁ (IM.out-el fmr v s a)) (proj₂ (IM.out-el fmr v s a))
+
+  GoEl : ∀ {k} {ρ ρ'} (d' : ∀ v → Decos.DecoAssign (suc n) (ρ' v))
+         (fmr : IX.FMor ∣ P ∣ ρ ρ') (v : Fin k)
+         (s : FFm.S.El (ρ v)) (a : FFm.T.AssignEl (ρ v) s) →
+         prod (Γ .fam .fm γ)
+           (Hf.FA.fib-el (ρ' v) (d' v) (proj₁ (IM.out-el fmr v s a)) (proj₂ (IM.out-el fmr v s a)))
+           ⇒ Hf.FB.fib-el (ρ' v) (d' v) (proj₁ (IM.out-el fmr v s a)) (aG-El fmr v s a)
+  GoEl {ρ' = ρ'} d' fmr v s a =
+    BF.Gf.rf-El (ρ' v) (d' v) (proj₁ (IM.out-el fmr v s a)) (proj₂ (IM.out-el fmr v s a))
+
+  mutual
+    η-fam-tree : (w : FFm.S.W ∣ P ∣ IX.params) (a : FFm.T.Assign w) →
+                 (A .fam .subst (IN.η algIx' algIxR' EL.hcur EL.hR hβI γ (w , a))
+                  ∘ h .famf .transf (γ , (w , a)))
+                   ≈ FFm.fold-fam alg γ w a
+    η-fam-tree (Sh.Shapes.sup s) a = {!!}
+
+    ηout-W : ∀ {k} {Q₀ : Poly-C (suc k)} {ρ ρ'} {fmr : IX.FMor ∣ P ∣ ρ ρ'}
+             {d : ∀ v → Decos.DecoAssign n (ρ v)} {d' : ∀ v → Decos.DecoAssign (suc n) (ρ' v)}
+             (df : DecoDefs.DecoF P fmr d d')
+             (w : FFm.S.W ∣ Q₀ ∣ ρ) (a : FFm.T.Assign w) (p : PoW Q₀ fmr w a) →
+             (FFm.FA.fib-subst Q₀ d'
+                {w₁ = proj₁ (IM.out-tree fmr w a)} {w₂ = proj₁ (IM.out-tree fmr w a)} p
+              ∘ HoW {Q₀ = Q₀} d' fmr w a)
+               ≈ GoW {Q₀ = Q₀} d' fmr w a
+    ηout-W {Q₀ = Q₀} df (Sh.Shapes.sup s) a p =
+      ηout-Sh Q₀ (DecoDefs.dbind Q₀ df) s a p
+
+    ηout-Sh : ∀ {j} (R : Poly-C j) {ηA ηB} {fmr : IX.FMor ∣ P ∣ ηA ηB}
+              {d : ∀ v → Decos.DecoAssign n (ηA v)} {d' : ∀ v → Decos.DecoAssign (suc n) (ηB v)}
+              (df : DecoDefs.DecoF P fmr d d')
+              (s : FFm.S.Shape ∣ R ∣ ηA) (a : FFm.T.AssignSh ∣ R ∣ ηA s) (p : PoSh R fmr s a) →
+              (FFm.FA.fib-shape-subst R d' p ∘ HoSh R d' fmr s a)
+                ≈ GoSh R d' fmr s a
+    ηout-Sh (const A₀) df s a p =
+      ≈-trans (∘-cong₁ (A₀ .fam .refl*)) id-left
+    ηout-Sh (var v)    df s a p = ηout-El df v s a p
+    ηout-Sh (R₁ + R₂)  df (inj₁ s) a p = ηout-Sh R₁ df s a p
+    ηout-Sh (R₁ + R₂)  df (inj₂ s) a p = ηout-Sh R₂ df s a p
+    ηout-Sh (R₁ × R₂)  df (s₁ , s₂) a (p' , q') =
+      ≈-trans (strong-prod-m-post _ _ _ _)
+        (strong-prod-m-cong (ηout-Sh R₁ df s₁ (λ q → a (inj₁ q)) p')
+          (ηout-Sh R₂ df s₂ (λ q → a (inj₂ q)) q'))
+    ηout-Sh (μ R₀')    df s a p = ηout-W df s a p
+
+    ηout-El : ∀ {k} {ρ ρ'} {fmr : IX.FMor ∣ P ∣ ρ ρ'}
+              {d : ∀ v → Decos.DecoAssign n (ρ v)} {d' : ∀ v → Decos.DecoAssign (suc n) (ρ' v)}
+              (df : DecoDefs.DecoF P fmr d d') (v : Fin k)
+              (s : FFm.S.El (ρ v)) (a : FFm.T.AssignEl (ρ v) s) (p : PoEl fmr v s a) →
+              (FFm.FA.fib-el-subst (ρ' v) (d' v) p ∘ HoEl d' fmr v s a)
+                ≈ GoEl d' fmr v s a
+    ηout-El DecoDefs.dbase        zero    s a p = η-fam-tree s a
+    ηout-El DecoDefs.dbase        (suc i) s a p =
+      ≈-trans (∘-cong₁ (δ i .fam .refl*)) id-left
+    ηout-El (DecoDefs.dbind Q₀ df) zero    w a p = ηout-W df w a p
+    ηout-El (DecoDefs.dbind Q₀ df) (suc v) s a p = ηout-El df v s a p
+
+------------------------------------------------------------------------------
 -- The initiality laws for the Fam μ-type structure. Index halves are the
 -- proven -idx lemmas; fibre halves under construction.
 ------------------------------------------------------------------------------
