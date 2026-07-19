@@ -1129,6 +1129,50 @@ module KDirect {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
     where
       module Yβ = prop-setoid.IsEquivalence (μObj R'' (extend δ A) .idx .Setoid.isEquivalence)
 
+-- The root β square at a one-level unfolding: the fibre fold after the
+-- algebra map's fibre action, transported along β, equals the algebra's
+-- fibre map after the g-family action behind unembed.
+rootβ-fam : ∀ {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
+            (alg : Fam𝒞._⇒_ (Fam𝒞-P.prod Γ (fobj μObj P (extend δ A))) A)
+            (γ : Γ .idx .Setoid.Carrier)
+            (t̂ : InMap.Tᵢ.TreeSh P δ ∣ P ∣ IX.params) →
+            (A .fam .subst
+               (Initiality.β Γ A P δ (Fold.algIx Γ A P δ alg) (Fold.algIx-resp Γ A P δ alg) γ t̂)
+             ∘ (Fold.fold-fam Γ A P δ alg γ
+                  (proj₁ (InMap.inMap P δ t̂)) (proj₂ (InMap.inMap P δ t̂))
+                ∘ prod-m (id _) (InMap.in-fam-shape P δ P DecoDefs.dbase (proj₁ t̂) (proj₂ t̂))))
+              ≈ (alg .famf .transf (γ , Fold.unembed-idx Γ A P δ P
+                    (IX.Reindex.reindexSh
+                      (Initiality.g Γ A P δ (Fold.algIx Γ A P δ alg) (Fold.algIx-resp Γ A P δ alg) γ)
+                      {Q = ∣ P ∣} {η = IX.params} t̂))
+                 ∘ pair p₁ (Fold.unembed-fam Γ A P δ P
+                      (proj₁ (IX.Reindex.reindexSh
+                        (Initiality.g Γ A P δ (Fold.algIx Γ A P δ alg) (Fold.algIx-resp Γ A P δ alg) γ)
+                        {Q = ∣ P ∣} {η = IX.params} t̂))
+                      (proj₂ (IX.Reindex.reindexSh
+                        (Initiality.g Γ A P δ (Fold.algIx Γ A P δ alg) (Fold.algIx-resp Γ A P δ alg) γ)
+                        {Q = ∣ P ∣} {η = IX.params} t̂))
+                    ∘ BetaFam.Gf.rf-Sh Γ A P δ alg γ P (λ v → lift tt) (proj₁ t̂) (proj₂ t̂)))
+rootβ-fam {n} Γ A P δ alg γ t̂ =
+  ≈-trans (∘-cong₂ (≈-trans (assoc _ _ _)
+             (∘-cong₂ (≈-trans (pair-natural _ _ _)
+               (pair-cong (≈-trans (pair-p₁ _ _) id-left) (assoc _ _ _))))))
+    (≈-trans (≈-sym (assoc _ _ _))
+      (≈-trans (∘-cong₁ (≈-sym (alg .famf .natural
+                  (Γ .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = γ}
+                  , Fold.unembed-resp Γ A P δ P βshP))))
+        (≈-trans (assoc _ _ _)
+          (∘-cong₂ (≈-trans (pair-compose _ _ _ _)
+            (pair-cong (≈-trans (∘-cong₁ (Γ .fam .refl*)) id-left)
+              (≈-trans (≈-sym (assoc _ _ _))
+                (≈-trans (∘-cong₁ (≈-sym (Fold.unembed-fam-natural Γ A P δ P βshP)))
+                  (≈-trans (assoc _ _ _)
+                    (∘-cong₂ (BetaFam.β-fam-shape Γ A P δ alg γ P DecoDefs.dbase
+                       (proj₁ t̂) (proj₂ t̂))))))))))))
+  where
+    βshP = Initiality.β-shape Γ A P δ (Fold.algIx Γ A P δ alg) (Fold.algIx-resp Γ A P δ alg)
+             γ ∣ P ∣ IX.fbase (proj₁ t̂) (proj₂ t̂)
+
 -- Fibre half of the β law, standalone so each step elaborates against an
 -- ascribed statement.
 β-famf : ∀ {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
@@ -1218,29 +1262,7 @@ module KDirect {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
 
     βshP = BF.IN.β-shape BF.algIx BF.algIxR γ ∣ P ∣ IX.fbase (proj₁ t̂₁) (proj₂ t̂₁)
 
-    rootβA : (A .fam .subst P₁
-              ∘ (FFm.fold-fam alg γ (proj₁ (IM.inMap t̂₁)) (proj₂ (IM.inMap t̂₁))
-                 ∘ prod-m (id _) (IM.in-fam-shape P DecoDefs.dbase (proj₁ t̂₁) (proj₂ t̂₁))))
-               ≈ (alg .famf .transf (γ , FFm.unembed-idx P
-                     (IX.Reindex.reindexSh (BF.IN.g BF.algIx BF.algIxR γ) {Q = ∣ P ∣} {η = IX.params} t̂₁))
-                  ∘ pair p₁ (FFm.unembed-fam P
-                       (proj₁ (IX.Reindex.reindexSh (BF.IN.g BF.algIx BF.algIxR γ) {Q = ∣ P ∣} {η = IX.params} t̂₁))
-                       (proj₂ (IX.Reindex.reindexSh (BF.IN.g BF.algIx BF.algIxR γ) {Q = ∣ P ∣} {η = IX.params} t̂₁))
-                     ∘ BF.Gf.rf-Sh P (λ v → lift tt) (proj₁ t̂₁) (proj₂ t̂₁)))
-    rootβA =
-      ≈-trans (∘-cong₂ (≈-trans (assoc _ _ _)
-                 (∘-cong₂ (≈-trans (pair-natural _ _ _)
-                   (pair-cong (≈-trans (pair-p₁ _ _) id-left) (assoc _ _ _))))))
-        (≈-trans (≈-sym (assoc _ _ _))
-          (≈-trans (∘-cong₁ (≈-sym (alg .famf .natural
-                      (ΓE.refl {x = γ} , FFm.unembed-resp P βshP))))
-            (≈-trans (assoc _ _ _)
-              (∘-cong₂ (≈-trans (pair-compose _ _ _ _)
-                (pair-cong (≈-trans (∘-cong₁ (Γ .fam .refl*)) id-left)
-                  (≈-trans (≈-sym (assoc _ _ _))
-                    (≈-trans (∘-cong₁ (≈-sym (FFm.unembed-fam-natural P βshP)))
-                      (≈-trans (assoc _ _ _)
-                        (∘-cong₂ (BF.β-fam-shape P DecoDefs.dbase (proj₁ t̂₁) (proj₂ t̂₁))))))))))))
+    rootβA = rootβ-fam Γ A P δ alg γ t̂₁
 
     tailFold : (pair p₁ (FFm.unembed-fam P _ _ ∘ BF.Gf.rf-Sh P (λ v → lift tt) (proj₁ t̂₁) (proj₂ t̂₁))
                 ∘ prod-m (id _) (IM.embed-fam P m))
