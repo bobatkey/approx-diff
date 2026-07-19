@@ -494,6 +494,61 @@ module FibreReindexS {N} (Γ : Obj) {ιA ιB : Fin N → Setoid os (os ⊔ es)}
     rf-El (inj₂ _) (Decos.mkDeco Q ρd) w a = rf-W ρd w a
 
 ------------------------------------------------------------------------------
+-- Two fibre actions over pointwise-equal environment families agree, up to
+-- transport along the pointwise index-level agreement, given per-leaf
+-- agreement of the fibre maps. Diagonal in the shape.
+------------------------------------------------------------------------------
+module PointwiseFam {N} (Γ : Obj) {ιA ιB : Fin N → Setoid os (os ⊔ es)}
+                    {δfA : ∀ v → Fam (ιA v) 𝒞} {δfB : ∀ v → Fam (ιB v) 𝒞}
+                    (g₁ g₂ : ∀ v → ιA v prop-setoid.⇒ ιB v)
+                    (γ : Γ .idx .Setoid.Carrier)
+                    (gf₁ : ∀ v (x : ιA v .Setoid.Carrier) →
+                           prod (Γ .fam .fm γ) (δfA v .fm x) ⇒ δfB v .fm (g₁ v .func x))
+                    (gf₂ : ∀ v (x : ιA v .Setoid.Carrier) →
+                           prod (Γ .fam .fm γ) (δfA v .fm x) ⇒ δfB v .fm (g₂ v .func x))
+                    (g≈ : ∀ v x → Setoid._≈_ (ιB v) (g₁ v .func x) (g₂ v .func x))
+                    (gf≈ : ∀ v x → (δfB v .subst (g≈ v x) ∘ gf₁ v x) ≈ gf₂ v x) where
+  module R₁f = FibreReindexS Γ {ιA = ιA} {ιB = ιB} {δfA = δfA} {δfB = δfB} g₁ γ gf₁
+  module R₂f = FibreReindexS Γ {ιA = ιA} {ιB = ιB} {δfA = δfA} {δfB = δfB} g₂ γ gf₂
+
+  hS : ∀ (S : Setoid os (os ⊔ es)) x → Setoid._≈_ S x x
+  hS S x = S .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = x}
+
+  module PW = IX.Pointwise
+    (λ l x → R₁f.Rg.reindexIx l x) (λ l x → R₂f.Rg.reindexIx l x)
+    hS (λ v x → g≈ v x)
+
+  module FBf = Fibre ιB δfB
+
+  mutual
+    pw-W : ∀ {k} {Q₀ : Poly-C (suc k)} {ρ̄} (d : ∀ v → Decos.DecoAssign N (ρ̄ v))
+           (w : Sh.Shapes.W N ∣ Q₀ ∣ ρ̄) (a : Sh.Trees.Assign ιA w) →
+           (FBf.fib-subst Q₀ d {w₁ = w} {w₂ = w} (PW.agree-W w a) ∘ R₁f.rf-W d w a)
+             ≈ R₂f.rf-W d w a
+    pw-W {Q₀ = Q₀} d (Sh.Shapes.sup s) a = pw-Sh Q₀ (Decos.deco-ext N Q₀ d) s a
+
+    pw-Sh : ∀ {j} (Q₀ : Poly-C j) {η̄} (d : ∀ v → Decos.DecoAssign N (η̄ v))
+            (s : Sh.Shapes.Shape N ∣ Q₀ ∣ η̄) (a : Sh.Trees.AssignSh ιA ∣ Q₀ ∣ η̄ s) →
+            (FBf.fib-shape-subst Q₀ d (PW.agree-Sh ∣ Q₀ ∣ η̄ s a) ∘ R₁f.rf-Sh Q₀ d s a)
+              ≈ R₂f.rf-Sh Q₀ d s a
+    pw-Sh (const A₀) d s a = ≈-trans (∘-cong₁ (A₀ .fam .refl*)) id-left
+    pw-Sh (var j)    d s a = pw-El _ (d j) s a
+    pw-Sh (Q₁ + Q₂)  d (inj₁ s) a = pw-Sh Q₁ d s a
+    pw-Sh (Q₁ + Q₂)  d (inj₂ s) a = pw-Sh Q₂ d s a
+    pw-Sh (Q₁ × Q₂)  d (s₁ , s₂) a =
+      ≈-trans (strong-prod-m-post _ _ _ _)
+        (strong-prod-m-cong (pw-Sh Q₁ d s₁ (λ p → a (inj₁ p)))
+          (pw-Sh Q₂ d s₂ (λ p → a (inj₂ p))))
+    pw-Sh (μ Q₀')    d s a = pw-W d s a
+
+    pw-El : ∀ (r : Fin N ⊎ Sh.Sort N) (dr : Decos.DecoAssign N r)
+            (s : Sh.Shapes.El N r) (a : Sh.Trees.AssignEl ιA r s) →
+            (FBf.fib-el-subst r dr (PW.agree-El r s a) ∘ R₁f.rf-El r dr s a)
+              ≈ R₂f.rf-El r dr s a
+    pw-El (inj₁ v)            _ s a = gf≈ v (a tt)
+    pw-El (inj₂ _) (Decos.mkDeco Q₀ ρd) w a = pw-W ρd w a
+
+------------------------------------------------------------------------------
 -- Fibre half of the β law: the fibre fold after the algebra map's fibre
 -- action, transported along the index-level β square, equals the fibre
 -- action along the Initiality g-family (the fibre fold at the α-entry,
