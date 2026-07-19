@@ -69,12 +69,6 @@ private
   ℓD : Level
   ℓD = o ⊔ m ⊔ e ⊔ lsuc os ⊔ lsuc es
 
--- Extend a family environment by a family over a fresh setoid.
-extendF : ∀ {n} {ι : Fin n → Setoid os (os ⊔ es)} {S : Setoid os (os ⊔ es)} →
-          (∀ i → Fam (ι i) 𝒞) → Fam S 𝒞 → ∀ v → Fam (extend ι S v) 𝒞
-extendF δf F Fin.zero    = F
-extendF δf F (Fin.suc i) = δf i
-
 -- A decoration of a sort: a μ-body erasing to it, with the sorts in its
 -- assignment decorated in turn. Decorations mention no environment, so they
 -- are shared by every fibre instantiation at the same context.

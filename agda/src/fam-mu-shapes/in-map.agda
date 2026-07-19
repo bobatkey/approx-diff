@@ -304,6 +304,81 @@ module InMap {n} (P : Poly-C (suc n)) (δ : Fin n → Obj) where
     in-fam-el-nat (dbind Q df) zero    {w₁} {w₂} p = in-fam-tree-nat df {w₁ = w₁} {w₂ = w₂} p
     in-fam-el-nat (dbind Q df) (suc v) p = in-fam-el-nat df v p
 
+  -- The fibre action of the root decomposition out-shape: identities and
+  -- 𝒞-products, the α-bundle being the identity on the μ-object's fibre.
+  mutual
+    out-fam-tree : ∀ {k} {Q : Poly-C (suc k)} {ρ ρ'} {fm : IX.FMor ∣ P ∣ ρ ρ'} {d d'}
+                   (df : DecoF fm d d') (w : S.W ∣ Q ∣ ρ) (a : T.Assign w) →
+                   Fδ.fib Q d w a ⇒ Fδ'.fib Q d' (proj₁ (out-tree fm w a)) (proj₂ (out-tree fm w a))
+    out-fam-tree {Q = Q} df (S.sup s) a = out-fam-shape Q (dbind Q df) s a
+
+    out-fam-shape : ∀ {j} (R : Poly-C j) {ηA ηB} {fm : IX.FMor ∣ P ∣ ηA ηB} {d d'}
+                    (df : DecoF fm d d') (s : S.Shape ∣ R ∣ ηA) (a : T.AssignSh ∣ R ∣ ηA s) →
+                    Fδ.fib-shape R d s a ⇒
+                      Fδ'.fib-shape R d' (proj₁ (out-shape ∣ R ∣ fm s a)) (proj₂ (out-shape ∣ R ∣ fm s a))
+    out-fam-shape (const A) df s a = id _
+    out-fam-shape (var v)   df s a = out-fam-el df v s a
+    out-fam-shape (R₁ + R₂) df (inj₁ s) a = out-fam-shape R₁ df s a
+    out-fam-shape (R₁ + R₂) df (inj₂ s) a = out-fam-shape R₂ df s a
+    out-fam-shape (R₁ × R₂) df (s₁ , s₂) a =
+      prod-m (out-fam-shape R₁ df s₁ (λ p → a (inj₁ p))) (out-fam-shape R₂ df s₂ (λ p → a (inj₂ p)))
+    out-fam-shape (μ Q')    df s a = out-fam-tree df s a
+
+    out-fam-el : ∀ {k} {ρ ρ'} {fm : IX.FMor ∣ P ∣ ρ ρ'} {d d'} (df : DecoF fm d d') (v : Fin k)
+                 (s : S.El (ρ v)) (a : T.AssignEl (ρ v) s) →
+                 Fδ.fib-el (ρ v) (d v) s a ⇒
+                   Fδ'.fib-el (ρ' v) (d' v) (proj₁ (out-el fm v s a)) (proj₂ (out-el fm v s a))
+    out-fam-el dbase        zero    w a = id _
+    out-fam-el dbase        (suc i) s a = id _
+    out-fam-el (dbind Q df) zero    w a = out-fam-tree df w a
+    out-fam-el (dbind Q df) (suc v) s a = out-fam-el df v s a
+
+  -- Fibre half of the round trip: decomposing and reassembling is the
+  -- identity up to transport along the index-level round trip.
+  mutual
+    io-fam-tree : ∀ {k} {Q : Poly-C (suc k)} {ρ ρ'} {fm : IX.FMor ∣ P ∣ ρ ρ'} {d d'}
+                  (df : DecoF fm d d') (w : S.W ∣ Q ∣ ρ) (a : T.Assign w) →
+                  (Fδ.fib-subst Q d
+                     {w₁ = proj₁ (in-tree fm (proj₁ (out-tree fm w a)) (proj₂ (out-tree fm w a)))}
+                     {w₂ = w}
+                     (io-tree fm w a)
+                   ∘ (in-fam-tree df (proj₁ (out-tree fm w a)) (proj₂ (out-tree fm w a))
+                      ∘ out-fam-tree df w a))
+                    ≈ id _
+    io-fam-tree {Q = Q} df (S.sup s) a = io-fam-shape Q (dbind Q df) s a
+
+    io-fam-shape : ∀ {j} (R : Poly-C j) {ηA ηB} {fm : IX.FMor ∣ P ∣ ηA ηB} {d d'}
+                   (df : DecoF fm d d') (s : S.Shape ∣ R ∣ ηA) (a : T.AssignSh ∣ R ∣ ηA s) →
+                   (Fδ.fib-shape-subst R d (io-shape ∣ R ∣ fm s a)
+                    ∘ (in-fam-shape R df (proj₁ (out-shape ∣ R ∣ fm s a)) (proj₂ (out-shape ∣ R ∣ fm s a))
+                       ∘ out-fam-shape R df s a))
+                     ≈ id _
+    io-fam-shape (const A) df s a =
+      ≈-trans (∘-cong₁ (A .fam .refl*)) (≈-trans id-left id-left)
+    io-fam-shape (var v)   df s a = io-fam-el df v s a
+    io-fam-shape (R₁ + R₂) df (inj₁ s) a = io-fam-shape R₁ df s a
+    io-fam-shape (R₁ + R₂) df (inj₂ s) a = io-fam-shape R₂ df s a
+    io-fam-shape (R₁ × R₂) df (s₁ , s₂) a =
+      ≈-trans (∘-cong₂ (≈-sym (prod-m-comp _ _ _ _)))
+        (≈-trans (≈-sym (prod-m-comp _ _ _ _))
+          (≈-trans (prod-m-cong (io-fam-shape R₁ df s₁ (λ p → a (inj₁ p)))
+                      (io-fam-shape R₂ df s₂ (λ p → a (inj₂ p))))
+            prod-m-id))
+    io-fam-shape (μ Q')    df s a = io-fam-tree df s a
+
+    io-fam-el : ∀ {k} {ρ ρ'} {fm : IX.FMor ∣ P ∣ ρ ρ'} {d d'} (df : DecoF fm d d') (v : Fin k)
+                (s : S.El (ρ v)) (a : T.AssignEl (ρ v) s) →
+                (Fδ.fib-el-subst (ρ v) (d v) (io-el fm v s a)
+                 ∘ (in-fam-el df v (proj₁ (out-el fm v s a)) (proj₂ (out-el fm v s a))
+                    ∘ out-fam-el df v s a))
+                  ≈ id _
+    io-fam-el dbase        zero    w a =
+      ≈-trans (∘-cong₁ (Fδ.fib-refl* P d₀ w a)) (≈-trans id-left id-left)
+    io-fam-el dbase        (suc i) s a =
+      ≈-trans (∘-cong₁ (δf i .refl*)) (≈-trans id-left id-left)
+    io-fam-el (dbind Q df) zero    w a = io-fam-tree df w a
+    io-fam-el (dbind Q df) (suc v) s a = io-fam-el df v s a
+
   ------------------------------------------------------------------------------
   -- Bridge fobj's native structure to shapes with assignments over the
   -- extended environment: leaves become the one-position shape with the

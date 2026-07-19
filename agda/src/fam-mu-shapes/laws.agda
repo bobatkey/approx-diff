@@ -494,9 +494,95 @@ module FibreReindexS {N} (Γ : Obj) {ιA ιB : Fin N → Setoid os (os ⊔ es)}
     rf-El (inj₂ _) (Decos.mkDeco Q ρd) w a = rf-W ρd w a
 
 ------------------------------------------------------------------------------
+-- Fibre half of the β law: the fibre fold after the algebra map's fibre
+-- action, transported along the index-level β square, equals the fibre
+-- action along the Initiality g-family (the fibre fold at the α-entry,
+-- projection at the parameters). Leaf-refl induction; at an α-position both
+-- sides are the fibre fold of the spliced subtree.
+------------------------------------------------------------------------------
+module BetaFam {n} (Γ A : Obj) (P : Poly-C (suc n)) (δ : Fin n → Obj)
+               (alg : Fam𝒞._⇒_ (Fam𝒞-P.prod Γ (fobj μObj P (extend δ A))) A)
+               (γ : Γ .idx .Setoid.Carrier) where
+  module FF = Fold Γ A P δ
+  module IM = InMap P δ
+  module IN = Initiality Γ A P δ
+
+  open DecoDefs P
+
+  algIx = FF.algIx alg
+  algIxR = FF.algIx-resp alg
+
+  gfg : ∀ v (x : IM.ιᵢ v .Setoid.Carrier) →
+        prod (Γ .fam .fm γ) (IM.δᵢ v .fam .fm x) ⇒
+          FF.δᴬ v .fam .fm (IN.g algIx algIxR γ v .func x)
+  gfg zero t = FF.fold-fam alg γ (proj₁ t) (proj₂ t)
+  gfg (suc i) x = p₂
+
+  module Gf = FibreReindexS Γ {ιA = IM.ιᵢ} {ιB = FF.ι'}
+                {δfA = λ v → IM.δᵢ v .fam} {δfB = λ v → FF.δᴬ v .fam}
+                (IN.g algIx algIxR γ) γ gfg
+
+  mutual
+    β-fam-tree : ∀ {k} {Q₀ : Poly-C (suc k)} {ρ ρ'} {fm : IX.FMor ∣ P ∣ ρ ρ'} {d d'}
+                 (df : DecoF fm d d') (w : IM.S'.W ∣ Q₀ ∣ ρ') (a : IM.Tᵢ.Assign w) →
+                 (FF.FA.fib-subst Q₀ d'
+                    {w₁ = proj₁ (FF.fold-reindex algIx γ fm (proj₁ (IM.in-tree fm w a)) (proj₂ (IM.in-tree fm w a)))}
+                    {w₂ = w}
+                    (IN.β-tree algIx algIxR γ fm w a)
+                  ∘ (FF.fold-tree-fam alg γ df (proj₁ (IM.in-tree fm w a)) (proj₂ (IM.in-tree fm w a))
+                     ∘ prod-m (id _) (IM.in-fam-tree df w a)))
+                   ≈ Gf.rf-W d' w a
+    β-fam-tree {Q₀ = Q₀} df (IM.S'.sup s) a = β-fam-shape Q₀ (dbind Q₀ df) s a
+
+    β-fam-shape : ∀ {j} (R : Poly-C j) {ηA ηB} {fm : IX.FMor ∣ P ∣ ηA ηB} {d d'}
+                  (df : DecoF fm d d') (s : IM.S'.Shape ∣ R ∣ ηB) (a : IM.Tᵢ.AssignSh ∣ R ∣ ηB s) →
+                  (FF.FA.fib-shape-subst R d' (IN.β-shape algIx algIxR γ ∣ R ∣ fm s a)
+                   ∘ (FF.fold-shape-fam alg γ R df (proj₁ (IM.in-shape ∣ R ∣ fm s a)) (proj₂ (IM.in-shape ∣ R ∣ fm s a))
+                      ∘ prod-m (id _) (IM.in-fam-shape R df s a)))
+                    ≈ Gf.rf-Sh R d' s a
+    β-fam-shape (const A₀) df s a =
+      ≈-trans (∘-cong₁ (A₀ .fam .refl*))
+        (≈-trans id-left (≈-trans (pair-p₂ _ _) id-left))
+    β-fam-shape (var v)    df s a = β-fam-el df v s a
+    β-fam-shape (R₁ + R₂)  df (inj₁ s) a = β-fam-shape R₁ df s a
+    β-fam-shape (R₁ + R₂)  df (inj₂ s) a = β-fam-shape R₂ df s a
+    β-fam-shape (R₁ × R₂)  df (s₁ , s₂) a =
+      ≈-trans (∘-cong₂ (strong-prod-m-pre _ _ _ _ _))
+        (≈-trans (strong-prod-m-post _ _ _ _)
+          (strong-prod-m-cong (β-fam-shape R₁ df s₁ (λ p → a (inj₁ p)))
+            (β-fam-shape R₂ df s₂ (λ p → a (inj₂ p)))))
+    β-fam-shape (μ Q₀')    df s a = β-fam-tree df s a
+
+    β-fam-el : ∀ {k} {ρ ρ'} {fm : IX.FMor ∣ P ∣ ρ ρ'} {d d'} (df : DecoF fm d d') (v : Fin k)
+               (s : IM.S'.El (ρ' v)) (a : IM.Tᵢ.AssignEl (ρ' v) s) →
+               (FF.FA.fib-el-subst (ρ' v) (d' v) (IN.β-el algIx algIxR γ fm v s a)
+                ∘ (FF.fold-apply-fam alg γ df v (proj₁ (IM.in-el fm v s a)) (proj₂ (IM.in-el fm v s a))
+                   ∘ prod-m (id _) (IM.in-fam-el df v s a)))
+                 ≈ Gf.rf-El (ρ' v) (d' v) s a
+    β-fam-el dbase        zero    s a =
+      ≈-trans (∘-cong₁ (A .fam .refl*))
+        (≈-trans id-left (≈-trans (∘-cong₂ prod-m-id) id-right))
+    β-fam-el dbase        (suc i) s a =
+      ≈-trans (∘-cong₁ (δ i .fam .refl*))
+        (≈-trans id-left (≈-trans (pair-p₂ _ _) id-left))
+    β-fam-el (dbind Q₀ df) zero    w a = β-fam-tree df w a
+    β-fam-el (dbind Q₀ df) (suc v) s a = β-fam-el df v s a
+
+------------------------------------------------------------------------------
 -- Fibre data of a fusion instance: the fibre maps sitting over the pointwise
 -- index family and over its α-extension by tree reindexing.
 ------------------------------------------------------------------------------
+-- The fibre part of a fusion family: the Fam-morphism's fibre map,
+-- transported to sit over the pointwise index family. Top-level so that the
+-- instances at a fusion datum and at its binder extension coincide.
+gfD : ∀ {N} (D : FuseData N) (γ : D .Γ .idx .Setoid.Carrier) (v : Fin N)
+      (x : D .sₛ v .idx .Setoid.Carrier) →
+      prod (D .Γ .fam .fm γ) (D .sₛ v .fam .fm x) ⇒ D .sₜ v .fam .fm (D .gγ γ v .func x)
+gfD D γ v x =
+  D .sₜ v .fam .subst
+    (D .sₜ v .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym (D .corr γ v x))
+    ∘ D .fs v .famf .transf (γ , x)
+
 module FuseFib {N} (D : FuseData N) (Q : Poly-C (suc N)) (γ : D .Γ .idx .Setoid.Carrier) where
   module FI = FuseInst D Q
 
@@ -504,40 +590,175 @@ module FuseFib {N} (D : FuseData N) (Q : Poly-C (suc N)) (γ : D .Γ .idx .Setoi
                  (μObj Q (D .sₜ))
   ALG = Fam𝒞._∘_ (hasMu .HasMu.inMap Q (D .sₜ)) (strong-fmor Q FI.fs★)
 
-  -- The fibre part of the fusion family: the Fam-morphism's fibre map,
-  -- transported to sit over the pointwise index family.
-  gfD : ∀ v (x : D .sₛ v .idx .Setoid.Carrier) →
-        prod (D .Γ .fam .fm γ) (D .sₛ v .fam .fm x) ⇒ D .sₜ v .fam .fm (D .gγ γ v .func x)
-  gfD v x =
-    D .sₜ v .fam .subst
-      (D .sₜ v .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.sym (D .corr γ v x))
-      ∘ D .fs v .famf .transf (γ , x)
-
   module RFμ = FibreReindexS (D .Γ) {ιA = λ v → D .sₛ v .idx} {ιB = λ v → D .sₜ v .idx}
                  {δfA = λ v → D .sₛ v .fam} {δfB = λ v → D .sₜ v .fam}
-                 (D .gγ γ) γ gfD
+                 (D .gγ γ) γ (gfD D γ)
 
-  -- The fibre action over ĝ: reindexing of whole trees at the α-entry, the
-  -- fusion family's fibre maps at the parameters.
-  ĝf : ∀ v (x : FI.ISs.ιᵢ v .Setoid.Carrier) →
-       prod (D .Γ .fam .fm γ) (FI.ISs.δᵢ v .fam .fm x) ⇒
-         FI.ISt.δᵢ v .fam .fm (ReindexInMap.ĝ (D .sₛ) (D .sₜ) (D .gγ γ) Q v .func x)
-  ĝf zero t = RFμ.rf-W (λ v → lift tt) (proj₁ t) (proj₂ t)
-  ĝf (suc i) x = gfD i x
+  -- The fold's defining algebra at the index level.
+  module Yμ = prop-setoid.IsEquivalence (μObj Q (D .sₜ) .idx .Setoid.isEquivalence)
 
-  module RĜ = FibreReindexS (D .Γ) {ιA = FI.ISs.ιᵢ} {ιB = FI.ISt.ιᵢ}
-                {δfA = λ v → FI.ISs.δᵢ v .fam} {δfB = λ v → FI.ISt.δᵢ v .fam}
-                (ReindexInMap.ĝ (D .sₛ) (D .sₜ) (D .gγ γ) Q) γ ĝf
+  ALGIx = FI.FF.algIx ALG
 
 ------------------------------------------------------------------------------
--- Fibre side of the fusion theorem, mirroring the index-level mutual pair.
--- fuse-fam-μ: the pointwise fibre action along the fusion family, transported
--- along the index-level fusion, equals the strong action's fibre part; direct
--- tree induction (the transported proofs are Prop-valued, so only their
--- endpoints matter). fuse-fam-poly: the fibre action along ĝ on a one-level
--- unfolding, transported along index-level fuse-poly, equals the pipeline's
--- fibre part; the rhf family carries the fibre maps over rh, agreeing with
--- tree reindexing at α (rhf0) and trivial at the parameters (rhf1).
+-- Direct fusion data at an instance. Φ is the composite the fold's recursion
+-- produces at each level: translate, reindex along the binder-extended
+-- family, reassemble. fuse-sh proves the index-level shape fusion (Φ agrees
+-- with pointwise reindexing), with the proven fuse-μ discharging the α and
+-- inner-μ positions. bridge-idx relates the strong action's one-level index
+-- behaviour behind the bridges to reindexing along the extended family, its
+-- μ-case again the proven fuse-μ at the extended instance.
+------------------------------------------------------------------------------
+module FuseDirect {N} (D : FuseData N) (Q : Poly-C (suc N)) (γ : D .Γ .idx .Setoid.Carrier) where
+  module FI = FuseInst D Q
+  module FB = FuseFib D Q γ
+
+  Dₑ : FuseData (suc N)
+  Dₑ = ext-data D Q
+
+  -- The fibre action along the binder-extended family; definitionally the
+  -- RFμ instance of the extended fusion data.
+  module RE = FibreReindexS (D .Γ) {ιA = λ v → Dₑ .sₛ v .idx} {ιB = λ v → Dₑ .sₜ v .idx}
+                {δfA = λ v → Dₑ .sₛ v .fam} {δfB = λ v → Dₑ .sₜ v .fam}
+                (Dₑ .gγ γ) γ (gfD Dₑ γ)
+
+  Φw : ∀ {k} {Q₀ : Sh.Poly (suc k)} {ρ ρ'} (fmr : IX.FMor ∣ Q ∣ ρ ρ')
+       (w : FI.FF.S.W Q₀ ρ) (a : FI.FF.T.Assign w) → FI.ISt.T.Tree Q₀ ρ
+  Φw {Q₀ = Q₀} {ρ' = ρ'} fmr w a =
+    FI.ISt.in-tree fmr
+      (proj₁ (IX.Reindex.reindex (Dₑ .gγ γ) {Q = Q₀} {ρ = ρ'} (FI.FF.fold-reindex FB.ALGIx γ fmr w a)))
+      (proj₂ (IX.Reindex.reindex (Dₑ .gγ γ) {Q = Q₀} {ρ = ρ'} (FI.FF.fold-reindex FB.ALGIx γ fmr w a)))
+
+  Φsh : ∀ {j} (R : Sh.Poly j) {ηA ηB} (fmr : IX.FMor ∣ Q ∣ ηA ηB)
+        (s : FI.FF.S.Shape R ηA) (a : FI.FF.T.AssignSh R ηA s) → FI.ISt.T.TreeSh R ηA
+  Φsh R {ηB = ηB} fmr s a =
+    FI.ISt.in-shape R fmr
+      (proj₁ (IX.Reindex.reindexSh (Dₑ .gγ γ) {Q = R} {η = ηB} (FI.FF.fold-shape FB.ALGIx γ R fmr s a)))
+      (proj₂ (IX.Reindex.reindexSh (Dₑ .gγ γ) {Q = R} {η = ηB} (FI.FF.fold-shape FB.ALGIx γ R fmr s a)))
+
+  Φel : ∀ {k} {ρ ρ'} (fmr : IX.FMor ∣ Q ∣ ρ ρ') (v : Fin k)
+        (s : FI.FF.S.El (ρ v)) (a : FI.FF.T.AssignEl (ρ v) s) → FI.ISt.T.TreeEl (ρ v)
+  Φel {ρ' = ρ'} fmr v s a =
+    FI.ISt.in-el fmr v
+      (proj₁ (FI.FF.fold-apply FB.ALGIx γ fmr v s a))
+      (λ p → IX.Reindex.reindexIx (Dₑ .gγ γ)
+               (FI.FF.S'.labelEl (ρ' v) (proj₁ (FI.FF.fold-apply FB.ALGIx γ fmr v s a)) p)
+               (proj₂ (FI.FF.fold-apply FB.ALGIx γ fmr v s a) p))
+
+  mutual
+    fuse-w : ∀ {k} {Q₀ : Sh.Poly (suc k)} {ρ ρ'} (fmr : IX.FMor ∣ Q ∣ ρ ρ')
+             (w : FI.FF.S.W Q₀ ρ) (a : FI.FF.T.Assign w) →
+             FI.ISt.E.W≈ w (proj₁ (Φw fmr w a))
+               (λ p → IX.Reindex.reindexIx (D .gγ γ) (FI.FF.S.labelW w p) (a p))
+               (proj₂ (Φw fmr w a))
+    fuse-w {Q₀ = Q₀} fmr (Sh.Shapes.sup s) a = fuse-sh Q₀ (IX.fbind Q₀ fmr) s a
+
+    fuse-sh : ∀ {j} (R : Sh.Poly j) {ηA ηB} (fmr : IX.FMor ∣ Q ∣ ηA ηB)
+              (s : FI.FF.S.Shape R ηA) (a : FI.FF.T.AssignSh R ηA s) →
+              FI.ISt.E.Sh≈ R ηA s (proj₁ (Φsh R fmr s a))
+                (λ p → IX.Reindex.reindexIx (D .gγ γ) (FI.FF.S.labelSh R ηA s p) (a p))
+                (proj₂ (Φsh R fmr s a))
+    fuse-sh (const S₀) fmr s a = S₀ .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl
+    fuse-sh (var v)    fmr s a = fuse-el fmr v s a
+    fuse-sh (R₁ + R₂)  fmr (inj₁ s) a = fuse-sh R₁ fmr s a
+    fuse-sh (R₁ + R₂)  fmr (inj₂ s) a = fuse-sh R₂ fmr s a
+    fuse-sh (R₁ × R₂)  fmr (s₁ , s₂) a =
+      fuse-sh R₁ fmr s₁ (λ p → a (inj₁ p)) , fuse-sh R₂ fmr s₂ (λ p → a (inj₂ p))
+    fuse-sh (μ R₀')    fmr s a = fuse-w fmr s a
+
+    fuse-el : ∀ {k} {ρ ρ'} (fmr : IX.FMor ∣ Q ∣ ρ ρ') (v : Fin k)
+              (s : FI.FF.S.El (ρ v)) (a : FI.FF.T.AssignEl (ρ v) s) →
+              FI.ISt.E.El≈ (ρ v) s (proj₁ (Φel fmr v s a))
+                (λ p → IX.Reindex.reindexIx (D .gγ γ) (FI.FF.S.labelEl (ρ v) s p) (a p))
+                (proj₂ (Φel fmr v s a))
+    fuse-el IX.fbase        zero    s a = fuse-μ D Q γ (s , a)
+    fuse-el IX.fbase        (suc i) s a =
+      D .sₜ i .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl
+    fuse-el (IX.fbind Q₀ fmr) zero    w a = fuse-w fmr w a
+    fuse-el (IX.fbind Q₀ fmr) (suc v) s a = fuse-el fmr v s a
+
+  bridge-idx : ∀ (R' : Poly-C (suc N)) (x : FI.FF.T'.TreeSh ∣ R' ∣ IX.params) →
+    FI.ISt.Eᵢ.Sh≈ ∣ R' ∣ IX.params
+      (proj₁ (IX.Reindex.reindexSh (Dₑ .gγ γ) {Q = ∣ R' ∣} {η = IX.params} x))
+      (proj₁ (FI.ISt.embed-idx R' (strong-fmor R' FI.fs★ .idxf .func (γ , FI.FF.unembed-idx R' x))))
+      (proj₂ (IX.Reindex.reindexSh (Dₑ .gγ γ) {Q = ∣ R' ∣} {η = IX.params} x))
+      (proj₂ (FI.ISt.embed-idx R' (strong-fmor R' FI.fs★ .idxf .func (γ , FI.FF.unembed-idx R' x))))
+  bridge-idx (const A₀) (s , a) =
+    A₀ .idx .Setoid.isEquivalence .prop-setoid.IsEquivalence.refl {x = a tt}
+  bridge-idx (var zero) (s , a) = FB.Yμ.refl {x = a tt}
+  bridge-idx (var (suc i)) (s , a) = D .corr γ i (a tt)
+  bridge-idx (R₁ + R₂) (inj₁ s , a) = bridge-idx R₁ (s , a)
+  bridge-idx (R₁ + R₂) (inj₂ s , a) = bridge-idx R₂ (s , a)
+  bridge-idx (R₁ × R₂) ((s₁ , s₂) , a) =
+    bridge-idx R₁ (s₁ , λ p → a (inj₁ p)) , bridge-idx R₂ (s₂ , λ p → a (inj₂ p))
+  bridge-idx (μ R'') (w , a) = fuse-μ Dₑ R'' γ (w , a)
+
+  ------------------------------------------------------------------------------
+  -- Fibre composites of the two sides: Ψ is the fibre action of Φ (fold the
+  -- fibres, act along the extended family, reassemble); Ξ is the strong
+  -- action's fibre part behind the bridges.
+  ------------------------------------------------------------------------------
+  open DecoDefs Q
+
+  Ψw : ∀ {k} {Q₀ : Poly-C (suc k)} {ρ ρ'} {fmr : IX.FMor ∣ Q ∣ ρ ρ'} {d d'}
+       (df : DecoF fmr d d') (w : FI.FF.S.W ∣ Q₀ ∣ ρ) (a : FI.FF.T.Assign w) →
+       prod (D .Γ .fam .fm γ) (FI.FF.Fδ.fib Q₀ d w a) ⇒
+         FI.ISt.Fδ.fib Q₀ d (proj₁ (Φw {Q₀ = ∣ Q₀ ∣} fmr w a)) (proj₂ (Φw {Q₀ = ∣ Q₀ ∣} fmr w a))
+  Ψw {Q₀ = Q₀} {ρ' = ρ'} {fmr = fmr} {d' = d'} df w a =
+    FI.ISt.in-fam-tree df
+      (proj₁ (IX.Reindex.reindex (Dₑ .gγ γ) {Q = ∣ Q₀ ∣} {ρ = ρ'} (FI.FF.fold-reindex FB.ALGIx γ fmr w a)))
+      (proj₂ (IX.Reindex.reindex (Dₑ .gγ γ) {Q = ∣ Q₀ ∣} {ρ = ρ'} (FI.FF.fold-reindex FB.ALGIx γ fmr w a)))
+      ∘ (RE.rf-W {Q = Q₀} d'
+           (proj₁ (FI.FF.fold-reindex FB.ALGIx γ fmr w a))
+           (proj₂ (FI.FF.fold-reindex FB.ALGIx γ fmr w a))
+         ∘ pair p₁ (FI.FF.fold-tree-fam FB.ALG γ df w a))
+
+  Ψsh : ∀ {j} (R : Poly-C j) {ηA ηB} {fmr : IX.FMor ∣ Q ∣ ηA ηB} {d d'}
+        (df : DecoF fmr d d') (s : FI.FF.S.Shape ∣ R ∣ ηA) (a : FI.FF.T.AssignSh ∣ R ∣ ηA s) →
+        prod (D .Γ .fam .fm γ) (FI.FF.Fδ.fib-shape R d s a) ⇒
+          FI.ISt.Fδ.fib-shape R d (proj₁ (Φsh ∣ R ∣ fmr s a)) (proj₂ (Φsh ∣ R ∣ fmr s a))
+  Ψsh R {ηB = ηB} {fmr = fmr} {d' = d'} df s a =
+    FI.ISt.in-fam-shape R df
+      (proj₁ (IX.Reindex.reindexSh (Dₑ .gγ γ) {Q = ∣ R ∣} {η = ηB} (FI.FF.fold-shape FB.ALGIx γ ∣ R ∣ fmr s a)))
+      (proj₂ (IX.Reindex.reindexSh (Dₑ .gγ γ) {Q = ∣ R ∣} {η = ηB} (FI.FF.fold-shape FB.ALGIx γ ∣ R ∣ fmr s a)))
+      ∘ (RE.rf-Sh R d'
+           (proj₁ (FI.FF.fold-shape FB.ALGIx γ ∣ R ∣ fmr s a))
+           (proj₂ (FI.FF.fold-shape FB.ALGIx γ ∣ R ∣ fmr s a))
+         ∘ pair p₁ (FI.FF.fold-shape-fam FB.ALG γ R df s a))
+
+  Ψel : ∀ {k} {ρ ρ'} {fmr : IX.FMor ∣ Q ∣ ρ ρ'} {d d'}
+        (df : DecoF fmr d d') (v : Fin k)
+        (s : FI.FF.S.El (ρ v)) (a : FI.FF.T.AssignEl (ρ v) s) →
+        prod (D .Γ .fam .fm γ) (FI.FF.Fδ.fib-el (ρ v) (d v) s a) ⇒
+          FI.ISt.Fδ.fib-el (ρ v) (d v) (proj₁ (Φel fmr v s a)) (proj₂ (Φel fmr v s a))
+  Ψel {ρ' = ρ'} {fmr = fmr} {d' = d'} df v s a =
+    FI.ISt.in-fam-el df v
+      (proj₁ (FI.FF.fold-apply FB.ALGIx γ fmr v s a))
+      (λ p → IX.Reindex.reindexIx (Dₑ .gγ γ)
+               (FI.FF.S'.labelEl (ρ' v) (proj₁ (FI.FF.fold-apply FB.ALGIx γ fmr v s a)) p)
+               (proj₂ (FI.FF.fold-apply FB.ALGIx γ fmr v s a) p))
+      ∘ (RE.rf-El (ρ' v) (d' v)
+           (proj₁ (FI.FF.fold-apply FB.ALGIx γ fmr v s a))
+           (proj₂ (FI.FF.fold-apply FB.ALGIx γ fmr v s a))
+         ∘ pair p₁ (FI.FF.fold-apply-fam FB.ALG γ df v s a))
+
+  Ξ : ∀ (R' : Poly-C (suc N)) (x : FI.FF.T'.TreeSh ∣ R' ∣ IX.params) →
+      prod (D .Γ .fam .fm γ) (FI.FF.FA.fib-shape R' (λ v → lift tt) (proj₁ x) (proj₂ x)) ⇒
+        FI.ISt.Fδ'.fib-shape R' (λ v → lift tt)
+          (proj₁ (FI.ISt.embed-idx R' (strong-fmor R' FI.fs★ .idxf .func (γ , FI.FF.unembed-idx R' x))))
+          (proj₂ (FI.ISt.embed-idx R' (strong-fmor R' FI.fs★ .idxf .func (γ , FI.FF.unembed-idx R' x))))
+  Ξ R' x =
+    FI.ISt.embed-fam R' (strong-fmor R' FI.fs★ .idxf .func (γ , FI.FF.unembed-idx R' x))
+      ∘ (strong-fmor R' FI.fs★ .famf .transf (γ , FI.FF.unembed-idx R' x)
+         ∘ pair p₁ (FI.FF.unembed-fam R' (proj₁ x) (proj₂ x) ∘ p₂))
+
+------------------------------------------------------------------------------
+-- Fibre side of the fusion theorem: the pointwise fibre action along the
+-- fusion family, transported along the index-level fusion, equals the strong
+-- action's fibre part. Direct tree induction mirroring the fold's recursion;
+-- the transported proofs are Prop-valued, so only their endpoints matter.
+-- At the root, the fold's one level is the composite Φ (by fuse-sh), whose
+-- reindex-and-reassemble half converts to the strong action's one-level form
+-- behind the bridges (by bridge-fam).
 ------------------------------------------------------------------------------
 mutual
   fuse-fam-μ : ∀ {N} (D : FuseData N) (Q : Poly-C (suc N)) (γ : D .Γ .idx .Setoid.Carrier)
@@ -550,44 +771,165 @@ mutual
                   (fuse-μ D Q γ (w , a))
                 ∘ FuseFib.RFμ.rf-W D Q γ (λ v → lift tt) w a)
                  ≈ strong-μ-fmor Q (D .fs) .famf .transf (γ , (w , a))
-  fuse-fam-μ D Q γ w a = {!!}
+  fuse-fam-μ D Q γ (Sh.Shapes.sup s) a =
+    ≈-trans (∘-cong₁ (μObj Q (D .sₜ) .fam .trans*
+                {x = IX.Reindex.reindex {ι = λ v → D .sₛ v .idx} {ι' = λ v → D .sₜ v .idx}
+                       (D .gγ γ) {Q = ∣ Q ∣} {ρ = λ i → inj₁ i} (Sh.Shapes.sup s , a)}
+                {y = FD.FI.ISt.inMap (IX.Reindex.reindexSh (FD.Dₑ .gγ γ) {Q = ∣ Q ∣} {η = IX.params} FX)}
+                {z = FD.FI.FF.fold FD.FB.ALGIx γ (Sh.Shapes.sup s) a}
+                A₂ A₁))
+      (≈-trans (assoc _ _ _)
+        (≈-trans (∘-cong₂ (fuse-fam-sh D Q γ Q DecoDefs.dbase s a))
+          (≈-trans (≈-sym (assoc _ _ _))
+            (≈-trans (∘-cong₁ (≈-sym (FD.FI.ISt.in-fam-shape-nat Q DecoDefs.dbase
+                        (FD.bridge-idx Q FX))))
+              (≈-trans (assoc _ _ _)
+                (≈-trans (∘-cong₂ (≈-trans (≈-sym (assoc _ _ _))
+                            (≈-trans (∘-cong₁ (bridge-fam D Q γ Q FX))
+                              (≈-trans (assoc _ _ _)
+                                (∘-cong₂ (≈-trans (assoc _ _ _)
+                                  (∘-cong₂ (≈-trans (pair-natural _ _ _)
+                                    (pair-cong (pair-p₁ _ _)
+                                      (≈-trans (assoc _ _ _) (∘-cong₂ (pair-p₂ _ _))))))))))))
+                  (≈-sym (≈-trans (∘-cong₁ id-left)
+                    (≈-trans (assoc _ _ _) (assoc _ _ _))))))))))
+    where
+      module FD = FuseDirect D Q γ
 
-  fuse-fam-poly : ∀ {N} (D : FuseData N) (Q : Poly-C (suc N)) (R : Poly-C (suc N))
-                  (γ : D .Γ .idx .Setoid.Carrier)
-                  (rh : ∀ v → FuseInst.ISs.ιᵢ D Q v prop-setoid.⇒ FuseInst.FF.ι' D Q v)
-                  (rh0 : ∀ t'' → Setoid._≈_ (μObj Q (D .sₜ) .idx) (rh zero .func t'')
-                           (IX.Reindex.reindex {ι = λ v → D .sₛ v .idx} {ι' = λ v → D .sₜ v .idx}
-                              (D .gγ γ) {Q = ∣ Q ∣} {ρ = λ i → inj₁ i} t''))
-                  (rh1 : ∀ i x → Setoid._≈_ (D .sₛ i .idx) (rh (suc i) .func x) x)
-                  (rhf : ∀ v (x : FuseInst.ISs.ιᵢ D Q v .Setoid.Carrier) →
-                         prod (D .Γ .fam .fm γ) (FuseInst.ISs.δᵢ D Q v .fam .fm x) ⇒
-                           FuseInst.FF.δᴬ D Q v .fam .fm (rh v .func x))
-                  (rhf0 : ∀ t'' → (μObj Q (D .sₜ) .fam .subst
-                            {x = rh zero .func t''}
-                            {y = IX.Reindex.reindex {ι = λ v → D .sₛ v .idx} {ι' = λ v → D .sₜ v .idx}
-                                   (D .gγ γ) {Q = ∣ Q ∣} {ρ = λ i → inj₁ i} t''}
-                            (rh0 t'')
-                          ∘ rhf zero t'')
-                           ≈ FuseFib.RFμ.rf-W D Q γ (λ v → lift tt) (proj₁ t'') (proj₂ t''))
-                  (rhf1 : ∀ i x → (D .sₛ i .fam .subst (rh1 i x) ∘ rhf (suc i) x) ≈ p₂)
-                  (x : FuseInst.ISs.Tᵢ.TreeSh D Q ∣ R ∣ IX.params) →
-                  (FuseInst.ISt.Fδ'.fib-shape-subst D Q R (λ v → lift tt)
-                     (fuse-poly D Q R γ rh rh0 rh1 x)
-                   ∘ FuseFib.RĜ.rf-Sh D Q γ R (λ v → lift tt) (proj₁ x) (proj₂ x))
-                    ≈ (FuseInst.ISt.embed-fam D Q R
-                         (strong-fmor R (FuseInst.fs★ D Q) .idxf .func
-                           (γ , FuseInst.FF.unembed-idx D Q R
-                                  (IX.Reindex.reindexSh rh {Q = ∣ R ∣} {η = IX.params} x)))
-                       ∘ (strong-fmor R (FuseInst.fs★ D Q) .famf .transf
-                            (γ , FuseInst.FF.unembed-idx D Q R
-                                   (IX.Reindex.reindexSh rh {Q = ∣ R ∣} {η = IX.params} x))
-                          ∘ pair p₁
-                              (FuseInst.FF.unembed-fam D Q R
-                                 (proj₁ (IX.Reindex.reindexSh rh {Q = ∣ R ∣} {η = IX.params} x))
-                                 (proj₂ (IX.Reindex.reindexSh rh {Q = ∣ R ∣} {η = IX.params} x))
-                               ∘ FibreReindexS.rf-Sh (D .Γ)
-                                   {ιA = FuseInst.ISs.ιᵢ D Q} {ιB = FuseInst.FF.ι' D Q}
-                                   {δfA = λ v → FuseInst.ISs.δᵢ D Q v .fam}
-                                   {δfB = λ v → FuseInst.FF.δᴬ D Q v .fam}
-                                   rh γ rhf R (λ v → lift tt) (proj₁ x) (proj₂ x))))
-  fuse-fam-poly D Q R γ rh rh0 rh1 rhf rhf0 rhf1 x = {!!}
+      FX = FD.FI.FF.fold-shape FD.FB.ALGIx γ ∣ Q ∣ IX.fbase s a
+
+      A₁ : FD.FI.ISt.E.W≈ {Q = ∣ Q ∣} {ρ = IX.params} (Sh.Shapes.sup s)
+             (proj₁ (FD.FI.ISt.inMap (IX.Reindex.reindexSh (FD.Dₑ .gγ γ) {Q = ∣ Q ∣} {η = IX.params} FX)))
+             (λ p → IX.Reindex.reindexIx (D .gγ γ) (FD.FI.FF.S.labelW {Q = ∣ Q ∣} {ρ = IX.params} (Sh.Shapes.sup s) p) (a p))
+             (proj₂ (FD.FI.ISt.inMap (IX.Reindex.reindexSh (FD.Dₑ .gγ γ) {Q = ∣ Q ∣} {η = IX.params} FX)))
+      A₁ = FD.fuse-sh ∣ Q ∣ IX.fbase s a
+
+      A₂ : FD.FI.ISt.E.W≈ {Q = ∣ Q ∣} {ρ = IX.params}
+             (proj₁ (FD.FI.ISt.inMap (IX.Reindex.reindexSh (FD.Dₑ .gγ γ) {Q = ∣ Q ∣} {η = IX.params} FX)))
+             (proj₁ (FD.FI.ISt.inMap (FD.FI.ISt.embed-idx Q (strong-fmor Q (FD.FI.fs★) .idxf .func (γ , FD.FI.FF.unembed-idx Q FX)))))
+             (proj₂ (FD.FI.ISt.inMap (IX.Reindex.reindexSh (FD.Dₑ .gγ γ) {Q = ∣ Q ∣} {η = IX.params} FX)))
+             (proj₂ (FD.FI.ISt.inMap (FD.FI.ISt.embed-idx Q (strong-fmor Q (FD.FI.fs★) .idxf .func (γ , FD.FI.FF.unembed-idx Q FX)))))
+      A₂ = FD.FI.ISt.in-shape-resp ∣ Q ∣ IX.fbase (FD.bridge-idx Q FX)
+
+  fuse-fam-w : ∀ {N} (D : FuseData N) (Q : Poly-C (suc N)) (γ : D .Γ .idx .Setoid.Carrier)
+               {k} {Q₀ : Poly-C (suc k)} {ρ ρ'} {fmr : IX.FMor ∣ Q ∣ ρ ρ'}
+               {d : ∀ v → Decos.DecoAssign N (ρ v)} {d' : ∀ v → Decos.DecoAssign (suc N) (ρ' v)}
+               (df : DecoDefs.DecoF Q fmr d d')
+               (w : Sh.Shapes.W N ∣ Q₀ ∣ ρ) (a : Sh.Trees.Assign (λ v → D .sₛ v .idx) w) →
+               (FuseInst.ISt.Fδ.fib-subst D Q Q₀ d
+                  {w₁ = w} {w₂ = proj₁ (FuseDirect.Φw D Q γ {Q₀ = ∣ Q₀ ∣} fmr w a)}
+                  (FuseDirect.fuse-w D Q γ fmr w a)
+                ∘ FuseFib.RFμ.rf-W D Q γ {Q = Q₀} d w a)
+                 ≈ FuseDirect.Ψw D Q γ df w a
+  fuse-fam-w D Q γ {Q₀ = Q₀} df (Sh.Shapes.sup s) a =
+    fuse-fam-sh D Q γ Q₀ (DecoDefs.dbind Q₀ df) s a
+
+  fuse-fam-sh : ∀ {N} (D : FuseData N) (Q : Poly-C (suc N)) (γ : D .Γ .idx .Setoid.Carrier)
+                {j} (R : Poly-C j) {ηA ηB} {fmr : IX.FMor ∣ Q ∣ ηA ηB}
+                {d : ∀ v → Decos.DecoAssign N (ηA v)} {d' : ∀ v → Decos.DecoAssign (suc N) (ηB v)}
+                (df : DecoDefs.DecoF Q fmr d d')
+                (s : Sh.Shapes.Shape N ∣ R ∣ ηA) (a : Sh.Trees.AssignSh (λ v → D .sₛ v .idx) ∣ R ∣ ηA s) →
+                (FuseInst.ISt.Fδ.fib-shape-subst D Q R d (FuseDirect.fuse-sh D Q γ ∣ R ∣ fmr s a)
+                 ∘ FuseFib.RFμ.rf-Sh D Q γ R d s a)
+                  ≈ FuseDirect.Ψsh D Q γ R df s a
+  fuse-fam-sh D Q γ (const A₀) df s a =
+    ≈-trans (∘-cong₁ (A₀ .fam .refl*))
+      (≈-trans id-left (≈-sym (≈-trans id-left (pair-p₂ _ _))))
+  fuse-fam-sh D Q γ (var v)    df s a = fuse-fam-el D Q γ df v s a
+  fuse-fam-sh D Q γ (R₁ + R₂)  df (inj₁ s) a = fuse-fam-sh D Q γ R₁ df s a
+  fuse-fam-sh D Q γ (R₁ + R₂)  df (inj₂ s) a = fuse-fam-sh D Q γ R₂ df s a
+  fuse-fam-sh D Q γ (R₁ × R₂)  df (s₁ , s₂) a =
+    ≈-trans (strong-prod-m-post _ _ _ _)
+      (≈-trans (strong-prod-m-cong (fuse-fam-sh D Q γ R₁ df s₁ (λ p → a (inj₁ p)))
+                  (fuse-fam-sh D Q γ R₂ df s₂ (λ p → a (inj₂ p))))
+        (≈-sym (≈-trans (∘-cong₂ (strong-prod-m-comp _ _ _ _))
+          (strong-prod-m-post _ _ _ _))))
+  fuse-fam-sh D Q γ (μ R₀')    df s a = fuse-fam-w D Q γ df s a
+
+  fuse-fam-el : ∀ {N} (D : FuseData N) (Q : Poly-C (suc N)) (γ : D .Γ .idx .Setoid.Carrier)
+                {k} {ρ ρ'} {fmr : IX.FMor ∣ Q ∣ ρ ρ'}
+                {d : ∀ v → Decos.DecoAssign N (ρ v)} {d' : ∀ v → Decos.DecoAssign (suc N) (ρ' v)}
+                (df : DecoDefs.DecoF Q fmr d d') (v : Fin k)
+                (s : Sh.Shapes.El N (ρ v)) (a : Sh.Trees.AssignEl (λ v' → D .sₛ v' .idx) (ρ v) s) →
+                (FuseInst.ISt.Fδ.fib-el-subst D Q (ρ v) (d v) (FuseDirect.fuse-el D Q γ fmr v s a)
+                 ∘ FuseFib.RFμ.rf-El D Q γ (ρ v) (d v) s a)
+                  ≈ FuseDirect.Ψel D Q γ df v s a
+  fuse-fam-el D Q γ DecoDefs.dbase        zero    s a =
+    ≈-trans (fuse-fam-μ D Q γ s a)
+      (≈-sym (≈-trans id-left
+        (≈-trans (assoc _ _ _)
+          (≈-trans (∘-cong₂ (pair-p₂ _ _))
+            (≈-trans (∘-cong₁ (μObj Q (D .sₜ) .fam .refl*
+                       {x = FuseInst.FF.fold D Q (FuseFib.ALGIx D Q γ) γ s a}))
+              id-left)))))
+  fuse-fam-el D Q γ DecoDefs.dbase        (suc i) s a =
+    ≈-trans (∘-cong₁ (D .sₜ i .fam .refl*))
+      (≈-trans id-left
+        (≈-sym (≈-trans id-left
+          (≈-trans (∘-cong₂ (≈-trans (pair-cong ≈-refl (≈-sym id-right))
+                     (≈-trans (pair-cong (≈-sym id-right) ≈-refl) (pair-ext (id _)))))
+            id-right))))
+  fuse-fam-el D Q γ (DecoDefs.dbind Q₀ df) zero    w a = fuse-fam-w D Q γ df w a
+  fuse-fam-el D Q γ (DecoDefs.dbind Q₀ df) (suc v) s a = fuse-fam-el D Q γ df v s a
+
+  bridge-fam : ∀ {N} (D : FuseData N) (Q : Poly-C (suc N)) (γ : D .Γ .idx .Setoid.Carrier)
+               (R' : Poly-C (suc N)) (x : FuseInst.FF.T'.TreeSh D Q ∣ R' ∣ IX.params) →
+               (FuseInst.ISt.Fδ'.fib-shape-subst D Q R' (λ v → lift tt)
+                  (FuseDirect.bridge-idx D Q γ R' x)
+                ∘ FuseDirect.RE.rf-Sh D Q γ R' (λ v → lift tt) (proj₁ x) (proj₂ x))
+                 ≈ FuseDirect.Ξ D Q γ R' x
+  bridge-fam D Q γ (const A₀) (s , a) =
+    ≈-trans (∘-cong₁ (A₀ .fam .refl*))
+      (≈-trans id-left
+        (≈-sym (≈-trans id-left
+          (≈-trans (∘-cong₂ (pair-cong ≈-refl id-left)) (pair-p₂ _ _)))))
+  bridge-fam D Q γ (var zero) (s , a) =
+    ≈-trans (∘-cong₁ (μObj Q (D .sₜ) .fam .refl* {x = a tt}))
+      (≈-trans id-left
+        (≈-trans (∘-cong₁ (μObj Q (D .sₜ) .fam .refl* {x = a tt}))
+          (≈-trans id-left
+            (≈-sym (≈-trans id-left
+              (≈-trans (∘-cong₂ (pair-cong ≈-refl id-left)) (pair-p₂ _ _)))))))
+  bridge-fam D Q γ (var (suc i)) (s , a) =
+    ≈-trans (≈-sym (assoc _ _ _))
+      (≈-trans (∘-cong₁ (≈-trans (≈-sym (D .sₜ i .fam .trans*
+                  {x = D .fs i .idxf .func (γ , a tt)}
+                  {y = D .gγ γ i .func (a tt)}
+                  {z = D .fs i .idxf .func (γ , a tt)} _ _))
+                (D .sₜ i .fam .refl* {x = D .fs i .idxf .func (γ , a tt)})))
+        (≈-trans id-left
+          (≈-sym (≈-trans id-left
+            (≈-trans (∘-cong₂ (≈-trans (pair-cong ≈-refl id-left)
+                       (≈-trans (pair-cong ≈-refl (≈-sym id-right))
+                         (≈-trans (pair-cong (≈-sym id-right) ≈-refl) (pair-ext (id _))))))
+              id-right)))))
+  bridge-fam D Q γ (R₁ + R₂) (inj₁ s , a) =
+    ≈-trans (bridge-fam D Q γ R₁ (s , a))
+      (≈-sym (∘-cong₂ (∘-cong₁ (≈-trans id-left id-left))))
+  bridge-fam D Q γ (R₁ + R₂) (inj₂ s , a) =
+    ≈-trans (bridge-fam D Q γ R₂ (s , a))
+      (≈-sym (∘-cong₂ (∘-cong₁ (≈-trans id-left id-left))))
+  bridge-fam D Q γ (R₁ × R₂) ((s₁ , s₂) , a) =
+    ≈-trans (strong-prod-m-post _ _ _ _)
+      (≈-trans (strong-prod-m-cong (bridge-fam D Q γ R₁ (s₁ , λ p → a (inj₁ p)))
+                  (bridge-fam D Q γ R₂ (s₂ , λ p → a (inj₂ p))))
+        (≈-sym
+          (≈-trans (∘-cong₂
+              (≈-trans (∘-cong₁ (pair-cong
+                          (≈-trans id-left (∘-cong₂ (pair-cong ≈-refl id-left)))
+                          (≈-trans id-left (∘-cong₂ (pair-cong ≈-refl id-left)))))
+                (≈-trans (∘-cong₂ (pair-cong ≈-refl
+                            (≈-trans (pair-natural _ _ _)
+                              (≈-trans (pair-cong (assoc _ _ _) (assoc _ _ _))
+                                (≈-sym (pair-cong
+                                  (≈-trans (assoc _ _ _) (∘-cong₂ (pair-p₂ _ _)))
+                                  (≈-trans (assoc _ _ _) (∘-cong₂ (pair-p₂ _ _)))))))))
+                  (strong-prod-m-comp _ _ _ _))))
+            (strong-prod-m-post _ _ _ _))))
+  bridge-fam D Q γ (μ R'') (w , a) =
+    ≈-trans (fuse-fam-μ (ext-data D Q) R'' γ w a)
+      (≈-sym (≈-trans id-left
+        (≈-trans (∘-cong₂ (≈-trans (pair-cong ≈-refl id-left)
+                   (≈-trans (pair-cong ≈-refl (≈-sym id-right))
+                     (≈-trans (pair-cong (≈-sym id-right) ≈-refl) (pair-ext (id _))))))
+          id-right)))
