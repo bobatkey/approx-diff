@@ -227,96 +227,49 @@ another sort.
 
 Since an assignment may send a variable to another sort, this definition is inductive.
 
-\begin{definition}[Shapes of a sort]
-\label{def:polynomial-types:shapes}
-Two mutually inductive judgements generate the shapes \citep{abbott2004}, by the rules in
-\figref{polynomial-types:shapes}. The first, $\Delta; \rho \vdash s : R$, reads $s$ is an
-\emph{$R$-shape} under a parameter context $\Delta$ and an assignment $\rho$ of the variables of
-the index-erased polynomial $R$; the second, $\Delta \vdash s : \sigma$, reads $s$ is a
-\emph{shape of sort $\sigma$}, the sort carrying its own assignment, so only $\Delta$ is needed.
-A \emph{position} of a shape is a leaf $\bullet$; it is \emph{labelled} by the
-set $X$ in the \textsc{const} rule and by the parameter $\rho(\alpha)$ in the \textsc{var-par} rule.
-\end{definition}
-
-\begin{figure}
-\small
-\makebox[\linewidth][l]{\jform{\Delta; \rho \vdash s : R}}
-\begin{mathpar}
-\inferrule*[right=const]
-  { }
-  {\Delta; \rho \vdash \bullet : \const(X)}
-\and
-\inferrule*[right=var-par]
-  {\rho(\alpha) \in \Delta}
-  {\Delta; \rho \vdash \bullet : \alpha}
-\and
-\inferrule*[right=var-sort]
-  {\rho(\alpha) = \sigma \\ \Delta \vdash s : \sigma}
-  {\Delta; \rho \vdash s : \alpha}
-\and
-\inferrule*[right={$+$L}]
-  {\Delta; \rho \vdash s : R_1}
-  {\Delta; \rho \vdash \mathsf{inl}\,s : R_1 + R_2}
-\and
-\inferrule*[right={$+$R}]
-  {\Delta; \rho \vdash s : R_2}
-  {\Delta; \rho \vdash \mathsf{inr}\,s : R_1 + R_2}
-\and
-\inferrule*[right={$\times$}]
-  {\Delta; \rho \vdash s_1 : R_1 \\ \Delta; \rho \vdash s_2 : R_2}
-  {\Delta; \rho \vdash \langle s_1, s_2 \rangle : R_1 \times R_2}
-\and
-\inferrule*[right={$\mu$}]
-  {\Delta \vdash s : (\alpha.R, \rho)}
-  {\Delta; \rho \vdash s : \mu\alpha.R}
-\end{mathpar}
-
-\medskip
-\makebox[\linewidth][l]{\jform{\Delta \vdash s : \sigma}}
-\begin{mathpar}
-\inferrule*[right=sort]
-  {\Delta; \rho[\alpha \mapsto (\alpha.R, \rho)] \vdash s : R}
-  {\Delta \vdash s : (\alpha.R, \rho)}
-\end{mathpar}
-\caption{Shapes of a sort: $R$-shapes under an assignment (upper), and shapes of a sort (lower).}
-\label{fig:polynomial-types:shapes}
-\end{figure}
-
 \begin{definition}[Trees of a sort]
 \label{def:polynomial-types:trees}
-Fix a kinding environment $\delta \in \Fam(\cat{C})^\Delta$. A \emph{tree of sort $\sigma$} over
-$\delta$ is a pair $(s, a)$ of a shape $s$ of sort $\sigma$ and an \emph{index assignment} $a$
-sending each position of $s$ to an element of the set naming it: $X$ for a $\const$-position, and
-$|\delta|(\rho(\alpha))$ for a parameter-position referencing variable $\alpha$. The set of such trees is $W_\sigma(\delta)$.
+Work over the erased environment $|\delta|$. For each sort $(\alpha.R, \rho)$ the set
+$W_{(\alpha.R,\rho)}$ of \emph{trees of sort $(\alpha.R, \rho)$}, and for each index-erased
+polynomial $R'$ with an assignment $\rho'$ of its variables the set of \emph{$R'$-trees}, are
+defined by a single simultaneous induction \citep{abbott2004}:
+\begin{itemize}
+\item a tree of sort $(\alpha.R, \rho)$ is an $R$-tree, the recursion variable $\alpha$ assigned the
+  sort $(\alpha.R, \rho)$ itself;
+\item a $\const X$-tree is an element of $X$;
+\item a $\beta$-tree is an element of $|\delta|(\rho'(\beta))$ if $\rho'(\beta)$ is a parameter, and a
+  tree of sort $\rho'(\beta)$ otherwise;
+\item a $(R_1 + R_2)$-tree is an $R_1$-tree or an $R_2$-tree, tagged with the summand;
+\item a $(R_1 \times R_2)$-tree is a pair of an $R_1$-tree and an $R_2$-tree;
+\item a $\mu\beta.R'$-tree is a tree of sort $(\beta.R', \rho')$.
+\end{itemize}
 \end{definition}
 
 \begin{definition}[Decoration]
 \label{def:polynomial-types:decoration}
-A \emph{decoration} $Q$ of a sort $(\alpha.R, \rho)$ is a polynomial over $\Fam(\cat{C})$ with
-$|Q| = R$, together with a decoration of each sort in the range of $\rho$.
+A \emph{decoration} of a sort $(\alpha.R, \rho)$ is a polynomial $Q$ over $\Fam(\cat{C})$ with $|Q| =
+R$, together with a decoration of each sort in the range of $\rho$. Decorations are data over the
+sorts, so the trees do not depend on them, and a decoration determines the sort it decorates. The
+root sort is decorated by $P$ itself, and a decoration induces decorations of the sorts reachable
+from its sort, each inner $\mu$-body decorating the sort it erases to.
 \end{definition}
-
-A decoration $Q$, together with a kinding environment $\delta$, assigns to each position $p$ of a
-shape of the sort a family $Q_p \in \Fam(\cat{C})$: the family $\const(X, \partial X)$ of $Q$ that
-the position comes from, at a $\const$-position, and the environment entry $\delta(\rho(\alpha))$, at
-a parameter-position referencing $\alpha$. Decorations are data over the sorts, so the shapes and
-trees do not depend on them. The root sort is decorated by $P$, and a decoration induces decorations
-of the sorts reachable from its sort, each inner $\mu$-body decorating the sort it erases to.
 
 \begin{definition}[Fibres]
 \label{def:polynomial-types:fibres}
-Given a decoration $Q$ of a sort $\sigma$ and a kinding environment $\delta$, the \emph{fibre}
-$\partial W_\sigma(s, a) \in \cat{C}$ of a tree $(s, a)$ of sort $\sigma$ is the product over the
-positions of $s$ of the family $Q_p$ at the assigned index:
-\[
-  \partial W_\sigma(s, a) = \prod_{p} \partial(Q_p)_{a(p)}.
-\]
+For a decorated sort $\sigma$, the \emph{fibre} $\partial W_\sigma(t) \in \cat{C}$ of a tree $t \in
+W_\sigma$ recovers the erased objects, by structural recursion on $t$:
+\begin{itemize}
+\item the fibre of a tree of sort $(\alpha.R, \rho)$ is the fibre of the underlying $R$-tree;
+\item the fibre of a $\const X$-tree $x$ is $\partial X_x$, where $\const(X, \partial X)$ is the
+  constant supplied by the decoration;
+\item the fibre of a $\beta$-tree is the corresponding fibre of $\delta(\rho'(\beta))$ if
+  $\rho'(\beta)$ is a parameter, and the fibre of the tree of sort $\rho'(\beta)$ otherwise;
+\item the fibre of a $(R_1 + R_2)$-tree is the fibre of the underlying $R_i$-tree;
+\item the fibre of a $(R_1 \times R_2)$-tree is the product of the fibres of its components;
+\item the fibre of a $\mu\beta.R'$-tree is the fibre of the underlying tree of sort $(\beta.R',
+  \rho')$, decorated by the corresponding $\mu$-body of the decoration.
+\end{itemize}
 \end{definition}
-
-Splitting a tree into a shape and an index assignment keeps the shape free of the environment, so a
-morphism of kinding environments acts on the index assignment and the fibres alone, leaving the
-shape fixed. Reindexing the carrier along such a morphism is therefore lightweight, and the
-functorial action of \secref{polynomial-types:mu-operator} rests on it.
 
 \paragraph{Worked example: rose trees.}
 Take $P = \const(A) \times \mu\beta.(\const(\One_{\!F}) + \alpha \times \beta) \in
@@ -364,10 +317,9 @@ For the algebra map $\inMap : P(\delta[\alpha \mapsto \mu_{\alpha.P}(\delta)]) \
 tuple of arguments to one application of the tree constructor: a label at each constant, a tag at each sum,
 a pair at each product, an $s_0$-subtree at each occurrence of $\alpha$, and at each inner
 $\mu$-body a subtree of its sort in which the $\alpha$-positions again hold $s_0$-subtrees.
-On index sets $\inMap$ assembles a shape of sort $s_0$, a new root above the argument
-shapes, together with the index assignment collecting the arguments' assignments and the
-const-labels; this is invertible, decomposition at the root being its inverse. In the rose-tree
-example
+\defref{polynomial-types:trees} admits exactly these arguments under the root of an $s_0$-tree, so
+on index sets $\inMap$ forms the tree with the arguments beneath a new root node, invertibly,
+decomposition at the root being its inverse; in the rose-tree example
 \begin{center}
 $\inMap : \bigl(x_0,\ [\,T_1,\ T_2\,]\bigr) \;\longmapsto\;$
 \begin{tikzpicture}[baseline=-8mm, level distance=7mm, sibling distance=12mm,
@@ -376,33 +328,32 @@ $\inMap : \bigl(x_0,\ [\,T_1,\ T_2\,]\bigr) \;\longmapsto\;$
 \end{tikzpicture}
 \end{center}
 \noindent
-with the triangles standing for the subtrees $T_1$ and $T_2$. On fibres $\inMap$ is
-the identity: the positions of the assembled shape are exactly those of the argument shapes, so its
-fibre (\defref{polynomial-types:fibres}) is the same product that the action of $P$ forms on the
-argument fibres; in the example, both sides are the same node-wise product of label
-fibres.
+with the triangles standing for the subtrees $T_1$ and $T_2$. On fibres $\inMap$ is the identity,
+because \defref{polynomial-types:fibres} computes the fibre of the new tree by the same product
+structure that the action of $P$ computes on the arguments; in the example, both sides are the same
+node-wise product of label fibres.
 
 For an algebra $a : \Gamma \times P(\delta[\alpha \mapsto Y]) \to Y$, the catamorphism
-$\cata{a} : \Gamma \times \mu_{\alpha.P}(\delta) \to Y$ is defined by recursion over
-the shape of its tree argument, simultaneously over all sorts,
-threading the $\Gamma$-component unchanged. In the rose-tree example, on index sets,
+$\cata{a} : \Gamma \times \mu_{\alpha.P}(\delta) \to Y$ is defined by structural recursion over
+trees, simultaneously over all sorts, threading the $\Gamma$-component unchanged. In the rose-tree
+example, on index sets,
 \[
   \cata{a}\bigl(\gamma,\ \inMap(x_0,\ [\,T_1,\ T_2\,])\bigr) \;=\;
   a\bigl(\gamma,\ (x_0,\ [\,\cata{a}(\gamma, T_1),\ \cata{a}(\gamma, T_2)\,])\bigr).
 \]
 \noindent
-In general, the root shape is decomposed into its arguments, the recursion is applied to each
-$s_0$-subtree, and $a$ combines the results. At an inner sort the recursion translates the
-subtree from $\delta$ to $\delta[\alpha \mapsto Y]$ by the strong action, replacing each
-$s_0$-subtree by its folded value and leaving the rest of the shape fixed (the list over $Y$ in the
-equation above), so the result lands in the domain of $a$. The fibres transform
-alongside.
+In general, the root is decomposed into its arguments, the recursion is applied to each
+$s_0$-subtree, and $a$ combines the results. At an inner sort the recursion translates its trees from
+the environment $\delta$ to the environment $\delta[\alpha \mapsto Y]$ by the strong action,
+replacing each $s_0$-subtree by its folded value and leaving the surrounding structure intact (the
+list over $Y$ in the equation above), so that the translated arguments land in the domain of $a$. The
+same recursion is performed on fibres.
 
 The law $\beta$ is the unfolded initiality square of \defref{polynomial-types:has-poly},
-taken at the concrete carriers. The upper path assembles the shape from the arguments
-and folds it; the lower path folds the $s_0$-subtrees inside the arguments and then applies $a$. Both
-compute the same recursion, and the equation above is $\beta$ at the example. For $\eta$, let $h$
-satisfy $\beta$ in place of $\cata{a}$; by induction on shapes
+taken at the concrete carriers. The upper path forms the tree with the arguments as its immediate
+subtrees and then folds it; the lower path folds the $s_0$-subtrees inside the arguments and then
+applies $a$. Both compute the same recursion on trees, and the equation above is $\beta$ at the
+example. For $\eta$, let $h$ satisfy $\beta$ in place of $\cata{a}$; by induction on trees
 (simultaneously over all sorts), $h$ agrees with $\cata{a}$ at every tree, the inductive
 hypothesis covering the $s_0$-subtrees among the arguments.
 \end{proof}
@@ -468,58 +419,3 @@ The strong action makes each $P$ the morphism part of a functor $(\cat{C}_\Gamma
 $\prodM{\pi_1}{g \circ \pi_2}$. For a $\mu$-subexpression the functoriality that fusion assumes of
 $F$ is the functoriality being proved, at the inner binder; the two are established together by
 induction on the polynomial expression.
-
-\subsection{Positions and reindexing}
-\label{sec:polynomial-types:positions}
-
-This subsection records the concrete representation of the carrier and its two operations, to guide
-the mechanisation. It is below the level of the rest of the development, and a reader following the
-categorical construction may skip it.
-
-\paragraph{Positions.}
-Shapes themselves form a mutually inductive family indexed by $\Delta$, $R$ and $\rho$
-(\figref{polynomial-types:shapes}), crossing the two judgements at the $\textsc{var-sort}$ and $\mu$
-nodes; representing that family faithfully in Agda, and keeping it workable, is the main thing the
-prototype has to establish. The \emph{positions} of a shape form an inductive family $\Pos$ indexed
-over it, one constructor per position-forming rule (the shape indices are suppressed below):
-\[
-\begin{array}{ll}
-  \star : \Pos(\bullet) &\\
-  \mathsf{inl} : \Pos(s) \to \Pos(\mathsf{inl}\,s) \quad&
-  \mathsf{inr} : \Pos(s) \to \Pos(\mathsf{inr}\,s) \\
-  \mathsf{fst} : \Pos(s_1) \to \Pos(\langle s_1, s_2 \rangle) \quad&
-  \mathsf{snd} : \Pos(s_2) \to \Pos(\langle s_1, s_2 \rangle) \\
-  \mathsf{down} : \Pos(s') \to \Pos(s) &\text{($s$ a $\textsc{var-sort}$ or $\mu$ node over $s'$)}
-\end{array}
-\]
-The leaf gives the single position $\star$; the pair node branches; the sum and descent nodes pass a
-position through. Each position $p$ names a set $|p| \in \Set$, read off by the same recursion: $X$
-at a $\const$-leaf, and $|\delta|(\rho(\alpha))$ at a parameter-leaf referencing $\alpha$ (the only
-place $\delta$ enters).
-
-\paragraph{Trees.}
-An \emph{index assignment} for $s$ is a dependent function $a : \prod_{p \in \Pos(s)} |p|$, and a
-tree of sort $\sigma$ over $\delta$ is a pair $(s, a)$ (\defref{polynomial-types:trees}). Because $a$
-is a function, tree equality is pointwise equality of assignments, so the carrier is a setoid and
-reindexing and folding must respect that equality. The fibre $\partial W_\sigma(s, a) = \prod_{p \in
-\Pos(s)} \partial(Q_p)_{a(p)}$ is computed by recursion on the shape, a finite nested product, with a
-decoration $Q$ giving each position its family $Q_p$.
-
-\paragraph{Reindexing.}
-A morphism $g : \delta \to \delta'$ of kinding environments acts on a tree $(s, a)$ with the shape
-$s$ \emph{unchanged}: the index assignment is $a$ postcomposed with the index part of $g$ at each
-parameter-position, const-positions untouched, and the fibre transforms by the fibre parts of $g$.
-Reindexing is thus postcomposition on the assignment, not a traversal of the shape, which is the
-point of the representation.
-
-\paragraph{Fold.}
-The catamorphism $\cata{a}$ recurses on the shape of its argument, simultaneously over all sorts,
-threading $\Gamma$. It reads the index assignment at each position, folds the sort-$s_0$ subtrees,
-and applies the strong action to translate an inner sort's subtree from $\delta$ to $\delta[\alpha
-\mapsto Y]$ before applying the algebra, as in the proof of \propref{polynomial-types:fam-has-poly}.
-This translation is not the reindexing above, which is along a morphism of environments; here the
-$\alpha$-entry changes to the algebra carrier $Y$. The recursion is structural on the shape; whether
-Agda accepts it without a size measure, given the two-judgement indexing, is one of the questions the
-prototype settles.
-
-
