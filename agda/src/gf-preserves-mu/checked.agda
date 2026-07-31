@@ -30,7 +30,7 @@ import polynomial-functor
 import fam-mu-types.sort
 import fam-mu-types.fibre
 
-module fam-mu-checked {o m e o₂ m₂ e₂} (os es : Level)
+module gf-preserves-mu.checked {o m e o₂ m₂ e₂} (os es : Level)
     {𝒞 : Category o m e} (𝒞T : HasTerminal 𝒞) (𝒞P : HasProducts 𝒞)
     {𝒢 : Category o₂ m₂ e₂} (𝒢T : HasTerminal 𝒢) (𝒢P : HasProducts 𝒢)
     (G : Functor (fam.CategoryOfFamilies.cat os (os ⊔ es) 𝒞) 𝒢)

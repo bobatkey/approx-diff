@@ -27,7 +27,7 @@ open import indexed-family using (_≃f_)
 import polynomial-functor
 import fam-mu-types.carrier
 
-module fam-mu-types.constant-free {o m e} (os es : Level) {𝒞 : Category o m e}
+module gf-preserves-mu.constant-free {o m e} (os es : Level) {𝒞 : Category o m e}
     (T : HasTerminal 𝒞) (P : HasProducts 𝒞) where
 
 open fam-mu-types.carrier os es T P

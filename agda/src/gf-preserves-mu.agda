@@ -27,10 +27,10 @@ open import Relation.Binary.PropositionalEquality
   using (_≡_; cong)
   renaming (refl to ≡-refl; sym to ≡-sym; trans to ≡-trans; subst to ≡-subst)
 import fam-mu-types
-import fam-mu-types.constant-free
 import fam-mu-realisation
 import fam-presentation
-import fam-mu-checked
+import gf-preserves-mu.constant-free
+import gf-preserves-mu.checked
 
 open Functor
 open Colimit
@@ -61,15 +61,15 @@ module gf-preserves-mu
 
   private
     module Glued = Category Gl
-    module Sk  = fam-mu-types.constant-free 0ℓ 0ℓ 𝒞-terminal 𝒞-products
-    module SkGl = fam-mu-types.constant-free 0ℓ 0ℓ GlT GlP
+    module Sk  = gf-preserves-mu.constant-free 0ℓ 0ℓ 𝒞-terminal 𝒞-products
+    module SkGl = gf-preserves-mu.constant-free 0ℓ 0ℓ GlT GlP
     module FMc = fam-mu-types 0ℓ 0ℓ 𝒞-terminal 𝒞-products
     module RGl = fam-mu-realisation 0ℓ 0ℓ GDC GlT GlP GlE GlSC
     module FMg = RGl.FM
     module Pres = fam-presentation 0ℓ 0ℓ {𝒞}
     module Gld = finite-coproducts-from-indexed.derive GDC
     module FamGl = FMg.Fam𝒞
-    module Chk = fam-mu-checked 0ℓ 0ℓ 𝒞-terminal 𝒞-products GlT GlP GF GF-preserve-products
+    module Chk = gf-preserves-mu.checked 0ℓ 0ℓ 𝒞-terminal 𝒞-products GlT GlP GF GF-preserve-products
   open RGl using (realise; η)
 
   module Fam⟨𝒞⟩ = fam.CategoryOfFamilies 0ℓ 0ℓ 𝒞
