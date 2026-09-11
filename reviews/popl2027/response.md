@@ -1,12 +1,12 @@
-Thanks to the reviewers for their fair reviews. We are gratified that the reviewers think that the overall idea is worth pursuing, and their the connection between provenance and AD is novel and interesting. We agree that without a notion of "ground truth" of what kind of provenance we are addressing the current submission is difficult to assess. We have a plan for addressing this, which we outline below.
+Thanks to the reviewers for their fair reviews. We are gratified that the reviewers think that the overall idea is worth pursuing, and that the connection between provenance and AD is novel and interesting. We agree that without a notion of "ground truth" of what kind of provenance we are addressing the current submission is difficult to assess. We have a plan to address this, outlined below.
 
 ## Proposed Changes
 
-For any final version of this submission, we propose to:
+For any final version, we will:
 
 1. Add a discussion of first-order data provenance (see below) that encompasses our examples and is lifted to higher-order programs by the categorical constructions presented in the paper. This will address the points of Reviewers A and B. We will also summarise the connections between conjugate maps, pairs, and Galois connections as requested by Reviewer C.
 
-2. Add some larger examples. We plan to add an example of a small expression language interpreter. Provenance tracking applied to an interpreter is a way to achieve program slicing, because it will reveal which parts of the input *program* contribute to the output.
+2. Add larger examples (Reviewer B), specifically an expression language interpreter. Provenance tracking applied to an interpreter is a way to achieve program slicing, because it will reveal which parts of the input *program* contribute to the output.
 
 3. Extend the discussion of related work, as requested by reviewer C.
 
@@ -34,6 +34,6 @@ We thank Reviewer C for the additional references. We have already cited the Cru
 
 We note that using lenses directly will not solve the problem of tying our derivatives to the functions. Indeed, in the Cruttwell et al. paper they inject Euclidean spaces and smooth functions into a category of lenses which forgets the connection. Lenses (and dependent lenses) treat functions and their derivatives of functions as a formal pairing. This seems to be essential to be able to lift the notion of derivative to higher order.
 
-In a previous version of this paper, we conjectured that there is a connection between our work and Tangent Categories (Cockett and Cruttwell, Appl Categor Struct (2014) 22:331–417). Tangent Categories generalise the (Reverse) Derivative Categories approach to allow for tangent spaces that vary.
+In a previous version, we conjectured that there is a connection to Tangent Categories (Cockett and Cruttwell, Appl Categor Struct (2014) 22:331–417). Tangent Categories generalise the (Reverse) Derivative Categories approach to allow for tangent spaces that vary.
 
 We were not aware of the two bidirectional transformation papers cited by Reviewer C, and will follow these up for any final version.
