@@ -22,9 +22,11 @@ We have a model of first-order data provenance, which proceeds along similar lin
 
 3. An object consists of a sequence of base types $[(A_1, AE_1), ..., (A_n,AE_n)]$. This is roughly a "vector", but the notion of relatedness may be different at each dimension.
 
-4. A morphism $f : [A_1, \dots, A_n] \to [B_1, \dots, B_m]$ is a pair of a function $f : A_1 \times \cdots \times A_n \to B_1 \times \cdots \times B_m$ and a function $\partial f$ from $A_1 \times \cdots \times A_n$ to $S$-valued $n$-by-$m$ matrices. These satisfy the condition that for all $x, x' \in \Pi_i A_i$ and $j$ with $0 \leq j < m-1$ we have $(\Sigma_i \partial f(x)_{i,j} \rhd AE_i(\pi_i x, \pi_i x')) \leq BE_j(f(x)_j,f(x')_j)$.
+4. A morphism $f : [A_1, \dots, A_n] \to [B_1, \dots, B_m]$ is a pair of a function $f : A_1 \times \cdots \times A_n \to B_1 \times \cdots \times B_m$ and a function $\partial f$ from $A_1 \times \cdots \times A_n$ to $S$-valued $n$-by-$m$ matrices. These satisfy the condition that for all $x, x' \in \Pi_i A_i$ and $j$ with $0 \leq j < m$ we have
 
-This construct gives a category with finite products that serves as a model of functions on tuples of first-order data with an intrinsic notion of derivative. The "Jacobian" associated with a function describes how each output position depends on the input positions collectively, at the given point. This can be seen as a "multi-category" version of metric space sensitivity, as studied in the context of differential privacy.
+$$(\sum_i \partial f(x)_{i,j} \rhd AE_i(\pi_i x, \pi_i x')) \leq BE_j(f(x)_j,f(x')_j)$$
+
+This gives a category with finite products that serves as a model of functions on tuples of first-order data with an intrinsic notion of derivative. The "Jacobian" associated with a function describes how each output position depends on the input positions collectively, at the given point. This can be seen as a "multi-category" version of metric space sensitivity, as studied in the context of differential privacy, generalised so that the sensitivity may depend on the input.
 
 Specialising $R$ and $S$ to the booleans, with $x \rhd y = x \to y$ yields the boolean-valued examples in the paper, and similarly for the other examples.
 
