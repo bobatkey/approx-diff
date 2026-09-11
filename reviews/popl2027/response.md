@@ -10,6 +10,8 @@ For any final version of this submission, we propose to:
 
 3. Extend the discussion of related work, as requested by reviewer C.
 
+The current version is only 23 pages long, so there is plenty of space for additional material.
+
 ## First-order Data Provenance [Reviewers A and B]
 
 We have a model of first-order data provenance, which proceeds along similar lines to the logical relation approach suggested by Reviewer A:
@@ -28,7 +30,7 @@ Specialising $R$ and $S$ to the booleans, with $x \rhd y = x \to y$ yields the b
 
 ## Connection to Lenses and Bidirectional Programming [Reviewer C]
 
-We thank Reviewer C for the additional references. We have already cited the Cruttwell et al. 2024 paper on page FIXME and noted that the $\mathrm{Fam}(C)$ construction we use is a generalisation of their lens based approach. Indeed, $\mathrm{Fam}(C)$ is sometimes called "dependent lenses" in other literature. We need the extra generality of dependency to make our category have sums and function spaces, where the "tangent space" varies according to the point.
+We thank Reviewer C for the additional references. We have already cited the Cruttwell et al. 2024 paper at the top of page 12 (line 540) and noted that the $\mathrm{Fam}(C)$ construction we use is a generalisation of their lens based approach. Indeed, $\mathrm{Fam}(C)$ is sometimes called "dependent lenses" in other literature. We need the extra generality of dependency to make our category have sums and function spaces, where the "tangent space" varies according to the point.
 
 We note that using lenses directly will not solve the problem of tying our derivatives to the functions. Indeed, in the Cruttwell et al. paper they inject Euclidean spaces and smooth functions into a category of lenses which forgets the connection. Lenses (and dependent lenses) treat functions and their derivatives of functions as a formal pairing. This seems to be essential to be able to lift the notion of derivative to higher order.
 
