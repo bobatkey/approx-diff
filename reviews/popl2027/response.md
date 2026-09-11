@@ -4,7 +4,7 @@ Thanks to the reviewers for their fair reviews. We are gratified that the review
 
 For any final version of this submission, we propose to:
 
-1. Add a discussion of first order data provenance (see below) that encompasses our examples and is lifted to higher order programs by the categorical constructions presented in the paper. This will address the points of Reviewers A and B. We will also summarise the connections between conjugate maps, pairs, and Galois connections as requested by Reviewer C.
+1. Add a discussion of first-order data provenance (see below) that encompasses our examples and is lifted to higher-order programs by the categorical constructions presented in the paper. This will address the points of Reviewers A and B. We will also summarise the connections between conjugate maps, pairs, and Galois connections as requested by Reviewer C.
 
 2. Add some larger examples. We plan to add an example of a small expression language interpreter. Provenance tracking applied to an interpreter is a way to achieve program slicing, because it will reveal which parts of the input *program* contribute to the output.
 
@@ -16,7 +16,7 @@ The current version is only 23 pages long, so there is plenty of space for addit
 
 We have a model of first-order data provenance, which proceeds along similar lines to the logical relation approach suggested by Reviewer A:
 
-1. We assume an ordered monoid R of "relatedness truth values" and a semiring "S" of "sensitivity values". The semiring S acts on the left on the monoid R via an operation $\rhd$.
+1. We assume an ordered monoid $R$ of "relatedness truth values" and a semiring $S$ of "sensitivity values". The semiring S acts on the left on the monoid R via an operation $\rhd$.
 
 2. A "base type" consists of a set $A$ with an $R$-valued binary relation $E$ of "relatedness".
 

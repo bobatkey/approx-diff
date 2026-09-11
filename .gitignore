@@ -9,6 +9,8 @@
 *.out
 *.fdb_latexmk
 *.fls
+*.loc
+*.soc
 *.pdf
 *.zip
 *.DS_Store
