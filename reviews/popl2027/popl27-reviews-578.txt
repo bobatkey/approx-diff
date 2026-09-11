@@ -1,0 +1,197 @@
+POPL 2027 Paper #578 Reviews and Comments
+===========================================================================
+Paper #578 Data Provenance as Automatic Differentiation
+
+
+Review #578A
+===========================================================================
+
+Overall merit
+-------------
+C. Weak paper, though I will not fight strongly against it
+
+Reviewer expertise
+------------------
+X. Expert
+
+Paper summary
+-------------
+This paper draws an analogy between automatic differentiation and dependency analysis. Just as a Jacobian matrix characterizes the quantitative dependence of each output position on each input position for a smooth map, a generalized derivative matrix can characterize whether each output depends on each input of a general function, and to what degree. And just as Jacobians can be computed compositionally by matrix multiplication, so can these generalized derivatives. The paper argues that by varying the semiring of scalars, one can recover different flavors of dependency analysis from the literature. The paper develops this analogy using a Category of Families construction: for each space $X$, a map $\partial X$ is equipped, taking points $x$ to "tangent" semimodules of approximations to $x$ (analogous to tangent spaces of vectors). Then a derivative of $f$ is a linear map taking approximations of $x$ to approximations of $f(x)$. Many example settings are discussed and worked out in the context of several example programs. An Agda formalization of the main conservativity/correctness result is provided.
+
+Strengths
+---------
+* The analogy illuminated by the paper is really pleasing. This view could be a very valuable unifying perspective on a number of different approaches to dependency analysis.
+
+* Connecting to autodiff is nice as it may also pave the way to new algorithms for forward and backward dependency analysis (based e.g. on efficient reverse-mode AD algorithms).
+
+* A formalization and implementation in Agda are provided.
+
+Weaknesses
+----------
+* The biggest weakness of the paper is that it provides no semantic account of what dependency tracking should mean, and thus the "correctness theorem" proves nothing about dependency tracking. (That is: the paper establishes compositionality of approximation/annotation/derivative maps, and proves conservativity of the underlying value semantics, but it does not prove that the derivative component actually characterizes dependency or approximation in some way.) This is acknowledged to some extent on L1065, but to me it significantly weakens the claim that the authors have provided "a semantic account of data provenance."
+
+    In automatic differentiation, there is a specification for what it means to be the derivative of a smooth map. What is missing in this paper is any analogue of this: what relation holds between a function and its derivative? Of course, the answer to this question will be different for each instantiation of the proposed framework. But for each example semiring the authors cover, it should be possible to specify such a relation, using which readers could interpret the semantic proposition asserted by dependency analysis in that semiring. For example, is it possible to define a logical relation $R_X(x, x', a)$ capturing the idea that the approximation $a$ of $x$ contains $x'$? Then could you prove that $(f(x), f(x'), \partial f_x(a))$ are related whenever $(x, x', a)$ are? Perhaps the relation would take a different form; I'm not sure. But a satisfying correctness result would give sufficient conditions on such a relation for the autodiff-style dependency analysis to go through.
+
+   As it stands, all of the intuition about what these semiring elements actually represent is conveyed informally, and it was difficult for me to make things precise. For example, in Section 5.1.2, why is the answer 1/10 when the quantity of $b$ could change arbitrarily? I can follow why the computation yields 1/10 (because the semiring uses "min" to combine paths), but I cannot pin down the semantic guarantee that the dependency analysis is making here. There is no specification relative to which "min" can be judged the correct or incorrect behavior.
+
+* Although significant space is devoted to coproducts, and the language supports `case`, it is not clear that dependencies can be tracked through branching computations. Or more precisely, I do not see how the proposed design could track that the coproduct component of an output depends on some input. In the case of Boolean outputs, for example, it seems that no dependence information is tracked at all (because 1 + 1 has a trivial tangent space). Therefore, there is no precise derivative for a primitive like `< : num x num -> (1 + 1)`. Or in the case of lists, dependence of the list length on inputs cannot be represented (as acknowledged on L1083). Perhaps this is to be expected, as autodiff does not have to track branches on changing program values. But this makes me wonder about how far this perspective can really be taken, and what its limitations might be relative to full-featured dependency tracking approaches.
+
+* In the implementation, "reverse-mode" is implemented by running forward-mode and transposing via self-duality, rather than via an algorithm truly analogous to reverse-mode autodiff. As far as I can tell, this ends up doing the equivalent of $n$ JVP-style (forward-mode) evaluations, where $n$ is the number of input positions, instead of computing the backward derivative in one forward and one backward pass.
+
+Comments for authors
+--------------------
+* L54: You compare "existing approaches to program slicing" with a "general categorical approach to data provenance", but data provenance is only part of program slicing. The proposed approach does not appear to provide the "program slice" responsible for computing the output.
+
+* L62: Why is "automatic" in quotes?
+
+* L133: It is strange to call `l = b` a point; isn't the tuple `(label, db, price)` the analogue of a point?
+
+* L160: Maybe this will become clear, but it's strange to me that the output of $\partial_{\mathbb{2}}(\cdots)_r$ accepts and returns non-Boolean values.
+
+* L333: missing parens around $(g \circ f)$.
+
+* L426: How does the fact that the meet-preserving forward map "seems to lack any direct dependency analysis applications of its own" connect to the observation on L424 that it tells us "which outputs a given input selection determines outright"? [In general, it is a little bit hard to follow, at this stage, what all the abstractions boil down to concretely vis-a-vis dependency tracking. In forward-mode AD, if we wish to measure dependence on a particular input, we run the forward derivative on a 'one-hot' tangent vector. But here, if we run on a 'one-hot' tangent, most outputs will be $\bot$, unless they depend *only* on the chosen direction. It then  seems we want a $\bot$-hot or 0-hot tangent vector, so that we can see what can no longer be computed when the given component is unavailable. This has the flavor of $\neg \circ f \circ \neg$, but apparently that is not the right reading, since the meet-preserving forward map has no dependency-tracking interpretations?)
+
+* L437: this para is hard to read. It is unclear what "addition" and "multiplication" refer to here (e.g. "addition's entries are 0"). It sounds like they are maps with Jacobians, but this is somewhat confusing, as most of the addition and multiplication in this section has been in the context of the semirings and semimodules themselves.
+
+* L451: It is hard to follow what is going on here. A lot of machinery has been introduced in this section, then we go back to "the refund example" (i.e., an example of a particular input that was discussed to the `total` program from Section 1), but without fully discussing how the new proposed relative error analysis would work. What derivatives are we using for each operation in `total`? With what initial vector? Are we running forward or reverse? Etc.
+
+* L474: I struggled to follow what is going on here. What is the setup? Is linearity here a significant limitation relative to Green, or are you saying that similar information can be recovered even in the linear setting?
+
+* L512: "It is then possible to, ..., to identify"
+
+* L514: "semiings"
+
+* L570: Maybe move the last comment to Remark 5?
+
+* L790: "used by the comprehension syntax" -- what comprehension syntax? There is none in the given language, as far as I can see... It is also unclear what it means that the signature contains an equality relation on labels. Where would this go? Is it a primitive mapping two labels to 1 + 1?
+
+
+
+Review #578B
+===========================================================================
+
+Overall merit
+-------------
+B. OK paper, but I will not champion it
+
+Reviewer expertise
+------------------
+Y. Knowledgeable
+
+Paper summary
+-------------
+The paper studies how forward and reverse data provenance can be
+computed using the same techniques as for forward and reverse
+automatic differentiation, by replacing the real numbers with a
+commutative semiring S, and tangent spaces with semimodules over S
+with a chosen self-duality. Examples of semirings are given,
+recovering known analyses in a uniform way.
+
+The paper considers the simply-typed lambda calculus extended with
+lists as the language of programs to be analysed. It gives a
+categorical semantics to this language similar to the semantics for
+differentiable programs: in the category Fam(SemiMod(S)), the Fam
+construction over the category of semimodules over a semiring S. The
+semantics of a program contains a map that computes provenance queries
+on that program. The paper proves that for first-order programs, the
+semantics in Fam(SemiMod(S)) agrees with the set-theoretic semantics,
+as expected.
+
+Strengths
+---------
++ Applying established categorical techniques to a new domain (data
+provenance). A novel connection between data provenance and AD.
+
++ Many examples of semirings that capture different analyses.
+
++ Giving a first denotational semantics to data provenance, which so
+far seems to have been studied only operationally. (Though I'm not an
+expert in data provenance).
+
++ The quality of the exposition is particularly excellent throughout.
+
++ Thorough comparison with related work.
+
++ An executable Agda implementation, based on the categorical
+semantics, for computing data provenance (although I didn't check this
+implementation).
+
+Weaknesses
+----------
+One could argue that the results of the paper fall out too easily, for
+example, the categorical facts from Sec 3 are well known, and the
+language and denotational semantics from Sec 4 are standard. So it
+seems to like the paper doesn't provide enough content for the
+standard of POPL. But I still think this is an exciting and novel
+research direction.
+
+The example programs considered are very simple. It's not clear to me
+how the framework can be used to analyse programs that people normally
+compute provenance for. It's also not entirely clear to me what such
+programs look like.
+
+Comments for authors
+--------------------
++ Line 590: (f, x) should be g(x)
+
++ Corollary 3.11: a Fam(...) around SemiMod(S)
+
++ Lines 934-935: two different notations for GLR
+
+
+
+Review #578C
+===========================================================================
+
+Overall merit
+-------------
+D. Reject
+
+Reviewer expertise
+------------------
+Y. Knowledgeable
+
+Paper summary
+-------------
+This paper studies whether data provenance can be understood using the same compositional structure as automatic differentiation. The main approach replaces the real coefficients of a Jacobian with elements of a commutative semiring whose values represent dependency information.
+
+A program is interpreted as its ordinary value together with a semiring-linear map intended to describe how information about its inputs propagates to its outputs. These maps compose like derivatives, and taking their transpose gives a backward analysis: the transpose maps a selection of outputs back to the related input positions.
+
+The results are formalized in Agda.
+
+Strengths
+---------
+- The connection between automatic differentiation and data provenance is interesting and potentially useful.
+
+Weaknesses
+----------
+- I found the paper difficult to read; the motivating example and later examples assume substantial machinery before explaining concretely what is being computed.
+
+- The examples illustrate the framework, but do not make clear what practical capability the community gains over other approaches.
+
+- The relationship to lenses and prior provenance work on bidirectional transformations is not sufficiently explained.
+
+Overall, these concerns make it difficult for me to recommend acceptance.
+
+Comments for authors
+--------------------
+The paper presents an interesting connection between automatic differentiation and provenance, but I found it difficult to understand how the framework relates to nearby work and how its algebraic constructions fit together.
+
+## Relationship to lenses and prior work
+
+The approach appears closely related to lenses: it pairs a forward computation with a backward map from output information to input information. Although L598-601 briefly mentions a lens model of AD, the paper does not explain this relationship or discuss prior work connecting provenance with bidirectional transformations. Since the paper already acknowledges that connecting the derivative to the underlying function remains future work, comparison with lens laws could help characterize the present result and the additional conditions still required.
+
+Relevant references include:
+
+- Robin Cockett, Geoffrey Cruttwell, Jonathan Gallagher, Jean-Simon Pacaud Lemay, Benjamin MacAdam, Gordon Plotkin, and Dorette Pronk. *Reverse Derivative Categories*. CSL 2020.
+
+- Geoffrey S. H. Cruttwell, Bruno Gavranović, Neil Ghani, Paul Wilson, and Fabio Zanasi. *Deep Learning with Parametric Lenses*. 2024.
+
+- Anthony Anjorin and James Cheney. *Provenance Meets Bidirectional Transformations*. TaPP 2019.
+
+- J. Nathan Foster and Grigoris Karvounarakis. *Provenance and Data Synchronization*. IEEE Data Engineering Bulletin 30(4), 2007.
+
+## Presentation of the forward and backward analyses
+
+L291-419: Although the individual constructions are given, I found the progression from transpose to conjugate map, conjugate pair, and Galois connection difficult to follow. Please summarize the construction with the types of each map and identify separately the assumptions on the semiring and on the approximation spaces.
